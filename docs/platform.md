@@ -53,15 +53,21 @@ Superadmins impersonating a tenant can access **Settings** and other admin route
 
 See `.env.example` (development) and `.env.production.example` (Docker/Dokploy).
 
+**Keep in `.env` (infrastructure / secrets):**
+
 | Variable | Purpose |
 |----------|---------|
 | `DATABASE_URL` | PostgreSQL connection |
 | `REDIS_URL` | BullMQ queue |
 | `JWT_SECRET` | Session cookies |
-| `ENCRYPTION_KEY` | Encrypt tenant API keys (falls back to JWT_SECRET) |
-| `WORKSPACE_ROOT` | Base path for agent tools |
-| `EXECUTE_RATE_LIMIT_MAX` | Per-IP workflow execute limit/min |
-| `USE_INLINE_EXECUTOR` | Skip Redis queue (dev fallback) |
+| `ENCRYPTION_KEY` | Encrypt stored API keys (falls back to JWT_SECRET) |
+| `WORKSPACE_ROOT` | Base path for agent tools (Docker: `/app`) |
+| `PORT` / `HOST` | Server bind |
+| `CORS_ORIGIN` | Optional override; default uses **Platform settings → Public URL** |
+
+**Configure in UI** (`/admin/settings`, superadmin): public URL, default LLM provider/model, TokenLab/OpenRouter/Custom keys, Resend email, rate limits, shell timeout, scheduler interval.
+
+Legacy env vars (`TOKENLAB_API_KEY`, `PUBLIC_URL`, etc.) are imported into Platform settings on first boot if present.
 
 ## Local development
 
@@ -147,12 +153,13 @@ Required env vars:
 
 | Variable | Purpose |
 |----------|---------|
-| `PUBLIC_URL` | HTTPS URL for cookies, password-reset links |
-| `JWT_SECRET` / `ENCRYPTION_KEY` | Auth + tenant API key encryption |
+| `JWT_SECRET` / `ENCRYPTION_KEY` | Auth + encryption for stored keys |
 | `REDIS_URL` | Worker queue (required in production) |
-| `RESEND_API_KEY` + `EMAIL_FROM` | Password reset + email notifications (optional but recommended) |
+| `DATABASE_URL` | Set automatically in Docker Compose |
 
-Without `RESEND_API_KEY`, password reset and email notifications are skipped (webhook/Slack still work).
+Configure **Public URL**, LLM keys, and email in **Admin → Platform settings** (`/admin/settings`).
+
+Optional legacy env import on first boot: `PUBLIC_URL`, `TOKENLAB_API_KEY`, `RESEND_API_KEY`, etc.
 
 ## What's still optional (v3)
 

@@ -346,3 +346,27 @@ model PasswordResetToken {
 
   @@index([tenantUserId])
 }
+
+// ─── Platform settings (superadmin UI; secrets encrypted) ───────────────────
+
+model PlatformSettings {
+  id                  String        @id @default("platform")
+  publicUrl           String        @default("http://localhost:5173")
+  defaultProvider     AgentProvider @default(tokenlab)
+  defaultModel        String        @default("claude-3-5-sonnet-20241022")
+  defaultTemperature  Float         @default(0.7)
+  tokenlabApiKey      String?       @db.Text
+  tokenlabBaseUrl     String        @default("https://api.lemondata.io/v1")
+  openrouterApiKey    String?       @db.Text
+  openrouterBaseUrl   String        @default("https://openrouter.ai/api/v1")
+  openrouterReferer   String        @default("https://auto-company.local")
+  customApiKey        String?       @db.Text
+  customBaseUrl       String        @default("")
+  resendApiKey        String?       @db.Text
+  emailFrom           String        @default("onboarding@resend.dev")
+  executeRateLimitMax Int           @default(10)
+  authRateLimitMax    Int           @default(30)
+  shellTimeoutMs      Int           @default(30000)
+  schedulerTickMs     Int           @default(60000)
+  updatedAt           DateTime      @updatedAt
+}

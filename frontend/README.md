@@ -22,6 +22,7 @@ Two login modes at `/login`:
 |-------|---------|
 | `/setup` | First superadmin (auto-redirect if none exists) |
 | `/admin` | Superadmin dashboard (superadmin only) |
+| `/admin/settings` | `PlatformSettingsPage` | Superadmin — LLM keys, email, public URL, rate limits |
 | `/admin/templates` | `PlatformTemplatesPage` | Edit/create platform templates, reseed, sync to tenants |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | React Flow canvas for global workflow templates |
 

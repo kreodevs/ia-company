@@ -209,6 +209,28 @@ export interface AuditLogEntry {
   metadata: Record<string, unknown> | null;
 }
 
+export interface PlatformSettings {
+  id: string;
+  publicUrl: string;
+  defaultProvider: "tokenlab" | "openrouter" | "custom";
+  defaultModel: string;
+  defaultTemperature: number;
+  tokenlabApiKey: string | null;
+  tokenlabBaseUrl: string;
+  openrouterApiKey: string | null;
+  openrouterBaseUrl: string;
+  openrouterReferer: string;
+  customApiKey: string | null;
+  customBaseUrl: string;
+  resendApiKey: string | null;
+  emailFrom: string;
+  executeRateLimitMax: number;
+  authRateLimitMax: number;
+  shellTimeoutMs: number;
+  schedulerTickMs: number;
+  updatedAt?: string;
+}
+
 export const api = {
   auth: {
     status: () => request<AuthStatus>("/auth/status"),
@@ -271,6 +293,14 @@ export const api = {
       if (params?.limit) qs.set("limit", String(params.limit));
       const query = qs.toString();
       return request<AuditLogEntry[]>(`/admin/audit-logs${query ? `?${query}` : ""}`);
+    },
+    platformSettings: {
+      get: () => request<PlatformSettings>("/admin/settings/platform"),
+      update: (body: Partial<PlatformSettings>) =>
+        request<PlatformSettings>("/admin/settings/platform", {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
     },
     templates: {
       summary: () =>

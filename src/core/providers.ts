@@ -2,6 +2,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 import type { AgentProvider } from "@prisma/client";
 import type { ProviderConfig } from "../types/index.js";
+import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 
 export interface ProviderEnvConfig {
   tokenlab: { apiKey: string; baseURL: string };
@@ -10,20 +11,7 @@ export interface ProviderEnvConfig {
 }
 
 export function getProviderEnvConfig(): ProviderEnvConfig {
-  return {
-    tokenlab: {
-      apiKey: process.env.TOKENLAB_API_KEY ?? "",
-      baseURL: process.env.TOKENLAB_BASE_URL ?? "https://api.lemondata.io/v1",
-    },
-    openrouter: {
-      apiKey: process.env.OPENROUTER_API_KEY ?? "",
-      baseURL: process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1",
-    },
-    custom: {
-      apiKey: process.env.CUSTOM_API_KEY ?? "",
-      baseURL: process.env.CUSTOM_BASE_URL ?? "",
-    },
-  };
+  return getPlatformSettingsSync().providers;
 }
 
 function resolveCredentials(config: ProviderConfig): { apiKey: string; baseURL: string } {
@@ -45,13 +33,13 @@ export function createLanguageModel(config: ProviderConfig): LanguageModel {
 
   if (!apiKey) {
     throw new Error(
-      `Missing API key for provider "${config.provider}". Set the corresponding env variable.`,
+      `Missing API key for provider "${config.provider}". Configure it in Admin → Platform settings.`,
     );
   }
 
   if (!baseURL) {
     throw new Error(
-      `Missing base URL for provider "${config.provider}". Set the corresponding env variable.`,
+      `Missing base URL for provider "${config.provider}". Configure it in Admin → Platform settings.`,
     );
   }
 
@@ -62,7 +50,7 @@ export function createLanguageModel(config: ProviderConfig): LanguageModel {
     ...(config.provider === "openrouter"
       ? {
           headers: {
-            "HTTP-Referer": process.env.OPENROUTER_REFERER ?? "https://auto-company.local",
+            "HTTP-Referer": getPlatformSettingsSync().openrouterReferer,
             "X-Title": "Auto-Company Platform",
           },
         }

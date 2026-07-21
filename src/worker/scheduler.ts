@@ -1,12 +1,12 @@
 import { prisma } from "../lib/prisma.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
-
-const TICK_MS = Number(process.env.SCHEDULER_TICK_MS ?? 60_000);
+import { getPlatformSettingsSync, warmPlatformSettingsCache } from "../lib/platform-settings.js";
 
 export function startAutonomousScheduler(): NodeJS.Timeout {
+  const tickMs = getPlatformSettingsSync().schedulerTickMs;
   return setInterval(() => {
     void tickSchedules();
-  }, TICK_MS);
+  }, tickMs);
 }
 
 async function tickSchedules() {
@@ -34,4 +34,11 @@ async function tickSchedules() {
 
     console.log(`Scheduled run ${runId} for schedule ${schedule.name}`);
   }
+}
+
+export async function bootstrapScheduler(): Promise<NodeJS.Timeout> {
+  const { ensurePlatformSettings } = await import("../lib/platform-settings.js");
+  await ensurePlatformSettings();
+  await warmPlatformSettingsCache();
+  return startAutonomousScheduler();
 }

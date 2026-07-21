@@ -16,6 +16,7 @@ import type {
 } from "../types/index.js";
 import { createLanguageModel, estimateCostUsd } from "./providers.js";
 import { createAgentTools } from "./tools.js";
+import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -33,7 +34,7 @@ export class WorkflowExecutor {
     this.workspaceRoot =
       options?.workspaceRoot ?? process.env.WORKSPACE_ROOT ?? process.cwd();
     this.shellTimeoutMs =
-      options?.shellTimeoutMs ?? Number(process.env.SHELL_TIMEOUT_MS ?? 30_000);
+      options?.shellTimeoutMs ?? getPlatformSettingsSync().shellTimeoutMs;
   }
 
   async execute(

@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import SettingsPage from "./pages/SettingsPage";
+import PlatformSettingsPage from "./pages/PlatformSettingsPage";
 import PlatformTemplatesPage from "./pages/PlatformTemplatesPage";
 import PlatformWorkflowEditorPage from "./pages/PlatformWorkflowEditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -51,6 +52,7 @@ function AppShell() {
               <nav className="flex gap-1">
                 {isSuperAdmin && <NavLink to="/admin">Admin</NavLink>}
                 {isSuperAdmin && <NavLink to="/admin/templates">Templates</NavLink>}
+                {isSuperAdmin && <NavLink to="/admin/settings">Settings</NavLink>}
                 {activeTenant && (
                   <>
                     <NavLink to="/agents">Agents</NavLink>
@@ -87,6 +89,7 @@ function AppShell() {
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin" element={<SuperAdminDashboardPage />} />
               <Route path="/admin/templates" element={<PlatformTemplatesPage />} />
+              <Route path="/admin/settings" element={<PlatformSettingsPage />} />
               <Route path="/admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
             </Route>
 

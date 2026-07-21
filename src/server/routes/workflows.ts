@@ -4,6 +4,7 @@ import { executeWorkflowInBackground } from "../../core/engine.js";
 import { logAudit } from "../../lib/audit.js";
 import { assertTenantCanExecute } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { updateWorkflowGraph } from "../lib/workflow-graph.js";
 import type { CreateWorkflowInput, ExecuteWorkflowInput } from "../../types/index.js";
 
@@ -140,7 +141,7 @@ export async function workflowRoutes(app: FastifyInstance) {
     {
       config: {
         rateLimit: {
-          max: Number(process.env.EXECUTE_RATE_LIMIT_MAX ?? 10),
+          max: getPlatformSettingsSync().executeRateLimitMax,
           timeWindow: "1 minute",
         },
       },

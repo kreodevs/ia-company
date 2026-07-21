@@ -159,6 +159,12 @@ export default function SuperAdminDashboardPage() {
             <li>{dashboard.stats.platformTemplates.workflows} workflow templates</li>
           </ul>
           <Link
+            to="/admin/settings"
+            className="mt-4 mr-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
+          >
+            Platform settings →
+          </Link>
+          <Link
             to="/admin/templates"
             className="mt-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
           >

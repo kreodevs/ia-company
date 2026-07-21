@@ -1,17 +1,28 @@
 import "dotenv/config";
 import { startWorkflowWorker } from "./processor.js";
-import { startAutonomousScheduler } from "./scheduler.js";
+import { bootstrapScheduler } from "./scheduler.js";
+import { ensurePlatformSettings, warmPlatformSettingsCache } from "../lib/platform-settings.js";
 
-const worker = startWorkflowWorker();
-const scheduler = startAutonomousScheduler();
+async function main() {
+  await ensurePlatformSettings();
+  await warmPlatformSettingsCache();
 
-console.log("Workflow worker + autonomous scheduler started");
+  const worker = startWorkflowWorker();
+  const scheduler = await bootstrapScheduler();
 
-async function shutdown() {
-  clearInterval(scheduler);
-  await worker.close();
-  process.exit(0);
+  console.log("Workflow worker + autonomous scheduler started");
+
+  async function shutdown() {
+    clearInterval(scheduler);
+    await worker.close();
+    process.exit(0);
+  }
+
+  process.on("SIGINT", () => void shutdown());
+  process.on("SIGTERM", () => void shutdown());
 }
 
-process.on("SIGINT", () => void shutdown());
-process.on("SIGTERM", () => void shutdown());
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

@@ -1,10 +1,12 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { ensurePlatformSettings } from "../src/lib/platform-settings.js";
 import { seedPlatformTemplates } from "../src/lib/seed-platform.js";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await ensurePlatformSettings();
   console.log("🌱 Seeding platform templates (no tenant)…");
   const result = await seedPlatformTemplates(prisma);
   console.log(`  ✓ ${result.skills} platform skill templates`);

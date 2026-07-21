@@ -7,6 +7,12 @@ import { agentRoutes } from "./routes/agents.js";
 import { adminRoutes } from "./routes/admin.js";
 import { consensusRoutes } from "./routes/consensus.js";
 import { platformTemplateRoutes } from "./routes/platform-templates.js";
+import { platformSettingsRoutes } from "./routes/platform-settings.js";
+import {
+  ensurePlatformSettings,
+  getPlatformSettingsSync,
+  warmPlatformSettingsCache,
+} from "../lib/platform-settings.js";
 import { runRoutes } from "./routes/runs.js";
 import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
@@ -19,10 +25,18 @@ const PORT = Number(process.env.PORT ?? 3001);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
 async function buildServer() {
+  try {
+    await ensurePlatformSettings();
+    await warmPlatformSettingsCache();
+  } catch (err) {
+    console.warn("Platform settings DB unavailable, using defaults:", err);
+  }
+  const platformSettings = getPlatformSettingsSync();
+
   const app = Fastify({ logger: false });
 
   await app.register(cors, {
-    origin: process.env.CORS_ORIGIN ?? true,
+    origin: process.env.CORS_ORIGIN ?? platformSettings.publicUrl ?? true,
     credentials: true,
   });
 
@@ -41,6 +55,7 @@ async function buildServer() {
     }));
 
     await api.register(adminRoutes);
+    await api.register(platformSettingsRoutes);
     await api.register(platformTemplateRoutes);
     await api.register(tenantUserRoutes);
     await api.register(tenantSettingsRoutes);

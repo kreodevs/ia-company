@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
+import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { subscribeToRun } from "../../core/engine.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import type { ExecutionEvent } from "../../types/index.js";
@@ -64,7 +65,7 @@ export async function runRoutes(app: FastifyInstance) {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
-        "Access-Control-Allow-Origin": process.env.CORS_ORIGIN ?? "http://localhost:5173",
+        "Access-Control-Allow-Origin": getPlatformSettingsSync().publicUrl,
         "Access-Control-Allow-Credentials": "true",
       });
 

@@ -1,3 +1,5 @@
+import { getPlatformSettingsSync } from "./platform-settings.js";
+
 export async function sendPasswordResetEmail(params: {
   to: string;
   name: string;
@@ -8,17 +10,16 @@ export async function sendPasswordResetEmail(params: {
   const subject = `Reset your ${tenantName} password`;
   const html = `<p>Hi ${name},</p><p>Reset your password for <strong>${tenantName}</strong>:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>This link expires in 1 hour.</p>`;
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
+  const { resendApiKey, emailFrom } = getPlatformSettingsSync();
 
-  if (resendKey) {
+  if (resendApiKey) {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${resendKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from, to, subject, html }),
+      body: JSON.stringify({ from: emailFrom, to, subject, html }),
     });
     if (!res.ok) {
       console.warn("[email] Resend failed:", await res.text());
@@ -36,18 +37,17 @@ export async function sendRunNotificationEmail(params: {
   subject: string;
   html: string;
 }): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
-  if (!resendKey || params.to.length === 0) return;
+  const { resendApiKey, emailFrom } = getPlatformSettingsSync();
+  if (!resendApiKey || params.to.length === 0) return;
 
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${resendKey}`,
+      Authorization: `Bearer ${resendApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from,
+      from: emailFrom,
       to: params.to,
       subject: params.subject,
       html: params.html,

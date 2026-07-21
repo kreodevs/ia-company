@@ -35,15 +35,9 @@ Open `http://localhost` → `/setup` to create superadmin.
 
 ## Email (Resend)
 
-Set in Dokploy / `.env.production` for password reset and email run notifications:
+Configure in **Admin → Platform settings** (`/admin/settings`): Resend API key + from address.
 
-| Variable | Example |
-|----------|---------|
-| `RESEND_API_KEY` | `re_...` from [resend.com](https://resend.com) |
-| `EMAIL_FROM` | `Auto Company <noreply@yourdomain.com>` (verified domain) |
-| `PUBLIC_URL` | `https://your-dokploy-domain.com` |
-
-Without these, the API still runs; email features no-op with a log warning.
+Without Resend configured, password reset and email notifications are skipped (webhook/Slack still work).
 
 ## Entrypoint (`docker/api/entrypoint.sh`)
 

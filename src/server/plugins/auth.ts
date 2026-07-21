@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyReply } from "fastify";
 import cookie from "@fastify/cookie";
 import jwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
+import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import {
@@ -22,7 +23,7 @@ export async function registerAuthPlugin(app: FastifyInstance) {
 
   await app.register(cookie);
   await app.register(rateLimit, {
-    max: Number(process.env.AUTH_RATE_LIMIT_MAX ?? 30),
+    max: getPlatformSettingsSync().authRateLimitMax,
     timeWindow: "1 minute",
   });
   await app.register(jwt, {

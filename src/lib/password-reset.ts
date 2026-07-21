@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "./prisma.js";
 import { hashPassword } from "./auth.js";
 import { sendPasswordResetEmail } from "./email.js";
+import { getPlatformSettingsSync } from "./platform-settings.js";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
 
@@ -31,7 +32,7 @@ export async function createPasswordResetToken(tenantSlug: string, email: string
     data: { tenantUserId: user.id, tokenHash, expiresAt },
   });
 
-  const publicUrl = process.env.PUBLIC_URL ?? process.env.CORS_ORIGIN ?? "http://localhost:5173";
+  const publicUrl = getPlatformSettingsSync().publicUrl;
   const resetUrl = `${publicUrl.replace(/\/$/, "")}/reset-password?token=${token}`;
 
   await sendPasswordResetEmail({

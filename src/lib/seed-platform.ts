@@ -1,6 +1,10 @@
-import type { AgentProvider, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { readdir, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import {
+  getPlatformSettingsSync,
+  warmPlatformSettingsCache,
+} from "./platform-settings.js";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
 
@@ -47,6 +51,7 @@ function slugToTitle(slug: string): string {
 }
 
 async function loadAgents() {
+  const settings = getPlatformSettingsSync();
   const agentsDir = join(REPO_ROOT, ".claude", "agents");
   const files = (await readdir(agentsDir)).filter((f) => f.endsWith(".md"));
   const agents = [];
@@ -62,7 +67,7 @@ async function loadAgents() {
       model:
         meta.model && meta.model !== "inherit"
           ? meta.model
-          : (process.env.DEFAULT_MODEL ?? "claude-3-5-sonnet-20241022"),
+          : settings.defaultModel,
       skillNames: inferSkillsForAgent(slug),
     });
   }
@@ -151,6 +156,7 @@ const DEFAULT_WORKFLOWS = [
 ];
 
 export async function seedPlatformTemplates(client: PrismaClient) {
+  await warmPlatformSettingsCache();
   const skillRecords = await loadSkills();
   const skillByName = new Map<string, string>();
 
@@ -211,12 +217,13 @@ async function upsertPlatformAgent(
   const existing = await client.agent.findFirst({
     where: { tenantId: null, name: agent.name },
   });
+  const settings = getPlatformSettingsSync();
   const data = {
     role: agent.role,
     systemPrompt: agent.systemPrompt,
     model: agent.model,
-    provider: (process.env.DEFAULT_PROVIDER as AgentProvider) ?? "tokenlab",
-    temperature: parseFloat(process.env.DEFAULT_TEMPERATURE ?? "0.7"),
+    provider: settings.defaultProvider,
+    temperature: settings.defaultTemperature,
   };
   if (existing) {
     return client.agent.update({ where: { id: existing.id }, data });
