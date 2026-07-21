@@ -105,8 +105,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
     restart: unless-stopped
-    ports:
-      - "${WEB_PORT:-80}:80"
+    # No host ports — Dokploy/Traefik routes by domain → web:80. Local: use docker-compose.local.yml
     depends_on:
       api:
         condition: service_healthy

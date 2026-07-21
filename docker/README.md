@@ -10,7 +10,7 @@ Stack for production: **PostgreSQL + Redis + API + Worker + Web (nginx)**.
 | `redis` | `redis:7-alpine` | internal | BullMQ job queue |
 | `api` | `docker/api/Dockerfile` | internal `:3001` | Node API + Prisma (uses `npm run build:server`, not full monorepo build) |
 | `worker` | same as `api` | internal | Workflow executor + autonomous scheduler |
-| `web` | `docker/web/Dockerfile` | `${WEB_PORT:-80}` | SPA + reverse proxy `/api` → api |
+| `web` | `docker/web/Dockerfile` | internal `:80` (Dokploy domain) | SPA + reverse proxy `/api` → api |
 
 The **web** image installs the `frontend` npm workspace using the **root** `package-lock.json` (there is no `frontend/package-lock.json`).
 
@@ -20,20 +20,19 @@ The **web** image installs the `frontend` npm workspace using the **root** `pack
 cp .env.production.example .env.production
 # Edit passwords and JWT_SECRET
 
-docker compose --env-file .env.production up -d --build
+docker compose -f docker-compose.yml -f docker-compose.local.yml --env-file .env.production up -d --build
 ```
 
-Open `http://localhost` → `/setup` to create superadmin.
+Open `http://localhost:8080` → `/setup` to create superadmin.
 
 ## Dokploy
 
 1. **New Compose** → connect Git repo or paste `docker-compose.yml`.
 2. **Environment** → copy variables from `.env.production.example`.
-3. Set `PUBLIC_URL` to your Dokploy domain (HTTPS).
-4. Set strong `POSTGRES_PASSWORD` and `JWT_SECRET`.
-5. Deploy. Only expose service **`web`** (port 80).
-6. First visit: `/setup` (superadmin) → `/admin` → create tenant + owner user.
-7. Tenant users sign in at `/login` → tab **Organization**.
+3. Set strong `POSTGRES_PASSWORD` and `JWT_SECRET`.
+4. Deploy. **Do not** publish host ports — add a **Domain** in Dokploy → service `web`, port `80`, path `/`.
+5. First visit: `/setup` (superadmin) → `/admin` → create tenant + owner user.
+6. Tenant users sign in at `/login` → tab **Organization**.
 
 ## Email (Resend)
 
