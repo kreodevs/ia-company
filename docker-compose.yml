@@ -115,9 +115,10 @@ services:
       - internal
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/"]
-      interval: 5m
+      interval: 15s
       timeout: 10s
       retries: 3
+      start_period: 10s
 
 networks:
   internal:

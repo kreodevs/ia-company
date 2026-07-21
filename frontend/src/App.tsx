@@ -36,27 +36,27 @@ function AppShell() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           <Route element={<SetupGate />}>
-            <Route path="/setup" element={<SetupSuperAdminPage />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="setup" element={<SetupSuperAdminPage />} />
+            <Route path="login" element={<LoginPage />} />
 
             <Route element={<RequireSuperAdmin />}>
-              <Route path="/admin" element={<SuperAdminDashboardPage />} />
-              <Route path="/admin/templates" element={<PlatformTemplatesPage />} />
-              <Route path="/admin/settings" element={<PlatformSettingsPage />} />
-              <Route path="/admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
+              <Route path="admin" element={<SuperAdminDashboardPage />} />
+              <Route path="admin/templates" element={<PlatformTemplatesPage />} />
+              <Route path="admin/settings" element={<PlatformSettingsPage />} />
+              <Route path="admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
             </Route>
 
             <Route element={<RequireTenantAccess />}>
-              <Route path="/" element={<WorkflowsPage />} />
-              <Route path="/agents" element={<AgentsPage />} />
-              <Route path="/skills" element={<SkillsPage />} />
-              <Route path="/workflows" element={<WorkflowsPage />} />
-              <Route path="/workflows/:id" element={<WorkflowEditorPage />} />
-              <Route path="/runs" element={<RunsPage />} />
-              <Route path="/runs/:id" element={<RunDetailPage />} />
-              <Route path="/consensus" element={<ConsensusPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/team" element={<TenantUsersPage />} />
+              <Route index element={<WorkflowsPage />} />
+              <Route path="agents" element={<AgentsPage />} />
+              <Route path="skills" element={<SkillsPage />} />
+              <Route path="workflows" element={<WorkflowsPage />} />
+              <Route path="workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="runs" element={<RunsPage />} />
+              <Route path="runs/:id" element={<RunDetailPage />} />
+              <Route path="consensus" element={<ConsensusPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="team" element={<TenantUsersPage />} />
             </Route>
           </Route>
         </Routes>

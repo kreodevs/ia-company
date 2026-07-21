@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 type LoginMode = "superadmin" | "tenant";
 
 export default function LoginPage() {
   const { loginSuperAdmin, loginTenant } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<LoginMode>("tenant");
   const [tenantSlug, setTenantSlug] = useState("");
   const [email, setEmail] = useState("");
@@ -20,8 +21,10 @@ export default function LoginPage() {
     try {
       if (mode === "superadmin") {
         await loginSuperAdmin(email, password);
+        navigate("/admin", { replace: true });
       } else {
         await loginTenant(tenantSlug, email, password);
+        navigate("/workflows", { replace: true });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
