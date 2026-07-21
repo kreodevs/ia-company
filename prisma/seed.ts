@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { ensurePlatformSettings } from "../src/lib/platform-settings.js";
-import { seedPlatformTemplates } from "../src/lib/seed-platform.js";
+import { ensurePlatformSettings } from "../src/lib/platform-settings.ts";
+import { seedPlatformTemplates } from "../src/lib/seed-platform.ts";
 
 const prisma = new PrismaClient();
 
