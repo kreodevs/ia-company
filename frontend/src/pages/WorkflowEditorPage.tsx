@@ -97,7 +97,7 @@ export default function WorkflowEditorPage() {
           <h1 className="mt-1 text-2xl font-bold">{workflow.name}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">{workflow.description}</p>
         </div>
-        <div className="flex max-w-md flex-col gap-2">
+        <div className="flex w-full flex-col gap-2 sm:max-w-md">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"

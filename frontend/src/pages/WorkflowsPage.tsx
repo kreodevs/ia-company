@@ -39,12 +39,12 @@ export default function WorkflowsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Workflows</h1>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="New workflow name"
-            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm sm:flex-none sm:min-w-[12rem]"
           />
           <button
             disabled={creating || !name.trim()}

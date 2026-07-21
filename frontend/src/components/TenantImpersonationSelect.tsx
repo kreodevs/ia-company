@@ -34,7 +34,7 @@ export default function TenantImpersonationSelect() {
         disabled={loading}
         value={activeTenant?.id ?? ""}
         onChange={(e) => void impersonate(e.target.value || null)}
-        className="max-w-[220px] rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1.5 text-sm"
+        className="max-w-[9rem] rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-2 py-1.5 text-sm sm:max-w-[220px] sm:px-3"
       >
         <option value="">Superadmin view</option>
         {tenants.map((t) => (

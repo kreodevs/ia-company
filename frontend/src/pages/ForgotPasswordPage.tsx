@@ -23,8 +23,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center">
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-8">
+    <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 sm:p-8">
         <h1 className="text-xl font-bold">Reset password</h1>
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
           Enter your organization slug and email. We will send a reset link if the account exists.

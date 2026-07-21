@@ -103,7 +103,8 @@ export default function TenantUsersPage() {
       {loading ? (
         <p className="text-[var(--color-muted-foreground)]">Loading…</p>
       ) : (
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
+        <table className="w-full min-w-[480px] text-left text-sm">
           <thead>
             <tr className="text-[var(--color-muted-foreground)]">
               <th className="pb-2">Name</th>
@@ -123,6 +124,7 @@ export default function TenantUsersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

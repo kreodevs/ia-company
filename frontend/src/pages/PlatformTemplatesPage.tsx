@@ -251,7 +251,7 @@ export default function PlatformTemplatesPage() {
         </p>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(["agents", "skills", "workflows"] as Tab[]).map((t) => (
           <button
             key={t}

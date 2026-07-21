@@ -31,8 +31,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center">
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-8">
+    <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 sm:p-8">
         <div className="mb-6 flex rounded-lg border border-[var(--color-border)] p-1">
           {(["tenant", "superadmin"] as LoginMode[]).map((m) => (
             <button

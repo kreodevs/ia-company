@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="mx-auto max-w-md py-20 text-center text-sm text-[var(--color-muted-foreground)]">
+      <div className="mx-auto max-w-md px-4 py-20 text-center text-sm text-[var(--color-muted-foreground)]">
         Missing reset token.{" "}
         <Link to="/forgot-password" className="text-[var(--color-primary)] hover:underline">
           Request a new link
@@ -41,8 +41,8 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center">
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-8">
+    <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 sm:p-8">
         <h1 className="text-xl font-bold">Choose a new password</h1>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
           <input

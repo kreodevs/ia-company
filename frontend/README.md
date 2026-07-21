@@ -46,6 +46,7 @@ Workflow execute loads tenant **consensus** by default and syncs results back on
 
 ## Components
 
+- `AppHeader` — responsive top navigation (horizontal on `md+`, hamburger drawer on mobile/tablet)
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
 

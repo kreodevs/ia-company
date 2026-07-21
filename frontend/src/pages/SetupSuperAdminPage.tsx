@@ -24,8 +24,8 @@ export default function SetupSuperAdminPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center">
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-8">
+    <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 sm:p-8">
         <h1 className="text-2xl font-bold">Create Superadmin</h1>
         <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
           No superadmin exists yet. Create the first account to manage tenants and the platform.

@@ -23,8 +23,8 @@ export default function RunsPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold">Execution Runs</h1>
-      <div className="overflow-hidden rounded-xl border border-[var(--color-border)]">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
             <tr>
               <th className="px-4 py-3">Workflow</th>

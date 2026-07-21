@@ -270,7 +270,7 @@ export default function SettingsPage() {
             />
           </label>
         </div>
-        <div className="flex gap-4 text-sm">
+        <div className="flex flex-wrap gap-4 text-sm">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"

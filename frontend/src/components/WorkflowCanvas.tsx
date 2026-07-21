@@ -166,7 +166,7 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
         </button>
       </div>
 
-      <div className="h-[600px] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-background)]">
+      <div className="h-[min(420px,55vh)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] sm:h-[500px] lg:h-[600px]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -178,8 +178,12 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
           colorMode="dark"
         >
           <Background gap={20} color="var(--color-border)" />
-          <Controls />
-          <MiniMap nodeColor="var(--color-primary)" maskColor="rgb(0 0 0 / 0.6)" />
+          <Controls className="!bottom-2 !left-2 sm:!bottom-4 sm:!left-4" />
+          <MiniMap
+            className="!hidden sm:!block"
+            nodeColor="var(--color-primary)"
+            maskColor="rgb(0 0 0 / 0.6)"
+          />
         </ReactFlow>
       </div>
     </div>
