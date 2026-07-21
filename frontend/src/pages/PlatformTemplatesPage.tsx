@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import { api, type Agent, type Skill, type TenantSummary, type Workflow } from "../lib/api";
+import { formatWorkflowTitle } from "../lib/workflow-display";
 
 type Tab = "agents" | "skills" | "workflows";
 
@@ -18,6 +20,10 @@ export default function PlatformTemplatesPage() {
   const [tenants, setTenants] = useState<TenantSummary[]>([]);
   const [selectedTenantIds, setSelectedTenantIds] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [newWorkflowName, setNewWorkflowName] = useState("");
+  const [creatingWorkflow, setCreatingWorkflow] = useState(false);
+  const [deletingWorkflowId, setDeletingWorkflowId] = useState<string | null>(null);
+  const [workflowSearch, setWorkflowSearch] = useState("");
 
   const formatSyncStats = (stats: {
     skills: { added: number; updated: number; linked?: number };
@@ -160,6 +166,55 @@ export default function PlatformTemplatesPage() {
     });
     await load();
     setMessage("Skill template saved");
+  };
+
+  const filteredWorkflows = useMemo(() => {
+    const query = workflowSearch.trim().toLowerCase();
+    if (!query) return workflows;
+    return workflows.filter((workflow) => {
+      const haystack = [
+        workflow.name,
+        formatWorkflowTitle(workflow.name),
+        workflow.description ?? "",
+        ...workflow.steps.map((step) => step.agent?.name ?? ""),
+        ...workflow.steps.map((step) => step.agent?.role ?? ""),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [workflowSearch, workflows]);
+
+  const createWorkflowTemplate = async () => {
+    const name = newWorkflowName.trim();
+    if (!name) return;
+    setCreatingWorkflow(true);
+    setMessage(null);
+    try {
+      const workflow = await api.admin.templates.createWorkflow({ name });
+      setNewWorkflowName("");
+      await load();
+      navigate(`/admin/templates/workflows/${workflow.id}`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Create failed");
+    } finally {
+      setCreatingWorkflow(false);
+    }
+  };
+
+  const deleteWorkflowTemplate = async (workflow: Workflow) => {
+    if (!confirm(`Delete platform workflow template "${workflow.name}"?`)) return;
+    setDeletingWorkflowId(workflow.id);
+    setMessage(null);
+    try {
+      await api.admin.templates.deleteWorkflow(workflow.id);
+      await load();
+      setMessage(`Deleted workflow template "${workflow.name}"`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Delete failed");
+    } finally {
+      setDeletingWorkflowId(null);
+    }
   };
 
   return (
@@ -358,38 +413,73 @@ export default function PlatformTemplatesPage() {
 
       {tab === "workflows" && (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <button
-            onClick={() => {
-              const name = prompt("Workflow template name");
-              if (!name?.trim()) return;
-              void api.admin.templates
-                .createWorkflow({ name: name.trim() })
-                .then((wf) => navigate(`/admin/templates/workflows/${wf.id}`))
-                .catch((err) => setMessage(err instanceof Error ? err.message : "Create failed"));
-            }}
-            className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
-          >
-            + Create workflow template
-          </button>
-          <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-            {workflows.map((wf) => (
-              <li
-                key={wf.id}
-                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4"
-              >
-                <Link
-                  to={`/admin/templates/workflows/${wf.id}`}
-                  className="block hover:opacity-90"
+          <div className="shrink-0 space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="font-semibold">Workflow templates</h2>
+                <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+                  Global pipelines cloned to new tenants. Open a template to edit agents and
+                  connections in the visual editor.
+                </p>
+              </div>
+              <p className="text-sm text-[var(--color-muted-foreground)]">
+                {filteredWorkflows.length} of {workflows.length}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 lg:flex-row">
+              <input
+                value={workflowSearch}
+                onChange={(e) => setWorkflowSearch(e.target.value)}
+                placeholder="Search workflows or agents…"
+                className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+              />
+              <div className="flex min-w-0 flex-1 gap-2">
+                <input
+                  value={newWorkflowName}
+                  onChange={(e) => setNewWorkflowName(e.target.value)}
+                  placeholder="new-workflow-name"
+                  className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void createWorkflowTemplate();
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={creatingWorkflow || !newWorkflowName.trim()}
+                  onClick={() => void createWorkflowTemplate()}
+                  className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
                 >
-                  <div className="font-semibold">{wf.name}</div>
-                  <p className="text-sm text-[var(--color-muted-foreground)]">{wf.description}</p>
-                  <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
-                    {wf.steps.length} steps · {wf.edges.length} edges · Open visual editor →
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  {creatingWorkflow ? "Creating…" : "Create & edit"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {filteredWorkflows.length === 0 ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-card)]/40 px-6 py-12 text-center">
+              <p className="font-medium">
+                {workflows.length === 0 ? "No workflow templates yet" : "No workflows match your search"}
+              </p>
+              <p className="mt-2 max-w-md text-sm text-[var(--color-muted-foreground)]">
+                {workflows.length === 0
+                  ? "Create a template to define a reusable agent pipeline for every new tenant."
+                  : "Try another search term or clear the filter."}
+              </p>
+            </div>
+          ) : (
+            <ul className="grid min-h-0 flex-1 gap-4 overflow-y-auto pr-1 md:grid-cols-2 xl:grid-cols-3">
+              {filteredWorkflows.map((workflow) => (
+                <li key={workflow.id}>
+                  <WorkflowTemplateCard
+                    workflow={workflow}
+                    editorPath={`/admin/templates/workflows/${workflow.id}`}
+                    deleting={deletingWorkflowId === workflow.id}
+                    onDelete={() => void deleteWorkflowTemplate(workflow)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>

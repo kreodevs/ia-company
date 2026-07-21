@@ -49,6 +49,7 @@ Workflow execute loads tenant **consensus** by default and syncs results back on
 - `AppHeader` — responsive top navigation (horizontal on `md+`, hamburger drawer on mobile/tablet)
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
+- `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/workflows` and admin `/admin/templates`)
 
 ## Development
 
