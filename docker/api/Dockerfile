@@ -12,7 +12,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json tsconfig.json ./
 COPY prisma ./prisma
 COPY src ./src
-RUN npx prisma generate && npm run build
+RUN npx prisma generate && npm run build:server
 
 FROM node:20-alpine AS runner
 WORKDIR /app

@@ -8,7 +8,7 @@ Stack for production: **PostgreSQL + Redis + API + Worker + Web (nginx)**.
 |---------|---------------|------|------|
 | `postgres` | `postgres:16-alpine` | internal | Database |
 | `redis` | `redis:7-alpine` | internal | BullMQ job queue |
-| `api` | `docker/api/Dockerfile` | internal `:3001` | Node API + Prisma |
+| `api` | `docker/api/Dockerfile` | internal `:3001` | Node API + Prisma (uses `npm run build:server`, not full monorepo build) |
 | `worker` | same as `api` | internal | Workflow executor + autonomous scheduler |
 | `web` | `docker/web/Dockerfile` | `${WEB_PORT:-80}` | SPA + reverse proxy `/api` → api |
 
