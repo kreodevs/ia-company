@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Super Admin ────────────────────────────────────────────────────────────
+
+model SuperAdmin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Multi-tenant ───────────────────────────────────────────────────────────
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agents    Agent[]
+  skills    Skill[]
+  workflows Workflow[]
+  runs      ExecutionRun[]
+  users     TenantUser[]
+}
+
+enum TenantUserRole {
+  owner
+  admin
+  member
+}
+
+model TenantUser {
+  id           String         @id @default(cuid())
+  tenantId     String
+  email        String
+  name         String
+  passwordHash String
+  role         TenantUserRole @default(member)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+// ─── Agents & Skills ────────────────────────────────────────────────────────
+
+enum AgentProvider {
+  tokenlab
+  openrouter
+  custom
+}
+
+model Agent {
+  id           String        @id @default(cuid())
+  tenantId     String?
+  name         String
+  role         String
+  systemPrompt String        @db.Text
+  provider     AgentProvider @default(tokenlab)
+  model        String        @default("claude-3-5-sonnet-20241022")
+  temperature  Float         @default(0.7)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  tenant       Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  skills       AgentSkill[]
+  workflowSteps WorkflowStep[]
+  executionLogs ExecutionLog[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Skill {
+  id            String   @id @default(cuid())
+  tenantId      String?
+  name          String
+  description   String   @db.Text
+  promptContent String   @db.Text
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant?      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  agents AgentSkill[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model AgentSkill {
+  agentId String
+  skillId String
+  agent   Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([agentId, skillId])
+}
+
+// ─── Workflows (React Flow graph) ───────────────────────────────────────────
+
+model Workflow {
+  id          String   @id @default(cuid())
+  tenantId    String?
+  name        String
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant?         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  steps  WorkflowStep[]
+  edges  WorkflowEdge[]
+  runs   ExecutionRun[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model WorkflowStep {
+  id           String @id @default(cuid())
+  workflowId   String
+  agentId      String
+  stepOrder    Int    @default(0)
+  label        String?
+  positionX    Float  @default(0)
+  positionY    Float  @default(0)
+  inputConfig  Json   @default("{}")
+  outputConfig Json   @default("{}")
+
+  workflow    Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent       Agent          @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  edgesFrom   WorkflowEdge[] @relation("EdgeSource")
+  edgesTo     WorkflowEdge[] @relation("EdgeTarget")
+  executionLogs ExecutionLog[]
+
+  @@index([workflowId, stepOrder])
+}
+
+model WorkflowEdge {
+  id           String  @id @default(cuid())
+  workflowId   String
+  sourceStepId String
+  targetStepId String
+  sourceHandle String?
+  targetHandle String?
+
+  workflow   Workflow     @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  sourceStep WorkflowStep @relation("EdgeSource", fields: [sourceStepId], references: [id], onDelete: Cascade)
+  targetStep WorkflowStep @relation("EdgeTarget", fields: [targetStepId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+// ─── Execution history ──────────────────────────────────────────────────────
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model ExecutionRun {
+  id           String          @id @default(cuid())
+  workflowId   String
+  tenantId     String?
+  status       ExecutionStatus @default(PENDING)
+  sharedMemory Json            @default("{}")
+  totalTokens  Int             @default(0)
+  totalCostUsd Float           @default(0)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  errorMessage String?         @db.Text
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  workflow Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  tenant   Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  logs     ExecutionLog[]
+
+  @@index([workflowId])
+  @@index([status])
+}
+
+enum LogLevel {
+  debug
+  info
+  warn
+  error
+}
+
+model ExecutionLog {
+  id         String   @id @default(cuid())
+  runId      String
+  stepId     String?
+  agentId    String?
+  level      LogLevel @default(info)
+  message    String   @db.Text
+  payload    Json?
+  tokensUsed Int?
+  costUsd    Float?
+  createdAt  DateTime @default(now())
+
+  run   ExecutionRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  step  WorkflowStep? @relation(fields: [stepId], references: [id], onDelete: SetNull)
+  agent Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@index([runId, createdAt])
+}

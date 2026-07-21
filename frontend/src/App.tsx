@@ -1,0 +1,100 @@
+import { Link, Route, Routes } from "react-router-dom";
+import {
+  RequireSuperAdmin,
+  RequireTenantAccess,
+  SetupGate,
+} from "./components/SetupGate";
+import TenantImpersonationSelect from "./components/TenantImpersonationSelect";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import AgentsPage from "./pages/AgentsPage";
+import LoginPage from "./pages/LoginPage";
+import RunDetailPage from "./pages/RunDetailPage";
+import RunsPage from "./pages/RunsPage";
+import SetupSuperAdminPage from "./pages/SetupSuperAdminPage";
+import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
+import TenantUsersPage from "./pages/TenantUsersPage";
+import WorkflowEditorPage from "./pages/WorkflowEditorPage";
+import WorkflowsPage from "./pages/WorkflowsPage";
+
+function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="rounded-lg px-3 py-2 text-sm text-[var(--color-muted-foreground)] transition hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function AppShell() {
+  const { authenticated, activeTenant, isSuperAdmin, isTenantAdmin, logout } = useAuth();
+
+  const homeLink = isSuperAdmin ? "/admin" : "/workflows";
+
+  return (
+    <div className="min-h-screen">
+      {authenticated && (
+        <header className="border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4">
+            <div className="flex items-center gap-4">
+              <Link to={homeLink} className="text-lg font-semibold tracking-tight">
+                Auto-Company
+              </Link>
+              <nav className="flex gap-1">
+                {isSuperAdmin && <NavLink to="/admin">Admin</NavLink>}
+                {activeTenant && (
+                  <>
+                    <NavLink to="/agents">Agents</NavLink>
+                    <NavLink to="/workflows">Workflows</NavLink>
+                    <NavLink to="/runs">Runs</NavLink>
+                    {isTenantAdmin && <NavLink to="/team">Team</NavLink>}
+                  </>
+                )}
+              </nav>
+            </div>
+            <div className="flex items-center gap-2">
+              <TenantImpersonationSelect />
+              <button
+                onClick={() => void logout()}
+                className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </header>
+      )}
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        <Routes>
+          <Route path="/setup" element={<SetupSuperAdminPage />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route element={<SetupGate />}>
+            <Route element={<RequireSuperAdmin />}>
+              <Route path="/admin" element={<SuperAdminDashboardPage />} />
+            </Route>
+
+            <Route element={<RequireTenantAccess />}>
+              <Route path="/" element={<WorkflowsPage />} />
+              <Route path="/agents" element={<AgentsPage />} />
+              <Route path="/workflows" element={<WorkflowsPage />} />
+              <Route path="/workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="/runs" element={<RunsPage />} />
+              <Route path="/runs/:id" element={<RunDetailPage />} />
+              <Route path="/team" element={<TenantUsersPage />} />
+            </Route>
+          </Route>
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  );
+}

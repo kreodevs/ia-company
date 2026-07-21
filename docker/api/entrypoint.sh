@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+DB_HOST="${POSTGRES_HOST:-postgres}"
+DB_PORT="${POSTGRES_PORT:-5432}"
+
+echo "Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT}…"
+i=0
+while [ "$i" -lt 60 ]; do
+  if nc -z "$DB_HOST" "$DB_PORT" 2>/dev/null; then
+    break
+  fi
+  i=$((i + 1))
+  sleep 1
+done
+
+if ! nc -z "$DB_HOST" "$DB_PORT" 2>/dev/null; then
+  echo "ERROR: PostgreSQL not reachable"
+  exit 1
+fi
+
+if [ "$RUN_MIGRATIONS" = "true" ]; then
+  echo "Applying database schema…"
+  npx prisma db push --skip-generate
+fi
+
+if [ "$RUN_SEED" = "true" ]; then
+  echo "Seeding platform templates…"
+  npx tsx prisma/seed.ts || echo "Seed completed or skipped"
+fi
+
+echo "Starting API on port ${PORT:-3001}…"
+exec node dist/server/index.js

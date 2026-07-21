@@ -1,0 +1,17 @@
+node_modules
+dist
+frontend/node_modules
+frontend/dist
+.git
+.env
+.env.*
+!.env.example
+!.env.production.example
+projects
+*.md
+!docker/README.md
+.cursor
+dashboard
+scripts
+tests
+terminals
