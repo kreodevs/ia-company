@@ -75,7 +75,7 @@ services:
       context: .
       dockerfile: docker/api/Dockerfile
     restart: unless-stopped
-    entrypoint: ["node", "dist/worker/index.js"]
+    entrypoint: ["node", "dist/src/worker/index.js"]
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-auto_company}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-auto_company}?schema=public
