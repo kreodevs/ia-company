@@ -41,6 +41,8 @@ services:
       context: .
       dockerfile: docker/api/Dockerfile
     restart: unless-stopped
+    ports:
+      - "3001:3001"
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
