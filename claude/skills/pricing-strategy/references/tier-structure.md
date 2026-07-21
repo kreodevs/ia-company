@@ -1,67 +1,67 @@
-# Tier Structure and Packaging
+# Estructura de niveles y embalaje
 
-## How Many Tiers?
+## ¿Cuántos niveles?
 
-**2 tiers:** Simple, clear choice
-- Works for: Clear SMB vs. Enterprise split
-- Risk: May leave money on table
+**2 niveles:** Elección sencilla y clara
+- Funciona para: eliminar la división entre pymes y empresas
+- Riesgo: Puede dejar dinero sobre la mesa
 
-**3 tiers:** Industry standard
-- Good tier = Entry point
-- Better tier = Recommended (anchor to best)
-- Best tier = High-value customers
+**3 niveles:** Estándar de la industria
+- Buen nivel = Punto de entrada
+- Mejor nivel = Recomendado (anclado al mejor)
+- Mejor nivel = Clientes de alto valor
 
-**4+ tiers:** More granularity
-- Works for: Wide range of customer sizes
-- Risk: Decision paralysis, complexity
-
----
-
-## Good-Better-Best Framework
-
-**Good tier (Entry):**
-- Purpose: Remove barriers to entry
-- Includes: Core features, limited usage
-- Price: Low, accessible
-- Target: Small teams, try before you buy
-
-**Better tier (Recommended):**
-- Purpose: Where most customers land
-- Includes: Full features, reasonable limits
-- Price: Your "anchor" price
-- Target: Growing teams, serious users
-
-**Best tier (Premium):**
-- Purpose: Capture high-value customers
-- Includes: Everything, advanced features, higher limits
-- Price: Premium (often 2-3x "Better")
-- Target: Larger teams, power users, enterprises
+**4+ niveles:** Más granularidad
+- Funciona para: Amplia gama de tamaños de clientes
+- Riesgo: Parálisis de decisiones, complejidad
 
 ---
 
-## Tier Differentiation Strategies
+## Marco Bueno-Mejor-Mejor
 
-**Feature gating:**
-- Basic features in all tiers
-- Advanced features in higher tiers
-- Works when features have clear value differences
+**Buen nivel (Entrada):**
+- Finalidad: Eliminar barreras de entrada.
+- Incluye: funciones principales, uso limitado
+- Precio: Bajo, accesible
+- Objetivo: Equipos pequeños, pruébalo antes de comprar.
 
-**Usage limits:**
-- Same features, different limits
-- More users, storage, API calls at higher tiers
-- Works when value scales with usage
+**Mejor nivel (recomendado):**
+- Propósito: Donde aterrizan la mayoría de los clientes.
+- Incluye: funciones completas, límites razonables
+- Precio: Su precio "ancla"
+- Objetivo: equipos en crecimiento, usuarios serios
 
-**Support level:**
-- Email support → Priority support → Dedicated success
-- Works for products with implementation complexity
-
-**Access and customization:**
-- API access, SSO, custom branding
-- Works for enterprise differentiation
+**Mejor nivel (Premium):**
+- Finalidad: Captar clientes de alto valor
+- Incluye: Todo, funciones avanzadas, límites más altos
+- Precio: Premium (a menudo 2-3 veces "Mejor")
+- Objetivo: equipos más grandes, usuarios avanzados, empresas
 
 ---
 
-## Example Tier Structure
+## Estrategias de diferenciación de niveles
+
+**Control de funciones:**
+- Funciones básicas en todos los niveles.
+- Funciones avanzadas en niveles superiores
+- Funciona cuando las características tienen diferencias de valor claras
+
+**Límites de uso:**
+- Mismas características, diferentes límites
+- Más usuarios, almacenamiento, llamadas API en niveles superiores
+- Funciona cuando el valor aumenta con el uso
+
+**Nivel de soporte:**
+- Soporte por correo electrónico → Soporte prioritario → Éxito dedicado
+- Funciona para productos con complejidad de implementación.
+
+**Acceso y personalización:**
+- Acceso API, SSO, marca personalizada
+- Trabajos para la diferenciación empresarial.
+
+---
+
+## Ejemplo de estructura de niveles
 
 ```
 ┌────────────────┬─────────────────┬─────────────────┬─────────────────┐
@@ -78,146 +78,144 @@
 │ SSO            │ ✗               │ ✗               │ ✓               │
 │ Audit logs     │ ✗               │ ✗               │ ✓               │
 └────────────────┴─────────────────┴─────────────────┴─────────────────┘
-```
+```---
 
----
+## Embalaje para Personas
 
-## Packaging for Personas
+### Identificación de personas que fijan precios
 
-### Identifying Pricing Personas
+Diferentes clientes tienen diferentes:
+- Disposición a pagar
+- Necesidades de funciones
+- Procesos de compra
+- Percepción de valor
 
-Different customers have different:
-- Willingness to pay
-- Feature needs
-- Buying processes
-- Value perception
+**Segmentar por:**
+- Tamaño de la empresa (emprendedor individual → PYME → empresa)
+- Caso de uso (marketing versus ventas versus soporte)
+- Sofisticación (principiante → usuario avanzado)
+- Industria (diferentes normas presupuestarias)
 
-**Segment by:**
-- Company size (solopreneur → SMB → enterprise)
-- Use case (marketing vs. sales vs. support)
-- Sophistication (beginner → power user)
-- Industry (different budget norms)
+### Embalaje basado en personas
 
-### Persona-Based Packaging
+**Paso 1: Definir personas**
 
-**Step 1: Define personas**
-
-| Persona | Size | Needs | WTP | Example |
+| Persona | Tamaño | Necesidades | DAP | Ejemplo |
 |---------|------|-------|-----|---------|
-| Freelancer | 1 person | Basic features | Low | $19/mo |
-| Small Team | 2-10 | Collaboration | Medium | $49/mo |
-| Growing Co | 10-50 | Scale, integrations | Higher | $149/mo |
-| Enterprise | 50+ | Security, support | High | Custom |
+| Profesional independiente | 1 persona | Características básicas | Bajo | $19/mes |
+| Equipo pequeño | 2-10 | Colaboración | Medio | $49/mes |
+| Compañía en crecimiento | 10-50 | Escala, integraciones | Superior | $149/mes |
+| Empresa | 50+ | Seguridad, soporte | Alto | Personalizado |
 
-**Step 2: Map features to personas**
+**Paso 2: Asigna características a personas**
 
-| Feature | Freelancer | Small Team | Growing | Enterprise |
+| Característica | Profesional independiente | Equipo pequeño | Creciendo | Empresa |
 |---------|------------|------------|---------|------------|
-| Core features | ✓ | ✓ | ✓ | ✓ |
-| Collaboration | — | ✓ | ✓ | ✓ |
-| Integrations | — | Limited | Full | Full |
-| API access | — | — | ✓ | ✓ |
+| Características principales | ✓ | ✓ | ✓ | ✓ |
+| Colaboración | — | ✓ | ✓ | ✓ |
+| Integraciones | — | Limitado | Completo | Completo |
+| Acceso API | — | — | ✓ | ✓ |
 | SSO/SAML | — | — | — | ✓ |
-| Audit logs | — | — | — | ✓ |
-| Custom contract | — | — | — | ✓ |
+| Registros de auditoría | — | — | — | ✓ |
+| Contrato personalizado | — | — | — | ✓ |
 
-**Step 3: Price to value for each persona**
-- Research willingness to pay per segment
-- Set prices that capture value without blocking adoption
-- Consider segment-specific landing pages
-
----
-
-## Freemium vs. Free Trial
-
-### When to Use Freemium
-
-**Freemium works when:**
-- Product has viral/network effects
-- Free users provide value (content, data, referrals)
-- Large market where % conversion drives volume
-- Low marginal cost to serve free users
-- Clear feature/usage limits for upgrade trigger
-
-**Freemium risks:**
-- Free users may never convert
-- Devalues product perception
-- Support costs for non-paying users
-- Harder to raise prices later
-
-### When to Use Free Trial
-
-**Free trial works when:**
-- Product needs time to demonstrate value
-- Onboarding/setup investment required
-- B2B with buying committees
-- Higher price points
-- Product is "sticky" once configured
-
-**Trial best practices:**
-- 7-14 days for simple products
-- 14-30 days for complex products
-- Full access (not feature-limited)
-- Clear countdown and reminders
-- Credit card optional vs. required trade-off
-
-**Credit card upfront:**
-- Higher trial-to-paid conversion (40-50% vs. 15-25%)
-- Lower trial volume
-- Better qualified leads
-
-### Hybrid Approaches
-
-**Freemium + Trial:**
-- Free tier with limited features
-- Trial of premium features
-- Example: Zoom (free 40-min, trial of Pro)
-
-**Reverse trial:**
-- Start with full access
-- After trial, downgrade to free tier
-- Example: See premium value, live with limitations until ready
+**Paso 3: Precio a valor para cada persona**
+- Investigación de disposición a pagar por segmento.
+- Establecer precios que capturen valor sin bloquear la adopción.
+- Considere páginas de destino específicas del segmento
 
 ---
 
-## Enterprise Pricing
+## Freemium frente a prueba gratuita
 
-### When to Add Custom Pricing
+### Cuándo usar Freemium
 
-Add "Contact Sales" when:
-- Deal sizes exceed $10k+ ARR
-- Customers need custom contracts
-- Implementation/onboarding required
-- Security/compliance requirements
-- Procurement processes involved
+**Freemium funciona cuando:**
+- El producto tiene efectos virales/de red.
+- Los usuarios gratuitos aportan valor (contenido, datos, referencias)
+- Mercado grande donde el porcentaje de conversión impulsa el volumen
+- Bajo costo marginal para atender a usuarios gratuitos.
+- Límites claros de funciones/uso para el activador de actualización
 
-### Enterprise Tier Elements
+**Riesgos de Freemium:**
+- Es posible que los usuarios gratuitos nunca realicen conversiones
+- Devalúa la percepción del producto.
+- Costos de soporte para usuarios que no pagan
+- Es más difícil subir los precios más adelante
 
-**Table stakes:**
+### Cuándo utilizar la prueba gratuita
+
+**La prueba gratuita funciona cuando:**
+- El producto necesita tiempo para demostrar valor.
+- Se requiere inversión en incorporación/instalación
+- B2B con comités de compras
+- Puntos de precio más altos
+- El producto es "pegajoso" una vez configurado
+
+**Mejores prácticas de prueba:**
+- 7-14 días para productos simples
+- 14-30 días para productos complejos
+- Acceso completo (sin funciones limitadas)
+- Borrar cuenta atrás y recordatorios.
+- Tarjeta de crédito opcional versus compensación requerida
+
+**Tarjeta de crédito por adelantado:**
+- Mayor conversión de prueba a pago (40-50 % frente a 15-25 %)
+- Menor volumen de prueba
+- Clientes potenciales mejor calificados
+
+### Enfoques híbridos
+
+**Freemium + Prueba:**
+- Nivel gratuito con funciones limitadas
+- Prueba de funciones premium
+- Ejemplo: Zoom (40 minutos gratis, prueba de Pro)
+
+**Prueba inversa:**
+- Comience con acceso completo
+- Después de la prueba, baje al nivel gratuito
+- Ejemplo: ver el valor de la prima, vivir con limitaciones hasta que esté listo
+
+---
+
+## Precios empresariales
+
+### Cuándo agregar precios personalizados
+
+Agregue "Contactar con Ventas" cuando:
+- Los tamaños de las ofertas superan los $10.000+ ARR
+- Los clientes necesitan contratos personalizados
+- Se requiere implementación/incorporación
+- Requisitos de seguridad/cumplimiento
+- Procesos de adquisiciones involucrados
+
+### Elementos del nivel empresarial
+
+**Apuestas de mesa:**
 - SSO/SAML
-- Audit logs
-- Admin controls
-- Uptime SLA
-- Security certifications
+- Registros de auditoría
+- Controles de administración
+- SLA de tiempo de actividad
+- Certificaciones de seguridad
 
-**Value-adds:**
-- Dedicated support/success
-- Custom onboarding
-- Training sessions
-- Custom integrations
-- Priority roadmap input
+**Valor agregado:**
+- Soporte dedicado/éxito
+- Incorporación personalizada
+- Sesiones de entrenamiento
+- Integraciones personalizadas
+- Entrada de hoja de ruta prioritaria
 
-### Enterprise Pricing Strategies
+### Estrategias de precios empresariales
 
-**Per-seat at scale:**
-- Volume discounts for large teams
-- Example: $15/user (standard) → $10/user (100+)
+**Por asiento a escala:**
+- Descuentos por volumen para equipos grandes.
+- Ejemplo: $15/usuario (estándar) → $10/usuario (100+)
 
-**Platform fee + usage:**
-- Base fee for access
-- Usage-based above thresholds
-- Example: $500/mo base + $0.01 per API call
+**Tarifa de plataforma + uso:**
+- Tarifa base de acceso
+- Umbrales superiores basados en el uso
+- Ejemplo: base de $500/mes + $0,01 por llamada API
 
-**Value-based contracts:**
-- Price tied to customer's revenue/outcomes
-- Example: % of transactions, revenue share
+**Contratos basados en valor:**
+- Precio vinculado a los ingresos/resultados del cliente.
+- Ejemplo: % de transacciones, participación en los ingresos

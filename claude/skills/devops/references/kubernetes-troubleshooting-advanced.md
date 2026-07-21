@@ -1,6 +1,6 @@
-# Kubernetes Troubleshooting Advanced
+# Solución de problemas avanzada en Kubernetes
 
-## Node Issues
+## Problemas de nodos
 ```bash
 kubectl describe node <node-name> | grep -A 5 "Conditions:"
 kubectl top node <node-name>
@@ -36,15 +36,15 @@ spec:
         averageUtilization: 70
 ```
 
-## Anti-Patterns
+## Anti-patrones
 
-**Using `latest` tag:**
+**Usar tag `latest`:**
 ```yaml
 # ❌ image: myapp:latest
 # ✅ image: myapp:v1.2.3
 ```
 
-**Missing resources:**
+**Recursos faltantes:**
 ```yaml
 # ✅ Always set
 resources:
@@ -52,7 +52,7 @@ resources:
   limits: { memory: "512Mi", cpu: "500m" }
 ```
 
-**Missing health checks:**
+**Health checks faltantes:**
 ```yaml
 livenessProbe:
   httpGet: { path: /health, port: 8080 }
@@ -60,14 +60,14 @@ readinessProbe:
   httpGet: { path: /ready, port: 8080 }
 ```
 
-**Running as root:**
+**Ejecutar como root:**
 ```yaml
 securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 ```
 
-## Monitoring
+## Monitoreo
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring

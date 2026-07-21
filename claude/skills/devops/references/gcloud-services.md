@@ -1,6 +1,6 @@
-# Google Cloud Services
+# Servicios en la nube de Google
 
-## Compute Engine (VMs)
+## Compute Engine (VM)
 
 ```bash
 # List instances
@@ -28,7 +28,7 @@ gcloud compute instances stop my-instance --zone=us-central1-a
 gcloud compute instances delete my-instance --zone=us-central1-a
 ```
 
-## Google Kubernetes Engine (GKE)
+## Motor de Google Kubernetes (GKE)
 
 ```bash
 # Create cluster
@@ -52,7 +52,7 @@ gcloud container clusters resize my-cluster \
 gcloud container clusters delete my-cluster --zone=us-central1-a
 ```
 
-## Cloud Run (Serverless Containers)
+## Cloud Run (contenedores sin servidor)
 
 ```bash
 # Deploy container
@@ -72,7 +72,7 @@ gcloud run services describe my-service --region=us-central1
 gcloud run services delete my-service --region=us-central1
 ```
 
-## App Engine
+## Motor de aplicaciones
 
 ```bash
 # Deploy application
@@ -95,7 +95,7 @@ gcloud app services set-traffic SERVICE \
   --splits v1=0.5,v2=0.5
 ```
 
-## Cloud Storage
+## Almacenamiento en la nube
 
 ```bash
 # Create bucket
@@ -120,7 +120,7 @@ gsutil iam ch user:user@example.com:objectViewer gs://my-bucket-name
 gsutil rm -r gs://my-bucket-name
 ```
 
-## Cloud SQL
+## Nube SQL
 
 ```bash
 # Create instance
@@ -145,7 +145,7 @@ gcloud sql connect my-instance --user=my-user
 gcloud sql instances delete my-instance
 ```
 
-## Cloud Functions
+## Funciones de la nube
 
 ```bash
 # Deploy function
@@ -168,7 +168,7 @@ gcloud functions call my-function
 gcloud functions delete my-function
 ```
 
-## BigQuery
+## Gran consulta
 
 ```bash
 # List datasets
@@ -190,7 +190,7 @@ bq query --use_legacy_sql=false \
 bq rm -r -f my_dataset
 ```
 
-## Cloud Build
+## Construcción de la nube
 
 ```bash
 # Submit build
@@ -206,7 +206,7 @@ gcloud builds describe BUILD_ID
 gcloud builds cancel BUILD_ID
 ```
 
-## Artifact Registry
+## Registro de artefactos
 
 ```bash
 # Create repository
@@ -225,7 +225,7 @@ docker push us-central1-docker.pkg.dev/PROJECT_ID/my-repo/my-image
 gcloud artifacts repositories list
 ```
 
-## Networking
+## Redes
 
 ```bash
 # Create VPC network
@@ -244,7 +244,7 @@ gcloud compute networks list
 gcloud compute firewall-rules list
 ```
 
-## IAM
+## SOY
 
 ```bash
 # List IAM policy
@@ -264,7 +264,7 @@ gcloud projects remove-iam-policy-binding PROJECT_ID \
 gcloud iam service-accounts list
 ```
 
-## Monitoring & Logging
+## Monitoreo y registro
 
 ```bash
 # View logs
@@ -281,24 +281,24 @@ gcloud logging sinks create my-sink \
 gcloud monitoring metrics-descriptors list
 ```
 
-## Quick Reference
+## Referencia rápida
 
-| Service | Command Prefix |
+| Servicio | Prefijo de comando |
 |---------|----------------|
-| Compute Engine | `gcloud compute` |
-| GKE | `gcloud container` |
-| Cloud Run | `gcloud run` |
-| App Engine | `gcloud app` |
-| Cloud Storage | `gsutil` |
-| BigQuery | `bq` |
-| Cloud SQL | `gcloud sql` |
-| Cloud Functions | `gcloud functions` |
-| IAM | `gcloud iam` |
+| Motor de Computación |`gcloud compute` |
+| GKE |`gcloud container` |
+| Ejecución en la nube |`gcloud run` |
+| Motor de aplicaciones |`gcloud app` |
+| Almacenamiento en la nube |`gsutil` |
+| Gran consulta |`bq` |
+| SQL en la nube |`gcloud sql` |
+| Funciones de la nube |`gcloud functions` |
+| YO AMO |`gcloud iam` |
 
-## Resources
+## Recursos
 
-- Compute Engine: https://cloud.google.com/compute/docs
+- Motor de Computación: https://cloud.google.com/compute/docs
 - GKE: https://cloud.google.com/kubernetes-engine/docs
-- Cloud Run: https://cloud.google.com/run/docs
-- App Engine: https://cloud.google.com/appengine/docs
-- Cloud Storage: https://cloud.google.com/storage/docs
+- Ejecución en la nube: https://cloud.google.com/run/docs
+- Motor de aplicaciones: https://cloud.google.com/appengine/docs
+- Almacenamiento en la nube: https://cloud.google.com/storage/docs

@@ -1,6 +1,6 @@
-# Kubernetes Troubleshooting
+# Solución de problemas en Kubernetes
 
-## Debugging Workflow
+## Flujo de depuración
 
 ```bash
 # 1. Overview
@@ -16,9 +16,9 @@ kubectl logs <pod-name> --previous  # Crashed instance
 kubectl logs <pod-name> -c <container>
 ```
 
-## Common Pod States
+## Estados comunes de pods
 
-| State | Cause | Solution |
+| Estado | Causa | Solución |
 |-------|-------|----------|
 | Pending | No node resources | Check node capacity |
 | ContainerCreating | Image pulling | Check image URI |
@@ -26,7 +26,7 @@ kubectl logs <pod-name> -c <container>
 | ImagePullBackOff | Failed image pull | Verify credentials |
 | OOMKilled (137) | Out of memory | Increase memory limit |
 
-## Service & Network
+## Servicio y red
 
 ```bash
 kubectl exec -it <pod-name> -- nslookup kubernetes.default
@@ -36,9 +36,9 @@ kubectl port-forward service/myservice 8080:8080
 kubectl get networkpolicies -A
 ```
 
-## Quick Fixes
+## Correcciones rápidas
 
-| Problem | Command |
+| Problema | Comando |
 |---------|---------|
 | Pod stuck | `kubectl delete pod <name> --grace-period=0 --force` |
 | High CPU | `kubectl top pods -A --sort-by=cpu` |
@@ -46,4 +46,4 @@ kubectl get networkpolicies -A
 | Restart | `kubectl rollout restart deployment/<name>` |
 | Rollback | `kubectl rollout undo deployment/<name>` |
 
-See `kubernetes-troubleshooting-advanced.md` for node issues, HPA, anti-patterns.
+Consulta `kubernetes-troubleshooting-advanced.md` para problemas de nodos, HPA y anti-patrones.

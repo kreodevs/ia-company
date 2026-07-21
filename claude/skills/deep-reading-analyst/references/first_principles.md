@@ -1,36 +1,36 @@
-# First Principles Thinking
+# Pensamiento de primeros principios
 
-## Core Concept
+## Concepto central
 
-Strip away assumptions and conventions to reach fundamental truths, then rebuild understanding from the ground up.
+Elimina supuestos y convenciones para llegar a verdades fundamentales, luego reconstruye la comprensión desde cero.
 
-## Three-Step Process
+## Proceso de tres pasos
 
-### Step 1: Identify Assumptions
+### Paso 1: Identificar supuestos
 
-**Ask:** "What do we assume to be true about this?"
+**Pregunta:** "¿Qué asumimos que es verdad sobre esto?"
 
-List all implicit and explicit assumptions in the content:
-- Unstated premises
-- Inherited wisdom ("everyone knows...")
-- Industry conventions
-- Historical precedents treated as universal laws
+Lista todos los supuestos implícitos y explícitos en el contenido:
+- Premisas no declaradas
+- Sabiduría heredada ("todos saben...")
+- Convenciones de la industria
+- Precedentes históricos tratados como leyes universales
 
-**Example from business:**
-- Assumption: "We need a physical store to sell products"
-- Question: Is this fundamentally true or historically convenient?
+**Ejemplo de negocios:**
+- Supuesto: "Necesitamos una tienda física para vender productos"
+- Pregunta: ¿Es esto fundamentalmente verdad o históricamente conveniente?
 
-### Step 2: Break Down to Fundamentals
+### Paso 2: Descomponer hasta fundamentos
 
-**Ask:** "What is definitely, provably true?"
+**Pregunta:** "¿Qué es definitivamente, demostrablemente verdad?"
 
-Reduce to indisputable facts:
-- Physical laws (if applicable)
-- Mathematical truths
-- Core human needs/behaviors
-- Cause-effect relationships you can verify
+Reduce a hechos indiscutibles:
+- Leyes físicas (si aplica)
+- Verdades matemáticas
+- Necesidades/comportamientos humanos centrales
+- Relaciones causa-efecto que puedas verificar
 
-**Sorting Framework:**
+**Marco de clasificación:**
 ```
 Claim → Ask: "How do I know this is true?"
     ↓
@@ -40,81 +40,81 @@ Claim → Ask: "How do I know this is true?"
 └─ "Mathematically/physically must be true" → Fundamental
 ```
 
-### Step 3: Rebuild from Scratch
+### Paso 3: Reconstruir desde cero
 
-**Ask:** "Starting from fundamentals only, what logically follows?"
+**Pregunta:** "Partiendo solo de fundamentos, ¿qué sigue lógicamente?"
 
-Reconstruct without importing old assumptions:
-1. Begin with verified fundamentals
-2. Each step must logically follow from previous
-3. Note where you make new assumptions (be explicit)
-4. Compare new construction to original concept
+Reconstruye sin importar supuestos antiguos:
+1. Comienza con fundamentos verificados
+2. Cada paso debe seguir lógicamente del anterior
+3. Anota dónde haces nuevos supuestos (sé explícito)
+4. Compara la nueva construcción con el concepto original
 
-## Application Template
+## Plantilla de aplicación
 
 ```markdown
 ## Original Concept/Argument
 [What the author claims]
 
-## Hidden Assumptions
+## Supuestos ocultos
 - Assumption 1: [Something taken as given]
 - Assumption 2: [...]
 
-## Verified Fundamentals
+## Fundamentos verificados
 - Fundamental 1: [Provably true core fact]
 - Fundamental 2: [...]
 
-## Rebuilt Understanding
+## Comprensión reconstruida
 Starting from fundamentals only:
 Step 1: [First logical derivation]
 Step 2: [Second logical derivation]
 ...
 Conclusion: [What actually follows]
 
-## Comparison
+## Comparación
 Original vs. Rebuilt:
 - What survived: [Fundamentally sound ideas]
 - What doesn't hold: [Based on questionable assumptions]
 - New insights: [What rebuilding revealed]
 ```
 
-## Common First Principles in Different Domains
+## Primeros principios comunes en distintos dominios
 
-### Business/Economics
-- People act in self-interest (with caveats)
-- Supply and demand affect price
-- Value = willingness to pay
-- Scarcity creates value
+### Negocios/Economía
+- Las personas actúan en interés propio (con matices)
+- Oferta y demanda afectan el precio
+- Valor = disposición a pagar
+- La escasez crea valor
 
-### Psychology/Human Behavior
-- Humans seek pleasure, avoid pain
-- Social status matters to humans
-- Cognitive biases exist (not "people are rational")
-- Habits form through repetition
+### Psicología/Comportamiento humano
+- Los humanos buscan placer, evitan dolor
+- El estatus social importa a los humanos
+- Existen sesgos cognitivos (no "las personas son racionales")
+- Los hábitos se forman mediante repetición
 
-### Technology
-- Information can be copied at near-zero cost
-- Network effects: value ∝ n² (Metcalfe's law)
-- Moore's law (transistor density doubles ~every 2 years)
-- Computation has energy cost
+### Tecnología
+- La información puede copiarse a costo casi cero
+- Efectos de red: valor ∝ n² (ley de Metcalfe)
+- Ley de Moore (densidad de transistores se duplica ~cada 2 años)
+- La computación tiene costo energético
 
-### Physics/Reality
-- Energy is conserved
-- Entropy increases
-- Speed of light is constant
-- Cause precedes effect
+### Física/Realidad
+- La energía se conserva
+- La entropía aumenta
+- La velocidad de la luz es constante
+- La causa precede al efecto
 
-## Red Flags: Pseudo-First Principles
+## Señales de alerta: pseudo-primeros principios
 
-Watch for claims disguised as fundamentals:
+Cuidado con afirmaciones disfrazadas de fundamentos:
 - "People always prefer X" (overgeneralization)
 - "This is just human nature" (often cultural)
 - "Economics proves..." (many schools of economics)
 - "Science says..." (which study? replicated?)
 
-**Test:** Can you point to specific evidence/mechanism, or is it folk wisdom?
+**Prueba:** ¿Puedes señalar evidencia/mecanismo específico, o es sabiduría popular?
 
-## Powerful Questions
+## Preguntas poderosas
 
 - "Why is this true?" (repeat 5 times - "5 Whys")
 - "What must be true for this to work?"
@@ -122,33 +122,33 @@ Watch for claims disguised as fundamentals:
 - "What would an alien with no context think?"
 - "What if the opposite were true?"
 
-## Example: Deconstructing "Need for College Education"
+## Ejemplo: Deconstruir "Necesidad de educación universitaria"
 
-**Assumptions:**
-- Need degree to get good job
-- Learning requires formal institution
-- 18-22 is the right age
-- Four years is optimal duration
+**Supuestos:**
+- Necesitas título para conseguir buen trabajo
+- El aprendizaje requiere institución formal
+- 18-22 es la edad correcta
+- Cuatro años es la duración óptima
 
-**Fundamentals:**
-- Employers want skilled workers
-- Skills can be demonstrated
-- Learning requires time + practice
-- Knowledge can be transmitted
+**Fundamentos:**
+- Los empleadores quieren trabajadores capacitados
+- Las habilidades pueden demostrarse
+- El aprendizaje requiere tiempo + práctica
+- El conocimiento puede transmitirse
 
-**Rebuilt:**
-→ Employers want proof of skill
-→ Proof can be: degree OR portfolio OR test OR track record
-→ Therefore, degree is one option, not necessity
-→ Insight: Focus on skill + proof, not credential alone
+**Reconstruido:**
+→ Los empleadores quieren prueba de habilidad
+→ La prueba puede ser: título O portafolio O examen O historial
+→ Por tanto, el título es una opción, no una necesidad
+→ Insight: Enfócate en habilidad + prueba, no solo en credencial
 
-## Practical Use in Reading
+## Uso práctico en la lectura
 
-When analyzing content:
-1. **Identify claims** that seem absolute
-2. **Challenge foundations:** "Does this HAVE to be true?"
-3. **Verify causation:** "Does A truly cause B, or just correlate?"
-4. **Rebuild the argument** from indisputable facts only
-5. **Compare** what survives vs. what was assumption
+Al analizar contenido:
+1. **Identifica afirmaciones** que parecen absolutas
+2. **Desafía fundamentos:** "¿Esto TIENE que ser verdad?"
+3. **Verifica causalidad:** "¿A realmente causa B, o solo correlaciona?"
+4. **Reconstruye el argumento** solo desde hechos indiscutibles
+5. **Compara** qué sobrevive vs. qué era supuesto
 
-This exposes weak arguments and strengthens valid ones.
+Esto expone argumentos débiles y fortalece los válidos.

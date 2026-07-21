@@ -1,8 +1,8 @@
-# Cloudflare D1 & KV
+# Cloudflare D1 y KV
 
-## D1 (SQLite Database)
+## D1 (Base de datos SQLite)
 
-### Setup
+### Configuración
 ```bash
 # Create database
 wrangler d1 create my-database
@@ -17,7 +17,7 @@ database_id = "YOUR_DATABASE_ID"
 wrangler d1 execute my-database --file=./schema.sql
 ```
 
-### Usage
+### Uso
 
 ```typescript
 // Query
@@ -40,16 +40,16 @@ await env.DB.batch([
 const { results } = await env.DB.prepare("SELECT * FROM users").all();
 ```
 
-### Features
-- Global read replication (low-latency reads)
-- Single-writer consistency
-- Standard SQLite syntax
-- 25GB database size limit
-- ACID transactions with batch
+### Características
+- Replicación global de lecturas (lecturas de baja latencia)
+- Consistencia de un solo escritor
+- Sintaxis SQLite estándar
+- Límite de tamaño de base de datos: 25GB
+- Transacciones ACID con batch
 
-## KV (Key-Value Store)
+## KV (Almacén clave-valor)
 
-### Setup
+### Configuración
 ```bash
 # Create namespace
 wrangler kv:namespace create MY_KV
@@ -60,7 +60,7 @@ binding = "KV"
 id = "YOUR_NAMESPACE_ID"
 ```
 
-### Usage
+### Uso
 
 ```typescript
 // Put with TTL
@@ -85,30 +85,30 @@ await env.KV.delete("session:token");
 const list = await env.KV.list({ prefix: "user:" });
 ```
 
-### Features
-- Sub-millisecond reads (edge-cached)
-- Eventual consistency (~60 seconds globally)
-- 25MB value size limit
-- Automatic expiration (TTL)
+### Características
+- Lecturas submilisegundo (cacheadas en el edge)
+- Consistencia eventual (~60 segundos globalmente)
+- Límite de tamaño de valor: 25MB
+- Expiración automática (TTL)
 
-## Use Cases
+## Casos de uso
 
 ### D1
-- Relational data
-- Complex queries with JOINs
-- ACID transactions
-- User accounts, orders, inventory
+- Datos relacionales
+- Consultas complejas con JOINs
+- Transacciones ACID
+- Cuentas de usuario, pedidos, inventario
 
 ### KV
-- Cache
-- Sessions
+- Caché
+- Sesiones
 - Feature flags
 - Rate limiting
-- Real-time counters
+- Contadores en tiempo real
 
-## Decision Matrix
+## Matriz de decisión
 
-| Need | Choose |
+| Necesidad | Elegir |
 |------|--------|
 | SQL queries | D1 |
 | Sub-millisecond reads | KV |
@@ -117,7 +117,7 @@ const list = await env.KV.list({ prefix: "user:" });
 | Strong consistency | D1 (writes), Durable Objects |
 | Automatic expiration | KV |
 
-## Resources
+## Recursos
 
 - D1: https://developers.cloudflare.com/d1/
 - KV: https://developers.cloudflare.com/kv/

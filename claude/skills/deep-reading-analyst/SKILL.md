@@ -1,32 +1,31 @@
 ---
 name: deep-reading-analyst
-description: "Comprehensive framework for deep analysis of articles, papers, and long-form content using 10+ thinking models (SCQA, 5W2H, critical thinking, inversion, mental models, first principles, systems thinking, six thinking hats). Use when users want to: (1) deeply understand complex articles/content, (2) analyze arguments and identify logical flaws, (3) extract actionable insights from reading materials, (4) create study notes or learning summaries, (5) compare multiple sources, (6) transform knowledge into practical applications, or (7) apply specific thinking frameworks. Triggered by phrases like 'analyze this article,' 'help me understand,' 'deep dive into,' 'extract insights from,' 'use [framework name],' or when users provide URLs/long-form content for analysis."
+description: "Marco integral para un análisis profundo de artículos, artículos y contenido extenso utilizando más de 10 modelos de pensamiento (SCQA, 5W2H, pensamiento crítico, inversión, modelos mentales, primeros principios, pensamiento sistémico, seis sombreros para pensar). Úselo cuando los usuarios quieran: (1) comprender profundamente artículos/contenidos complejos, (2) analizar argumentos e identificar fallas lógicas, (3) extraer conocimientos prácticos de materiales de lectura, (4) crear notas de estudio o resúmenes de aprendizaje, (5) comparar múltiples fuentes, (6) transformar el conocimiento en aplicaciones prácticas o (7) aplicar marcos de pensamiento específicos. Se activa con frases como "analizar este artículo", "ayúdame a comprender", "profundizar en", "extraer información de", "usar [nombre del marco]" o cuando los usuarios proporcionan URL o contenido de formato largo para su análisis."
 ---
+# Analista de lectura profunda
 
-# Deep Reading Analyst
+Transforma la lectura superficial en aprendizaje profundo mediante un análisis sistemático utilizando más de 10 marcos de pensamiento probados. Guía a los usuarios desde la comprensión hasta la aplicación a través de flujos de trabajo estructurados.
 
-Transforms surface-level reading into deep learning through systematic analysis using 10+ proven thinking frameworks. Guides users from understanding to application through structured workflows.
+## Arsenal marco
 
-## Framework Arsenal
+### Análisis rápido (15min)
+- 📋 **SCQA** - Pensamiento estructurado (Situación-Complicación-Pregunta-Respuesta)
+- 🔍 **5W2H** - Verificación de integridad (qué, por qué, quién, cuándo, dónde, cómo, cuánto)
 
-### Quick Analysis (15min)
-- 📋 **SCQA** - Structure thinking (Situation-Complication-Question-Answer)
-- 🔍 **5W2H** - Completeness check (What, Why, Who, When, Where, How, How much)
+### Análisis estándar (30 min)
+- 🎯 **Pensamiento crítico** - Evaluación de argumentos
+- 🔄 **Pensamiento Inverso** - Identificación de riesgos
 
-### Standard Analysis (30min)
-- 🎯 **Critical Thinking** - Argument evaluation
-- 🔄 **Inversion Thinking** - Risk identification
+### Análisis profundo (60min)
+- 🧠 **Modelos mentales** - Análisis multiperspectiva (física, biología, psicología, economía)
+- ⚡ **Primeros principios** - Extracción de esencias
+- 🔗 **Pensamiento sistémico** - Mapeo de relaciones
+- 🎨 **Seis sombreros para pensar** - Creatividad estructurada
 
-### Deep Analysis (60min)
-- 🧠 **Mental Models** - Multi-perspective analysis (physics, biology, psychology, economics)
-- ⚡ **First Principles** - Essence extraction
-- 🔗 **Systems Thinking** - Relationship mapping
-- 🎨 **Six Thinking Hats** - Structured creativity
+### Análisis de investigación (120 min+)
+- 📊 **Comparación entre fuentes** - Síntesis de varios artículos
 
-### Research Analysis (120min+)
-- 📊 **Cross-Source Comparison** - Multi-article synthesis
-
-## Workflow Decision Tree
+## Árbol de decisión del flujo de trabajo
 
 ```
 User provides content
@@ -46,21 +45,21 @@ Ask: Purpose + Depth Level + Preferred Frameworks
 └─────────────────┴─────────────────┴─────────────────┴─────────────────┘
 ```
 
-## Step 1: Initialize Analysis
+## Paso 1: Inicializar el análisis
 
-**Ask User (conversationally):**
-1. "What's your main goal for reading this?"
-   - Problem-solving / Learning / Writing / Decision-making / Curiosity
-2. "How deep do you want to go?"
-   - Quick (15min) / Standard (30min) / Deep (60min) / Research (120min+)
-3. "Any specific frameworks you'd like to use?"
-   - Suggest based on content type (see Framework Selection Guide below)
+**Preguntar al usuario (conversacionalmente):**
+1. "¿Cuál es tu principal objetivo al leer esto?"
+   - Resolución de problemas / Aprendizaje / Escritura / Toma de decisiones / Curiosidad
+2. "¿A qué profundidad quieres llegar?"
+   - Rápido (15 min) / Estándar (30 min) / Profundo (60 min) / Investigación (120 min+)
+3. "¿Algún marco específico que le gustaría utilizar?"
+   - Sugerir según el tipo de contenido (consulte la Guía de selección de marcos a continuación)
 
-**Default if no response:** Level 2 (Standard mode) with auto-selected frameworks
+**Predeterminado si no hay respuesta:** Nivel 2 (modo estándar) con marcos seleccionados automáticamente
 
-### Framework Selection Guide
+### Guía de selección de marcos
 
-Based on content type, auto-suggest:
+Según el tipo de contenido, realice sugerencias automáticas:
 
 ```markdown
 📄 Strategy/Business articles → SCQA + Mental Models + Inversion
@@ -70,11 +69,11 @@ Based on content type, auto-suggest:
 📈 Case studies → SCQA + Mental Models + Systems Thinking
 ```
 
-## Step 2: Structural Understanding
+## Paso 2: Comprensión estructural
 
-**Always start here regardless of depth level.**
+**Empiece siempre aquí independientemente del nivel de profundidad.**
 
-### Phase 2A: Basic Structure
+### Fase 2A: Estructura Básica
 
 ```markdown
 📄 Content Type: [Article/Paper/Report/Guide]
@@ -91,12 +90,12 @@ Structure Overview:
 Key Concepts: [3-5 terms with brief definitions]
 ```
 
-### Phase 2B: SCQA Analysis (Quick Framework)
+### Fase 2B: Análisis SCQA (Marco rápido)
 
-Load `references/scqa_framework.md` and apply:
+Cargue `references/scqa_framework.md` y aplique:
 
 ```markdown
-## SCQA Structure
+## Estructura SCQA
 
 **S (Situation)**: [Background/context the article establishes]
 **C (Complication)**: [Problem/challenge identified]
@@ -109,12 +108,12 @@ Load `references/scqa_framework.md` and apply:
 - Completeness: [★★★☆☆]
 ```
 
-### Phase 2C: 5W2H Completeness Check (if Level 1+)
+### Fase 2C: Verificación de integridad de 5W2H (si es nivel 1+)
 
-Quick scan using `references/5w2h_analysis.md`:
+Escaneo rápido usando `references/5w2h_analysis.md`:
 
 ```markdown
-## Information Completeness
+## Completitud de la información
 
 ✅ Well-covered: [What, Why, How]
 ⚠️  Partially covered: [Who, When]
@@ -123,37 +122,37 @@ Quick scan using `references/5w2h_analysis.md`:
 🔴 Critical gaps: [List 1-2 most important missing pieces]
 ```
 
-## Step 3: Apply Thinking Models
+## Paso 3: Aplicar modelos de pensamiento
 
-**Select based on depth level and user preference:**
+**Seleccione según el nivel de profundidad y la preferencia del usuario:**
 
-### Level 1 (Quick - 15 min)
-**Core**: Structure + SCQA + 5W2H Quick Check
+### Nivel 1 (Rápido - 15 min)
+**Núcleo**: Estructura + SCQA + Comprobación rápida 5W2H
 
-Output:
-- SCQA breakdown
-- Information gaps (from 5W2H)
-- TOP 3 insights
-- 1 immediate action item
+Salida:
+- Desglose del SCQA
+- Lagunas de información (de 5W2H)
+- 3 ideas principales
+- 1 elemento de acción inmediata
 
-### Level 2 (Standard - 30 min)
-**Add**: Critical Thinking + Inversion
+### Nivel 2 (Estándar - 30 min)
+**Agregar**: Pensamiento crítico + Inversión
 
-Load and apply:
+Cargar y aplicar:
 - `references/critical_thinking.md`:
-  - Argument quality assessment
-  - Logic flaw identification
-  - Evidence evaluation
-  - Alternative perspectives
+  - Evaluación de la calidad del argumento.
+  - Identificación de fallas lógicas.
+  - Evaluación de evidencia
+  - Perspectivas alternativas
 
 - `references/inversion_thinking.md`:
-  - How to ensure failure? (reverse the advice)
-  - What assumptions if wrong?
-  - Missing risks
-  - Pre-mortem analysis
+  - ¿Cómo asegurar el fracaso? (invierte el consejo)
+  - ¿Qué suposiciones si son erróneas?
+  - Riesgos perdidos
+  - Análisis pre-mortem
 
 ```markdown
-## Critical Analysis
+## Análisis crítico
 
 ### Argument Strength: [X/10]
 Strengths:
@@ -165,7 +164,7 @@ Weaknesses:
 Logical fallacies detected:
 - [If any]
 
-## Inversion Analysis
+## Análisis de inversión
 
 🚨 How this could fail:
 1. [Failure mode 1] → Mitigation: [...]
@@ -175,28 +174,28 @@ Missing risk factors:
 - [Risk 1]
 ```
 
-### Level 3 (Deep - 60 min)
-**Add**: Mental Models + First Principles + Systems + Six Hats
+### Nivel 3 (Profundo - 60 min)
+**Agregar**: Modelos mentales + Primeros principios + Sistemas + Seis sombreros
 
-Load and apply:
+Cargar y aplicar:
 - `references/mental_models.md`:
-  - Select 3-5 relevant models from different disciplines
-  - Apply each lens to the content
-  - Identify cross-model insights
+  - Seleccione 3-5 modelos relevantes de diferentes disciplinas
+  - Aplicar cada lente al contenido.
+  - Identificar conocimientos entre modelos
 
 - `references/first_principles.md`:
-  - Strip to fundamental truths
-  - Identify core assumptions
-  - Rebuild understanding from base
+  - Desnúdate de las verdades fundamentales.
+  - Identificar los supuestos centrales
+  - Reconstruir la comprensión desde la base.
 
 - `references/systems_thinking.md`:
-  - Map relationships and feedback loops
-  - Identify leverage points
-  - See the big picture
+  - Mapa de relaciones y bucles de retroalimentación.
+  - Identificar puntos de apalancamiento
+  - Ver el panorama general
 
 - `references/six_hats.md`:
-  - White (facts), Red (feelings), Black (caution)
-  - Yellow (benefits), Green (creativity), Blue (process)
+  - Blanco (hechos), Rojo (sentimientos), Negro (precaución)
+  - Amarillo (beneficios), Verde (creatividad), Azul (proceso)
 
 ```markdown
 ## Multi-Model Analysis
@@ -222,14 +221,14 @@ Fundamental truth: [What remains after stripping assumptions]
 
 ### Systems Map:
 ```
-[Variable A] ──reinforces──> [Variable B]
-      ↑                          |
+[Variable A] ──refuerza──> [Variable B]
+      ↑ |
       |                          |
-   balances                  reinforces
+   equilibra refuerza
       |                          |
       └─────────<────────────────┘
 
-Leverage point: [Where small change = big impact]
+Punto de influencia: [Donde pequeños cambios = gran impacto]
 ```
 
 ### Six Hats Perspective:
@@ -241,14 +240,14 @@ Leverage point: [Where small change = big impact]
 💙 Process: [Meta-thinking]
 ```
 
-### Level 4 (Research - 120 min+)
-**Add**: Cross-source comparison via web_search
+### Nivel 4 (Investigación - 120 min+)
+**Agregar**: Comparación entre fuentes a través de web_search
 
-Use web_search to find 2-3 related sources, then:
-- Load `references/comparison_matrix.md`
-- Compare SCQA across sources
-- Identify consensus vs. divergence
-- Synthesize integrated perspective
+Utilice web_search para encontrar 2 o 3 fuentes relacionadas, luego:
+- Cargar `references/comparison_matrix.md`
+- Comparar SCQA entre fuentes
+- Identificar consenso versus divergencia
+- Sintetizar la perspectiva integrada.
 
 ```markdown
 ## Multi-Source Analysis
@@ -265,7 +264,7 @@ Key claim: [...]
 S-C-Q-A: [Summary]
 Key claim: [...]
 
-## Synthesis
+## Síntesis
 
 **Consensus**: [What all agree on]
 **Divergence**: [Where they differ]
@@ -273,17 +272,17 @@ Key claim: [...]
 **Integrated view**: [Your synthesis]
 ```
 
-## Step 4: Synthesis & Output
+## Paso 4: Síntesis y resultados
 
-**Generate based on user goal:**
+**Generar según el objetivo del usuario:**
 
-### For Problem-Solving:
+### Para resolver problemas:
 
 ```markdown
-## Applicable Solutions
+## Soluciones aplicables
 [Extract 2-3 methods from content]
 
-## Application Plan
+## Plan de aplicación
 Problem: [User's specific issue]
 Relevant insights: [From analysis]
 
@@ -300,10 +299,10 @@ Potential failure points:
 - [Point 2] → Prevent by: [...]
 ```
 
-### For Learning:
+### Para aprender:
 
 ```markdown
-## Learning Notes
+## Notas de aprendizaje
 
 Core concepts (explained simply):
 1. **[Concept 1]**: [Definition + Example]
@@ -319,23 +318,23 @@ Connections to prior knowledge:
 Fundamental question: [...]
 Core principle: [...]
 
-## Verification Questions
+## Preguntas de verificación
 1. [Question to test understanding]
 2. [Question to test application]
 3. [Question to test evaluation]
 ```
 
-### For Writing Reference:
+### Para referencia escrita:
 
 ```markdown
 ## Key Arguments & Evidence
 [Structured extraction with page/paragraph numbers]
 
-## Quotable Insights
+## Ideas citables
 "[Quote 1]" — Context: [...]
 "[Quote 2]" — Context: [...]
 
-## Critical Analysis Notes
+## Notas de análisis crítico
 Strengths: [For citing]
 Limitations: [For balanced discussion]
 
@@ -348,10 +347,10 @@ What the article doesn't address:
 - [Gap 2]
 ```
 
-### For Decision-Making:
+### Para la toma de decisiones:
 
 ```markdown
-## Decision Framework
+## Marco de decisiones
 
 Options presented: [A / B / C]
 
@@ -360,7 +359,7 @@ Multi-model evaluation:
 - Risk lens (Inversion): [...]
 - Systems lens: [...]
 
-## Six Hats Decision Analysis
+## Análisis de decisiones con Seis Sombreros
 🤍 Facts: [Objective comparison]
 🖤 Risks: [What could go wrong]
 💛 Benefits: [Upside potential]
@@ -373,9 +372,9 @@ Worst case: [...]
 Most likely: [...]
 ```
 
-## Step 5: Knowledge Activation
+## Paso 5: Activación del Conocimiento
 
-**Always end with:**
+**Siempre termina con:**
 
 ```markdown
 ## 🎯 Immediate Takeaways (Top 3)
@@ -413,89 +412,87 @@ Most likely: [...]
 □ Mental Models □ First Principles □ Systems □ Six Hats
 ```
 
-## Quality Standards
+## Estándares de calidad
 
-Every analysis must:
-- ✅ Stay faithful to original content (no misrepresentation)
-- ✅ Distinguish facts from opinions
-- ✅ Provide concrete examples
-- ✅ Apply frameworks appropriately (not force-fit)
-- ✅ Connect to user's context when possible
-- ✅ End with actionable steps
-- ✅ Cite specific sections (paragraph numbers, quotes)
+Todo análisis debe:
+- ✅ Mantente fiel al contenido original (sin tergiversaciones)
+- ✅ Distinguir hechos de opiniones
+- ✅ Proporcionar ejemplos concretos
+- ✅ Aplicar las estructuras apropiadamente (no forzar el ajuste)
+- ✅ Conéctese al contexto del usuario cuando sea posible
+- ✅ Terminar con pasos prácticos
+- ✅ Citar secciones específicas (números de párrafos, citas)**Evitar:**
+- ❌ Abrumador con todos los marcos a la vez (respetar el nivel de profundidad)
+- ❌ Jerga académica sin explicación.
+- ❌ Análisis sin aplicación
+- ❌ Copiar el texto palabra por palabra (siempre reformular para comprenderlo)
+- ❌ Usar marcos superficialmente (profundizar, no ampliar)
 
-**Avoid:**
-- ❌ Overwhelming with all frameworks at once (respect depth level)
-- ❌ Academic jargon without explanation
-- ❌ Analysis without application
-- ❌ Copying text verbatim (always reword for understanding)
-- ❌ Using frameworks superficially (go deep, not wide)
+## Patrones de interacción
 
-## Interaction Patterns
+**Cuestionario progresivo:**
+- Comprensión: "¿Qué crees que quiere decir el autor con X?"
+- Crítica: "¿Ves alguna laguna en este argumento?"
+- Aplicación: "¿Cómo podrías utilizar esto en tu trabajo?"
+- Meta: "¿Qué modelo de pensamiento te ayudó más? ¿Por qué?"
 
-**Progressive questioning:**
-- Understanding: "What do you think the author means by X?"
-- Critical: "Do you see any gaps in this argument?"
-- Application: "How might you use this in your work?"
-- Meta: "Which thinking model helped you most? Why?"
+**Adaptarse a las señales:**
+- El usuario pregunta "¿cuál es el punto principal?" → Quieren concisión, utilice SCQA
+- El usuario desafía su análisis → Apóyese en el pensamiento crítico + inversión
+- El usuario pregunta "¿cómo uso esto?" → Centrarse en la aplicación + Primeros principios
+- El usuario quiere "múltiples perspectivas" → Utilice seis sombreros o modelos mentales
+- El usuario menciona "riesgos" → Aplicar el pensamiento inverso
+- El usuario pregunta "¿cómo se conecta esto?" → Utilice el pensamiento sistémico
 
-**Adapt to signals:**
-- User asks "what's the main point?" → They want conciseness, use SCQA
-- User challenges your analysis → Lean into Critical Thinking + Inversion
-- User asks "how do I use this?" → Focus on application + First Principles
-- User wants "multiple perspectives" → Use Six Hats or Mental Models
-- User mentions "risks" → Apply Inversion Thinking
-- User asks "how does this connect?" → Use Systems Thinking
+**Sugerencias de marco durante la conversación:**
+- "¿Quieres que aplique [X framework] a este punto?"
+- "Este parece un buen lugar para el pensamiento inverso. ¿Quieres explorar los modos de fallo?"
+- "Noto varios modelos mentales en juego aquí, ¿quieres que los analice?"
 
-**Framework suggestions during conversation:**
-- "Would you like me to apply [X framework] to this point?"
-- "This seems like a good place for inversion thinking - want to explore failure modes?"
-- "I notice several mental models at play here, want me to unpack them?"
+## Materiales de referencia
 
-## Reference Materials
+### Marcos básicos (todos los niveles)
+- `references/scqa_framework.md` - Pensamiento estructurado (S-C-Q-A)
+- `references/5w2h_analysis.md` - Verificación de integridad (7 preguntas)
 
-### Core Frameworks (All Levels)
-- `references/scqa_framework.md` - Structure thinking (S-C-Q-A)
-- `references/5w2h_analysis.md` - Completeness check (7 questions)
+### Marcos de nivel estándar
+- `references/critical_thinking.md` - Análisis de argumentos
+- `references/inversion_thinking.md` - Análisis de modo de fallo y riesgo
 
-### Standard Level Frameworks
-- `references/critical_thinking.md` - Argument analysis
-- `references/inversion_thinking.md` - Risk and failure mode analysis
+### Marcos de nivel profundo
+- `references/mental_models.md` - Biblioteca de modelos multidisciplinarios
+- `references/first_principles.md` - Método de extracción de esencia
+- `references/systems_thinking.md` - Mapeo de relaciones
+- `references/six_hats.md` - Protocolo multiperspectiva
 
-### Deep Level Frameworks
-- `references/mental_models.md` - Multi-discipline model library
-- `references/first_principles.md` - Essence extraction method
-- `references/systems_thinking.md` - Relationship mapping
-- `references/six_hats.md` - Multi-perspective protocol
+### Formatos de salida
+- `references/output_templates.md` - Ejemplos de formato de notas
+- `references/comparison_matrix.md` - Análisis cruzado de artículos
 
-### Output Formats
-- `references/output_templates.md` - Note format examples
-- `references/comparison_matrix.md` - Cross-article analysis
+## Uso avanzado
 
-## Advanced Usage
+### Combinaciones de marcos personalizados
 
-### Custom Framework Combinations
+El usuario puede solicitar combinaciones específicas:
+- "Usar SCQA + Inversión" - Estructura con análisis de riesgos
+- "Aplicar Modelos Mentales + Pensamiento Sistémico" - Análisis de sistemas multilente
+- "5W2H + Pensamiento crítico" - Integridad + control de calidad
 
-User can request specific combinations:
-- "Use SCQA + Inversion" - Structure with risk analysis
-- "Apply Mental Models + Systems Thinking" - Multi-lens system analysis
-- "5W2H + Critical Thinking" - Completeness + quality check
+### Profundización iterativa
 
-### Iterative Deepening
+Comience con el Nivel 1, luego pregunte:
+- "¿Quieres profundizar en alguna parte?"
+- "¿Qué marco sería más valioso aquí?"
+- "¿Deberíamos hacer un análisis de inversión de esta solución?"
 
-Start with Level 1, then ask:
-- "Want to go deeper on any part?"
-- "Which framework would be most valuable here?"
-- "Should we do an inversion analysis of this solution?"
+### Optimizaciones específicas del dominio
 
-### Domain-Specific Optimizations
-
-**Business/Strategy**: SCQA + Mental Models (economics) + Inversion
-**Technical/Research**: 5W2H + First Principles + Critical Thinking
-**Personal Development**: Six Hats + Inversion + Systems
-**Decision-Making**: Mental Models + Inversion + SCQA
-**Creative**: Six Hats + First Principles + Mental Models
+**Negocio/Estrategia**: SCQA + Modelos Mentales (economía) + Inversión
+**Técnico/Investigación**: 5W2H + Primeros principios + Pensamiento crítico
+**Desarrollo personal**: Seis Sombreros + Inversión + Sistemas
+**Toma de Decisiones**: Modelos Mentales + Inversión + SCQA
+**Creativo**: Seis Sombreros + Primeros Principios + Modelos Mentales
 
 ---
 
-**Remember**: The goal is insight, not framework completion. Use frameworks as tools to reveal understanding, not as checklists to complete. Quality of thinking > quantity of frameworks applied.
+**Recuerde**: el objetivo es obtener información, no completar el marco. Utilice los marcos como herramientas para revelar comprensión, no como listas de verificación para completar. Calidad de pensamiento > cantidad de marcos aplicados.

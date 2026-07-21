@@ -1,33 +1,33 @@
-# Docker Basics
+# Conceptos básicos de Docker
 
-Core concepts and workflows for Docker containerization.
+Conceptos centrales y flujos de trabajo para la contenedorización con Docker.
 
-## Core Concepts
+## Conceptos centrales
 
-**Containers:** Lightweight, isolated processes bundling apps with dependencies. Ephemeral by default.
+**Contenedores:** Procesos ligeros y aislados que empaquetan aplicaciones con sus dependencias. Por defecto son efímeros.
 
-**Images:** Read-only blueprints for containers. Layered filesystem for reusability.
+**Imágenes:** Planos de solo lectura para contenedores. Sistema de archivos en capas para reutilización.
 
-**Volumes:** Persistent storage surviving container deletion.
+**Volúmenes:** Almacenamiento persistente que sobrevive a la eliminación del contenedor.
 
-**Networks:** Enable container communication.
+**Redes:** Permiten la comunicación entre contenedores.
 
-## Dockerfile Best Practices
+## Buenas prácticas de Dockerfile
 
-### Essential Instructions
+### Instrucciones esenciales
 ```dockerfile
 FROM node:20-alpine              # Base image (use specific versions)
 WORKDIR /app                     # Working directory
 COPY package*.json ./            # Copy dependency files first
 RUN npm install --production     # Execute build commands
 COPY . .                         # Copy application code
-ENV NODE_ENV=production          # Environment variables
+ENV NODE_ENV=production          # Variables de entorno
 EXPOSE 3000                      # Document exposed ports
 USER node                        # Run as non-root (security)
 CMD ["node", "server.js"]        # Default command
 ```
 
-### Multi-Stage Builds (Production)
+### Builds multi-etapa (producción)
 ```dockerfile
 # Stage 1: Build
 FROM node:20-alpine AS build
@@ -47,7 +47,7 @@ EXPOSE 3000
 CMD ["node", "dist/server.js"]
 ```
 
-Benefits: Smaller images, improved security, no build tools in production.
+Beneficios: Imágenes más pequeñas, mayor seguridad, sin herramientas de build en producción.
 
 ### .dockerignore
 ```
@@ -62,7 +62,7 @@ dist
 coverage
 ```
 
-## Building Images
+## Construcción de imágenes
 
 ```bash
 # Build with tag
@@ -78,7 +78,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t myapp:1.0 .
 docker image history myapp:1.0
 ```
 
-## Running Containers
+## Ejecución de contenedores
 
 ```bash
 # Basic run
@@ -90,7 +90,7 @@ docker run -d --name myapp myapp:1.0
 # Port mapping (host:container)
 docker run -p 8080:3000 myapp:1.0
 
-# Environment variables
+# Variables de entorno
 docker run -e NODE_ENV=production myapp:1.0
 
 # Volume mount (named volume)
@@ -106,7 +106,7 @@ docker run --memory 512m --cpus 0.5 myapp:1.0
 docker run -it myapp:1.0 /bin/sh
 ```
 
-## Container Management
+## Gestión de contenedores
 
 ```bash
 # List containers
@@ -140,7 +140,7 @@ docker stats myapp
 docker cp myapp:/app/logs ./logs
 ```
 
-## Volume Management
+## Gestión de volúmenes
 
 ```bash
 # Create volume
@@ -156,7 +156,7 @@ docker volume rm mydata
 docker volume prune
 ```
 
-## Network Management
+## Gestión de redes
 
 ```bash
 # Create network
@@ -172,7 +172,7 @@ docker network connect my-network myapp
 docker network disconnect my-network myapp
 ```
 
-## Language-Specific Dockerfiles
+## Dockerfiles específicos por lenguaje
 
 ### Node.js
 ```dockerfile
@@ -221,7 +221,7 @@ COPY --from=build /app/main /main
 CMD ["/main"]
 ```
 
-## Security Hardening
+## Endurecimiento de seguridad
 
 ```dockerfile
 # Use specific versions
@@ -238,16 +238,16 @@ COPY --chown=nodejs:nodejs . .
 USER nodejs
 ```
 
-## Troubleshooting
+## Solución de problemas
 
-### Container exits immediately
+### El contenedor termina de inmediato
 ```bash
 docker logs myapp
 docker run -it myapp /bin/sh
 docker run -it --entrypoint /bin/sh myapp
 ```
 
-### Cannot connect
+### No se puede conectar
 ```bash
 docker ps
 docker port myapp
@@ -255,32 +255,32 @@ docker network inspect bridge
 docker inspect myapp | grep IPAddress
 ```
 
-### Out of disk space
+### Sin espacio en disco
 ```bash
 docker system df
 docker system prune -a
 docker volume prune
 ```
 
-### Build cache issues
+### Problemas de caché de build
 ```bash
 docker build --no-cache -t myapp .
 docker builder prune
 ```
 
-## Best Practices
+## Buenas prácticas
 
-- Use specific image versions, not `latest`
-- Run as non-root user
-- Multi-stage builds to minimize size
-- Implement health checks
-- Set resource limits
-- Keep images under 500MB
-- Scan for vulnerabilities: `docker scout cves myapp:1.0`
+- Usa versiones específicas de imagen, no `latest`
+- Ejecuta como usuario no root
+- Builds multi-etapa para minimizar el tamaño
+- Implementa health checks
+- Establece límites de recursos
+- Mantén las imágenes por debajo de 500MB
+- Escanea vulnerabilidades: `docker scout cves myapp:1.0`
 
-## Quick Reference
+## Referencia rápida
 
-| Task | Command |
+| Tarea | Comando |
 |------|---------|
 | Build | `docker build -t myapp:1.0 .` |
 | Run | `docker run -d -p 8080:3000 myapp:1.0` |
@@ -290,7 +290,7 @@ docker builder prune
 | Remove | `docker rm myapp` |
 | Clean | `docker system prune -a` |
 
-## Resources
+## Recursos
 
 - Docs: https://docs.docker.com
 - Best Practices: https://docs.docker.com/develop/dev-best-practices/

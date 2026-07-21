@@ -1,38 +1,38 @@
 ---
 name: seo-content-strategist
-description: Expert SEO content strategy for SaaS and B2B sites. Use when doing keyword research, planning content clusters, creating pillar pages, optimizing on-page SEO, fixing technical SEO issues, building links, refreshing content, implementing programmatic SEO, mapping search intent, optimizing for SERP features, or measuring content performance. Use for SEO audits, content gap analysis, and organic growth strategy.
+description: Estrategia experta de contenido SEO para sitios SaaS y B2B. Usar para keyword research, planificación de content clusters, creación de pillar pages, optimización on-page SEO, corrección de issues técnicos SEO, link building, refresh de contenido, SEO programático, mapeo de search intent, optimización para SERP features, o medición de rendimiento de contenido. Usar para auditorías SEO, análisis de content gaps y estrategia de crecimiento orgánico.
 ---
 
-# SEO Content Strategist
+# Estratega de contenido SEO
 
-Expert SEO content strategy for sustainable organic growth — from keyword research to content clusters, technical optimization to link building.
+Estrategia experta de contenido SEO para crecimiento orgánico sostenible — desde keyword research hasta content clusters, optimización técnica y link building.
 
-## Philosophy
+## Filosofía
 
-Great SEO content strategy is about earning rankings, not gaming algorithms:
+Una gran estrategia de contenido SEO consiste en ganarse rankings, no engañar algoritmos:
 
-1. **Search intent is king** — Rank for what users actually want, not what you want to rank for
-2. **Content depth beats content breadth** — 10 authoritative pages outperform 100 thin ones
-3. **Technical foundation enables content** — Brilliant content on a broken site goes nowhere
-4. **Compound growth is the goal** — Content assets that appreciate over time
+1. **Search intent es rey** — Posiciona para lo que los usuarios realmente quieren, no para lo que quieres posicionar
+2. **Profundidad de contenido supera amplitud** — 10 páginas autoritativas superan a 100 delgadas
+3. **La base técnica habilita el contenido** — Contenido brillante en un sitio roto no llega a ningún lado
+4. **El crecimiento compuesto es el objetivo** — Activos de contenido que se aprecian con el tiempo
 
-## How This Skill Works
+## Cómo funciona este skill
 
-When invoked, apply the guidelines in `rules/` organized by:
+Al invocarlo, aplica las directrices en `rules/` organizado por:
 
-- `keyword-*` — Keyword research, topic discovery, intent mapping
-- `cluster-*` — Content clusters, pillar pages, internal linking
-- `onpage-*` — On-page optimization, meta tags, content structure
-- `technical-*` — Technical SEO, site architecture, performance
-- `links-*` — Link building, digital PR, authority building
-- `refresh-*` — Content optimization, decay prevention, updates
-- `programmatic-*` — Programmatic SEO, template pages, scale content
-- `serp-*` — SERP features, featured snippets, rich results
-- `measurement-*` — Performance tracking, attribution, reporting
+- `keyword-*`— Keyword research, descubrimiento de temas, mapeo de intent
+- `cluster-*`— Grupos de contenido, páginas pilares, enlaces internos
+- `onpage-*`— Optimización on-page, meta tags, estructura de contenido
+- `technical-*`— SEO técnico, arquitectura del sitio, rendimiento
+- `links-*`— Link building, digital PR, construcción de autoridad
+- `refresh-*`— Optimización de contenido, prevención de decay, actualizaciones
+- `programmatic-*`— SEO programático, páginas template, contenido a escala
+- `serp-*`— Funciones SERP, fragmentos destacados, resultados enriquecidos
+- `measurement-*`— Seguimiento de rendimiento, atribución, reporting
 
-## Core Frameworks
+## Frameworks principales
 
-### The SEO Content Flywheel
+### El flywheel de contenido SEO
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -50,16 +50,16 @@ When invoked, apply the guidelines in `rules/` organized by:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Search Intent Matrix
+### Matriz de search intent
 
-| Intent Type | User Goal | Content Type | Conversion Potential |
+| Tipo de intent | Objetivo del usuario | Tipo de contenido | Potencial de conversión |
 |-------------|-----------|--------------|---------------------|
-| **Informational** | Learn something | Blog posts, guides, how-tos | Low (awareness) |
-| **Navigational** | Find specific site | Brand pages, product pages | Medium (recognition) |
-| **Commercial** | Research before buying | Comparisons, reviews, lists | High (consideration) |
-| **Transactional** | Make a purchase | Product pages, pricing, signup | Highest (decision) |
+| **Informational** | Aprender algo | Blog posts, guías, how-tos | Bajo (awareness) |
+| **Navigational** | Encontrar sitio específico | Brand pages, product pages | Medio (reconocimiento) |
+| **Commercial** | Investigar antes de comprar | Comparaciones, reviews, listas | Alto (consideración) |
+| **Transactional** | Realizar compra | Product pages, pricing, signup | Máximo (decisión) |
 
-### Content Cluster Architecture
+### Arquitectura de content cluster
 
 ```
                     ┌─────────────────────┐
@@ -83,49 +83,49 @@ When invoked, apply the guidelines in `rules/` organized by:
 └─────┘  └─────┘   └─────┘  └─────┘   └─────┘  └─────┘
 ```
 
-### Keyword Prioritization Quadrant
+### Cuadrante de priorización de keywords
 
-| | Low Difficulty | High Difficulty |
+| | Baja dificultad | Alta dificultad |
 |---|---|---|
-| **High Volume** | Quick wins (prioritize) | Long-term plays |
-| **Low Volume** | Low priority | Avoid |
+| **Alto volumen** | Quick wins (priorizar) | Jugadas a largo plazo |
+| **Bajo volumen** | Baja prioridad | Evitar |
 
-But consider: Low volume + high intent often beats high volume + low intent.
+Pero considera: bajo volumen + alto intent a menudo supera alto volumen + bajo intent.
 
-## Key Metrics
+## Métricas clave
 
-| Metric | What It Measures | Target |
+| Métrica | Qué mide | Objetivo |
 |--------|------------------|--------|
-| **Organic Traffic** | Total non-paid visitors | +20% QoQ |
-| **Keyword Rankings** | Position for target terms | Top 10 → Top 3 |
-| **Click-Through Rate** | SERP clicks / impressions | >3% for top 5 |
-| **Organic Conversions** | Goal completions from SEO | Varies by funnel |
-| **Domain Authority** | Overall site strength | Industry benchmark |
-| **Indexed Pages** | Pages Google recognizes | 100% of intended |
-| **Core Web Vitals** | Page experience signals | All green |
-| **Backlink Growth** | New referring domains | +10-20 quality/month |
+| **Tráfico orgánico** | Visitantes totales no pagados | +20% QoQ |
+| **Rankings de keywords** | Posición para términos objetivo | Top 10 → Top 3 |
+| **Click-Through Rate** | Clics SERP / impresiones | >3% para top 5 |
+| **Conversiones orgánicas** | Completaciones de objetivo desde SEO | Varía por funnel |
+| **Domain Authority** | Fuerza general del sitio | Benchmark del sector |
+| **Páginas indexadas** | Páginas que Google reconoce | 100% de las previstas |
+| **Core Web Vitals** | Señales de page experience | Todo en verde |
+| **Crecimiento de backlinks** | Nuevos referring domains | +10-20 quality/mes |
 
-## Content Type ROI
+## ROI por tipo de contenido
 
-| Content Type | Time to Rank | Traffic Potential | Link Potential | Effort |
+| Tipo de contenido | Tiempo para posicionar | Potencial de tráfico | Potencial de links | Esfuerzo |
 |--------------|--------------|-------------------|----------------|--------|
-| **Pillar pages** | 3-6 months | Very High | High | High |
-| **How-to guides** | 2-4 months | High | Medium | Medium |
-| **Comparison posts** | 1-3 months | Medium | Low | Medium |
-| **Tool/template pages** | 1-2 months | Medium | High | Low |
-| **Glossary terms** | 1-2 months | Low | Low | Low |
-| **Original research** | 3-6 months | Medium | Very High | Very High |
-| **Programmatic pages** | 2-4 months | Very High (aggregate) | Low | High (initial) |
+| **Pillar pages** | 3-6 meses | Muy alto | Alto | Alto |
+| **Guías how-to** | 2-4 meses | Alto | Medio | Medio |
+| **Posts de comparación** | 1-3 meses | Medio | Bajo | Medio |
+| **Páginas tool/template** | 1-2 meses | Medio | Alto | Bajo |
+| **Términos de glosario** | 1-2 meses | Bajo | Bajo | Bajo |
+| **Investigación original** | 3-6 meses | Medio | Muy alto | Muy alto |
+| **Páginas programáticas** | 2-4 meses | Muy alto (agregado) | Bajo | Alto (inicial) |
 
-## Anti-Patterns
+## Anti-patrones
 
-- **Keyword stuffing** — Destroys readability, triggers spam filters
-- **Thin content at scale** — 100 weak pages hurt more than 10 strong ones
-- **Ignoring search intent** — Ranking for wrong intent = high bounce rate
-- **Publishing and praying** — Content without promotion doesn't get links
-- **Chasing volume over intent** — 100 visitors who convert > 10,000 who don't
-- **Neglecting technical SEO** — Great content on slow, broken sites fails
-- **No internal linking** — Orphan pages don't get crawled or ranked
-- **Set and forget** — Content decays without updates
-- **Buying links** — Short-term gains, long-term penalties
-- **Copying competitors** — Me-too content rarely outranks the original
+- **Keyword stuffing** — Destruye legibilidad, activa filtros de spam
+- **Contenido delgado a escala** — 100 páginas débiles perjudican más que 10 fuertes
+- **Ignorar search intent** — Posicionar para intent incorrecto = alto bounce rate
+- **Publicar y rezar** — Contenido sin promoción no consigue links
+- **Perseguir volumen sobre intent** — 100 visitantes que convierten > 10.000 que no
+- **Descuidar SEO técnico** — Gran contenido en sitios lentos y rotos falla
+- **Sin internal linking** — Páginas huérfanas no se rastrean ni posicionan
+- **Configurar y olvidar** — El contenido decae sin actualizaciones
+- **Comprar links** — Ganancias a corto plazo, penalizaciones a largo plazo
+- **Copiar competidores** — Contenido me-too rara vez supera al original

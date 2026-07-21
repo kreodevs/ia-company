@@ -1,65 +1,68 @@
-# Session Management
+# Gestión de sesiones
 
-Multiple isolated browser sessions with state persistence and concurrent browsing.
+Múltiples sesiones de navegador aisladas con persistencia de estado y navegación simultánea.
 
-**Related**: [authentication.md](authentication.md) for login patterns, [SKILL.md](../SKILL.md) for quick start.
+**Relacionado**: [authentication.md](authentication.md) para patrones de inicio de sesión, [SKILL.md](../SKILL.md) para inicio rápido.
 
-## Contents
+## Contenidos
 
-- [Named Sessions](#named-sessions)
-- [Session Isolation Properties](#session-isolation-properties)
-- [Session State Persistence](#session-state-persistence)
-- [Common Patterns](#common-patterns)
-- [Default Session](#default-session)
-- [Session Cleanup](#session-cleanup)
-- [Best Practices](#best-practices)
+- [Sesiones nombradas](#sesiones-nombradas)
+- [Propiedades de aislamiento de sesión](#propiedades-de-aislamiento-de-sesión)
+- [Persistencia del estado de sesión](#persistencia-estado-de-sesión)
+- [Patrones comunes](#patrones-comunes)
+- [Sesión predeterminada](#sesión-predeterminada)
+- [Limpieza de sesión](#session-cleanup)
+- [Mejores prácticas](#mejores-practicas)
 
-## Named Sessions
+## Sesiones nombradas
 
-Use `--session` flag to isolate browser contexts:
+uso `--session` bandera para aislar los contextos del navegador:
 
 ```bash
-# Session 1: Authentication flow
+
+# Sesión 1: Flujo de autenticación
 agent-browser --session auth open https://app.example.com/login
 
-# Session 2: Public browsing (separate cookies, storage)
+# Sesión 2: Navegación pública (cookies y almacenamiento separados)
 agent-browser --session public open https://example.com
 
-# Commands are isolated by session
+# Los comandos están aislados por sesión
 agent-browser --session auth fill @e1 "user@example.com"
 agent-browser --session public get text body
 ```
 
-## Session Isolation Properties
+## Propiedades de aislamiento de sesión
 
-Each session has independent:
-- Cookies
-- LocalStorage / SessionStorage
+Cada sesión tiene independiente:
+- galletas
+- Almacenamiento local/Almacenamiento de sesión
 - IndexedDB
-- Cache
-- Browsing history
-- Open tabs
+- Caché
+- Historial de navegación
+- Pestañas abiertas
 
-## Session State Persistence
+## Persistencia del estado de sesión
 
-### Save Session State
+### Guardar estado de sesión
 
 ```bash
+
 # Save cookies, storage, and auth state
 agent-browser state save /path/to/auth-state.json
 ```
 
-### Load Session State
+### Cargar estado de sesión
 
 ```bash
-# Restore saved state
+
+# Restaurar estado guardado
 agent-browser state load /path/to/auth-state.json
 
-# Continue with authenticated session
+# Continuar con sesión autenticada
 agent-browser open https://app.example.com/dashboard
 ```
 
-### State File Contents
+### Contenido del archivo de estado
 
 ```json
 {
@@ -70,17 +73,18 @@ agent-browser open https://app.example.com/dashboard
 }
 ```
 
-## Common Patterns
+## Patrones comunes
 
-### Authenticated Session Reuse
+### Reutilización de sesión autenticada
 
 ```bash
 #!/bin/bash
+
 # Save login state once, reuse many times
 
 STATE_FILE="/tmp/auth-state.json"
 
-# Check if we have saved state
+# Comprobar si hay estado guardado
 if [[ -f "$STATE_FILE" ]]; then
     agent-browser state load "$STATE_FILE"
     agent-browser open https://app.example.com/dashboard
@@ -98,67 +102,72 @@ else
 fi
 ```
 
-### Concurrent Scraping
+### Raspado simultáneo
 
 ```bash
 #!/bin/bash
-# Scrape multiple sites concurrently
 
-# Start all sessions
+# Extraer de varios sitios en paralelo
+
+# Iniciar todas las sesiones
 agent-browser --session site1 open https://site1.com &
 agent-browser --session site2 open https://site2.com &
 agent-browser --session site3 open https://site3.com &
 wait
 
-# Extract from each
+# Extraer de cada uno
 agent-browser --session site1 get text body > site1.txt
 agent-browser --session site2 get text body > site2.txt
 agent-browser --session site3 get text body > site3.txt
 
-# Cleanup
+# Limpieza
 agent-browser --session site1 close
 agent-browser --session site2 close
 agent-browser --session site3 close
 ```
 
-### A/B Testing Sessions
+### Sesiones de prueba A/B
 
 ```bash
-# Test different user experiences
+
+# Probar distintas experiencias de usuario
 agent-browser --session variant-a open "https://app.com?variant=a"
 agent-browser --session variant-b open "https://app.com?variant=b"
 
-# Compare
+# Comparar
 agent-browser --session variant-a screenshot /tmp/variant-a.png
 agent-browser --session variant-b screenshot /tmp/variant-b.png
 ```
 
-## Default Session
+## Sesión predeterminada
 
-When `--session` is omitted, commands use the default session:
+cuando `--session` se omite, los comandos usan la sesión predeterminada:
 
 ```bash
-# These use the same default session
+
+# Usan la misma sesión por defecto
 agent-browser open https://example.com
 agent-browser snapshot -i
 agent-browser close  # Closes default session
 ```
 
-## Session Cleanup
+## Limpieza de sesión
 
 ```bash
-# Close specific session
+
+# Cerrar sesión específica
 agent-browser --session auth close
 
-# List active sessions
+# Listar sesiones activas
 agent-browser session list
 ```
 
-## Best Practices
+## Mejores prácticas
 
-### 1. Name Sessions Semantically
+### 1. Nombrar sesiones semánticamente
 
 ```bash
+
 # GOOD: Clear purpose
 agent-browser --session github-auth open https://github.com
 agent-browser --session docs-scrape open https://docs.example.com
@@ -167,27 +176,30 @@ agent-browser --session docs-scrape open https://docs.example.com
 agent-browser --session s1 open https://github.com
 ```
 
-### 2. Always Clean Up
+### 2. Limpiar siempre
 
 ```bash
-# Close sessions when done
+
+# Cerrar sesiones al terminar
 agent-browser --session auth close
 agent-browser --session scrape close
 ```
 
-### 3. Handle State Files Securely
+### 3. Manejar archivos de estado de forma segura
 
 ```bash
+
 # Don't commit state files (contain auth tokens!)
 echo "*.auth-state.json" >> .gitignore
 
-# Delete after use
+# Eliminar tras el uso
 rm /tmp/auth-state.json
 ```
 
-### 4. Timeout Long Sessions
+### 4. Tiempo de espera para sesiones largas
 
 ```bash
-# Set timeout for automated scripts
+
+# Configurar timeout para scripts automatizados
 timeout 60 agent-browser --session long-task get text body
 ```

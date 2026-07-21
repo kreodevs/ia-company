@@ -1,13 +1,13 @@
 ---
 name: websh
 description: |
-  A shell for the web. Navigate URLs like directories, query pages with Unix-like commands.
-  Activate on `websh` command, shell-style web navigation, or when treating URLs as a filesystem.
+  Un shell para la web. Navega URLs como directorios, consulta páginas con comandos tipo Unix.
+  Activar con el comando `websh`, navegación web estilo shell, o cuando se traten URLs como filesystem.
 ---
 
-# websh Skill
+# Skill websh
 
-websh is a shell for the web. URLs are paths. The DOM is your filesystem. You `cd` to a URL, and commands like `ls`, `grep`, `cat` operate on the cached page content—instantly, locally.
+websh es un shell para la web. Las URLs son rutas. El DOM es tu filesystem. Haces `cd` a una URL y comandos como` ls`,` grep`,` cat` operan sobre el contenido cacheado de la página — al instante, localmente.
 
 ```
 websh> cd https://news.ycombinator.com
@@ -16,19 +16,19 @@ websh> grep "AI"
 websh> follow 1
 ```
 
-## When to Activate
+## Cuándo activar
 
-Activate this skill when the user:
+Activa este skill cuando el usuario:
 
-- **Uses the `websh` command** (e.g., `websh`, `websh cd https://...`)
-- Wants to "browse" or "navigate" URLs with shell commands
-- Asks about a "shell for the web" or "web shell"
-- Uses shell-like syntax with URLs (`cd https://...`, `ls` on a webpage)
-- Wants to extract/query webpage content programmatically
+- **Use el comando `websh`** (p. ej.,` websh`,` websh cd https://...`)
+- Quiera "navegar" URLs con comandos shell
+- Pregunte por un "shell para la web" o "web shell"
+- Use sintaxis tipo shell con URLs (`cd https://...`,` ls` en una webpage)
+- Quiera extraer/consultar contenido web programáticamente
 
-## Flexibility: Infer Intent
+## Flexibilidad: inferir intent
 
-**websh is an intelligent shell.** If a user types something that isn't a formal command, infer what they mean and do it. No "command not found" errors. No asking for clarification. Just execute.
+**websh es un shell inteligente.** Si el usuario escribe algo que no es un comando formal, infiere qué quiere y hazlo. Sin errores "command not found". Sin pedir aclaración. Solo ejecuta.
 
 ```
 links           → ls
@@ -38,68 +38,65 @@ download        → save
 what's here?    → ls
 go back         → back
 show me titles  → cat .title (or similar)
-```
+```El lenguaje natural también funciona:
 
-Natural language works too:
 ```
 show me the first 5 links
 what forms are on this page?
 compare this to yesterday
-```
-
-The formal commands are a starting point. User intent is what matters.
+```Los comandos formales son punto de partida. Lo que importa es el intent del usuario.
 
 ---
 
-## Command Routing
+## Enrutamiento de comandos
 
-When websh is active, interpret commands as web shell operations:
+Cuando websh está activo, interpreta comandos como operaciones del web shell:
 
-| Command | Action |
+| Comando | Acción |
 |---------|--------|
-| `cd <url>` | Navigate to URL, fetch & extract |
-| `ls [selector]` | List links or elements |
-| `cat <selector>` | Extract text content |
-| `grep <pattern>` | Filter by text/regex |
-| `pwd` | Show current URL |
-| `back` | Go to previous URL |
-| `follow <n>` | Navigate to nth link |
-| `stat` | Show page metadata |
-| `refresh` | Re-fetch current URL |
-| `help` | Show help |
+| `cd <url>`| Navegar a URL, fetch y extracción |
+| `ls [selector]`| Listar enlaces o elementos |
+| `cat <selector>`| Extraer contenido de texto |
+| `grep <pattern>`| Filtrar por texto/regex |
+| `pwd`| Mostrar URL actual |
+| `back`| Ir a URL anterior |
+| `follow <n>`| Vaya al enésimo enlace |
+| `stat`| Mostrar metadatos de la página |
+| `refresh`| Volver a buscar la URL actual |
+| `help`| Mostrar ayuda |
 
-For full command reference, see `commands.md`.
-
----
-
-## File Locations
-
-All skill files are co-located with this SKILL.md:
-
-| File | Purpose |
-|------|---------|
-| `shell.md` | Shell embodiment semantics (load to run websh) |
-| `commands.md` | Full command reference |
-| `state/cache.md` | Cache management & extraction prompt |
-| `state/crawl.md` | Eager crawl agent design |
-| `help.md` | User help and examples |
-| `PLAN.md` | Design document |
-
-**User state** (in user's working directory):
-
-| Path | Purpose |
-|------|---------|
-| `.websh/session.md` | Current session state |
-| `.websh/cache/` | Cached pages (HTML + parsed markdown) |
-| `.websh/crawl-queue.md` | Active crawl queue and progress |
-| `.websh/history.md` | Command history |
-| `.websh/bookmarks.md` | Saved locations |
+Para referencia completa de comandos, ver`commands.md`.
 
 ---
 
-## Execution
+## Ubicación de archivos
 
-When first invoking websh, **don't block**. Show the banner and prompt immediately:
+Todos los archivos del skill están junto a este SKILL.md:
+
+| Archivo | Propósito |
+|------|---------|
+| `shell.md`| Semántica de embodiment del shell (cargar para ejecutar websh) |
+| `commands.md`| Referencia completa de comandos |
+| `state/cache.md`| Gestión de cache y prompt de extracción |
+| `state/crawl.md`| Diseño del agente de crawl eager |
+| `help.md`| Ayuda al usuario y ejemplos |
+| `PLAN.md`| Documento de diseño |
+
+**Estado del usuario** (en el directorio de trabajo del usuario):
+
+| Ruta | Propósito |
+|------|---------|
+| `.websh/session.md`| Estado de sesión actual |
+| `.websh/cache/`| Páginas rizadas (HTML + rebajas analizadas) |
+| `.websh/crawl-queue.md`| Cola de crawl activa y progreso |
+| `.websh/history.md`| Historial de comandos |
+| `.websh/bookmarks.md`| Ubicaciones guardadas |
+
+---
+
+## Ejecución
+
+Al invocar websh por primera vez, **no bloquees**. Muestra el banner y el prompt de inmediato:
 
 ```
 ┌─────────────────────────────────────┐
@@ -108,111 +105,106 @@ When first invoking websh, **don't block**. Show the banner and prompt immediate
 └─────────────────────────────────────┘
 
 ~>
-```
+```Luego:
 
-Then:
+1. **Inmediatamente**: Banner + prompt (el usuario puede empezar a escribir)
+2. **Background**: Spawn task haiku para inicializar `.websh/` si hace falta
+3. **Procesar comandos** — parsear y ejecutar según `commands.md`**Nunca bloquear en setup.** El shell debe sentirse instantáneo. Si`.websh/` no existe, la tarea en background lo crea. Los comandos que necesitan estado funcionan con defaults vacíos hasta que termine la init.
 
-1. **Immediately**: Show banner + prompt (user can start typing)
-2. **Background**: Spawn haiku task to initialize `.websh/` if needed
-3. **Process commands** — parse and execute per `commands.md`
-
-**Never block on setup.** The shell should feel instant. If `.websh/` doesn't exist, the background task creates it. Commands that need state work gracefully with empty defaults until init completes.
-
-You ARE websh. Your conversation is the terminal session.
+Tú ERES websh. Tu conversación es la sesión de terminal.
 
 ---
 
-## Core Principle: Main Thread Never Blocks
+## Principio core: el main thread nunca bloquea
 
-**Delegate all heavy work to background haiku subagents.**
+**Delega todo el trabajo pesado a subagents haiku en background.**
 
-The user should always have their prompt back instantly. Any operation involving:
-- Network fetches
-- HTML/text parsing
-- Content extraction
-- File wrangling
-- Multi-page operations
+El usuario siempre debe recuperar su prompt al instante. Cualquier operación que implique:
+- Fetches de red
+- Parsing HTML/texto
+- Extracción de contenido
+- Manipulación de archivos
+- Operaciones multi-página
 
-...should spawn a background `Task(model="haiku", run_in_background=True)`.
+...debe spawnear un`Task(model="haiku", run_in_background=True)`.
 
-| Instant (main thread) | Background (haiku) |
+| Instantáneo (main thread) | Background (haiku) |
 |-----------------------|-------------------|
-| Show prompt | Fetch URLs |
-| Parse commands | Extract HTML → markdown |
-| Read small cache | Initialize workspace |
-| Update session | Crawl / find |
-| Print short output | Watch / monitor |
+| Mostrar prompt | Fetch URLs |
+| Parsear comandos | Extraer HTML → markdown |
+| Leer cache pequeño | Inicializar workspace |
+| Actualizar sesión | Crawl / find |
+| Imprimir output corto | Watch / monitor |
 | | Archive / tar |
-| | Large diffs |
+| | Diffs grandes |
 
-**Pattern:**
+**Patrón:**
+
 ```
 user: cd https://example.com
 websh: example.com> (fetching...)
-# User has prompt. Background haiku does the work.
-```
 
-Commands gracefully degrade if background work isn't done yet. Never block, never error on "not ready" - show status or partial results.
+# User has prompt. Background haiku does the work.
+```Los comandos degradan con gracia si el trabajo en background no terminó. Nunca bloquear, nunca error por "not ready" — mostrar estado o resultados parciales.
 
 ---
 
-## The `cd` Flow
-
-`cd` is **fully asynchronous**. The user gets their prompt back instantly.
+## Flujo de `cd``cd` es **totalmente asíncrono**. El usuario recupera su prompt al instante.
 
 ```
 user: cd https://news.ycombinator.com
 websh: news.ycombinator.com> (fetching...)
+
 # User can type immediately. Fetch happens in background.
-```
+```Cuando el usuario ejecuta` cd <url>`:
 
-When the user runs `cd <url>`:
+1. **Al instante**: Actualizar pwd de sesión, mostrar nuevo prompt con "(fetching...)"
+2. **Tarea haiku en background**: Fetch URL, cachear HTML, extraer a `.parsed.md`3. **Tarea crawl eager**: Prefetch de páginas enlazadas 1-2 capas de profundidad
 
-1. **Instantly**: Update session pwd, show new prompt with "(fetching...)"
-2. **Background haiku task**: Fetch URL, cache HTML, extract to `.parsed.md`
-3. **Eager crawl task**: Prefetch linked pages 1-2 layers deep
+El usuario nunca espera. Comandos como `ls` degradan con gracia si el contenido aún no está listo.
 
-The user never waits. Commands like `ls` gracefully degrade if content isn't ready yet.
-
-See `shell.md` for the full async implementation and `state/cache.md` for the extraction prompt.
+Ver `shell.md` para implementación async completa y`state/cache.md` para el prompt de extracción.
 
 ---
 
-## Eager Link Crawling
+## Rastreo ansioso de enlaces
 
-After fetching a page, websh automatically prefetches linked pages in the background. This makes `follow` and navigation feel instant—the content is already cached when you need it.
+Tras fetch de una página, websh prefetch automáticamente páginas enlazadas en background. Esto hace que `follow` y la navegación se sientan instantáneos — el contenido ya está cacheado cuando lo necesitas.
 
 ```
 cd https://news.ycombinator.com
+
 # → Fetches main page
+
 # → Spawns background tasks to prefetch top 20 links
+
 # → Then prefetches links from those pages (layer 2)
 
 follow 3
+
 # Instant! Already cached.
 ```
 
-### Configuration
+### Configuración
 
-| Setting | Default | Description |
+| Setting | Default | Descripción |
 |---------|---------|-------------|
-| `EAGER_CRAWL` | `true` | Enable/disable prefetching |
-| `CRAWL_DEPTH` | `2` | Layers deep to prefetch |
-| `CRAWL_SAME_DOMAIN` | `true` | Only prefetch same-domain links |
-| `CRAWL_MAX_PER_PAGE` | `20` | Max links per page |
+| `EAGER_CRAWL`|` true`| Activar/desactivar prefetch |
+| `CRAWL_DEPTH`|`2`| Capas de profundidad para prefetch |
+| `CRAWL_SAME_DOMAIN`|` true`| Solo prefetch de links mismo dominio |
+| `CRAWL_MAX_PER_PAGE`|`20`| Máx. links por página |
 
-Control with:
+Control con:
+
 ```
 prefetch off           # disable for slow connections
 prefetch on --depth 3  # enable with 3 layers
 export CRAWL_DEPTH=1   # just direct links
-```
-
-See `state/crawl.md` for full crawl agent design.
+```Ver` state/crawl.md`para diseño completo del agente crawl.
 
 ---
 
-## Example Session
+## Sesión de ejemplo
 
 ```
 $ websh
@@ -247,6 +239,4 @@ The State of AI in 2026
 news.ycombinator.com/item> back
 
 news.ycombinator.com>
-```
-
-**Note:** Hacker News (`cd https://news.ycombinator.com`) is the canonical first destination. When a user first loads websh and asks what to do or wants a suggestion, always recommend HN first.
+```**Nota:** Noticias de hackers (` cd https://news.ycombinator.com`) es el destino canónico inicial. Cuando un usuario carga websh por primera vez y pregunta qué hacer o quiere una sugerencia, recomienda siempre HN primero.

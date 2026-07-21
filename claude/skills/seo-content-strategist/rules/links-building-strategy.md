@@ -1,56 +1,56 @@
 ---
-title: Link Building & Authority Strategy
-impact: HIGH
-tags: link-building, backlinks, authority, digital-pr, outreach
+título: Estrategia de autoridad y construcción de enlaces
+impacto: ALTO
+Etiquetas: construcción de enlaces, vínculos de retroceso, autoridad, relaciones públicas digitales, divulgación
 ---
 
-## Link Building & Authority Strategy
+## Estrategia de construcción de enlaces y autoridad
 
-**Impact: HIGH**
+**Impacto: ALTO**
 
-Backlinks remain one of the strongest ranking signals. But modern link building is about earning links through value, not acquiring them through manipulation. Quality over quantity — one link from a relevant, authoritative site beats 100 from irrelevant directories.
+Los vínculos de retroceso siguen siendo una de las señales de clasificación más fuertes. Pero la construcción de enlaces moderna consiste en ganar enlaces a través del valor, no en adquirirlos mediante la manipulación. Calidad sobre cantidad: un enlace de un sitio relevante y autorizado supera a 100 de directorios irrelevantes.
 
-### Link Quality Factors
+### Factores de calidad del enlace
 
-| Factor | What to Look For | Red Flags |
+| factor | Qué buscar | Banderas rojas |
 |--------|------------------|-----------|
-| **Domain Authority** | DA 40+ for most value | DA < 20, new domains |
-| **Relevance** | Same industry/topic | Unrelated niches |
-| **Traffic** | Site gets real visitors | Zero traffic sites |
-| **Link placement** | Editorial, in-content | Footer, sidebar, blogroll |
-| **Anchor text** | Natural, varied | Exact match keyword spam |
-| **Follow status** | Dofollow preferred | All nofollow is suspicious |
-| **Link neighborhood** | Quality outbound links | Links to spam sites |
+| **Autoridad de dominio** | DA 40+ al máximo valor | DA < 20, nuevos dominios |
+| **Relevancia** | Misma industria/tema | Nichos no relacionados |
+| **Tráfico** | El sitio recibe visitantes reales | Sitios de tráfico cero |
+| **Ubicación del enlace** | Editorial, contenido | Pie de página, barra lateral, blogroll |
+| **Texto de anclaje** | Naturales, variados | Spam de palabras clave de concordancia exacta |
+| **Estado de seguimiento** | Preferiblemente Dofollow | Todo nofollow es sospechoso |
+| **Vincular barrio** | Enlaces salientes de calidad | Enlaces a sitios de spam |
 
-### Link Building Tactics Ranked
+### Tácticas de construcción de enlaces clasificadas
 
-| Tactic | Difficulty | Quality | Scalability | Best For |
+| Táctica | Dificultad | Calidad | Escalabilidad | Mejor para |
 |--------|------------|---------|-------------|----------|
-| **Original research** | High | Very High | Low | Authority building |
-| **Digital PR** | High | High | Medium | Brand + links |
-| **Guest posting** | Medium | Medium-High | Medium | Targeted niches |
-| **Resource link building** | Medium | Medium-High | Medium | Evergreen content |
-| **Broken link building** | Medium | Medium | Medium | Quick wins |
-| **HARO/Connectively** | Low | Medium | High | Volume |
-| **Podcast guesting** | Medium | Medium | Low | Personal brand |
-| **Tool/template pages** | High (initial) | High | High | Passive links |
-| **Infographics** | Medium | Low-Medium | Low | Outdated tactic |
-| **Directories** | Low | Low | High | Local SEO only |
+| **Investigación original** | Alto | Muy Alto | Bajo | Edificio de autoridad |
+| **Relaciones públicas digitales** | Alto | Alto | Medio | Marca + enlaces |
+| **Publicación de invitado** | Medio | Medio-Alto | Medio | Nichos específicos |
+| **Construcción de enlaces de recursos** | Medio | Medio-Alto | Medio | Contenido imperecedero |
+| **Construcción de enlaces rotos** | Medio | Medio | Medio | Victorias rápidas |
+| **HARO/Conectivamente** | Bajo | Medio | Alto | Volumen |
+| **Podcast invitado** | Medio | Medio | Bajo | Marca personal |
+| **Páginas de herramientas/plantillas** | Alto (inicial) | Alto | Alto | Enlaces pasivos |
+| **Infografía** | Medio | Bajo-Medio | Bajo | Táctica obsoleta |
+| **Directorios** | Bajo | Bajo | Alto | Solo SEO local |
 
-### Link-Worthy Content Types
+### Tipos de contenido digno de enlace
 
-| Content Type | Link Appeal | Example |
+| Tipo de contenido | Apelación de enlace | Ejemplo |
 |--------------|-------------|---------|
-| **Original data/research** | Very High | "State of Secrets Management 2024" |
-| **Industry survey** | High | "We surveyed 500 DevOps teams..." |
-| **Definitive guide** | High | "Complete Guide to Zero Trust" |
-| **Free tool/calculator** | Very High | "API Security Score Calculator" |
-| **Templates/frameworks** | High | "Security Policy Templates" |
-| **Comparison charts** | Medium | Detailed vendor comparisons |
-| **Expert roundups** | Medium | "20 CTOs on Security Priorities" |
-| **Case studies** | Medium | Customer success with data |
+| **Datos/investigación originales** | Muy Alto | "Estado de la gestión de los secretos 2024" |
+| **Encuesta de la industria** | Alto | "Encuestamos a 500 equipos de DevOps..." |
+| **Guía definitiva** | Alto | "Guía completa para la confianza cero" |
+| **Herramienta/calculadora gratuita** | Muy Alto | "Calculadora de puntuación de seguridad API" |
+| **Plantillas/marcos** | Alto | "Plantillas de políticas de seguridad" |
+| **Gráficos comparativos** | Medio | Comparaciones detalladas de proveedores |
+| **Resúmenes de expertos** | Medio | "20 CTO sobre prioridades de seguridad" |
+| **Estudios de caso** | Medio | Éxito del cliente con datos |
 
-### Good Outreach Email
+### Buen correo electrónico de divulgación
 
 ```
 Subject: Quick question about your secrets management guide
@@ -71,15 +71,13 @@ find it useful as a reference. Here's the report:
 Either way, thanks for the great content on [their site].
 
 [Your name]
-```
+```**Por qué funciona:**
+- Específico (muestra que lees su contenido)
+- Proporciona valor (no solo solicita un enlace)
+- Sin solicitud de enlace explícita (enfoque suave)
+- Corto y respetuoso del tiempo.
 
-**Why it works:**
-- Specific (shows you read their content)
-- Provides value (not just asking for link)
-- No explicit link request (soft approach)
-- Short and respectful of time
-
-### Bad Outreach Email
+### Correo electrónico de divulgación incorrecto
 
 ```
 Subject: Link Exchange Opportunity!!!
@@ -108,7 +106,7 @@ Link Building Specialist
 ✗ Obvious template
 ```
 
-### Digital PR Strategy
+### Estrategia de relaciones públicas digitales
 
 ```
 1. Find newsworthy angles
@@ -136,27 +134,27 @@ Link Building Specialist
    └── Embeddable resources
 ```
 
-### Guest Posting Guidelines
+### Pautas de publicación de invitados
 
-**Good targets:**
-- Relevant industry blogs (DA 40+)
-- Complementary tool/service blogs
-- Professional communities
-- Industry publications
+**Buenos objetivos:**
+- Blogs relevantes de la industria (DA 40+)
+- Blogs de herramientas/servicios complementarios.
+- Comunidades profesionales
+- Publicaciones de la industria
 
-**What to offer:**
-- Genuinely useful content for their audience
-- Exclusive angles/data
-- Follow their content guidelines
-- Promote the post to your audience
+**Qué ofrecer:**
+- Contenido realmente útil para su audiencia.
+- Ángulos/datos exclusivos
+- Siga sus pautas de contenido.
+- Promociona la publicación entre tu audiencia.
 
-**What to avoid:**
-- Sites that accept any guest post
-- "Write for us" farms
-- Paying for placement
-- Exact-match anchor text links
+**Qué evitar:**
+- Sitios que aceptan cualquier publicación de invitado.
+- Granjas "Escribe para nosotros"
+- Pagar por la colocación
+- Enlaces de texto de anclaje de coincidencia exacta
 
-### Good Guest Post Pitch
+### Buen discurso de publicación de invitado
 
 ```
 Subject: Guest post idea: API security mistakes we see at startups
@@ -184,7 +182,7 @@ Interested?
 [Title, Company]
 ```
 
-### Resource Link Building
+### Construcción de enlaces de recursos
 
 ```
 1. Find resource pages
@@ -204,7 +202,7 @@ Interested?
    └── Offer to help update their page
 ```
 
-### Broken Link Building
+### Construcción de enlaces rotos
 
 ```
 1. Find broken links on target sites
@@ -222,33 +220,33 @@ Interested?
    └── Provide value (help them fix their page)
 ```
 
-### Link Velocity Guidelines
+### Directrices de velocidad de enlace
 
-| Site Stage | Monthly New Referring Domains | Notes |
+| Etapa del sitio | Nuevos dominios de referencia mensuales | Notas |
 |------------|-------------------------------|-------|
-| **New site** | 5-15 | Steady growth, avoid spikes |
-| **Established** | 15-30 | Mix of tactics |
-| **Authority** | 30-50+ | Natural growth + campaigns |
+| **Nuevo sitio** | 5-15 | Crecimiento constante, evitar picos |
+| **Establecido** | 15-30 | Mezcla de tácticas |
+| **Autoridad** | 30-50+ | Crecimiento natural + campañas |
 
-**Red flags:**
-- 0 → 100 links overnight (looks unnatural)
-- All links from same source
-- Links faster than you're creating content
-- Sudden drop (could indicate link removal/penalty)
+**Banderas rojas:**
+- 0 → 100 enlaces durante la noche (parece poco natural)
+- Todos los enlaces de la misma fuente.
+- Enlaces más rápido de lo que estás creando contenido
+- Caída repentina (podría indicar eliminación/penalización del enlace)
 
-### Anchor Text Distribution
+### Distribución del texto ancla
 
-| Anchor Type | Target % | Example |
+| Tipo de ancla | % objetivo | Ejemplo |
 |-------------|----------|---------|
-| **Brand** | 30-40% | "Infisical", "Infisical.com" |
+| **Marca** | 30-40% | "Infisical", "Infisical.com" |
 | **URL** | 10-20% | "infisical.com/blog/post" |
-| **Generic** | 15-25% | "click here", "read more", "this guide" |
-| **Topic/keyword** | 15-25% | "secrets management guide" |
-| **Exact match** | 1-5% | "kubernetes secrets management" |
+| **Genérico** | 15-25% | "haga clic aquí", "leer más", "esta guía" |
+| **Tema/palabra clave** | 15-25% | "guía de gestión de secretos" |
+| **Coincidencia exacta** | 1-5% | "gestión de secretos de Kubernetes" |
 
-**Key:** Diverse anchor text looks natural. All exact-match is spam.
+**Clave:** El texto de anclaje diverso parece natural. Toda coincidencia exacta es spam.
 
-### Internal Linking for Link Equity
+### Enlaces internos para la equidad del enlace
 
 ```
 PageRank flows through internal links:
@@ -266,26 +264,26 @@ Strategy:
 - Limit links per page (equity dilutes)
 ```
 
-### Link Building Metrics to Track
+### Métricas de construcción de enlaces para realizar un seguimiento
 
-| Metric | What It Shows | Tool |
+| Métrica | Lo que muestra | Herramienta |
 |--------|---------------|------|
-| **Referring domains** | Total linking sites | Ahrefs, Moz |
-| **Domain Rating/Authority** | Overall site strength | Ahrefs (DR), Moz (DA) |
-| **Link velocity** | New links over time | Ahrefs, Majestic |
-| **Anchor text distribution** | Link profile health | Ahrefs |
-| **Lost links** | Churn, issues | Ahrefs, Moz |
-| **Competitor gap** | Opportunities | Ahrefs Link Intersect |
+| **Dominios de referencia** | Total de sitios enlazados | Ahrefs, Moz |
+| **Clasificación de dominio/Autoridad** | Fortaleza general del sitio | Ahrefs (RD), Moz (DA) |
+| **Velocidad de enlace** | Nuevos enlaces a lo largo del tiempo | Ahrefs, majestuoso |
+| **Distribución del texto de anclaje** | Salud del perfil del enlace | Ahrefs |
+| **Enlaces perdidos** | Rotación, problemas | Ahrefs, Moz |
+| **Brecha de competencia** | Oportunidades | Intersección de enlaces de Ahrefs |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Buying links** — Violates guidelines, risk of penalty
-- **Link exchanges** — "I'll link to you if you link to me" is detectable
-- **PBNs** — Private blog networks are a penalty waiting to happen
-- **Comment spam** — Links in blog comments don't help
-- **Forum signature links** — Waste of time, often nofollowed
-- **Irrelevant links** — Pet blog linking to your SaaS hurts more than helps
-- **Over-optimized anchors** — Too many exact-match keywords is spam signal
-- **Link velocity spikes** — 0 to 500 links overnight is unnatural
-- **Ignoring disavow** — Bad links need to be disavowed
-- **Focusing only on DA** — Relevance matters more than raw authority
+- **Enlaces de compra**: infringe las directrices y conlleva riesgo de sanción
+- **Intercambios de enlaces** — "Te vincularé si tú me vinculas a mí" es detectable
+- **PBN**: las redes de blogs privados son una penalización a punto de suceder
+- **Comentarios spam**: los enlaces en los comentarios del blog no ayudan
+- **Enlaces de firma del foro** — Pérdida de tiempo, a menudo no seguido
+- **Enlaces irrelevantes**: vincular un blog de mascotas a su SaaS duele más que ayuda
+- **Anclas demasiado optimizadas**: demasiadas palabras clave de concordancia exacta son una señal de spam
+- **Picos en la velocidad de los enlaces**: 0 a 500 enlaces durante la noche no es natural
+- **Ignorar desautorización**: los enlaces incorrectos deben desautorizarse
+- **Centrarse solo en DA**: la relevancia importa más que la autoridad pura y simple

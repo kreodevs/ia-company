@@ -1,8 +1,8 @@
-# Cloudflare Browser Rendering
+# Representación del navegador Cloudflare
 
-Headless browser automation with Puppeteer/Playwright on Cloudflare Workers.
+Automatización del navegador sin cabeza con Puppeteer/Playwright en Cloudflare Workers.
 
-## Setup
+## Configuración
 
 **wrangler.toml:**
 ```toml
@@ -13,7 +13,7 @@ compatibility_date = "2024-01-01"
 browser = { binding = "MYBROWSER" }
 ```
 
-## Basic Screenshot Worker
+## Trabajador de captura de pantalla básico
 
 ```typescript
 import puppeteer from '@cloudflare/puppeteer';
@@ -35,7 +35,7 @@ export default {
 };
 ```
 
-## Session Reuse (Cost Optimization)
+## Reutilización de sesiones (optimización de costos)
 
 ```typescript
 // Disconnect instead of close
@@ -50,7 +50,7 @@ if (freeSession) {
 }
 ```
 
-## PDF Generation
+## Generación de PDF
 
 ```typescript
 const browser = await puppeteer.launch(env.MYBROWSER);
@@ -85,7 +85,7 @@ return new Response(pdf, {
 });
 ```
 
-## Durable Objects for Persistent Sessions
+## Objetos duraderos para sesiones persistentes
 
 ```typescript
 export class Browser {
@@ -128,7 +128,7 @@ export class Browser {
 }
 ```
 
-## AI-Powered Web Scraper
+## Web Scraper impulsado por IA
 
 ```typescript
 import { Ai } from '@cloudflare/ai';
@@ -157,7 +157,7 @@ export default {
 };
 ```
 
-## Crawler with Queues
+## Rastreador con colas
 
 ```typescript
 export default {
@@ -185,9 +185,9 @@ export default {
 };
 ```
 
-## Configuration
+## Configuración
 
-### Timeout
+### Se acabó el tiempo
 ```typescript
 await page.goto(url, {
   timeout: 60000,  // 60 seconds max
@@ -197,12 +197,12 @@ await page.goto(url, {
 await page.waitForSelector('.content', { timeout: 45000 });
 ```
 
-### Viewport
+### Ventana gráfica
 ```typescript
 await page.setViewport({ width: 1920, height: 1080 });
 ```
 
-### Screenshot Options
+### Opciones de captura de pantalla
 ```typescript
 const screenshot = await page.screenshot({
   type: 'png',       // 'png' | 'jpeg' | 'webp'
@@ -216,54 +216,54 @@ const screenshot = await page.screenshot({
 });
 ```
 
-## Limits & Pricing
+## Límites y precios
 
-### Free Plan
-- 10 minutes/day
-- 3 concurrent browsers
-- 3 new browsers/minute
+### Plan gratuito
+- 10 minutos/día
+- 3 navegadores simultáneos
+- 3 nuevos navegadores/minuto
 
-### Paid Plan
-- 10 hours/month included
-- 30 concurrent browsers
-- 30 new browsers/minute
-- $0.09/hour overage
-- $2.00/concurrent browser overage
+### Plan pago
+- 10 horas/mes incluidas
+- 30 navegadores simultáneos
+- 30 nuevos navegadores/minuto
+- $0.09/hora excedente
+- $2.00/exceso de navegador simultáneo
 
-### Cost Optimization
-1. Use `disconnect()` instead of `close()`
-2. Enable Keep-Alive (10 min max)
-3. Pool tabs with browser contexts
-4. Cache auth state with KV
-5. Implement Durable Objects cleanup
+### Optimización de costos
+1. uso`disconnect()`en lugar de`close()`
+2. Habilite Keep-Alive (máximo 10 minutos)
+3. Pestañas agrupadas con contextos del navegador
+4. Estado de autenticación de caché con KV
+5. Implementar la limpieza de objetos duraderos
 
-## Best Practices
+## Mejores prácticas
 
-### Session Management
-- Always use `disconnect()` for reuse
-- Implement session pooling
-- Track session IDs and states
+### Gestión de sesiones
+- Usar siempre`disconnect()`para reutilizar
+- Implementar la agrupación de sesiones.
+- Seguimiento de ID y estados de sesión
 
-### Performance
-- Cache content in KV
-- Use browser contexts vs multiple browsers
-- Choose appropriate `waitUntil` strategy
-- Set realistic timeouts
+### Rendimiento
+- Contenido de caché en KV
+- Utilice contextos de navegador frente a varios navegadores
+- Elija apropiado`waitUntil`estrategia
+- Establecer tiempos de espera realistas
 
-### Error Handling
-- Handle timeout errors gracefully
-- Check session availability before connecting
-- Validate responses before caching
+### Manejo de errores
+- Manejar los errores de tiempo de espera con gracia
+- Consulta la disponibilidad de la sesión antes de conectarte.
+- Validar las respuestas antes del almacenamiento en caché.
 
-### Security
-- Validate user-provided URLs
-- Implement authentication
-- Sanitize extracted content
-- Set appropriate CORS headers
+### Seguridad
+- Validar las URL proporcionadas por el usuario
+- Implementar autenticación
+- Desinfectar el contenido extraído
+- Establecer encabezados CORS apropiados
 
-## Troubleshooting
+## Solución de problemas
 
-**Timeout Errors:**
+**Errores de tiempo de espera:**
 ```typescript
 await page.goto(url, {
   timeout: 60000,
@@ -271,35 +271,35 @@ await page.goto(url, {
 });
 ```
 
-**Memory Issues:**
+**Problemas de memoria:**
 ```typescript
 await page.close();  // Close pages
 await browser.disconnect();  // Reuse session
 ```
 
-**Font Rendering:**
-Use supported fonts (Noto Sans, Roboto, etc.) or inject custom:
+**Representación de fuentes:**
+Utilice fuentes compatibles (Noto Sans, Roboto, etc.) o inyecte fuentes personalizadas:
 ```html
 <link href="https://fonts.googleapis.com/css2?family=Poppins" rel="stylesheet">
 ```
 
-## Key Methods
+## Métodos clave
 
-### Puppeteer
-- `puppeteer.launch(binding)` - Start browser
-- `puppeteer.connect(binding, sessionId)` - Reconnect
-- `puppeteer.sessions(binding)` - List sessions
-- `browser.newPage()` - Create page
-- `browser.disconnect()` - Disconnect (keep alive)
-- `browser.close()` - Close (terminate)
-- `page.goto(url, options)` - Navigate
-- `page.screenshot(options)` - Capture
-- `page.pdf(options)` - Generate PDF
-- `page.content()` - Get HTML
-- `page.evaluate(fn)` - Execute JS
+### Titiritero
+- `puppeteer.launch(binding)`- Iniciar navegador
+- `puppeteer.connect(binding, sessionId)`- Reconectar
+- `puppeteer.sessions(binding)`- Lista de sesiones
+- `browser.newPage()`- Crear página
+- `browser.disconnect()`- Desconectar (mantener con vida)
+- `browser.close()`- Cerrar (terminar)
+- `page.goto(url, options)`- Navegar
+- `page.screenshot(options)`- Captura
+- `page.pdf(options)`- Generar PDF
+- `page.content()`- Obtener HTML
+- `page.evaluate(fn)`- Ejecutar JS
 
-## Resources
+## Recursos
 
-- Docs: https://developers.cloudflare.com/browser-rendering/
-- Puppeteer: https://pptr.dev/
-- Examples: https://developers.cloudflare.com/workers/examples/
+- Documentos: https://developers.cloudflare.com/browser-rendering/
+- Titiritero: https://pptr.dev/
+- Ejemplos: https://developers.cloudflare.com/workers/examples/

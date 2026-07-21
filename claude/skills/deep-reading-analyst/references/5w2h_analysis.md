@@ -1,57 +1,56 @@
-# 5W2H Analysis Framework
+# Marco de análisis 5W2H
 
-## Overview
+## Descripción general
 
-5W2H is a systematic questioning method to comprehensively understand any topic, problem, or plan through 7 fundamental questions.
+5W2H es un método de cuestionamiento sistemático para comprender de manera integral cualquier tema, problema o plan a través de 7 preguntas fundamentales.
 
-**The 7 Core Questions**:
-- **What** - Object, goal, content
-- **Why** - Reason, purpose, significance  
-- **Who** - People, stakeholders, responsibilities
-- **When** - Timing, schedule, deadlines
-- **Where** - Location, context, scope
-- **How** - Methods, processes, steps
-- **How much** - Cost, quantity, metrics
+**Las 7 preguntas centrales**:
+- **Qué** - Objeto, objetivo, contenido
+- **Por qué** - Razón, propósito, significado  
+- **Quién** - Personas, partes interesadas, responsabilidades
+- **Cuándo** - Calendario, cronograma, plazos
+- **Dónde** - Ubicación, contexto, alcance
+- **Cómo** - Métodos, procesos, pasos
+- **Cuánto** - Costo, cantidad, métricas
 
-## When to Use
+## Cuándo utilizar
 
-Ideal for:
-- 📋 Quickly understanding complete article information
-- 🔍 Discovering information gaps and omissions
-- 📊 Evaluating plan feasibility
-- 💼 Analyzing business cases and proposals
-- 📝 Organizing complex information
-- ✅ Verifying information completeness
+Ideal para:
+- 📋 Comprender rápidamente la información completa del artículo
+- 🔍 Descubrir lagunas y omisiones de información
+- 📊 Evaluación de la viabilidad del plan.
+- 💼 Análisis de casos y propuestas de negocio.
+- 📝 Organizar información compleja
+- ✅ Verificar la integridad de la información
 
-## The 7 Questions in Detail
+## Las 7 Preguntas en Detalle
 
-### W1: What (Content)
+### W1: Qué (Contenido)
 
-**Core Questions**:
-1. What is the main topic?
-2. What are the key claims/conclusions?
-3. What solutions are proposed?
-4. What core concepts are involved?
-5. What are the expected outcomes?
+**Preguntas principales**:
+1. ¿Cuál es el tema principal?
+2. ¿Cuáles son las afirmaciones/conclusiones clave?
+3. ¿Qué soluciones se proponen?
+4. ¿Qué conceptos centrales están involucrados?
+5. ¿Cuáles son los resultados esperados?
 
-**Deep Inquiry**:
-- What's the real problem?
-- What's missing?
-- What could go wrong?
-- What are the alternatives?
+**Consulta profunda**:
+- ¿Cuál es el verdadero problema?
+- ¿Qué falta?
+- ¿Qué podría salir mal?
+- ¿Cuáles son las alternativas?
 
-### W2: Why (Reasons)
+### W2: Por qué (razones)
 
-**Core Questions**:
-1. Why discuss this topic now?
-2. Why is this solution effective?
-3. Why not choose other approaches?
-4. Why should the audience care?
-5. Why this timing?
+**Preguntas principales**:
+1. ¿Por qué discutir este tema ahora?
+2. ¿Por qué es eficaz esta solución?
+3. ¿Por qué no elegir otros enfoques?
+4. ¿Por qué debería importarle al público?
+5. ¿Por qué este momento?
 
-**Five Whys Technique**:
-Ask "why" 5 times to reach root cause:
-```
+**Técnica de los cinco porqués**:
+Pregunte "por qué" 5 veces para llegar a la causa raíz:```
 Problem: [Surface issue]
 → Why 1: [First layer]
   → Why 2: [Second layer]
@@ -60,62 +59,61 @@ Problem: [Surface issue]
         → Why 5: [Root cause] ← Real issue
 ```
 
-### W3: Who (People)
+### W3: Quién (Personas)
 
-**Core Questions**:
-1. Who is the target audience?
-2. Who are the stakeholders?
-3. Who is responsible for execution?
-4. Who benefits? Who loses?
-5. Whose expertise/cases are cited?
-6. Who is the author? (potential biases?)
+**Preguntas principales**:
+1. ¿Quién es el público objetivo?
+2. ¿Quiénes son las partes interesadas?
+3. ¿Quién es responsable de la ejecución?
+4. ¿Quién se beneficia? ¿Quién pierde?
+5. ¿De quién son los conocimientos/casos que se citan?
+6. ¿Quién es el autor? (¿posibles sesgos?)
 
-**Deep Analysis**:
-- Stakeholder mapping
-- Decision-makers vs. executors
-- Who has veto power?
+**Análisis profundo**:
+- Mapeo de partes interesadas
+- Tomadores de decisiones versus ejecutores
+- ¿Quién tiene poder de veto?
 
-### W4: When (Timing)
+### W4: Cuándo (momento)
 
-**Core Questions**:
-1. When to start?
-2. What's the timeline/schedule?
-3. When will results appear?
-4. How time-sensitive is this?
-5. When are key decisions needed?
-6. What's the historical context?
+**Preguntas principales**:
+1. ¿Cuándo empezar?
+2. ¿Cuál es el cronograma?
+3. ¿Cuándo aparecerán los resultados?
+4. ¿Qué tan urgente es esto?
+5. ¿Cuándo se necesitan decisiones clave?
+6. ¿Cuál es el contexto histórico?
 
-**Time Trap Identification**:
-- Unrealistic time expectations?
-- Missing key milestones?
-- Buffer time considered?
+**Identificación de la trampa del tiempo**:
+- ¿Expectativas de tiempo poco realistas?
+- ¿Faltan hitos clave?
+- ¿Se considera el tiempo de amortiguación?
 
-### W5: Where (Context)
+### W5: Dónde (Contexto)
 
-**Core Questions**:
-1. Where does this apply? (geography, industry, organization)
-2. Where is execution happening?
-3. Where to get resources?
-4. What are the limitations/constraints?
-5. What's the scope of impact?
+**Preguntas principales**:
+1. ¿Dónde se aplica esto? (geografía, industria, organización)
+2. ¿Dónde se lleva a cabo la ejecución?
+3. ¿Dónde conseguir recursos?
+4. ¿Cuáles son las limitaciones/restricciones?
+5. ¿Cuál es el alcance del impacto?
 
-**Context Dependency**:
-- Does it work in different environments?
-- Cultural differences?
-- Scale considerations?
+**Dependencia del contexto**:
+- ¿Funciona en diferentes entornos?
+- ¿Diferencias culturales?
+- ¿Consideraciones de escala?
 
-### H1: How (Methods)
+### H1: Cómo (Métodos)
 
-**Core Questions**:
-1. What are the specific steps?
-2. What tools/methods are used?
-3. How to measure progress?
-4. How to handle obstacles?
-5. How to ensure quality?
-6. How to get started?
+**Preguntas principales**:
+1. ¿Cuáles son los pasos específicos?
+2. ¿Qué herramientas/métodos se utilizan?
+3. ¿Cómo medir el progreso?
+4. ¿Cómo afrontar los obstáculos?
+5. ¿Cómo garantizar la calidad?
+6. ¿Cómo empezar?
 
-**Process Mapping**:
-```
+**Mapeo de procesos**:```
 [Start] → [Step 1] → [Decision Point]
                          ↓ Yes / ↓ No
                     [Step 2A]  [Step 2B]
@@ -125,18 +123,17 @@ Problem: [Surface issue]
                     [End]
 ```
 
-### H2: How Much (Metrics)
+### H2: Cuánto (métricas)
 
-**Core Questions**:
-1. What's the cost? (money, time, opportunity, learning)
-2. How many resources needed?
-3. What's the expected ROI?
-4. What's the scale/magnitude?
-5. How big are the risks?
-6. What are the target metrics?
+**Preguntas principales**:
+1. ¿Cuál es el costo? (dinero, tiempo, oportunidad, aprendizaje)
+2. ¿Cuántos recursos se necesitan?
+3. ¿Cuál es el retorno de la inversión esperado?
+4. ¿Cuál es la escala/magnitud?
+5. ¿Qué tan grandes son los riesgos?
+6. ¿Cuáles son las métricas objetivo?
 
-**ROI Analysis**:
-```
+**Análisis de retorno de la inversión**:```
 Investment:
 - Direct costs: [$]
 - Indirect costs: [$]
@@ -150,9 +147,9 @@ Returns:
 Worth it?: [Yes/No]
 ```
 
-## Complete Analysis Template
+## Plantilla de análisis completa
 
-### Quick Version (15 min)
+### Versión rápida (15 min)
 
 ```markdown
 # 5W2H Quick Analysis: [Article Title]
@@ -165,12 +162,12 @@ Worth it?: [Yes/No]
 **How**: [Key steps (3-5)]
 **How much**: [Main costs and expected returns]
 
-## Gap Analysis
+## Análisis de brechas
 Missing information: [List unanswered questions from 5W2H]
 Key risks: [Risks based on missing info]
 ```
 
-### Deep Version (60 min)
+### Versión profunda (60 min)
 
 ```markdown
 # 5W2H Deep Analysis: [Article Title]
@@ -204,28 +201,28 @@ Key risks: [Risks based on missing info]
 
 ## 📊 Overall Assessment
 
-### Information Completeness
+### Completitud de la información
 - ✅ Clearly answered: [X/7]
 - ⚠️  Partially answered: [List]
 - ❌ Completely missing: [List]
 
-### Feasibility Score
+### Puntuación de viabilidad
 Based on 5W2H completeness: [X/10]
 
-### Risk Level
+### Nivel de riesgo
 Based on missing info: [High/Medium/Low]
 
-### Action Recommendations
+### Recomendaciones de acción
 1. [Specific recommendation based on analysis]
 2. [Information needed to supplement]
 3. [Priority actions to take]
 ```
 
-## Practical Example
+## Ejemplo práctico
 
-### Example: Remote Work Article
+### Ejemplo: artículo sobre trabajo remoto
 
-**Article Title**: "How to Successfully Transition to Remote Work"
+**Título del artículo**: "Cómo realizar una transición exitosa al trabajo remoto"
 
 ```markdown
 ## 5W2H Analysis
@@ -274,7 +271,7 @@ Based on missing info: [High/Medium/Low]
 - ROI: Office costs ↓50%
 ⚠️  Missing: Transition period productivity drop costs
 
-## Gap Analysis
+## Análisis de brechas
 
 Missing critical information:
 1. Why - Why not consider hybrid model
@@ -291,31 +288,28 @@ Recommendations:
 3. Budget 15-20% for transition productivity dip
 ```
 
-## Integration with Other Frameworks
+## Integración con otros marcos
 
-### + Critical Thinking
-```
+### + Pensamiento crítico```
 5W2H → Identify missing information
 Critical Thinking → Evaluate quality of existing information
 ```
 
-### + SCQA
-```
+### + SCQA```
 SCQA → Understand problem framework
 5W2H → Analyze solution completeness
 ```
 
-### + Inversion
-```
+### + Inversión```
 5W2H → Forward analysis of plan
 Inversion → For each W/H, ask "what if it's missing?"
 ```
 
-## Advanced Techniques
+## Técnicas Avanzadas
 
-### 1. Prioritized 5W2H
+### 1. 5W2H priorizado
 
-Not all 7 questions are equally important—adjust by article type:
+No todas las 7 preguntas son igualmente importantes; ajústelas por tipo de artículo:
 
 ```markdown
 Strategy articles: Why (40%) > What (30%) > How (20%) > Others
@@ -323,7 +317,7 @@ How-to articles: How (40%) > What (25%) > How much (20%) > Others
 Analysis articles: What (30%) > Why (30%) > Who (20%) > Others
 ```
 
-### 2. Iterative 5W2H
+### 2. 5W2H iterativo
 
 ```markdown
 Round 1: Quick scan of all 7 questions (15 min)
@@ -331,46 +325,46 @@ Round 2: Deep dive on 2-3 most lacking (30 min)
 Round 3: Cross-validate answer consistency (15 min)
 ```
 
-### 3. Extended 5W2H (+ 2H)
+### 3. Extendido 5W2H (+ 2H)
 
-Add two more Hows:
-- **How to measure?** (metrics)
-- **How to sustain?** (maintenance)
+Agregue dos Hows más:
+- **¿Cómo medir?** (métricas)
+- **¿Cómo sostenerlo?** (mantenimiento)
 
-## Common Pitfalls
+## Errores comunes
 
-### ❌ Surface-Level Analysis
-- Wrong: Mechanically answer 7 questions without depth
-- Right: Dig 2-3 levels deep on each question
+### ❌ Análisis a nivel de superficie
+- Incorrecto: Responde mecánicamente 7 preguntas sin profundidad
+- Derecha: profundiza 2 o 3 niveles en cada pregunta
 
-### ❌ Ignoring Gaps
-- Wrong: Only analyze what article provides
-- Right: Explicitly note what article doesn't answer
+### ❌ Ignorar las lagunas
+- Incorrecto: Analiza sólo lo que proporciona el artículo.
+- Derecha: observe explícitamente qué artículo no responde
 
-### ❌ Siloed Thinking
-- Wrong: Analyze 7 questions independently
-- Right: Look for consistency and contradictions across answers
+### ❌ Pensamiento en silos
+- Incorrecto: Analiza 7 preguntas de forma independiente
+- Derecha: busque coherencia y contradicciones entre las respuestas.
 
-## Practice Tips
+## Consejos de práctica
 
-1. **Print Checklist**: Prepare standard 5W2H template
-2. **Timed Drills**: Complete quick analysis in 15 minutes
-3. **Reverse Validation**: Use analysis to reconstruct article—is it complete?
-4. **Comparative Application**: Compare 5W2H across multiple articles on same topic
+1. **Imprimir lista de verificación**: Prepare la plantilla estándar 5W2H
+2. **Ejercicios cronometrados**: complete un análisis rápido en 15 minutos
+3. **Validación inversa**: utilice el análisis para reconstruir el artículo: ¿está completo?
+4. **Aplicación comparativa**: compare 5W2H en varios artículos sobre el mismo tema
 
-## Summary
+## Resumen
 
-5W2H is:
-- ✅ **Completeness Checker**: Ensures no information omissions
-- ✅ **Quick Understanding Framework**: Systematically captures essence
-- ✅ **Communication Bridge**: Standardized analysis language
+5W2H es:
+- ✅ **Comprobador de integridad**: garantiza que no haya omisiones de información
+- ✅ **Marco de comprensión rápida**: Capta sistemáticamente la esencia
+- ✅ **Puente de comunicación**: Lenguaje de análisis estandarizado
 
-Best for:
-- 📋 Project plan evaluation
-- 📊 Business proposal analysis
-- 📝 Operational guide comprehension
-- 🔍 Information gap identification
+Lo mejor para:
+- 📋 Evaluación del plan de proyecto
+- 📊 Análisis de propuesta de negocio.
+- 📝 Comprensión de la guía operativa.
+- 🔍 Identificación de lagunas de información
 
 ---
 
-**Remember**: 5W2H's value isn't just answering these 7 questions, but discovering which questions *aren't* answered—and why.
+**Recuerde**: el valor de 5W2H no es solo responder estas 7 preguntas, sino descubrir qué preguntas *no* están respondidas y por qué.

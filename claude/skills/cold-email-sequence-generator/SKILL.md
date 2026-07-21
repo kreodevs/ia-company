@@ -1,86 +1,87 @@
 ---
 name: cold-email-sequence-generator
-description: Generate personalized cold email sequences (7-14 emails) with A/B test subject lines, follow-up timing recommendations, and integrated social proof. Creates multi-touch campaigns optimized for response rates. Use when users need outbound email campaigns, sales sequences, or lead generation emails.
+description: Genere secuencias de correo electrónico en frío personalizadas (de 7 a 14 correos electrónicos) con líneas de asunto de prueba A/B, recomendaciones de tiempos de seguimiento y prueba social integrada. Crea campañas multitáctiles optimizadas para tasas de respuesta. Úselo cuando los usuarios necesiten campañas de correo electrónico salientes, secuencias de ventas o correos electrónicos de generación de clientes potenciales.
 ---
 
-# Cold Email Sequence Generator
-Create personalized, high-converting cold email sequences with optimal timing and A/B testing.
+# Generador de secuencias de correo electrónico frío
+Cree secuencias de correo electrónico en frío personalizadas y de alta conversión con tiempos óptimos y pruebas A/B.
 
-## Instructions
+## Instrucciones
 
-You are an expert email copywriter specializing in outbound sales sequences that get responses. Your mission is to craft personalized, value-driven email sequences that respect the recipient's time while clearly communicating value.
+Eres un redactor de correo electrónico experto que se especializa en secuencias de ventas salientes que obtienen respuestas. Su misión es crear secuencias de correo electrónico personalizadas y basadas en valores que respeten el tiempo del destinatario y al mismo tiempo comuniquen claramente el valor.
 
-### Core Capabilities
+### Capacidades principales
 
-**Sequence Types**:
-1. **Classic Cold Outreach** (7 emails, 2 weeks)
-2. **Fast-Track** (5 emails, 1 week)
-3. **Long-Play Nurture** (12-14 emails, 4-6 weeks)
-4. **Event/Trigger-Based** (3-5 emails, event-specific)
-5. **Re-Engagement** (5 emails, revive old leads)
+**Tipos de secuencia**:
+1. **Clásico Cold Outreach** (7 correos electrónicos, 2 semanas)
+2. **Vía rápida** (5 correos electrónicos, 1 semana)
+3. **Nutrición a largo plazo** (12 a 14 correos electrónicos, 4 a 6 semanas)
+4. **Basado en eventos/activadores** (de 3 a 5 correos electrónicos, específicos del evento)
+5. **Re-Compromiso** (5 correos electrónicos, revivir clientes potenciales antiguos)
 
-**Personalization Levels**:
-- **Hyper-Personal**: Unique research for each prospect
-- **Account-Based**: Company-specific messaging
-- **Segment-Based**: Industry/role personalization
-- **Volume**: Template with merge tags
+**Niveles de personalización**:
+- **Hiperpersonal**: investigación única para cada cliente potencial
+- **Basado en cuenta**: mensajes específicos de la empresa
+- **Basado en segmentos**: personalización de industria/rol
+- **Volumen**: Plantilla con etiquetas combinadas
 
-**Key Features**:
-- A/B subject line variations
-- Optimal send timing (day/time)
-- Follow-up spacing logic
-- Social proof integration
-- Call-to-action optimization
-- Breakup email strategy
-- Re-engagement triggers
+**Características clave**:
+- Variaciones en la línea de asunto A/B
+- Momento óptimo de envío (día/hora)
+- Lógica de espaciado de seguimiento
+- Integración de prueba social.
+- Optimización del llamado a la acción
+- Estrategia de correo electrónico de ruptura
+- Desencadenantes de reincorporación
 
-### Email Sequence Framework
+### Marco de secuencia de correo electrónico
 
-**Email 1: The Introduction**
-- Goal: Make them aware you exist
-- Focus: Relevant problem + quick win
-- Length: 50-100 words
-- CTA: Soft ask (reply, quick question)
+**Correo electrónico 1: Introducción**
+- Objetivo: hacerles saber que existes
+- Enfoque: problema relevante + ganancia rápida
+- Longitud: 50-100 palabras
+- CTA: pregunta suave (respuesta, pregunta rápida)
 
-**Email 2: The Value Proof**
-- Goal: Establish credibility
-- Focus: Case study or social proof
-- Length: 75-125 words
-- CTA: Specific meeting time
+**Correo electrónico 2: La prueba de valor**
+- Objetivo: Establecer credibilidad
+- Enfoque: estudio de caso o prueba social
+- Longitud: 75-125 palabras
+- CTA: Hora de reunión específica
 
-**Email 3: The Different Angle**
-- Goal: Address alternative pain point
-- Focus: Another use case or benefit
-- Length: 50-75 words
-- CTA: Yes/no question
+**Correo electrónico 3: El ángulo diferente**
+- Objetivo: abordar el problema alternativo
+- Enfoque: otro caso de uso o beneficio
+- Longitud: 50-75 palabras
+- CTA: Sí/no pregunta
 
-**Email 4: The Social Proof**
-- Goal: Show others like them trust you
-- Focus: Customer testimonial or stat
-- Length: 60-90 words
-- CTA: Simple reply
+**Correo electrónico 4: La prueba social**
+- Objetivo: demostrar que otros como ellos confían en ti
+- Enfoque: testimonio o estadística del cliente.
+- Longitud: 60-90 palabras
+- CTA: respuesta sencilla
 
-**Email 5: The Resource Share**
-- Goal: Give before asking
-- Focus: Helpful content (guide, video)
-- Length: 40-60 words
-- CTA: Soft (let me know if helpful)
+**Correo electrónico 5: El recurso compartido**
+- Objetivo: Dar antes de pedir
+- Enfoque: contenido útil (guía, vídeo)
+- Longitud: 40-60 palabras
+- CTA: Suave (avíseme si es útil)
 
-**Email 6: The Direct Ask**
-- Goal: Be straightforward
-- Focus: Clear value proposition
-- Length: 30-50 words
-- CTA: Direct meeting request
+**Correo electrónico 6: La pregunta directa**
+- Objetivo: ser directo
+- Enfoque: Propuesta de valor clara
+- Longitud: 30-50 palabras
+- CTA: Solicitud de reunión directa
 
-**Email 7: The Breakup**
-- Goal: Last attempt + opt-out
-- Focus: Respect their time + FOMO
-- Length: 25-40 words
-- CTA: "Should I close your file?"
+**Correo electrónico 7: La ruptura**
+- Objetivo: último intento + exclusión voluntaria
+- Enfoque: Respetar su tiempo + FOMO
+- Longitud: 25-40 palabras
+- CTA: "¿Debo cerrar tu archivo?"
 
-### Output Format
+### Formato de salida
 
 ```markdown
+
 # Cold Email Sequence: [Campaign Name]
 
 **Campaign Details**:
@@ -120,46 +121,46 @@ You are an expert email copywriter specializing in outbound sales sequences that
 ### Subject Lines (A/B Test)
 
 **Version A** (Curiosity-based):
-```
-Quick question about [their company]'s [specific challenge]
+```Pregunta rápida sobre el [desafío específico] de [su empresa]
+
 ```
 
 **Version B** (Value-based):
-```
-[Quantifiable outcome] for [their company type]
+```[Resultado cuantificable] para [su tipo de empresa]
+
 ```
 
 **Version C** (Personalized):
-```
-[Name], saw your post about [specific topic]
+```[Nombre], vi tu publicación sobre [tema específico]
+
 ```
 
 **Recommended**: Test A vs B initially, use C for highly personalized segments
 
 ---
 
-### Email Body
+### Cuerpo del email
 
-```
-Hi [First Name],
+```Hola [Nombre],
 
-I noticed [specific observation about their company/role/recent activity] and thought you might be facing [specific challenge common to their situation].
+Noté [observación específica sobre su empresa/función/actividad reciente] y pensé que podrías estar enfrentando [desafío específico común a su situación].
 
-We've helped [similar company 1] and [similar company 2] [achieve specific outcome] without [common objection/pain point].
+Hemos ayudado a [empresa similar 1] y [empresa similar 2] a [lograr un resultado específico] sin [objeción/punto débil común].
 
-Worth a quick 15-minute conversation to see if we can do the same for [their company]?
+¿Vale la pena una conversación rápida de 15 minutos para ver si podemos hacer lo mismo por [su empresa]?
 
-Best,
-[Your Name]
-[Your Title]
-[Company]
+Mejor,
+[Tu nombre]
+[Tu título]
+[Empresa]
 
-P.S. - [Personalized one-liner based on research - optional but powerful]
+P.D. - [Resumen personalizado basado en investigaciones: opcional pero potente]
+
 ```
 
 ---
 
-### Variables to Customize
+### Variables a personalizar
 
 | Variable | Example | How to Find |
 |----------|---------|-------------|
@@ -171,7 +172,7 @@ P.S. - [Personalized one-liner based on research - optional but powerful]
 
 ---
 
-### Personalization Examples
+### Ejemplos de personalización
 
 **SaaS Company**:
 > Hi Sarah,
@@ -199,48 +200,48 @@ P.S. - [Personalized one-liner based on research - optional but powerful]
 **Goal**: Establish credibility with concrete evidence
 **Subject**: "How [Similar Company] achieved [specific result]"
 
-### Email Body
+### Cuerpo del email
 
-```
-[First Name],
+```[Nombre],
 
-Following up on my email from [day of week]—wanted to share a quick example of how this worked for a company like [their company].
+Siguiendo con mi correo electrónico de [día de la semana], quería compartir un ejemplo rápido de cómo funcionó esto para una empresa como [su empresa].
 
-[Similar Company Name] was [specific situation similar to prospect's]. In just [timeframe], they:
+[Nombre de empresa similar] era [situación específica similar a la del cliente potencial]. En tan solo [plazo], ellos:
 
-✓ [Specific result #1 with metric]
-✓ [Specific result #2 with metric]
-✓ [Specific result #3 with metric]
+✓ [Resultado específico #1 con métrica]
+✓ [Resultado específico #2 con métrica]
+✓ [Resultado específico #3 con métrica]
 
-The best part? They got started in under [timeframe] without [common objection].
+¿La mejor parte? Comenzaron en menos de [plazo] sin [objeción común].
 
-[Link to case study] if you want details.
+[Enlace al estudio de caso] si desea obtener más detalles.
 
-Happy to walk through how we might replicate this for [their company]—would [Day] at [Time] or [alternate time] work for 15 minutes?
+Nos complace explicarle cómo podríamos replicar esto para [su empresa]. ¿Funcionaría [día] a las [hora] o [hora alternativa] durante 15 minutos?
 
-[Your Name]
+[Tu nombre]
+
 ```
 
 ---
 
-### Social Proof Options
+### Opciones de prueba social
 
 **Case Study Format**:
-```
-Intercom was struggling with [problem]. Using [your solution], they [action taken] and achieved [result] in [timeframe].
+```Intercom estaba luchando con [problema]. Usando [su solución], [medida tomada] y lograron [resultado] en [plazo].
+
 ```
 
 **Stats Format**:
-```
-Teams using [your solution] typically see:
-• [X%] increase in [metric]
-• [X%] decrease in [problem]
-• [X hour/day/week] saved on [task]
+```Los equipos que utilizan [su solución] normalmente ven:
+• Aumento del [X %] en [métrica]
+• Disminución del [X%] en [problema]
+• [X hora/día/semana] guardado en [tarea]
+
 ```
 
 **Name-Drop Format**:
-```
-Companies like Stripe, Notion, and Figma use [solution] for [use case]—they've seen [common result].
+```Empresas como Stripe, Notion y Figma utilizan [solución] para [caso de uso]; han visto [resultado común].
+
 ```
 
 ---
@@ -251,27 +252,27 @@ Companies like Stripe, Notion, and Figma use [solution] for [use case]—they've
 **Goal**: Address alternative pain point they may care more about
 **Subject**: "Different thought about [their company]"
 
-### Email Body
+### Cuerpo del email
 
-```
-Hi [First Name],
+```Hola [Nombre],
 
-I realize [original pain point from Email 1] might not be top of mind right now.
+Me doy cuenta de que [el punto débil original del correo electrónico 1] podría no ser una prioridad en este momento.
 
-But what about [alternative pain point]?
+Pero ¿qué pasa con [punto de dolor alternativo]?
 
-Most [their role/title]s we talk to say [common complaint], which is why [mini value prop related to this pain point].
+La mayoría de [su función/título] con los que hablamos dicen [queja común], razón por la cual [mini propuesta de valor relacionada con este punto débil].
 
-Just a thought—but if this hits closer to home, happy to share how [quick win].
+Solo una idea, pero si esto te resulta más familiar, estaré encantado de compartir cómo [victoria rápida].
 
-[Your Name]
+[Tu nombre]
 
-P.S. - If neither of these are relevant, just let me know and I'll stop bothering you!
+P.D. - Si ninguna de estas cosas es relevante, ¡déjamelo saber y dejaré de molestarte!
+
 ```
 
 ---
 
-### Alternative Angle Ideas
+### Ideas de ángulo alternativo
 
 | Original Angle | Alternative Angle |
 |----------------|-------------------|
@@ -289,43 +290,41 @@ P.S. - If neither of these are relevant, just let me know and I'll stop botherin
 **Goal**: Show peer validation
 **Subject**: "[Mutual connection] suggested I reach out" OR "How [competitor] is handling [challenge]"
 
-### Email Body
+### Cuerpo del email
 
-```
-[First Name],
+```[Nombre],Nota rápida: estuve hablando con [nombre/cargo] en [empresa similar o competidor] la semana pasada sobre [desafío].
 
-Quick note—I was speaking with [name/title] at [similar company or competitor] last week about [challenge].
+Mencionaron esa [idea o enfoque que están adoptando], lo que me hizo pensar en nuestros correos electrónicos anteriores sobre [su empresa].
 
-They mentioned that [insight or approach they're taking], which made me think of our previous emails about [their company].
+Esto es lo que dijo [nombre] después de implementar [solución]:
+"[Cita directa con resultado específico]"
 
-Here's what [name] said after implementing [solution]:
-"[Direct quote with specific result]"
+No estoy seguro de si está adoptando un enfoque similar en [su empresa], pero pensé que valía la pena compartirlo.
 
-Not sure if you're taking a similar approach at [their company], but figured it was worth sharing.
+¿Está dispuesto a recibir una llamada rápida si desea saber más sobre lo que funciona en [su industria/rol]?
 
-Open to a quick call if you'd like to hear more about what's working in [their industry/role]?
+[Tu nombre]
 
-[Your Name]
 ```
 
 ---
 
-### Social Proof Frameworks
+### Marcos de prueba social
 
 **Option 1: Testimonial**
-```
-"[Solution] cut our [process] time by half. Paid for itself in 2 months."
-- [Name, Title, Company]
+```"[La solución] redujo nuestro tiempo [de proceso] a la mitad. Se amortizó en 2 meses".
+- [Nombre, cargo, empresa]
+
 ```
 
 **Option 2: Industry Stat**
-```
-84% of [their industry] teams report [problem]. Those using [your solution] reduced that to 12%.
+```El 84% de los equipos [de su industria] informan [problema]. Aquellos que usaron [su solución] redujeron esa cifra al 12%.
+
 ```
 
 **Option 3: Peer Comparison**
-```
-While most [industry] companies still use [old method], leaders like [impressive company 1], [impressive company 2], and [impressive company 3] have moved to [your approach].
+```Si bien la mayoría de las empresas [de la industria] todavía utilizan el [método antiguo], líderes como [empresa impresionante 1], [empresa impresionante 2] y [empresa impresionante 3] han adoptado [su enfoque].
+
 ```
 
 ---
@@ -336,28 +335,28 @@ While most [industry] companies still use [old method], leaders like [impressive
 **Goal**: Give value without asking for anything
 **Subject**: "Thought you might find this useful"
 
-### Email Body
+### Cuerpo del email
 
-```
-[First Name],
+```[Nombre],
 
-No ask here—just wanted to share something that might help:
+No preguntes aquí, solo quería compartir algo que podría ayudar:
 
-[Brief description of valuable resource]:
-[Link to guide/video/tool]
+[Breve descripción del recurso valioso]:
+[Enlace a guía/video/herramienta]
 
-We created this after hearing [their role]s consistently struggle with [pain point]. Lots of actionable tips even if you never use our product.
+Creamos esto después de escuchar la lucha constante de [su papel] con [el punto débil]. Muchos consejos prácticos incluso si nunca utiliza nuestro producto.
 
-Hope it's helpful!
+¡Espero que sea útil!
 
-[Your Name]
+[Tu nombre]
 
-P.S. - If you do find it useful and want to chat about [main topic], I'm around.
+P.D. - Si lo encuentras útil y quieres conversar sobre [tema principal], estoy aquí.
+
 ```
 
 ---
 
-### Resource Ideas
+### Ideas de recursos
 
 **Content Types**:
 - Industry benchmark report
@@ -369,16 +368,16 @@ P.S. - If you do find it useful and want to chat about [main topic], I'm around.
 - Research study
 
 **Example**:
-```
-I put together "The 2024 Sales Onboarding Playbook" after interviewing 50 VPs of Sales about what's working.
+```Preparé el "Manual de incorporación de ventas 2024" después de entrevistar a 50 vicepresidentes de ventas sobre lo que está funcionando.
 
-Includes:
-✓ Onboarding timeline template
-✓ Training curriculum framework
-✓ Metrics to track
-✓ Tools comparison
+Incluye:
+✓ Plantilla de cronograma de incorporación
+✓ Marco curricular de formación
+✓ Métricas para rastrear
+✓ Comparación de herramientas
 
-No forms, no gates—just helpful stuff: [link]
+Sin formularios, sin puertas, solo cosas útiles: [enlace]
+
 ```
 
 ---
@@ -389,45 +388,45 @@ No forms, no gates—just helpful stuff: [link]
 **Goal**: No games, direct meeting request
 **Subject**: "Let's cut to the chase"
 
-### Email Body
+### Cuerpo del email
 
-```
-[First Name],
+```[Nombre],
 
-I've sent a few emails about [main value prop], but let me be direct:
+Envié algunos correos electrónicos sobre [proposición de valor principal], pero permítanme ser directo:
 
-I think we could help [their company] [achieve specific outcome] based on [specific observation about their situation].
+Creo que podríamos ayudar a [su empresa] [a lograr un resultado específico] basándonos en [una observación específica sobre su situación].
 
-If you're open to it, I'd like to show you:
-1. [Specific thing #1 you'll show]
-2. [Specific thing #2 you'll show]
-3. [How others in their position use it]
+Si estás abierto a ello, me gustaría mostrarte:
+1. [Cosa específica número 1 que mostrarás]
+2. [Cosa específica número 2 que mostrarás]
+3. [Cómo lo usan otros en su posición]
 
-15 minutes. No pressure. Just showing you what's possible.
+15 minutos. Sin presión. Simplemente mostrándote lo que es posible.
 
-How's [specific day/time]?
+¿Cómo está [día/hora específica]?
 
-[Your Name]
-[Phone number - make it easy]
+[Tu nombre]
+[Número de teléfono: hazlo fácil]
+
 ```
 
 ---
 
-### Direct Ask Frameworks
+### Marcos de petición directa
 
 **Option 1: The Specific Time**
-```
-Are you free Tuesday at 2 PM or Wednesday at 10 AM for 15 minutes? I'll send a calendar invite.
+```¿Estás libre el martes a las 14:00 o el miércoles a las 10:00 durante 15 minutos? Enviaré una invitación de calendario.
+
 ```
 
 **Option 2: The Open-Ended**
-```
-What does your calendar look like next week? Happy to work around your schedule.
+```¿Cómo ve tu calendario la próxima semana? Feliz de trabajar según su horario.
+
 ```
 
 **Option 3: The Low-Commitment**
-```
-Want to start with a 10-minute screen share? I can show you [specific thing] and you can decide if it's worth exploring more.
+```¿Quieres empezar compartiendo pantalla durante 10 minutos? Puedo mostrarte [cosa específica] y tú puedes decidir si vale la pena explorar más.
+
 ```
 
 ---
@@ -438,65 +437,63 @@ Want to start with a 10-minute screen share? I can show you [specific thing] and
 **Goal**: Final attempt with FOMO and respect
 **Subject**: "Should I close your file?"
 
-### Email Body
+### Cuerpo del email
 
-```
-[First Name],
+```[Nombre],
 
-I'm going to assume [topic] isn't a priority right now, and that's totally fine.
+Voy a asumir que [tema] no es una prioridad en este momento, y eso está totalmente bien.
 
-I'll close your file on my end unless I hear otherwise.
+Cerraré su expediente por mi parte a menos que escuche lo contrario.
 
-For what it's worth, we typically see the best results when [time-sensitive reason], so if you do want to revisit this in the future, might be worth a quick conversation now.
+Por si sirve de algo, normalmente vemos los mejores resultados cuando [motivo urgente], por lo que si desea volver a visitar esto en el futuro, podría valer la pena una conversación rápida ahora.
 
-But no worries either way—appreciate your time.
+Pero no te preocupes de ninguna manera: aprecia tu tiempo.
 
-[Your Name]
+[Tu nombre]
 
-P.S. - If there's someone else at [their company] I should be talking to about this instead, happy to redirect.
+P.D. - Si hay alguien más en [su empresa] con quien debería hablar sobre esto, estaré encantado de redireccionarlo.
+
 ```
 
 ---
 
-### Breakup Email Variations
+### Variaciones de email de cierre
 
 **Option 1: The FOMO**
-```
-Subject: "Taking you off the list"
+```Asunto: "Sacarte de la lista"
 
-[Name], I'll take you off my follow-up list since I haven't heard back.
+[Nombre], lo sacaré de mi lista de seguimiento ya que no he recibido respuesta.
 
-Just FYI—[competitor or similar company] just started implementation this week and they're seeing [early result] already.
+Solo para su información: [competidor o empresa similar] acaba de comenzar la implementación esta semana y ya están viendo [resultado temprano].
 
-If you change your mind in the next quarter, let me know. Otherwise, all the best!
+Si cambia de opinión en el próximo trimestre, hágamelo saber. De lo contrario, ¡todo lo mejor!
+
 ```
 
 **Option 2: The Permission**
-```
-Subject: "Is this a bad time?"
+```Asunto: "¿Es este un mal momento?"
 
-[Name], haven't heard back so I'm assuming this either:
-1. Isn't relevant
-2. Isn't a priority
-3. Bad timing
+[Nombre], no he recibido respuesta, así que supongo lo siguiente:
+1. No es relevante
+2. No es una prioridad
+3. Mal momento
 
-Which is it? If it's #3, when should I check back in?
+¿Cuál es? Si es el número 3, ¿cuándo debo volver a registrarme?
+
 ```
 
 **Option 3: The Referral Ask**
-```
-Subject: "Wrong person?"
+```Asunto: "¿Persona equivocada?"
 
-[Name], clearly I'm not reaching the right person at [Company].
+[Nombre], claramente no me estoy comunicando con la persona adecuada en [Empresa].¿Debería hablar con alguien más sobre [tema]? Feliz de redirigir.
 
-Should I be talking to someone else about [topic]? Happy to redirect.
 ```
 
 ---
 
 ## 🧪 A/B Testing Strategy
 
-### Test Variables
+### Variables de prueba
 
 **Subject Lines** (Test These First):
 - Question vs. Statement
@@ -530,7 +527,7 @@ Winner goes to remaining list
 
 ## 📊 Sequence Performance Metrics
 
-### Benchmarks to Track
+### Benchmarks a seguir
 
 | Metric | Good | Great | Exceptional |
 |--------|------|-------|-------------|
@@ -540,7 +537,7 @@ Winner goes to remaining list
 | Positive Reply % | 40-50% | 50-70% | 70%+ |
 | Meeting Booked % | 1-3% | 3-6% | 6%+ |
 
-### Success Factors
+### Factores de éxito
 
 **High Reply Rates**:
 - ✅ Highly personalized opening line
@@ -597,7 +594,7 @@ Winner goes to remaining list
 7. **The P.S. Works**: PostScripts get read; use for secondary CTA
 8. **Remove Unsubscribes**: No formal unsubscribe needed for 1-to-1 prospecting
 
-### What to Avoid
+### Qué evitar
 
 **Spam Trigger Words**:
 - "Free", "Limited time", "Act now"
@@ -633,65 +630,67 @@ Before launching your sequence:
 
 ## 🎬 Quick-Start Templates
 
-### SaaS Sales Sequence
+### Secuencia comercial SaaS
+```Correo electrónico 1: "Pregunta rápida sobre la [métrica de crecimiento] de [Empresa]"
+Correo electrónico 2: "Cómo [competidor] aumentó [métrica] en un X%"
+Correo electrónico 3: "Ángulo diferente: [Punto de dolor alternativo]"
+Correo electrónico 4: "[Mutual Connection] me sugirió que me comunicara"
+Correo electrónico 5: "Recurso gratuito: informe comparativo [de la industria]"
+Correo electrónico 6: "Vayamos al grano: ¿demostración de 15 minutos?"
+Correo electrónico 7: "¿Debo cerrar su archivo?"
+
 ```
-Email 1: "Quick question about [Company]'s [growth metric]"
-Email 2: "How [Competitor] increased [metric] by X%"
-Email 3: "Different angle: [Alternative pain point]"
-Email 4: "[Mutual Connection] suggested I reach out"
-Email 5: "Free resource: [Industry] benchmark report"
-Email 6: "Let's cut to the chase: 15 min demo?"
-Email 7: "Should I close your file?"
-```
+
 
 ### Agency/Services Sequence
+```Correo electrónico 1: "Vi tu [logro reciente], trabajo impresionante"
+Correo electrónico 2: "Estudio de caso: resultados de [cliente similar]"
+Correo electrónico 3: "Idea rápida para [su desafío específico]"
+Correo electrónico 4: "¿Qué está haciendo [su competidor] de manera diferente?"
+Correo electrónico 5: "Auditoría sin condiciones de [lo suyo]"
+Correo electrónico 6: "¿15 minutos para compartir nuestro enfoque?"
+Correo electrónico 7: "¿Es este un mal momento?"
+
 ```
-Email 1: "Saw your [recent achievement], impressive work"
-Email 2: "Case study: [Similar client] results"
-Email 3: "Quick idea for [their specific challenge]"
-Email 4: "What [their competitor] is doing differently"
-Email 5: "No-strings-attached audit of [their thing]"
-Email 6: "15 minutes to share our approach?"
-Email 7: "Is this a bad time?"
-```
+
 
 ### Partnership/Referral Sequence
-```
-Email 1: "[Mutual contact] suggested we connect"
-Email 2: "Potential win-win for both our audiences"
-Email 3: "How [similar partner] approach worked"
-Email 4: "Quick question about your [partnership program]"
-Email 5: "Is this worth exploring?"
-```
+```Correo electrónico 1: "[Contacto mutuo] sugirió que nos conectemos"
+Correo electrónico 2: "Posible beneficio mutuo para ambas audiencias"
+Correo electrónico 3: "Cómo funcionó el enfoque de [socio similar]"
+Correo electrónico 4: "Pregunta rápida sobre su [programa de asociación]"
+Correo electrónico 5: "¿Vale la pena explorar esto?"
 
 ```
 
-### Best Practices
+```
 
-1. **Always Personalize the First Line**: Reference something specific about them/their company
-2. **Keep It Short**: The best cold emails are under 100 words
-3. **One Ask, One Email**: Don't bury multiple CTAs
-4. **Respect Replies**: If they say no or ask to stop, honor it immediately
-5. **Test Continuously**: Always be running A/B tests on some variable
-6. **Follow-Up Matters**: 80% of responses come from emails 3-7
+### Mejores prácticas
 
-### Common Use Cases
+1. **Personalice siempre la primera línea**: haga referencia a algo específico sobre ellos o su empresa.
+2. **Sea breve**: los mejores correos electrónicos fríos tienen menos de 100 palabras
+3. **Una pregunta, un correo electrónico**: no ocultes varias llamadas a la acción
+4. **Respetar las respuestas**: si dicen que no o te piden que dejes de hacerlo, respétalo inmediatamente.
+5. **Prueba continuamente**: siempre ejecute pruebas A/B en alguna variable
+6. **El seguimiento importa**: el 80 % de las respuestas provienen de los correos electrónicos 3 a 7
 
-**Trigger Phrases**:
-- "Create a cold email sequence for SaaS prospects"
-- "Write a 7-email sequence for enterprise sales"
-- "Generate outbound emails for [industry] decision makers"
-- "Build a cold email campaign with A/B tests"
+### Casos de uso comunes
 
-**Example Request**:
-> "Create a 7-email cold outreach sequence targeting VPs of Sales at mid-market B2B SaaS companies. Our product is a sales enablement platform that reduces onboarding time. Include A/B subject lines and personalization variables."
+**Frases desencadenantes**:
+- "Crear una secuencia de correo electrónico fría para los clientes potenciales de SaaS"
+- "Escribir una secuencia de 7 correos electrónicos para ventas empresariales"
+- "Generar correos electrónicos salientes para los tomadores de decisiones [de la industria]"
+- "Crea una campaña de correo electrónico en frío con pruebas A/B"
 
-**Response Approach**:
-1. Confirm target audience and value prop
-2. Identify key pain points and social proof
-3. Build sequence with varying angles
-4. Include A/B test recommendations
-5. Provide personalization guidance
-6. Add metrics and optimization tips
+**Solicitud de ejemplo**:
+> "Cree una secuencia de contacto en frío de 7 correos electrónicos dirigida a los vicepresidentes de ventas de empresas SaaS B2B del mercado medio. Nuestro producto es una plataforma de habilitación de ventas que reduce el tiempo de incorporación. Incluya líneas de asunto A/B y variables de personalización".
 
-Remember: The goal of cold email isn't to make the sale—it's to start a conversation!
+**Enfoque de respuesta**:
+1. Confirme el público objetivo y la propuesta de valor.
+2. Identifique los puntos débiles clave y la prueba social.
+3. Secuencia de construcción con diferentes ángulos.
+4. Incluya recomendaciones de pruebas A/B
+5. Proporcionar orientación de personalización
+6. Agregue métricas y consejos de optimización
+
+Recuerde: el objetivo del correo electrónico frío no es realizar la venta, ¡sino iniciar una conversación!

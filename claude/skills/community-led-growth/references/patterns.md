@@ -1,21 +1,21 @@
-# Community-Led Growth
+# Crecimiento liderado por la comunidad
 
-## Patterns
+## Patrones
 
 
 ---
-  #### **Name**
-Ambassador Program Design
-  #### **Description**
-Turning power users into growth engines
-  #### **When To Use**
-When you have passionate users ready to advocate
-  #### **Implementation**
-    ## Ambassador Program Architecture
+  #### **Nombre**
+Diseño del programa de embajadores
+  #### **Descripción**
+Convertir a los usuarios avanzados en motores de crecimiento
+  #### **Cuándo usarlo**
+Cuando tienes usuarios apasionados listos para defender
+  #### **Implementación**
+    ## Arquitectura del programa Ambassador
     
-    ### 1. Ambassador Tiers
-    
-    ```
+    ### 1. Niveles de embajador
+
+```
     Tier 3: Champions (Many)
     - Requirements: Active user, some contribution
     - Benefits: Early access, swag, recognition
@@ -30,92 +30,94 @@ When you have passionate users ready to advocate
     - Requirements: Significant influence
     - Benefits: Above + compensation, strategy input
     - Commitment: 20+ hours/month
-    ```
     
-    ### 2. Selection Criteria
+
+```
+
+### 2. Criterios de selección
     
-    | Criterion | Why | How to Measure |
-    |-----------|-----|----------------|
-    | Product expertise | Can teach others | Support contributions, content |
-    | Audience/reach | Amplification | Followers, engagement rate |
-    | Authenticity | Trusted voice | Natural mentions, sentiment |
-    | Availability | Can commit | Past activity consistency |
+    | Criterio | Por qué | Cómo medir |
+    |-----------|-------------|----------------|
+    | Experiencia en productos | Puede enseñar a otros | Contribuciones de apoyo, contenido |
+    | Audiencia/alcance | Amplificación | Seguidores, tasa de participación |
+    | Autenticidad | Voz confiable | Menciones naturales, sentimiento |
+    | Disponibilidad | Puede cometer | Coherencia de la actividad pasada |
     
-    ### 3. Ambassador Activities
+    ### 3. Actividades del embajador
     
-    **Content Creation**
-    - Blog posts, tutorials, videos
-    - Social media sharing
-    - Product reviews
+    **Creación de contenido**
+    - Publicaciones de blog, tutoriales, vídeos.
+    - Compartir redes sociales
+    - Reseñas de productos
     
-    **Community Building**
-    - Answering questions
-    - Hosting events/meetups
-    - Mentoring new users
+    **Construcción comunitaria**
+    - Responder preguntas
+    - Organizar eventos/reuniones
+    - Tutoría de nuevos usuarios.
     
-    **Product Feedback**
-    - Beta testing
-    - Feature requests
-    - User research participation
+    **Comentarios sobre el producto**
+    - Pruebas beta
+    - Solicitudes de funciones
+    - Participación en la investigación de usuarios.
     
-    **Business Impact**
-    - Referral generation
-    - Case study participation
-    - Speaking engagements
+    **Impacto empresarial**
+    - Generación de referencias
+    - Participación en estudios de caso.
+    - Compromisos para hablar
     
-    ### 4. Ambassador Metrics
+    ### 4. Métricas del embajador
     
-    | Metric | Definition | Target |
+    | Métrica | Definición | Objetivo |
     |--------|------------|--------|
-    | Content pieces | Ambassador-created content/month | 2-4/ambassador |
-    | Referrals | New users from ambassador links | Track individually |
-    | Engagement | Responses, likes, shares | Growing trend |
-    | NPS of ambassadors | Ambassador satisfaction | >70 |
-    | Retention of ambassadors | % active after 6 months | >60% |
+    | Piezas de contenido | Contenido creado por embajadores/mes | 2-4/embajador |
+    | Referencias | Nuevos usuarios desde enlaces de embajadores | Seguimiento individual |
+    | Compromiso | Respuestas, me gusta, acciones | Tendencia creciente |
+    | NPS de embajadores | Satisfacción del embajador | >70 |
+    | Retención de embajadores | % activo después de 6 meses | >60% |
     
-    ### 5. Program Operations
+    ### 5. Operaciones del programa
     
-    **Onboarding (Week 1-2)**
-    - Welcome kit
-    - Platform access
-    - Resource library
-    - Buddy assignment
+    **Incorporación (Semana 1-2)**
+    - Kit de bienvenida
+    - Acceso a la plataforma
+    - Biblioteca de recursos
+    - Asignación de amigos
     
-    **Ongoing Engagement (Monthly)**
-    - Newsletter/updates
-    - Exclusive events
-    - Recognition programs
-    - Feedback sessions
+    **Compromiso continuo (mensual)**
+    - Boletín/actualizaciones
+    - Eventos exclusivos
+    - Programas de reconocimiento
+    - Sesiones de retroalimentación
     
-    **Recognition (Quarterly)**
-    - Top contributor awards
-    - Exclusive experiences
-    - Public appreciation
-    - Compensation review
+    **Reconocimiento (Trimestral)**
+    - Premios al mejor colaborador
+    - Experiencias exclusivas
+    - Apreciación pública
+    - Revisión de compensación
     
 
 ---
-  #### **Name**
-User Group Playbook
-  #### **Description**
-Scaling local/virtual user communities
-  #### **When To Use**
-Building grassroots community presence
-  #### **Implementation**
-    ## User Group Strategy
+  #### **Nombre**
+Guía del grupo de usuarios
+  #### **Descripción**
+Ampliar las comunidades de usuarios locales/virtuales
+  #### **Cuándo usarlo**
+Construir presencia comunitaria de base
+  #### **Implementación**
+    ## Estrategia de grupo de usuarios
     
-    ### 1. User Group Types
+    ### 1. Tipos de grupos de usuarios
     
-    | Type | Format | Best For |
+    | Tipo | Formato | Mejor para |
     |------|--------|----------|
-    | Local meetups | In-person | Geographic density |
-    | Virtual groups | Online | Distributed users |
-    | Industry groups | Mixed | Vertical focus |
-    | Use-case groups | Mixed | Specific workflows |
+    | Reuniones locales | En persona | Densidad geográfica |
+    | Grupos virtuales | En línea | Usuarios distribuidos |
+    | Grupos industriales | Mixto | Enfoque vertical |
+    | Grupos de casos de uso | Mixto | Flujos de trabajo específicos |
     
-    ### 2. User Group Structure
-    
-    ```
+    ### 2. Estructura del grupo de usuarios
+
+```
     Central Program
     ├── Program Manager
     ├── Resources (content, swag, budget)
@@ -125,52 +127,54 @@ Building grassroots community presence
     ├── Group Leader (volunteer)
     ├── Co-organizers (1-3)
     └── Members
-    ```
     
-    ### 3. Group Leader Support
+
+```
+
+### 3. Apoyo al líder del grupo
     
-    **Resources Provided**
-    - Event planning templates
-    - Presentation decks
-    - Swag allocation
-    - Venue sponsorship
-    - Speaker connections
+    **Recursos proporcionados**
+    - Plantillas de planificación de eventos
+    - Plataformas de presentación
+    - Asignación de botín
+    - Patrocinio del lugar
+    - Conexiones de altavoces
     
-    **Recognition**
-    - Leader certification
-    - Exclusive access
-    - Annual summit
-    - Career opportunities
+    **Reconocimiento**
+    - Certificación de líder
+    - Acceso exclusivo
+    - Cumbre anual
+    - Oportunidades profesionales
     
-    ### 4. Event Formats
+    ### 4. Formatos de eventos
     
-    **Beginner-Friendly**
-    - 101 workshops
-    - Show and tell
-    - Office hours
+    **Apto para principiantes**
+    - 101 talleres
+    - Mostrar y contar
+    - Horario de oficina
     
-    **Intermediate**
-    - Deep dives
-    - Use case showcases
-    - Panel discussions
+    **Intermedio**
+    - Inmersiones profundas
+    - Muestras de casos de uso
+    - Paneles de discusión
     
-    **Advanced**
-    - Hackathons
-    - Architecture reviews
-    - Expert roundtables
+    **Avanzado**
+    - Hackatones
+    - Revisiones de arquitectura
+    - Mesas redondas de expertos
     
-    ### 5. Scaling Playbook
+    ### 5. Guía de escalamiento
     
-    | Stage | Groups | Focus |
+    | Etapa | Grupos | Enfoque |
     |-------|--------|-------|
-    | Seed | 1-5 | Validate format, find leaders |
-    | Grow | 5-20 | Playbook, resources, training |
-    | Scale | 20-100 | Self-serve, automation |
-    | Mature | 100+ | Quality, consolidation |
+    | Semilla | 1-5 | Validar formato, encontrar líderes |
+    | Crecer | 5-20 | Manual de estrategias, recursos, formación |
+    | Escala | 20-100 | Autoservicio, automatización |
+    | maduro | 100+ | Calidad, consolidación |
     
-    ### 6. Group Health Metrics
-    
-    ```
+    ### 6. Métricas de salud del grupo
+
+```
     Group Health Score = (
       Meeting frequency × 0.3 +
       Attendance rate × 0.3 +
@@ -181,66 +185,64 @@ Building grassroots community presence
     Healthy: >70
     At risk: 40-70
     Inactive: <40
-    ```
+    ```---
+  #### **Nombre**
+Crecimiento atribuido a la comunidad
+  #### **Descripción**
+Medir el impacto empresarial de la comunidad
+  #### **Cuándo usarlo**
+Demostrar el retorno de la inversión de la comunidad
+  #### **Implementación**
+    ## Modelo de atribución comunitaria
     
+    ### 1. Categorías de atribución
+    
+    **Atribución de adquisición**
+    - Referencia de un miembro de la comunidad.
+    - Conversión de contenido comunitario.
+    - Asistencia al evento → registro
+    - Mención de la comunidad en la encuesta de registro.
+    
+    **Atribución de retención**
+    - Retención de miembros de la comunidad versus no miembros
+    - Tickets de soporte evitados (respuestas de la comunidad)
+    - Adopción de funciones del contenido de la comunidad.
+    
+    **Atribución de expansión**
+    - Ventas adicionales influenciadas por la comunidad.
+    - Expansión de la educación comunitaria.
+    - Venta cruzada de exposición comunitaria.
+    
+    ### 2. Métodos de medición
+    
+    **Atribución directa**
 
----
-  #### **Name**
-Community-Attributed Growth
-  #### **Description**
-Measuring community's business impact
-  #### **When To Use**
-Proving community ROI
-  #### **Implementation**
-    ## Community Attribution Model
-    
-    ### 1. Attribution Categories
-    
-    **Acquisition Attribution**
-    - Referral from community member
-    - Conversion from community content
-    - Event attendance → signup
-    - Community mention in signup survey
-    
-    **Retention Attribution**
-    - Community members vs non-members retention
-    - Support tickets avoided (community answers)
-    - Feature adoption from community content
-    
-    **Expansion Attribution**
-    - Upsells influenced by community
-    - Expansion from community education
-    - Cross-sell from community exposure
-    
-    ### 2. Measurement Methods
-    
-    **Direct Attribution**
-    ```
+```
     Referral codes: Ambassador123 → trackable signup
     UTM parameters: ?ref=community-post-xyz
     Survey responses: "How did you hear about us?"
-    ```
-    
-    **Influence Attribution**
-    ```
+    ```**Atribución de influencia**
+
+```
     Community touchpoint before conversion:
     - Visited community within 30 days of signup
     - Consumed community content before purchase
     - Attended event before expansion
-    ```
-    
-    **Cohort Comparison**
-    ```
+    ```**Comparación de cohortes**
+
+```
     Community members vs non-members:
     - Retention rate (Week 1, Month 1, Month 6)
     - Expansion rate
     - Support ticket volume
     - NPS score
-    ```
     
-    ### 3. ROI Calculation
-    
-    ```
+
+```
+
+### 3. Cálculo del retorno de la inversión
+
+```
     Community Value =
       (Attributed acquisition × CAC saved) +
       (Retention lift × LTV delta) +
@@ -254,155 +256,160 @@ Proving community ROI
       Event cost
     
     ROI = (Value - Cost) / Cost
-    ```
     
-    ### 4. Dashboard Metrics
+
+```
+
+### 4. Métricas del panel
     
-    | Category | Metric | Target |
+    | Categoría | Métrica | Objetivo |
     |----------|--------|--------|
-    | Acquisition | Community-attributed signups | X/month |
-    | Retention | Member vs non-member retention | +20% |
-    | Support | Questions answered in community | 30% of volume |
-    | Content | Community content views | Growing |
-    | Advocacy | Net Promoter Score (members) | >60 |
+    | Adquisición | Registros atribuidos a la comunidad | X/mes |
+    | Retención | Retención de miembros versus no miembros | +20% |
+    | Soporte | Preguntas respondidas en comunidad | 30% del volumen |
+    | Contenido | Vistas de contenido de la comunidad | Creciendo |
+    | Promoción | Net Promoter Score (miembros) | >60 |
     
 
 ---
-  #### **Name**
-Community Content Engine
-  #### **Description**
-User-generated content for growth
-  #### **When To Use**
-Leveraging community for content
-  #### **Implementation**
-    ## Community Content Strategy
+  #### **Nombre**
+Motor de contenido comunitario
+  #### **Descripción**
+Contenido generado por el usuario para el crecimiento
+  #### **Cuándo usarlo**
+Aprovechar la comunidad para el contenido
+  #### **Implementación**
+    ## Estrategia de contenido comunitario
     
-    ### 1. Content Types from Community
+    ### 1. Tipos de contenido de la comunidad
     
-    **User-Generated Content**
-    - Tutorials and how-tos
-    - Use case showcases
-    - Tips and tricks
-    - Templates and examples
+    **Contenido generado por el usuario**
+    - Tutoriales y procedimientos
+    - Muestras de casos de uso
+    - Consejos y trucos
+    - Plantillas y ejemplos.
     
-    **Collaborative Content**
-    - Community + company co-creation
-    - Expert interviews
-    - Panel discussions
-    - Community spotlights
+    **Contenido colaborativo**
+    - Cocreación comunidad + empresa
+    - Entrevistas a expertos
+    - Paneles de discusión
+    - Focos comunitarios
     
-    **Discussion Content**
-    - Forum threads (SEO value)
-    - Q&A (searchable knowledge)
-    - Best practice threads
-    - Feature discussions
+    **Contenido de la discusión**
+    - Hilos del foro (valor SEO)
+    - Preguntas y respuestas (conocimiento que se puede buscar)
+    - Hilos de mejores prácticas
+    - Discusiones de características
     
-    ### 2. Content Incentive Programs
+    ### 2. Programas de incentivos de contenido
     
-    | Program | Incentive | Content Type |
+    | Programa | Incentivo | Tipo de contenido |
     |---------|-----------|--------------|
-    | Write for us | Payment + exposure | Long-form articles |
-    | Tutorial bounty | Swag + credit | Tutorials |
-    | Template contest | Prize + feature | Templates |
-    | Share your story | Recognition | Case studies |
+    | Escribe para nosotros | Pago + exposición | Artículos extensos |
+    | Recompensa de tutoriales | Botín + crédito | Tutoriales |
+    | Concurso de plantillas | Premio + reportaje | Plantillas |
+    | Comparte tu historia | Reconocimiento | Estudios de caso |
     
-    ### 3. Content Quality Framework
+    ### 3. Marco de calidad del contenido
     
-    **Tier 1: Curated (High Bar)**
-    - Edited and reviewed
-    - Published on main channels
-    - Company branding
+    **Nivel 1: Seleccionado (barra alta)**
+    - Editado y revisado
+    - Publicado en los principales canales.
+    - Marca de la empresa
     
-    **Tier 2: Featured (Medium Bar)**
-    - Light review
-    - Community showcase
-    - Author credit
+    **Nivel 2: Destacado (barra mediana)**
+    - Revisión ligera
+    - escaparate comunitario
+    - Crédito del autor
     
-    **Tier 3: Open (Low Bar)**
-    - Community guidelines only
-    - Forum/discussion format
-    - Peer moderation
+    **Nivel 3: Abierto (barra baja)**
+    - Solo pautas comunitarias
+    - Formato de foro/discusión
+    - Moderación de pares
     
-    ### 4. SEO Value Extraction
-    
-    ```
+    ### 4. Extracción de valor SEO
+
+```
     Community content for SEO:
     1. Q&A threads → FAQ pages
     2. Discussion highlights → Blog posts
     3. Tutorial collection → Resource hub
     4. Problem-solution pairs → Landing pages
-    ```
     
-    ### 5. Content Metrics
+
+```
+
+### 5. Métricas de contenido
     
-    | Metric | Definition | Target |
+    | Métrica | Definición | Objetivo |
     |--------|------------|--------|
-    | UGC volume | Pieces created/month | Growing |
-    | Content quality | Engagement rate | >5% |
-    | SEO traffic | Traffic from community content | Growing |
-    | Conversion | Content → Signup rate | >1% |
+    | Volumen CGU | Piezas creadas/mes | Creciendo |
+    | Calidad del contenido | Tasa de participación | >5% |
+    | Tráfico SEO | Tráfico procedente del contenido de la comunidad | Creciendo |
+    | Conversión | Contenido → Tasa de registro | >1% |
     
 
 ---
-  #### **Name**
-Community Platform Architecture
-  #### **Description**
-Choosing and structuring community tools
-  #### **When To Use**
-Setting up community infrastructure
-  #### **Implementation**
-    ## Platform Decision Framework
+  #### **Nombre**
+Arquitectura de plataforma comunitaria
+  #### **Descripción**
+Elegir y estructurar herramientas comunitarias.
+  #### **Cuándo usarlo**
+Configuración de infraestructura comunitaria
+  #### **Implementación**
+    ## Marco de decisión de la plataforma
     
-    ### 1. Platform Options
+    ### 1. Opciones de plataforma
     
-    | Platform Type | Examples | Best For |
+    | Tipo de plataforma | Ejemplos | Mejor para |
     |---------------|----------|----------|
-    | Forum-style | Discourse, Circle | Deep discussions |
-    | Chat-style | Discord, Slack | Real-time engagement |
-    | Q&A-style | Stack Overflow-like | Support/knowledge |
-    | Social-style | Custom, Tribe | Social networking |
-    | Hybrid | Bettermode, Khoros | Multiple use cases |
+    | Estilo foro | Discurso, Círculo | Discusiones profundas |
+    | Estilo chat | Discordia, holgura | Compromiso en tiempo real |
+    | Estilo preguntas y respuestas | Tipo de desbordamiento de pila | Soporte/conocimiento |
+    | Estilo social | Personalizado, Tribu | Redes sociales |
+    | Híbrido | Mejor modo, Khoros | Múltiples casos de uso |
     
-    ### 2. Selection Criteria
+    ### 2. Criterios de selección
     
-    **Community Needs**
-    - Real-time vs async preference
-    - Content longevity importance
-    - Structure vs spontaneity
-    - Technical vs general audience
+    **Necesidades de la comunidad**
+    - Preferencia en tiempo real frente a asíncrona
+    - Importancia de la longevidad del contenido.
+    - Estructura vs espontaneidad
+    - Público técnico vs público general
     
-    **Business Needs**
-    - SSO/integration requirements
-    - Analytics needs
-    - Moderation scale
-    - Budget constraints
+    **Necesidades comerciales**
+    - SSO/requisitos de integración
+    - Necesidades analíticas
+    - Escala de moderación
+    - Restricciones presupuestarias
     
-    ### 3. Common Architectures
+    ### 3. Arquitecturas comunes
     
-    **Developer Community**
-    ```
+    **Comunidad de desarrolladores**
+
+```
     Discord (real-time chat)
     + GitHub Discussions (code-related)
     + Discourse (long-form)
-    ```
-    
-    **SaaS Community**
-    ```
+    ```**Comunidad SaaS**
+
+```
     Circle or Bettermode (primary)
     + Slack connect (customers)
     + Events platform
-    ```
-    
-    **Enterprise Community**
-    ```
+    ```**Comunidad empresarial**
+
+```
     Custom or Khoros (branded)
     + SSO integration
     + CRM connection
-    ```
     
-    ### 4. Integration Architecture
-    
-    ```
+
+```
+
+### 4. Arquitectura de integración
+
+```
     Community Platform
     ├── SSO (product login)
     ├── CRM (member data)
@@ -410,96 +417,97 @@ Setting up community infrastructure
     ├── Analytics (engagement tracking)
     ├── Support (ticket deflection)
     └── Events (registration)
-    ```
     
-    ### 5. Migration Considerations
+
+```
+
+### 5. Consideraciones migratorias
     
-    | From | To | Considerations |
+    | Desde | A | Consideraciones |
     |------|----|----------------|
-    | Free Slack | Paid platform | Content export, member migration |
-    | Facebook | Owned platform | Reduced reach, better data |
-    | Forum | Chat | Different engagement patterns |
+    | Holgura gratuita | Plataforma paga | Exportación de contenidos, migración de miembros |
+    | Facebook | Plataforma propia | Alcance reducido, mejores datos |
+    | Foro | Charla | Diferentes patrones de participación |
     
 
-## Anti-Patterns
+## Antipatrones
 
-
----
-  #### **Name**
-Community Theater
-  #### **Description**
-Launching community without strategy
-  #### **Why Bad**
-    Empty community is worse than none.
-    Signals neglect to users.
-    Costs resources without return.
-    
-  #### **What To Do Instead**
-    Start with 50-100 engaged users.
-    Validate community need first.
-    Seed with content and activity.
-    
 
 ---
-  #### **Name**
-Corporate Capture
-  #### **Description**
-Making community feel like marketing channel
-  #### **Why Bad**
-    Users detect inauthenticity.
-    Kills organic engagement.
-    Drives away best advocates.
+  #### **Nombre**
+Teatro comunitario
+  #### **Descripción**
+Lanzamiento de comunidad sin estrategia
+  #### **Por qué es malo**
+    Una comunidad vacía es peor que ninguna.
+    Señales de descuido a los usuarios.
+    Cuesta recursos sin retorno.
     
-  #### **What To Do Instead**
-    Community-first, company-second.
-    Let users lead discussions.
-    Promotional content < 10%.
+  #### **Qué hacer en su lugar**
+    Comience con entre 50 y 100 usuarios comprometidos.
+    Primero, valide la necesidad de la comunidad.
+    Semilla con contenido y actividad.
     
 
 ---
-  #### **Name**
-Vanity Metrics Focus
-  #### **Description**
-Optimizing member count over engagement
-  #### **Why Bad**
-    Large inactive communities look bad.
-    Engagement rate crashes.
-    No business impact.
+  #### **Nombre**
+Captura corporativa
+  #### **Descripción**
+Hacer que la comunidad se sienta como un canal de marketing
+  #### **Por qué es malo**
+    Los usuarios detectan falta de autenticidad.
+    Mata el compromiso orgánico.
+    Ahuyenta a los mejores defensores.
     
-  #### **What To Do Instead**
-    Focus on engagement rate.
-    Quality > quantity.
-    Measure business outcomes.
-    
-
----
-  #### **Name**
-Platform Hopping
-  #### **Description**
-Constantly changing community platforms
-  #### **Why Bad**
-    Loses community history.
-    Frustrates members.
-    Resets growth.
-    
-  #### **What To Do Instead**
-    Choose platform for 3+ years.
-    Migrate only with clear ROI.
-    Preserve content when moving.
+  #### **Qué hacer en su lugar**
+    La comunidad primero, la empresa después.
+    Permita que los usuarios lideren las discusiones.
+    Contenido promocional < 10%.
     
 
 ---
-  #### **Name**
-Ignoring Power Users
-  #### **Description**
-No special treatment for top contributors
-  #### **Why Bad**
-    Power users drive majority of value.
-    They leave without recognition.
-    Community becomes generic.
+  #### **Nombre**
+Enfoque en métricas personalizadas
+  #### **Descripción**
+Optimizar el recuento de miembros sobre la participación
+  #### **Por qué es malo**
+    Las grandes comunidades inactivas tienen mala pinta.
+    La tasa de participación cae.
+    Sin impacto empresarial.
     
-  #### **What To Do Instead**
-    Identify and nurture top 10%.
-    Create tiered recognition.
-    Give exclusive access and benefits.
+  #### **Qué hacer en su lugar**
+    Centrarse en la tasa de participación.
+    Calidad > cantidad.
+    Medir los resultados del negocio.
     
+
+---
+  #### **Nombre**
+Salto de plataforma
+  #### **Descripción**
+Plataformas comunitarias en constante cambio
+  #### **Por qué es malo**
+    Pierde la historia de la comunidad.
+    Frustra a los miembros.
+    Restablece el crecimiento.
+    
+  #### **Qué hacer en su lugar**
+    Elija plataforma por más de 3 años.
+    Migre solo con un retorno de la inversión claro.
+    Conservar el contenido al moverse.
+    
+
+---
+  #### **Nombre**
+Ignorar a los usuarios avanzados
+  #### **Descripción**
+No hay trato especial para los principales contribuyentes
+  #### **Por qué es malo**
+    Los usuarios avanzados generan la mayor parte del valor.
+    Se van sin reconocimiento.
+    La comunidad se vuelve genérica.
+    
+  #### **Qué hacer en su lugar**
+    Identificar y nutrir al 10% superior.
+    Cree reconocimiento escalonado.
+    Dar acceso y beneficios exclusivos.

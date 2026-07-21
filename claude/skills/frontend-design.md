@@ -1,42 +1,42 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
+description: Crear interfaces frontend distintivas y de calidad production-grade. Usar cuando el usuario pida construir componentes web, páginas, artefactos, pósters o aplicaciones (sitios web, landing pages, dashboards, componentes React, layouts HTML/CSS, o al estilizar/embellecer cualquier UI web). Genera código y diseño UI creativo y pulido que evita estéticas genéricas de IA.
 license: Complete terms in LICENSE.txt
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+Esta skill guía la creación de interfaces frontend distintivas y de calidad production-grade que evitan estéticas genéricas de "AI slop". Implementa código funcional real con atención excepcional a los detalles estéticos y elecciones creativas.
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+El usuario proporciona requisitos frontend: un componente, página, aplicación o interfaz a construir. Puede incluir contexto sobre propósito, audiencia o restricciones técnicas.
 
-## Design Thinking
+## Pensamiento de diseño
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+Antes de codificar, entiende el contexto y comprométete con una dirección estética AUDAZ:
+- **Propósito**: ¿Qué problema resuelve esta interfaz? ¿Quién la usa?
+- **Tono**: Elige un extremo: brutalmente minimal, maximalista caótico, retro-futurista, orgánico/natural, lujo/refinado, lúdico/juguete, editorial/revista, brutalista/crudo, art deco/geométrico, suave/pastel, industrial/utilitario, etc. Hay muchos estilos. Úsalos como inspiración pero diseña uno fiel a la dirección estética.
+- **Restricciones**: Requisitos técnicos (framework, rendimiento, accesibilidad).
+- **Diferenciación**: ¿Qué hace esto INOLVIDABLE? ¿Cuál es la única cosa que alguien recordará?
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+**CRÍTICO**: Elige una dirección conceptual clara y ejecútala con precisión. Tanto el maximalismo audaz como el minimalismo refinado funcionan; la clave es la intencionalidad, no la intensidad.
 
-Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
-- Production-grade and functional
-- Visually striking and memorable
-- Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+Luego implementa código funcional (HTML/CSS/JS, React, Vue, etc.) que sea:
+- De calidad production-grade y funcional
+- Visualmente impactante y memorable
+- Cohesivo con un punto de vista estético claro
+- Meticulosamente refinado en cada detalle
 
-## Frontend Aesthetics Guidelines
+## Directrices de estética frontend
 
-Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+Enfócate en:
+- **Tipografía**: Elige fuentes bellas, únicas e interesantes. Evita genéricas como Arial e Inter; opta por opciones distintivas que eleven la estética; elecciones tipográficas inesperadas y con carácter. Combina una display font distintiva con una body font refinada.
+- **Color y tema**: Comprométete con una estética cohesiva. Usa CSS variables para consistencia. Colores dominantes con acentos marcados superan paletas tímidas y uniformes.
+- **Motion**: Usa animaciones para efectos y micro-interacciones. Prioriza soluciones solo CSS para HTML. Usa la librería Motion para React cuando esté disponible. Enfócate en momentos de alto impacto: una carga de página bien orquestada con reveals escalonados (animation-delay) genera más deleite que micro-interacciones dispersas. Usa scroll-triggering y estados hover que sorprendan.
+- **Composición espacial**: Layouts inesperados. Asimetría. Superposición. Flujo diagonal. Elementos que rompen la grid. Espacio negativo generoso O densidad controlada.
+- **Fondos y detalles visuales**: Crea atmósfera y profundidad en lugar de colores sólidos por defecto. Añade efectos y texturas contextuales que encajen con la estética general. Aplica formas creativas como gradient meshes, texturas de ruido, patrones geométricos, transparencias en capas, sombras dramáticas, bordes decorativos, cursores personalizados y overlays de grain.
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+NUNCA uses estéticas genéricas generadas por IA como familias tipográficas sobreusadas (Inter, Roboto, Arial, system fonts), esquemas de color cliché (especialmente gradientes morados sobre fondo blanco), layouts y patrones de componentes predecibles, y diseño cookie-cutter sin carácter específico del contexto.
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+Interpreta creativamente y haz elecciones inesperadas que se sientan genuinamente diseñadas para el contexto. Ningún diseño debe ser igual. Varía entre temas claros y oscuros, distintas fuentes, distintas estéticas. NUNCA converjas en elecciones comunes (Space Grotesk, por ejemplo) entre generaciones.
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+**IMPORTANTE**: Ajusta la complejidad de implementación a la visión estética. Diseños maximalistas necesitan código elaborado con animaciones y efectos extensos. Diseños minimalistas o refinados necesitan contención, precisión y atención cuidadosa al espaciado, tipografía y detalles sutiles. La elegancia viene de ejecutar bien la visión.
 
-Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+Recuerda: Claude es capaz de trabajo creativo extraordinario. No te contengas; muestra lo que realmente se puede crear al pensar fuera de lo común y comprometerse plenamente con una visión distintiva.

@@ -1,8 +1,8 @@
-# Workflow Patterns
+# Patrones de flujo de trabajo
 
-## Sequential Workflows
+## Flujos de trabajo secuenciales
 
-For complex tasks, break operations into clear, sequential steps. It is often helpful to give Claude an overview of the process towards the beginning of SKILL.md:
+Para tareas complejas, divida las operaciones en pasos claros y secuenciales. A menudo resulta útil brindarle a Claude una descripción general del proceso hacia el comienzo de SKILL.md:
 
 ```markdown
 Filling a PDF form involves these steps:
@@ -14,9 +14,9 @@ Filling a PDF form involves these steps:
 5. Verify output (run verify_output.py)
 ```
 
-## Conditional Workflows
+## Flujos de trabajo condicionales
 
-For tasks with branching logic, guide Claude through decision points:
+Para tareas con lógica de ramificación, guíe a Claude a través de los puntos de decisión:
 
 ```markdown
 1. Determine the modification type:

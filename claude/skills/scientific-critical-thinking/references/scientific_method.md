@@ -1,169 +1,167 @@
-# Scientific Method Core Principles
+# Principios básicos del método científico
 
-## Fundamental Principles
+## Principios fundamentales
 
-### 1. Empiricism
-- Knowledge derives from observable, measurable evidence
-- Claims must be testable through observation or experiment
-- Subjective experience alone is insufficient for scientific conclusions
+### 1. Empirismo
+- El conocimiento se deriva de evidencia observable y mensurable.
+- Las afirmaciones deben ser comprobables mediante observación o experimento.
+- La experiencia subjetiva por sí sola no es suficiente para sacar conclusiones científicas.
 
-### 2. Falsifiability (Popper's Criterion)
-- A hypothesis must be capable of being proven false
-- Unfalsifiable claims are not scientific (e.g., "invisible, undetectable forces")
-- Good hypotheses make specific, testable predictions
+### 2. Falsificabilidad (Criterio de Popper)
+- Una hipótesis debe poder demostrarse como falsa.
+- Las afirmaciones infalsables no son científicas (por ejemplo, "fuerzas invisibles e indetectables")
+- Las buenas hipótesis hacen predicciones específicas y comprobables.
 
-### 3. Reproducibility
-- Results must be replicable by independent researchers
-- Methods must be described with sufficient detail for replication
-- Single studies are rarely definitive; replication strengthens confidence
+### 3. Reproducibilidad
+- Los resultados deben ser replicables por investigadores independientes.
+- Los métodos deben describirse con suficiente detalle para su replicación.
+- Los estudios individuales rara vez son definitivos; la replicación fortalece la confianza
 
-### 4. Parsimony (Occam's Razor)
-- Prefer simpler explanations over complex ones when both fit the data
-- Don't multiply entities unnecessarily
-- Extraordinary claims require extraordinary evidence
+### 4. Parsimonia (La Navaja de Occam)
+- Prefiere explicaciones más simples a las complejas cuando ambas se ajustan a los datos.
+- No multipliques entidades innecesariamente
+- Las afirmaciones extraordinarias requieren pruebas extraordinarias
 
-### 5. Systematic Observation
-- Use standardized, rigorous methods
-- Control for confounding variables
-- Minimize observer bias through blinding and protocols
+### 5. Observación sistemática
+- Utilizar métodos estandarizados y rigurosos.
+- Control de variables de confusión
+- Minimizar el sesgo del observador mediante cegamiento y protocolos.
 
-## The Scientific Process
+## El proceso científico
 
-### 1. Question Formation
-- Identify a specific, answerable question
-- Ensure the question is within the scope of scientific inquiry
-- Consider whether current methods can address the question
+### 1. Formación de preguntas
+- Identificar una pregunta específica que pueda responderse.
+- Asegurar que la pregunta esté dentro del alcance de la investigación científica.
+- Considerar si los métodos actuales pueden abordar la cuestión.
 
-### 2. Literature Review
-- Survey existing knowledge
-- Identify gaps and contradictions
-- Build on previous work rather than reinventing
+### 2. Revisión de la literatura
+- Encuesta de conocimientos existentes.
+- Identificar lagunas y contradicciones.
+- Aprovechar el trabajo anterior en lugar de reinventarlo.
 
-### 3. Hypothesis Development
-- State a clear, testable prediction
-- Define variables operationally
-- Specify the expected relationship between variables
+### 3. Desarrollo de hipótesis
+- Establecer una predicción clara y comprobable.
+- Definir variables operativamente.
+- Especificar la relación esperada entre variables.
 
-### 4. Experimental Design
-- Choose appropriate methodology
-- Identify independent and dependent variables
-- Control confounding variables
-- Select appropriate sample size and population
-- Plan statistical analyses in advance
+### 4. Diseño experimental
+- Elija la metodología adecuada
+- Identificar variables independientes y dependientes.
+- Controlar variables de confusión.
+- Seleccionar el tamaño de muestra y la población adecuados.
+- Planificar análisis estadísticos con antelación.
 
-### 5. Data Collection
-- Follow protocols consistently
-- Record all observations, including unexpected results
-- Maintain detailed lab notebooks or data logs
-- Use validated measurement instruments
+### 5. Recopilación de datos
+- Seguir protocolos consistentemente
+- Registre todas las observaciones, incluidos los resultados inesperados.
+- Mantener cuadernos de laboratorio detallados o registros de datos.
+- Utilizar instrumentos de medición validados.
 
-### 6. Analysis
-- Apply appropriate statistical methods
-- Test assumptions of statistical tests
-- Consider effect size, not just significance
-- Look for alternative explanations
+### 6. Análisis
+- Aplicar métodos estadísticos adecuados
+- Supuestos de prueba de pruebas estadísticas.
+- Considere el tamaño del efecto, no sólo la importancia.
+- Buscar explicaciones alternativas.
 
-### 7. Interpretation
-- Distinguish between correlation and causation
-- Acknowledge limitations
-- Consider alternative interpretations
-- Avoid overgeneralizing beyond the data
+### 7. Interpretación
+- Distinguir entre correlación y causalidad.
+- Reconocer limitaciones
+- Considerar interpretaciones alternativas.
+- Evite generalizar demasiado más allá de los datos.
 
-### 8. Communication
-- Report methods transparently
-- Include negative results
-- Acknowledge conflicts of interest
-- Make data and code available when possible
+### 8. Comunicación
+- Informar métodos de forma transparente.
+- Incluir resultados negativos
+- Reconocer conflictos de intereses.
+- Hacer que los datos y el código estén disponibles cuando sea posible.
 
-## Critical Evaluation Criteria
+## Criterios críticos de evaluación
 
-### When Reviewing Scientific Work, Ask:
+### Al revisar el trabajo científico, pregunte:
 
-**Validity Questions:**
-- Does the study measure what it claims to measure?
-- Are the methods appropriate for the research question?
-- Were controls adequate?
-- Could confounding variables explain the results?
+**Preguntas de validez:**
+- ¿El estudio mide lo que dice medir?
+- ¿Son los métodos apropiados para la pregunta de investigación?
+- ¿Fueron los controles adecuados?
+- ¿Podrían las variables de confusión explicar los resultados?
 
-**Reliability Questions:**
-- Are measurements consistent?
-- Would the study produce similar results if repeated?
-- Are inter-rater reliability and measurement precision reported?
+**Preguntas sobre confiabilidad:**
+- ¿Son consistentes las mediciones?
+- ¿El estudio produciría resultados similares si se repitiera?
+- ¿Se informa la confiabilidad entre evaluadores y la precisión de las mediciones?
 
-**Generalizability Questions:**
-- Is the sample representative of the target population?
-- Are the conditions realistic or artificial?
-- Do the results apply beyond the specific context?
+**Preguntas de generalización:**
+- ¿Es la muestra representativa de la población objetivo?
+- ¿Las condiciones son realistas o artificiales?
+- ¿Los resultados se aplican más allá del contexto específico?
 
-**Statistical Questions:**
-- Is the sample size adequate for the analysis?
-- Are the statistical tests appropriate?
-- Are effect sizes reported alongside p-values?
-- Were multiple comparisons corrected?
+**Preguntas estadísticas:**
+- ¿El tamaño de la muestra es adecuado para el análisis?
+- ¿Son apropiadas las pruebas estadísticas?
+- ¿Se informan los tamaños del efecto junto con los valores p?
+- ¿Se corrigieron las comparaciones múltiples?
 
-**Logical Questions:**
-- Do the conclusions follow from the data?
-- Are alternative explanations considered?
-- Are causal claims supported by the study design?
-- Are limitations acknowledged?
+**Preguntas lógicas:**
+- ¿Las conclusiones se derivan de los datos?
+- ¿Se consideran explicaciones alternativas?
+- ¿Las afirmaciones causales están respaldadas por el diseño del estudio?
+- ¿Se reconocen las limitaciones?
 
-## Red Flags in Scientific Claims
+## Banderas rojas en afirmaciones científicas
 
-1. **Cherry-picking data** - Highlighting only supporting evidence
-2. **Moving goalposts** - Changing predictions after seeing results
-3. **Ad hoc hypotheses** - Adding explanations to rescue a failed prediction
-4. **Appeal to authority** - "Expert X says" without evidence
-5. **Anecdotal evidence** - Relying on personal stories over systematic data
-6. **Correlation implies causation** - Confusing association with causality
-7. **Post hoc rationalization** - Explaining results after the fact without prediction
-8. **Ignoring base rates** - Not considering prior probability
-9. **Confirmation bias** - Seeking only evidence that supports beliefs
-10. **Publication bias** - Only positive results get published
+1. **Datos seleccionados**: resaltando solo la evidencia que lo respalda
+2. **Mover postes** - Cambiar predicciones después de ver los resultados
+3. **Hipótesis ad hoc**: agregar explicaciones para rescatar una predicción fallida
+4. **Apelación a la autoridad** - "El experto X dice" sin pruebas
+5. **Evidencia anecdótica** - Confiar en historias personales en lugar de datos sistemáticos
+6. **Correlación implica causalidad** - Asociación confusa con causalidad
+7. **Racionalización post hoc**: explicación de los resultados a posteriori sin predicción
+8. **Ignorar las tasas base** - No considerar la probabilidad previa
+9. **Sesgo de confirmación**: buscar únicamente evidencia que respalde las creencias
+10. **Sesgo de publicación**: solo se publican los resultados positivos
 
-## Standards for Causal Inference
+## Estándares para la inferencia causal### Criterios de Bradford Hill (adaptado)
+1. **Fuerza**: las asociaciones fuertes son más probablemente causales
+2. **Consistencia** - Observaciones repetidas por diferentes investigadores
+3. **Especificidad**: resultados específicos de causas específicas
+4. **Temporalidad** - La causa precede al efecto (esencial)
+5. **Gradiente biológico** - Relación dosis-respuesta
+6. **Plausibilidad** - Coherente con el conocimiento existente
+7. **Coherencia** - Consistente con otras evidencias
+8. **Experimento**: la evidencia experimental respalda la causalidad
+9. **Analogía**: existen relaciones causa-efecto similares
 
-### Bradford Hill Criteria (adapted)
-1. **Strength** - Strong associations are more likely causal
-2. **Consistency** - Repeated observations by different researchers
-3. **Specificity** - Specific outcomes from specific causes
-4. **Temporality** - Cause precedes effect (essential)
-5. **Biological gradient** - Dose-response relationship
-6. **Plausibility** - Coherent with existing knowledge
-7. **Coherence** - Consistent with other evidence
-8. **Experiment** - Experimental evidence supports causation
-9. **Analogy** - Similar cause-effect relationships exist
+### Establecer la causalidad requiere:
+- Precedencia temporal (causa antes que efecto)
+- Covariación (correlación causa y efecto)
+- Eliminación de explicaciones alternativas.
+- Idealmente: la manipulación experimental muestra que la causa produce el efecto.
 
-### Establishing Causation Requires:
-- Temporal precedence (cause before effect)
-- Covariation (cause and effect correlate)
-- Elimination of alternative explanations
-- Ideally: experimental manipulation showing cause produces effect
+## Revisión por pares y consenso científico
 
-## Peer Review and Scientific Consensus
+### Comprender la revisión por pares
+- Filtra errores obvios pero no es perfecto.
+- Los revisores pueden pasar por alto problemas o tener sesgos.
+- Publicado ≠ probado; significa "pasó el escrutinio inicial"
+- Existen mecanismos de retractación para documentos defectuosos.
 
-### Understanding Peer Review
-- Filters obvious errors but isn't perfect
-- Reviewers can miss problems or have biases
-- Published ≠ proven; it means "passed initial scrutiny"
-- Retraction mechanisms exist for flawed papers
+### Consenso científico
+- Surge de la convergencia de múltiples líneas de evidencia independientes.
+- El consenso puede cambiar con nueva evidencia
+- Los estudios individuales rara vez anulan el consenso
+- Considere el peso de la evidencia, no los documentos individuales.
 
-### Scientific Consensus
-- Emerges from convergence of multiple independent lines of evidence
-- Consensus can change with new evidence
-- Individual studies rarely overturn consensus
-- Consider the weight of evidence, not individual papers
+## Principios de ciencia abierta
 
-## Open Science Principles
+### Prácticas de Transparencia
+- Prerregistro de hipótesis y métodos
+- Compartir datos abiertos
+- Código fuente abierto
+- Preimpresiones para una rápida difusión.
+- Informes registrados (revisión por pares antes de la recopilación de datos)
 
-### Transparency Practices
-- Preregistration of hypotheses and methods
-- Open data sharing
-- Open-source code
-- Preprints for rapid dissemination
-- Registered reports (peer review before data collection)
-
-### Why Transparency Matters
-- Reduces publication bias
-- Enables verification
-- Prevents p-hacking and HARKing (Hypothesizing After Results are Known)
-- Accelerates scientific progress
+### Por qué es importante la transparencia
+- Reduce el sesgo de publicación.
+- Permite la verificación
+- Previene el p-hacking y el HARKing (elaboración de hipótesis después de conocer los resultados)
+- Acelera el progreso científico

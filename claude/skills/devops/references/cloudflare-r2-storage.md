@@ -1,23 +1,23 @@
-# Cloudflare R2 Storage
+# Almacenamiento en Cloudflare R2
 
-S3-compatible object storage with zero egress fees.
+Almacenamiento de objetos compatible con S3 sin tarifas de salida.
 
-## Quick Start
+## Inicio rápido
 
-### Create Bucket
+### Crear depósito
 ```bash
 wrangler r2 bucket create my-bucket
 wrangler r2 bucket create my-bucket --location=wnam
 ```
 
-Locations: `wnam`, `enam`, `weur`, `eeur`, `apac`
+Ubicaciones:`wnam`, `enam`, `weur`, `eeur`, `apac`
 
-### Upload Object
+### Cargar objeto
 ```bash
 wrangler r2 object put my-bucket/file.txt --file=./local-file.txt
 ```
 
-### Workers Binding
+### Obligación de trabajadores
 
 **wrangler.toml:**
 ```toml
@@ -26,7 +26,7 @@ binding = "MY_BUCKET"
 bucket_name = "my-bucket"
 ```
 
-**Worker:**
+**Obrero:**
 ```typescript
 // Put
 await env.MY_BUCKET.put('user-uploads/photo.jpg', imageData, {
@@ -69,9 +69,9 @@ if (object) {
 }
 ```
 
-## S3 API Integration
+## Integración de la API de S3
 
-### AWS CLI
+### CLI de AWS
 ```bash
 # Configure
 aws configure
@@ -108,7 +108,7 @@ await s3.send(new PutObjectCommand({
 }));
 ```
 
-### Python (Boto3)
+### Pitón (Boto3)
 ```python
 import boto3
 
@@ -124,9 +124,9 @@ s3.upload_fileobj(file_obj, 'my-bucket', 'file.txt')
 s3.download_file('my-bucket', 'file.txt', './local-file.txt')
 ```
 
-## Multipart Uploads
+## Cargas de varias partes
 
-For files >100MB:
+Para archivos >100 MB:
 
 ```typescript
 const multipart = await env.MY_BUCKET.createMultipartUpload('large-file.mp4');
@@ -139,7 +139,7 @@ const part2 = await multipart.uploadPart(2, chunk2);
 const object = await multipart.complete([part1, part2]);
 ```
 
-### Rclone (Large Files)
+### Rclone (archivos grandes)
 ```bash
 rclone config  # Configure Cloudflare R2
 
@@ -149,21 +149,21 @@ rclone copy large-video.mp4 r2:my-bucket/ \
   --s3-chunk-size=100M
 ```
 
-## Public Buckets
+## Cubos públicos
 
-### Enable Public Access
-1. Dashboard → R2 → Bucket → Settings → Public Access
-2. Add custom domain (recommended) or use r2.dev
+### Habilitar acceso público
+1. Panel de control → R2 → Depósito → Configuración → Acceso público
+2. Agregue un dominio personalizado (recomendado) o use r2.dev
 
-**r2.dev (rate-limited):**
+**r2.dev (velocidad limitada):**
 ```
 https://pub-<hash>.r2.dev/file.txt
 ```
 
-**Custom domain (production):**
-Cloudflare handles DNS/TLS automatically
+**Dominio personalizado (producción):**
+Cloudflare maneja DNS/TLS automáticamente
 
-## CORS Configuration
+## Configuración CORS
 
 ```bash
 wrangler r2 bucket cors put my-bucket --rules '[
@@ -177,7 +177,7 @@ wrangler r2 bucket cors put my-bucket --rules '[
 ]'
 ```
 
-## Lifecycle Rules
+## Reglas del ciclo de vida
 
 ```bash
 wrangler r2 bucket lifecycle put my-bucket --rules '[
@@ -194,7 +194,7 @@ wrangler r2 bucket lifecycle put my-bucket --rules '[
 ]'
 ```
 
-## Event Notifications
+## Notificaciones de eventos
 
 ```bash
 wrangler r2 bucket notification create my-bucket \
@@ -202,11 +202,11 @@ wrangler r2 bucket notification create my-bucket \
   --event-type=object-create
 ```
 
-Supported events: `object-create`, `object-delete`
+Eventos soportados:`object-create`, `object-delete`
 
-## Data Migration
+## Migración de datos
 
-### Sippy (Incremental)
+### Sippy (incremental)
 ```bash
 wrangler r2 bucket sippy enable my-bucket \
   --provider=aws \
@@ -216,65 +216,65 @@ wrangler r2 bucket sippy enable my-bucket \
   --secret-access-key=$AWS_SECRET
 ```
 
-Objects migrate on first request.
+Los objetos migran en la primera solicitud.
 
-### Super Slurper (Bulk)
-Use dashboard for one-time complete migration from AWS, GCS, Azure.
+### Súper Slurper (a granel)
+Utilice el panel para realizar una migración completa por única vez desde AWS, GCS y Azure.
 
-## Best Practices
+## Mejores prácticas
 
-### Performance
-- Use Cloudflare Cache with custom domains
-- Multipart uploads for files >100MB
-- Rclone for batch operations
-- Location hints match user geography
+### Actuación
+- Utilice Cloudflare Cache con dominios personalizados
+- Cargas de varias partes para archivos >100 MB
+- Rclone para operaciones por lotes
+- Las sugerencias de ubicación coinciden con la geografía del usuario.
 
-### Security
-- Never commit Access Keys
-- Use environment variables
-- Bucket-scoped tokens for least privilege
-- Presigned URLs for temporary access
-- Enable Cloudflare Access for protection
+### Seguridad
+- Nunca confirmes las claves de acceso
+- Utilizar variables de entorno.
+- Tokens con alcance de cubo para privilegios mínimos
+- URL prefirmadas para acceso temporal
+- Habilite el acceso a Cloudflare para protección
 
-### Cost Optimization
-- Infrequent Access storage for archives (30+ days)
-- Lifecycle rules to auto-transition/delete
-- Larger multipart chunks = fewer Class A operations
-- Monitor usage via dashboard
+### Optimización de costos
+- Almacenamiento de acceso poco frecuente para archivos (más de 30 días)
+- Reglas de ciclo de vida para transición/eliminación automática
+- Fragmentos multiparte más grandes = menos operaciones de Clase A
+- Monitorear el uso a través del panel
 
-### Naming
-- Bucket names: lowercase, hyphens, 3-63 chars
-- Avoid sequential prefixes (use hashed for performance)
-- No dots in bucket names if using custom domains with TLS
+### Nombrar
+- Nombres de depósitos: minúsculas, guiones, de 3 a 63 caracteres
+- Evite prefijos secuenciales (use hash para mejorar el rendimiento)
+- No hay puntos en los nombres de los depósitos si se utilizan dominios personalizados con TLS
 
-## Limits
+## Límites
 
-- Buckets per account: 1,000
-- Object size: 5TB max
-- Lifecycle rules: 1,000 per bucket
-- Event notification rules: 100 per bucket
-- r2.dev rate limit: 1,000 req/min (use custom domains)
+- Cubos por cuenta: 1.000
+- Tamaño del objeto: 5 TB máx.
+- Reglas del ciclo de vida: 1000 por depósito.
+- Reglas de notificación de eventos: 100 por depósito
+- Límite de velocidad de r2.dev: 1000 solicitudes/min (use dominios personalizados)
 
-## Troubleshooting
+## Solución de problemas
 
-**401 Unauthorized:**
-- Verify Access Keys
-- Check endpoint URL includes account ID
-- Ensure region is "auto"
+**401 no autorizado:**
+- Verificar claves de acceso
+- Verificar que la URL del punto final incluya el ID de la cuenta
+- Asegúrese de que la región sea "automática"
 
-**403 Forbidden:**
-- Check bucket permissions
-- Verify CORS configuration
-- Confirm bucket exists
+**403 Prohibido:**
+- Verificar los permisos del depósito
+- Verificar la configuración de CORS
+- Confirmar que existe el depósito
 
-**Presigned URLs not working:**
-- Verify CORS configuration
-- Check URL expiry time
-- Ensure origin matches CORS rules
+**Las URL prefirmadas no funcionan:**
+- Verificar la configuración de CORS
+- Verifique el tiempo de vencimiento de la URL
+- Asegúrese de que el origen coincida con las reglas CORS
 
-## Resources
+## Recursos
 
-- Docs: https://developers.cloudflare.com/r2/
+- Documentos: https://developers.cloudflare.com/r2/
 - Wrangler: https://developers.cloudflare.com/r2/reference/wrangler-commands/
-- S3 Compatibility: https://developers.cloudflare.com/r2/api/s3/api/
-- Workers API: https://developers.cloudflare.com/r2/api/workers/
+- Compatibilidad S3: https://developers.cloudflare.com/r2/api/s3/api/
+- API de trabajadores: https://developers.cloudflare.com/r2/api/workers/

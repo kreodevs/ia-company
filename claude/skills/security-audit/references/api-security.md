@@ -1,10 +1,10 @@
-# API Security
+# Seguridad API
 
-Security considerations specific to API endpoints.
+Consideraciones de seguridad específicas para los puntos finales de API.
 
-## Input Validation
+## Validación de entrada
 
-### Schema Validation
+### Validación del esquema
 
 ```typescript
 import { z } from 'zod';
@@ -41,7 +41,7 @@ function validate(schema: z.ZodSchema) {
 app.post('/users', validate(CreateUserSchema), createUser);
 ```
 
-### Input Sanitization
+### Sanitización de insumos
 
 ```typescript
 import DOMPurify from 'dompurify';
@@ -74,7 +74,7 @@ function sanitizeFilename(input: string): string {
 }
 ```
 
-### Content-Type Validation
+### Validación del tipo de contenido
 
 ```typescript
 function requireJSON(req: Request, res: Response, next: NextFunction) {
@@ -92,13 +92,11 @@ function requireJSON(req: Request, res: Response, next: NextFunction) {
 
 // Apply to all API routes
 app.use('/api', requireJSON);
-```
+```---
 
----
+## Limitación de velocidad
 
-## Rate Limiting
-
-### Basic Rate Limiting
+### Limitación de tasa básica
 
 ```typescript
 import rateLimit from 'express-rate-limit';
@@ -142,7 +140,7 @@ app.use('/api/auth', authLimiter);
 app.use('/api/export', exportLimiter);
 ```
 
-### Redis-Based Rate Limiting
+### Limitación de tarifas basada en Redis
 
 ```typescript
 import RedisStore from 'rate-limit-redis';
@@ -160,7 +158,7 @@ const rateLimiter = rateLimit({
 });
 ```
 
-### Per-User Rate Limiting
+### Limitación de tarifas por usuario
 
 ```typescript
 const userLimiter = rateLimit({
@@ -171,13 +169,11 @@ const userLimiter = rateLimit({
     return req.user?.id || req.ip;
   }
 });
-```
+```---
 
----
+## Configuración CORS
 
-## CORS Configuration
-
-### Secure CORS Setup
+### Configuración segura de CORS
 
 ```typescript
 import cors from 'cors';
@@ -207,20 +203,20 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions));
 ```
 
-### CORS Security Checklist
+### Lista de verificación de seguridad CORS
 
-| Setting | Insecure | Secure |
+| Configuración | Inseguro | Seguro |
 |---------|----------|--------|
-| origin | `'*'` | Explicit allowlist |
-| credentials | `true` with `origin: '*'` | `true` only with specific origins |
-| methods | All methods | Only required methods |
-| allowedHeaders | `'*'` | Specific headers |
+| origen | `'*'`| Lista de permitidos explícitos |
+| credenciales | `true` with`origin: '*'`|` true`sólo con orígenes específicos |
+| métodos | Todos los métodos | Sólo métodos requeridos |
+| permitidoEncabezados | `'*'`| Cabeceras específicas |
 
 ---
 
-## Security Headers
+## Encabezados de seguridad
 
-### Helmet Configuration
+### Configuración del casco
 
 ```typescript
 import helmet from 'helmet';
@@ -254,7 +250,7 @@ app.use(helmet({
 }));
 ```
 
-### Manual Headers
+### Encabezados manuales
 
 ```typescript
 app.use((req, res, next) => {
@@ -276,13 +272,11 @@ app.use((req, res, next) => {
   
   next();
 });
-```
+```---
 
----
+## Manejo de errores
 
-## Error Handling
-
-### Secure Error Responses
+### Respuestas de error seguras
 
 ```typescript
 // Custom error class
@@ -337,7 +331,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 app.use(errorHandler);
 ```
 
-### Error Information Disclosure
+### Divulgación de información de error
 
 ```typescript
 // ❌ Leaks information
@@ -358,11 +352,9 @@ res.status(500).json({
 res.status(401).json({
   error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
 });
-```
+```---
 
----
-
-## Request Size Limits
+## Límites de tamaño de solicitud
 
 ```typescript
 import express from 'express';
@@ -394,13 +386,11 @@ const upload = multer({
     cb(null, true);
   }
 });
-```
+```---
 
----
+## Seguridad de control de versiones de API
 
-## API Versioning Security
-
-### Version-Specific Security
+### Seguridad específica de la versión
 
 ```typescript
 // Deprecation headers
@@ -433,13 +423,11 @@ function blockDeprecated(sunsetDate: Date) {
     next();
   };
 }
-```
+```---
 
----
+## Seguridad del webhook
 
-## Webhook Security
-
-### Signature Verification
+### Verificación de firma
 
 ```typescript
 import crypto from 'crypto';
@@ -498,13 +486,11 @@ async function sendWebhook(url: string, payload: unknown, secret: string) {
     body
   });
 }
-```
+```---
 
----
+## Seguridad GraphQL
 
-## GraphQL Security
-
-### Query Complexity Limiting
+### Limitación de la complejidad de las consultas
 
 ```typescript
 import { createComplexityLimitRule } from 'graphql-validation-complexity';
@@ -521,7 +507,7 @@ const server = new ApolloServer({
 });
 ```
 
-### Depth Limiting
+### Limitación de profundidad
 
 ```typescript
 import depthLimit from 'graphql-depth-limit';
@@ -532,55 +518,53 @@ const server = new ApolloServer({
 });
 ```
 
-### Introspection Control
+### Control de introspección
 
 ```typescript
 const server = new ApolloServer({
   schema,
   introspection: process.env.NODE_ENV !== 'production'
 });
-```
+```---
 
----
+## Lista de verificación de seguridad de API
 
-## API Security Checklist
+### Autenticación
+- [] Todos los puntos finales requieren autenticación (excepto los públicos)
+- [] Los tokens tienen una caducidad razonable
+- [] El mecanismo de actualización del token funciona
+- [] Cerrar sesión invalida los tokens
 
-### Authentication
-- [ ] All endpoints require authentication (except public)
-- [ ] Tokens have reasonable expiration
-- [ ] Token refresh mechanism works
-- [ ] Logout invalidates tokens
+### Autorización
+- [] Cada punto final tiene autorización explícita
+- [ ] Se verifica la propiedad de los recursos
+- [] Sin vulnerabilidades IDOR
+- [] Funciones de administrador protegidas
 
-### Authorization
-- [ ] Every endpoint has explicit authorization
-- [ ] Resource ownership is verified
-- [ ] No IDOR vulnerabilities
-- [ ] Admin functions protected
+### Validación de entrada
+- [] Todas las entradas validadas según el esquema
+- [] Límites de tamaño de solicitud configurados
+- [] Cargas de archivos validadas
+- [] Sin inyección SQL/NoSQL
 
-### Input Validation
-- [ ] All input validated against schema
-- [ ] Request size limits configured
-- [ ] File uploads validated
-- [ ] No SQL/NoSQL injection
+### Limitación de velocidad
+- [] Límite de tarifa global
+- [] Límite de tasa de punto final de autenticación
+- [] Limitación de tarifas por usuario
+- [ ] Límites de operación costosos
 
-### Rate Limiting
-- [ ] Global rate limit
-- [ ] Auth endpoint rate limit
-- [ ] Per-user rate limiting
-- [ ] Expensive operation limits
+### Encabezados y CORS
+- [] CORS configurado correctamente
+- [] Conjunto de encabezados de seguridad
+- [] No hay datos confidenciales en los encabezados
 
-### Headers & CORS
-- [ ] CORS properly configured
-- [ ] Security headers set
-- [ ] No sensitive data in headers
+### Manejo de errores
+- [] No hay rastros de pila en las respuestas
+- [] No se filtraron detalles internos
+- [] Formato de error consistente
+- [] Solicitar ID para depuración
 
-### Error Handling
-- [ ] No stack traces in responses
-- [ ] No internal details leaked
-- [ ] Consistent error format
-- [ ] Request IDs for debugging
-
-### Logging
-- [ ] Security events logged
-- [ ] No sensitive data in logs
-- [ ] Request IDs correlate
+### Registro
+- [] Eventos de seguridad registrados
+- [] No hay datos confidenciales en los registros
+- [] Solicitar ID se correlacionan

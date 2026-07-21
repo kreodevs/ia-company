@@ -1,496 +1,490 @@
-# Experimental Design Checklist
-
-## Research Question Formulation
-
-### Is the Question Well-Formed?
-- [ ] **Specific:** Clearly defined variables and relationships
-- [ ] **Answerable:** Can be addressed with available methods
-- [ ] **Relevant:** Addresses a gap in knowledge or practical need
-- [ ] **Feasible:** Resources, time, and ethical considerations allow it
-- [ ] **Falsifiable:** Can be proven wrong if incorrect
-
-### Have You Reviewed the Literature?
-- [ ] Identified what's already known
-- [ ] Found gaps or contradictions to address
-- [ ] Learned from methodological successes and failures
-- [ ] Identified appropriate outcome measures
-- [ ] Determined typical effect sizes in the field
-
-## Hypothesis Development
-
-### Is Your Hypothesis Testable?
-- [ ] Makes specific, quantifiable predictions
-- [ ] Variables are operationally defined
-- [ ] Specifies direction/nature of expected relationships
-- [ ] Can be falsified by potential observations
-
-### Types of Hypotheses
-- [ ] **Null hypothesis (H₀):** No effect/relationship exists
-- [ ] **Alternative hypothesis (H₁):** Effect/relationship exists
-- [ ] **Directional vs. non-directional:** One-tailed vs. two-tailed tests
-
-## Study Design Selection
-
-### What Type of Study is Appropriate?
-
-**Experimental (Intervention) Studies:**
-- [ ] **Randomized Controlled Trial (RCT):** Gold standard for causation
-- [ ] **Quasi-experimental:** Non-random assignment but manipulation
-- [ ] **Within-subjects:** Same participants in all conditions
-- [ ] **Between-subjects:** Different participants per condition
-- [ ] **Factorial:** Multiple independent variables
-- [ ] **Crossover:** Participants receive multiple interventions sequentially
-
-**Observational Studies:**
-- [ ] **Cohort:** Follow groups over time
-- [ ] **Case-control:** Compare those with/without outcome
-- [ ] **Cross-sectional:** Snapshot at one time point
-- [ ] **Ecological:** Population-level data
-
-**Consider:**
-- [ ] Can you randomly assign participants?
-- [ ] Can you manipulate the independent variable?
-- [ ] Is the outcome rare (favor case-control) or common?
-- [ ] Do you need to establish temporal sequence?
-- [ ] What's feasible given ethical, practical constraints?
-
-## Variables
-
-### Independent Variables (Manipulated/Predictor)
-- [ ] Clearly defined and operationalized
-- [ ] Appropriate levels/categories chosen
-- [ ] Manipulation is sufficient to test hypothesis
-- [ ] Manipulation check planned (if applicable)
-
-### Dependent Variables (Outcome/Response)
-- [ ] Directly measures the construct of interest
-- [ ] Validated and reliable measurement
-- [ ] Sensitive enough to detect expected effects
-- [ ] Appropriate for statistical analysis planned
-- [ ] Primary outcome clearly designated
-
-### Control Variables
-- [ ] **Confounding variables identified:**
-  - Variables that affect both IV and DV
-  - Alternative explanations for findings
-- [ ] **Strategy for control:**
-  - Randomization
-  - Matching
-  - Stratification
-  - Statistical adjustment
-  - Restriction (inclusion/exclusion criteria)
-  - Blinding
-
-### Extraneous Variables
-- [ ] Potential sources of noise identified
-- [ ] Standardized procedures to minimize
-- [ ] Environmental factors controlled
-- [ ] Time of day, setting, equipment standardized
-
-## Sampling
-
-### Population Definition
-- [ ] **Target population:** Who you want to generalize to
-- [ ] **Accessible population:** Who you can actually sample from
-- [ ] **Sample:** Who actually participates
-- [ ] Difference between these documented
-
-### Sampling Method
-- [ ] **Probability sampling (preferred for generalizability):**
-  - Simple random sampling
-  - Stratified sampling
-  - Cluster sampling
-  - Systematic sampling
-- [ ] **Non-probability sampling (common but limits generalizability):**
-  - Convenience sampling
-  - Purposive sampling
-  - Snowball sampling
-  - Quota sampling
-
-### Sample Size
-- [ ] **A priori power analysis conducted**
-  - Expected effect size (from literature or pilot)
-  - Desired power (typically .80 or .90)
-  - Significance level (typically .05)
-  - Statistical test to be used
-- [ ] Accounts for expected attrition/dropout
-- [ ] Sufficient for planned subgroup analyses
-- [ ] Practical constraints acknowledged
-
-### Inclusion/Exclusion Criteria
-- [ ] Clearly defined and justified
-- [ ] Not overly restrictive (limits generalizability)
-- [ ] Based on theoretical or practical considerations
-- [ ] Ethical considerations addressed
-- [ ] Documented and applied consistently
-
-## Blinding and Randomization
-
-### Randomization
-- [ ] **What is randomized:**
-  - Participant assignment to conditions
-  - Order of conditions (within-subjects)
-  - Stimuli/items presented
-- [ ] **Method of randomization:**
-  - Computer-generated random numbers
-  - Random number tables
-  - Coin flips (for very small studies)
-- [ ] **Allocation concealment:**
-  - Sequence generated before recruitment
-  - Allocation hidden until after enrollment
-  - Sequentially numbered, sealed envelopes (if needed)
-- [ ] **Stratified randomization:**
-  - Balance important variables across groups
-  - Block randomization to ensure equal group sizes
-- [ ] **Check randomization:**
-  - Compare groups at baseline
-  - Report any significant differences
-
-### Blinding
-- [ ] **Single-blind:** Participants don't know group assignment
-- [ ] **Double-blind:** Participants and researchers don't know
-- [ ] **Triple-blind:** Participants, researchers, and data analysts don't know
-- [ ] **Blinding feasibility:**
-  - Is true blinding possible?
-  - Placebo/sham controls needed?
-  - Identical appearance of interventions?
-- [ ] **Blinding check:**
-  - Assess whether blinding maintained
-  - Ask participants/researchers to guess assignments
-
-## Control Groups and Conditions
-
-### What Type of Control?
-- [ ] **No treatment control:** Natural course of condition
-- [ ] **Placebo control:** Inert treatment for comparison
-- [ ] **Active control:** Standard treatment comparison
-- [ ] **Wait-list control:** Delayed treatment
-- [ ] **Attention control:** Matches contact time without active ingredient
-
-### Multiple Conditions
-- [ ] Factorial designs for multiple factors
-- [ ] Dose-response relationship assessment
-- [ ] Mechanism testing with component analyses
-
-## Procedures
-
-### Protocol Development
-- [ ] **Detailed, written protocol:**
-  - Step-by-step procedures
-  - Scripts for standardized instructions
-  - Decision rules for handling issues
-  - Data collection forms
-- [ ] Pilot tested before main study
-- [ ] Staff trained to criterion
-- [ ] Compliance monitoring planned
-
-### Standardization
-- [ ] Same instructions for all participants
-- [ ] Same equipment and materials
-- [ ] Same environment/setting when possible
-- [ ] Same assessment timing
-- [ ] Deviations from protocol documented
-
-### Data Collection
-- [ ] **When collected:**
-  - Baseline measurements
-  - Post-intervention
-  - Follow-up timepoints
-- [ ] **Who collects:**
-  - Trained researchers
-  - Blinded when possible
-  - Inter-rater reliability established
-- [ ] **How collected:**
-  - Valid, reliable instruments
-  - Standardized administration
-  - Multiple methods if possible (triangulation)
-
-## Measurement
-
-### Validity
-- [ ] **Face validity:** Appears to measure construct
-- [ ] **Content validity:** Covers all aspects of construct
-- [ ] **Criterion validity:** Correlates with gold standard
-  - Concurrent validity
-  - Predictive validity
-- [ ] **Construct validity:** Measures theoretical construct
-  - Convergent validity (correlates with related measures)
-  - Discriminant validity (doesn't correlate with unrelated measures)
-
-### Reliability
-- [ ] **Test-retest:** Consistent over time
-- [ ] **Internal consistency:** Items measure same construct (Cronbach's α)
-- [ ] **Inter-rater reliability:** Agreement between raters (Cohen's κ, ICC)
-- [ ] **Parallel forms:** Alternative versions consistent
-
-### Measurement Considerations
-- [ ] Objective measures preferred when possible
-- [ ] Validated instruments used when available
-- [ ] Multiple measures of key constructs
-- [ ] Sensitivity to change considered
-- [ ] Floor/ceiling effects avoided
-- [ ] Response formats appropriate
-- [ ] Recall periods appropriate
-- [ ] Cultural appropriateness considered
-
-## Bias Minimization
-
-### Selection Bias
-- [ ] Random sampling when possible
-- [ ] Clearly defined eligibility criteria
-- [ ] Document who declines and why
-- [ ] Minimize self-selection
-
-### Performance Bias
-- [ ] Standardized protocols
-- [ ] Blinding of providers
-- [ ] Monitor protocol adherence
-- [ ] Document deviations
-
-### Detection Bias
-- [ ] Blinding of outcome assessors
-- [ ] Objective measures when possible
-- [ ] Standardized assessment procedures
-- [ ] Multiple raters with reliability checks
-
-### Attrition Bias
-- [ ] Strategies to minimize dropout
-- [ ] Track reasons for dropout
-- [ ] Compare dropouts to completers
-- [ ] Intention-to-treat analysis planned
-
-### Reporting Bias
-- [ ] Preregister study and analysis plan
-- [ ] Designate primary vs. secondary outcomes
-- [ ] Commit to reporting all outcomes
-- [ ] Distinguish planned from exploratory analyses
-
-## Data Management
-
-### Data Collection
-- [ ] Data collection forms designed and tested
-- [ ] REDCap, Qualtrics, or similar platforms
-- [ ] Range checks and validation rules
-- [ ] Regular backups
-- [ ] Secure storage (HIPAA/GDPR compliant if needed)
-
-### Data Quality
-- [ ] Real-time data validation
-- [ ] Regular quality checks
-- [ ] Missing data patterns monitored
-- [ ] Outliers identified and investigated
-- [ ] Protocol deviations documented
-
-### Data Security
-- [ ] De-identification procedures
-- [ ] Access controls
-- [ ] Audit trails
-- [ ] Compliance with regulations (IRB, HIPAA, GDPR)
-
-## Statistical Analysis Planning
-
-### Analysis Plan (Prespecify Before Data Collection)
-- [ ] **Primary analysis:**
-  - Statistical test(s) specified
-  - Hypothesis clearly stated
-  - Significance level set (usually α = .05)
-  - One-tailed or two-tailed
-- [ ] **Secondary analyses:**
-  - Clearly designated as secondary
-  - Exploratory analyses labeled as such
-- [ ] **Multiple comparisons:**
-  - Adjustment method specified (if needed)
-  - Primary outcome protects from inflation
-
-### Assumptions
-- [ ] Assumptions of statistical tests identified
-- [ ] Plan to check assumptions
-- [ ] Backup non-parametric alternatives
-- [ ] Transformation options considered
-
-### Missing Data
-- [ ] Anticipated amount of missingness
-- [ ] Missing data mechanism (MCAR, MAR, MNAR)
-- [ ] Handling strategy:
-  - Complete case analysis
-  - Multiple imputation
-  - Maximum likelihood
-- [ ] Sensitivity analyses planned
-
-### Effect Sizes
-- [ ] Appropriate effect size measures identified
-- [ ] Will be reported alongside p-values
-- [ ] Confidence intervals planned
-
-### Statistical Software
-- [ ] Software selected (R, SPSS, Stata, Python, etc.)
-- [ ] Version documented
-- [ ] Analysis scripts prepared in advance
-- [ ] Will be made available (Open Science)
-
-## Ethical Considerations
-
-### Ethical Approval
-- [ ] IRB/Ethics committee approval obtained
-- [ ] Study registered (ClinicalTrials.gov, etc.) if applicable
-- [ ] Protocol follows Declaration of Helsinki or equivalent
-
-### Informed Consent
-- [ ] Voluntary participation
-- [ ] Comprehensible explanation
-- [ ] Risks and benefits disclosed
-- [ ] Right to withdraw without penalty
-- [ ] Privacy protections explained
-- [ ] Compensation disclosed
-
-### Risk-Benefit Analysis
-- [ ] Potential benefits outweigh risks
-- [ ] Risks minimized
-- [ ] Vulnerable populations protected
-- [ ] Data safety monitoring (if high risk)
-
-### Confidentiality
-- [ ] Data de-identified
-- [ ] Secure storage
-- [ ] Limited access
-- [ ] Reporting doesn't allow re-identification
-
-## Validity Threats
-
-### Internal Validity (Causation)
-- [ ] **History:** External events between measurements
-- [ ] **Maturation:** Changes in participants over time
-- [ ] **Testing:** Effects of repeated measurement
-- [ ] **Instrumentation:** Changes in measurement over time
-- [ ] **Regression to mean:** Extreme scores becoming less extreme
-- [ ] **Selection:** Groups differ at baseline
-- [ ] **Attrition:** Differential dropout
-- [ ] **Diffusion:** Control group receives treatment elements
-
-### External Validity (Generalizability)
-- [ ] Sample representative of population
-- [ ] Setting realistic/natural
-- [ ] Treatment typical of real-world implementation
-- [ ] Outcome measures ecologically valid
-- [ ] Time frame appropriate
-
-### Construct Validity (Measurement)
-- [ ] Measures actually tap intended constructs
-- [ ] Operations match theoretical definitions
-- [ ] No confounding of constructs
-- [ ] Adequate coverage of construct
-
-### Statistical Conclusion Validity
-- [ ] Adequate statistical power
-- [ ] Assumptions met
-- [ ] Appropriate tests used
-- [ ] Alpha level appropriate
-- [ ] Multiple comparisons addressed
-
-## Reporting and Transparency
-
-### Preregistration
-- [ ] Study preregistered (OSF, ClinicalTrials.gov, AsPredicted)
-- [ ] Hypotheses stated a priori
-- [ ] Analysis plan documented
-- [ ] Distinguishes confirmatory from exploratory
-
-### Reporting Guidelines
-- [ ] **RCTs:** CONSORT checklist
-- [ ] **Observational studies:** STROBE checklist
-- [ ] **Systematic reviews:** PRISMA checklist
-- [ ] **Diagnostic studies:** STARD checklist
-- [ ] **Qualitative research:** COREQ checklist
-- [ ] **Case reports:** CARE guidelines
-
-### Transparency
-- [ ] All measures reported
-- [ ] All manipulations disclosed
-- [ ] Sample size determination explained
-- [ ] Exclusion criteria and numbers reported
-- [ ] Attrition documented
-- [ ] Deviations from protocol noted
-- [ ] Conflicts of interest disclosed
-
-### Open Science
-- [ ] Data sharing planned (when ethical)
-- [ ] Analysis code shared
-- [ ] Materials available
-- [ ] Preprint posted
-- [ ] Open access publication when possible
-
-## Post-Study Considerations
-
-### Data Analysis
-- [ ] Follow preregistered plan
-- [ ] Clearly label deviations and exploratory analyses
-- [ ] Check assumptions
-- [ ] Report all outcomes
-- [ ] Report effect sizes and CIs, not just p-values
-
-### Interpretation
-- [ ] Conclusions supported by data
-- [ ] Limitations acknowledged
-- [ ] Alternative explanations considered
-- [ ] Generalizability discussed
-- [ ] Clinical/practical significance addressed
-
-### Dissemination
-- [ ] Publish regardless of results (reduce publication bias)
-- [ ] Present at conferences
-- [ ] Share findings with participants (when appropriate)
-- [ ] Communicate to relevant stakeholders
-- [ ] Plain language summaries
-
-### Next Steps
-- [ ] Replication needed?
-- [ ] Follow-up studies identified
-- [ ] Mechanism studies planned
-- [ ] Clinical applications considered
-
-## Common Pitfalls to Avoid
-
-- [ ] No power analysis → underpowered study
-- [ ] Hypothesis formed after seeing data (HARKing)
-- [ ] No blinding when feasible → bias
-- [ ] P-hacking (data fishing, optional stopping)
-- [ ] Multiple testing without correction → false positives
-- [ ] Inadequate control group
-- [ ] Confounding not addressed
-- [ ] Instruments not validated
-- [ ] High attrition not addressed
-- [ ] Cherry-picking results to report
-- [ ] Causal language from correlational data
-- [ ] Ignoring assumptions of statistical tests
-- [ ] Not preregistering changes literature bias
-- [ ] Conflicts of interest not disclosed
-
-## Final Checklist Before Starting
-
-- [ ] Research question is clear and important
-- [ ] Hypothesis is testable and specific
-- [ ] Study design is appropriate
-- [ ] Sample size is adequate (power analysis)
-- [ ] Measures are valid and reliable
-- [ ] Confounds are controlled
-- [ ] Randomization and blinding implemented
-- [ ] Data collection is standardized
-- [ ] Analysis plan is prespecified
-- [ ] Ethical approval obtained
-- [ ] Study is preregistered
-- [ ] Resources are sufficient
-- [ ] Team is trained
-- [ ] Protocol is documented
-- [ ] Backup plans exist for problems
-
-## Remember
-
-**Good experimental design is about:**
-- Asking clear questions
-- Minimizing bias
-- Maximizing validity
-- Appropriate inference
-- Transparency
-- Reproducibility
-
-**The best time to think about these issues is before collecting data, not after.**
+# Lista de verificación de diseño experimental
+
+## Formulación de preguntas de investigación
+
+### ¿Está bien formulada la pregunta?
+- [ ] **Específico:** Variables y relaciones claramente definidas
+- [ ] **Responsable:** Se puede solucionar con los métodos disponibles
+- [ ] **Relevante:** Aborda una brecha en el conocimiento o una necesidad práctica
+- [ ] **Factible:** Los recursos, el tiempo y las consideraciones éticas lo permiten.
+- [ ] **Falsificable:** Se puede demostrar que es incorrecto si es incorrecto
+
+### ¿Ha revisado la literatura?
+- [ ] Identificado lo que ya se sabe
+- [ ] Se encontraron lagunas o contradicciones que abordar
+- [ ] Aprendido de aciertos y fracasos metodológicos
+- [ ] Medidas de resultado apropiadas identificadas
+- [ ] Determinación de tamaños de efecto típicos en el campo.
+
+## Desarrollo de hipótesis
+
+### ¿Su hipótesis es comprobable?
+- [ ] Hace predicciones específicas y cuantificables.
+- [ ] Las variables están definidas operativamente.
+- [] Especifica la dirección/naturaleza de las relaciones esperadas.
+- [ ] Puede ser falsificado por posibles observaciones.
+
+### Tipos de hipótesis
+- [ ] **Hipótesis nula (H₀):** No existe ningún efecto/relación
+- [ ] **Hipótesis alternativa (H₁):** Existe efecto/relación
+- [ ] **Direccional versus no direccional:** Pruebas de una cola versus dos colas
+
+## Selección del diseño del estudio
+
+### ¿Qué tipo de estudio es apropiado?
+
+**Estudios experimentales (de intervención):**
+- [ ] **Ensayo controlado aleatorio (ECA):** Estándar de referencia para la causalidad
+- [ ] **Cuasi-experimental:** Asignación no aleatoria pero manipulación
+- [ ] **Dentro de los sujetos:** Los mismos participantes en todas las condiciones
+- [ ] **Entre sujetos:** Diferentes participantes por condición
+- [ ] **Factorial:** Múltiples variables independientes
+- [ ] **Crossover:** Los participantes reciben múltiples intervenciones secuencialmente
+
+**Estudios observacionales:**
+- [] **Cohorte:** Seguir grupos a lo largo del tiempo
+- [ ] **Casos y controles:** Comparar aquellos con/sin resultado
+- [ ] **Transversal:** Instantánea en un momento dado
+- [ ] **Ecológico:** Datos a nivel poblacional
+
+**Considerar:**
+- [ ] ¿Puedes asignar participantes aleatoriamente?
+- [ ] ¿Puedes manipular la variable independiente?
+- [ ] ¿El resultado es raro (favorecer casos y controles) o común?
+- [ ] ¿Necesitas establecer una secuencia temporal?
+- [ ] ¿Qué es factible dadas las limitaciones éticas y prácticas?
+
+##Variables
+
+### Variables independientes (manipuladas/predictoras)
+- [ ] Claramente definido y operacionalizado
+- [ ] Niveles/categorías apropiadas elegidas
+- [ ] La manipulación es suficiente para probar la hipótesis.
+- [ ] Control de manipulación previsto (si procede)
+
+### Variables dependientes (resultado/respuesta)
+- [ ] Mide directamente el constructo de interés
+- [ ] Medición validada y confiable
+- [ ] Lo suficientemente sensible como para detectar los efectos esperados
+- [ ] Apropiado para el análisis estadístico previsto
+- [ ] Resultado primario claramente designado
+
+### Variables de control
+- [ ] **Variables de confusión identificadas:**
+  - Variables que afectan tanto a IV como a DV
+  - Explicaciones alternativas para los hallazgos.
+- [ ] **Estrategia de control:**
+  - Aleatorización
+  - Coincidencia
+  - Estratificación
+  - Ajuste estadístico
+  - Restricción (criterios de inclusión/exclusión)
+  - cegamiento
+
+### Variables extrañas
+- [ ] Potenciales fuentes de ruido identificadas
+- [ ] Procedimientos estandarizados para minimizar
+- [ ] Factores ambientales controlados
+- [ ] Hora del día, entorno, equipamiento estandarizado
+
+## Muestreo
+
+### Definición de población
+- [ ] **Población objetivo:** A quién desea generalizar
+- [ ] **Población accesible:** ¿De quién realmente puedes tomar muestras?
+- [ ] **Muestra:** Quién participa realmente
+- [ ] Diferencia entre estos documentados
+
+### Método de muestreo
+- [ ] **Muestreo probabilístico (preferido para generalización):**
+  - Muestreo aleatorio simple
+  - Muestreo estratificado
+  - Muestreo por conglomerados
+  - Muestreo sistemático
+- [ ] **Muestreo no probabilístico (común pero limita la generalización):**
+  - Muestreo de conveniencia
+  - Muestreo intencional
+  - Muestreo de bola de nieve
+  - Muestreo por cuotas
+
+### Tamaño de la muestra
+- [ ] **Análisis de potencia realizado a priori**
+  - Tamaño del efecto esperado (según la literatura o el piloto)
+  - Potencia deseada (normalmente .80 o .90)
+  - Nivel de significancia (normalmente 0,05)
+  - Prueba estadística a utilizar.
+- [ ] Cuentas para el desgaste/abandono esperado
+- [ ] Suficiente para análisis de subgrupos planificados
+- [ ] Restricciones prácticas reconocidas
+
+### Criterios de inclusión/exclusión
+- [ ] Claramente definido y justificado
+- [ ] No demasiado restrictivo (limita la generalización)
+- [ ] Basado en consideraciones teóricas o prácticas.
+- [ ] Consideraciones éticas abordadas
+- [ ] Documentado y aplicado consistentemente
+
+## Cegamiento y aleatorización### Aleatorización
+- [ ] **Qué es aleatorio:**
+  - Asignación de participantes a condiciones.
+  - Orden de condiciones (dentro de los sujetos)
+  - Estímulos/artículos presentados
+- [ ] **Método de aleatorización:**
+  - Números aleatorios generados por computadora
+  - Tablas de números aleatorios
+  - Lanzamientos de moneda (para estudios muy pequeños)
+- [ ] **Ocultación de asignación:**
+  - Secuencia generada antes del reclutamiento.
+  - Asignación oculta hasta después de la inscripción
+  - Sobres sellados y numerados secuencialmente (si es necesario)
+- [ ] **Aleatorización estratificada:**
+  - Equilibrar variables importantes entre grupos
+  - Bloquear la aleatorización para garantizar tamaños de grupo iguales.
+- [ ] **Verificar aleatorización:**
+  - Comparar grupos al inicio
+  - Informar cualquier diferencia significativa
+
+### Cegador
+- [ ] **Simple ciego:** Los participantes no conocen la asignación grupal
+- [ ] **Doble ciego:** Los participantes y los investigadores no saben
+- [ ] **Triple ciego:** Los participantes, investigadores y analistas de datos no saben
+- [ ] **Viabilidad de cegamiento:**
+  - ¿Es posible un verdadero cegamiento?
+  - ¿Se necesitan controles placebo/simulados?
+  - ¿Idéntica apariencia de las intervenciones?
+- [ ] **Comprobación ciega:**
+  - Evaluar si se mantiene el cegamiento
+  - Pida a los participantes/investigadores que adivinen las tareas.
+
+## Grupos de control y condiciones
+
+### ¿Qué tipo de control?
+- [ ] **Sin tratamiento de control:** Curso natural de la afección
+- [ ] **Control placebo:** Tratamiento inerte para comparación
+- [ ] **Control activo:** Comparación de tratamientos estándar
+- [ ] **Control de lista de espera:** Retraso en el tratamiento
+- [ ] **Control de atención:** Coincide con el tiempo de contacto sin ingrediente activo
+
+### Múltiples condiciones
+- [ ] Diseños factoriales para múltiples factores
+- [ ] Evaluación de la relación dosis-respuesta
+- [] Pruebas de mecanismos con análisis de componentes.
+
+## Procedimientos
+
+### Desarrollo de protocolo
+- [ ] **Protocolo escrito detallado:**
+  - Procedimientos paso a paso
+  - Guiones para instrucciones estandarizadas.
+  - Reglas de decisión para el manejo de problemas.
+  - Formularios de recogida de datos
+- [ ] Prueba piloto antes del estudio principal
+- [ ] Personal capacitado a criterio
+- [ ] Seguimiento del cumplimiento previsto
+
+### Estandarización
+- [ ] Mismas instrucciones para todos los participantes
+- [ ] Mismo equipo y materiales
+- [] Mismo entorno/configuración cuando sea posible
+- [ ] Mismo momento de evaluación
+- [ ] Desviaciones del protocolo documentadas
+
+### Recopilación de datos
+- [ ] **Cuando se recoge:**
+  - Mediciones de referencia
+  - Post-intervención
+  - Puntos de tiempo de seguimiento
+- [ ] **Quién colecciona:**
+  - Investigadores capacitados
+  - Cegado cuando sea posible
+  - Se estableció la confiabilidad entre evaluadores.
+- [ ] **Cómo se recopila:**
+  - Instrumentos válidos y confiables.
+  - Administración estandarizada
+  - Múltiples métodos si es posible (triangulación)
+
+## Medición
+
+### Validez
+- [ ] **Validez aparente:** Parece medir un constructo
+- [ ] **Validez de contenido:** Cubre todos los aspectos del constructo
+- [ ] **Validez de criterio:** Se correlaciona con el estándar de oro
+  - Validez concurrente
+  - Validez predictiva
+- [ ] **Validez de constructo:** Mide el constructo teórico
+  - Validez convergente (se correlaciona con medidas relacionadas)
+  - Validez discriminante (no se correlaciona con medidas no relacionadas)
+
+### Fiabilidad
+- [ ] **Test-retest:** Consistente en el tiempo
+- [ ] **Consistencia interna:** Los ítems miden el mismo constructo (α de Cronbach)
+- [ ] **Confiabilidad entre evaluadores:** Acuerdo entre evaluadores (κ de Cohen, ICC)
+- [ ] **Formas paralelas:** Versiones alternativas consistentes
+
+### Consideraciones de medición
+- [ ] Se prefieren medidas objetivas cuando sea posible
+- [ ] Instrumentos validados utilizados cuando estén disponibles
+- [] Múltiples medidas de constructos clave
+- [ ] Sensibilidad al cambio considerado
+- [ ] Se evitan efectos suelo/techo
+- [ ] Formatos de respuesta apropiados
+- [ ] Períodos de recuperación apropiados
+- [ ] Se considera la idoneidad cultural
+
+## Minimización de sesgos
+
+### Sesgo de selección
+- [ ] Muestreo aleatorio cuando sea posible
+- [ ] Criterios de elegibilidad claramente definidos
+- [] Documentar quién rechaza y por qué
+- [] Minimizar la autoselección
+
+### Sesgo de rendimiento
+- [ ] Protocolos estandarizados
+- [ ] Cegamiento de los proveedores
+- [ ] Monitorear el cumplimiento del protocolo
+- [ ] Desviaciones de documentos
+
+### Sesgo de detección
+- [ ] Cegamiento de los evaluadores de resultados
+- [ ] Medidas objetivas cuando sea posible
+- [ ] Procedimientos de evaluación estandarizados
+- [] Múltiples evaluadores con controles de confiabilidad
+
+### Sesgo de desgaste
+- [ ] Estrategias para minimizar la deserción escolar
+- [] Seguimiento de los motivos del abandono
+- [] Comparar los que abandonaron con los que completaron
+- [ ] Análisis por intención de tratar planificado### Sesgo de información
+- [ ] Plan de estudio y análisis de preinscripción
+- [] Designar resultados primarios versus secundarios
+- [ ] Comprometerse a informar todos los resultados.
+- [ ] Distinguir los análisis planificados de los exploratorios
+
+## Gestión de datos
+
+### Recopilación de datos
+- [ ] Formularios de recogida de datos diseñados y probados
+- [ ] REDCap, Qualtrics o plataformas similares
+- [] Verificaciones de rango y reglas de validación
+- [] Copias de seguridad periódicas
+- [] Almacenamiento seguro (cumple con HIPAA/GDPR si es necesario)
+
+### Calidad de los datos
+- [] Validación de datos en tiempo real
+- [ ] Controles de calidad periódicos
+- [] Patrones de datos faltantes monitoreados
+- [ ] Valores atípicos identificados e investigados
+- [ ] Desviaciones del protocolo documentadas
+
+### Seguridad de datos
+- [ ] Procedimientos de desidentificación
+- [ ] Controles de acceso
+- [] Pistas de auditoría
+- [ ] Cumplimiento de normativas (IRB, HIPAA, GDPR)
+
+## Planificación del análisis estadístico
+
+### Plan de análisis (preespecificar antes de la recopilación de datos)
+- [ ] **Análisis primario:**
+  - Prueba(s) estadística(es) especificada(s)
+  - Hipótesis claramente expresada.
+  - Nivel de significancia establecido (normalmente α = 0,05)
+  - De una cola o de dos colas
+- [ ] **Análisis secundarios:**
+  - Claramente designado como secundario
+  - Análisis exploratorios etiquetados como tales.
+- [ ] **Múltiples comparaciones:**
+  - Método de ajuste especificado (si es necesario)
+  - El resultado primario protege de la inflación.
+
+### Suposiciones
+- [ ] Supuestos de pruebas estadísticas identificadas
+- [ ] Plan para comprobar los supuestos
+- [ ] Backup de alternativas no paramétricas
+- [ ] Opciones de transformación consideradas
+
+### Datos faltantes
+- [] Cantidad prevista de faltantes
+- [ ] Mecanismo de datos faltantes (MCAR, MAR, MNAR)
+- [ ] Estrategia de manejo:
+  - Análisis completo del caso.
+  - Imputación múltiple
+  - Máxima probabilidad
+- [ ] Análisis de sensibilidad previstos
+
+### Tamaños de efectos
+- [ ] Medidas apropiadas del tamaño del efecto identificadas
+- [] Se informará junto con los valores p
+- [ ] Intervalos de confianza planificados
+
+### Software estadístico
+- [ ] Software seleccionado (R, SPSS, Stata, Python, etc.)
+- [ ] Versión documentada
+- [ ] Guiones de análisis preparados con antelación
+- [ ] Estará disponible (Ciencia Abierta)
+
+## Consideraciones éticas
+
+### Aprobación ética
+- [ ] Se obtuvo la aprobación del IRB/comité de ética
+- [ ] Estudio registrado (ClinicalTrials.gov, etc.) si corresponde
+- [ ] El protocolo sigue la Declaración de Helsinki o equivalente
+
+### Consentimiento informado
+- [ ] Participación voluntaria
+- [ ] Explicación comprensible
+- [ ] Riesgos y beneficios divulgados
+- [ ] Derecho a desistir sin penalización
+- [] Explicación de las protecciones de privacidad
+- [ ] Compensación divulgada
+
+### Análisis riesgo-beneficio
+- [ ] Los beneficios potenciales superan los riesgos
+- [ ] Riesgos minimizados
+- [ ] Poblaciones vulnerables protegidas
+- [ ] Monitoreo de seguridad de datos (si es de alto riesgo)
+
+### Confidencialidad
+- [] Datos no identificados
+- [] Almacenamiento seguro
+- [ ] Acceso limitado
+- [] Los informes no permiten la reidentificación
+
+## Amenazas a la validez
+
+### Validez interna (causalidad)
+- [ ] **Historial:** Eventos externos entre mediciones
+- [ ] **Maduración:** Cambios en los participantes a lo largo del tiempo
+- [ ] **Pruebas:** Efectos de mediciones repetidas
+- [ ] **Instrumentación:** Cambios en la medición a lo largo del tiempo
+- [ ] **Regresión a la media:** Las puntuaciones extremas se vuelven menos extremas
+- [ ] **Selección:** Los grupos difieren al inicio
+- [ ] **Deserción:** Abandono diferencial
+- [ ] **Difusión:** El grupo de control recibe elementos de tratamiento
+
+### Validez externa (generalizabilidad)
+- [ ] Muestra representativa de la población
+- [] Ajuste realista/natural
+- [ ] Tratamiento típico de la implementación en el mundo real
+- [ ] Medidas de resultado ecológicamente válidas
+- [ ] Plazo adecuado
+
+### Validez de constructo (medición)
+- [ ] Las medidas realmente aprovechan las construcciones previstas
+- [] Las operaciones coinciden con las definiciones teóricas.
+- [ ] Sin confusión de constructos
+- [ ] Cobertura adecuada del constructo
+
+### Validez de la conclusión estadística
+- [ ] Poder estadístico adecuado
+- [ ] Supuestos cumplidos
+- [ ] Pruebas apropiadas utilizadas
+- [] Nivel alfa apropiado
+- [] Se abordaron múltiples comparaciones
+
+## Informes y transparencia
+
+### Preinscripción
+- [] Estudio prerregistrado (OSF, ClinicalTrials.gov, AsPredicted)
+- [ ] Hipótesis planteadas a priori
+- [ ] Plan de análisis documentado
+- [ ] Distingue confirmatorio de exploratorio
+
+### Directrices para la presentación de informes
+- [ ] **ECA:** Lista de verificación CONSORT
+- [ ] **Estudios observacionales:** Lista de verificación STROBE
+- [ ] **Revisiones sistemáticas:** Lista de verificación PRISMA
+- [ ] **Estudios de diagnóstico:** Lista de verificación STARD
+- [ ] **Investigación cualitativa:** Lista de verificación COREQ
+- [ ] **Reportes de casos:** Pautas CARE### Transparencia
+- [ ] Todas las medidas reportadas
+- [ ] Todas las manipulaciones reveladas.
+- [] Explicación de la determinación del tamaño de la muestra
+- [ ] Criterios de exclusión y números reportados
+- [ ] Desgaste documentado
+- [ ] Se observaron desviaciones del protocolo
+- [ ] Conflictos de intereses revelados
+
+### Ciencia abierta
+- [ ] Intercambio de datos planificado (cuando sea ético)
+- [] Código de análisis compartido
+- [ ] Materiales disponibles
+- [] Preimpresión publicada
+- [ ] Publicación de acceso abierto cuando sea posible
+
+## Consideraciones posteriores al estudio
+
+### Análisis de datos
+- [] Seguir el plan prerregistrado
+- [ ] Etiquetar claramente las desviaciones y los análisis exploratorios.
+- [ ] Verificar supuestos
+- [] Informar todos los resultados
+- [] Informar los tamaños del efecto y los IC, no solo los valores p
+
+### Interpretación
+- [ ] Conclusiones sustentadas en datos
+- [ ] Limitaciones reconocidas
+- [ ] Explicaciones alternativas consideradas
+- [ ] Generalización discutida
+- [ ] Se aborda la importancia clínica/práctica
+
+### Difusión
+- [] Publicar independientemente de los resultados (reducir el sesgo de publicación)
+- [ ] Presente en congresos
+- [ ] Compartir los hallazgos con los participantes (cuando corresponda)
+- [ ] Comunicarse con las partes interesadas relevantes
+- [] Resúmenes en lenguaje sencillo
+
+### Próximos pasos
+- [] ¿Se necesita replicación?
+- [ ] Estudios de seguimiento identificados
+- [ ] Estudios de mecanismos previstos
+- [ ] Aplicaciones clínicas consideradas
+
+## Errores comunes que se deben evitar
+
+- [ ] Sin análisis de potencia → estudio con poca potencia
+- [ ] Hipótesis formada después de ver datos (HARKing)
+- [ ] Sin cegamiento cuando sea factible → sesgo
+- [] P-hacking (pesca de datos, parada opcional)
+- [ ] Pruebas múltiples sin corrección → falsos positivos
+- [ ] Grupo de control inadecuado
+- [ ] Factores de confusión no abordados
+- [ ] Instrumentos no validados
+- [ ] Deserción elevada no abordada
+- [] Resultados seleccionados para informar
+- [] Lenguaje causal a partir de datos correlacionales.
+- [] Ignorar los supuestos de las pruebas estadísticas.
+- [ ] No prerregistrarse cambia el sesgo de la literatura
+- [ ] Conflictos de intereses no revelados
+
+## Lista de verificación final antes de comenzar
+
+- [ ] La pregunta de investigación es clara e importante.
+- [ ] La hipótesis es comprobable y específica.
+- [ ] El diseño del estudio es apropiado
+- [ ] El tamaño de la muestra es adecuado (análisis de potencia)
+- [ ] Las medidas son válidas y fiables.
+- [ ] Se controlan los factores de confusión
+- [ ] Se implementó la aleatorización y el cegamiento.
+- [ ] La recopilación de datos está estandarizada
+- [ ] El plan de análisis está preespecificado.
+- [ ] Aprobación ética obtenida
+- [ ] El estudio está prerregistrado
+- [ ] Los recursos son suficientes
+- [ ] El equipo está capacitado.
+- [ ] El protocolo está documentado
+- [] Existen planes de respaldo para problemas
+
+## Recuerda
+
+**Un buen diseño experimental se trata de:**
+- Hacer preguntas claras
+- Minimizar el sesgo
+- Maximizar la validez
+- Inferencia apropiada
+- Transparencia
+- Reproducibilidad
+
+**El mejor momento para pensar en estos temas es antes de recopilar datos, no después.**

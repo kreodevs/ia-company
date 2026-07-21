@@ -1,140 +1,140 @@
 ---
 name: startup-business-models
-description: Use when choosing or evaluating a startup revenue model, pricing/value metric, packaging/tier design, or calculating unit economics (LTV, CAC, payback, gross margin, NRR), including usage-based/credit/AI pricing and variable compute/COGS constraints.
+description: Usar al elegir o evaluar un modelo de ingresos de startup, métrica de pricing/valor, diseño de packaging/tiers, o calcular unit economics (LTV, CAC, payback, gross margin, NRR), incluyendo pricing usage-based/credit/AI y restricciones de compute/COGS variable.
 ---
 
-# Startup Business Models
+# Modelos de negocio para startups
 
-Systematic workflow for choosing revenue models, pricing, and unit economics.
+Flujo de trabajo sistemático para elegir modelos de ingresos, pricing y unit economics.
 
-## Quick Start (Inputs)
+## Inicio rápido (inputs)
 
-Ask for the smallest set of inputs that makes the decision meaningful:
+Pide el conjunto mínimo de inputs que haga la decisión significativa:
 
-- Business type: SaaS, usage-based/API, marketplace, services, hardware + service
-- ICP/segment(s): SMB / mid-market / enterprise (and ACV/ARPA bands)
-- Current pricing and packaging: value metric, tiers, limits, discount policy, billing cadence
-- Unit economics drivers: fully-loaded CAC, gross margin/COGS (include LLM/infra/third-party), churn/retention, expansion (NRR)
-- Constraints: sales motion (PLG vs sales-led), implementation constraints (billing metering, proration), gross margin floor, payback target
+- Tipo de negocio: SaaS, usage-based/API, marketplace, servicios, hardware + servicio
+- ICP/segmento(s): SMB / mid-market / enterprise (y bandas ACV/ARPA)
+- Pricing y packaging actuales: value metric, tiers, límites, política de descuentos, cadencia de facturación
+- Drivers de unit economics: CAC fully-loaded, gross margin/COGS (incluir LLM/infra/terceros), churn/retención, expansión (NRR)
+- Restricciones: motion de ventas (PLG vs sales-led), restricciones de implementación (billing metering, proration), piso de gross margin, objetivo de payback
 
-If numbers are missing, proceed with ranges + explicit assumptions and highlight what to measure next.
+Si faltan números, avanza con rangos + supuestos explícitos y destaca qué medir a continuación.
 
-## Workflow
+## Flujo de trabajo
 
-1) Classify the model
-- Subscription, usage-based, freemium, marketplace take-rate, transaction fee, ads, outcome-based, credit-based, hybrid.
+1) Clasificar el modelo
+- Suscripción, usage-based, freemium, take-rate de marketplace, transaction fee, ads, outcome-based, credit-based, híbrido.
 
-2) Build a segment-level unit economics snapshot
-- Use `references/unit-economics-calculator.md` for formulas, benchmarks, and common pitfalls.
-- Prefer cohort/segment views over blended averages.
+2) Construir snapshot de unit economics por segmento
+- Usar `references/unit-economics-calculator.md` para fórmulas, benchmarks y errores comunes.
+- Preferir vistas por cohorte/segmento sobre promedios mezclados.
 
-3) Evaluate model fit and risks
-- Align price metric with value delivered and cost incurred (especially usage + AI compute).
-- Identify failure modes: margin compression, adverse selection, channel conflict, support cost explosions, metering/overage friction.
+3) Evaluar encaje del modelo y riesgos
+- Alinear price metric con valor entregado y costo incurrido (especialmente usage + AI compute).
+- Identificar modos de fallo: compresión de margen, selección adversa, conflicto de canal, explosión de costos de soporte, fricción de metering/overage.
 
-4) Propose pricing + packaging changes
-- Use `references/pricing-research-guide.md` for WTP methods and pricing interview scripts.
-- Use `assets/pricing-tier-design.md` to draft tiers, limits, upgrade triggers, and enforcement rules.
+4) Proponer cambios de pricing + packaging
+- Usar `references/pricing-research-guide.md` para métodos WTP y scripts de entrevistas de pricing.
+- Usar `assets/pricing-tier-design.md` para borrador de tiers, límites, triggers de upgrade y reglas de enforcement.
 
-5) Define measurement and roll-out
-- Define success metric + guardrails, evaluation design, and explicit lag windows (conversion now, retention later).
+5) Definir medición y roll-out
+- Definir métrica de éxito + guardrails, diseño de evaluación y ventanas de lag explícitas (conversión ahora, retención después).
 
-6) Deliver a decision-ready output
-- Recommendation, rationale, assumptions, scenarios (base/best/worst), and next experiments.
+6) Entregar output listo para decisión
+- Recomendación, rationale, supuestos, escenarios (base/best/worst) y próximos experimentos.
 
-## 2026 Heuristics (Context-Dependent)
+## Heurísticas 2026 (dependientes del contexto)
 
-- Prioritize payback and gross margin over a single ratio; LTV:CAC is easiest to game.
-- Typical SaaS targets (directional, by segment/stage): LTV:CAC 3-5x, payback 6-12 months (PLG) or 12-18 months (sales-led early), NRR >100% (mid-market/enterprise) and gross margin >70% (software-only).
-- For usage-based / AI products: model contribution margin per unit (token/job/workflow) and set pricing guardrails (rate limits, minimums, commit tiers, credit expiries).
+- Priorizar payback y gross margin sobre un solo ratio; LTV:CAC es fácil de manipular.
+- Objetivos SaaS típicos (orientativos, por segmento/etapa): LTV:CAC 3-5x, payback 6-12 meses (PLG) o 12-18 meses (sales-led temprano), NRR >100% (mid-market/enterprise) y gross margin >70% (solo software).
+- Para productos usage-based / AI: modelar contribution margin por unidad (token/job/workflow) y definir guardrails de pricing (rate limits, mínimos, commit tiers, expiración de créditos).
 
-## Related Skills (Routing)
+## Skills relacionados (routing)
 
 - [startup-idea-validation](../startup-idea-validation/)
 - [startup-competitive-analysis](../startup-competitive-analysis/)
 - [startup-fundraising](../startup-fundraising/)
 - [startup-go-to-market](../startup-go-to-market/)
 
-## Pricing Change Measurement & Experiment Design
-Use this when you are changing pricing, packaging, value metric, limits, discounts, or billing cadence.
+## Medición de cambios de pricing y diseño de experimentos
+Usar cuando cambies pricing, packaging, value metric, límites, descuentos o cadencia de facturación.
 
-### 1) Define success and guardrails (before launch)
-| Type | Examples |
+### 1) Definir éxito y guardrails (antes del launch)
+| Tipo | Ejemplos |
 |------|----------|
-| Primary success metric | Net revenue retention (NRR), ARPA/ARPU, gross margin %, payback period, upgrade rate, expansion MRR |
-| Guardrails | New logo conversion, activation rate, refund rate, support load, churn (logo + revenue), sales cycle length |
+| Métrica principal de éxito | Net revenue retention (NRR), ARPA/ARPU, gross margin %, payback period, upgrade rate, expansion MRR |
+| Guardrails | Conversión de new logos, activation rate, refund rate, carga de soporte, churn (logo + revenue), duración del ciclo de ventas |
 
-### 2) Pick an evaluation design
-| Design | Best when | How to read results |
+### 2) Elegir diseño de evaluación
+| Diseño | Mejor cuando | Cómo leer resultados |
 |--------|-----------|---------------------|
-| A/B (randomized) | Self-serve / PLG flows | Compare conversion, ARPA, refunds, and downstream retention by assignment |
-| Holdout/control cohort | Pricing is hard to randomize | Compare treated vs. holdout cohorts matched on segment, channel, and start month |
-| Step rollout (time-based) | Enterprise contracts, invoicing cycles | Compare pre/post with a parallel cohort (not exposed yet) to reduce seasonality bias |
-| Geo/account rollout | Regions/segments are separable | Compare regions/segments; watch for channel mix shifts |
+| A/B (randomizado) | Flujos self-serve / PLG | Comparar conversión, ARPA, refunds y retención downstream por asignación |
+| Cohorte holdout/control | El pricing es difícil de randomizar | Comparar cohortes tratadas vs. holdout emparejadas por segmento, canal y mes de inicio |
+| Rollout escalonado (por tiempo) | Contratos enterprise, ciclos de facturación | Comparar pre/post con cohorte paralela (aún no expuesta) para reducir sesgo estacional |
+| Rollout geo/cuenta | Regiones/segmentos separables | Comparar regiones/segmentos; vigilar cambios en mix de canal |
 
-### 3) Use explicit lag windows (avoid premature conclusions)
-- Short lag (days to 2 weeks): checkout conversion, activation, sales cycle friction, refund/support spikes.
-- Medium lag (4 to 8 weeks): upgrades, expansion MRR, usage growth, discounting behavior, proration effects.
-- Long lag (90 to 180+ days, B2B): churn, net revenue retention, renewal outcomes, contraction risk.
+### 3) Usar ventanas de lag explícitas (evitar conclusiones prematuras)
+- Lag corto (días a 2 semanas): conversión checkout, activación, fricción del ciclo de ventas, picos de refund/soporte.
+- Lag medio (4 a 8 semanas): upgrades, expansion MRR, crecimiento de usage, comportamiento de descuentos, efectos de proration.
+- Lag largo (90 a 180+ días, B2B): churn, net revenue retention, resultados de renovación, riesgo de contracción.
 
-### 4) Report an "all-in" view (not just conversion)
-- Revenue quality: net revenue after refunds, discounts, and credits; gross margin impact (including variable compute/COGS).
-- Segments: break down by plan, seat band, channel, ACV/ARR band, and customer age (new vs. renewal).
-- Decision rule: write a go/no-go threshold (example: "NRR +2pts with no >0.5pt drop in activation and no >10% increase in support load").
+### 4) Reportar vista "all-in" (no solo conversión)
+- Calidad de revenue: net revenue tras refunds, descuentos y créditos; impacto en gross margin (incluyendo compute/COGS variable).
+- Segmentos: desglosar por plan, banda de seats, canal, banda ACV/ARR y antigüedad del cliente (nuevo vs. renovación).
+- Regla de decisión: escribir umbral go/no-go (ejemplo: "NRR +2pts sin caída >0.5pt en activación y sin aumento >10% en carga de soporte").
 
-## SaaS Metrics (Read When Needed)
+## Métricas SaaS (leer cuando haga falta)
 
-Use `references/saas-metrics-playbook.md` for definitions and templates (MRR/ARR, churn, NRR, Quick Ratio, Magic Number, burn multiple, stage focus).
+Usar `references/saas-metrics-playbook.md` para definiciones y templates (MRR/ARR, churn, NRR, Quick Ratio, Magic Number, burn multiple, foco por etapa).
 
-## Resources
+## Recursos
 
-| Resource | Purpose |
+| Recurso | Propósito |
 |----------|---------|
-| [unit-economics-calculator.md](references/unit-economics-calculator.md) | LTV, CAC, payback calculations |
-| [pricing-research-guide.md](references/pricing-research-guide.md) | WTP research methodology |
-| [saas-metrics-playbook.md](references/saas-metrics-playbook.md) | SaaS-specific metrics deep dive |
+| [unit-economics-calculator.md](references/unit-economics-calculator.md) | Cálculos LTV, CAC, payback |
+| [pricing-research-guide.md](references/pricing-research-guide.md) | Metodología de investigación WTP |
+| [saas-metrics-playbook.md](references/saas-metrics-playbook.md) | Deep dive en métricas SaaS |
 
-## Templates
+## Plantillas
 
-| Template | Purpose |
+| Template | Propósito |
 |----------|---------|
-| [business-model-canvas.md](assets/business-model-canvas.md) | Full model design |
-| [unit-economics-worksheet.md](assets/unit-economics-worksheet.md) | Calculate and track metrics |
-| [pricing-tier-design.md](assets/pricing-tier-design.md) | Pricing & packaging worksheet |
+| [business-model-canvas.md](assets/business-model-canvas.md) | Diseño completo del modelo |
+| [unit-economics-worksheet.md](assets/unit-economics-worksheet.md) | Calcular y rastrear métricas |
+| [pricing-tier-design.md](assets/pricing-tier-design.md) | Worksheet de pricing y packaging |
 
-## Data
+## Datos
 
-| File | Purpose |
+| Archivo | Propósito |
 |------|---------|
-| [sources.json](data/sources.json) | Business model resources |
+| [sources.json](data/sources.json) | Recursos de modelos de negocio |
 
 ---
 
-## Do / Avoid (Jan 2026)
+## Hacer / Evitar (Ene 2026)
 
-### Do
+### Hacer
 
-- Define your value metric (seat/usage/outcome) and validate willingness-to-pay early.
-- Include COGS drivers in pricing decisions (especially usage-based).
-- Use discount guardrails and renewal logic (avoid ad-hoc deals).
+- Definir tu value metric (seat/usage/outcome) y validar willingness-to-pay temprano.
+- Incluir drivers de COGS en decisiones de pricing (especialmente usage-based).
+- Usar guardrails de descuento y lógica de renovación (evitar deals ad-hoc).
 
-### Avoid
+### Evitar
 
-- Pricing as an afterthought (“we’ll figure it out later”).
-- Margin blindness (shipping usage growth that destroys gross margin).
-- Misleading LTV calculations from immature cohorts.
+- Pricing como pensamiento posterior ("lo resolveremos después").
+- Ceguera de margen (enviar crecimiento de usage que destruye gross margin).
+- Cálculos de LTV engañosos por cohortes inmaduras.
 
-## What Good Looks Like
+## Cómo se ve lo bueno
 
-- Packaging: a clear value metric, tier logic, and discount policy (with enforcement rules).
-- Unit economics: CAC, gross margin, churn, payback, and retention defined and tied to cohorts.
-- Assumptions: one inputs sheet, ranges/sensitivities, and scenarios (base/best/worst).
-- Experiments: pricing changes tested with decision rules (not “gut feel” rollouts).
-- Risks: margin compression, adverse selection, channel conflict, and support cost modeled.
+- Packaging: value metric clara, lógica de tiers y política de descuentos (con reglas de enforcement).
+- Unit economics: CAC, gross margin, churn, payback y retención definidos y ligados a cohortes.
+- Supuestos: una hoja de inputs, rangos/sensibilidades y escenarios (base/best/worst).
+- Experimentos: cambios de pricing probados con reglas de decisión (no rollouts por "gut feel").
+- Riesgos: compresión de margen, selección adversa, conflicto de canal y costo de soporte modelados.
 
-## Optional: AI / Automation
+## Opcional: AI / Automatización
 
-Use only when explicitly requested and policy-compliant.
+Usar solo cuando se solicite explícitamente y sea compatible con políticas.
 
-- Summarize pricing research and competitor snapshots; verify manually before acting.
-- Draft pricing page copy; humans verify claims and consistency with contracts.
+- Resumir investigación de pricing y snapshots competitivos; verificar manualmente antes de actuar.
+- Borrador de copy de pricing page; humanos verifican claims y consistencia con contratos.

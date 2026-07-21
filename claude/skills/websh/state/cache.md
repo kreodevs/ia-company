@@ -1,22 +1,22 @@
 ---
-role: cache-management
-summary: |
-  How websh caches pages and extracts content. Includes the iterative extraction
-  prompt that drives the haiku subagent, cache directory structure, and
-  graceful degradation when extraction is incomplete.
-see-also:
-  - ../shell.md: Shell semantics
-  - ../commands.md: Command reference
-  - crawl.md: Eager crawl agent
+rol: gestión de caché
+resumen: |
+  Cómo websh almacena en caché las páginas y extrae el contenido. Incluye la extracción iterativa.
+  mensaje que controla el subagente haiku, la estructura del directorio de caché y
+  degradación elegante cuando la extracción es incompleta.
+ver también:
+  - ../shell.md: Semántica del shell
+  - ../commands.md: referencia de comando
+  - crawl.md: agente de rastreo ansioso
 ---
 
-# websh Cache Management
+# websh Gestión de caché
 
-When you `cd` to a URL, websh fetches the HTML and spawns an async haiku subagent to extract rich content into a markdown file. This document defines the cache structure and extraction process.
+cuando tu `cd` a una URL, websh recupera el HTML y genera un subagente haiku asíncrono para extraer contenido enriquecido en un archivo de rebajas. Este documento define la estructura de la caché y el proceso de extracción.
 
 ---
 
-## Directory Structure
+## Estructura del directorio
 
 ```
 .websh/
@@ -27,59 +27,54 @@ When you `cd` to a URL, websh fetches the HTML and spawns an async haiku subagen
 │   └── {slug}.parsed.md          # Extracted content (by haiku)
 ├── history.md                    # Command history
 └── bookmarks.md                  # Saved URLs
-```
+```---
 
----
+## Conversión de URL a Slug
 
-## URL to Slug Conversion
+Las URL se convierten en nombres de archivos legibles:
 
-URLs become readable filenames:
+**Algoritmo:**
+1. Eliminar protocolo (`https://`)
+2. Replace `/` with`-`3. Reemplace los caracteres especiales con`-`4. Contraer múltiples`-` a soltero
+5. Recorte a una longitud razonable (100 caracteres como máximo)
+6. Minúsculas
 
-**Algorithm:**
-1. Remove protocol (`https://`)
-2. Replace `/` with `-`
-3. Replace special chars with `-`
-4. Collapse multiple `-` to single
-5. Trim to reasonable length (100 chars max)
-6. Lowercase
+**Ejemplos:**
 
-**Examples:**
-
-| URL | Slug |
+| URL | Babosa |
 |-----|------|
-| `https://news.ycombinator.com` | `news-ycombinator-com` |
-| `https://x.com/deepfates/status/123` | `x-com-deepfates-status-123` |
-| `https://techcrunch.com/2024/06/25/smashing/` | `techcrunch-com-2024-06-25-smashing` |
-| `https://example.com/path?q=test&a=1` | `example-com-path-q-test-a-1` |
+| `https://news.ycombinator.com`|` news-ycombinator-com`|
+| `https://x.com/deepfates/status/123`|` x-com-deepfates-status-123`|
+| `https://techcrunch.com/2024/06/25/smashing/`|` techcrunch-com-2024-06-25-smashing`|
+| `https://example.com/path?q=test&a=1`|` example-com-path-q-test-a-1`|
 
 ---
 
-## index.md
+## índice.md
 
-Tracks all cached URLs:
+Realiza un seguimiento de todas las URL almacenadas en caché:
 
 ```markdown
+
 # websh cache index
 
-## Entries
+## Entradas
 
 | Slug | URL | Fetched | Status |
 |------|-----|---------|--------|
 | news-ycombinator-com | https://news.ycombinator.com | 2026-01-24T10:30:00Z | extracted |
 | x-com-deepfates-status-123 | https://x.com/deepfates/status/123 | 2026-01-24T10:35:00Z | extracting |
 | techcrunch-com-article | https://techcrunch.com/... | 2026-01-24T10:40:00Z | fetched |
-```
-
-**Status values:**
-- `fetched` — HTML saved, extraction not started
-- `extracting` — Haiku agent running
-- `extracted` — Extraction complete
+```**Valores de estado:**
+- `fetched`— HTML guardado, extracción no iniciada
+- `extracting`— Agente de haiku corriendo
+- `extracted`— Extracción completa
 
 ---
 
-## Extraction: The Haiku Subagent
+## Extracción: El subagente Haiku
 
-When `cd` completes the fetch, spawn an extraction agent:
+cuando `cd` completa la búsqueda, genera un agente de extracción:
 
 ```
 Task({
@@ -91,37 +86,39 @@ Task({
 })
 ```
 
-### Extraction Prompt
+### Mensaje de extracción
 
-````markdown
+```markdown
+
 # websh Page Extraction
 
 You are extracting useful content from a webpage for the websh cache.
 
-## Input
+## Entrada
 
 URL: {url}
 HTML file: {html_path}
 Output file: {output_path}
 
-## Task
+## Tarea
 
 Perform an **iterative intelligent parse** of the HTML. Make multiple passes,
 each time extracting more useful detail. Write your findings to the output
 markdown file, updating it as you go.
 
-## Process
+## Proceso
+
+```bucle hasta que la extracción sea completa (normalmente de 2 a 4 pasadas):
+  1. Lea el archivo HTML
+  2. Lea su salida actual (si existe)
+  3. Identificar lo que falta o podría enriquecerse
+  4. Actualice el archivo de salida con nuevos hallazgos.
+  5. Evaluar: ¿hay más contenido útil para extraer?
 
 ```
-loop until extraction is thorough (typically 2-4 passes):
-  1. Read the HTML file
-  2. Read your current output (if exists)
-  3. Identify what's missing or could be richer
-  4. Update the output file with new findings
-  5. Assess: is there more useful content to extract?
-```
 
-## Pass Focus
+
+## Enfoque del pase
 
 - **Pass 1**: Basic structure
   - Page title, main heading
@@ -145,76 +142,78 @@ loop until extraction is thorough (typically 2-4 passes):
   - Add context and relationships
   - Note anything unusual or interesting
 
-## Output Format
+## Formato de salida
 
 Write to {output_path} in this format:
 
-```markdown
-# {url}
+```rebaja
+#{url}
 
-Fetched: {timestamp}
-Passes: {n}
-Status: {extracting|complete}
+Obtenido: {marca de tiempo}
+Pases: {n}
+Estado: {extrayendo|completo}
 
-## Summary
+## Resumen
 
-{2-3 sentence summary of what this page is}
+{Resumen de 2-3 oraciones de lo que es esta página}
 
-## Links
+## Enlaces
 
-| # | Text | Href | Notes |
+| # | Texto | Href | Notas |
 |---|------|------|-------|
 | 0 | ... | ... | ... |
 | 1 | ... | ... | ... |
 ...
 
-## Content
+## Contenido
 
-### Main Content
+### Contenido principal
 
-{extracted article text, cleaned and readable}
+{texto del artículo extraído, limpio y legible}
 
-### Comments/Discussion
+### Comentarios/Discusión
 
-{if applicable}
+{si corresponde}
 
-### Sidebar/Navigation
+### Barra lateral/Navegación
 
-{notable navigation or related links}
+{navegación destacada o enlaces relacionados}
 
-## Structure
+## Estructura
 
-Page type: {article, list, profile, search results, etc.}
+Tipo de página: {artículo, lista, perfil, resultados de búsqueda, etc.}
 
-Key patterns:
-- {selector} → {what it contains}
-- ...
+Patrones clave:
+- {selector} → {qué contiene}
+-...
 
-## Forms
+## Formularios
 
-### {form name/action}
-- {field name} ({type})
-- ...
+### {nombre del formulario/acción}
+- {nombre del campo} ({tipo})
+-...
 
-## Media
+## Medios
 
-- {images, videos, embeds}
+- {imágenes, vídeos, incrustaciones}
 
-## Metadata
+## Metadatos
 
-- title: ...
-- description: ...
-- og:image: ...
-- ...
+- título: ...
+- descripción: ...
+- og:imagen: ...
+-...
 
-## Extraction Notes
+## Notas de extracción
 
-Pass 1: {what was extracted}
-Pass 2: {what was added}
+Paso 1: {lo que se extrajo}
+Paso 2: {lo que se agregó}
 ...
+
 ```
 
-## Guidelines
+
+## Directrices
 
 1. **Be thorough but efficient** — Extract everything useful, skip boilerplate
 2. **Preserve structure** — Keep hierarchy from the page
@@ -223,7 +222,7 @@ Pass 2: {what was added}
 5. **Note patterns** — Identify site-specific structures
 6. **Stay readable** — Output should be useful to both humans and grep
 
-## Completion
+## Finalización
 
 After each pass, assess:
 - Have I captured the main content?
@@ -234,65 +233,66 @@ After each pass, assess:
 When extraction is thorough, update Status to `complete` and finish.
 
 Write your final confirmation:
+```Extracción completa: {output_path}
+Pases: {n}
+Enlaces: {count}
+Contenido: {breve descripción}
+
 ```
-Extraction complete: {output_path}
-Passes: {n}
-Links: {count}
-Content: {brief description}
 ```
-````
 
 ---
 
-## Graceful Degradation
+## Degradación elegante
 
-Commands work even if extraction is incomplete:
+Los comandos funcionan incluso si la extracción está incompleta:
 
-| Command | If extracted | If only HTML |
+| Comando | Si se extrae | Si solo HTML |
 |---------|--------------|--------------|
-| `ls` | Rich links from markdown | Basic `<a>` tag parsing |
-| `cat .selector` | From extracted content | Direct HTML parsing |
-| `grep "pattern"` | Search extracted text | Search raw text |
-| `stat` | Full metadata | Basic info |
+| `ls`| Enlaces enriquecidos de Markdown | Básico`<a>` análisis de etiquetas |
+| `cat .selector`| Del contenido extraído | Análisis HTML directo |
+| `grep "pattern"`| Buscar texto extraído | Buscar texto sin formato |
+| `stat`| Metadatos completos | Información básica |
 
-### Checking extraction status
+### Comprobando el estado de extracción
 
-Before executing a command, check:
+Antes de ejecutar un comando, verifique:
 
-1. Does `{slug}.parsed.md` exist?
-2. Does it contain `Status: complete`?
+1. ¿Tiene `{slug}.parsed.md`¿existir?
+2. ¿Contiene`Status: complete`?
 
-If complete, use the rich extracted content. Otherwise, fall back to HTML parsing or show what's available.
+Si está completo, utilice el rico contenido extraído. De lo contrario, recurra al análisis HTML o muestre lo que está disponible.
 
 ---
 
-## Cache Files
+## Archivos de caché
 
-### {slug}.html
+### {babosa}.html
 
-Raw HTML exactly as fetched. Kept for:
-- Fallback when extraction incomplete
-- CSS selector queries that need full DOM
-- Re-extraction if needed
+HTML sin procesar exactamente como se obtuvo. Guardado para:
+- Respaldo cuando la extracción está incompleta
+- Consultas del selector CSS que necesitan DOM completo
+- Reextracción si es necesario
 
-### {slug}.parsed.md
+### {babosa}.parsed.md
 
-The rich extracted content. Example:
+El rico contenido extraído. Ejemplo:
 
 ```markdown
+
 # https://news.ycombinator.com
 
 Fetched: 2026-01-24T10:30:00Z
 Passes: 3
 Status: complete
 
-## Summary
+## Resumen
 
 Hacker News front page. A tech-focused link aggregator showing 30 user-submitted
 stories ranked by points. Mix of Show HN projects, technical articles, and
 industry news.
 
-## Links
+## Enlaces
 
 | # | Text | Href | Notes |
 |---|------|------|-------|
@@ -302,7 +302,7 @@ industry news.
 | 3 | A deep dive into WebAssembly | /item?id=41234570 | 167 pts, 89 comments |
 ...
 
-## Content
+## Contenido
 
 ### Main Content
 
@@ -320,7 +320,7 @@ This is a link aggregator. Stories are displayed in a ranked list with:
 - [show](/show) - Show HN projects
 - [jobs](/jobs) - Job postings
 
-## Structure
+## Estructura
 
 Page type: Link aggregator / News feed
 
@@ -331,7 +331,7 @@ Key patterns:
 - .age → Submission time
 - .subtext → Metadata row (points, user, time, comments)
 
-## Forms
+## Formularios
 
 ### Search (external)
 - q (text) → Algolia HN search
@@ -340,62 +340,59 @@ Key patterns:
 - acct (text)
 - pw (password)
 
-## Media
+## Medios
 
 None (text-only design)
 
-## Metadata
+## Metadatos
 
 - title: Hacker News
 - (no meta description)
 - (no og tags)
 
-## Extraction Notes
+## Notas de extracción
 
 Pass 1: Found 30 story links, basic structure
 Pass 2: Extracted navigation, identified patterns
 Pass 3: Added metadata, cleaned up content descriptions
-```
+```---
 
----
+## Estado de sesión
 
-## Session State
-
-### session.md
+### sesión.md
 
 ```markdown
+
 # websh session
 
 started: 2026-01-24T10:30:00Z
 pwd: https://news.ycombinator.com
 pwd_slug: news-ycombinator-com
 
-## Navigation Stack
+## Pila de navegación
 
 - https://news.ycombinator.com
 
-## Recent Commands
+## Comandos recientes
 
 1. cd https://news.ycombinator.com
 2. ls | head 5
 3. grep "AI"
-```
-
-Updated after each command.
+```Actualizado después de cada comando.
 
 ---
 
-## Cache Expiration
+## Caducidad de la caché
 
-Currently, cache does not auto-expire. Use `refresh` to re-fetch.
+Actualmente, la caché no caduca automáticamente. Usar `refresh` para volver a buscar.
 
-Future consideration: TTL-based expiration, staleness warnings.
+Consideración futura: caducidad basada en TTL, advertencias de obsolescencia.
 
 ---
 
-## Initialization
+## Inicialización
 
-On first websh command, if `.websh/` doesn't exist:
+En el primer comando websh, si `.websh/` no existe:
 
 ```bash
 mkdir -p .websh/cache
@@ -403,21 +400,20 @@ touch .websh/session.md
 touch .websh/history.md
 touch .websh/bookmarks.md
 echo "# websh cache index\n\n## Entries\n\n| Slug | URL | Fetched | Status |\n|------|-----|---------|--------|" > .websh/cache/index.md
-```
-
-Write initial session state:
+```Escribir estado de sesión inicial:
 
 ```markdown
+
 # websh session
 
 started: {now}
 pwd: (none)
 
-## Navigation Stack
+## Pila de navegación
 
 (empty)
 
-## Recent Commands
+## Comandos recientes
 
 (none)
 ```

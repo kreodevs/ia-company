@@ -1,27 +1,26 @@
 ---
 name: deep-research
-description: Conduct enterprise-grade research with multi-source synthesis, citation tracking, and verification. Use when user needs comprehensive analysis requiring 10+ sources, verified claims, or comparison of approaches. Triggers include "deep research", "comprehensive analysis", "research report", "compare X vs Y", or "analyze trends". Do NOT use for simple lookups, debugging, or questions answerable with 1-2 searches.
+description: Realiza investigación de nivel empresarial con síntesis multi-fuente, seguimiento de citas y verificación. Usar cuando el usuario necesite análisis comprehensivo que requiera 10+ fuentes, afirmaciones verificadas o comparación de enfoques. Disparadores incluyen "deep research", "comprehensive analysis", "research report", "compare X vs Y" o "analyze trends". NO usar para búsquedas simples, debugging o preguntas respondibles con 1-2 búsquedas.
+---
+# Investigación profunda
+
+<!-- INICIO DE BLOQUE DE CONTEXTO ESTÁTICO - Optimizado para almacenamiento en caché rápido -->
+<!-- Todas las instrucciones estáticas, metodología y plantillas debajo de esta línea -->
+<!-- Contenido dinámico (consultas de usuarios, resultados) agregado después de este bloque -->
+
+## Instrucciones del sistema principal
+
+**Propósito:** Entregar informes de investigación verificados y respaldados por citas a través de un proceso de 8 fases (Alcance → Planificar → Recuperar → Triangular → Sintetizar → Crítica → Refinar → Paquete) con puntuación de credibilidad de la fuente y gestión progresiva del contexto.
+
+**Estrategia de contexto:** Esta habilidad utiliza las mejores prácticas de ingeniería de contexto de 2025:
+- Instrucciones estáticas almacenadas en caché (esta sección)
+- Divulgación progresiva (cargar referencias solo cuando sea necesario)
+- Evite la "pérdida en el medio" (información crítica al inicio/final, no enterrada)
+- Marcadores de sección explícitos para navegación contextual.
+
 ---
 
-# Deep Research
-
-<!-- STATIC CONTEXT BLOCK START - Optimized for prompt caching -->
-<!-- All static instructions, methodology, and templates below this line -->
-<!-- Dynamic content (user queries, results) added after this block -->
-
-## Core System Instructions
-
-**Purpose:** Deliver citation-backed, verified research reports through 8-phase pipeline (Scope → Plan → Retrieve → Triangulate → Synthesize → Critique → Refine → Package) with source credibility scoring and progressive context management.
-
-**Context Strategy:** This skill uses 2025 context engineering best practices:
-- Static instructions cached (this section)
-- Progressive disclosure (load references only when needed)
-- Avoid "loss in the middle" (critical info at start/end, not buried)
-- Explicit section markers for context navigation
-
----
-
-## Decision Tree (Execute First)
+## Árbol de decisión (ejecutar primero)
 
 ```
 Request Analysis
@@ -49,90 +48,88 @@ Validation Gate
 
 ---
 
-## Workflow (Clarify → Plan → Act → Verify → Report)
+## Flujo de trabajo (Aclarar → Planificar → Actuar → Verificar → Informar)
 
-**AUTONOMY PRINCIPLE:** This skill operates independently. Infer assumptions from query context. Only stop for critical errors or incomprehensible queries.
+**PRINCIPIO DE AUTONOMÍA:** Esta habilidad opera de forma independiente. Inferir suposiciones a partir del contexto de la consulta. Deténgase únicamente en caso de errores críticos o consultas incomprensibles.
 
-### 1. Clarify (Rarely Needed - Prefer Autonomy)
+### 1. Aclarar (rara vez es necesario; se prefiere la autonomía)
 
-**DEFAULT: Proceed autonomously. Derive assumptions from query signals.**
+**POR PREDETERMINADO: Procedimiento de forma autónoma. Derivar suposiciones a partir de señales de consulta.**
 
-**ONLY ask if CRITICALLY ambiguous:**
-- Query is incomprehensible (e.g., "research the thing")
-- Contradictory requirements (e.g., "quick 50-source ultradeep analysis")
+**Pregunte SÓLO si es CRÍTICAMENTE ambiguo:**
+- La consulta es incomprensible (por ejemplo, "investiga el asunto")
+- Requisitos contradictorios (por ejemplo, "análisis rápido y ultraprofundo de 50 fuentes")
 
-**When in doubt: PROCEED with standard mode. User will redirect if incorrect.**
+**En caso de duda: PROCEDA con el modo estándar. El usuario redirigirá si es incorrecto.**
 
-**Default assumptions:**
-- Technical query → Assume technical audience
-- Comparison query → Assume balanced perspective needed
-- Trend query → Assume recent 1-2 years unless specified
-- Standard mode is default for most queries
-
----
-
-### 2. Plan
-
-**Mode selection criteria:**
-- **Quick** (2-5 min): Exploration, broad overview, time-sensitive
-- **Standard** (5-10 min): Most use cases, balanced depth/speed [DEFAULT]
-- **Deep** (10-20 min): Important decisions, need thorough verification
-- **UltraDeep** (20-45 min): Critical analysis, maximum rigor
-
-**Announce plan and execute:**
-- Briefly state: selected mode, estimated time, number of sources
-- Example: "Starting standard mode research (5-10 min, 15-30 sources)"
-- Proceed without waiting for approval
+**Supuestos predeterminados:**
+- Consulta técnica → Asumir audiencia técnica
+- Consulta de comparación → Se necesita una perspectiva equilibrada
+- Consulta de tendencias → Suponga 1 o 2 años recientes, a menos que se especifique
+- El modo estándar es el predeterminado para la mayoría de las consultas.
 
 ---
 
-### 3. Act (Phase Execution)
+### 2. Planificar
 
-**All modes execute:**
-- Phase 1: SCOPE - Define boundaries ([method](./reference/methodology.md#phase-1-scope))
-- Phase 3: RETRIEVE - Parallel search execution (5-10 concurrent searches + agents) ([method](./reference/methodology.md#phase-3-retrieve---parallel-information-gathering))
-- Phase 8: PACKAGE - Generate report using [template](./templates/report_template.md)
+**Criterios de selección de modo:**
+- **Rápido** (2-5 min): exploración, descripción general amplia, urgente
+- **Estándar** (5-10 min): la mayoría de los casos de uso, profundidad/velocidad equilibrada [POR PREDETERMINADO]
+- **Profundo** (10-20 min): decisiones importantes que necesitan una verificación exhaustiva
+- **UltraDeep** (20-45 min): Análisis crítico, máximo rigor
 
-**Standard/Deep/UltraDeep execute:**
-- Phase 2: PLAN - Strategy formulation
-- Phase 4: TRIANGULATE - Verify 3+ sources per claim
-- Phase 4.5: OUTLINE REFINEMENT - Adapt structure based on evidence (WebWeaver 2025) ([method](./reference/methodology.md#phase-45-outline-refinement---dynamic-evolution-webweaver-2025))
-- Phase 5: SYNTHESIZE - Generate novel insights
+**Anunciar el plan y ejecutarlo:**
+- Indica brevemente: modo seleccionado, tiempo estimado, número de fuentes
+- Ejemplo: "Iniciar investigación en modo estándar (5-10 min, 15-30 fuentes)"
+- Continuar sin esperar la aprobación.
 
-**Deep/UltraDeep execute:**
-- Phase 6: CRITIQUE - Red-team analysis
-- Phase 7: REFINE - Address gaps
+---
 
-**Critical: Avoid "Loss in the Middle"**
-- Place key findings at START and END of sections, not buried
-- Use explicit headers and markers
-- Structure: Summary → Details → Conclusion (not Details sandwiched)
+### 3. Actuar (Fase de Ejecución)
 
-**Progressive Context Loading:**
-- Load [methodology](./reference/methodology.md) sections on-demand
-- Load [template](./templates/report_template.md) only for Phase 8
-- Do not inline everything - reference external files
+**Todos los modos se ejecutan:**
+- Fase 1: ALCANCE - Definir límites ([método](./reference/methodology.md#phase-1-scope))
+- Fase 3: RECUPERAR - Ejecución de búsqueda paralela (5-10 búsquedas simultáneas + agentes) ([método](./reference/methodology.md#phase-3-retrieve---parallel-information-gathering))
+- Fase 8: PAQUETE - Generar informe usando [plantilla](./templates/report_template.md)
 
-**Anti-Hallucination Protocol (CRITICAL):**
-- **Source grounding**: Every factual claim MUST cite a specific source immediately [N]
-- **Clear boundaries**: Distinguish between FACTS (from sources) and SYNTHESIS (your analysis)
-- **Explicit markers**: Use "According to [1]..." or "[1] reports..." for source-grounded statements
-- **No speculation without labeling**: Mark inferences as "This suggests..." not "Research shows..."
-- **Verify before citing**: If unsure whether source actually says X, do NOT fabricate citation
-- **When uncertain**: Say "No sources found for X" rather than inventing references
+**Ejecución estándar/profunda/ultraprofunda:**
+- Fase 2: PLANIFICAR - Formulación de estrategias
+- Fase 4: TRIANGULAR - Verificar más de 3 fuentes por reclamo
+- Fase 4.5: REFINAMIENTO DEL ESQUEMA - Adaptar estructura basada en evidencia (WebWeaver 2025) ([método](./reference/methodology.md#phase-45-outline-refinement---dynamic-evolution-webweaver-2025))
+- Fase 5: SINTETIZAR - Generar conocimientos novedosos
 
-**Parallel Execution Requirements (CRITICAL for Speed):**
+**Ejecución profunda/ultraprofunda:**
+- Fase 6: CRÍTICA - Análisis del equipo rojo
+- Fase 7: REFINAR - Abordar las deficiencias
 
-**Phase 3 RETRIEVE - Mandatory Parallel Search:**
-1. **Decompose query** into 5-10 independent search angles before ANY searches
-2. **Launch ALL searches in single message** with multiple tool calls (NOT sequential)
-3. **Quality threshold monitoring** for FFS pattern:
-   - Track source count and avg credibility score
-   - Proceed when threshold reached (mode-specific, see methodology)
-   - Continue background searches for additional depth
-4. **Spawn 3-5 parallel agents** using Task tool for deep-dive investigations
+**Crítico: Evite la "pérdida en el medio"**
+- Coloque los hallazgos clave al INICIO y FINAL de las secciones, no enterrados
+- Utilice encabezados y marcadores explícitos
+- Estructura: Resumen → Detalles → Conclusión (no Detalles intercalados)
 
-**Example correct execution:**
+**Carga de contexto progresivo:**
+- Cargar secciones [metodología](./reference/methodology.md) a pedido
+- Cargar [plantilla](./templates/report_template.md) solo para la Fase 8
+- No incluir todo en línea - hacer referencia a archivos externos
+
+**Protocolo Antialucinaciones (CRÍTICO):**
+- **Fundamentación de la fuente**: Cada afirmación fáctica DEBE citar una fuente específica inmediatamente [N]
+- **Límites claros**: Distinga entre HECHOS (de las fuentes) y SÍNTESIS (su análisis)
+- **Marcadores explícitos**: utilice "Según [1]..." o "[1] informes..." para declaraciones basadas en la fuente.
+- **Sin especulaciones sin etiquetas**: marque las inferencias como "Esto sugiere..." y no como "La investigación muestra..."
+- **Verifique antes de citar**: si no está seguro de si la fuente realmente dice X, NO invente la cita
+- **Cuando no esté seguro**: diga "No se encontraron fuentes para X" en lugar de inventar referencias.
+
+**Requisitos de ejecución paralela (CRÍTICOS para la velocidad):****Fase 3 RECUPERACIÓN - Búsqueda paralela obligatoria:**
+1. **Descomponer la consulta** en 5 a 10 ángulos de búsqueda independientes antes de CUALQUIER búsqueda
+2. **Inicia TODAS las búsquedas en un solo mensaje** con Múltiples llamadas a herramientas (NO secuenciales)
+3. **Monitoreo de umbral de calidad** para el patrón FFS:
+- Seguimiento del recuento de fuentes y puntuación de credibilidad promedio.
+- Proceder cuando se alcance el umbral (modo específico, ver metodología)
+- Continuar las búsquedas en segundo plano para mayor profundidad.
+4. **Genera de 3 a 5 agentes paralelos** usando la herramienta Tarea para investigaciones profundas
+
+**Ejemplo de ejecución correcta:**
 ```
 [Single message with 8+ parallel tool calls]
 WebSearch #1: Core topic semantic
@@ -145,310 +142,306 @@ Task agent #1: Academic paper analysis
 Task agent #2: Technical documentation deep dive
 ```
 
-**❌ WRONG (sequential execution):**
+**❌ MAL (ejecución secuencial):**
 ```
 WebSearch #1 → wait for results → WebSearch #2 → wait → WebSearch #3...
 ```
 
-**✅ RIGHT (parallel execution):**
+**✅ DERECHO (ejecución paralela):**
 ```
 All searches + agents launched simultaneously in one message
 ```
 
 ---
 
-### 4. Verify (Always Execute)
+### 4. Verificar (Ejecutar siempre)
 
-**Step 1: Citation Verification (Catches Fabricated Sources)**
+**Paso 1: Verificación de citas (captura fuentes fabricadas)**
 
 ```bash
 python scripts/verify_citations.py --report [path]
 ```
 
-**Checks:**
-- DOI resolution (verifies citation actually exists)
-- Title/year matching (detects mismatched metadata)
-- Flags suspicious entries (2024+ without DOI, no URL, failed verification)
+**Cheques:**
+- Resolución DOI (verifica que la cita realmente existe)
+- Coincidencia de título/año (detecta metadatos no coincidentes)
+- Marca entradas sospechosas (2024+ sin DOI, sin URL, verificación fallida)
 
-**If suspicious citations found:**
-- Review flagged entries manually
-- Remove or replace fabricated sources
-- Re-run until clean
+**Si se encuentran citas sospechosas:**
+- Revisar las entradas marcadas manualmente
+- Eliminar o reemplazar fuentes fabricadas
+- Vuelva a ejecutar hasta que esté limpio.
 
-**Step 2: Structure & Quality Validation**
+**Paso 2: Validación de estructura y calidad**
 
 ```bash
 python scripts/validate_report.py --report [path]
 ```
 
-**8 automated checks:**
-1. Executive summary length (50-250 words)
-2. Required sections present (+ recommended: Claims table, Counterevidence)
-3. Citations formatted [1], [2], [3]
-4. Bibliography matches citations
-5. No placeholder text (TBD, TODO)
-6. Word count reasonable (500-10000)
-7. Minimum 10 sources
-8. No broken internal links
+**8 comprobaciones automáticas:**
+1. Extensión del resumen ejecutivo (50-250 palabras)
+2. Secciones requeridas presentes (+ recomendado: tabla de reclamaciones, contraevidencia)
+3. Citas formateadas [1], [2], [3]
+4. La bibliografía coincide con las citas.
+5. Sin texto de marcador de posición (TBD, TODO)
+6. Número de palabras razonables (500-10000)
+7. Mínimo 10 fuentes
+8. Sin enlaces internos rotos
 
-**If fails:**
-- Attempt 1: Auto-fix formatting/links
-- Attempt 2: Manual review + correction
-- After 2 failures: **STOP** → Report issues → Ask user
+**Si falla:**
+- Intención 1: formato/enlaces de corrección automática
+- Intento 2: Revisión manual + corrección
+- Después de 2 fallos: **PARAR** → Informar problemas → Preguntar al usuario
 
 ---
 
-### 5. Report
+### 5. Informe
 
-**CRITICAL: Generate COMPREHENSIVE, DETAILED markdown reports**
+**CRÍTICO: Genere informes de rebajas COMPLETOS Y DETALLADOS**
 
-**File Organization (CRITICAL - Clean Accessibility):**
+**Organización de archivos (CRÍTICO - Accesibilidad limpia):**
 
-**1. Create Organized Folder in Documents:**
-- ALWAYS create dedicated folder: `~/Documents/[TopicName]_Research_[YYYYMMDD]/`
-- Extract clean topic name from research question (remove special chars, use underscores/CamelCase)
-- Examples:
-  - "psilocybin research 2025" → `~/Documents/Psilocybin_Research_20251104/`
-  - "compare React vs Vue" → `~/Documents/React_vs_Vue_Research_20251104/`
-  - "AI safety trends" → `~/Documents/AI_Safety_Trends_Research_20251104/`
-- If folder exists, use it; if not, create it
-- This ensures clean organization and easy accessibility
+**1. Crear carpeta organizada en documentos:**
+- SIEMPRE cree una carpeta dedicada:`~/Documents/[TopicName]_Research_[YYYYMMDD]/`
+- Extraiga el nombre limpio del tema de la pregunta de investigación (elimine caracteres especiales, use guiones bajos/CamelCase)
+- Ejemplos:
+- "investigación de psilocibina 2025" →`~/Documents/Psilocybin_Research_20251104/`
+- "comparar React vs Vue" →`~/Documents/React_vs_Vue_Research_20251104/`
+- "Tendencias de seguridad de la IA" →`~/Documents/AI_Safety_Trends_Research_20251104/`
+- Si la carpeta existe, úsela; si no, crealo
+- Esto garantiza una organización limpia y una fácil accesibilidad.
 
-**2. Save All Formats to Same Folder:**
+**2. Guarde todos los formatos en la misma carpeta:**
 
-**Markdown (Primary Source):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].md`
-- Also save copy to: `~/.claude/research_output/` (internal tracking)
-- Full detailed report with all findings
+**Rebaja (fuente principal):**
+- Guardar en:`[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].md`
+- También guardar copia en:`~/.claude/research_output/`(seguimiento interno)
+- Informe completo y detallado con todos los hallazgos.
 
-**HTML (McKinsey Style - ALWAYS GENERATE):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].html`
-- Use McKinsey template: [mckinsey_template](./templates/mckinsey_report_template.html)
-- Design principles: Sharp corners (NO border-radius), muted corporate colors (navy #003d5c, gray #f8f9fa), ultra-compact layout, info-first structure
-- Place critical metrics dashboard at top (extract 3-4 key quantitative findings)
-- Use data tables for dense information presentation
-- 14px base font, compact spacing, no decorative gradients or colors
-- **Attribution Gradients (2025):** Wrap each citation [N] in `<span class="citation">` with nested tooltip div showing source details
-- OPEN in browser automatically after generation
+**HTML (Estilo McKinsey - SIEMPRE GENERAR):**
+- Guardar en:`[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].html`
+- Utilice la plantilla de McKinsey: [mckinsey_template](./templates/mckinsey_report_template.html)
+- Principios de diseño: Esquinas afiladas (SIN radio de borde), colores corporativos apagados (azul marino #003d5c, gris #f8f9fa), diseño ultracompacto, estructura de información primero
+- Coloque el panel de métricas críticas en la parte superior (extraiga 3-4 hallazgos cuantitativos clave)
+- Utilice tablas de datos para una presentación densa de información.
+- Fuente base de 14px, espacio compacto, sin degradados ni colores decorativos
+- **Gradientes de atribución (2025):** Envuelva cada cita [N] en`<span class="citation">`con un div de información sobre herramientas anidado que muestra los detalles de la fuente
+- ABRIR en el navegador automáticamente después de la generación
 
-**PDF (Professional Print - ALWAYS GENERATE):**
-- Save to: `[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].pdf`
-- Use generating-pdf skill (via Task tool with general-purpose agent)
-- Professional formatting with headers, page numbers
-- OPEN in default PDF viewer after generation
+**PDF (Impresión profesional - SIEMPRE GENERAR):**
+- Guardar en:`[Documents folder]/research_report_[YYYYMMDD]_[topic_slug].pdf`
+- Utilice la habilidad de generar PDF (a través de la herramienta Task con un agente de uso general)
+- Formato profesional con encabezados, números de página.
+- ABRIR en el visor de PDF predeterminado después de la generación
 
-**3. File Naming Convention:**
-All files use same base name for easy matching:
+**3. Convención de nomenclatura de archivos:**
+Todos los archivos usan el mismo nombre base para facilitar la comparación:
 - `research_report_20251104_psilocybin_2025.md`
 - `research_report_20251104_psilocybin_2025.html`
 - `research_report_20251104_psilocybin_2025.pdf`
 
-**Length Requirements (UNLIMITED with Progressive Assembly):**
-- Quick mode: 2,000+ words (baseline quality threshold)
-- Standard mode: 4,000+ words (comprehensive analysis)
-- Deep mode: 6,000+ words (thorough investigation)
-- UltraDeep mode: 10,000-50,000+ words (NO UPPER LIMIT - as comprehensive as evidence warrants)
+**Requisitos de longitud (ILIMITADO con montaje progresivo):**
+- Modo rápido: más de 2000 palabras (umbral de calidad inicial)
+- Modo estándar: más de 4000 palabras (análisis completo)
+- Modo profundo: más de 6000 palabras (investigación exhaustiva)
+- Modo UltraDeep: 10 000-50 000+ palabras (SIN LÍMITE SUPERIOR - tan completo como lo justifica la evidencia)
 
-**How Unlimited Length Works:**
-Progressive file assembly allows ANY report length by generating section-by-section.
-Each section is written to file immediately (avoiding output token limits).
-Complex topics with many findings? Generate 20, 30, 50+ findings - no constraint!
+**Cómo funciona la longitud ilimitada:**
+El ensamblaje de archivos progresivo permite CUALQUIER longitud de informe generando sección por sección.
+Cada sección se escribe en el archivo inmediatamente (evitando límites de tokens de salida).
+¿Temas complejos con muchos hallazgos? Genere 20, 30, 50+ hallazgos: ¡sin restricciones!
 
-**Content Requirements:**
-- Use [template](./templates/report_template.md) as exact structure
-- Generate each section to APPROPRIATE depth (determined by evidence, not word targets)
-- Include specific data, statistics, dates, numbers (not vague statements)
-- Multiple paragraphs per finding with evidence (as many as needed)
-- Each section gets focused generation attention
-- DO NOT write summaries - write FULL analysis
+**Requisitos de contenido:**
+- Utilice [plantilla](./templates/report_template.md) como estructura exacta
+- Genere cada sección con la profundidad APROPIADA (determinada por evidencia, no por objetivos de palabras)
+- Incluir datos específicos, estadísticas, fechas, números (no declaraciones vagas)
+- Múltiples párrafos por hallazgo con evidencia (tanto como sea necesario)
+- Cada sección recibe atención generacional enfocada.
+- NO escriba resúmenes - escriba análisis COMPLETOS**Estándares de escritura:**
+- **Basado en la narrativa**: escribe en prosa fluida. Cada hallazgo cuenta una historia con comienzo (contexto), desarrollo (evidencia) y final (implicaciones).
+- **Precisión**: Cada palabra elegida deliberadamente, conlleva intención.
+- **Economía**: sin tonterías, elimina gramática sofisticada y modificadores innecesarios
+- **Claridad**: números exactos incluidos en frases ("El estudio demostró una reducción del 23% en la mortalidad"), no aislados en viñetas
+- **Directividad**: Expresar encuentra sin adornos
+- **Alta relación señal/ruido**: información densa, respeta el tiempo del lector
 
-**Writing Standards:**
-- **Narrative-driven**: Write in flowing prose. Each finding tells a story with beginning (context), middle (evidence), end (implications)
-- **Precision**: Every word deliberately chosen, carries intention
-- **Economy**: No fluff, eliminate fancy grammar, unnecessary modifiers
-- **Clarity**: Exact numbers embedded in sentences ("The study demonstrated a 23% reduction in mortality"), not isolated in bullets
-- **Directness**: State findings without embellishment
-- **High signal-to-noise**: Dense information, respect reader's time
+**Política de viñetas (aplicación antifatiga):**
+- Utilice viñetas CON MAREZACIÓN: solo para listas distintas (nombres de productos, lista de empresas, pasos enumerados)
+- NUNCA utiliza viñetas como entrega de contenido principal: fragmentan el pensamiento
+- Cada sección de hallazgos requiere párrafos sustantivos en prosa (3-5+ párrafos como mínimo)
+- Ejemplo: en lugar de "• Tamaño del mercado: 2.400 millones de dólares", escriba "El mercado global alcanzó los 2.400 millones de dólares en 2023, impulsado por la creciente demanda de los consumidores y los vientos de cola regulatorios [1]".
 
-**Bullet Point Policy (Anti-Fatigue Enforcement):**
-- Use bullets SPARINGLY: Only for distinct lists (product names, company roster, enumerated steps)
-- NEVER use bullets as primary content delivery - they fragment thinking
-- Each findings section requires substantive prose paragraphs (3-5+ paragraphs minimum)
-- Example: Instead of "• Market size: $2.4B" write "The global market reached $2.4 billion in 2023, driven by increasing consumer demand and regulatory tailwinds [1]."
+**Comprobación de calidad antifatiga (se aplica a sección CADA):**
+Antes de considerar una sección completa, verifique:
+- [ ] **Recuento de párrafos**: ≥3 párrafos para las secciones principales (## títulos)
+- [ ] **Primero la prosa**: <20% del contenido son viñetas (≥80% debe ser prosa fluida)
+- [ ] **Sin marcadores de posición**: Cero instancias de "El contenido continúa", "Debido a la longitud", "[Secciones X-Y]"
+- [ ] **Rico en evidencia**: puntos de datos específicos, estadísticas, citas (no declaraciones vagas)
+- [ ] **Densidad de citas**: reclamaciones principales citadas dentro de la misma frase
 
-**Anti-Fatigue Quality Check (Apply to EVERY Section):**
-Before considering a section complete, verify:
-- [ ] **Paragraph count**: ≥3 paragraphs for major sections (## headings)
-- [ ] **Prose-first**: <20% of content is bullet points (≥80% must be flowing prose)
-- [ ] **No placeholders**: Zero instances of "Content continues", "Due to length", "[Sections X-Y]"
-- [ ] **Evidence-rich**: Specific data points, statistics, quotes (not vague statements)
-- [ ] **Citation density**: Major claims cited within same sentence
+**Si CUALQUIER verificación falla:** Vuelva a generar la sección antes de pasar a la siguiente.
 
-**If ANY check fails:** Regenerate the section before moving to next.
+**Estándares de atribución de fuente (críticos para prevenir la fabricación):**
+- **Cita inmediata**: cada afirmación fáctica seguida de [N] cita en la misma oración
+- **Cite las fuentes directamente**: utilice "Según [1]..." o "[1] informes..." para declaraciones objetivas.
+- **Distinguir hecho de síntesis**:
+- ✅ BUENO: "La mortalidad disminuyó un 23% (p<0,01) en el grupo de tratamiento [1]."
+- ❌ MALO: "Los estudios muestran que la mortalidad mejoró significativamente".
+- **Sin atribuciones vagas**:
+- ❌ NUNCA: "Las investigaciones sugieren...", "Los estudios muestran...", "Los expertos creen..."
+- ✅ SIEMPRE: “Smith et al. (2024) encontraron…” [1], “Según datos de la FDA…” [2]
+- **Etiqueta la especulación específicamente**:
+- ✅ BUENO: "Esto sugiere un mecanismo potencial..." (análisis, no hecho)
+- ❌ MALO: "El mecanismo es..." (presentado como un hecho sin citar)
+- **Admitir incertidumbre**:
+- ✅ BUENO: "No se encontraron fuentes dirigiéndose a X directamente".
+- ❌ MALO: inventar una cita para llenar el vacío
+- **Patrón de plantilla**: "[Afirmación específica con números/datos] [Cita]. [Análisis/implicaciones]".
 
-**Source Attribution Standards (Critical for Preventing Fabrication):**
-- **Immediate citation**: Every factual claim followed by [N] citation in same sentence
-- **Quote sources directly**: Use "According to [1]..." or "[1] reports..." for factual statements
-- **Distinguish fact from synthesis**:
-  - ✅ GOOD: "Mortality decreased 23% (p<0.01) in the treatment group [1]."
-  - ❌ BAD: "Studies show mortality improved significantly."
-- **No vague attributions**:
-  - ❌ NEVER: "Research suggests...", "Studies show...", "Experts believe..."
-  - ✅ ALWAYS: "Smith et al. (2024) found..." [1], "According to FDA data..." [2]
-- **Label speculation explicitly**:
-  - ✅ GOOD: "This suggests a potential mechanism..." (analysis, not fact)
-  - ❌ BAD: "The mechanism is..." (presented as fact without citation)
-- **Admit uncertainty**:
-  - ✅ GOOD: "No sources found addressing X directly."
-  - ❌ BAD: Fabricating a citation to fill the gap
-- **Template pattern**: "[Specific claim with numbers/data] [Citation]. [Analysis/implication]."
+**Entregar al usuario:**
+1. Resumen ejecutivo (en línea en el chat)
+2. Ruta de la carpeta organizada (por ejemplo, "Todos los archivos guardados en: ~/Documentos/Psilocybin_Research_20251104/")
+3. Confirmación de los tres formatos generados:
+- Rebaja (fuente)
+- HTML (estilo McKinsey, abierto en el navegador)
+- PDF (impresión profesional, abierto en el visor)
+4. Resumen de evaluación de la calidad de las fuentes (recuento de fuentes)
+5. Próximos pasos (si corresponde)
 
-**Deliver to user:**
-1. Executive summary (inline in chat)
-2. Organized folder path (e.g., "All files saved to: ~/Documents/Psilocybin_Research_20251104/")
-3. Confirmation of all three formats generated:
-   - Markdown (source)
-   - HTML (McKinsey-style, opened in browser)
-   - PDF (professional print, opened in viewer)
-4. Source quality assessment summary (source count)
-5. Next steps (if relevant)
+**Flujo de trabajo de generación: ensamblaje de archivos progresivo (longitud ilimitada)**
 
-**Generation Workflow: Progressive File Assembly (Unlimited Length)**
-
-**Phase 8.1: Setup**
+**Fase 8.1: Configuración**
 ```bash
-# Extract topic slug from research question
+# Extraer slug del tema desde la pregunta de investigación
 # Create folder: ~/Documents/[TopicName]_Research_[YYYYMMDD]/
 mkdir -p ~/Documents/[folder_name]
 
-# Create initial markdown file with frontmatter
+# Crear archivo markdown inicial con frontmatter
 # File path: [folder]/research_report_[YYYYMMDD]_[slug].md
 ```
 
-**Phase 8.2: Progressive Section Generation**
+**Fase 8.2: Generación de secciones progresivas**
 
-**CRITICAL STRATEGY:** Generate and write each section individually to file using Write/Edit tools.
-This allows unlimited report length while keeping each generation manageable.
+**ESTRATEGIA CRÍTICA:** Genere y escriba cada sección individualmente en un archivo utilizando herramientas de escritura/edición.
+Esto permite una longitud ilimitada de los informes y al mismo tiempo mantiene cada generación manejable.
 
-**OUTPUT TOKEN LIMIT SAFEGUARD (CRITICAL - Claude Code Default: 32K):**
+**PROTECCIÓN DEL LÍMITE DE TOKEN DE SALIDA (CRÍTICO - Código Claude Predeterminado: 32K):**
 
-Claude Code default limit: 32,000 output tokens (≈24,000 words total per skill execution)
-This is a HARD LIMIT and cannot be changed within the skill.
+Límite predeterminado de Claude Code: 32 000 tokens de salida (≈24 000 palabras en total por ejecución de habilidad)
+Este es un LÍMITE DIFÍCIL y no se puede cambiar dentro de la habilidad.
 
-**What this means:**
-- Total output (your text + all tool call content) must be <32,000 tokens
-- 32,000 tokens ≈ 24,000 words max
-- Leave safety margin: Target ≤20,000 words total output
+**Qué significa esto:**
+- La producción total (su texto + todo el contenido de las llamadas a herramientas) debe ser <32 000 tokens
+- 32.000 tokens ≈ 24.000 palabras como máximo
+- Dejar margen de seguridad: Objetivo ≤20.000 palabras de producción total
 
-**Realistic report sizes per mode:**
-- Quick mode: 2,000-4,000 words ✅ (well under limit)
-- Standard mode: 4,000-8,000 words ✅ (comfortably under limit)
-- Deep mode: 8,000-15,000 words ✅ (achievable with care)
-- UltraDeep mode: 15,000-20,000 words ⚠️ (at limit, monitor closely)
+**Tamaños de informes realistas por modo:**
+- Modo rápido: 2000-4000 palabras ✅ (muy por debajo del límite)
+- Modo estándar: 4000-8000 palabras ✅ (cómodamente por debajo del límite)
+- Modo profundo: 8.000-15.000 palabras ✅ (alcanzable con cuidado)
+- Modo UltraDeep: 15 000-20 000 palabras ⚠️ (en el límite, supervisar de cerca)
 
-**For reports >20,000 words:**
-User must run skill multiple times:
-- Run 1: "Generate Part 1 (sections 1-6)" → saves to part1.md
-- Run 2: "Generate Part 2 (sections 7-12)" → saves to part2.md
-- User manually combines or asks Claude to merge files
+**Para informes >20.000 palabras:**
+El usuario debe ejecutar la habilidad varias veces:
+- Ejecución 1: "Generar Parte 1 (secciones 1-6)" → guarda en part1.md
+- Ejecutar 2: "Generar la Parte 2 (secciones 7-12)" → guarda en part2.md
+- El usuario combina manualmente o le pide a Claude que combine archivos
 
-**Auto-Continuation Strategy (TRUE Unlimited Length):**
+**Estrategia de continuación automática (duración ilimitada VERDADERA):**Cuando el informe supera las 18.000 palabras en una sola tirada:
+1. Genere las secciones 1 a 10 (manténgase en menos de 18.000 palabras)
+2. Guarde el archivo de estado de continuación con preservación del contexto.
+3. Generar agente de continuación a través de la herramienta Tarea
+4. Agente a continuación: Lee el estado → Genera el siguiente lote → Genera el siguiente agente si es necesario
+5. La cadena continúa recursivamente hasta completarse.
 
-When report exceeds 18,000 words in single run:
-1. Generate sections 1-10 (stay under 18K words)
-2. Save continuation state file with context preservation
-3. Spawn continuation agent via Task tool
-4. Continuation agent: Reads state → Generates next batch → Spawns next agent if needed
-5. Chain continues recursively until complete
+Esto logra una longitud ILIMITADA respetando el límite de 32K por agente
 
-This achieves UNLIMITED length while respecting 32K limit per agent
-
-**Initialize Citation Tracking:**
+**Inicializar seguimiento de citas:**
 ```
 citations_used = []  # Maintain this list in working memory throughout
 ```
 
-**Section Generation Loop:**
+**Bucle de generación de secciones:**
 
-**Pattern:** Generate section content → Use Write/Edit tool with that content → Move to next section
-Each Write/Edit call contains ONE section (≤2,000 words per call)
+**Patrón:** Generar contenido de sección → Usar la herramienta Escribir/Editar con ese contenido → Pasar a la siguiente sección
+Cada llamada de escritura/edición contiene UNA sección (≤2000 palabras por llamada)
 
-1. **Executive Summary** (200-400 words)
-   - Generate section content
-   - Tool: Write(file, content=frontmatter + Executive Summary)
-   - Track citations used
-   - Progress: "✓ Executive Summary"
+1. **Resumen ejecutivo** (200-400 palabras)
+- Generar contenido de sección
+- Herramienta: Escribir (archivo, contenido = frontmatter + Resumen ejecutivo)
+- Seguimiento de las citas utilizadas.
+- Progreso: " ✓ Resumen Ejecutivo "
 
-2. **Introduction** (400-800 words)
-   - Generate section content
-   - Tool: Edit(file, old=last_line, new=old + Introduction section)
-   - Track citations used
-   - Progress: "✓ Introduction"
+2. **Introducción** (400-800 palabras)
+- Generar contenido de sección
+- Herramienta: Editar (archivo, antiguo=última línea, nuevo=antiguo + sección de Introducción)
+- Seguimiento de las citas utilizadas.
+- Progreso: " ✓ Introducción "
 
-3. **Finding 1** (600-2,000 words)
-   - Generate complete finding
-   - Tool: Edit(file, append Finding 1)
-   - Track citations used
-   - Progress: "✓ Finding 1"
+3. **Encontrar 1** (600-2000 palabras)
+- Generar hallazgo completo.
+- Herramienta: Editar (archivo, agregar Hallazgo 1)
+- Seguimiento de las citas utilizadas.
+- Progreso: " ✓ Encontrar 1 "
 
-4. **Finding 2** (600-2,000 words)
-   - Generate complete finding
-   - Tool: Edit(file, append Finding 2)
-   - Track citations used
-   - Progress: "✓ Finding 2"
+4. **Encontrar 2** (600-2000 palabras)
+- Generar hallazgo completo.
+- Herramienta: Editar (archivo, agregar Hallazgo 2)
+- Seguimiento de las citas utilizadas.
+- Progreso: " ✓ Encontrar 2 "
 
-... Continue for ALL findings (each finding = one Edit tool call, ≤2,000 words)
+... Continuar para TODOS los hallazgos (cada hallazgo = una llamada a la herramienta de edición, ≤2000 palabras)
 
-**CRITICAL:** If you have 10 findings × 1,500 words each = 15,000 words of findings
-This is OKAY because each Edit call is only 1,500 words (under 2,000 word limit per tool call)
-The FILE grows to 15,000 words, but no single tool call exceeds limits
+**CRÍTICO:** Si tiene 10 hallazgos × 1500 palabras cada uno = 15 000 palabras de hallazgos
+Esto está BIEN porque cada llamada de edición tiene solo 1500 palabras (menos del límite de 2000 palabras por llamada de herramienta)
+El ARCHIVO crece a 15.000 palabras, pero ninguna llamada de herramienta excede los límites
 
-4. **Synthesis & Insights**
-   - Generate: Novel insights beyond source statements (as long as needed for synthesis)
-   - Tool: Edit (append to file)
-   - Track: Extract citations, append to citations_used
-   - Progress: "Generated Synthesis ✓"
+4. **Síntesis y conocimientos**
+- Generar: conocimientos novedosos más allá de las declaraciones fuente (siempre que sean necesarios para la síntesis)
+- Herramienta: Editar (añadir al archivo)
+- Seguimiento: extraer citas, agregar a citations_used
+- Progreso: "Síntesis Generada ✓"
 
-5. **Limitations & Caveats**
-   - Generate: Counterevidence, gaps, uncertainties (appropriate depth)
-   - Tool: Edit (append to file)
-   - Track: Extract citations, append to citations_used
-   - Progress: "Generated Limitations ✓"
+5. **Limitaciones y advertencias**
+- Generar: Contraevidencias, lagunas, incertidumbres (profundidad adecuada)
+- Herramienta: Editar (añadir al archivo)
+- Seguimiento: extraer citas, agregar a citations_used
+- Progreso: "Limitaciones Generadas ✓"
 
-6. **Recommendations**
-   - Generate: Immediate actions, next steps, research needs (appropriate depth)
-   - Tool: Edit (append to file)
-   - Track: Extract citations, append to citations_used
-   - Progress: "Generated Recommendations ✓"
+6. **Recomendaciones**
+- Generar: Acciones inmediatas, próximos pasos, necesidades de investigación (profundidad adecuada)
+- Herramienta: Editar (añadir al archivo)
+- Seguimiento: extraer citas, agregar a citations_used
+- Progreso: "Recomendaciones Generadas ✓"
 
-7. **Bibliography (CRITICAL - ALL Citations)**
-   - Generate: COMPLETE bibliography with EVERY citation from citations_used list
-   - Format: [1], [2], [3]... [N] - each citation gets full entry
-   - Verification: Check citations_used list - if list contains [1] through [73], generate all 73 entries
-   - NO ranges ([1-50]), NO placeholders ("Additional citations"), NO truncation
-   - Tool: Edit (append to file)
-   - Progress: "Generated Bibliography ✓ (N citations)"
+7. **Bibliografía (CRÍTICA - TODAS las citas)**
+- Generar: bibliografía COMPLETA con CADA cita de la lista citations_used
+- Formato: [1], [2], [3]... [N] - cada cita obtiene entrada completa
+- Verificación: verifique la lista de citas_usadas; si la lista contiene del [1] al [73], genere las 73 entradas
+- SIN rangos ([1-50]), SIN marcadores de posición ("Citas adicionales"), SIN truncamiento
+- Herramienta: Editar (añadir al archivo)
+- Progreso: "Bibliografía Generada ✓ (N citas)"
 
-8. **Methodology Appendix**
-   - Generate: Research process, verification approach (appropriate depth)
-   - Tool: Edit (append to file)
-   - Progress: "Generated Methodology ✓"
+8. **Apéndice de Metodología**
+- Generar: Proceso de investigación, enfoque de verificación (profundidad adecuada)
+- Herramienta: Editar (añadir al archivo)
+- Avance: “Metodología Generada ✓”
 
-**Phase 8.3: Auto-Continuation Decision Point**
+**Fase 8.3: Punto de decisión de continuación automática**
 
-After generating sections, check word count:
+Después de generar secciones, verifique el recuento de palabras:
 
-**If total output ≤18,000 words:** Complete normally
-- Generate Bibliography (all citations)
-- Generate Methodology
-- Verify complete report
-- Save copy to ~/.claude/research_output/
-- Done! ✓
+**Si la producción total es ≤18 000 palabras:** Complete normalmente
+- Generar bibliografía (todas las citas)
+- Generar Metodología
+- Verificar informe completo
+- Guardar copia en ~/.claude/research_output/
+- ¡Listo! ✓
 
-**If total output will exceed 18,000 words:** Auto-Continuation Protocol
+**Si la producción total supera las 18 000 palabras:** Protocolo de continuación automático
 
-**Step 1: Save Continuation State**
-Create file: `~/.claude/research_output/continuation_state_[report_id].json`
+**Paso 1: Guardar el estado a continuación**
+Crear archivo:`~/.claude/research_output/continuation_state_[report_id].json`
 
 ```json
 {
@@ -500,9 +493,9 @@ Create file: `~/.claude/research_output/continuation_state_[report_id].json`
 }
 ```
 
-**Step 2: Spawn Continuation Agent**
+**Paso 2: Agente de continuación de generación**
 
-Use Task tool with general-purpose agent:
+Utilice la herramienta Tarea con agente de uso general:
 
 ```
 Task(
@@ -553,8 +546,8 @@ HANDOFF PROTOCOL (if spawning next agent):
 )
 ```
 
-**Step 3: Report Continuation Status**
-Tell user:
+**Paso 3: Informar el estado a continuación**
+Dile al usuario:
 ```
 📊 Report Generation: Part 1 Complete (N sections, X words)
 🔄 Auto-continuing via spawned agent...
@@ -562,78 +555,76 @@ Tell user:
    Progress: [X%] complete
 ```
 
-**Phase 8.4: Continuation Agent Quality Protocol**
+**Fase 8.4: Protocolo de Calidad del Agente de Continuación**
 
-When continuation agent starts:
+Cuando comienza el agente a continuación:
 
-**Context Loading (CRITICAL):**
-1. Read continuation_state.json → Load ALL context
-2. Read existing report file → Review last 3 sections
-3. Extract patterns:
-   - Sentence structure complexity
-   - Technical terminology used
-   - Citation placement patterns
-   - Paragraph transition style
+**Carga de contexto (CRÍTICO):**
+1. Lea continuation_state.json → Cargar TODO el contexto
+2. Leer el archivo de informe existente → Revisar las últimas 3 secciones
+3. Patrones adicionales:
+- Complejidad de la estructura de la oración.
+- Terminología técnica utilizada
+- Patrones de colocación de citas.
+- Estilo de transición de párrafo
 
-**Pre-Generation Checklist:**
-- [ ] Loaded research context (themes, question, narrative arc)
-- [ ] Reviewed previous sections for flow
-- [ ] Loaded citation numbering (start from N+1)
-- [ ] Loaded quality targets (words, density, style)
-- [ ] Understand where in narrative arc (beginning/middle/end)
+**Lista de verificación previa a la generación:**
+- [ ] Contexto de investigación cargado (temas, pregunta, arco narrativo)
+- [] Se revisaron las secciones anteriores para ver el flujo.
+- [] Numeración de citas cargadas (comienza desde N+1)
+- [] Objetivos de calidad cargados (palabras, densidad, estilo)
+- [] Entender dónde en el arco narrativo (principio/medio/final)**Generación por sección:**
+1. Generar contenido de sección
+2. Controles de calidad:
+- Recuento de palabras: dentro del objetivo ±20%
+- Densidad de citas: Coincide con la tasa establecida
+- Proporción de prosa: ≥80% prosa
+- Conexión del tema: Vínculos con key_themes
+- Coincidencia de estilo: coherente con Quality_metrics.writing_style
+3. Si CUALQUIER verificación falla: Regenerar sección
+4. Si pasa: escribir en el archivo, actualizar el estado
 
-**Per-Section Generation:**
-1. Generate section content
-2. Quality checks:
-   - Word count: Within target ±20%
-   - Citation density: Matches established rate
-   - Prose ratio: ≥80% prose
-   - Theme connection: Ties to key_themes
-   - Style match: Consistent with quality_metrics.writing_style
-3. If ANY check fails: Regenerate section
-4. If passes: Write to file, update state
+**Decisión de traspaso:**
+- Calculadora: recuento de palabras actuales + secciones restantes × avg_words_per_section
+- Si total < 18K: generar todas las secciones restantes + finalizar
+- Si el total > 18K: generar lote parcial, actualizar estado, generar el siguiente agente
 
-**Handoff Decision:**
-- Calculate: Current word count + remaining sections × avg_words_per_section
-- If total < 18K: Generate all remaining sections + finish
-- If total > 18K: Generate partial batch, update state, spawn next agent
+**Responsabilidades finales del agente:**
+- Generar secciones de contenido final.
+- Genere bibliografía COMPLETA utilizando TODAS las citas de state.citations.bibliography_entries
+- Lea el informe completo recopilado.
+- Ejecutar validación: scripts de python/validate_report.py --report [ruta]
+- Eliminar continuation_state.json (limpieza)
+- Informe completo al usuario con métricas.
 
-**Final Agent Responsibilities:**
-- Generate final content sections
-- Generate COMPLETE bibliography using ALL citations from state.citations.bibliography_entries
-- Read entire assembled report
-- Run validation: python scripts/validate_report.py --report [path]
-- Delete continuation_state.json (cleanup)
-- Report complete to user with metrics
+**Antifatiga incorporada:**
+Cada agente genera fragmentos manejables (≤18.000 palabras), manteniendo la calidad.
+La preservación del contexto garantiza la coherencia entre los límites de continuación.
 
-**Anti-Fatigue Built-In:**
-Each agent generates manageable chunks (≤18K words), maintaining quality.
-Context preservation ensures coherence across continuation boundaries.
-
-**Generate HTML (McKinsey Style)**
-1. Read McKinsey template from `./templates/mckinsey_report_template.html`
-2. Extract 3-4 key quantitative metrics from findings for dashboard
-3. **Use Python script for MD to HTML conversion:**
+**Generar HTML (estilo McKinsey)**
+1. Lea la plantilla de McKinsey de`./templates/mckinsey_report_template.html`
+2. Extraiga de 3 a 4 métricas cuantitativas clave de los hallazgos para el panel
+3. **Utilice el script Python para la conversión de MD a HTML:**
 
    ```bash
    cd ~/.claude/skills/deep-research
    python scripts/md_to_html.py [markdown_report_path]
    ```
 
-   The script returns two parts:
-   - **Part A ({{CONTENT}}):** All sections except Bibliography, properly converted to HTML
-   - **Part B ({{BIBLIOGRAPHY}}):** Bibliography section only, formatted as HTML
+El guión devuelve dos partes:
+- **Parte A ({{CONTENT}}):** Todas las secciones excepto Bibliografía, correctamente convertidas a HTML
+- **Parte B ({{BIBLIOGRAFÍA}}):** Sólo sección de bibliografía, con formato HTML
 
-   **CRITICAL:** The script handles ALL conversion automatically:
-   - Headers: ## → `<div class="section"><h2 class="section-title">`, ### → `<h3 class="subsection-title">`
-   - Lists: Markdown bullets → `<ul><li>` with proper nesting
-   - Tables: Markdown tables → `<table>` with thead/tbody
-   - Paragraphs: Text wrapped in `<p>` tags
-   - Bold/italic: **text** → `<strong>`, *text* → `<em>`
-   - Citations: [N] preserved for tooltip conversion in step 4
+**CRÍTICO:** El script maneja TODAS las conversiones automáticamente:
+- Encabezados: ## →`<div class="section"><h2 class="section-title">`, ### → `<h3 class="subsection-title">`
+- Listas: viñetas de rebajas →`<ul><li>`con anidamiento adecuado
+- Tablas: Tablas de rebajas →`<table>`estafador/cuerpo
+- Párrafos: texto envuelto en etiquetas`<p>`
+- Negrita/cursiva: **texto** →`<strong>`, *texto* →`<em>`
+- Citas: [N] conservada para la conversión de información sobre herramientas en el paso 4
 
-4. **Add Citation Tooltips (Attribution Gradients):**
-   For each [N] citation in {{CONTENT}} (not bibliography), optionally add interactive tooltips:
+4. **Agregar información sobre herramientas de citas (gradientes de atribución):**
+Para cada [N] cita en {{CONTENT}} (sin bibliografía), opcionalmente agregue información sobre herramientas interactivas:
    ```html
    <span class="citation">[N]
      <span class="citation-tooltip">
@@ -646,105 +637,103 @@ Context preservation ensures coherence across continuation boundaries.
      </span>
    </span>
    ```
-   NOTE: This step is optional for speed. Basic [N] citations are sufficient.
+NOTA: Este paso es opcional para la velocidad. Las citas básicas [N] son ​​suficientes.
 
-5. Replace placeholders in template:
-   - {{TITLE}} - Report title (extract from first ## heading in MD)
-   - {{DATE}} - Generation date (YYYY-MM-DD format)
-   - {{SOURCE_COUNT}} - Number of unique sources
-   - {{METRICS_DASHBOARD}} - Metrics HTML from step 2
-   - {{CONTENT}} - HTML from Part A (script output)
-   - {{BIBLIOGRAPHY}} - HTML from Part B (script output)
+5. Vuelva a colocar los marcadores de posición en la plantilla:
+- {{TITLE}} - Título del informe (extracto del primer ## encabezado en MD)
+- {{DATE}} - Fecha de generación (formato AAAA-MM-DD)
+- {{SOURCE_COUNT}} - Número de fuentes únicas
+- {{METRICS_DASHBOARD}} - Métricas HTML del paso 2
+- {{CONTENT}} - HTML de la Parte A (salida del script)
+- {{BIBLIOGRAFÍA}} - HTML de la Parte B (salida del script)
 
-6. **CRITICAL: NO EMOJIS** - Remove any emoji characters from final HTML
+6. **CRÍTICO: NO HAY EMOJIS** - Elimina los caracteres emoji del HTML final
 
-7. Save to: `[folder]/research_report_[YYYYMMDD]_[slug].html`
+7. Guardar en:`[folder]/research_report_[YYYYMMDD]_[slug].html`
 
-8. **Verify HTML (MANDATORY):**
+8. **Verificar HTML (OBLIGATORIO):**
    ```bash
    python scripts/verify_html.py --html [html_path] --md [md_path]
    ```
-   - Check passes: Proceed to step 9
-   - Check fails: Fix errors and re-run verification
+- Verificar pases: continuar con el paso 9
+- La comprobación falla: corrige errores y vuelve a ejecutar la verificación.
 
-9. Open in browser: `open [html_path]`
+9. Abrir en el navegador:`open [html_path]`
 
-**Generate PDF**
-1. Use Task tool with general-purpose agent
-2. Invoke generating-pdf skill with markdown as input
-3. Save to: `[folder]/research_report_[YYYYMMDD]_[slug].pdf`
-4. PDF will auto-open when complete
-
----
-
-## Output Contract
-
-**Format:** Comprehensive markdown report following [template](./templates/report_template.md) EXACTLY
-
-**Required sections (all must be detailed):**
-- Executive Summary (2-3 concise paragraphs, 50-250 words)
-- Introduction (2-3 paragraphs: question, scope, methodology, assumptions)
-- Main Analysis (4-8 findings, each 300-500 words with citations [1], [2], [3])
-- Synthesis & Insights (500-1000 words: patterns, novel insights, implications)
-- Limitations & Caveats (2-3 paragraphs: gaps, assumptions, uncertainties)
-- Recommendations (3-5 immediate actions, 3-5 next steps, 3-5 further research)
-- **Bibliography (CRITICAL - see rules below)**
-- Methodology Appendix (2-3 paragraphs: process, sources, verification)
-
-**Bibliography Requirements (ZERO TOLERANCE - Report is UNUSABLE without complete bibliography):**
-- ✅ MUST include EVERY citation [N] used in report body (if report has [1]-[50], write all 50 entries)
-- ✅ Format: [N] Author/Org (Year). "Title". Publication. URL (Retrieved: Date)
-- ✅ Each entry on its own line, complete with all metadata
-- ❌ NO placeholders: NEVER use "[8-75] Additional citations", "...continue...", "etc.", "[Continue with sources...]"
-- ❌ NO ranges: Write [3], [4], [5]... individually, NOT "[3-50]"
-- ❌ NO truncation: If 30 sources cited, write all 30 entries in full
-- ⚠️ Validation WILL FAIL if bibliography contains placeholders or missing citations
-- ⚠️ Report is GARBAGE without complete bibliography - no way to verify claims
-
-**Strictly Prohibited:**
-- Placeholder text (TBD, TODO, [citation needed])
-- Uncited major claims
-- Broken links
-- Missing required sections
-- **Short summaries instead of detailed analysis**
-- **Vague statements without specific evidence**
-
-**Writing Standards (Critical):**
-- **Narrative-driven**: Write in flowing prose with complete sentences that build understanding progressively
-- **Precision**: Choose each word deliberately - every word must carry intention
-- **Economy**: Eliminate fluff, unnecessary adjectives, fancy grammar
-- **Clarity**: Use precise technical terms, avoid ambiguity. Embed exact numbers in sentences, not bullets
-- **Directness**: State findings clearly without embellishment
-- **Signal-to-noise**: High information density, respect reader's time
-- **Bullet discipline**: Use bullets only for distinct lists (products, companies, steps). Default to prose paragraphs
-- **Examples of precision**:
-  - Bad: "significantly improved outcomes" → Good: "reduced mortality 23% (p<0.01)"
-  - Bad: "several studies suggest" → Good: "5 RCTs (n=1,847) show"
-  - Bad: "potentially beneficial" → Good: "increased biomarker X by 15%"
-  - Bad: "• Market: $2.4B" → Good: "The market reached $2.4 billion in 2023, driven by consumer demand [1]."
-
-**Quality gates (enforced by validator):**
-- Minimum 2,000 words (standard mode)
-- Average credibility score >60/100
-- 3+ sources per major claim
-- Clear facts vs. analysis distinction
-- All sections present and detailed
+**Generar PDF**
+1. Utilice la herramienta Tarea con agente de uso general
+2. Invocar la habilidad de generar pdf con Markdown como entrada
+3. Guardar en:`[folder]/research_report_[YYYYMMDD]_[slug].pdf`
+4. El PDF se abrirá automáticamente cuando esté completo
 
 ---
 
-## Error Handling & Stop Rules
+## Contrato de salida
 
-**Stop immediately if:**
-- 2 validation failures on same error → Pause, report, ask user
-- <5 sources after exhaustive search → Report limitation, request direction
-- User interrupts/changes scope → Confirm new direction
+**Formato:** Informe de rebajas completo siguiendo [plantilla](./templates/report_template.md) EXACTAMENTE
 
-**Graceful degradation:**
-- 5-10 sources → Note in limitations, proceed with extra verification
-- Time constraint reached → Package partial results, document gaps
-- High-priority critique issue → Address immediately
+**Secciones requeridas (todas deben estar detalladas):**
+- Resumen ejecutivo (2-3 párrafos concisos, 50-250 palabras)
+- Introducción (2-3 párrafos: pregunta, alcance, metodología, supuestos)
+- Análisis principal (4-8 hallazgos, cada uno de 300-500 palabras con citas [1], [2], [3])
+- Síntesis e ideas (500-1000 palabras: patrones, ideas novedosas, implicaciones)
+- Limitaciones y advertencias (2-3 párrafos: lagunas, suposiciones, incertidumbres)
+- Recomendaciones (3-5 acciones inmediatas, 3-5 próximos pasos, 3-5 investigaciones adicionales)
+- **Bibliografía (CRÍTICA - ver las reglas a continuación)**
+- Apéndice de Metodología (2-3 párrafos: proceso, fuentes, verificación)**Requisitos de bibliografía (TOLERANCIA CERO - El informe es INUTILIZABLE sin bibliografía completa):**
+- ✅ DEBE incluir CADA cita [N] utilizada en el cuerpo del informe (si el informe tiene [1]-[50], escriba las 50 entradas)
+- ✅ Formato: [N] Autor/Org (Año). "Título". Publicación. URL (obtenido: fecha)
+- ✅ Cada entrada en su propia línea, completa con todos los metadatos
+- ❌ SIN marcadores de posición: NUNCA utilice "[8-75] Citas adicionales", "...continuar...", "etc.", "[Continuar con fuentes...]"
+- ❌ SIN rangos: Escriba [3], [4], [5]... individualmente, NO "[3-50]"
+- ❌ NO truncamiento: si se citan 30 fuentes, escriba las 30 entradas completas
+- ⚠️ La validación FALLARÁ si la bibliografía contiene marcadores de posición o faltan citas
+- ⚠️ El informe es BASURA sin bibliografía completa; no hay forma de verificar las afirmaciones
 
-**Error format:**
+**Estrictamente prohibido:**
+- Texto de marcador de posición (TBD, TODO, [cita requerida])
+- Reclamaciones importantes no citadas
+- Enlaces rotos
+- Faltan secciones requeridas
+- **Resúmenes breves en lugar de análisis detallados**
+- **Declaraciones vagas sin evidencia específica**
+
+**Estándares de redacción (críticos):**
+- **Basado en la narrativa**: escriba en prosa fluida con oraciones completas que desarrollen la comprensión progresivamente.
+- **Precisión**: elija cada palabra deliberadamente; cada palabra debe tener intención
+- **Economía**: Elimina tonterías, adjetivos innecesarios y gramática sofisticada
+- **Claridad**: Utilice términos técnicos precisos, evite la ambigüedad. Insertar números exactos en oraciones, no viñetas
+- **Directo**: Exponga los hallazgos claramente sin adornos
+- **Señal-a-ruido**: Alta densidad de información, respeta el tiempo del lector
+- **Disciplina con viñetas**: utilice viñetas solo para listas distintas (productos, empresas, pasos). Predeterminado a párrafos en prosa
+- **Ejemplos de precisión**:
+  - Malo: "resultados significativamente mejorados" → Bueno: "reducción de la mortalidad en un 23% (p<0,01)"
+  - Malo: "varios estudios sugieren" → Bueno: "5 ECA (n=1.847) lo demuestran"
+  - Malo: "potencialmente beneficioso" → Bueno: "aumentó el biomarcador X en un 15%"
+  - Malo: "• Mercado: 2.400 millones de dólares" → Bueno: "El mercado alcanzó los 2.400 millones de dólares en 2023, impulsado por la demanda de los consumidores [1]".
+
+**Puertas de calidad (aplicadas por el validador):**
+- Mínimo 2.000 palabras (modo estándar)
+- Puntaje de credibilidad promedio >60/100
+- Más de 3 fuentes por reclamo importante
+- Distinción entre hechos claros y análisis
+- Todas las secciones presentes y detalladas.
+
+---
+
+## Manejo de errores y reglas de detención
+
+**Deténgase inmediatamente si:**
+- 2 fallas de validación en el mismo error → Pausar, informar, preguntar al usuario
+- <5 fuentes después de una búsqueda exhaustiva → Limitación del informe, dirección de solicitud
+- El usuario interrumpe/cambia el alcance → Confirma la nueva dirección
+
+**Degradación elegante:**
+- 5-10 fuentes → Nota sobre limitaciones, continúa con verificación adicional
+- Se alcanzó el límite de tiempo → Paquete de resultados parciales, lagunas en los documentos
+- Asunto crítico de alta prioridad → Abordar inmediatamente
+
+**Formato de error:**
 ```
 ⚠️ Issue: [Description]
 📊 Context: [What was attempted]
@@ -757,100 +746,98 @@ Context preservation ensures coherence across continuation boundaries.
 
 ---
 
-## Quality Standards (Always Enforce)
+## Estándares de calidad (siempre hacer cumplir)
 
-Every report must:
-- 10+ sources (document if fewer)
-- 3+ sources per major claim
-- Executive summary <250 words
-- Full citations with URLs
-- Credibility assessment
-- Limitations section
-- Methodology documented
-- No placeholders
+Todo informe debe:
+- Más de 10 fuentes (documento si hay menos)
+- Más de 3 fuentes por reclamo importante
+- Resumen ejecutivo <250 palabras
+- Citas completas con URL.
+- Evaluación de credibilidad
+- Sección de limitaciones
+- Metodología documentada
+- Sin marcadores de posición
 
-**Priority:** Thoroughness over speed. Quality > speed.
-
----
-
-## Inputs & Assumptions
-
-**Required:**
-- Research question (string)
-
-**Optional:**
-- Mode (quick/standard/deep/ultradeep)
-- Time constraints
-- Required perspectives/sources
-- Output format
-
-**Assumptions:**
-- User requires verified, citation-backed information
-- 10-50 sources available on topic
-- Time investment: 5-45 minutes
+**Prioridad:** Minuciosidad sobre velocidad. Calidad > velocidad.
 
 ---
 
-## When to Use / NOT Use
+## Entradas y supuestos
 
-**Use when:**
-- Comprehensive analysis (10+ sources needed)
-- Comparing technologies/approaches/strategies
-- State-of-the-art reviews
-- Multi-perspective investigation
-- Technical decisions
-- Market/trend analysis
+**Requerido:**
+- Pregunta de investigación (cadena)
 
-**Do NOT use:**
-- Simple lookups (use WebSearch)
-- Debugging (use standard tools)
-- 1-2 search answers
-- Time-sensitive quick answers
+**Opcional:**
+- Modo (rápido/estándar/profundo/ultraprofundo)
+- Limitaciones de tiempo
+- Perspectivas/fuentes requeridas
+- Formato de salida
 
----
-
-## Scripts (Offline, Python stdlib only)
-
-**Location:** `./scripts/`
-
-- **research_engine.py** - Orchestration engine
-- **validate_report.py** - Quality validation (8 checks)
-- **citation_manager.py** - Citation tracking
-- **source_evaluator.py** - Credibility scoring (0-100)
-
-**No external dependencies required.**
+**Supuestos:**
+- El usuario requiere información verificada y respaldada por citas
+- 10-50 fuentes disponibles sobre el tema
+- Inversión de tiempo: 5-45 minutos
 
 ---
 
-## Progressive References (Load On-Demand)
+## Cuándo usar/NO usar
 
-**Do not inline these - reference only:**
-- [Complete Methodology](./reference/methodology.md) - 8-phase details
-- [Report Template](./templates/report_template.md) - Output structure
-- [README](./README.md) - Usage docs
-- [Quick Start](./QUICK_START.md) - Fast reference
-- [Competitive Analysis](./COMPETITIVE_ANALYSIS.md) - vs OpenAI/Gemini
+**Usar cuando:**
+- Análisis completo (se necesitan más de 10 fuentes)
+- Comparar tecnologías/enfoques/estrategias
+- Revisiones de última generación
+- Investigación multiperspectiva
+- Decisiones técnicas
+- Análisis de mercado/tendencias
 
-**Context Management:** Load files on-demand for current phase only. Do not preload all content.
-
----
-
-<!-- STATIC CONTEXT BLOCK END -->
-<!-- ⚡ Above content is cacheable (>1024 tokens, static) -->
-<!-- 📝 Below: Dynamic content (user queries, retrieved data, generated reports) -->
-<!-- This structure enables 85% latency reduction via prompt caching -->
+**NO usar:**
+- Búsquedas simples (use WebSearch)
+- Depuración (use herramientas estándar)
+- 1-2 respuestas de búsqueda
+- Respuestas rápidas urgentes
 
 ---
 
-## Dynamic Execution Zone
+## Scripts (sin conexión, solo Python stdlib)
 
-**User Query Processing:**
-[User research question will be inserted here during execution]
+**Ubicación:**`./scripts/`
 
-**Retrieved Information:**
-[Search results and sources will be accumulated here]
+- **research_engine.py** - Motor de orquestación
+- **validate_report.py** - Validación de calidad (8 comprobaciones)
+- **citation_manager.py** - Seguimiento de citas
+- **source_evaluator.py** - Puntuación de credibilidad (0-100)
 
-**Generated Analysis:**
-[Findings, synthesis, and report content generated here]
+**No se requieren dependencias externas.**
 
-**Note:** This section remains empty in the skill definition. Content populated during runtime only.
+---
+
+## Referencias progresivas (carga bajo demanda)**No incluyes estos - solo referencia:**
+- [Metodología completa](./reference/methodology.md) - Detalles de 8 fases
+- [Plantilla de informe](./templates/report_template.md) - Estructura de salida
+- [README](./README.md) - Documentos de uso
+- [Inicio rápido](./QUICK_START.md) - Referencia rápida
+- [Análisis competitivo](./COMPETITIVE_ANALYSIS.md) - vs OpenAI/Gemini
+
+**Gestión de contexto:** Cargue archivos bajo demanda solo para la fase actual. No precargue todo el contenido.
+
+---
+
+<!-- FIN DEL BLOQUE DE CONTEXTO ESTÁTICO -->
+<!-- ⚡ El contenido anterior se puede almacenar en caché (>1024 tokens, estático) -->
+<!-- 📝 Abajo: Contenido dinámico (consultas de usuarios, datos recuperados, informes generados) -->
+<!-- Esta estructura permite una reducción de la latencia del 85 % mediante el almacenamiento en caché rápido -->
+
+---
+
+## Zona de ejecución dinámica
+
+**Procesamiento de consultas de usuarios:**
+[La pregunta de investigación del usuario se insertará aquí durante la ejecución]
+
+**Información recuperada:**
+[Los resultados de la búsqueda y las fuentes se acumularán aquí]
+
+**Análisis generado:**
+[Hallazgos, síntesis y contenido del informe generado aquí]
+
+**Nota:** Esta sección permanece vacía en la definición de habilidad. Contenido completado solo durante el tiempo de ejecución.

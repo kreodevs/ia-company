@@ -1,13 +1,13 @@
-# Helm Package Management
+# Gestión de paquetes con Helm
 
-## Core Concepts
+## Conceptos centrales
 
-- **Chart:** Helm package with K8s resource definitions
-- **Repository:** Collection of charts
-- **Release:** Deployed instance of a chart
-- **Values:** Configuration that parameterizes charts
+- **Chart:** Paquete Helm con definiciones de recursos K8s
+- **Repository:** Colección de charts
+- **Release:** Instancia desplegada de un chart
+- **Values:** Configuración que parametriza los charts
 
-## Chart Structure
+## Estructura del chart
 
 ```
 mychart/
@@ -22,7 +22,7 @@ mychart/
 └── values.schema.json     # Validation (optional)
 ```
 
-## Essential Commands
+## Comandos esenciales
 
 ```bash
 helm create mychart           # Create chart
@@ -40,7 +40,7 @@ helm list
 helm uninstall myrelease
 ```
 
-## Multi-Environment
+## Multi-entorno
 
 ```bash
 # Files: values.yaml, values-dev.yaml, values-prod.yaml
@@ -48,7 +48,7 @@ helm install myapp ./mychart -f values.yaml -f values-prod.yaml
 helm install myapp ./mychart --set replicaCount=3 --set image.tag=v1.2.3
 ```
 
-## values.yaml Example
+## Ejemplo de values.yaml
 
 ```yaml
 replicaCount: 2
@@ -64,7 +64,7 @@ resources:
   requests: { cpu: 250m, memory: 256Mi }
 ```
 
-## Dependencies
+## Dependencias
 
 ```yaml
 # Chart.yaml
@@ -78,4 +78,4 @@ dependencies:
 helm dependency update mychart
 ```
 
-See `kubernetes-helm-advanced.md` for templates, hooks, and packaging.
+Consulta `kubernetes-helm-advanced.md` para templates, hooks y empaquetado.

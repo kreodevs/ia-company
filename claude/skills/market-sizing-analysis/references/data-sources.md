@@ -1,421 +1,415 @@
-# Market Sizing Data Sources
+# Fuentes de datos sobre dimensionamiento del mercado
 
-Curated list of credible sources for market research and sizing analysis.
+Lista seleccionada de fuentes creíbles para investigaciones de mercado y análisis de tamaño.
 
-## Industry Research Reports
+## Informes de investigación de la industria
 
-### Premium Research Firms
+### Empresas de investigación premium
 
 **Gartner** (https://www.gartner.com)
 
-- Technology market forecasts and sizing
-- Magic Quadrants for competitive positioning
-- Typical cost: $5K-$50K per report
-- Best for: Enterprise software, IT services, emerging tech
+- Previsiones y dimensionamiento del mercado tecnológico.
+- Cuadrantes Mágicos para posicionamiento competitivo
+- Costo típico: entre 5.000 y 50.000 dólares por informe
+- Ideal para: software empresarial, servicios de TI y tecnología emergente.
 
 **Forrester** (https://www.forrester.com)
 
-- Business technology and digital transformation
-- Wave evaluations for vendor comparison
-- Typical cost: $3K-$30K per report
-- Best for: Marketing tech, customer experience, B2B
+- Tecnología empresarial y transformación digital
+- Evaluaciones de olas para comparar proveedores.
+- Costo típico: entre 3.000 y 30.000 dólares por informe
+- Ideal para: tecnología de marketing, experiencia del cliente, B2B
 
 **IDC** (https://www.idc.com)
 
-- IT market intelligence and sizing
-- Detailed segment breakdowns
-- Typical cost: $4K-$40K per report
-- Best for: Hardware, software, IT services
+- Inteligencia y dimensionamiento del mercado TI.
+- Desgloses detallados de segmentos
+- Costo típico: entre 4.000 y 40.000 dólares por informe
+- Ideal para: hardware, software y servicios de TI
 
 **McKinsey** (https://www.mckinsey.com/featured-insights)
 
-- Free insights and reports
-- Strategic industry analysis
-- Best for: Industry trends, macroeconomic context
+- Información e informes gratuitos.
+- Análisis estratégico de la industria.
+- Ideal para: tendencias de la industria, contexto macroeconómico.
 
-### Accessible Research
+### Investigación accesible
 
-**Statista** (https://www.statista.com)
+**Estatista** (https://www.statista.com)
 
-- Cost: $39/month individual, $199/month business
-- Coverage: 80,000+ topics across industries
-- Best for: Quick market size estimates, charts, trends
+- Costo: $39/mes individual, $199/mes empresarial
+- Cobertura: más de 80.000 temas en todas las industrias
+- Ideal para: estimaciones rápidas del tamaño del mercado, gráficos y tendencias
 
 **CB Insights** (https://www.cbinsights.com)
 
-- Cost: Custom pricing (typically $10K+/year)
-- Coverage: Venture capital, startup markets
-- Best for: Emerging markets, competitive intelligence
+- Costo: precios personalizados (normalmente $10K+/año)
+- Cobertura: Capital riesgo, mercados de startups
+- Ideal para: mercados emergentes, inteligencia competitiva
 
 **PitchBook** (https://pitchbook.com)
 
-- Cost: Institutional pricing
-- Coverage: Private company valuations, M&A, VC
-- Best for: Startup valuations, funding trends
+- Costo: Precios institucionales
+- Cobertura: Valoraciones de empresas privadas, fusiones y adquisiciones, capital de riesgo
+- Ideal para: valoraciones de empresas emergentes, tendencias de financiación
 
-**Grand View Research** (https://www.grandviewresearch.com)
+**Investigación de Grand View** (https://www.grandviewresearch.com)
 
-- Cost: $2K-$5K per report
-- Coverage: B2C and emerging markets
-- Best for: Consumer markets, healthcare, cleantech
+- Costo: $2K-$5K por informe
+- Cobertura: B2C y mercados emergentes
+- Ideal para: mercados de consumo, atención sanitaria y tecnologías limpias.
 
-## Government and Public Data
+## Gobierno y datos públicos
 
-### U.S. Government Sources
+### Fuentes del gobierno de EE. UU.
 
-**U.S. Census Bureau** (https://www.census.gov)
+**EE.UU. Oficina del Censo** (https://www.census.gov)
 
-- Free, authoritative demographic data
-- Economic census every 5 years
-- Best for: Business counts, demographics, spending
+- Datos demográficos autorizados y gratuitos
+- Censo económico cada 5 años.
+- Ideal para: recuento de empresas, demografía y gastos.
 
-**Bureau of Labor Statistics** (https://www.bls.gov)
+**Oficina de Estadísticas Laborales** (https://www.bls.gov)
 
-- Free employment and economic data
-- Industry-specific statistics
-- Best for: Employment trends, wages, productivity
+- Datos laborales y económicos gratuitos
+- Estadísticas específicas de la industria
+- Ideal para: tendencias de empleo, salarios y productividad.
 
 **SEC EDGAR** (https://www.sec.gov/edgar)
 
-- Free public company filings
-- 10-K, 10-Q reports with segment revenue
-- Best for: Validating market size with public company data
+- Presentaciones gratuitas de empresas públicas
+- Informes 10-K, 10-Q con ingresos por segmento
+- Ideal para: validar el tamaño del mercado con datos de empresas públicas
 
-**Data.gov** (https://www.data.gov)
+**Datos.gov** (https://www.data.gov)
 
-- Free government datasets
-- Aggregates across agencies
-- Best for: Specialized industry data
+- Conjuntos de datos gubernamentales gratuitos
+- Agregados entre agencias
+- Ideal para: datos especializados de la industria
 
-### International Sources
+### Fuentes internacionales
 
-**OECD** (https://data.oecd.org)
+**OCDE** (https://data.oecd.org)
 
-- Free international economic data
-- Best for: Cross-country comparisons
+- Datos económicos internacionales gratuitos
+- Ideal para: comparaciones entre países
 
-**World Bank** (https://data.worldbank.org)
+**Banco Mundial** (https://data.worldbank.org)
 
-- Free global development data
-- Best for: Emerging markets, macro trends
+- Datos de desarrollo global gratuitos.
+- Ideal para: mercados emergentes, tendencias macro
 
 **Eurostat** (https://ec.europa.eu/eurostat)
 
-- Free European Union statistics
-- Best for: European market sizing
+- Estadísticas gratuitas de la Unión Europea
+- Ideal para: dimensionar el mercado europeo
 
-## Trade Associations
+## Asociaciones comerciales
 
-Industry associations often publish market research:
+Las asociaciones industriales suelen publicar estudios de mercado:
 
-**Software & SaaS**
+**Software y SaaS**
 
-- Software & Information Industry Association (SIIA)
-- Cloud Security Alliance (CSA)
+- Asociación de la Industria de Software e Información (SIIA)
+- Alianza de seguridad en la nube (CSA)
 
-**E-commerce & Retail**
+**Comercio electrónico y venta minorista**
 
-- National Retail Federation (NRF)
-- Digital Commerce 360
+- Federación Nacional de Minoristas (NRF)
+- Comercio Digital 360
 
-**Financial Services**
+**Servicios financieros**
 
-- American Bankers Association (ABA)
-- Financial Technology Association (FTA)
+- Asociación de Banqueros Estadounidenses (ABA)
+- Asociación de Tecnología Financiera (FTA)
 
-**Healthcare**
+**Cuidado de la salud**
 
-- Healthcare Information and Management Systems Society (HIMSS)
-- American Hospital Association (AHA)
+- Sociedad de Sistemas de Gestión e Información Sanitaria (HIMSS)
+- Asociación Americana de Hospitales (AHA)
 
-**Manufacturing**
+**Fabricación**
 
-- National Association of Manufacturers (NAM)
-- Industrial Internet Consortium (IIC)
+- Asociación Nacional de Fabricantes (NAM)
+- Consorcio de Internet Industrial (IIC)
 
-## Company and Customer Data
+## Datos de empresa y clientes
 
-### B2B Databases
+### Bases de datos B2B
 
-**LinkedIn Sales Navigator** ($99/month)
+**Navegador de ventas de LinkedIn** ($99/mes)
 
-- Company and employee counts
-- Industry filters
-- Best for: B2B customer counting
+- Recuentos de empresas y empleados.
+- Filtros de la industria
+- Ideal para: recuento de clientes B2B
 
-**ZoomInfo** (Custom pricing)
+**ZoomInfo** (precios personalizados)
 
-- Company databases with firmographics
-- Contact data
-- Best for: B2B TAM calculations
+- Bases de datos de la empresa con firmografía.
+- Datos de contacto
+- Ideal para: cálculos TAM B2B
 
-**Crunchbase** ($29-$99/month)
+**Crunchbase** ($29-$99/mes)
 
-- Startup company data
-- Funding and employee information
-- Best for: Tech startup markets
+- Datos de la empresa de nueva creación
+- Información sobre financiación y empleados.
+- Ideal para: mercados de startups tecnológicas
 
-**BuiltWith** ($295-$995/month)
+**Construido con** ($295-$995/mes)
 
-- Technology usage data
-- Website analytics
-- Best for: Technology adoption sizing
+- Datos de uso de tecnología.
+- Análisis de sitios web
+- Ideal para: dimensionamiento de la adopción de tecnología
 
-### Consumer Data
+### Datos del consumidor
 
-**Euromonitor** (Custom pricing)
+**Euromonitor** (precios personalizados)
 
-- Consumer market research
-- Best for: B2C product markets
+- Investigación de mercado de consumo.
+- Ideal para: mercados de productos B2C
 
-**Nielsen** (Custom pricing)
+**Nielsen** (precios personalizados)
 
-- Consumer behavior and media
-- Best for: CPG, retail, media markets
+- Comportamiento del consumidor y medios de comunicación.
+- Ideal para: CPG, comercio minorista y mercados de medios
 
-**Mintel** (Custom pricing)
+**Mintel** (precios personalizados)
 
-- Consumer trends and insights
-- Best for: B2C products and services
+- Tendencias y conocimientos del consumidor.
+- Ideal para: productos y servicios B2C
 
-## Search and Discovery Tools
+## Herramientas de búsqueda y descubrimiento
 
-### Market Research Aggregators
+### Agregadores de investigación de mercado
 
-**Research and Markets** (https://www.researchandmarkets.com)
+**Investigación y Mercados** (https://www.researchandmarkets.com)
 
-- Aggregates reports from 100+ publishers
-- $500-$10K per report
-- Search across all major research firms
+- Agrega informes de más de 100 editores
+- $500-$10K por informe
+- Búsqueda en todas las principales empresas de investigación**MercadosyMarkets** (https://www.marketsandmarkets.com)
 
-**MarketsandMarkets** (https://www.marketsandmarkets.com)
+- Investigación personalizada y sindicada.
+- Entre 4.000 y 10.000 dólares por informe
+- Bueno para nichos de mercado B2B
 
-- Custom and syndicated research
-- $4K-$10K per report
-- Good for niche B2B markets
+### Herramientas de búsqueda gratuitas
 
-### Free Search Tools
+**Google Académico** (https://scholar.google.com)
 
-**Google Scholar** (https://scholar.google.com)
-
-- Free academic research
-- Best for: Emerging technologies, academic validation
+- Investigación académica gratuita
+- Ideal para: tecnologías emergentes, validación académica.
 
 **SSRN** (https://www.ssrn.com)
 
-- Free working papers
-- Best for: Financial services, economics
+- Papeles de trabajo gratuitos.
+- Ideal para: servicios financieros, economía.
 
 **arXiv** (https://arxiv.org)
 
-- Free preprints in CS, physics, etc.
-- Best for: AI/ML, scientific markets
+- Preimpresiones gratuitas en informática, física, etc.
+- Ideal para: IA/ML, mercados científicos
 
-## Competitive Intelligence
+## Inteligencia Competitiva
 
-### Public Company Analysis
+### Análisis de empresas públicas
 
-**Yahoo Finance** (Free)
+**Yahoo Finanzas** (Gratis)
 
-- Public company financials
-- Segment revenue from earnings
+- Finanzas de empresas públicas
+- Ingresos del segmento provenientes de ganancias
 
-**Seeking Alpha** (Free + Premium)
+**Buscando Alfa** (Gratis + Premium)
 
-- Earnings transcripts
-- Analyst estimates
+- Transcripciones de ganancias
+- Estimaciones de analistas
 
-**Public company investor relations**
+**Relaciones con inversores de empresas públicas**
 
-- Annual reports (10-K)
-- Investor presentations
+- Informes anuales (10-K)
+- Presentaciones para inversores.
 
-### Private Company Intelligence
+### Inteligencia de empresas privadas
 
-**PrivCo** (Custom pricing)
+**PrivCo** (precio personalizado)
 
-- Private company financials
-- M&A transaction data
+- Finanzas de empresas privadas.
+- Datos de transacciones de fusiones y adquisiciones
 
-**Owler** (Free + Premium)
+**Búho** (Gratis + Premium)
 
-- Company profiles and news
-- Revenue estimates
+- Perfiles de empresa y noticias.
+- Estimaciones de ingresos
 
-**SimilarWeb** (Free + Premium)
+**Web similar** (Gratis + Premium)
 
-- Website traffic analytics
-- Best for: Online business sizing
+- Análisis de tráfico del sitio web.
+- Ideal para: dimensionamiento de empresas online
 
-## Survey and Primary Research
+## Encuesta e investigación primaria
 
-### Survey Tools
+### Herramientas de encuesta
 
-**SurveyMonkey** ($25-$75/month)
+**SurveyMonkey** ($25-$75/mes)
 
-- DIY surveys
-- Best for: Customer willingness to pay
+- encuestas de bricolaje
+- Ideal para: disposición del cliente a pagar
 
-**Typeform** ($25-$83/month)
+**Typeform** ($25-$83/mes)
 
-- Conversational surveys
-- Best for: User research
+- Encuestas conversacionales
+- Ideal para: investigación de usuarios
 
-**Qualtrics** (Enterprise pricing)
+**Qualtrics** (precio empresarial)
 
-- Professional research platform
-- Best for: Large-scale studies
+- Plataforma de investigación profesional.
+- Ideal para: estudios a gran escala
 
-### Panel Providers
+### Proveedores de paneles
 
-**Respondent.io** ($100-$200 per response)
+**Respondent.io** ($100-$200 por respuesta)
 
-- Recruit professionals for interviews
-- Best for: B2B customer research
+- Reclutar profesionales para entrevistas.
+- Ideal para: investigación de clientes B2B
 
-**UserTesting** ($49 per participant)
+**UserTesting** ($49 por participante)
 
-- User research and testing
-- Best for: Product validation
+- Investigación y pruebas de usuarios.
+- Ideal para: validación de productos
 
-**Google Surveys** ($0.10-$3.50 per response)
+**Encuestas de Google** ($0,10-$3,50 por respuesta)
 
-- Quick consumer surveys
-- Best for: Basic consumer insights
+- Encuestas rápidas a consumidores
+- Ideal para: conocimientos básicos del consumidor
 
-## Data Quality Checklist
+## Lista de verificación de calidad de datos
 
-When evaluating sources:
+Al evaluar fuentes:
 
-**Authority**
+**Autoridad**
 
-- [ ] Who published the research?
-- [ ] What's their reputation?
-- [ ] Do they have industry expertise?
+- [ ] ¿Quién publicó la investigación?
+- [ ] ¿Cuál es su reputación?
+- [] ¿Tienen experiencia en la industria?
 
-**Methodology**
+**Metodología**
 
-- [ ] How was data collected?
-- [ ] What's the sample size?
-- [ ] When was research conducted?
+- [ ] ¿Cómo se recogieron los datos?
+- [ ] ¿Cuál es el tamaño de la muestra?
+- [ ] ¿Cuándo se realizó la investigación?
 
-**Recency**
+**Reciente**
 
-- [ ] Is data current (< 2 years old)?
-- [ ] Has market changed significantly?
-- [ ] Are growth rates still applicable?
+- [ ] ¿Están los datos actualizados (< 2 años)?
+- [ ] ¿Ha cambiado significativamente el mercado?
+- [ ] ¿Siguen siendo aplicables las tasas de crecimiento?
 
-**Consistency**
+**Consistencia**
 
-- [ ] Do multiple sources agree?
-- [ ] Are definitions consistent?
-- [ ] Do numbers triangulate?
+- [] ¿Están de acuerdo varias fuentes?
+- [ ] ¿Son consistentes las definiciones?
+- [ ] ¿Los números se triangulan?
 
-**Relevance**
+**Relevancia**
 
-- [ ] Does it match your market definition?
-- [ ] Is geography appropriate?
-- [ ] Are segments aligned?
+- [ ] ¿Coincide con su definición de mercado?
+- [ ] ¿Es apropiada la geografía?
+- [ ] ¿Están alineados los segmentos?
 
-## Free vs. Paid Strategy
+## Estrategia gratuita versus paga
 
-**Start with free sources:**
+**Comience con fuentes gratuitas:**
 
-1. Government data for customer counts
-2. Public company filings for segment revenue
-3. Trade associations for industry trends
-4. Google Scholar for academic research
+1. Datos gubernamentales para el recuento de clientes
+2. Presentaciones de empresas públicas para ingresos del segmento
+3. Asociaciones comerciales para las tendencias de la industria.
+4. Google Scholar para investigación académica
 
-**Upgrade to paid when:**
+**Actualice a pago cuando:**
 
-- Raising institutional funding (investors expect premium sources)
-- Need detailed segment breakdowns
-- Market is niche or emerging
-- Free sources are outdated or insufficient
+- Recaudar financiación institucional (los inversores esperan fuentes de primas)
+- Necesita desgloses detallados de segmentos
+- El mercado es de nicho o emergente.
+- Las fuentes gratuitas están desactualizadas o son insuficientes.
 
-**Cost-effective approach:**
+**Enfoque rentable:**
 
-- Buy 1-2 key reports that cover your core market
-- Use free sources for triangulation
-- Supplement with primary research (customer interviews)
-- Cite mix of free and paid sources
+- Compre 1 o 2 informes clave que cubran su mercado principal
+- Utilice fuentes gratuitas para la triangulación.
+- Complemento con investigación primaria (entrevistas a clientes)
+- Citar una combinación de fuentes gratuitas y de pago.
 
-## Citation Best Practices
+## Mejores prácticas de citas
 
-Always cite sources in market sizing:
+Cite siempre fuentes en el dimensionamiento del mercado:
 
-**Format:**
+**Formato:**
 
 ```
 Market Size: $X.XB
 Source: [Publisher], [Report Name], [Date]
 URL: [link if available]
-```
-
-**Example:**
+```**Example:**
 
 ```
 Email Marketing Software TAM: $7.5B (2024)
 Source: Gartner, "Market Share: Email Marketing Software, Worldwide, 2024"
 Note: Includes all email marketing software revenue globally
-```
+```**Incluye:**
 
-**Include:**
+- Editor y nombre del informe.
+- Fecha de publicación
+- Geografía y alcance
+- Cualquier ajuste realizado
+- Enlace a la fuente (si es pública)
 
-- Publisher and report name
-- Publication date
-- Geography and scope
-- Any adjustments made
-- Link to source (if public)
+## Mantener la investigación actualizada
 
-## Keeping Research Current
+**Establecer alertas de Google**
 
-**Set Google Alerts**
+- Palabras clave de la industria
+- Nombres de empresas
+- Condiciones de mercado
 
-- Industry keywords
-- Company names
-- Market terms
+**Siga las empresas de investigación**
 
-**Follow Research Firms**
+- cuentas de Twitter
+- Actualizaciones de LinkedIn
+- Resúmenes de boletines gratuitos
 
-- Twitter accounts
-- LinkedIn updates
-- Free newsletter summaries
+**Seguimiento de empresas públicas**
 
-**Track Public Companies**
+- Calendarios de ganancias
+- Páginas de relaciones con inversores
+- Informes anuales
 
-- Earnings calendars
-- Investor relations pages
-- Annual reports
+**Únase a grupos industriales**
 
-**Join Industry Groups**
+- Grupos de LinkedIn
+- Comunidades flojas
+- Asociaciones comerciales
 
-- LinkedIn groups
-- Slack communities
-- Trade associations
+**Revisar anualmente**
 
-**Review Annually**
+- Actualizar el tamaño del mercado con nuevos datos.
+- Ajustar los supuestos de crecimiento.
+- Revisar la metodología si el mercado cambia.
 
-- Update market size with new data
-- Adjust growth assumptions
-- Revisit methodology if market changed
+## Guía de investigación de emergencia
 
-## Emergency Research Guide
+**¿Necesita tamaño de mercado en < 2 horas?**
 
-**Need market size in < 2 hours?**
+1. **Check Statista** (15 min): descripción general rápida de la industria
+2. **Buscar empresas públicas** (30 min): obtenga ingresos del segmento a partir de 10 K
+3. **Búsqueda de LinkedIn** (20 min): cuente los clientes B2B potenciales
+4. **Google Scholar** (20 min): busque artículos académicos
+5. **Calcular de abajo hacia arriba** (30 min) - Clientes × Precio
+6. **Triangular** (15 min) - Compara fuentes
 
-1. **Check Statista** (15 min) - Quick industry overview
-2. **Find public companies** (30 min) - Get segment revenue from 10-Ks
-3. **LinkedIn search** (20 min) - Count potential B2B customers
-4. **Google Scholar** (20 min) - Find academic papers
-5. **Calculate bottom-up** (30 min) - Customers × Price
-6. **Triangulate** (15 min) - Compare sources
+**Documente todo:**
 
-**Document everything:**
+- Anota todas las fuentes.
+- Tenga en cuenta todas las suposiciones
+- Muestra tu metodología
+- Advertencia sobre la calidad de los datos.
 
-- Write down all sources
-- Note all assumptions
-- Show your methodology
-- Caveat data quality
-
-Better to have a defensible estimate with clear limitations than no data at all.
+Es mejor tener una estimación defendible con limitaciones claras que ningún dato.

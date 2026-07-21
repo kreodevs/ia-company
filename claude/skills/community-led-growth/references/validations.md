@@ -1,112 +1,149 @@
-# Community Led Growth - Validations
+# Crecimiento liderado por la comunidad: validaciones
 
-## Community Without Strategy
+## Comunidad Sin Estrategia
 
-### **Id**
-no-community-strategy
-### **Severity**
-high
-### **Type**
+### **Identificación**
+estrategia-no-comunitaria
+
+### **Severidad**
+alto
+
+### **Tipo**
 conceptual
-### **Check**
-Community initiative must have clear goals and metrics
-### **Message**
-Community launched without strategic plan.
-### **Fix Action**
-Define community goals, success metrics, and resource plan
 
-## Launch Without Seeding
+### **Comprobar**
+La iniciativa comunitaria debe tener objetivos y métricas claras.
 
-### **Id**
-no-seeding-plan
-### **Severity**
-high
-### **Type**
+### **Mensaje**
+Comunidad lanzada sin plan estratégico.
+
+### **Acción reparadora**
+Definir objetivos comunitarios, métricas de éxito y plan de recursos.
+
+## Lanzamiento sin siembra
+
+### **Identificación**
+plan sin siembra
+
+### **Severidad**
+alto
+
+### **Tipo**
 conceptual
-### **Check**
-Community launch must include seeding strategy
-### **Indicators**
-  - Launch to empty community
-  - No founding member program
-### **Message**
-Community launching without content/member seeding.
-### **Fix Action**
-Recruit 50-100 founding members and seed content before public launch
 
-## Member Count as Primary Metric
+### **Comprobar**
+El lanzamiento comunitario debe incluir una estrategia de siembra
 
-### **Id**
-vanity-member-count
-### **Severity**
-medium
-### **Type**
+### **Indicadores**
+  - Lanzamiento a la comunidad vacía.
+  - Sin programa de miembros fundadores
+
+### **Mensaje**
+Lanzamiento de la comunidad sin contenido/sembrado de miembros.
+
+### **Acción reparadora**
+Reclutar entre 50 y 100 miembros fundadores y generar contenido antes del lanzamiento público.
+
+## Recuento de miembros como métrica principal
+
+### **Identificación**
+recuento-de-miembros-vanidad
+
+### **Severidad**
+medio
+
+### **Tipo**
 conceptual
-### **Check**
-Community metrics should prioritize engagement over size
-### **Indicators**
-  - Member count as north star
-  - No engagement metrics
-### **Message**
-Community measuring member count without engagement quality.
-### **Fix Action**
-Add engagement metrics: active %, post rate, response rate
 
-## Missing Business Attribution
+### **Comprobar**
+Las métricas de la comunidad deben priorizar la participación sobre el tamaño
 
-### **Id**
-no-attribution-system
-### **Severity**
-medium
-### **Type**
+### **Indicadores**
+  - El miembro cuenta como estrella del norte.
+  - Sin métricas de participación
+
+### **Mensaje**
+Comunidad que mide el número de miembros sin calidad de participación.
+
+### **Acción reparadora**
+Agregar métricas de participación: porcentaje activo, tasa de publicación, tasa de respuesta
+
+## Atribución empresarial faltante
+
+### **Identificación**
+sistema sin atribución
+
+### **Severidad**
+medio
+
+### **Tipo**
 conceptual
-### **Check**
-Community must track business impact
-### **Message**
-No system to attribute business outcomes to community.
-### **Fix Action**
-Implement referral tracking, surveys, and cohort analysis
 
-## Single Point of Moderation Failure
+### **Comprobar**
+La comunidad debe realizar un seguimiento del impacto empresarial
 
-### **Id**
-single-moderator
-### **Severity**
-medium
-### **Type**
+### **Mensaje**
+No hay un sistema para atribuir los resultados comerciales a la comunidad.
+
+### **Acción reparadora**
+Implementar seguimiento de referencias, encuestas y análisis de cohortes.
+
+## Fallo en el punto único de moderación
+
+### **Identificación**
+moderador único
+
+### **Severidad**
+medio
+
+### **Tipo**
 conceptual
-### **Check**
-Community moderation should not depend on one person
-### **Message**
-Community has single moderator - risk of burnout/abandonment.
-### **Fix Action**
-Add backup moderators and clear escalation paths
 
-## Unbounded Ambassador Expectations
+### **Comprobar**
+La moderación comunitaria no debe depender de una sola persona
 
-### **Id**
-no-ambassador-limits
-### **Severity**
-low
-### **Type**
+### **Mensaje**
+La comunidad tiene un único moderador: riesgo de agotamiento/abandono.
+
+### **Acción reparadora**
+Agregue moderadores de respaldo y despeje rutas de escalada
+
+## Expectativas ilimitadas del embajador
+
+### **Identificación**
+sin-límites-de-embajador
+
+### **Severidad**
+bajo
+
+### **Tipo**
 conceptual
-### **Check**
-Ambassador programs must set clear time boundaries
-### **Message**
-Ambassador program lacks hour expectations and boundaries.
-### **Fix Action**
-Define expected hours/month and how to decline requests
 
-## Missing Community Guidelines
+### **Comprobar**
+Los programas de embajadores deben establecer límites de tiempo claros
 
-### **Id**
-no-content-guidelines
-### **Severity**
-medium
-### **Type**
+### **Mensaje**
+El programa de embajadores carece de límites y expectativas horarias.
+
+### **Acción reparadora**
+Definir las horas/mes previstas y cómo rechazar solicitudes
+
+## Faltan pautas comunitarias
+
+### **Identificación**
+pautas sin contenido
+
+### **Severidad**
+medio
+
+### **Tipo**
 conceptual
-### **Check**
-Community must have published guidelines
-### **Message**
-Community operating without clear guidelines.
-### **Fix Action**
-Create and publish community guidelines covering behavior and content
+
+### **Comprobar**
+La comunidad debe tener pautas publicadas.
+
+### **Mensaje**
+Comunidad funcionando sin lineamientos claros.
+
+### **Acción reparadora**
+Crear y publicar pautas comunitarias que cubran el comportamiento y el contenido.

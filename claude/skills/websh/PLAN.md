@@ -1,8 +1,8 @@
-# websh: A Shell for the Web
+# websh: un shell para la web
 
-## Vision
+## Visión
 
-A shell where URLs are paths and the DOM is your filesystem. You navigate to a URL, and commands operate on the cached page content—instantly, locally, no refetching.
+Un shell donde las URL son rutas y el DOM es su sistema de archivos. Usted navega a una URL y los comandos operan en el contenido de la página almacenado en caché, de manera instantánea, local, sin necesidad de volver a buscarlo.
 
 ```
 websh> cd https://news.ycombinator.com
@@ -10,25 +10,23 @@ websh> ls                    # list links
 websh> grep "AI" | head 5    # filter
 websh> cat .title            # CSS selector extraction
 websh> follow 3              # navigate to 3rd link
-```
-
-The web becomes a computing environment you explore with familiar commands.
+```La web se convierte en un entorno informático que se explora con comandos familiares.
 
 ---
 
-## Design Principles
+## Principios de diseño
 
-1. **Fetch once, operate locally** — `cd` fetches and caches; all other commands work on cache
-2. **Flat cache structure** — URLs become flat filenames (slashes → dashes)
-3. **You ARE the shell** — Claude embodies websh, maintaining session state
-4. **Composable primitives** — small commands that pipe together
-5. **Familiar UX** — Unix-like commands adapted for web semantics
+1. **Buscar una vez, operar localmente** — `cd` búsquedas y cachés; todos los demás comandos funcionan en caché
+2. **Estructura de caché plana**: las URL se convierten en nombres de archivos planos (barras → guiones)
+3. **Tú ERES el caparazón**: Claude encarna websh y mantiene el estado de la sesión.
+4. **Primitivas componibles**: pequeños comandos que se combinan
+5. **Familiar UX**: comandos similares a Unix adaptados para la semántica web
 
 ---
 
-## Directory Structure
+## Estructura del directorio
 
-### Skill files (in this directory)
+### Archivos de habilidades (en este directorio)
 
 ```
 prose/skills/websh/
@@ -41,7 +39,7 @@ prose/skills/websh/
 └── help.md               # User help and examples
 ```
 
-### User state (in working directory)
+### Estado del usuario (en el directorio de trabajo)
 
 ```
 .websh/
@@ -54,57 +52,53 @@ prose/skills/websh/
 └── bookmarks.md          # Saved locations
 ```
 
-### Cache filename convention
+### Convención de nombre de archivo de caché
 
-URLs flatten to readable slugs:
-- `https://news.ycombinator.com` → `news-ycombinator-com`
-- `https://x.com/deepfates/status/123` → `x-com-deepfates-status-123`
-- `https://techcrunch.com/2024/06/25/article-name/` → `techcrunch-com-2024-06-25-article-name`
+Las URL se aplanan hasta convertirse en barras legibles:
+- `https://news.ycombinator.com`→` news-ycombinator-com`-` https://x.com/deepfates/status/123`→` x-com-deepfates-status-123`-` https://techcrunch.com/2024/06/25/article-name/`→` techcrunch-com-2024-06-25-article-name`Cada URL almacenada en caché obtiene dos archivos:
+- `{slug}.html`— raw HTML
+- `{slug}.parsed.md`— extracción iterativa
 
-Each cached URL gets two files:
-- `{slug}.html` — raw HTML
-- `{slug}.parsed.md` — iterative extraction
-
-The `index.md` maps full URLs to slugs and tracks fetch/extraction status.
+el `index.md` asigna URL completas a slugs y realiza un seguimiento del estado de recuperación/extracción.
 
 ---
 
-## Core Commands
+## Comandos principales
 
-| Command | Description | Operates On |
+| Comando | Descripción | Opera en |
 |---------|-------------|-------------|
-| `cd <url>` | Navigate to URL, fetch & extract (async) | Network → Cache → Haiku extraction |
-| `pwd` | Show current URL | Session |
-| `ls [selector]` | List links or elements | Cache |
-| `cat <selector>` | Extract text content | Cache |
-| `grep <pattern>` | Filter by text/regex | Cache |
-| `head <n>` / `tail <n>` | Slice results | Pipe |
-| `follow <n\|text>` | Navigate to nth link or matching text | Cache → Network |
-| `back` | Go to previous URL | Session history |
-| `refresh` | Re-fetch current URL | Network → Cache |
-| `stat` | Show page metadata (title, links count, etc.) | Cache |
-| `save <path>` | Save current page to file | Cache → Filesystem |
-| `history` | Show navigation history | Session |
-| `bookmarks` | List saved locations | User state |
-| `bookmark [name]` | Save current URL | User state |
+| `cd <url>`| Navegue a URL, busque y extraiga (asíncrono) | Red → Caché → Extracción de Haiku |
+| `pwd`| Mostrar URL actual | Sesión |
+| `ls [selector]`| Listar enlaces o elementos | Caché |
+| `cat <selector>`| Extraer contenido de texto | Caché |
+| `grep <pattern>`| Filtrar por texto/expresión regular | Caché |
+| `head <n>`/` tail <n>`| Resultados de corte | Tubería |
+| `follow <n\|text>`| Navegue hasta el enésimo enlace o texto coincidente | Caché → Red |
+| `back`| Ir a la URL anterior | Historial de sesiones |
+| `refresh`| Volver a buscar la URL actual | Red → Caché |
+| `stat`| Mostrar metadatos de la página (título, recuento de enlaces, etc.) | Caché |
+| `save <path>`| Guardar la página actual en un archivo | Caché → Sistema de archivos |
+| `history`| Mostrar historial de navegación | Sesión |
+| `bookmarks`| Listar ubicaciones guardadas | Estado del usuario |
+| `bookmark [name]`| Guardar URL actual | Estado del usuario |
 
-### Planned extensions
+### Extensiones planificadas
 
-| Command | Description |
+| Comando | Descripción |
 |---------|-------------|
-| `diff <url1> <url2>` | Compare two pages |
-| `watch <url>` | Poll for changes |
-| `form <selector>` | Interact with forms |
-| `click <selector>` | Simulate click (JS-heavy sites) |
-| `mount <api> <path>` | Mount API as virtual directory |
+| `diff <url1> <url2>`| Comparar dos páginas |
+| `watch <url>`| Encuesta para cambios |
+| `form <selector>`| Interactuar con formularios |
+| `click <selector>`| Simular clic (sitios con mucho JS) |
+| `mount <api> <path>`| Montar API como directorio virtual |
 
 ---
 
-## The `cd` Flow: Fetch + Extract
+## El `cd` Flujo: buscar + extraer
 
-When the user runs `cd <url>`, websh performs a two-phase operation:
+Cuando el usuario ejecuta`cd <url>`, websh realiza una operación de dos fases:
 
-### Phase 1: Fetch (synchronous)
+### Fase 1: Recuperación (sincrónica)
 
 ```
 cd https://news.ycombinator.com
@@ -113,13 +107,9 @@ cd https://news.ycombinator.com
    ├─→ Save raw HTML to .websh/cache/{hash}.html
    ├─→ Update index.json with URL → hash mapping
    └─→ Update session.md with new pwd
-```
+```El usuario ve:` fetching... done`### Fase 2: Extracto (subagente de haiku asíncrono, iterativo)
 
-The user sees: `fetching... done`
-
-### Phase 2: Extract (async haiku subagent, iterative)
-
-Immediately after fetch, spawn a background haiku agent that **loops** to build up a rich markdown extraction:
+Inmediatamente después de la recuperación, genera un agente de haiku en segundo plano que **se repite** para generar una rica extracción de rebajas:
 
 ```
 Task({
@@ -129,9 +119,7 @@ Task({
   model: "haiku",
   run_in_background: true
 })
-```
-
-The haiku agent runs an **iterative intelligent parse**:
+```El agente haiku ejecuta un **análisis inteligente iterativo**:
 
 ```
 loop until **extraction is thorough**:
@@ -140,29 +128,28 @@ loop until **extraction is thorough**:
   3. Identify what's missing or could be richer
   4. Append/update the .parsed.md with new findings
   5. Repeat until diminishing returns
-```
+```Cada pase se centra en diferentes aspectos:
+- **Pase 1**: Estructura básica (título, encabezados principales, inventario de enlaces)
+- **Pase 2**: Extracción de contenido (texto del artículo, comentarios, citas clave)
+- **Pase 3**: Metadatos y contexto (autor, fecha, enlaces relacionados, estructura del sitio)
+- **Pase 4+**: casos extremos, contenido perdido, limpieza
 
-Each pass focuses on different aspects:
-- **Pass 1**: Basic structure (title, main headings, link inventory)
-- **Pass 2**: Content extraction (article text, comments, key quotes)
-- **Pass 3**: Metadata and context (author, date, related links, site structure)
-- **Pass 4+**: Edge cases, missed content, cleanup
-
-**Output: `.websh/cache/{hash}.parsed.md`**
+**Salida: `.websh/cache/{hash}.parsed.md`**
 
 ```markdown
+
 # https://news.ycombinator.com
 
 Fetched: 2026-01-24T10:30:00Z
 Extraction: 3 passes
 
-## Summary
+## Resumen
 
 Hacker News front page. Tech news aggregator with user-submitted links
 and discussions. 30 stories visible, mix of Show HN, technical articles,
 and industry news.
 
-## Links
+## Enlaces
 
 | # | Title | Points | Comments |
 |---|-------|--------|----------|
@@ -180,7 +167,7 @@ and industry news.
 - [show](/show) - Show HN
 - [jobs](/jobs) - Jobs
 
-## Content Patterns
+## Patrones de contenido
 
 This is a link aggregator. Each story has:
 - Title (class: .titleline)
@@ -195,7 +182,7 @@ This is a link aggregator. Each story has:
 2. "The State of AI in 2026" - 891 points, 432 comments
 ...
 
-## Forms
+## Formularios
 
 - Search: input[name=q] at /hn.algolia.com
 - Login: /login (username, password)
@@ -205,9 +192,7 @@ This is a link aggregator. Each story has:
 - No images on front page (text-only design)
 - Mobile-friendly, minimal CSS
 - Stories refresh frequently
-```
-
-**User experience:**
+```**Experiencia de usuario:**
 
 ```
 news.ycombinator.com> cd https://example.com
@@ -218,34 +203,37 @@ extracting... (pass 1)
 example.com> ls
 
 # Shows what's available so far
+
 # Agent continues extracting in background
+
 # Subsequent commands get richer data as passes complete
 ```
 
-### Why iterative?
+### ¿Por qué iterativo?
 
-- **Progressive richness**: First pass gives basics fast, later passes add depth
-- **Intelligent focus**: Haiku decides what to extract based on page type
-- **Human-readable output**: Markdown is inspectable, debuggable, useful
-- **Graceful degradation**: Commands work after pass 1, improve with more passes
-- **Site-aware**: Haiku recognizes patterns (HN stories, tweets, blog posts) and adapts
+- **Riqueza progresiva**: la primera pasada proporciona lo básico rápidamente, las pasadas posteriores añaden profundidad
+- **Enfoque inteligente**: Haiku decide qué extraer según el tipo de página
+- **Salida legible por humanos**: Markdown es inspeccionable, depurable y útil
+- **Degradación elegante**: los comandos funcionan después del pase 1, mejoran con más pases
+- **Consciente del sitio**: Haiku reconoce patrones (historias HN, tweets, publicaciones de blogs) y se adapta
 
-### Why haiku?
+### ¿Por qué haikus?
 
-- **Fast**: Each pass completes quickly
-- **Cheap**: Multiple passes still economical
-- **Parallel**: Doesn't block user commands
-- **Smart**: Adapts extraction strategy to content type
+- **Rápido**: cada pase se completa rápidamente
+- **Barato**: varios pases siguen siendo económicos
+- **Paralelo**: No bloquea los comandos del usuario
+- **Inteligente**: adapta la estrategia de extracción al tipo de contenido
 
 ---
 
-## State Management
+## Gestión del Estado
 
-### Session state (`session.md`)
+### Estado de la sesión (`session.md`)
 
-Tracks the current shell session:
+Realiza un seguimiento de la sesión de shell actual:
 
 ```markdown
+
 # websh session
 
 pwd: https://news.ycombinator.com
@@ -260,27 +248,28 @@ started: 2026-01-24T10:30:00Z
 - https://news.ycombinator.com (current)
 ```
 
-### Cache format
+### Formato de caché
 
-Each cached page has two files:
+Cada página almacenada en caché tiene dos archivos:
 
-**`{hash}.html`** — Raw fetched HTML (for reference, selector queries)
+** `{hash}.html`** — HTML obtenido sin procesar (como referencia, consultas de selector)
 
-**`{hash}.parsed.md`** — Intelligent extraction (written iteratively by haiku):
+** `{hash}.parsed.md`** — Extracción inteligente (escrito iterativamente por haiku):
 
 ```markdown
+
 # https://news.ycombinator.com
 
 Fetched: 2026-01-24T10:30:00Z
 Passes: 3
 Status: complete
 
-## Summary
+## Resumen
 
 Hacker News front page. Tech news aggregator with 30 stories.
 Mix of Show HN projects, technical deep-dives, and industry news.
 
-## Links
+## Enlaces
 
 | # | Title | Href | Meta |
 |---|-------|------|------|
@@ -288,7 +277,7 @@ Mix of Show HN projects, technical deep-dives, and industry news.
 | 1 | The State of AI | /item?id=456 | 891 pts, 432 comments |
 ...
 
-## Content
+## Contenido
 
 ### Main content
 (extracted article text, cleaned up)
@@ -301,7 +290,7 @@ Mix of Show HN projects, technical deep-dives, and industry news.
 - [past](/front)
 ...
 
-## Structure
+## Estructura
 
 Page type: Link aggregator
 Key selectors:
@@ -309,43 +298,42 @@ Key selectors:
 - .score → point counts
 - .hnuser → usernames
 
-## Forms
+## Formularios
 
 ### Login (/login)
 - username (text)
 - password (password)
 
-## Media
+## Medios
 
 (none on this page)
 
-## Metadata
+## Metadatos
 
 - og:title: Hacker News
 - description: News for hackers
 
-## Extraction Notes
+## Notas de extracción
 
 Pass 1: Basic structure, 30 links found
 Pass 2: Extracted metadata, identified page type
 Pass 3: Cleaned up content, noted patterns
-```
+```El formato de rebajas es:
+- **Legible por humanos**: puedes `cat` y entender la página
+- **Compatible con Grep**: comandos como `grep "AI"` trabajar naturalmente
+- **Construido iterativamente**: cada paso agrega/refina secciones
+- **Consciente del sitio**: Haiku adapta la estructura al tipo de contenido
 
-The markdown format is:
-- **Human-readable**: You can `cat` it and understand the page
-- **Grep-friendly**: Commands like `grep "AI"` work naturally
-- **Iteratively built**: Each pass adds/refines sections
-- **Site-aware**: Haiku adapts structure to content type
-
-Commands like `ls`, `grep`, `cat` read from the `.json` file for speed. The `.html` is available for selector-based extraction.
+Comandos como `ls`,` grep`,` cat`leer del`.json` archivo para mayor velocidad. El`.html` está disponible para extracción basada en selector.
 
 ---
 
-## Shell Embodiment Pattern
+## Patrón de realización de concha
 
-Following the OpenProse VM pattern, websh uses the "you ARE the shell" approach:
+Siguiendo el patrón OpenProse VM, websh utiliza el enfoque "tú ERES el shell":
 
 ```markdown
+
 # From shell.md
 
 You are websh—a shell for navigating and querying the web.
@@ -368,51 +356,49 @@ Your prompt format:
 
 Example:
 news.ycombinator.com> ls
-```
+```---
+
+## Archivos para crear
+
+### Fase 1: capa central
+
+1. **SKILL.md** — Activadores de activación, enrutamiento de comandos
+   - Activar en:`websh`,` web shell`, URL en contexto de shell
+   - Ruta a shell.md para su ejecución.
+
+2. **shell.md** — Semántica del shell
+   - Instrucciones de realización
+   - Análisis de comandos
+   - Gestión estatal
+   - Formato de salida
+
+3. **commands.md** — Referencia de comandos
+   - Sintaxis detallada para cada comando.
+   - Ejemplos
+   - Comportamiento de las tuberías
+
+4. **state/cache.md** — Gestión de caché
+   - Buscar y almacenar
+   - **Mensaje de extracción iterativo** (el mensaje que impulsa el bucle del haiku)
+   - Gestión de índices
+   - Degradación elegante (los comandos funcionan antes de que se complete la extracción)
+   - Caducidad/actualización
+
+5. **help.md** — Documentación del usuario
+   - Empezando
+   - Hoja de trucos de comando
+   - Ejemplos
+
+### Fase 2: Extensiones
+
+- Interacción de formularios
+- Páginas renderizadas en JavaScript (a través de herramientas del navegador, si están disponibles)
+- Montaje API
+- Comandos de diferenciación/reloj
 
 ---
 
-## Files to Create
-
-### Phase 1: Core shell
-
-1. **SKILL.md** — Activation triggers, command routing
-   - Activate on: `websh`, `web shell`, URLs in shell context
-   - Route to shell.md for execution
-
-2. **shell.md** — Shell semantics
-   - Embodiment instructions
-   - Command parsing
-   - State management
-   - Output formatting
-
-3. **commands.md** — Command reference
-   - Detailed syntax for each command
-   - Examples
-   - Piping behavior
-
-4. **state/cache.md** — Cache management
-   - Fetch and store
-   - **Iterative extraction prompt** (the prompt that drives haiku's loop)
-   - Index management
-   - Graceful degradation (commands work before extraction completes)
-   - Expiration/refresh
-
-5. **help.md** — User documentation
-   - Getting started
-   - Command cheatsheet
-   - Examples
-
-### Phase 2: Extensions
-
-- Form interaction
-- JavaScript-rendered pages (via browser tools if available)
-- API mounting
-- Diff/watch commands
-
----
-
-## Example Session
+## Sesión de ejemplo
 
 ```
 $ websh
@@ -464,40 +450,38 @@ Title:    Hacker News
 Fetched:  2026-01-24T10:30:00Z (5 min ago)
 Links:    30
 Size:     45 KB
-```
+```---
+
+## Preguntas abiertas
+
+1. **Páginas renderizadas en JS**: muchos sitios requieren JavaScript. Opciones:
+   - Falla con gracia con un mensaje útil
+   - Integre con herramientas de automatización del navegador si están disponibles
+   - Utilice API siempre que sea posible (por ejemplo, API de Twitter/X frente a scraping)
+
+2. **Autenticación**: ¿Cómo manejar las sesiones iniciadas?
+   - ¿Importación de cookies desde el navegador?
+   - ¿Configuración manual del encabezado?
+
+3. **Limitación de velocidad**: ¿El límite de velocidad de Websh debería recuperarse automáticamente?
+
+4. **Caducidad de la caché**: ¿basada en TTL? ¿Actualización manual únicamente?
 
 ---
 
-## Open Questions
+## Próximos pasos
 
-1. **JS-rendered pages**: Many sites require JavaScript. Options:
-   - Fail gracefully with helpful message
-   - Integrate with browser automation tools if available
-   - Use APIs where possible (e.g., Twitter/X API vs scraping)
-
-2. **Authentication**: How to handle logged-in sessions?
-   - Cookie import from browser?
-   - Manual header setting?
-
-3. **Rate limiting**: Should websh rate-limit fetches automatically?
-
-4. **Cache expiration**: TTL-based? Manual refresh only?
+1. Cree SKILL.md con activadores de activación
+2. Escriba shell.md con la semántica de realización central
+3. Escribe comandos.md con gramática de comandos.
+4. Escriba state/cache.md con lógica de almacenamiento en caché
+5. Escriba help.md para los usuarios.
+6. Pruebe con URL reales
 
 ---
 
-## Next Steps
+## Inspiración
 
-1. Create SKILL.md with activation triggers
-2. Write shell.md with core embodiment semantics
-3. Write commands.md with command grammar
-4. Write state/cache.md with caching logic
-5. Write help.md for users
-6. Test with real URLs
-
----
-
-## Inspiration
-
-- Unix shell philosophy (small tools, pipes, text streams)
-- OpenProse VM pattern (embodiment, state files)
-- The original tweet: "Is there a shell for the web?"
+- Filosofía de shell de Unix (pequeñas herramientas, tuberías, flujos de texto)
+- Patrón OpenProse VM (realización, archivos de estado)
+- El tweet original: "¿Existe un shell para la web?"

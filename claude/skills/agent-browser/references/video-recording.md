@@ -1,22 +1,23 @@
-# Video Recording
+# Grabación de vídeo
 
-Capture browser automation as video for debugging, documentation, or verification.
+Capture la automatización del navegador como vídeo para depuración, documentación o verificación.
 
-**Related**: [commands.md](commands.md) for full command reference, [SKILL.md](../SKILL.md) for quick start.
+**Relacionado**: [commands.md](commands.md) para una referencia completa de los comandos, [SKILL.md](../SKILL.md) para un inicio rápido.
 
-## Contents
+## Contenidos
 
-- [Basic Recording](#basic-recording)
-- [Recording Commands](#recording-commands)
-- [Use Cases](#use-cases)
-- [Best Practices](#best-practices)
-- [Output Format](#output-format)
-- [Limitations](#limitations)
+- [Grabación básica](#grabación-básica)
+- [Comandos de grabación](#comandos-de-grabación)
+- [Casos de uso](#casos de uso)
+- [Mejores prácticas](#mejores-practicas)
+- [Formato de salida](#formato-de-salida)
+- [Limitaciones](#limitaciones)
 
-## Basic Recording
+## Grabación básica
 
 ```bash
-# Start recording
+
+# Iniciar grabación
 agent-browser record start ./demo.webm
 
 # Perform actions
@@ -29,9 +30,10 @@ agent-browser fill @e2 "test input"
 agent-browser record stop
 ```
 
-## Recording Commands
+## Comandos de grabación
 
 ```bash
+
 # Start recording to file
 agent-browser record start ./output.webm
 
@@ -42,12 +44,13 @@ agent-browser record stop
 agent-browser record restart ./take2.webm
 ```
 
-## Use Cases
+## Casos de uso
 
-### Debugging Failed Automation
+### Depuración de automatización fallida
 
 ```bash
 #!/bin/bash
+
 # Record automation for debugging
 
 agent-browser record start ./debug-$(date +%Y%m%d-%H%M%S).webm
@@ -64,10 +67,11 @@ agent-browser click @e1 || {
 agent-browser record stop
 ```
 
-### Documentation Generation
+### Generación de documentación
 
 ```bash
 #!/bin/bash
+
 # Record workflow for documentation
 
 agent-browser record start ./docs/how-to-login.webm
@@ -89,10 +93,11 @@ agent-browser wait 1000  # Show result
 agent-browser record stop
 ```
 
-### CI/CD Test Evidence
+### Evidencia de prueba de CI/CD
 
 ```bash
 #!/bin/bash
+
 # Record E2E test runs for CI artifacts
 
 TEST_NAME="${1:-e2e-test}"
@@ -111,25 +116,27 @@ fi
 agent-browser record stop
 ```
 
-## Best Practices
+## Mejores prácticas
 
-### 1. Add Pauses for Clarity
+### 1. Agregue pausas para mayor claridad
 
 ```bash
+
 # Slow down for human viewing
 agent-browser click @e1
 agent-browser wait 500  # Let viewer see result
 ```
 
-### 2. Use Descriptive Filenames
+### 2. Utilice nombres de archivos descriptivos
 
 ```bash
+
 # Include context in filename
 agent-browser record start ./recordings/login-flow-2024-01-15.webm
 agent-browser record start ./recordings/checkout-test-run-42.webm
 ```
 
-### 3. Handle Recording in Error Cases
+### 3. Manejar la grabación en casos de error
 
 ```bash
 #!/bin/bash
@@ -142,12 +149,14 @@ cleanup() {
 trap cleanup EXIT
 
 agent-browser record start ./automation.webm
+
 # ... automation steps ...
 ```
 
-### 4. Combine with Screenshots
+### 4. Combinar con capturas de pantalla
 
 ```bash
+
 # Record video AND capture key frames
 agent-browser record start ./flow.webm
 
@@ -160,14 +169,14 @@ agent-browser screenshot ./screenshots/step2-after-click.png
 agent-browser record stop
 ```
 
-## Output Format
+## Formato de salida
 
-- Default format: WebM (VP8/VP9 codec)
-- Compatible with all modern browsers and video players
-- Compressed but high quality
+- Formato predeterminado: WebM (códec VP8/VP9)
+- Compatible con todos los navegadores y reproductores de vídeo modernos.
+- Comprimido pero de alta calidad.
 
-## Limitations
+## Limitaciones
 
-- Recording adds slight overhead to automation
-- Large recordings can consume significant disk space
-- Some headless environments may have codec limitations
+- La grabación añade una ligera sobrecarga a la automatización.
+- Las grabaciones grandes pueden consumir una cantidad significativa de espacio en el disco.
+- Algunos entornos sin cabeza pueden tener limitaciones de códec

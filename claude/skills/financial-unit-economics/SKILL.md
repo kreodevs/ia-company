@@ -1,183 +1,180 @@
 ---
 name: financial-unit-economics
-description: Use when evaluating business model viability, analyzing profitability per customer/product/transaction, validating startup metrics (CAC, LTV, payback period), making pricing decisions, assessing scalability, comparing business models, or when user mentions unit economics, CAC/LTV ratio, contribution margin, customer profitability, break-even analysis, or needs to determine if a business can be profitable at scale.
+description: Usar al evaluar viabilidad del modelo de negocio, analizar rentabilidad por cliente/producto/transacción, validar métricas de startup (CAC, LTV, payback period), tomar decisiones de pricing, evaluar escalabilidad, comparar modelos de negocio, o cuando el usuario mencione unit economics, ratio CAC/LTV, contribution margin, rentabilidad por cliente, break-even analysis, o necesite determinar si un negocio puede ser rentable a escala.
 ---
-# Financial Unit Economics
 
-## Table of Contents
-- [Purpose](#purpose)
-- [When to Use](#when-to-use)
-- [What Is It?](#what-is-it)
-- [Workflow](#workflow)
-- [Common Patterns](#common-patterns)
+# Unit economics financieros
+
+## Tabla de contenidos
+- [Propósito](#propósito)
+- [Cuándo usar](#cuándo-usar)
+- [¿Qué es?](#qué-es)
+- [Flujo de trabajo](#flujo-de-trabajo)
+- [Patrones comunes](#patrones-comunes)
 - [Guardrails](#guardrails)
-- [Quick Reference](#quick-reference)
+- [Referencia rápida](#referencia-rápida)
 
-## Purpose
+## Propósito
 
-Financial Unit Economics analyzes the profitability of individual units (customers, products, transactions) to determine if a business model is viable and scalable. This skill guides you through calculating key metrics (CAC, LTV, contribution margin), interpreting ratios, conducting cohort analysis, and making data-driven decisions about pricing, marketing spend, and growth strategy.
+Los unit economics financieros analizan la rentabilidad de unidades individuales (clientes, productos, transacciones) para determinar si un modelo de negocio es viable y escalable. Este skill te guía para calcular métricas clave (CAC, LTV, contribution margin), interpretar ratios, realizar análisis por cohortes y tomar decisiones basadas en datos sobre pricing, gasto en marketing y estrategia de crecimiento.
 
-## When to Use
+## Cuándo usar
 
-Use this skill when:
+Usa este skill cuando:
 
-- **Business model validation**: Determine if startup/new product can be profitable at scale
-- **Pricing decisions**: Set prices based on target margins and customer economics
-- **Marketing spend**: Assess ROI of acquisition channels, optimize CAC
-- **Growth strategy**: Decide when to scale (raise funding, increase spend) based on unit economics
-- **Product roadmap**: Prioritize features that improve retention or reduce churn (increase LTV)
-- **Investor pitch**: Demonstrate business model viability with CAC, LTV, payback metrics
-- **Channel optimization**: Compare profitability across customer segments or acquisition channels
-- **Subscription models**: Analyze recurring revenue, churn, cohort retention curves
-- **Marketplace economics**: Model take rate, supply/demand side economics, liquidity
-- **Financial planning**: Forecast cash flow, runway, burn rate based on unit economics
+- **Validación del modelo de negocio**: Determinar si startup/nuevo producto puede ser rentable a escala
+- **Decisiones de pricing**: Fijar precios según márgenes objetivo y economics del cliente
+- **Gasto en marketing**: Evaluar ROI de canales de adquisición, optimizar CAC
+- **Estrategia de crecimiento**: Decidir cuándo escalar (levantar funding, aumentar gasto) según unit economics
+- **Roadmap de producto**: Priorizar features que mejoren retención o reduzcan churn (aumentar LTV)
+- **Pitch a inversores**: Demostrar viabilidad del modelo con métricas CAC, LTV, payback
+- **Optimización de canal**: Comparar rentabilidad entre segmentos de clientes o canales de adquisición
+- **Modelos de suscripción**: Analizar revenue recurrente, churn, curvas de retención por cohorte
+- **Economics de marketplace**: Modelar take rate, economics supply/demand, liquidez
+- **Planificación financiera**: Forecast de cash flow, runway, burn rate basado en unit economics
 
-Trigger phrases: "unit economics", "CAC/LTV", "customer acquisition cost", "lifetime value", "contribution margin", "payback period", "customer profitability", "break-even", "cohort analysis", "is this business viable?"
+Frases trigger: "unit economics", "CAC/LTV", "customer acquisition cost", "lifetime value", "contribution margin", "payback period", "customer profitability", "break-even", "cohort analysis", "is this business viable?"
 
-## What Is It?
+## ¿Qué es?
 
-**Financial Unit Economics** is the practice of measuring profitability at the most granular level (per customer, product, or transaction) to understand if revenue from a single unit exceeds the cost to acquire and serve it.
+Los **unit economics financieros** miden rentabilidad al nivel más granular (por cliente, producto o transacción) para entender si el revenue de una unidad supera el costo de adquirirla y servirla.
 
-**Core components**:
-- **CAC (Customer Acquisition Cost)**: Total sales/marketing spend ÷ new customers acquired
-- **LTV (Lifetime Value)**: Revenue from customer over their lifetime minus variable costs
-- **Contribution Margin**: (Revenue - Variable Costs) ÷ Revenue (as %)
-- **LTV/CAC Ratio**: Measures return on acquisition investment (target: 3:1 or higher)
-- **Payback Period**: Months to recover CAC from customer revenue
-- **Cohort Analysis**: Track metrics over time for customer groups (by acquisition month/channel)
+**Componentes core**:
+- **CAC (Customer Acquisition Cost)**: Gasto total sales/marketing ÷ nuevos clientes adquiridos
+- **LTV (Lifetime Value)**: Revenue del cliente en su lifetime menos costos variables
+- **Contribution Margin**: (Revenue - Costos variables) ÷ Revenue (como %)
+- **Ratio LTV/CAC**: Mide retorno de inversión en adquisición (objetivo: 3:1 o superior)
+- **Payback Period**: Meses para recuperar CAC del revenue del cliente
+- **Análisis por cohortes**: Rastrear métricas en el tiempo por grupos de clientes (por mes/canal de adquisición)
 
-**Quick example:**
+**Ejemplo rápido:**
 
-**Scenario**: SaaS startup, subscription model ($100/month), analyzing unit economics.
+**Escenario**: Startup SaaS, modelo de suscripción ($100/mes), analizando unit economics.
 
-**Metrics**:
-- **CAC**: $20k marketing spend, 100 new customers → CAC = $200
-- **Monthly revenue per customer**: $100
-- **Variable costs**: $20/customer/month (hosting, support)
+**Métricas**:
+- **CAC**: $20k gasto marketing, 100 nuevos clientes → CAC = $200
+- **Revenue mensual por cliente**: $100
+- **Costos variables**: $20/cliente/mes (hosting, soporte)
 - **Gross margin**: ($100 - $20) / $100 = 80%
-- **Monthly churn**: 5% → Average lifetime = 1 / 0.05 = 20 months
-- **LTV**: $100 revenue × 20 months × 80% margin = $1,600
-- **LTV/CAC**: $1,600 / $200 = 8:1 ✓ (healthy, >3:1)
-- **Payback period**: $200 CAC ÷ ($100 × 80% margin) = 2.5 months ✓ (good, <12 months)
+- **Churn mensual**: 5% → Lifetime promedio = 1 / 0.05 = 20 meses
+- **LTV**: $100 revenue × 20 meses × 80% margin = $1,600
+- **LTV/CAC**: $1,600 / $200 = 8:1 ✓ (saludable, >3:1)
+- **Payback period**: $200 CAC ÷ ($100 × 80% margin) = 2.5 meses ✓ (bueno, <12 meses)
 
-**Interpretation**: Strong unit economics. Each customer generates 8× their acquisition cost. Can profitably scale marketing spend. Payback in 2.5 months means fast capital recovery.
+**Interpretación**: Unit economics sólidos. Cada cliente genera 8× su costo de adquisición. Se puede escalar marketing con rentabilidad. Payback en 2.5 meses = recuperación rápida de capital.
 
-**Core benefits**:
-- **Early warning system**: Detect unsustainable business models before scaling losses
-- **Data-driven growth**: Know when unit economics justify increasing spend
-- **Channel optimization**: Identify which acquisition channels are profitable
-- **Pricing power**: Quantify impact of price changes on profitability
-- **Investor confidence**: Demonstrate path to profitability with clear metrics
+**Beneficios core**:
+- **Sistema de alerta temprana**: Detectar modelos insostenibles antes de escalar pérdidas
+- **Crecimiento basado en datos**: Saber cuándo los unit economics justifican aumentar gasto
+- **Optimización de canal**: Identificar qué canales de adquisición son rentables
+- **Poder de pricing**: Cuantificar impacto de cambios de precio en rentabilidad
+- **Confianza de inversores**: Demostrar camino a rentabilidad con métricas claras
 
-## Workflow
+## Flujo de trabajo
 
-Copy this checklist and track your progress:
+Copia este checklist y rastrea tu progreso:
 
 ```
-Unit Economics Analysis Progress:
-- [ ] Step 1: Define the unit
-- [ ] Step 2: Calculate CAC
-- [ ] Step 3: Calculate LTV
-- [ ] Step 4: Assess contribution margin
-- [ ] Step 5: Analyze cohorts
-- [ ] Step 6: Interpret and recommend
-```
+Progreso de análisis de unit economics:
+- [ ] Paso 1: Definir la unidad
+- [ ] Paso 2: Calcular CAC
+- [ ] Paso 3: Calcular LTV
+- [ ] Paso 4: Evaluar contribution margin
+- [ ] Paso 5: Analizar cohortes
+- [ ] Paso 6: Interpretar y recomendar
+```**Paso 1: Definir la unidad**
 
-**Step 1: Define the unit**
+¿Cuál es tu unidad de análisis? (Cliente, SKU de producto, transacción, suscripción). Ver [resources/template.md](resources/template.md#unit-definition-template).
 
-What is your unit of analysis? (Customer, product SKU, transaction, subscription). See [resources/template.md](resources/template.md#unit-definition-template).
+**Paso 2: Calcular CAC**
 
-**Step 2: Calculate CAC**
+Costos totales de adquisición (sales + marketing) ÷ unidades nuevas adquiridas. Desglosar por canal si aplica. Ver [resources/template.md](resources/template.md#cac-calculation-template) y [resources/methodology.md](resources/methodology.md#1-customer-acquisition-cost-cac).
 
-Total acquisition costs (sales + marketing) ÷ new units acquired. Break down by channel if applicable. See [resources/template.md](resources/template.md#cac-calculation-template) and [resources/methodology.md](resources/methodology.md#1-customer-acquisition-cost-cac).
+**Paso 3: Calcular LTV**
 
-**Step 3: Calculate LTV**
+Revenue en lifetime de la unidad menos costos variables. Usar datos de cohorte para retención/churn. Ver [resources/template.md](resources/template.md#ltv-calculation-template) y [resources/methodology.md](resources/methodology.md#2-lifetime-value-ltv).
 
-Revenue over unit lifetime minus variable costs. Use cohort data for retention/churn. See [resources/template.md](resources/template.md#ltv-calculation-template) and [resources/methodology.md](resources/methodology.md#2-lifetime-value-ltv).
+**Paso 4: Evaluar contribution margin**
 
-**Step 4: Assess contribution margin**
+(Revenue - Costos variables) ÷ Revenue. Identificar palancas para mejorar margin. Ver [resources/template.md](resources/template.md#contribution-margin-template) y [resources/methodology.md](resources/methodology.md#3-contribution-margin-analysis).
 
-(Revenue - Variable Costs) ÷ Revenue. Identify levers to improve margin. See [resources/template.md](resources/template.md#contribution-margin-template) and [resources/methodology.md](resources/methodology.md#3-contribution-margin-analysis).
+**Paso 5: Analizar cohortes**
 
-**Step 5: Analyze cohorts**
+Rastrear retención, LTV, payback por cohorte de clientes (mes/canal/segmento de adquisición). Ver [resources/template.md](resources/template.md#cohort-analysis-template) y [resources/methodology.md](resources/methodology.md#4-cohort-analysis).
 
-Track retention, LTV, payback by customer cohort (acquisition month/channel/segment). See [resources/template.md](resources/template.md#cohort-analysis-template) and [resources/methodology.md](resources/methodology.md#4-cohort-analysis).
+**Paso 6: Interpretar y recomendar**
 
-**Step 6: Interpret and recommend**
+Evaluar ratio LTV/CAC, payback period, eficiencia de cash. Hacer recomendaciones (pricing, canales, crecimiento). Ver [resources/template.md](resources/template.md#interpretation-template) y [resources/methodology.md](resources/methodology.md#5-interpreting-unit-economics).
 
-Assess LTV/CAC ratio, payback period, cash efficiency. Make recommendations (pricing, channels, growth). See [resources/template.md](resources/template.md#interpretation-template) and [resources/methodology.md](resources/methodology.md#5-interpreting-unit-economics).
+Validar usando [resources/evaluators/rubric_financial_unit_economics.json](resources/evaluators/rubric_financial_unit_economics.json). **Estándar mínimo**: Puntuación media ≥ 3.5.
 
-Validate using [resources/evaluators/rubric_financial_unit_economics.json](resources/evaluators/rubric_financial_unit_economics.json). **Minimum standard**: Average score ≥ 3.5.
+## Patrones comunes
 
-## Common Patterns
+**Patrón 1: Modelo de suscripción SaaS**
+- **Métricas clave**: MRR, ARR, churn rate, LTV/CAC, payback period, CAC payback
+- **Cálculo**: LTV = ARPU × Gross Margin % ÷ Churn Rate
+- **Benchmarks**: LTV/CAC ≥3:1, Payback <12 meses, Churn <5% mensual (B2C) o <2% (B2B)
+- **Palancas**: Reducir churn (aumentar LTV), upsell/cross-sell (aumentar ARPU), optimizar canales (reducir CAC)
+- **Cuándo**: Negocio de suscripción, revenue recurrente, retención crítica
 
-**Pattern 1: SaaS Subscription Model**
-- **Key metrics**: MRR, ARR, churn rate, LTV/CAC, payback period, CAC payback
-- **Calculation**: LTV = ARPU × Gross Margin % ÷ Churn Rate
-- **Benchmarks**: LTV/CAC ≥3:1, Payback <12 months, Churn <5% monthly (B2C) or <2% (B2B)
-- **Levers**: Reduce churn (increase LTV), upsell/cross-sell (increase ARPU), optimize channels (reduce CAC)
-- **When**: Subscription business, recurring revenue, retention critical
-
-**Pattern 2: E-commerce / Transactional**
-- **Key metrics**: AOV (Average Order Value), repeat purchase rate, contribution margin per order, CAC
-- **Calculation**: LTV = AOV × Purchase Frequency × Gross Margin % × Customer Lifetime (years)
+**Patrón 2: E-commerce / Transaccional**
+- **Métricas clave**: AOV (Average Order Value), repeat purchase rate, contribution margin por pedido, CAC
+- **Cálculo**: LTV = AOV × Purchase Frequency × Gross Margin % × Customer Lifetime (años)
 - **Benchmarks**: Contribution margin ≥40%, Repeat purchase rate ≥25%, LTV/CAC ≥2:1
-- **Levers**: Increase AOV (bundling, upsells), drive repeat purchases (loyalty programs), reduce variable costs
-- **When**: Transactional business, e-commerce, retail
+- **Palancas**: Aumentar AOV (bundling, upsells), impulsar repeat purchases (loyalty programs), reducir costos variables
+- **Cuándo**: Negocio transaccional, e-commerce, retail
 
-**Pattern 3: Marketplace / Platform**
-- **Key metrics**: Take rate, GMV (Gross Merchandise Value), supply/demand CAC, liquidity
-- **Calculation**: LTV = GMV per user × Take Rate × Gross Margin % ÷ Churn Rate
-- **Benchmarks**: Take rate 10-30%, LTV/CAC ≥3:1 for both sides, network effects kicking in
-- **Levers**: Increase take rate (value-added services), improve matching (increase GMV), balance supply/demand
-- **When**: Two-sided marketplace, platform business
+**Patrón 3: Marketplace / Platform**
+- **Métricas clave**: Take rate, GMV (Gross Merchandise Value), CAC supply/demand, liquidez
+- **Cálculo**: LTV = GMV por usuario × Take Rate × Gross Margin % ÷ Churn Rate
+- **Benchmarks**: Take rate 10-30%, LTV/CAC ≥3:1 en ambos lados, network effects activos
+- **Palancas**: Aumentar take rate (servicios de valor añadido), mejorar matching (aumentar GMV), balancear supply/demand
+- **Cuándo**: Marketplace de dos lados, negocio platform
 
-**Pattern 4: Freemium / PLG (Product-Led Growth)**
-- **Key metrics**: Free-to-paid conversion rate, time to convert, paid user LTV, blended CAC
-- **Calculation**: Blended LTV = (Free users × Conversion % × Paid LTV) - (Free user costs)
-- **Benchmarks**: Conversion ≥2%, Time to convert <90 days, Paid LTV/CAC ≥4:1
-- **Levers**: Increase conversion rate (improve product, optimize paywall), reduce time to value, lower CAC via virality
-- **When**: Product-led growth, freemium model, viral product
+**Patrón 4: Freemium / PLG (Product-Led Growth)**
+- **Métricas clave**: Free-to-paid conversion rate, time to convert, paid user LTV, blended CAC
+- **Cálculo**: Blended LTV = (Free users × Conversion % × Paid LTV) - (Free user costs)
+- **Benchmarks**: Conversion ≥2%, Time to convert <90 días, Paid LTV/CAC ≥4:1
+- **Palancas**: Aumentar conversion rate (mejorar producto, optimizar paywall), reducir time to value, bajar CAC vía viralidad
+- **Cuándo**: Product-led growth, modelo freemium, producto viral
 
-**Pattern 5: Enterprise / High-Touch Sales**
-- **Key metrics**: CAC (including sales team costs), sales cycle length, NRR (Net Revenue Retention), LTV
-- **Calculation**: LTV = ACV (Annual Contract Value) × Gross Margin % × Average Customer Lifetime (years)
+**Patrón 5: Enterprise / Ventas high-touch**
+- **Métricas clave**: CAC (incluyendo costos del equipo de ventas), sales cycle length, NRR (Net Revenue Retention), LTV
+- **Cálculo**: LTV = ACV (Annual Contract Value) × Gross Margin % × Average Customer Lifetime (años)
 - **Benchmarks**: LTV/CAC ≥3:1, Sales efficiency (ARR added ÷ S&M spend) ≥1.0, NRR ≥110%
-- **Levers**: Shorten sales cycle, increase ACV (upsell, premium tiers), improve retention (NRR)
-- **When**: Enterprise sales, high ACV, long sales cycles
+- **Palancas**: Acortar sales cycle, aumentar ACV (upsell, tiers premium), mejorar retención (NRR)
+- **Cuándo**: Ventas enterprise, ACV alto, ciclos de venta largos
 
 ## Guardrails
 
-**Critical requirements:**
+**Requisitos críticos:**1. **CAC fully-loaded**: Incluir todos los costos de adquisición (salarios sales, gasto marketing, tools, asignación overhead). Subestimar CAC hace que los unit economics parezcan mejores de lo real.
 
-1. **Fully-loaded CAC**: Include all acquisition costs (sales salaries, marketing spend, tools, overhead allocation). Underestimating CAC makes unit economics look better than reality. Common miss: excluding sales team salaries.
+2. **Costos variables reales**: Solo costos que escalan con cada unidad (COGS, hosting por usuario, transaction fees). No incluir costos fijos (rent, core engineering). LTV requiere margin preciso.
 
-2. **True variable costs**: Only include costs that scale with each unit (COGS, hosting per user, transaction fees). Don't include fixed costs (rent, core engineering). LTV calculation requires accurate margin.
+3. **LTV basado en cohortes**: No promediar todos los clientes. Cohortes tempranas ≠ recientes. Rastrear curvas de retención por cohorte. LTV debe basarse en retención observada, no supuestos.
 
-3. **Cohort-based LTV**: Don't average across all customers. Early cohorts ≠ recent cohorts. Track retention curves by cohort (acquisition month/channel). LTV should be based on observed retention, not assumptions.
+4. **El horizonte temporal importa**: LTV es predicción. Usar supuestos conservadores. En productos nuevos, estimaciones LTV son poco fiables. Ponderar más cohortes recientes.
 
-4. **Time horizon matters**: LTV is a prediction. Use conservative assumptions. For new products, LTV estimates are unreliable (insufficient data). Weight recent cohorts more heavily.
+5. **Payback period vs. LTV/CAC**: Ambos importan. LTV/CAC alto pero payback largo (>18 meses) tensiona cash. Payback rápido (<6 meses) permite reinversión rápida.
 
-5. **Payback period vs. LTV/CAC**: Both matter. High LTV/CAC but long payback (>18 months) strains cash. Fast payback (<6 months) allows rapid reinvestment. Optimize for both.
+6. **Análisis por canal**: Métricas blended ocultan la verdad. CAC y LTV varían por canal. Analizar por separado para optimizar gasto.
 
-6. **Channel-level analysis**: Blended metrics hide truth. CAC and LTV vary by channel (paid search vs. referral vs. content). Analyze separately to optimize spend.
+7. **La retención es rey**: Pequeños cambios en churn tienen impacto exponencial en LTV. Mejorar churn mensual de 5% a 4% aumenta LTV 25%.
 
-7. **Retention is king**: Small changes in churn have exponential impact on LTV. Improving monthly churn from 5% to 4% increases LTV by 25%. Retention improvements > acquisition improvements.
+8. **Piso de gross margin**: Necesitas ≥60% gross margin para SaaS, ≥40% para e-commerce. Margin bajo = ratio LTV/CAC alto pero cash flow pobre.
 
-8. **Gross margin floor**: Need ≥60% gross margin for SaaS, ≥40% for e-commerce to be viable. Low margin means high LTV/CAC ratio still yields poor cash flow.
+**Errores comunes:**
 
-**Common pitfalls:**
+- ❌ **Ignorar churn**: Asumir que los clientes se quedan para siempre
+- ❌ **LTV vanidad**: Retención irreal (p. ej., LTV 5 años con 1 mes de datos)
+- ❌ **CAC blended**: Mezclar canales rentables e irrentables
+- ❌ **No actualizar**: Los unit economics cambian; recalcular trimestralmente
+- ❌ **Costos faltantes**: Olvidar soporte, payment processing, fraude, refunds
+- ❌ **Escalar prematuramente**: Crecer antes de que funcionen los unit economics (LTV/CAC <2:1)
 
-- ❌ **Ignoring churn**: Assuming customers stay forever. Reality: churn compounds. Use cohort retention curves.
-- ❌ **Vanity LTV**: Using unrealistic retention (e.g., 5 year LTV with 1 month of data). Stick to observed behavior.
-- ❌ **Blended CAC**: Mixing profitable and unprofitable channels. Break down by channel, segment, cohort.
-- ❌ **Not updating**: Unit economics change as product, market, competition evolve. Re-calculate quarterly.
-- ❌ **Missing costs**: Forgetting support costs, payment processing fees, fraud losses, refunds. Track everything.
-- ❌ **Premature scaling**: Growing before unit economics work (LTV/CAC <2:1). "We'll make it up in volume" rarely works.
+## Referencia rápida
 
-## Quick Reference
-
-**Key formulas:**
+**Fórmulas clave:**
 
 ```
 CAC = (Sales + Marketing Costs) ÷ New Customers Acquired
@@ -205,40 +202,38 @@ ARR (Annual Recurring Revenue) = MRR × 12
 ARPU (Average Revenue Per User) = Total Revenue ÷ Total Users
 
 NRR (Net Revenue Retention) = (Starting ARR + Expansion - Contraction - Churn) ÷ Starting ARR
-```
+```**Benchmarks (varía por etapa e industria):**
 
-**Benchmarks (varies by stage and industry):**
-
-| Metric | Good | Acceptable | Poor |
+| Métrica | Bueno | Aceptable | Pobre |
 |--------|------|------------|------|
-| **LTV/CAC Ratio** | ≥5:1 | 3:1 - 5:1 | <3:1 |
-| **Payback Period** | <6 months | 6-12 months | >18 months |
+| **Ratio LTV/CAC** | ≥5:1 | 3:1 - 5:1 | <3:1 |
+| **Payback Period** | <6 meses | 6-12 meses | >18 meses |
 | **Gross Margin (SaaS)** | ≥80% | 60-80% | <60% |
 | **Gross Margin (E-commerce)** | ≥50% | 40-50% | <40% |
-| **Monthly Churn (B2C SaaS)** | <3% | 3-7% | >7% |
-| **Monthly Churn (B2B SaaS)** | <1% | 1-3% | >3% |
-| **CAC Payback (SaaS)** | <12 months | 12-18 months | >18 months |
+| **Churn mensual (B2C SaaS)** | <3% | 3-7% | >7% |
+| **Churn mensual (B2B SaaS)** | <1% | 1-3% | >3% |
+| **CAC Payback (SaaS)** | <12 meses | 12-18 meses | >18 meses |
 | **NRR (SaaS)** | ≥120% | 100-120% | <100% |
 
-**Decision framework:**
+**Framework de decisión:**
 
-| LTV/CAC | Payback | Recommendation |
+| LTV/CAC | Payback | Recomendación |
 |---------|---------|----------------|
-| <1:1 | Any | **Stop**: Losing money on every customer. Fix model or pivot. |
-| 1:1 - 2:1 | >12 months | **Caution**: Marginal economics. Don't scale yet. Improve retention or reduce CAC. |
-| 2:1 - 3:1 | 6-12 months | **Optimize**: Unit economics acceptable. Focus on improving before scaling. |
-| 3:1 - 5:1 | <12 months | **Scale**: Good economics. Can profitably invest in growth. |
-| >5:1 | <6 months | **Aggressive scale**: Excellent economics. Raise capital, increase spend rapidly. |
+| <1:1 | Cualquiera | **Detener**: Pierdes dinero en cada cliente. Corregir modelo o pivotar. |
+| 1:1 - 2:1 | >12 meses | **Precaución**: Economics marginales. No escalar aún. |
+| 2:1 - 3:1 | 6-12 meses | **Optimizar**: Economics aceptables. Mejorar antes de escalar. |
+| 3:1 - 5:1 | <12 meses | **Escalar**: Buen economics. Invertir en crecimiento con rentabilidad. |
+| >5:1 | <6 meses | **Escalar agresivamente**: Economics excelentes. Levantar capital, aumentar gasto. |
 
-**Inputs required:**
-- **Revenue data**: Pricing, ARPU, AOV, transaction frequency
-- **Cost data**: Sales/marketing spend, COGS, variable costs per customer
-- **Retention data**: Churn rate, cohort retention curves, repeat purchase behavior
-- **Channel data**: CAC by acquisition channel, LTV by segment
-- **Time period**: Cohort definition (monthly, quarterly), historical data range
+**Inputs requeridos:**
+- **Datos de revenue**: Pricing, ARPU, AOV, frecuencia de transacción
+- **Datos de costo**: Gasto sales/marketing, COGS, costos variables por cliente
+- **Datos de retención**: Churn rate, curvas por cohorte, repeat purchase behavior
+- **Datos de canal**: CAC por canal, LTV por segmento
+- **Periodo temporal**: Definición de cohorte, rango histórico
 
-**Outputs produced:**
-- `unit-economics-analysis.md`: Full analysis with CAC, LTV, ratios, cohort breakdowns
-- `cohort-retention-table.csv`: Retention curves by cohort
-- `channel-profitability.csv`: CAC and LTV by acquisition channel
-- `recommendations.md`: Pricing, channel, growth recommendations based on metrics
+**Outputs producidos:**
+-`unit-economics-analysis.md`: Análisis completo con CAC, LTV, ratios, desgloses por cohorte
+-`cohort-retention-table.csv`: Curvas de retención por cohorte
+-`channel-profitability.csv`: CAC y LTV por canal de adquisición
+-`recommendations.md`: Recomendaciones de pricing, canal y crecimiento

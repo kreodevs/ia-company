@@ -1,29 +1,29 @@
-# Inversion Thinking Framework
+# Marco de pensamiento de inversión
 
-## Overview
+## Descripción general
 
-Inversion is a powerful mental tool: instead of asking "how to succeed?", ask "how to fail?" then avoid those failure modes.
+La inversión es una poderosa herramienta mental: en lugar de preguntar "¿cómo tener éxito?", pregunte "¿cómo fracasar?". luego evite esos modos de falla.
 
-**Core Principle**: "Invert, always invert." — Carl Jacobi (German mathematician)
+**Principio fundamental**: "Invertir, invertir siempre". — Carl Jacobi (matemático alemán)
 
-## When to Use
+## Cuándo utilizar
 
-Ideal for:
-- 🎯 Mitigating risks and avoiding failure
-- 🔍 Discovering hidden problems and obstacles
-- 💡 Breaking through mental blocks
-- ⚠️ Stress-testing plans for fragility
-- 🛡️ Building defensive strategies
+Ideal para:
+- 🎯 Mitigar riesgos y evitar fracasos
+- 🔍 Descubrir problemas y obstáculos ocultos
+- 💡 Romper bloqueos mentales
+- ⚠️ Planes de pruebas de estrés para la fragilidad
+- 🛡️ Construyendo estrategias defensivas
 
-## Three Inversion Modes
+## Tres modos de inversión
 
-### 1. Goal Inversion
+### 1. Inversión de objetivos
 
-**Forward**: How to achieve goal X?
-**Inverted**: How to guarantee failure to achieve X?
+**Adelante**: ¿Cómo lograr el objetivo X?
+**Invertido**: ¿Cómo garantizar que no se alcance X?
 
 ```markdown
-## Goal Inversion Analysis
+## Análisis de inversión de objetivos
 
 Forward Goal: [Article's main recommendation]
 
@@ -38,13 +38,13 @@ Insights:
 - Defensive strategy: [Formulate]
 ```
 
-### 2. Assumption Inversion
+### 2. Inversión de supuestos
 
-**Forward**: If assumption A holds, then conclusion B is valid
-**Inverted**: What happens if assumption A doesn't hold?
+**Adelante**: Si se cumple el supuesto A, entonces la conclusión B es válida
+**Invertido**: ¿Qué sucede si el supuesto A no se cumple?
 
 ```markdown
-## Assumption Inversion Test
+## Prueba de inversión de supuestos
 
 Article's core assumptions:
 1. [Assumption 1]
@@ -59,13 +59,13 @@ Inversion Test:
 Discovered vulnerabilities: [List]
 ```
 
-### 3. Causality Inversion
+### 3. Inversión de causalidad
 
-**Forward**: A causes B (cause to effect)
-**Inverted**: To get B, what must be true? (effect to cause)
+**Adelante**: A causa B (causa a efecto)
+**Invertido**: Para obtener B, ¿qué debe ser cierto? (efecto a causa)
 
 ```markdown
-## Causality Inversion
+## Inversión de causalidad
 
 Desired Outcome: [Article's promised result]
 
@@ -79,9 +79,9 @@ Necessary Conditions:
 ✗ [Unmentioned necessary conditions] ← Important discovery
 ```
 
-## Application Method
+## Método de aplicación
 
-### Step 1: Identify Forward Claims
+### Paso 1: Identificar reclamaciones futuras
 
 ```markdown
 ## Article's Forward Claims
@@ -91,9 +91,9 @@ Recommended actions: [List]
 Expected results: [Describe]
 ```
 
-### Step 2: Apply Four Inversion Questions
+### Paso 2: Aplicar cuatro preguntas de inversión
 
-#### ❌ Q1: How to guarantee failure?
+#### ❌ P1: ¿Cómo garantizar el fracaso?
 
 ```markdown
 Most effective failure methods:
@@ -104,7 +104,7 @@ Most effective failure methods:
 Insight: Avoid these traps
 ```
 
-#### ⚠️ Q2: When would the advice backfire?
+#### ⚠️ P2: ¿Cuándo sería contraproducente el consejo?
 
 ```markdown
 Backfire scenarios:
@@ -115,7 +115,7 @@ Backfire scenarios:
 Prerequisites: [Unstated but necessary conditions]
 ```
 
-#### 🔍 Q3: What risks are missing?
+#### 🔍 P3: ¿Qué riesgos faltan?
 
 ```markdown
 Risks article doesn't mention:
@@ -126,7 +126,7 @@ Risks article doesn't mention:
 Risk mitigation: [Supplement]
 ```
 
-#### 🎯 Q4: What's reasonable about the opposite view?
+#### 🎯 P4: ¿Qué tiene de razonable la opinión contraria?
 
 ```markdown
 Contrary perspectives:
@@ -140,10 +140,10 @@ Merit in opposition:
 Balanced view: [Synthesized judgment]
 ```
 
-### Step 3: Build Failure-Mode Checklist
+### Paso 3: Crear una lista de verificación en modo de falla
 
 ```markdown
-## Failure Prevention Checklist
+## Checklist de prevención de fallos
 
 Based on inversion, avoid:
 - [ ] [Failure mode 1] → Prevention: [Specific action]
@@ -155,10 +155,10 @@ Early warning signs:
 - 🚨 [Signal 2] → Requires immediate adjustment
 ```
 
-### Step 4: Restructure Action Plan
+### Paso 4: Plan de acción de reestructuración
 
 ```markdown
-## Defensive Action Plan
+## Plan de acción defensivo
 
 Original plan: [Article's recommendation]
 
@@ -171,48 +171,47 @@ Stop-Doing List:
 - ❌ [Explicitly what NOT to do]
 ```
 
-## Practical Examples
+## Ejemplos prácticos
 
-### Example 1: Productivity Article
+### Ejemplo 1: artículo sobre productividad
 
-**Article Claim**: "Waking up at 5am is key to success"
+**Reivindicación del artículo**: "Despertarse a las 5 de la mañana es la clave del éxito"
 
-#### Inversion Analysis:
+#### Análisis de inversión:
 
-**Forward**: How to become an early riser?
-**Inverted**: How to guarantee the 5am plan fails?
+**Adelante**: ¿Cómo convertirse en un madrugador?
+**Invertido**: ¿Cómo garantizar que el plan de las 5 a.m. falle?
 
-**Failure Checklist**:
-1. Stay up until 3am → Insight: Total sleep matters more than wake time
-2. No compelling morning reason → Insight: Need clear morning purpose
-3. Inconsistent weekend schedule → Insight: Consistency is key
-4. Alarm within arm's reach → Insight: Environmental design matters
+**Lista de verificación de fallas**:
+1. Quédese despierto hasta las 3 a. m. → Insight: el sueño total importa más que la hora de despertarse
+2. No hay una razón convincente para la mañana → Perspicacia: se necesita un propósito claro para la mañana
+3. Horario de fin de semana inconsistente → Insight: la coherencia es clave
+4. Alarma al alcance de la mano → Insight: El diseño ambiental importa
 
-**Inversion Discoveries**:
-- ⚠️ Article ignores: Individual chronotype differences ("night owls")
-- ⚠️ Fails when: Work requires night shifts
-- ⚠️ Backfires: Sleep deprivation reduces productivity
+**Descubrimientos de inversión**:
+- ⚠️ El artículo ignora: Diferencias de cronotipo individuales ("noctámbulos")
+- ⚠️ Falla cuando: El trabajo requiere turnos nocturnos
+- ⚠️ Efectos contraproducentes: la falta de sueño reduce la productividad
 
-**Optimized Recommendation**:
-- Don't chase wake time, chase:
-  1. Sufficient sleep (7-9 hours)
-  2. Consistent schedule
-  3. High-value morning activities
+**Recomendación optimizada**:
+- No persigas la hora de despertarte, persigue:
+  1. Dormir lo suficiente (7-9 horas)
+  2. Horario consistente
+  3. Actividades matutinas de alto valor
 
-### Example 2: Business Strategy
+### Ejemplo 2: estrategia empresarial
 
-**Article Claim**: "Rapid expansion to capture market"
+**Reivindicación del artículo**: "Rápida expansión para capturar mercado"
 
-#### Inverted Q: How to ensure expansion fails?
+#### Invertido P: ¿Cómo garantizar que la expansión falle?
 
-**Failure List**:
-1. Expand before product-market fit → Insight: Need PMF first
-2. Poor cash flow management → Insight: Growth speed ≠ healthy growth
-3. Team quality can't keep up → Insight: Organizational capacity is bottleneck
-4. Neglect existing customers → Insight: Retention vs. acquisition balance
+**Lista de errores**:
+1. Ampliar antes de que el producto se ajuste al mercado → Insight: primero se necesita PMF
+2. Mala gestión del flujo de caja → Insight: Velocidad de crecimiento ≠ crecimiento saludable
+3. La calidad del equipo no puede seguir el ritmo → Insight: la capacidad organizacional es un cuello de botella
+4. Descuidar a los clientes existentes → Insight: equilibrio entre retención y adquisición
 
-**Necessary Conditions Check**:
-```markdown
+**Verificación de condiciones necesarias**:```markdown
 Prerequisites for rapid expansion:
 ✓ Proven business model (article mentions)
 ✗ Adequate funding reserves (article omits)
@@ -220,41 +219,37 @@ Prerequisites for rapid expansion:
 ✗ Strong team culture (article omits)
 ```
 
-**Inversion Insight**:
-Article only discusses "gas pedal", not "brakes". Need to add:
-- Expansion stop conditions
-- Stage-gate validation
-- Retreat plan
+**Perspectiva de inversión**:
+El artículo sólo trata sobre el "pedal del acelerador", no sobre los "frenos". Necesidad de agregar:
+- Condiciones de parada de expansión
+- Validación de etapa
+- Plan de retiro
 
-## Integration with Other Frameworks
+## Integración con otros marcos
 
-### + Critical Thinking
-```markdown
+### + Pensamiento crítico```markdown
 Critical Thinking: Find argument holes
 Inversion: What happens if the holes lead to failure?
 ```
 
-### + First Principles
-```markdown
+### + Primeros principios```markdown
 First Principles: Strip to essentials
 Inversion: Test fragility of essential assumptions
 ```
 
-### + Systems Thinking
-```markdown
+### + Pensamiento sistémico```markdown
 Systems Thinking: See reinforcing loops
 Inversion: Identify negative loops and collapse points
 ```
 
-### + Mental Models
-```markdown
+### + Modelos mentales```markdown
 Mental Models: Multi-angle analysis
 Inversion: Consider the opposite for each angle
 ```
 
-## Inversion Toolbox
+## Caja de herramientas de inversión
 
-### Tool 1: Pre-Mortem
+### Herramienta 1: Pre-Mórtem
 
 ```markdown
 ## Pre-Mortem Analysis
@@ -271,10 +266,10 @@ Based on this, current actions should be:
 - [Prevention measure 2]
 ```
 
-### Tool 2: Reverse Engineering
+### Herramienta 2: Ingeniería inversa
 
 ```markdown
-## Working Backwards from Results
+## Trabajar hacia atrás desde resultados
 
 Ideal outcome: [Describe]
 
@@ -287,7 +282,7 @@ Reverse steps:
 Article's missing steps: [Identify]
 ```
 
-### Tool 3: Not-To-Do List
+### Herramienta 3: Lista de cosas que no hay que hacer
 
 ```markdown
 ## Not-To-Do List (More Important Than To-Do)
@@ -301,7 +296,7 @@ Stop signals:
 When [X signal] appears, immediately stop
 ```
 
-### Tool 4: Devil's Advocate
+### Herramienta 4: Abogado del Diablo
 
 ```markdown
 ## Playing Devil's Advocate
@@ -315,48 +310,48 @@ Balanced conclusion:
 Not A or B, but [middle path]
 ```
 
-## Common Pitfalls
+## Errores comunes
 
-### ❌ Excessive Negativity
-- Wrong: Use inversion to reject everything
-- Right: Use inversion to optimize plans, not abandon them
+### ❌ Negatividad excesiva
+- Incorrecto: usa la inversión para rechazar todo.
+- Derecha: utilice la inversión para optimizar los planes, no abandonarlos
 
-### ❌ Analysis Paralysis
-- Wrong: See too many risks, can't act
-- Right: Identify risks → Design mitigations → Act
+### ❌ Parálisis del análisis
+- Incorrecto: ve demasiados riesgos, no puede actuar
+- Derecha: Identificar riesgos → Diseñar mitigaciones → Actuar
 
-### ❌ Ignoring Probability
-- Wrong: Treat low-probability risks same as high-probability
-- Right: Risk assessment = Probability × Impact
+### ❌ Ignorando la probabilidad
+- Incorrecto: Trate los riesgos de baja probabilidad de la misma manera que los de alta probabilidad.
+- Derecha: Evaluación de riesgos = Probabilidad × Impacto
 
-## Practice Exercises
+## Ejercicios de práctica
 
-### Exercise 1: Daily Decisions
-For any daily decision, ask:
-- "How to ensure this decision is wrong?"
-- What blind spots did I discover?
+### Ejercicio 1: Decisiones diarias
+Para cualquier decisión diaria, pregunte:
+- "¿Cómo garantizar que esta decisión sea incorrecta?"
+- ¿Qué puntos ciegos descubrí?
 
-### Exercise 2: Inverted Reading
-For any advice article, automatically ask:
-- "When would this advice be harmful?"
-- "What prerequisites are missing?"
+### Ejercicio 2: Lectura Invertida
+Para cualquier artículo de consejo, pregunta automáticamente:
+- "¿Cuándo sería perjudicial este consejo?"
+- "¿Qué requisitos faltan?"
 
-### Exercise 3: Pre-Mortem Planning
-Before any plan, do 15-minute pre-mortem:
-- Assume failure, list causes
-- Modify plan to avoid these causes
+### Ejercicio 3: Planificación pre-mortem
+Antes de cualquier plan, haz una autopsia de 15 minutos:
+- Suponer fallo, enumerar las causas.
+- Modificar plan para evitar estas causas.
 
-## Key Quotes
+## Citas clave
 
-> "It is remarkable how much long-term advantage people like us have gotten by trying to be consistently not stupid, instead of trying to be very intelligent."
-> — Charlie Munger
+> "Es notable la ventaja a largo plazo que hemos obtenido personas como nosotros al tratar de no ser estúpidos de manera constante, en lugar de intentar ser muy inteligentes".
+> —Charlie Munger
 
-> "Tell me where I'm going to die, so I'll never go there."
+> "Dime dónde voy a morir, así nunca iré allí".
 > — Carl Jacobi
 
-> "If you want to improve, be content to be thought foolish and stupid."
-> — Epictetus (On how inversion may contradict conventional wisdom)
+> "Si quieres mejorar, confórmate con que te consideren tonto y estúpido".
+> — Epicteto (Sobre cómo la inversión puede contradecir la sabiduría convencional)
 
 ---
 
-**Remember**: Inversion's goal isn't pessimism, but robustness. By seeing failure paths, we design better success paths.
+**Recuerde**: El objetivo de Inversion no es el pesimismo, sino la solidez. Al ver las rutas de fracaso, diseñamos mejores rutas de éxito.

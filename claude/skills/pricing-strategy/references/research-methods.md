@@ -1,36 +1,36 @@
-# Pricing Research Methods
+# Métodos de investigación de precios
 
-## Van Westendorp Price Sensitivity Meter
+## Medidor de sensibilidad de precios de Van Westendorp
 
-The Van Westendorp survey identifies the acceptable price range for your product.
+La encuesta de Van Westendorp identifica el rango de precios aceptable para su producto.
 
-### The Four Questions
+### Las cuatro preguntas
 
-Ask each respondent:
-1. "At what price would you consider [product] to be so expensive that you would not consider buying it?" (Too expensive)
-2. "At what price would you consider [product] to be priced so low that you would question its quality?" (Too cheap)
-3. "At what price would you consider [product] to be starting to get expensive, but you still might consider it?" (Expensive/high side)
-4. "At what price would you consider [product] to be a bargain—a great buy for the money?" (Cheap/good value)
+Pregunte a cada encuestado:
+1. "¿A qué precio consideraría que [el producto] es tan caro que no consideraría comprarlo?" (Demasiado caro)
+2. "¿A qué precio consideraría que [el producto] tiene un precio tan bajo que cuestionaría su calidad?" (Demasiado barato)
+3. "¿A qué precio consideraría que [el producto] está empezando a ser caro, pero aún así podría considerarlo?" (Caro/lado alto)
+4. "¿A qué precio consideraría que [el producto] es una ganga, una excelente compra por su dinero?" (Barato/buen valor)
 
-### How to Analyze
+### Cómo analizar
 
-1. Plot cumulative distributions for each question
-2. Find the intersections:
-   - **Point of Marginal Cheapness (PMC):** "Too cheap" crosses "Expensive"
-   - **Point of Marginal Expensiveness (PME):** "Too expensive" crosses "Cheap"
-   - **Optimal Price Point (OPP):** "Too cheap" crosses "Too expensive"
-   - **Indifference Price Point (IDP):** "Expensive" crosses "Cheap"
+1. Trazar distribuciones acumulativas para cada pregunta.
+2. Encuentra las intersecciones:
+   - **Punto de baratura marginal (PMC):** "Demasiado barato" cruza "Caro"
+   - **Punto de Costo Marginal (PME):** "Demasiado caro" cruza "Barato"
+   - **Punto de precio óptimo (OPP):** "Demasiado barato" cruza "Demasiado caro"
+   - **Punto de precio de indiferencia (IDP):** "Caro" cruza "Barato"
 
-**The acceptable price range:** PMC to PME
-**Optimal pricing zone:** Between OPP and IDP
+**El rango de precios aceptable:** PMC a PME
+**Zona de precios óptima:** Entre OPP e IDP
 
-### Survey Tips
-- Need 100-300 respondents for reliable data
-- Segment by persona (different willingness to pay)
-- Use realistic product descriptions
-- Consider adding purchase intent questions
+### Consejos para encuestas
+- Se necesitan entre 100 y 300 encuestados para obtener datos fiables.
+- Segmentar por persona (diferente disposición a pagar)
+- Utilice descripciones de productos realistas.
+- Considere agregar preguntas de intención de compra
 
-### Sample Output
+### Salida de muestra
 
 ```
 Price Sensitivity Analysis Results:
@@ -43,23 +43,21 @@ Point of Marginal Expensiveness: $79/mo
 Recommended range: $49-59/mo
 Current price: $39/mo (below optimal)
 Opportunity: 25-50% price increase without significant demand impact
-```
+```---
 
----
+## Análisis MaxDiff (mejor-peor escala)
 
-## MaxDiff Analysis (Best-Worst Scaling)
+MaxDiff identifica qué características valoran más los clientes, informando las decisiones de embalaje.
 
-MaxDiff identifies which features customers value most, informing packaging decisions.
+### Cómo funciona
 
-### How It Works
+1. Enumere entre 8 y 15 funciones que podría incluir
+2. Muestre a los encuestados conjuntos de 4 o 5 funciones a la vez.
+3. Pregunte: "¿Cuál es MÁS importante? ¿Cuál es MENOS importante?"
+4. Repita en varios conjuntos hasta que se comparen todas las funciones.
+5. El análisis estadístico produce puntuaciones de importancia.
 
-1. List 8-15 features you could include
-2. Show respondents sets of 4-5 features at a time
-3. Ask: "Which is MOST important? Which is LEAST important?"
-4. Repeat across multiple sets until all features compared
-5. Statistical analysis produces importance scores
-
-### Example Survey Question
+### Ejemplo de pregunta de encuesta
 
 ```
 Which feature is MOST important to you?
@@ -72,59 +70,59 @@ Which feature is LEAST important to you?
 □ Advanced analytics
 ```
 
-### Analyzing Results
+### Analizando resultados
 
-Features are ranked by utility score:
-- High utility = Must-have (include in base tier)
-- Medium utility = Differentiator (use for tier separation)
-- Low utility = Nice-to-have (premium tier or cut)
+Las funciones se clasifican por puntuación de utilidad:
+- Alta utilidad = Imprescindible (incluir en el nivel base)
+- Utilidad media = Diferenciador (uso para separación de niveles)
+- Baja utilidad = Es bueno tenerlo (nivel premium o corte)
 
-### Using MaxDiff for Packaging
+### Uso de MaxDiff para embalaje
 
-| Utility Score | Packaging Decision |
+| Puntuación de utilidad | Decisión de embalaje |
 |---------------|-------------------|
-| Top 20% | Include in all tiers (table stakes) |
-| 20-50% | Use to differentiate tiers |
-| 50-80% | Higher tiers only |
-| Bottom 20% | Consider cutting or premium add-on |
+| 20% superior | Incluir en todos los niveles (apuestas de mesa) |
+| 20-50% | Uso para diferenciar niveles |
+| 50-80% | Sólo niveles superiores |
+| 20% inferior | Considere cortar o agregar un complemento premium |
 
 ---
 
-## Willingness to Pay Surveys
+## Disposición a pagar encuestas
 
-**Direct method (simple but biased):**
-"How much would you pay for [product]?"
+**Método directo (simple pero sesgado):**
+"¿Cuánto pagarías por [producto]?"
 
-**Better: Gabor-Granger method:**
-"Would you buy [product] at [$X]?" (Yes/No)
-Vary price across respondents to build demand curve.
+**Mejor: método Gabor-Granger:**
+"¿Comprarías [producto] a [$X]?" (Sí/No)
+Variar el precio entre los encuestados para construir la curva de demanda.
 
-**Even better: Conjoint analysis:**
-Show product bundles at different prices
-Respondents choose preferred option
-Statistical analysis reveals price sensitivity per feature
+**Aún mejor: análisis conjunto:**
+Mostrar paquetes de productos a diferentes precios
+Los encuestados eligen la opción preferida
+El análisis estadístico revela la sensibilidad al precio por característica
 
 ---
 
-## Usage-Value Correlation Analysis
+## Análisis de correlación valor-uso
 
-### 1. Instrument usage data
-Track how customers use your product:
-- Feature usage frequency
-- Volume metrics (users, records, API calls)
-- Outcome metrics (revenue generated, time saved)
+### 1. Datos de uso del instrumento
+Realice un seguimiento de cómo los clientes utilizan su producto:
+- Frecuencia de uso de funciones
+- Métricas de volumen (usuarios, registros, llamadas API)
+- Métricas de resultados (ingresos generados, tiempo ahorrado)
 
-### 2. Correlate with customer success
-- Which usage patterns predict retention?
-- Which usage patterns predict expansion?
-- Which customers pay the most, and why?
+### 2. Correlacionarse con el éxito del cliente
+- ¿Qué patrones de uso predicen la retención?
+- ¿Qué patrones de uso predicen la expansión?
+- ¿Qué clientes pagan más y por qué?
 
-### 3. Identify value thresholds
-- At what usage level do customers "get it"?
-- At what usage level do they expand?
-- At what usage level should price increase?
+### 3. Identificar umbrales de valor
+- ¿A qué nivel de uso lo "entienden" los clientes?
+- ¿A qué nivel de uso se expanden?
+- ¿A qué nivel de uso debería aumentar el precio?
 
-### Example Analysis
+### Análisis de ejemplo
 
 ```
 Usage-Value Correlation Analysis:

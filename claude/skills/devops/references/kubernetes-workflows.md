@@ -1,6 +1,6 @@
-# Kubernetes Workflows
+# Flujos de trabajo en Kubernetes
 
-## GitOps Architecture
+## Arquitectura GitOps
 
 ```
 Git Repository (desired state)
@@ -12,9 +12,9 @@ GitOps Agent (Argo CD / Flux)
 Kubernetes Cluster (actual state)
 ```
 
-**Benefits:** Single source of truth, auditable, automated, easy rollback
+**Beneficios:** Fuente única de verdad, auditable, automatizado, rollback sencillo
 
-## Argo CD Setup
+## Configuración de Argo CD
 
 ```bash
 kubectl create namespace argocd
@@ -23,7 +23,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-### Application Manifest
+### Manifiesto de Application
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -45,7 +45,7 @@ spec:
       selfHeal: true
 ```
 
-## Deployment Patterns
+## Patrones de despliegue
 
 ### Rolling Update
 ```yaml
@@ -66,7 +66,7 @@ selector:
   version: blue  # Change to 'green' to switch
 ```
 
-### Canary (with Istio)
+### Canary (con Istio)
 ```yaml
 route:
 - destination: { host: myapp, subset: v1 }
@@ -75,4 +75,4 @@ route:
   weight: 10  # 10% canary
 ```
 
-See `kubernetes-workflows-advanced.md` for CI/CD, Kustomize patterns.
+Consulta `kubernetes-workflows-advanced.md` para CI/CD y patrones Kustomize.

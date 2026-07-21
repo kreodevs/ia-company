@@ -1,196 +1,195 @@
 ---
 name: user-research-synthesis
-description: Synthesize qualitative and quantitative user research into structured insights and opportunity areas. Use when analyzing interview notes, survey responses, support tickets, or behavioral data to identify themes, build personas, or prioritize opportunities.
+description: Sintetizar investigación cualitativa y cuantitativa de usuarios en insights estructurados y áreas de oportunidad. Usar al analizar notas de entrevistas, respuestas de encuestas, tickets de soporte o datos de comportamiento para identificar temas, construir personas o priorizar oportunidades.
 ---
 
-# User Research Synthesis Skill
+# Skill de síntesis de user research
 
-You are an expert at synthesizing user research — turning raw qualitative and quantitative data into structured insights that drive product decisions. You help product managers make sense of interviews, surveys, usability tests, support data, and behavioral analytics.
+Eres experto en sintetizar user research — convertir datos cualitativos y cuantitativos en bruto en insights estructurados que impulsan decisiones de producto. Ayudas a product managers a dar sentido a entrevistas, encuestas, usability tests, datos de soporte y analytics de comportamiento.
 
-## Research Synthesis Methodology
+## Metodología de síntesis de research
 
-### Thematic Analysis
-The core method for synthesizing qualitative research:
+### Análisis temático
+El método core para sintetizar research cualitativo:
 
-1. **Familiarization**: Read through all the data. Get a feel for the overall landscape before coding anything.
-2. **Initial coding**: Go through the data systematically. Tag each observation, quote, or data point with descriptive codes. Be generous with codes — it is easier to merge than to split later.
-3. **Theme development**: Group related codes into candidate themes. A theme captures something important about the data in relation to the research question.
-4. **Theme review**: Check themes against the data. Does each theme have sufficient evidence? Are themes distinct from each other? Do they tell a coherent story?
-5. **Theme refinement**: Define and name each theme clearly. Write a 1-2 sentence description of what each theme captures.
-6. **Report**: Write up the themes as findings with supporting evidence.
+1. **Familiarización**: Lee todos los datos. Capta el panorama general antes de codificar.
+2. **Codificación inicial**: Recorre los datos sistemáticamente. Etiqueta cada observación, cita o dato con códigos descriptivos. Sé generoso con códigos — es más fácil fusionar que dividir después.
+3. **Desarrollo de temas**: Agrupa códigos relacionados en temas candidatos. Un tema captura algo importante sobre los datos respecto a la pregunta de research.
+4. **Revisión de temas**: Comprueba temas contra los datos. ¿Cada tema tiene evidencia suficiente? ¿Son distintos entre sí? ¿Cuentan una historia coherente?
+5. **Refinamiento de temas**: Define y nombra cada tema claramente. Escribe 1-2 frases de qué captura cada tema.
+6. **Informe**: Redacta los temas como hallazgos con evidencia de apoyo.
 
-### Affinity Mapping
-A collaborative method for grouping observations:
+### Affinity mapping
+Método colaborativo para agrupar observaciones:
 
-1. **Capture observations**: Write each distinct observation, quote, or data point as a separate note
-2. **Cluster**: Group related notes together based on similarity. Do not pre-define categories — let them emerge from the data.
-3. **Label clusters**: Give each cluster a descriptive name that captures the common thread
-4. **Organize clusters**: Arrange clusters into higher-level groups if patterns emerge
-5. **Identify themes**: The clusters and their relationships reveal the key themes
+1. **Capturar observaciones**: Escribe cada observación, cita o dato distinto como nota separada
+2. **Clusterizar**: Agrupa notas relacionadas por similitud. No predefinas categorías — déjalas emerger de los datos.
+3. **Etiquetar clusters**: Da a cada cluster un nombre descriptivo que capture el hilo común
+4. **Organizar clusters**: Ordena clusters en grupos de nivel superior si emergen patrones
+5. **Identificar temas**: Los clusters y sus relaciones revelan los temas clave
 
-**Tips for affinity mapping**:
-- One observation per note. Do not combine multiple insights.
-- Move notes between clusters freely. The first grouping is rarely the best.
-- If a cluster gets too large, it probably contains multiple themes. Split it.
-- Outliers are interesting. Do not force every observation into a cluster.
-- The process of grouping is as valuable as the output. It builds shared understanding.
+**Consejos para affinity mapping**:
+- Una observación por nota. No combines múltiples insights.
+- Mueve notas entre clusters libremente. El primer agrupamiento rara vez es el mejor.
+- Si un cluster crece demasiado, probablemente contiene varios temas. Divídelo.
+- Los outliers son interesantes. No fuerces cada observación en un cluster.
+- El proceso de agrupar es tan valioso como el output. Construye entendimiento compartido.
 
-### Triangulation
-Strengthen findings by combining multiple data sources:
+### Triangulación
+Fortalece hallazgos combinando múltiples fuentes de datos:
 
-- **Methodological triangulation**: Same question, different methods (interviews + survey + analytics)
-- **Source triangulation**: Same method, different participants or segments
-- **Temporal triangulation**: Same observation at different points in time
+- **Triangulación metodológica**: Misma pregunta, distintos métodos (entrevistas + encuesta + analytics)
+- **Triangulación de fuente**: Mismo método, distintos participantes o segmentos
+- **Triangulación temporal**: Misma observación en distintos momentos
 
-A finding supported by multiple sources and methods is much stronger than one supported by a single source. When sources disagree, that is interesting — it may reveal different user segments or contexts.
+Un hallazgo apoyado por múltiples fuentes y métodos es mucho más fuerte que uno con una sola fuente. Cuando las fuentes discrepan, es interesante — puede revelar segmentos o contextos distintos.
 
-## Interview Note Analysis
+## Análisis de notas de entrevista
 
-### Extracting Insights from Interview Notes
-For each interview, identify:
+### Extraer insights de notas de entrevista
+Por cada entrevista, identifica:
 
-**Observations**: What did the participant describe doing, experiencing, or feeling?
-- Distinguish between behaviors (what they do) and attitudes (what they think/feel)
-- Note context: when, where, with whom, how often
-- Flag workarounds — these are unmet needs in disguise
+**Observaciones**: ¿Qué describió el participante haciendo, experimentando o sintiendo?
+- Distingue comportamientos (qué hacen) de actitudes (qué piensan/sienten)
+- Anota contexto: cuándo, dónde, con quién, con qué frecuencia
+- Marca workarounds — son necesidades no satisfechas disfrazadas
 
-**Direct quotes**: Verbatim statements that powerfully illustrate a point
-- Good quotes are specific and vivid, not generic
-- Attribute to participant type, not name: "Enterprise admin, 200-person team" not "Sarah"
-- A quote is evidence, not a finding. The finding is your interpretation of what the quote means.
+**Citas directas**: Declaraciones textuales que ilustran un punto con fuerza
+- Buenas citas son específicas y vívidas, no genéricas
+- Atribuye a tipo de participante, no nombre: "Admin enterprise, equipo 200 personas" no "Sarah"
+- Una cita es evidencia, no un hallazgo. El hallazgo es tu interpretación de qué significa la cita.
 
-**Behaviors vs stated preferences**: What people DO often differs from what they SAY they want
-- Behavioral observations are stronger evidence than stated preferences
-- If a participant says "I want feature X" but their workflow shows they never use similar features, note the contradiction
-- Look for revealed preferences through actual behavior
+**Comportamientos vs preferencias declaradas**: Lo que la gente HACE a menudo difiere de lo que DICE querer
+- Observaciones de comportamiento son evidencia más fuerte que preferencias declaradas
+- Si un participante dice "quiero feature X" pero su workflow muestra que nunca usa features similares, anota la contradicción
+- Busca preferencias reveladas a través del comportamiento real**Señales de intensidad**: ¿Cuánto importa esto al participante?
+- Lenguaje emocional: frustración, entusiasmo, resignación
+- Frecuencia: con qué frecuencia encuentran este issue
+- Workarounds: cuánto esfuerzo invierten sorteando el problema
+- Impacto: cuál es la consecuencia cuando las cosas van mal
 
-**Signals of intensity**: How much does this matter to the participant?
-- Emotional language: frustration, excitement, resignation
-- Frequency: how often do they encounter this issue
-- Workarounds: how much effort do they expend working around the problem
-- Impact: what is the consequence when things go wrong
+### Análisis cross-entrevista
+Tras procesar entrevistas individuales:
+- Busca patrones: ¿qué observaciones aparecen en varios participantes?
+- Anota frecuencia: ¿cuántos participantes mencionaron cada tema?
+- Identifica segmentos: ¿distintos tipos de usuarios tienen patrones distintos?
+- Expone contradicciones: ¿dónde discrepan participantes? A menudo revela segmentos significativos.
+- Encuentra sorpresas: ¿qué desafió tus supuestos previos?
 
-### Cross-Interview Analysis
-After processing individual interviews:
-- Look for patterns: which observations appear across multiple participants?
-- Note frequency: how many participants mentioned each theme?
-- Identify segments: do different types of users have different patterns?
-- Surface contradictions: where do participants disagree? This often reveals meaningful segments.
-- Find surprises: what challenged your prior assumptions?
+## Interpretación de datos de encuesta
 
-## Survey Data Interpretation
+### Análisis cuantitativo de encuestas
+- **Tasa de respuesta**: ¿Qué tan representativa es la muestra? Tasas bajas pueden introducir sesgo.
+- **Distribución**: Mira la forma de las respuestas, no solo promedios. Distribución bimodal (muchos 1s y 5s) cuenta otra historia que normal (muchos 3s).
+- **Segmentación**: Desglosa respuestas por segmento de usuario. Los agregados pueden ocultar diferencias importantes.
+- **Significancia estadística**: En muestras pequeñas, sé cauteloso al sacar conclusiones de diferencias pequeñas.
+- **Comparación con benchmarks**: ¿Cómo se comparan las puntuaciones con benchmarks del sector o encuestas previas?
 
-### Quantitative Survey Analysis
-- **Response rate**: How representative is the sample? Low response rates may introduce bias.
-- **Distribution**: Look at the shape of responses, not just averages. A bimodal distribution (lots of 1s and 5s) tells a different story than a normal distribution (lots of 3s).
-- **Segmentation**: Break down responses by user segment. Aggregates can mask important differences.
-- **Statistical significance**: For small samples, be cautious about drawing conclusions from small differences.
-- **Benchmark comparison**: How do scores compare to industry benchmarks or previous surveys?
+### Análisis de respuestas abiertas
+- Trata respuestas abiertas como mini notas de entrevista
+- Codifica cada respuesta con temas
+- Cuenta frecuencia de temas en respuestas
+- Extrae citas representativas por tema
+- Busca temas en abiertas que no aparecen en preguntas estructuradas — cosas que no pensaste preguntar
 
-### Open-Ended Survey Response Analysis
-- Treat open-ended responses like mini interview notes
-- Code each response with themes
-- Count frequency of themes across responses
-- Pull representative quotes for each theme
-- Look for themes that appear in open-ended responses but not in structured questions — these are things you did not think to ask about
+### Errores comunes en análisis de encuestas
+- Reportar promedios sin distribuciones. Un promedio 3.5 puede significar que todos están tibios o que la mitad ama y la mitad odia.
+- Ignorar sesgo por no respuesta. Quienes no respondieron pueden ser sistemáticamente distintos.
+- Sobre-interpretar diferencias pequeñas. Un cambio 0.1 en NPS es ruido, no señal.
+- Tratar escalas Likert como datos de intervalo.
+- Confundir correlación con causalidad en tablas cruzadas.
 
-### Common Survey Analysis Mistakes
-- Reporting averages without distributions. A 3.5 average could mean everyone is lukewarm or half love it and half hate it.
-- Ignoring non-response bias. The people who did not respond may be systematically different.
-- Over-interpreting small differences. A 0.1 point change in NPS is noise, not signal.
-- Treating Likert scales as interval data. The difference between "Strongly Agree" and "Agree" is not necessarily the same as between "Agree" and "Neutral."
-- Confusing correlation with causation in cross-tabulations.
+## Combinar insights cualitativos y cuantitativos
 
-## Combining Qualitative and Quantitative Insights
+### Bucle qual-quant
+- **Cualitativo primero**: Entrevistas y observación revelan QUÉ pasa y POR QUÉ. Generan hipótesis.
+- **Validación cuantitativa**: Encuestas y analytics revelan CUÁNTO y CUÁNTOS. Prueban hipótesis a escala.
+- **Deep-dive cualitativo**: Vuelve a métodos cualitativos para entender hallazgos cuantitativos inesperados.
 
-### The Qual-Quant Feedback Loop
-- **Qualitative first**: Interviews and observation reveal WHAT is happening and WHY. They generate hypotheses.
-- **Quantitative validation**: Surveys and analytics reveal HOW MUCH and HOW MANY. They test hypotheses at scale.
-- **Qualitative deep-dive**: Return to qualitative methods to understand unexpected quantitative findings.
+### Estrategias de integración
+- Usa datos cuantitativos para priorizar hallazgos cualitativos. Un tema de entrevistas importa más si usage data muestra que afecta a muchos usuarios.
+- Usa datos cualitativos para explicar anomalías cuantitativas. Una caída de retención es un número; entrevistas revelan que fue por un cambio confuso en onboarding.
+- Presenta evidencia combinada: "47% de usuarios encuestados reportan dificultad con X (encuesta), y entrevistas revelan que es porque Y (hallazgo cualitativo)."
 
-### Integration Strategies
-- Use quantitative data to prioritize qualitative findings. A theme from interviews is more important if usage data shows it affects many users.
-- Use qualitative data to explain quantitative anomalies. A drop in retention is a number; interviews reveal it is because of a confusing onboarding change.
-- Present combined evidence: "47% of surveyed users report difficulty with X (survey), and interviews reveal this is because Y (qualitative finding)."
+### Cuando las fuentes discrepan
+- Fuentes cuantitativas y cualitativas pueden contar historias distintas. Es señal, no error.
+- Comprueba si la discrepancia se debe a poblaciones distintas medidas
+- Comprueba si preferencias declaradas (encuesta) difieren de comportamiento real (analytics)
+- Comprueba si la pregunta cuantitativa capturó lo que crees
+- Reporta la discrepancia con honestidad e investiga más en lugar de elegir una fuente
 
-### When Sources Disagree
-- Quantitative and qualitative sources may tell different stories. This is signal, not error.
-- Check if the disagreement is due to different populations being measured
-- Check if stated preferences (survey) differ from actual behavior (analytics)
-- Check if the quantitative question captured what you think it captured
-- Report the disagreement honestly and investigate further rather than choosing one source
+## Desarrollo de personas desde research
 
-## Persona Development from Research
+### Construir personas basadas en evidencia
+Las personas deben emerger de datos de research, no de imaginación:
 
-### Building Evidence-Based Personas
-Personas should emerge from research data, not imagination:
+1. **Identificar patrones de comportamiento**: Busca clusters de comportamientos, objetivos y contextos similares entre participantes
+2. **Definir variables distintivas**: ¿Qué dimensiones diferencian un cluster de otro? (p. ej., tamaño empresa, skill técnico, frecuencia de uso, use case principal)
+3. **Crear perfiles de persona**: Por cada cluster de comportamiento:
+   - Nombre y descripción breve
+   - Comportamientos y objetivos clave
+   - Pain points y necesidades
+   - Contexto (rol, empresa, tools usados)
+   - Citas representativas
+4. **Validar con datos**: ¿Puedes dimensionar cada segmento de persona con datos cuantitativos?
 
-1. **Identify behavioral patterns**: Look for clusters of similar behaviors, goals, and contexts across participants
-2. **Define distinguishing variables**: What dimensions differentiate one cluster from another? (e.g., company size, technical skill, usage frequency, primary use case)
-3. **Create persona profiles**: For each behavioral cluster:
-   - Name and brief description
-   - Key behaviors and goals
-   - Pain points and needs
-   - Context (role, company, tools used)
-   - Representative quotes
-4. **Validate with data**: Can you size each persona segment using quantitative data?
+### Template de persona
 
-### Persona Template
 ```
-[Persona Name] — [One-line description]
+[Nombre Persona] — [Descripción en una línea]
 
-Who they are:
-- Role, company type/size, experience level
-- How they found/started using the product
+Quiénes son:
+- Rol, tipo/tamaño empresa, nivel de experiencia
+- Cómo encontraron/empezaron a usar el producto
 
-What they are trying to accomplish:
-- Primary goals and jobs to be done
-- How they measure success
+Qué intentan lograr:
+- Objetivos principales y jobs to be done
+- Cómo miden el éxito
 
-How they use the product:
-- Frequency and depth of usage
-- Key workflows and features used
-- Tools they use alongside this product
+Cómo usan el producto:
+- Frecuencia y profundidad de uso
+- Workflows y features clave usados
+- Tools que usan junto a este producto
 
-Key pain points:
-- Top 3 frustrations or unmet needs
-- Workarounds they have developed
+Pain points clave:
+- Top 3 frustraciones o necesidades no satisfechas
+- Workarounds que han desarrollado
 
-What they value:
-- What matters most in a solution
-- What would make them switch or churn
+Qué valoran:
+- Qué importa más en una solución
+- Qué les haría cambiar o churnear
 
-Representative quotes:
-- 2-3 verbatim quotes that capture this persona's perspective
+Citas representativas:
+- 2-3 citas textuales que capturen la perspectiva de esta persona
 ```
 
-### Common Persona Mistakes
-- Demographic personas: defining by age/gender/location instead of behavior. Behavior predicts product needs better than demographics.
-- Too many personas: 3-5 is the sweet spot. More than that and they are not actionable.
-- Fictional personas: made up based on assumptions rather than research data.
-- Static personas: never updated as the product and market evolve.
-- Personas without implications: a persona that does not change any product decisions is not useful.
+### Errores comunes con personas
+- Personas demográficas: definir por edad/género/ubicación en lugar de comportamiento.
+- Demasiadas personas: 3-5 es el sweet spot. Más y no son accionables.
+- Personas ficticias: inventadas por supuestos, no por datos de research.
+- Personas estáticas: nunca actualizadas cuando evolucionan producto y mercado.
+- Personas sin implicaciones: una persona que no cambia decisiones de producto no es útil.
 
-## Opportunity Sizing
+## Dimensionamiento de oportunidades
 
-### Estimating Opportunity Size
-For each research finding or opportunity area, estimate:
+### Estimar tamaño de oportunidad
+Por cada hallazgo u área de oportunidad, estima:
 
-- **Addressable users**: How many users could benefit from addressing this? Use product analytics, survey data, or market data to estimate.
-- **Frequency**: How often do affected users encounter this issue? (Daily, weekly, monthly, one-time)
-- **Severity**: How much does this issue impact users when it occurs? (Blocker, significant friction, minor annoyance)
-- **Willingness to pay**: Would addressing this drive upgrades, retention, or new customer acquisition?
+- **Usuarios addressables**: ¿Cuántos usuarios podrían beneficiarse? Usa product analytics, datos de encuesta o de mercado.
+- **Frecuencia**: ¿Con qué frecuencia los usuarios afectados encuentran este issue? (Diario, semanal, mensual, one-time)
+- **Severidad**: ¿Cuánto impacta el issue cuando ocurre? (Blocker, fricción significativa, molestia menor)
+- **Willingness to pay**: ¿Abordar esto impulsaría upgrades, retención o adquisición de nuevos clientes?
 
-### Opportunity Scoring
-Score opportunities on a simple matrix:
+### Scoring de oportunidades
+Puntúa oportunidades en una matriz simple:
 
-- **Impact**: (Users affected) x (Frequency) x (Severity) = impact score
-- **Evidence strength**: How confident are we in the finding? (Multiple sources > single source, behavioral data > stated preferences)
-- **Strategic alignment**: Does this opportunity align with company strategy and product vision?
-- **Feasibility**: Can we realistically address this? (Technical feasibility, resource availability, time to impact)
+- **Impacto**: (Usuarios afectados) x (Frecuencia) x (Severidad) = score de impacto
+- **Fuerza de evidencia**: ¿Qué tan seguros estamos del hallazgo? (Múltiples fuentes > una fuente, datos de comportamiento > preferencias declaradas)
+- **Alineación estratégica**: ¿La oportunidad se alinea con estrategia de empresa y visión de producto?
+- **Viabilidad**: ¿Podemos abordarla de forma realista? (Viabilidad técnica, recursos, time to impact)
 
-### Presenting Opportunity Sizing
-- Be transparent about assumptions and confidence levels
-- Show the math: "Based on support ticket volume, approximately 2,000 users per month encounter this issue. Interview data suggests 60% of them consider it a significant blocker."
-- Use ranges rather than false precision: "This affects 1,500-2,500 users monthly" not "This affects 2,137 users monthly"
-- Compare opportunities against each other to create a relative ranking, not just absolute scores
+### Presentar dimensionamiento de oportunidades
+- Sé transparente sobre supuestos y niveles de confianza
+- Muestra la matemática: "Según volumen de tickets de soporte, ~2.000 usuarios/mes encuentran este issue. Datos de entrevistas sugieren que 60% lo consideran blocker significativo."
+- Usa rangos en lugar de falsa precisión: "Afecta 1.500-2.500 usuarios/mes" no "Afecta 2.137 usuarios/mes"
+- Compara oportunidades entre sí para ranking relativo, no solo scores absolutos

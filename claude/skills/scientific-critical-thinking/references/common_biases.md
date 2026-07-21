@@ -1,364 +1,360 @@
-# Common Biases in Scientific Research
-
-## Cognitive Biases Affecting Researchers
-
-### 1. Confirmation Bias
-**Description:** Tendency to search for, interpret, and recall information that confirms preexisting beliefs.
-
-**Manifestations:**
-- Designing studies that can only support the hypothesis
-- Interpreting ambiguous results as supportive
-- Remembering hits and forgetting misses
-- Selectively citing literature that agrees
-
-**Mitigation:**
-- Preregister hypotheses and analysis plans
-- Actively seek disconfirming evidence
-- Use blinded data analysis
-- Consider alternative hypotheses
-
-### 2. Hindsight Bias (I-Knew-It-All-Along Effect)
-**Description:** After an event, people perceive it as having been more predictable than it actually was.
-
-**Manifestations:**
-- HARKing (Hypothesizing After Results are Known)
-- Claiming predictions that weren't made
-- Underestimating surprise at results
-
-**Mitigation:**
-- Document predictions before data collection
-- Preregister studies
-- Distinguish exploratory from confirmatory analyses
-
-### 3. Publication Bias (File Drawer Problem)
-**Description:** Positive/significant results are more likely to be published than negative/null results.
-
-**Manifestations:**
-- Literature appears to support effects that don't exist
-- Overestimation of effect sizes
-- Inability to estimate true effects from published literature
-
-**Mitigation:**
-- Publish null results
-- Use preregistration and registered reports
-- Conduct systematic reviews with grey literature
-- Check for funnel plot asymmetry in meta-analyses
-
-### 4. Anchoring Bias
-**Description:** Over-reliance on the first piece of information encountered.
-
-**Manifestations:**
-- Initial hypotheses unduly influence interpretation
-- First studies in a field set expectations
-- Pilot data biases main study interpretation
-
-**Mitigation:**
-- Consider multiple initial hypotheses
-- Evaluate evidence independently
-- Use structured decision-making
-
-### 5. Availability Heuristic
-**Description:** Overestimating likelihood of events based on how easily examples come to mind.
-
-**Manifestations:**
-- Overemphasizing recent or dramatic findings
-- Neglecting base rates
-- Anecdotal evidence overshadowing statistics
-
-**Mitigation:**
-- Consult systematic reviews, not memorable papers
-- Consider base rates explicitly
-- Use statistical thinking, not intuition
-
-### 6. Bandwagon Effect
-**Description:** Adopting beliefs because many others hold them.
-
-**Manifestations:**
-- Following research trends without critical evaluation
-- Citing widely-cited papers without reading
-- Accepting "textbook knowledge" uncritically
-
-**Mitigation:**
-- Evaluate evidence independently
-- Read original sources
-- Question assumptions
-
-### 7. Belief Perseverance
-**Description:** Maintaining beliefs even after evidence disproving them.
-
-**Manifestations:**
-- Defending theories despite contradictory evidence
-- Finding ad hoc explanations for discrepant results
-- Dismissing replication failures
-
-**Mitigation:**
-- Explicitly consider what evidence would change your mind
-- Update beliefs based on evidence
-- Distinguish between theories and ego
-
-### 8. Outcome Bias
-**Description:** Judging decisions based on outcomes rather than the quality of the decision at the time.
-
-**Manifestations:**
-- Valuing lucky guesses over sound methodology
-- Dismissing good studies with null results
-- Rewarding sensational findings over rigorous methods
-
-**Mitigation:**
-- Evaluate methodology independently of results
-- Value rigor and transparency
-- Recognize role of chance
-
-## Experimental and Methodological Biases
-
-### 9. Selection Bias
-**Description:** Systematic differences between those selected for study and those not selected.
-
-**Types:**
-- **Sampling bias:** Non-random sample
-- **Attrition bias:** Systematic dropout
-- **Volunteer bias:** Self-selected participants differ
-- **Berkson's bias:** Hospital patients differ from general population
-- **Survivorship bias:** Only examining "survivors"
-
-**Detection:**
-- Compare characteristics of participants vs. target population
-- Analyze dropout patterns
-- Consider who is missing from the sample
-
-**Mitigation:**
-- Random sampling
-- Track and analyze non-responders
-- Use strategies to minimize dropout
-- Report participant flow diagrams
-
-### 10. Observer Bias (Detection Bias)
-**Description:** Researchers' expectations influence observations or measurements.
-
-**Manifestations:**
-- Measuring outcomes differently across groups
-- Interpreting ambiguous results based on group assignment
-- Unconsciously cueing participants
-
-**Mitigation:**
-- Blinding of observers/assessors
-- Objective, automated measurements
-- Standardized protocols
-- Inter-rater reliability checks
-
-### 11. Performance Bias
-**Description:** Systematic differences in care provided to comparison groups.
-
-**Manifestations:**
-- Treating experimental group differently
-- Providing additional attention to one group
-- Differential adherence to protocols
-
-**Mitigation:**
-- Standardize all procedures
-- Blind participants and providers
-- Use placebo controls
-- Monitor protocol adherence
-
-### 12. Measurement Bias (Information Bias)
-**Description:** Systematic errors in how variables are measured.
-
-**Types:**
-- **Recall bias:** Systematic differences in accuracy of recall
-- **Social desirability bias:** Responding in socially acceptable ways
-- **Interviewer bias:** Interviewer's characteristics affect responses
-- **Instrument bias:** Measurement tools systematically err
-
-**Mitigation:**
-- Use validated, objective measures
-- Standardize data collection
-- Blind participants to hypotheses
-- Verify self-reports with objective data
-
-### 13. Confounding Bias
-**Description:** Effect of extraneous variable mixed with the variable of interest.
-
-**Examples:**
-- Age confounding relationship between exercise and health
-- Socioeconomic status confounding education and outcomes
-- Indication bias in treatment studies
-
-**Mitigation:**
-- Randomization
-- Matching
-- Statistical adjustment
-- Stratification
-- Restriction
-
-### 14. Reporting Bias
-**Description:** Selective reporting of results.
-
-**Types:**
-- **Outcome reporting bias:** Selectively reporting outcomes
-- **Time-lag bias:** Delayed publication of negative results
-- **Language bias:** Publishing positive results in English
-- **Citation bias:** Preferentially citing positive studies
-
-**Mitigation:**
-- Preregister all outcomes
-- Report all planned analyses
-- Distinguish primary from secondary outcomes
-- Use study registries
-
-### 15. Spectrum Bias
-**Description:** Test performance varies depending on the spectrum of disease severity in the sample.
-
-**Manifestations:**
-- Diagnostic tests appearing more accurate in extreme cases
-- Treatment effects differing by severity
-
-**Mitigation:**
-- Test in representative samples
-- Report performance across disease spectrum
-- Avoid case-control designs for diagnostic studies
-
-### 16. Lead-Time Bias
-**Description:** Apparent survival benefit due to earlier detection, not improved outcomes.
-
-**Example:**
-- Screening detecting disease earlier makes survival seem longer, even if death occurs at same age
-
-**Mitigation:**
-- Measure mortality, not just survival from diagnosis
-- Use randomized screening trials
-- Consider length-time and overdiagnosis bias
-
-### 17. Length-Time Bias
-**Description:** Screening disproportionately detects slower-growing, less aggressive cases.
-
-**Example:**
-- Slow-growing cancers detected more often than fast-growing ones, making screening appear beneficial
-
-**Mitigation:**
-- Randomized trials with mortality endpoints
-- Consider disease natural history
-
-### 18. Response Bias
-**Description:** Systematic pattern in how participants respond.
-
-**Types:**
-- **Acquiescence bias:** Tendency to agree
-- **Extreme responding:** Always choosing extreme options
-- **Neutral responding:** Avoiding extreme responses
-- **Demand characteristics:** Responding based on perceived expectations
-
-**Mitigation:**
-- Mix positive and negative items
-- Use multiple response formats
-- Blind participants to hypotheses
-- Use behavioral measures
-
-## Statistical and Analysis Biases
-
-### 19. P-Hacking (Data Dredging)
-**Description:** Manipulating data or analyses until significant results emerge.
-
-**Manifestations:**
-- Collecting data until significance reached
-- Testing multiple outcomes, reporting only significant ones
-- Trying multiple analysis methods
-- Excluding "outliers" to reach significance
-- Subgroup analyses until finding significance
-
-**Detection:**
-- Suspiciously perfect p-values (just below .05)
-- Many researcher degrees of freedom
-- Undisclosed analyses
-- Fishing expeditions
-
-**Mitigation:**
-- Preregister analysis plans
-- Report all analyses conducted
-- Correct for multiple comparisons
-- Distinguish exploratory from confirmatory
-
-### 20. HARKing (Hypothesizing After Results are Known)
-**Description:** Presenting post hoc hypotheses as if they were predicted a priori.
-
-**Why problematic:**
-- Inflates apparent evidence
-- Conflates exploration with confirmation
-- Misrepresents the scientific process
-
-**Mitigation:**
-- Preregister hypotheses
-- Clearly label exploratory analyses
-- Require replication of unexpected findings
-
-### 21. Base Rate Neglect
-**Description:** Ignoring prior probability when evaluating evidence.
-
-**Example:**
-- Test with 95% accuracy in rare disease (1% prevalence): positive result only 16% likely to indicate disease
-
-**Mitigation:**
-- Always consider base rates/prior probability
-- Use Bayesian reasoning
-- Report positive and negative predictive values
-
-### 22. Regression to the Mean
-**Description:** Extreme measurements tend to be followed by less extreme ones.
-
-**Manifestations:**
-- Treatment effects in extreme groups may be regression artifacts
-- "Sophomore slump" in high performers
-
-**Mitigation:**
-- Use control groups
-- Consider natural variation
-- Don't select based on extreme baseline values without controls
-
-### 23. Texas Sharpshooter Fallacy
-**Description:** Selecting data after seeing patterns, like shooting arrows then drawing targets around clusters.
-
-**Manifestations:**
-- Finding patterns in random data
-- Subgroup analyses selected post hoc
-- Geographic clustering studies without correction
-
-**Mitigation:**
-- Prespecify hypotheses
-- Correct for multiple comparisons
-- Replicate findings in independent data
-
-## Reducing Bias: Best Practices
-
-### Study Design
-1. Randomization
-2. Blinding (single, double, triple)
-3. Control groups
-4. Adequate sample size
-5. Preregistration
-
-### Data Collection
-1. Standardized protocols
-2. Validated instruments
-3. Objective measures when possible
-4. Multiple observers/raters
-5. Complete data collection
-
-### Analysis
-1. Intention-to-treat analysis
-2. Prespecified analyses
-3. Appropriate statistical tests
-4. Multiple comparison corrections
-5. Sensitivity analyses
-
-### Reporting
-1. Complete transparency
-2. CONSORT, PRISMA, or similar guidelines
-3. Report all outcomes
-4. Distinguish exploratory from confirmatory
-5. Share data and code
-
-### Meta-Level
-1. Adversarial collaboration
-2. Replication studies
-3. Open science practices
-4. Peer review
-5. Systematic reviews
+# Sesgos comunes en la investigación científica
+
+## Sesgos cognitivos que afectan a los investigadores
+
+### 1. Sesgo de confirmación
+**Descripción:** Tendencia a buscar, interpretar y recordar información que confirme creencias preexistentes.
+
+**Manifestaciones:**
+- Diseñar estudios que sólo puedan apoyar la hipótesis.
+- Interpretar resultados ambiguos como de apoyo.
+- Recordar aciertos y olvidar fallos.
+- Citar selectivamente literatura que esté de acuerdo.
+
+**Mitigación:**
+- Prerregistro de hipótesis y planes de análisis.
+- Buscar activamente pruebas que lo refuten.
+- Utilice análisis de datos ciegos.
+- Considerar hipótesis alternativas.
+
+### 2. Sesgo retrospectivo (efecto "Lo sabía todo el tiempo")
+**Descripción:** Después de un evento, la gente lo percibe como más predecible de lo que realmente fue.
+
+**Manifestaciones:**
+- HARKing (Hacer hipótesis después de conocer los resultados)
+- Reclamar predicciones que no se hicieron.
+- Subestimar la sorpresa ante los resultados.
+
+**Mitigación:**
+- Documentar las predicciones antes de la recopilación de datos.
+- Estudios previos a la inscripción
+- Distinguir los análisis exploratorios de los confirmatorios.
+
+### 3. Sesgo de publicación (problema del archivador)
+**Descripción:** Es más probable que se publiquen resultados positivos/significativos que resultados negativos/nulos.
+
+**Manifestaciones:**
+- La literatura parece apoyar efectos que no existen.
+- Sobreestimación de los tamaños del efecto.
+- Incapacidad para estimar los efectos reales a partir de la literatura publicada.
+
+**Mitigación:**
+- Publicar resultados nulos
+- Utilice informes preinscritos y registrados.
+- Realizar revisiones sistemáticas con literatura gris.
+- Verificar la asimetría del gráfico de embudo en los metanálisis
+
+### 4. Sesgo de anclaje
+**Descripción:** Dependencia excesiva de la primera información encontrada.
+
+**Manifestaciones:**
+- Las hipótesis iniciales influyen indebidamente en la interpretación.
+- Los primeros estudios en un campo establecieron expectativas.
+- Los datos piloto sesgan la interpretación del estudio principal.
+
+**Mitigación:**
+- Considerar múltiples hipótesis iniciales.
+- Evaluar la evidencia de forma independiente.
+- Utilizar una toma de decisiones estructurada.
+
+### 5. Heurística de disponibilidad
+**Descripción:** Sobreestimar la probabilidad de eventos en función de la facilidad con la que se le ocurren ejemplos.
+
+**Manifestaciones:**
+- Poner demasiado énfasis en hallazgos recientes o dramáticos.
+- Descuidar las tarifas base
+- La evidencia anecdótica eclipsa las estadísticas.
+
+**Mitigación:**
+- Consultar revisiones sistemáticas, no artículos memorables.
+- Considerar explícitamente las tarifas base
+- Utilice el pensamiento estadístico, no la intuición.
+
+### 6. Efecto del carro
+**Descripción:** Adoptar creencias porque muchos otros las mantienen.
+
+**Manifestaciones:**
+- Seguir tendencias de investigación sin evaluación crítica.
+- Citar artículos ampliamente citados sin leerlos.
+- Aceptar acríticamente los "conocimientos de los libros de texto".
+
+**Mitigación:**
+- Evaluar la evidencia de forma independiente.
+- Leer fuentes originales
+- Cuestionar supuestos
+
+### 7. Creencia Perseverancia
+**Descripción:** Mantener creencias incluso después de que la evidencia las refute.
+
+**Manifestaciones:**
+- Defender teorías a pesar de evidencia contradictoria.
+- Encontrar explicaciones ad hoc para resultados discrepantes.
+- Descartar errores de replicación
+
+**Mitigación:**
+- Considere explícitamente qué evidencia le haría cambiar de opinión.
+- Actualizar creencias basadas en evidencia.
+- Distinguir entre teorías y ego.
+
+### 8. Sesgo de resultados
+**Descripción:** Juzgar decisiones basándose en los resultados en lugar de en la calidad de la decisión en ese momento.
+
+**Manifestaciones:**
+- Valorar las conjeturas afortunadas sobre la metodología sólida.
+- Descartar buenos estudios con resultados nulos.
+- Premiar los hallazgos sensacionales sobre los métodos rigurosos.
+
+**Mitigación:**
+- Evaluar la metodología independientemente de los resultados.
+- Valorar el rigor y la transparencia
+- Reconocer el papel del azar.
+
+## Sesgos experimentales y metodológicos
+
+### 9. Sesgo de selección
+**Descripción:** Diferencias sistemáticas entre los seleccionados para el estudio y los no seleccionados.
+
+**Tipos:**
+- **Sesgo de muestreo:** Muestra no aleatoria
+- **Sesgo de deserción:** Abandono sistemático
+- **Sesgo de voluntariado:** Los participantes autoseleccionados difieren
+- **Sesgo de Berkson:** Los pacientes hospitalizados difieren de la población general
+- **Sesgo de supervivencia:** Examinar únicamente a los "supervivientes"
+
+**Detección:**
+- Comparar las características de los participantes versus la población objetivo.
+- Analizar patrones de abandono
+- Considere quién falta en la muestra.
+
+**Mitigación:**
+- Muestreo aleatorio
+- Seguimiento y análisis de los que no responden.
+- Utilizar estrategias para minimizar la deserción.
+- Informar diagramas de flujo de participantes.
+
+### 10. Sesgo del observador (sesgo de detección)
+**Descripción:** Las expectativas de los investigadores influyen en las observaciones o mediciones.**Manifestaciones:**
+- Medir los resultados de manera diferente entre los grupos.
+- Interpretar resultados ambiguos basados en la asignación grupal.
+- Indicar inconscientemente a los participantes.
+
+**Mitigación:**
+- Cegamiento de observadores/evaluadores
+- Mediciones objetivas y automatizadas.
+- Protocolos estandarizados
+- Comprobaciones de fiabilidad entre evaluadores.
+
+### 11. Sesgo de desempeño
+**Descripción:** Diferencias sistemáticas en la atención brindada a los grupos de comparación.
+
+**Manifestaciones:**
+- Tratar al grupo experimental de manera diferente.
+- Proporcionar atención adicional a un grupo.
+- Cumplimiento diferencial de protocolos
+
+**Mitigación:**
+- Estandarizar todos los procedimientos.
+- Participantes y proveedores ciegos.
+- Utilice controles de placebo
+- Monitorear el cumplimiento del protocolo.
+
+### 12. Sesgo de medición (sesgo de información)
+**Descripción:** Errores sistemáticos en cómo se miden las variables.
+
+**Tipos:**
+- **Sesgo de recuerdo:** Diferencias sistemáticas en la precisión del recuerdo
+- **Sesgo de deseabilidad social:** Responder de manera socialmente aceptable.
+- **Sesgo del entrevistador:** Las características del entrevistador afectan las respuestas.
+- **Sesgo del instrumento:** Las herramientas de medición se equivocan sistemáticamente
+
+**Mitigación:**
+- Utilizar medidas objetivas y validadas.
+- Estandarizar la recopilación de datos.
+- Cega a los participantes a las hipótesis.
+- Verificar autoinformes con datos objetivos
+
+### 13. Sesgo de confusión
+**Descripción:** Efecto de la variable extraña mezclada con la variable de interés.
+
+**Ejemplos:**
+- Edad relación de confusión entre el ejercicio y la salud
+- El estatus socioeconómico confunde la educación y los resultados.
+- Sesgo de indicación en los estudios de tratamiento.
+
+**Mitigación:**
+- Aleatorización
+- Coincidencia
+- Ajuste estadístico
+- Estratificación
+- Restricción
+
+### 14. Sesgo de información
+**Descripción:** Informes selectivos de resultados.
+
+**Tipos:**
+- **Sesgo de informe de resultados:** Informe de resultados selectivo
+- **Sesgo de desfase temporal:** Publicación retrasada de resultados negativos.
+- **Sesgo lingüístico:** Publicar resultados positivos en inglés
+- **Sesgo de citación:** Citar preferentemente estudios positivos.
+
+**Mitigación:**
+- Preregistrar todos los resultados
+- Informar todos los análisis planificados.
+- Distinguir los resultados primarios de los secundarios.
+- Utilizar registros de estudio.
+
+### 15. Sesgo del espectro
+**Descripción:** El rendimiento de la prueba varía según el espectro de gravedad de la enfermedad en la muestra.
+
+**Manifestaciones:**
+- Las pruebas de diagnóstico parecen más precisas en casos extremos.
+- Los efectos del tratamiento difieren según la gravedad.
+
+**Mitigación:**
+- Prueba en muestras representativas
+- Informar el rendimiento en todo el espectro de enfermedades.
+- Evitar diseños de casos y controles para estudios de diagnóstico.
+
+### 16. Sesgo de plazo de entrega
+**Descripción:** Beneficio aparente en la supervivencia debido a una detección más temprana, no a mejores resultados.
+
+**Ejemplo:**
+- La detección temprana de enfermedades hace que la supervivencia parezca más larga, incluso si la muerte ocurre a la misma edad.
+
+**Mitigación:**
+- Medir la mortalidad, no sólo la supervivencia desde el diagnóstico.
+- Utilizar ensayos de detección aleatorios.
+- Considerar el sesgo de duración y de sobrediagnóstico
+
+### 17. Sesgo de duración-tiempo
+**Descripción:** Las pruebas de detección detectan de manera desproporcionada casos de crecimiento más lento y menos agresivos.
+
+**Ejemplo:**
+- Los cánceres de crecimiento lento se detectan con más frecuencia que los de crecimiento rápido, lo que hace que la detección parezca beneficiosa
+
+**Mitigación:**
+- Ensayos aleatorios con criterios de valoración de mortalidad.
+- Considerar la historia natural de la enfermedad.
+
+### 18. Sesgo de respuesta
+**Descripción:** Patrón sistemático en cómo responden los participantes.
+
+**Tipos:**
+- **Sesgo de aquiescencia:** Tendencia a estar de acuerdo
+- **Respuesta extrema:** Siempre eligiendo opciones extremas
+- **Respuesta neutral:** Evitar respuestas extremas
+- **Características de la demanda:** Responder en función de las expectativas percibidas
+
+**Mitigación:**
+- Mezclar elementos positivos y negativos.
+- Utilice múltiples formatos de respuesta
+- Cega a los participantes a las hipótesis.
+- Utilizar medidas de comportamiento.
+
+## Sesgos estadísticos y de análisis
+
+### 19. P-Hacking (dragado de datos)
+**Descripción:** Manipular datos o análisis hasta que surjan resultados significativos.
+
+**Manifestaciones:**
+- Recopilar datos hasta alcanzar la significación.
+- Probar múltiples resultados, informando sólo los significativos.
+- Probar múltiples métodos de análisis.
+- Excluir "valores atípicos" para alcanzar significancia
+- Análisis de subgrupos hasta encontrar significación.
+
+**Detección:**
+- Valores p sospechosamente perfectos (justo por debajo de 0,05)
+- Muchos investigadores grados de libertad.
+- Análisis no divulgados
+- Expediciones de pesca
+
+**Mitigación:**
+- Planes de análisis previos al registro.
+- Informar de todos los análisis realizados.
+- Correcto para comparaciones múltiples
+- Distinguir exploratorio de confirmatorio.### 20. HARKing (Hacer hipótesis después de conocer los resultados)
+**Descripción:** Presentar hipótesis post hoc como si estuvieran predichas a priori.
+
+**Por qué es problemático:**
+- Infla la evidencia aparente
+- Combina exploración con confirmación.
+- Tergiversa el proceso científico.
+
+**Mitigación:**
+- Hipótesis previas al registro
+- Etiquetar claramente los análisis exploratorios.
+- Requerir replicación de hallazgos inesperados.
+
+### 21. Descuido de la tarifa base
+**Descripción:** Ignorar la probabilidad previa al evaluar la evidencia.
+
+**Ejemplo:**
+- Prueba con 95% de precisión en enfermedades raras (prevalencia del 1%): solo un 16% de probabilidad de que un resultado positivo indique enfermedad
+
+**Mitigación:**
+- Considere siempre las tasas base/probabilidad previa
+- Utilizar razonamiento bayesiano.
+- Informar valores predictivos positivos y negativos.
+
+### 22. Regresión a la media
+**Descripción:** Las mediciones extremas tienden a ser seguidas por otras menos extremas.
+
+**Manifestaciones:**
+- Los efectos del tratamiento en grupos extremos pueden ser artefactos de regresión
+- "Caída de estudiantes de segundo año" entre los de alto rendimiento
+
+**Mitigación:**
+- Utilizar grupos de control.
+- Considere la variación natural
+- No seleccione basándose en valores de referencia extremos sin controles
+
+### 23. Falacia del francotirador de Texas
+**Descripción:** Seleccionar datos después de ver patrones, como disparar flechas y luego dibujar objetivos alrededor de grupos.
+
+**Manifestaciones:**
+- Encontrar patrones en datos aleatorios.
+- Análisis de subgrupos seleccionados post hoc
+- Estudios de agrupamiento geográfico sin corrección.
+
+**Mitigación:**
+- Preespecificar hipótesis
+- Correcto para comparaciones múltiples
+- Replicar los hallazgos en datos independientes.
+
+## Reducción del sesgo: mejores prácticas
+
+### Diseño del estudio
+1. Aleatorización
+2. Cegamiento (simple, doble, triple)
+3. Grupos de control
+4. Tamaño de muestra adecuado
+5. Preinscripción
+
+### Recopilación de datos
+1. Protocolos estandarizados
+2. Instrumentos validados
+3. Medidas objetivas cuando sea posible
+4. Múltiples observadores/evaluadores
+5. Completar la recopilación de datos
+
+### Análisis
+1. Análisis por intención de tratar
+2. Análisis preespecificados
+3. Pruebas estadísticas apropiadas
+4. Múltiples correcciones de comparación.
+5. Análisis de sensibilidad
+
+### Informes
+1. Transparencia total
+2. CONSORT, PRISMA o pautas similares
+3. Informar todos los resultados
+4. Distinguir exploratorio de confirmatorio
+5. Comparte datos y código
+
+### Metanivel
+1. Colaboración adversaria
+2. Estudios de replicación
+3. Prácticas de ciencia abierta
+4. Revisión por pares
+5. Revisiones sistemáticas

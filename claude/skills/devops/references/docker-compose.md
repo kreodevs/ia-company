@@ -1,8 +1,8 @@
 # Docker Compose
 
-Multi-container application orchestration.
+Orquestación de aplicaciones multi-contenedor.
 
-## Basic Structure
+## Estructura básica
 
 ```yaml
 version: '3.8'
@@ -56,7 +56,7 @@ networks:
     driver: bridge
 ```
 
-## Commands
+## Comandos
 
 ```bash
 # Start services
@@ -96,7 +96,7 @@ docker compose pull
 docker compose config
 ```
 
-## Environment-Specific Configs
+## Configuraciones por entorno
 
 **compose.yml (base):**
 ```yaml
@@ -135,16 +135,16 @@ services:
           memory: 512M
 ```
 
-**Usage:**
+**Uso:**
 ```bash
-# Development (uses compose.yml + compose.override.yml)
+# Desarrollo (uses compose.yml + compose.override.yml)
 docker compose up
 
 # Production
 docker compose -f compose.yml -f compose.prod.yml up -d
 ```
 
-## Health Checks
+## Comprobaciones de salud
 
 ```yaml
 services:
@@ -157,7 +157,7 @@ services:
       retries: 3
 ```
 
-## Resource Limits
+## Límites de recursos
 
 ```yaml
 services:
@@ -172,7 +172,7 @@ services:
           memory: 256M
 ```
 
-## Logging
+## Registro
 
 ```yaml
 services:
@@ -184,9 +184,9 @@ services:
         max-file: "3"
 ```
 
-## Environment Variables
+## Variables de entorno
 
-**Using .env file:**
+**Usando archivo .env:**
 ```bash
 # .env
 DATABASE_URL=postgresql://user:pass@db:5432/app
@@ -200,9 +200,9 @@ services:
       - .env
 ```
 
-## Networking
+## Redes
 
-Services on same network communicate via service name:
+Los servicios en la misma red se comunican mediante el nombre del servicio:
 
 ```yaml
 services:
@@ -214,7 +214,7 @@ services:
       - DATABASE_URL=postgresql://user:pass@db:5432/app
 ```
 
-## Volume Backup/Restore
+## Backup/restauración de volúmenes
 
 ```bash
 # Backup
@@ -226,7 +226,7 @@ docker compose run --rm -v app_data:/data -v $(pwd):/backup \
   alpine tar xzf /backup/backup.tar.gz -C /data
 ```
 
-## Common Stacks
+## Stacks comunes
 
 ### Web + Database + Cache
 ```yaml
@@ -242,7 +242,7 @@ services:
     image: redis:7-alpine
 ```
 
-### Microservices
+### Microservicios
 ```yaml
 services:
   api-gateway:
@@ -255,18 +255,18 @@ services:
     image: rabbitmq:3-management
 ```
 
-## Best Practices
+## Buenas prácticas
 
-- Use named volumes for data persistence
-- Implement health checks for all services
-- Set restart policies for production
-- Use environment-specific compose files
-- Configure resource limits
-- Enable logging with size limits
-- Use depends_on for service ordering
-- Network isolation with custom networks
+- Usa volúmenes con nombre para persistencia de datos
+- Implementa health checks para todos los servicios
+- Establece políticas de reinicio para producción
+- Usa archivos compose específicos por entorno
+- Configura límites de recursos
+- Habilita logging con límites de tamaño
+- Usa depends_on para ordenar servicios
+- Aislamiento de red con redes personalizadas
 
-## Troubleshooting
+## Solución de problemas
 
 ```bash
 # View service logs
@@ -285,7 +285,7 @@ docker compose up --build service-name
 docker compose down --volumes --rmi all
 ```
 
-## Resources
+## Recursos
 
 - Docs: https://docs.docker.com/compose/
 - Compose Specification: https://docs.docker.com/compose/compose-file/

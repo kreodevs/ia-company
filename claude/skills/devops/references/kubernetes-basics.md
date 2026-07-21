@@ -1,6 +1,6 @@
-# Kubernetes Core Concepts
+# Conceptos core de Kubernetes
 
-## Cluster Architecture
+## Arquitectura del cluster
 
 ```
 CONTROL PLANE                    WORKER NODES
@@ -63,7 +63,7 @@ spec:
     targetPort: 8080
 ```
 
-## ConfigMap & Secret
+## ConfigMap y Secret
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -79,9 +79,9 @@ stringData:
   password: secretpassword
 ```
 
-## Workload Types
+## Tipos de workload
 
-| Type | Use Case |
+| Tipo | Caso de uso |
 |------|----------|
 | Deployment | Stateless apps |
 | StatefulSet | Databases |
@@ -89,7 +89,7 @@ stringData:
 | Job | Batch tasks |
 | CronJob | Scheduled |
 
-## Labels
+## Etiquetas
 ```yaml
 labels:
   app: myapp

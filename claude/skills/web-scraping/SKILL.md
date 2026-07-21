@@ -1,15 +1,15 @@
 ---
 name: web-scraping
-description: Web scraping with anti-bot bypass, content extraction, undocumented APIs and poison pill detection. Use when extracting content from websites, handling paywalls, implementing scraping cascades or processing social media. Covers requests, trafilatura, Playwright with stealth mode, yt-dlp and instaloader patterns.
+description: Web scraping con derivación anti-bot, extracción de contenido, API no documentadas y detección de píldoras venenosas. Úselo al extraer contenido de sitios web, manejar muros de pago, implementar cascadas de scraping o procesar redes sociales. Cubre peticiones, trafilatura, Dramaturgo con modo sigiloso, patrones yt-dlp y instaloader.
 ---
 
-# Web scraping methodology
+# Metodología de raspado web
 
-Patterns for reliable, ethical web scraping with fallback strategies and anti-bot handling.
+Patrones para web scraping confiable y ético con estrategias alternativas y manejo anti-bot.
 
-## Scraping cascade architecture
+## Arquitectura en cascada de raspado
 
-Implement multiple extraction strategies with automatic fallback:
+Implemente múltiples estrategias de extracción con respaldo automático:
 
 ```python
 from abc import ABC, abstractmethod
@@ -188,7 +188,9 @@ class PlaywrightScraperAsync:
             return None
 
 # Usage in Jupyter notebook cells:
+
 # scraper = PlaywrightScraperAsync()
+
 # result = await scraper.fetch('https://example.com')
 
 class ScrapingCascade:
@@ -209,30 +211,30 @@ class ScrapingCascade:
         return None
 ```
 
-## Undocumented APIs
+## API no documentadas
 
-### Finding undocumented APIs
+### Encontrar API no documentadas
 
-Use browser developer tools to discover APIs:
+Utilice las herramientas de desarrollo del navegador para descubrir API:
 
-1. **Open developer tools** (right-click → Inspect, or F12)
-2. **Go to the Network tab** to monitor all requests
-3. **Filter by Fetch/XHR** to show only API calls
-4. **Trigger the action** you want to capture (search, scroll, click)
-5. **Analyze the response** — usually JSON with key-value pairs
-6. **Copy as cURL** (right-click the request)
-7. **Convert to code** using [curlconverter.com](https://curlconverter.com/)
+1. **Abra herramientas de desarrollador** (haga clic con el botón derecho → Inspeccionar o F12)
+2. **Vaya a la pestaña Red** para monitorear todas las solicitudes
+3. **Filtrar por Fetch/XHR** para mostrar solo llamadas API
+4. **Activa la acción** que deseas capturar (buscar, desplazarte, hacer clic)
+5. **Analice la respuesta** (generalmente JSON con pares clave-valor)
+6. **Copiar como cURL** (haga clic derecho en la solicitud)
+7. **Convertir a código** usando [curlconverter.com](https://curlconverter.com/)
 
-### Stripping down API requests
+### Eliminación de solicitudes de API
 
-When you copy a cURL from dev tools, it includes many parameters. Strip it down by:
+Cuando copia un cURL de las herramientas de desarrollo, incluye muchos parámetros. Quítelo por:
 
-1. **Remove unnecessary cookies** — test without them first
-2. **Keep authentication tokens** if required
-3. **Identify the input parameters** you can modify (like `prefix` for search terms)
-4. **Test parameter values** — some expire, so periodically verify
+1. **Elimine las cookies innecesarias**: pruebe sin ellas primero
+2. **Conserve los tokens de autenticación** si es necesario
+3. **Identifique los parámetros de entrada** que puede modificar (como `prefix` para términos de búsqueda)
+4. **Valores de parámetros de prueba**: algunos caducan, así que verifíquelos periódicamente
 
-### Example: Reverse-engineering an autocomplete API
+### Ejemplo: ingeniería inversa de una API de autocompletar
 
 ```python
 import requests
@@ -272,12 +274,11 @@ for keyword in keywords:
     suggestions['search_word'] = keyword  # track seed keyword
     time.sleep(1)  # rate limit yourself
     data.extend(suggestions.get('suggestions', []))
-```
-*Source: [Leon Yin, "Finding Undocumented APIs," Inspect Element](https://inspectelement.org/apis.html), 2023*
+```*Fuente: [Leon Yin, "Encontrar API no documentadas", Inspeccionar elemento](https://inspectelement.org/apis.html), 2023*
 
-## Poison pill detection
+## Detección de pastillas venenosas
 
-Detect paywalls, anti-bot pages, and other failures:
+Detecte muros de pago, páginas anti-bot y otras fallas:
 
 ```python
 from dataclasses import dataclass
@@ -371,9 +372,9 @@ class PoisonPillDetector:
         return PoisonPillResult(False, PoisonPillType.NONE, 0.0, '')
 ```
 
-## Social media scraping
+## Raspado de redes sociales
 
-### YouTube with yt-dlp
+### YouTube con yt-dlp
 
 ```python
 import yt_dlp
@@ -454,7 +455,7 @@ def get_transcript(url: str) -> list[dict]:
         return []
 ```
 
-### Instagram with instaloader
+### Instagram con instalador
 
 ```python
 import instaloader
@@ -502,7 +503,7 @@ class InstagramScraper:
         self.loader.download_post(post, target=str(output_dir))
 ```
 
-### TikTok with yt-dlp
+### TikTok con yt-dlp
 
 ```python
 def scrape_tiktok_profile(username: str, output_dir: Path, limit: int = 50) -> list[dict]:
@@ -542,9 +543,9 @@ def download_tiktok_video(url: str, output_dir: Path) -> Path:
         return Path(ydl.prepare_filename(info))
 ```
 
-## Request patterns
+## Solicitar patrones
 
-### Rotating user agents and headers
+### Rotación de agentes de usuario y encabezados
 
 ```python
 import random
@@ -582,7 +583,7 @@ class RequestManager:
                 time.sleep(2 ** attempt)  # Exponential backoff
 ```
 
-### Respectful scraping with delays
+### Scraping respetuoso con retrasos
 
 ```python
 import time
@@ -608,11 +609,11 @@ class PoliteRequester:
         self.last_request_per_domain[domain] = time.time()
 ```
 
-## Ethical considerations
+## Consideraciones éticas
 
-- Always check `robots.txt` before scraping
-- Respect rate limits and add delays between requests
-- Don't scrape personal data without consent
-- Cache responses to avoid redundant requests
-- Identify yourself with a descriptive User-Agent when appropriate
-- Stop if you receive explicit blocking signals
+- Siempre verifique `robots.txt` antes de raspar
+- Respete los límites de tarifas y agregue retrasos entre solicitudes
+- No extraigas datos personales sin consentimiento
+- Caché de respuestas para evitar solicitudes redundantes
+- Identifíquese con un User-Agent descriptivo cuando corresponda
+- Deténgase si recibe señales de bloqueo explícitas

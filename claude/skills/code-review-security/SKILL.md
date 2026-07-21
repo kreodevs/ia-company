@@ -1,13 +1,13 @@
 ---
 name: code-review-security
 description: >-
-  Security-focused code review checklist and automated scanning patterns. Use when
-  reviewing pull requests for security issues, auditing authentication/authorization
-  code, checking for OWASP Top 10 vulnerabilities, or validating input sanitization.
-  Covers SQL injection prevention, XSS protection, CSRF tokens, authentication flow
-  review, secrets detection, dependency vulnerability scanning, and secure coding
-  patterns for Python (FastAPI) and React. Does NOT cover deployment security (use
-  docker-best-practices) or incident handling (use incident-response).
+  Lista de verificación de revisión de código centrada en seguridad y patrones de escaneo automatizados. Usar al
+  revisar pull requests por issues de seguridad, auditar código de autenticación/autorización,
+  buscar vulnerabilidades OWASP Top 10 o validar sanitización de inputs.
+  Cubre prevención de inyección SQL, protección XSS, tokens CSRF, revisión de flujos de autenticación,
+  detección de secretos, escaneo de vulnerabilidades en dependencias y patrones de codificación segura
+  para Python (FastAPI) y React. NO cubre seguridad de deployment (usar
+  docker-best-practices) ni manejo de incidentes (usar incident-response).
 license: MIT
 compatibility: 'Python 3.12+, FastAPI, React, TypeScript'
 metadata:
@@ -18,45 +18,47 @@ allowed-tools: Read Grep Glob Write Bash(python:*) Bash(npm:*)
 context: fork
 ---
 
-# Code Review Security
+# Seguridad de revisión de código
 
-## When to Use
+## Cuándo utilizar
 
-Activate this skill when:
-- Reviewing pull requests for security vulnerabilities
-- Auditing authentication or authorization code changes
-- Reviewing code that handles user input, file uploads, or external data
-- Checking for OWASP Top 10 vulnerabilities in new features
-- Validating that secrets are not committed to the repository
-- Scanning dependencies for known vulnerabilities
-- Reviewing API endpoints that expose sensitive data
+Activa esta habilidad cuando:
+- Revisión de solicitudes de extracción para vulnerabilidades de seguridad.
+- Auditoría de cambios de código de autenticación o autorización.
+- Revisar el código que maneja la entrada del usuario, la carga de archivos o datos externos.
+- Comprobación de las 10 vulnerabilidades principales de OWASP en nuevas funciones
+- Validar que los secretos no estén confirmados en el repositorio.
+- Escaneo de dependencias en busca de vulnerabilidades conocidas.
+- Revisión de puntos finales de API que exponen datos confidenciales
 
-**Output:** Write findings to `security-review.md` with severity, file:line, description, and recommendations.
+**Salida:** Escriba los hallazgos en `security-review.md` con gravedad, archivo:línea, descripción y recomendaciones.
 
-Do NOT use this skill for:
-- Deployment infrastructure security (use `docker-best-practices`)
-- Incident response procedures (use `incident-response`)
-- General code quality review without security focus (use `pre-merge-checklist`)
-- Writing implementation code (use `python-backend-expert` or `react-frontend-expert`)
+NO uses esta habilidad para:
+- Seguridad de la infraestructura de implementación (use`docker-best-practices`)
+- Procedimientos de respuesta a incidentes (use`incident-response`)
+- Revisión general de la calidad del código sin enfoque de seguridad (use`pre-merge-checklist`)
+- Escribir código de implementación (use `python-backend-expert` o`react-frontend-expert`)
 
-## Instructions
+## Instrucciones
 
-### OWASP Top 10 Checklist
+### Lista de verificación de los 10 mejores de OWASP
 
-Review every PR against the OWASP Top 10 (2021 edition). Each category below includes specific checks for Python/FastAPI and React codebases.
+Revise cada PR comparándolo con el OWASP Top 10 (edición 2021). Cada categoría a continuación incluye comprobaciones específicas para las bases de código de Python/FastAPI y React.
 
 ---
 
-#### A01: Broken Access Control
+#### A01: Control de acceso roto
 
-**What to look for:**
-- Missing authorization checks on endpoints
-- Direct object reference without ownership verification
-- Endpoints that expose data without role-based filtering
-- Missing `Depends()` for auth on new routes
+**Qué buscar:**
+- Faltan controles de autorización en los puntos finales
+- Referencia directa de objeto sin verificación de propiedad.
+- Puntos finales que exponen datos sin filtrado basado en roles
+- Falta `Depends()` para autenticación en nuevas rutas
 
-**Python/FastAPI checks:**
+**Comprobaciones de Python/FastAPI:**
+
 ```python
+
 # BAD: No authorization check -- any authenticated user can access any user
 @router.get("/users/{user_id}")
 async def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -72,27 +74,26 @@ async def get_user(
     if current_user.id != user_id and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Forbidden")
     return await user_repo.get(user_id)
-```
-
-**Review checklist:**
-- [ ] Every route has authentication (`Depends(get_current_user)`)
-- [ ] Resource access is verified against the requesting user
-- [ ] Admin-only endpoints check `role == "admin"`
-- [ ] List endpoints filter by user ownership (unless admin)
-- [ ] No IDOR (Insecure Direct Object Reference) vulnerabilities
+```**Revisar lista de verificación:**
+- [ ] Cada ruta tiene autenticación (`Depends(get_current_user)`)
+- [] El acceso a los recursos se verifica con el usuario solicitante
+- [] Verificación de puntos finales solo para administradores `role == "admin"`- [] Listar los puntos finales filtrados por propiedad del usuario (a menos que sea administrador)
+- [] Sin vulnerabilidades IDOR (Referencia directa a objetos inseguros)
 
 ---
 
-#### A02: Cryptographic Failures
+#### A02: Fallos criptográficos
 
-**What to look for:**
-- Passwords stored in plaintext or with weak hashing
-- Sensitive data in logs or error messages
-- Hardcoded secrets, API keys, or tokens
-- Weak JWT configuration
+**Qué buscar:**
+- Contraseñas almacenadas en texto plano o con hash débil
+- Datos confidenciales en registros o mensajes de error.
+- Secretos codificados, claves API o tokens
+- Configuración JWT débil
 
-**Python checks:**
+**Comprobaciones de Python:**
+
 ```python
+
 # BAD: Weak password hashing
 import hashlib
 password_hash = hashlib.md5(password.encode()).hexdigest()
@@ -107,27 +108,26 @@ SECRET_KEY = "my-super-secret-key-123"
 
 # GOOD: Secret from environment
 SECRET_KEY = os.environ["SECRET_KEY"]
-```
-
-**Review checklist:**
-- [ ] Passwords hashed with bcrypt (never MD5, SHA1, or plaintext)
-- [ ] JWT secret loaded from environment, not hardcoded
-- [ ] Sensitive data excluded from logs (passwords, tokens, PII)
-- [ ] HTTPS enforced for all external communication
-- [ ] No secrets in source code (check `.env.example` has placeholders only)
+```**Revisar lista de verificación:**
+- [] Contraseñas codificadas con bcrypt (nunca MD5, SHA1 o texto sin formato)
+- [] Secreto JWT cargado desde el entorno, no codificado
+- [] Datos confidenciales excluidos de los registros (contraseñas, tokens, PII)
+- [] HTTPS aplicado para todas las comunicaciones externas
+- [] No hay secretos en el código fuente (verifique que `.env.example` solo tenga marcadores de posición)
 
 ---
 
-#### A03: Injection
+#### A03: Inyección
 
-**What to look for:**
-- Raw SQL queries with string interpolation
-- `eval()`, `exec()`, `compile()` with user input
-- `subprocess` calls with `shell=True`
-- Template injection
+**Qué buscar:**
+- Consultas SQL sin formato con interpolación de cadenas.
+-`eval()`,` exec()`,` compile()`con entrada del usuario
+- `subprocess` llama con`shell=True`- Inyección de plantilla
 
-**Python checks:**
+**Comprobaciones de Python:**
+
 ```python
+
 # BAD: SQL injection via string formatting
 query = f"SELECT * FROM users WHERE email = '{email}'"
 db.execute(text(query))
@@ -149,43 +149,42 @@ result = eval(user_input)
 
 # GOOD: Never eval user input. Use ast.literal_eval for safe parsing.
 result = ast.literal_eval(user_input)  # Only for literal structures
-```
-
-**Review checklist:**
-- [ ] No raw SQL with string interpolation (use ORM or parameterized queries)
-- [ ] No `eval()`, `exec()`, or `compile()` with external input
-- [ ] No `subprocess.run(..., shell=True)` with dynamic arguments
-- [ ] No `pickle.loads()` on untrusted data
-- [ ] All user input validated by Pydantic schemas before use
+```**Revisar lista de verificación:**
+- [] No hay SQL sin formato con interpolación de cadenas (use ORM o consultas parametrizadas)
+- [ ] No`eval()`,` exec()`o` compile()`con entrada externa
+- [] No `subprocess.run(..., shell=True)` con argumentos dinámicos
+- [] No `pickle.loads()` en datos que no son de confianza
+- [] Todas las entradas del usuario validadas por esquemas de Pydantic antes de su uso.
 
 ---
 
-#### A04: Insecure Design
+#### A04: Diseño inseguro
 
-**What to look for:**
-- Missing rate limiting on authentication endpoints
-- No account lockout after failed login attempts
-- Missing CAPTCHA on public-facing forms
-- Business logic flaws (e.g., negative amounts, self-privilege-escalation)
+**Qué buscar:**
+- Falta limitación de velocidad en los puntos finales de autenticación
+- Sin bloqueo de cuenta después de intentos fallidos de inicio de sesión
+- Falta CAPTCHA en formularios públicos
+- Defectos de lógica empresarial (por ejemplo, cantidades negativas, escalada de privilegios personales)
 
-**Review checklist:**
-- [ ] Rate limiting on login, registration, and password reset
-- [ ] Account lockout or exponential backoff after 5+ failed attempts
-- [ ] Business logic validates constraints (positive amounts, valid transitions)
-- [ ] Sensitive operations require re-authentication
+**Revisar lista de verificación:**
+- [] Tasa de limitación de inicio de sesión, registro y restablecimiento de contraseña
+- [] Bloqueo de cuenta o retroceso exponencial después de más de 5 intentos fallidos
+- [ ] La lógica de negocio valida las restricciones (montos positivos, transiciones válidas)
+- [] Las operaciones sensibles requieren una nueva autenticación
 
 ---
 
-#### A05: Security Misconfiguration
+#### A05: Configuración incorrecta de seguridad
 
-**What to look for:**
-- Debug mode enabled in production
-- CORS configured with wildcard `*` origins
-- Default credentials or admin accounts
-- Verbose error messages exposing stack traces
+**Qué buscar:**
+- Modo de depuración habilitado en producción.
+- CORS configurado con orígenes comodín `*`- Credenciales predeterminadas o cuentas de administrador
+- Mensajes de error detallados que exponen seguimientos de pila
 
-**Python/FastAPI checks:**
+**Comprobaciones de Python/FastAPI:**
+
 ```python
+
 # BAD: Wide-open CORS
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
@@ -202,37 +201,35 @@ app = FastAPI(debug=True)
 
 # GOOD: Debug only in development
 app = FastAPI(debug=settings.DEBUG)  # DEBUG=False in production
-```
-
-**Review checklist:**
-- [ ] CORS origins are explicit (no wildcard in production)
-- [ ] Debug mode disabled in production configuration
-- [ ] Error responses do not expose stack traces or internal details
-- [ ] Default admin credentials are changed or removed
-- [ ] Security headers set (X-Content-Type-Options, X-Frame-Options, etc.)
+```**Revisar lista de verificación:**
+- [] Los orígenes de CORS son explícitos (sin comodines en producción)
+- [] Modo de depuración deshabilitado en la configuración de producción
+- [] Las respuestas de error no exponen seguimientos de pila ni detalles internos
+- [] Las credenciales de administrador predeterminadas se cambian o eliminan
+- [] Conjunto de encabezados de seguridad (X-Content-Type-Options, X-Frame-Options, etc.)
 
 ---
 
-#### A06: Vulnerable and Outdated Components
+#### A06: Componentes vulnerables y obsoletos
 
-**Review checklist:**
-- [ ] No known CVEs in Python dependencies (`pip-audit` or `safety check`)
-- [ ] No known CVEs in npm dependencies (`npm audit`)
-- [ ] Dependencies pinned to specific versions in lock files
-- [ ] No deprecated packages still in use
+**Revisar lista de verificación:**
+- [] No se conocen CVE en dependencias de Python (`pip-audit` o`safety check`)
+- [] No se conocen CVE en dependencias de npm (`npm audit`)
+- [] Dependencias ancladas a versiones específicas en archivos de bloqueo
+- [] Aún no se utilizan paquetes obsoletos
 
 ---
 
-#### A07: Identification and Authentication Failures
+#### A07: Fallas de identificación y autenticación
 
-**What to look for:**
-- Weak password policies
-- Session tokens that do not expire
-- Missing multi-factor authentication for admin actions
-- JWT tokens without expiration
+**Qué buscar:**
+- Políticas de contraseñas débiles
+- Tokens de sesión que no caducan
+- Falta autenticación multifactor para acciones de administrador
+- Tokens JWT sin vencimiento**Comprobaciones de Python:**
 
-**Python checks:**
 ```python
+
 # BAD: JWT without expiration
 token = jwt.encode({"sub": user_id}, SECRET_KEY, algorithm="HS256")
 
@@ -242,46 +239,46 @@ token = jwt.encode(
     SECRET_KEY,
     algorithm="HS256",
 )
-```
-
-**Review checklist:**
-- [ ] JWT tokens have expiration (`exp` claim)
-- [ ] Refresh tokens are stored securely and can be revoked
-- [ ] Password policy enforces minimum length (12+) and complexity
-- [ ] Session invalidation on password change or logout
-- [ ] No user enumeration via login error messages
+```**Revisar lista de verificación:**
+- [] Los tokens JWT tienen vencimiento (reclamo`exp`)
+- [] Los tokens de actualización se almacenan de forma segura y se pueden revocar
+- [] La política de contraseñas exige una longitud mínima (12+) y complejidad
+- [] Invalidación de sesión al cambiar la contraseña o cerrar sesión
+- [] No hay enumeración de usuarios mediante mensajes de error de inicio de sesión
 
 ---
 
-#### A08: Software and Data Integrity Failures
+#### A08: Fallas de integridad de datos y software
 
-**Review checklist:**
-- [ ] CI/CD pipeline validates artifact integrity
-- [ ] No unsigned or unverified packages
-- [ ] Deserialization of untrusted data uses safe methods (no `pickle.loads`)
-- [ ] Database migrations are reviewed before execution
-
----
-
-#### A09: Security Logging and Monitoring Failures
-
-**Review checklist:**
-- [ ] Authentication events are logged (login, logout, failed attempts)
-- [ ] Authorization failures are logged with context
-- [ ] Sensitive data is NOT included in logs (passwords, tokens, PII)
-- [ ] Log entries include timestamp, user ID, IP address, action
-- [ ] Alerting configured for suspicious patterns (brute force, unusual access)
+**Revisar lista de verificación:**
+- [] La canalización de CI/CD valida la integridad del artefacto
+- [] No hay paquetes sin firmar o sin verificar
+- [] La deserialización de datos que no son de confianza utiliza métodos seguros (no`pickle.loads`)
+- [] Las migraciones de bases de datos se revisan antes de su ejecución.
 
 ---
 
-#### A10: Server-Side Request Forgery (SSRF)
+#### A09: Fallas de monitoreo y registro de seguridad
 
-**What to look for:**
-- User-supplied URLs used in server-side requests
-- Redirect endpoints that accept arbitrary URLs
+**Revisar lista de verificación:**
+- [] Se registran eventos de autenticación (iniciar sesión, cerrar sesión, intentos fallidos)
+- [] Los errores de autorización se registran con contexto
+- [] Los datos confidenciales NO se incluyen en los registros (contraseñas, tokens, PII)
+- [] Las entradas del registro incluyen marca de tiempo, ID de usuario, dirección IP y acción.
+- [] Alertas configuradas para patrones sospechosos (fuerza bruta, acceso inusual)
 
-**Python checks:**
+---
+
+#### A10: Falsificación de solicitudes del lado del servidor (SSRF)
+
+**Qué buscar:**
+- URL proporcionadas por el usuario utilizadas en solicitudes del lado del servidor
+- Redirigir puntos finales que aceptan URL arbitrarias
+
+**Comprobaciones de Python:**
+
 ```python
+
 # BAD: Fetch arbitrary URL from user input
 url = request.query_params["url"]
 response = httpx.get(url)  # SSRF: can access internal services
@@ -292,45 +289,44 @@ parsed = urlparse(url)
 if parsed.hostname not in ALLOWED_HOSTS:
     raise HTTPException(400, "URL not allowed")
 response = httpx.get(url)
-```
-
-**Review checklist:**
-- [ ] No server-side requests to user-controlled URLs without validation
-- [ ] URL allowlists used for external integrations
-- [ ] Internal service URLs not exposed in error messages
+```**Revisar lista de verificación:**
+- [] No hay solicitudes del lado del servidor a URL controladas por el usuario sin validación
+- [] Listas permitidas de URL utilizadas para integraciones externas
+- [] URL de servicios internos no expuestas en mensajes de error
 
 ---
 
-### Python-Specific Security Checks
+### Comprobaciones de seguridad específicas de Python
 
-Beyond OWASP, review Python code for these patterns:
+Más allá de OWASP, revise el código Python para estos patrones:
 
-| Pattern | Risk | Fix |
+| Patrón | Riesgo | Arreglar |
 |---------|------|-----|
-| `eval(user_input)` | Remote code execution | Remove or use `ast.literal_eval` |
-| `pickle.loads(data)` | Arbitrary code execution | Use JSON or `msgpack` |
-| `subprocess.run(cmd, shell=True)` | Command injection | Pass args as list, `shell=False` |
-| `yaml.load(data)` | Code execution | Use `yaml.safe_load(data)` |
-| `os.system(cmd)` | Command injection | Use `subprocess.run([...])` |
-| Raw SQL strings | SQL injection | Use ORM or parameterized queries |
-| `hashlib.md5(password)` | Weak hashing | Use `bcrypt` via `passlib` |
-| `jwt.decode(token, options={"verify_signature": False})` | Auth bypass | Always verify signature |
-| `open(user_path)` | Path traversal | Validate path, use `pathlib.resolve()` |
-| `tempfile.mktemp()` | Race condition | Use `tempfile.mkstemp()` |
+| `eval(user_input)`| Ejecución remota de código | Eliminar o utilizar` ast.literal_eval`|
+| `pickle.loads(data)`| Ejecución de código arbitrario | Utilice JSON o` msgpack`|
+| `subprocess.run(cmd, shell=True)`| Inyección de comando | Pase argumentos como lista,` shell=False`|
+| `yaml.load(data)`| Ejecución de código | Utilice` yaml.safe_load(data)`|
+| `os.system(cmd)`| Inyección de comando | Utilice` subprocess.run([...])`|
+| Cadenas SQL sin formato | Inyección SQL | Utilice ORM o consultas parametrizadas |
+| `hashlib.md5(password)`| Hashing débil | Utilice` bcrypt`a través de` passlib`|
+| `jwt.decode(token, options={"verify_signature": False})`| Omisión de autenticación | Verifique siempre la firma |
+| `open(user_path)`| Recorrido del camino | Validar ruta, usar` pathlib.resolve()`|
+| `tempfile.mktemp()`| Condición de carrera | Utilice` tempfile.mkstemp()`|
 
-### React-Specific Security Checks
+### Comprobaciones de seguridad específicas de React
 
-| Pattern | Risk | Fix |
+| Patrón | Riesgo | Arreglar |
 |---------|------|-----|
-| `dangerouslySetInnerHTML` | XSS | Use text content or sanitize with DOMPurify |
-| `javascript:` in href | XSS | Validate URLs, allow only `https:` |
-| `window.location = userInput` | Open redirect | Validate against allowlist |
-| Storing tokens in localStorage | Token theft via XSS | Use httpOnly cookies |
-| Inline event handlers from data | XSS | Use React event handlers |
-| `eval()` or `Function()` | Code execution | Remove entirely |
-| Rendering user HTML | XSS | Use a sanitization library |
+| `dangerouslySetInnerHTML`| XSS | Utilice contenido de texto o desinfecte con DOMPurify |
+| `javascript:` en href | XSS | Validar URL, permitir solo`https:`|
+| `window.location = userInput`| Abrir redireccionamiento | Validar contra la lista de permitidos |
+| Almacenamiento de tokens en localStorage | Robo de tokens a través de XSS | Utilice cookies httpOnly |
+| Controladores de eventos en línea a partir de datos | XSS | Utilice controladores de eventos de React |
+| `eval()` o`Function()`| Ejecución de código | Eliminar por completo |
+| Representación HTML del usuario | XSS | Utilice una biblioteca de desinfección |
 
-**React code review:**
+**Revisión del código de reacción:**
+
 ```tsx
 // BAD: XSS via dangerouslySetInnerHTML
 <div dangerouslySetInnerHTML={{ __html: userBio }} />
@@ -350,24 +346,25 @@ const safeHref = /^https?:\/\//.test(userLink) ? userLink : "#";
 <a href={safeHref}>Click</a>
 ```
 
-### Severity Classification
+### Clasificación de gravedad
 
-Classify each finding by severity for prioritization:
+Clasifique cada hallazgo por gravedad para priorizar:
 
-| Severity | Description | Examples | SLA |
+| Gravedad | Descripción | Ejemplos | Acuerdo de Nivel de Servicio |
 |----------|-------------|----------|-----|
-| **Critical** | Exploitable remotely, no auth needed, data breach | SQL injection, RCE, auth bypass | Block merge, fix immediately |
-| **High** | Exploitable with auth, privilege escalation | IDOR, broken access control, XSS (stored) | Block merge, fix before release |
-| **Medium** | Requires specific conditions to exploit | CSRF, XSS (reflected), open redirect | Fix within sprint |
-| **Low** | Defense-in-depth, informational | Missing headers, verbose errors | Fix when convenient |
-| **Info** | Best practice recommendations | Dependency updates, code style | Track in backlog |
+| **Crítico** | Explotable de forma remota, no se necesita autenticación, violación de datos | Inyección SQL, RCE, omisión de autenticación | Bloquee la fusión, solucione de inmediato |
+| **Alto** | Explotable con autenticación, escalada de privilegios | IDOR, control de acceso roto, XSS (almacenado) | Bloquear fusión, arreglar antes del lanzamiento |
+| **Medio** | Requiere condiciones específicas para explotar | CSRF, XSS (reflejado), redireccionamiento abierto | Arreglar dentro del sprint |
+| **Bajo** | Defensa en profundidad, informativa | Encabezados faltantes, errores detallados | Arreglar cuando sea conveniente |
+| **Información** | Recomendaciones de mejores prácticas | Actualizaciones de dependencia, estilo de código | Seguimiento del trabajo pendiente |
 
-### Finding Report Format
+### Encontrar formato de informe
 
-When reporting security findings, use this format for consistency:
+Al informar sobre hallazgos de seguridad, utilice este formato para mantener la coherencia:
 
 ```markdown
-## Security Finding: [Title]
+
+## Hallazgo de seguridad: [Título]
 
 **Severity:** Critical | High | Medium | Low | Info
 **Category:** OWASP A01-A10 or custom category
@@ -379,15 +376,21 @@ Brief description of the vulnerability and its impact.
 
 ### Vulnerable Code
 ```python
-# The problematic code
-vulnerable_function(user_input)
+
+# El código problemático
+función_vulnerable(entrada_usuario)
+
 ```
+
 
 ### Recommended Fix
 ```python
-# The secure alternative
-safe_function(sanitize(user_input))
+
+# La alternativa segura
+función_segura(desinfectar(entrada_usuario))
+
 ```
+
 
 ### Impact
 What an attacker could achieve by exploiting this vulnerability.
@@ -397,21 +400,18 @@ What an attacker could achieve by exploiting this vulnerability.
 - Link to relevant CWE entry
 ```
 
-### Automated Scanning
+### Escaneo automatizado
 
-Use `scripts/security-scan.py` to perform AST-based scanning for common vulnerability patterns in Python code. The script scans for:
-- `eval()` / `exec()` / `compile()` calls
-- `subprocess` with `shell=True`
-- `pickle.loads()` on potentially untrusted data
-- Raw SQL string construction
-- `yaml.load()` without `Loader=SafeLoader`
-- Hardcoded secret patterns (API keys, passwords)
-- Weak hash functions (MD5, SHA1 for passwords)
+Utilice `scripts/security-scan.py` para realizar un escaneo basado en AST en busca de patrones de vulnerabilidad comunes en el código Python. El script busca:
+- Llamadas `eval()`/` exec()`/` compile()`-` subprocess`con` shell=True`-` pickle.loads()`sobre datos potencialmente no confiables
+- Construcción de cadenas SQL sin formato
+- `yaml.load()` sin`Loader=SafeLoader`- Patrones secretos codificados (claves API, contraseñas)
+- Funciones hash débiles (MD5, SHA1 para contraseñas)
 
-Run: `python scripts/security-scan.py --path ./app --output-dir ./security-results`
+Ejecutar: `python scripts/security-scan.py --path ./app --output-dir ./security-results`**Escaneo de dependencias (ejecutado por separado):**
 
-**Dependency scanning (run separately):**
 ```bash
+
 # Python dependencies
 pip-audit --requirement requirements.txt --output json > dep-audit.json
 
@@ -419,56 +419,62 @@ pip-audit --requirement requirements.txt --output json > dep-audit.json
 npm audit --json > npm-audit.json
 ```
 
-## Examples
+## Ejemplos
 
-### Example Review Comment (Critical)
+### Ejemplo de comentario de revisión (crítico)> **SEGURIDAD: Inyección SQL (Crítico, OWASP A03)**
+>
+> Archivo: `app/repositories/user_repository.py:47`>
+>
 
-> **SECURITY: SQL Injection (Critical, OWASP A03)**
->
-> File: `app/repositories/user_repository.py:47`
->
-> ```python
+```python
 > query = f"SELECT * FROM users WHERE name LIKE '%{search_term}%'"
-> ```
+> ```>
+> Esto construye una consulta SQL sin formato con interpolación de cadenas, lo que permite la inyección de SQL.
+> Un atacante podría ingresar `'; DROP TABLE users; --` para destruir datos.
 >
-> This constructs a raw SQL query with string interpolation, allowing SQL injection.
-> An attacker could input `'; DROP TABLE users; --` to destroy data.
+> **Solución:** Utilice el filtrado ORM de SQLAlchemy:
 >
-> **Fix:** Use SQLAlchemy ORM filtering:
-> ```python
+
+```python
 > users = db.query(User).filter(User.name.ilike(f"%{search_term}%")).all()
-> ```
+> 
 
-### Example Review Comment (Medium)
+```
 
-> **SECURITY: Missing Rate Limiting (Medium, OWASP A04)**
+### Ejemplo de comentario de revisión (medio)
+
+> **SEGURIDAD: Falta límite de velocidad (Medio, OWASP A04)**
 >
-> File: `app/routes/auth.py:12`
+> Archivo: `app/routes/auth.py:12`>
+> El terminal `/auth/login` no tiene límite de velocidad. Un atacante podría realizar fuerza bruta
+> ataques de contraseña a velocidad ilimitada.
 >
-> The `/auth/login` endpoint has no rate limiting. An attacker could perform brute-force
-> password attacks at unlimited speed.
+> **Solución:** Agregar middleware de limitación de velocidad:
 >
-> **Fix:** Add rate limiting middleware:
-> ```python
+
+```python
 > from slowapi import Limiter
 > limiter = Limiter(key_func=get_remote_address)
 >
 > @router.post("/login")
 > @limiter.limit("5/minute")
 > async def login(request: Request, ...):
-> ```
+> 
 
-### Output File
+```
 
-Write security findings to `security-review.md`:
+### Archivo de salida
+
+Escriba los resultados de seguridad en`security-review.md`:
 
 ```markdown
-# Security Review: [Feature/PR Name]
 
-## Summary
+# Revisión de seguridad: [Nombre de funcionalidad/PR]
+
+## Resumen
 - Critical: 0 | High: 1 | Medium: 2 | Low: 1
 
-## Findings
+## Hallazgos
 
 ### [CRITICAL] SQL Injection in user search
 - **File:** app/routes/users.py:45
@@ -479,7 +485,7 @@ Write security findings to `security-review.md`:
 ### [HIGH] Missing authorization check
 ...
 
-## Passed Checks
+## Comprobaciones superadas
 - No hardcoded secrets found
 - Dependencies up to date
 ```

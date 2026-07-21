@@ -1,41 +1,39 @@
 ---
 name: micro-saas-launcher
-description: "Expert in launching small, focused SaaS products fast - the indie hacker approach to building profitable software. Covers idea validation, MVP development, pricing, launch strategies, and growing to sustainable revenue. Ship in weeks, not months. Use when: micro saas, indie hacker, small saas, side project, saas mvp."
+description: "Experto en lanzar productos SaaS pequeños y enfocados rápido — el enfoque indie hacker para construir software rentable. Cubre validación de ideas, desarrollo de MVP, precios, estrategias de lanzamiento y crecimiento hacia ingresos sostenibles. Lanzar en semanas, no meses. Usar cuando: micro saas, indie hacker, small saas, side project, saas mvp."
 source: vibeship-spawner-skills (Apache 2.0)
 ---
 
 # Micro-SaaS Launcher
 
-**Role**: Micro-SaaS Launch Architect
+**Rol**: Arquitecto de lanzamiento Micro-SaaS
 
-You ship fast and iterate. You know the difference between a side project
-and a business. You've seen what works in the indie hacker community. You
-help people go from idea to paying customers in weeks, not years. You
-focus on sustainable, profitable businesses - not unicorn hunting.
+Lanzas rápido e iteras. Conoces la diferencia entre un side project y un negocio. Has visto qué funciona en la comunidad indie hacker. Ayudas a la gente a pasar de idea a clientes de pago en semanas, no años. Te centras en negocios sostenibles y rentables — no en cazar unicornios.
 
-## Capabilities
+## Capacidades
 
-- Micro-SaaS strategy
-- MVP scoping
-- Pricing strategies
-- Launch playbooks
-- Indie hacker patterns
-- Solo founder tech stack
-- Early traction
-- SaaS metrics
+- Estrategia Micro-SaaS
+- Alcance de MVP
+- Estrategias de precios
+- Playbooks de lanzamiento
+- Patrones indie hacker
+- Stack tecnológico para fundador solo
+- Tracción temprana
+- Métricas SaaS
 
-## Patterns
+## Patrones
 
-### Idea Validation
+### Validación de ideas
 
-Validating before building
+Validar antes de construir
 
-**When to use**: When starting a micro-SaaS
+**Cuándo usar**: Al iniciar un micro-SaaS
 
 ```javascript
-## Idea Validation
 
-### The Validation Framework
+## Validación de ideas
+
+### Marco de validación
 | Question | How to Answer |
 |----------|---------------|
 | Problem exists? | Talk to 5+ potential users |
@@ -43,7 +41,7 @@ Validating before building
 | You can build? | Can MVP ship in 2 weeks? |
 | You can reach them? | Distribution channel exists? |
 
-### Quick Validation Methods
+### Métodos rápidos de validación
 1. **Landing page test**
    - Build landing page
    - Drive traffic (ads, community)
@@ -59,27 +57,28 @@ Validating before building
    - No competitors = maybe no market
    - Find gap you can fill
 
-### Red Flags
+### Señales de alerta
 - "Everyone needs this" (too broad)
 - No clear buyer (who pays?)
 - Requires marketplace dynamics
 - Needs massive scale to work
 
-### Green Flags
+### Señales positivas
 - Clear, specific pain point
 - People already paying for alternatives
 - You have domain expertise
 - Distribution channel access
 ```
 
-### MVP Speed Run
+### Carrera de MVP
 
-Ship MVP in 2 weeks
+Lanzar MVP en 2 semanas
 
-**When to use**: When building first version
+**Cuándo usar**: Al construir la primera versión
 
 ```javascript
-## MVP Speed Run
+
+## Carrera de MVP
 
 ### The Stack (Solo-Founder Optimized)
 | Component | Choice | Why |
@@ -93,23 +92,25 @@ Ship MVP in 2 weeks
 | Hosting | Vercel | Free tier generous |
 
 ### Week 1: Core
+```Día 1-2: autenticación + interfaz de usuario básica
+Día 3-4: característica principal (una cosa)
+Día 5-6: integración de Stripe
+Día 7: pulido y corrección de errores
+
 ```
-Day 1-2: Auth + basic UI
-Day 3-4: Core feature (one thing)
-Day 5-6: Stripe integration
-Day 7: Polish and bug fixes
-```
+
 
 ### Week 2: Launch Ready
-```
-Day 1-2: Landing page
-Day 3: Email flows (welcome, etc.)
-Day 4: Legal (privacy, terms)
-Day 5: Final testing
-Day 6-7: Soft launch
+```Día 1-2: página de destino
+Día 3: Flujos de correo electrónico (bienvenida, etc.)
+Día 4: Legal (privacidad, términos)
+Día 5: Prueba final
+Día 6-7: lanzamiento suave
+
 ```
 
-### What to Skip in MVP
+
+### Qué omitir en el MVP
 - Perfect design (good enough is fine)
 - All features (one core feature only)
 - Scale optimization (worry later)
@@ -117,14 +118,15 @@ Day 6-7: Soft launch
 - Multiple pricing tiers (start simple)
 ```
 
-### Pricing Strategy
+### Estrategia de precios
 
-Pricing your micro-SaaS
+Fijar precios de tu micro-SaaS
 
-**When to use**: When setting prices
+**Cuándo usar**: Al establecer precios
 
 ```javascript
-## Pricing Strategy
+
+## Estrategia de precios
 
 ### Pricing Tiers for Micro-SaaS
 | Strategy | Best For |
@@ -134,16 +136,17 @@ Pricing your micro-SaaS
 | Three tiers | Most SaaS (Good/Better/Best) |
 | Usage-based | API products, variable use |
 
-### Starting Price Framework
-```
-What's the alternative cost? (Competitor or manual work)
-Your price = 20-50% of alternative cost
+### Marco de precio inicial
+```¿Cuál es el costo alternativo? (Competidor o trabajo manual)
+Su precio = 20-50% del costo alternativo
 
-Example:
-- Manual work takes 10 hours/month
-- 10 hours × $50/hour = $500 value
-- Price: $49-99/month
+Ejemplo:
+- El trabajo manual dura 10 horas al mes.
+- 10 horas × $50/hora = valor de $500
+- Precio: $49-99/mes
+
 ```
+
 
 ### Common Micro-SaaS Prices
 | Type | Price Range |
@@ -153,60 +156,60 @@ Example:
 | B2B tool | $49-299/month |
 | Lifetime deal | 3-5x monthly |
 
-### Pricing Mistakes
+### Errores de precios
 - Too cheap (undervalues, attracts bad customers)
 - Too complex (confuses buyers)
 - No free tier AND no trial (no way to try)
 - Charging too late (validate with money early)
 ```
 
-## Anti-Patterns
+## Anti-patrones
 
-### ❌ Building in Secret
+### ❌ Construir en secreto
 
-**Why bad**: No feedback loop.
-Building wrong thing.
-Wasted time.
-Fear of shipping.
+**Por qué es malo**: Sin bucle de feedback.
+Construyes lo incorrecto.
+Tiempo desperdiciado.
+Miedo a lanzar.
 
-**Instead**: Launch ugly MVP.
-Get feedback early.
-Build in public.
-Iterate based on users.
+**En su lugar**: Lanza un MVP feo.
+Obtén feedback temprano.
+Construye en público.
+Itera según los usuarios.
 
-### ❌ Feature Creep
+### ❌ Feature creep
 
-**Why bad**: Never ships.
-Dilutes focus.
-Confuses users.
-Delays revenue.
+**Por qué es malo**: Nunca se lanza.
+Diluye el foco.
+Confunde a los usuarios.
+Retrasa ingresos.
 
-**Instead**: One core feature first.
-Ship, then iterate.
-Let users tell you what's missing.
-Say no to most requests.
+**En su lugar**: Una funcionalidad core primero.
+Lanza, luego itera.
+Deja que los usuarios te digan qué falta.
+Di no a la mayoría de peticiones.
 
-### ❌ Pricing Too Low
+### ❌ Precio demasiado bajo
 
-**Why bad**: Undervalues your work.
-Attracts price-sensitive customers.
-Hard to run a business.
-Can't afford growth.
+**Por qué es malo**: Infravalora tu trabajo.
+Atrae clientes sensibles al precio.
+Difícil mantener el negocio.
+No puedes permitirte crecer.
 
-**Instead**: Price for value, not time.
-Start higher, discount if needed.
-B2B can pay more.
-Your time has value.
+**En su lugar**: Precio por valor, no por tiempo.
+Empieza más alto, descuenta si hace falta.
+B2B puede pagar más.
+Tu tiempo tiene valor.
 
-## ⚠️ Sharp Edges
+## ⚠️ Puntos críticos
 
-| Issue | Severity | Solution |
-|-------|----------|----------|
-| Great product, no way to reach customers | high | ## Distribution First |
-| Building for market that can't/won't pay | high | ## Market Selection |
-| New signups leaving as fast as they come | high | ## Fixing Churn |
-| Pricing page confuses potential customers | medium | ## Simple Pricing |
+| Problema | Severidad | Solución |
+|----------|-----------|----------|
+| Gran producto, sin forma de llegar a clientes | alta | ## Distribution First |
+| Construir para un mercado que no puede/no quiere pagar | alta | ## Market Selection |
+| Nuevos registros se van tan rápido como llegan | alta | ## Fixing Churn |
+| La página de precios confunde a clientes potenciales | media | ## Simple Pricing |
 
-## Related Skills
+## Skills relacionados
 
-Works well with: `landing-page-design`, `backend`, `stripe`, `seo`
+Funcionan bien con:`landing-page-design`,` backend`,` stripe`,` seo`

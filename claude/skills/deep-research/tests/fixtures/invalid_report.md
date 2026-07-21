@@ -1,27 +1,27 @@
-# Research Report: Bad Report
+# Informe de investigación: Informe defectuoso
 
-## Executive Summary
+## Resumen ejecutivo
 
-This is too short.
+Esto es demasiado corto.
 
 **Primary Recommendation:** TBD
 
-**Confidence Level:** High
+**Nivel de confianza:** Alto
 
 ---
 
-## Introduction
+## Introducción
 
-Missing methodology section.
-
----
-
-## Main Analysis
-
-No citations here [99].
+Falta la sección de metodología.
 
 ---
 
-## Limitations & Caveats
+## Análisis principal
 
-Some limitations TODO.
+No hay citas aquí [99].
+
+---
+
+## Limitaciones y advertencias
+
+Algunas limitaciones TODO.

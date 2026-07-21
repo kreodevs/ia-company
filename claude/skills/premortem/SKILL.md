@@ -1,66 +1,64 @@
 ---
 name: premortem
-description: Pre-mortem analysis that imagines a plan has failed, then works backward to identify causes and preventions. Use before launches, major decisions, or risky initiatives to surface hidden risks.
+description: Análisis pre-mortem que imagina que un plan ha fallado y trabaja hacia atrás para identificar causas y prevenciones. Usar antes de lanzamientos, decisiones importantes o iniciativas riesgosas para exponer riesgos ocultos.
 user-invocable: true
 ---
 
-# Pre-Mortem Analysis
+# Análisis pre-mortem
 
-Imagine the plan has completely failed, then work backward to identify what went wrong and how to prevent it.
+Imagina que el plan ha fallado por completo, luego trabaja hacia atrás para identificar qué salió mal y cómo prevenirlo.
 
-## Instructions
+## Instrucciones
 
-Set the scene: "It's [timeframe] in the future. This initiative was a complete disaster. Looking back, what happened?"
+Plantea la escena: "Es [marco temporal] en el futuro. Esta iniciativa fue un desastre total. Mirando atrás, ¿qué pasó?"
 
-Generate failure scenarios without filtering for likelihood—get everything on the table first, then prioritize.
+Genera escenarios de fallo sin filtrar por probabilidad: primero saca todo a la mesa, luego prioriza.
 
-### Output Format
+### Formato de salida
 
-**The Plan**
-Summarize what's being attempted and the success criteria.
+**El plan**
+Resume qué se intenta y los criterios de éxito.
 
-**Time Jump**
-"It's [X months] later. This has failed completely. The outcome: [describe the disaster vividly]."
+**Salto temporal**
+"Han pasado [X meses]. Esto ha fallado por completo. El resultado: [describe el desastre con detalle]."
 
-**What Went Wrong**
+**Qué salió mal**
 
-Generate 8-12 plausible failure causes across categories:
+Genera 8-12 causas plausibles de fallo en categorías:
 
-| Category | Failure Mode | How It Played Out |
+| Categoría | Modo de fallo | Cómo se desarrolló |
 |----------|--------------|-------------------|
-| Execution | [What failed] | [The story of how] |
-| External | [What failed] | [The story of how] |
-| People | [What failed] | [The story of how] |
-| Technical | [What failed] | [The story of how] |
-| Assumptions | [What failed] | [The story of how] |
+| Ejecución | [Qué falló] | [La historia de cómo] |
+| Externo | [Qué falló] | [La historia de cómo] |
+| Personas | [Qué falló] | [La historia de cómo] |
+| Técnico | [Qué falló] | [La historia de cómo] |
+| Supuestos | [Qué falló] | [La historia de cómo] |
 
-**Risk Prioritization**
+**Priorización de riesgos**
 
-| Failure Mode | Likelihood | Impact | Priority |
+| Modo de fallo | Probabilidad | Impacto | Prioridad |
 |--------------|------------|--------|----------|
-| ... | High/Med/Low | High/Med/Low | 1-5 |
+| ... | Alta/Media/Baja | Alta/Media/Baja | 1-5 |
 
-**Top 3 Risks & Mitigations**
+**Top 3 riesgos y mitigaciones**
 
-For each top risk:
-- **Risk**: [Description]
-- **Early Warning Signs**: What would indicate this is happening?
-- **Prevention**: How to reduce likelihood
-- **Mitigation**: How to reduce impact if it occurs
-- **Owner**: Who's responsible for watching this?
+Para cada riesgo principal:
+- **Riesgo**: [Descripción]
+- **Señales tempranas de alerta**: ¿Qué indicaría que está ocurriendo?
+- **Prevención**: Cómo reducir la probabilidad
+- **Mitigación**: Cómo reducir el impacto si ocurre
+- **Responsable**: ¿Quién vigila esto?
 
-**Pre-Mortem Insights**
-What did this exercise reveal that wasn't obvious before?
+**Insights del pre-mortem**
+¿Qué reveló este ejercicio que no era obvio antes?
 
-**Revised Confidence**
-After this analysis, how confident are you in success? What would increase confidence?
+**Confianza revisada**
+Tras este análisis, ¿qué tan confiado estás en el éxito? ¿Qué aumentaría la confianza?
 
-## Guidelines
+## Directrices
 
-- Be vivid and specific—"the database corrupted" not "something went wrong"
-- Include uncomfortable possibilities (key person leaves, competitor moves, we were wrong)
-- Don't filter for "that won't happen"—the point is to surface hidden concerns
-- Assign real owners to mitigations
-- Look for single points of failure
-
-$ARGUMENTS
+- Sé vívido y específico: "la base de datos se corrompió", no "algo salió mal"
+- Incluye posibilidades incómodas (se va una persona clave, mueve un competidor, nos equivocamos)
+- No filtres con "eso no pasará": el punto es exponer preocupaciones ocultas
+- Asigna responsables reales a las mitigaciones
+- Busca puntos únicos de fallo$ARGUMENTS

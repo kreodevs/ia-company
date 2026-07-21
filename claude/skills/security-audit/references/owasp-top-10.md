@@ -1,15 +1,16 @@
-# OWASP Top 10 Reference
+# Referencia de los 10 principales de OWASP
 
-The OWASP Top 10 represents the most critical web application security risks.
+El OWASP Top 10 representa los riesgos de seguridad de aplicaciones web más críticos.
 
-## A01:2021 – Broken Access Control
+## A01:2021 – Control de acceso roto
 
-### Description
-Access control enforces policy such that users cannot act outside their intended permissions.
+### Descripción
+El control de acceso aplica una política tal que los usuarios no pueden actuar fuera de los permisos previstos.
 
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # Missing authorization checks
 grep -rn "router\.\(get\|post\|put\|delete\)" --include="*.ts" | \
   xargs -I{} sh -c 'grep -L "auth\|authorize\|permission" "{}"'
@@ -21,7 +22,7 @@ grep -rn "params\.id\|params\.userId" --include="*.ts" | grep -v "owner\|author"
 grep -rn "findById\|findOne" --include="*.ts" | grep -v "where.*userId"
 ```
 
-### Vulnerable Code
+### Código vulnerable
 
 ```typescript
 // IDOR: Any user can access any order
@@ -36,7 +37,7 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 ```
 
-### Fixed Code
+### Código fijo
 
 ```typescript
 // IDOR prevention
@@ -53,18 +54,17 @@ app.delete('/api/users/:id', authenticate, requireRole('admin'), async (req, res
   await User.delete(req.params.id);
   res.status(204).send();
 });
-```
+```---
 
----
+## A02:2021 – Fallos criptográficos
 
-## A02:2021 – Cryptographic Failures
+### Descripción
+Fallos relacionados con la criptografía que a menudo conducen a la exposición de datos confidenciales.
 
-### Description
-Failures related to cryptography which often leads to sensitive data exposure.
-
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # Weak hashing
 grep -rn "md5\|sha1\|crypto\.createHash" --include="*.ts" --include="*.js"
 
@@ -76,7 +76,7 @@ grep -rn "apiKey\s*=\s*['\"]" --include="*.ts" --include="*.js"
 grep -rn "Math\.random" --include="*.ts" --include="*.js"
 ```
 
-### Vulnerable Code
+### Código vulnerable
 
 ```typescript
 // Weak password hashing
@@ -89,7 +89,7 @@ const token = Math.random().toString(36).substring(2);
 console.log(`User ${email} logged in with token ${token}`);
 ```
 
-### Fixed Code
+### Código fijo
 
 ```typescript
 // Strong password hashing
@@ -102,18 +102,17 @@ const token = crypto.randomBytes(32).toString('hex');
 
 // Sanitized logging
 console.log(`User ${email.substring(0, 3)}*** logged in`);
-```
+```---
 
----
+## A03:2021 – Inyección
 
-## A03:2021 – Injection
+### Descripción
+La aplicación no valida, filtra ni desinfecta los datos proporcionados por el usuario.
 
-### Description
-User-supplied data is not validated, filtered, or sanitized by the application.
-
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # SQL Injection
 grep -rn "query\s*(\s*['\`].*\$\|+" --include="*.ts"
 grep -rn "execute\s*(\s*['\`].*\$\|+" --include="*.ts"
@@ -127,7 +126,7 @@ grep -rn "find\s*(\s*{.*req\." --include="*.ts"
 grep -rn "\$where\|\$regex" --include="*.ts"
 ```
 
-### Vulnerable Code
+### Código vulnerable
 
 ```typescript
 // SQL Injection
@@ -143,7 +142,7 @@ const user = await User.findOne({
 });
 ```
 
-### Fixed Code
+### Código fijo
 
 ```typescript
 // Parameterized queries
@@ -158,23 +157,21 @@ const output = execSync(`ping ${hostname}`);
 const email = String(req.body.email);
 const user = await User.findOne({ email });
 const isValid = await bcrypt.compare(req.body.password, user.passwordHash);
-```
+```---
 
----
+## A04:2021 – Diseño inseguro
 
-## A04:2021 – Insecure Design
+### Descripción
+Riesgos relacionados con defectos de diseño. No se puede solucionar con una implementación perfecta.
 
-### Description
-Risks related to design flaws. Cannot be fixed by a perfect implementation.
+### Patrones de detección
 
-### Detection Patterns
+- Defectos de lógica de negocios (se requiere revisión manual)
+- Falta de limitación de tasas en operaciones sensibles
+- Sin mecanismo de bloqueo de cuenta
+- Restablecimiento de contraseña sin verificación
 
-- Business logic flaws (manual review required)
-- Missing rate limiting on sensitive operations
-- No account lockout mechanism
-- Password reset without verification
-
-### Common Flaws
+### Defectos comunes
 
 ```typescript
 // No rate limiting on login
@@ -193,7 +190,7 @@ app.post('/checkout', async (req, res) => {
 });
 ```
 
-### Fixed Design
+### Diseño fijo
 
 ```typescript
 // Rate limiting
@@ -208,18 +205,17 @@ const expiry = Date.now() + 3600000; // 1 hour
 // Server-side calculation
 const items = await Cart.findByUserId(req.user.id);
 const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-```
+```---
 
----
+## A05:2021 – Configuración incorrecta de seguridad
 
-## A05:2021 – Security Misconfiguration
+### Descripción
+Falta refuerzo de seguridad, configuraciones predeterminadas, errores detallados.
 
-### Description
-Missing security hardening, default configurations, verbose errors.
-
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # Debug mode
 grep -rn "debug\s*:\s*true\|DEBUG=true" --include="*.ts" --include="*.env*"
 
@@ -230,7 +226,7 @@ grep -rn "res\.send.*err\.\(stack\|message\)" --include="*.ts"
 grep -rn "admin:admin\|root:root\|password123" --include="*"
 ```
 
-### Vulnerable Configuration
+### Configuración vulnerable
 
 ```typescript
 // Express error handler exposing stack
@@ -245,7 +241,7 @@ app.use((err, req, res, next) => {
 app.use(cors({ origin: '*' })); // ❌
 ```
 
-### Fixed Configuration
+### Configuración fija
 
 ```typescript
 // Production error handler
@@ -265,18 +261,17 @@ app.use(cors({
 
 // Security headers
 app.use(helmet());
-```
+```---
 
----
+## A06:2021 – Componentes vulnerables
 
-## A06:2021 – Vulnerable Components
+### Descripción
+Utilizar componentes con vulnerabilidades conocidas.
 
-### Description
-Using components with known vulnerabilities.
-
-### Detection
+### Detección
 
 ```bash
+
 # npm
 npm audit
 npm audit --json | jq '.vulnerabilities | keys[]'
@@ -289,36 +284,37 @@ safety check
 snyk test
 ```
 
-### Common Issues
+### Problemas comunes
 
-| Package | Vulnerability | Fix |
+| Paquete | Vulnerabilidad | Arreglar |
 |---------|---------------|-----|
-| lodash <4.17.21 | Prototype pollution | Update |
-| express <4.17.3 | ReDoS | Update |
-| axios <0.21.1 | SSRF | Update |
-| jsonwebtoken <9.0.0 | Algorithm confusion | Update |
+| lodash <4.17.21 | Contaminación prototipo | Actualización |
+| expresar <4.17.3 | Rehacer | Actualización |
+| ejes <0.21.1 | SSRF | Actualización |
+| jsonwebtoken<9.0.0 | Confusión de algoritmos | Actualización |
 
 ---
 
-## A07:2021 – Auth Failures
+## A07:2021 – Fallos de autenticación
 
-### Description
-Confirmation of user identity, authentication, and session management.
+### Descripción
+Confirmación de identidad de usuario, autenticación y gestión de sesiones.
 
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # Weak JWT verification
 grep -rn "verify.*algorithms\|algorithm.*none" --include="*.ts"
 
-# Session fixation
+# Fijación de sesión
 grep -rn "req\.session\s*=" --include="*.ts"
 
 # No logout invalidation
 grep -rn "logout" -A5 --include="*.ts" | grep -v "destroy\|invalidate"
 ```
 
-### Vulnerable Code
+### Código vulnerable
 
 ```typescript
 // JWT without algorithm restriction
@@ -336,7 +332,7 @@ app.post('/logout', (req, res) => {
 });
 ```
 
-### Fixed Code
+### Código fijo
 
 ```typescript
 // Explicit algorithm
@@ -355,18 +351,17 @@ app.post('/logout', async (req, res) => {
   await TokenBlacklist.add(req.token, req.user.tokenExp);
   res.json({ success: true });
 });
-```
+```---
 
----
+## A08:2021 – Integridad de datos y software
 
-## A08:2021 – Software and Data Integrity
+### Descripción
+Código e infraestructura que no protege contra violaciones de integridad.
 
-### Description
-Code and infrastructure that does not protect against integrity violations.
-
-### Detection
+### Detección
 
 ```bash
+
 # No integrity checks on external resources
 grep -rn "<script src=" --include="*.html" | grep -v "integrity="
 
@@ -376,32 +371,27 @@ grep -rn "JSON\.parse\|unserialize\|pickle\.load" --include="*.ts" --include="*.
 # CI/CD pipeline vulnerabilities (manual review)
 ```
 
-### Vulnerable Code
-
-```html
+### Código vulnerable```html
 <!-- No subresource integrity -->
 <script src="https://cdn.example.com/lib.js"></script>
 ```
 
-### Fixed Code
-
-```html
+### Código fijo```html
 <!-- With SRI -->
 <script src="https://cdn.example.com/lib.js" 
         integrity="sha384-abc123..." 
         crossorigin="anonymous"></script>
-```
+```---
 
----
+## A09:2021 – Fallos de registro
 
-## A09:2021 – Logging Failures
+### Descripción
+Registro, detección, monitoreo y respuesta activa insuficientes.
 
-### Description
-Insufficient logging, detection, monitoring, and active response.
-
-### Detection
+### Detección
 
 ```bash
+
 # Missing security logging
 grep -rn "login\|logout\|password" --include="*.ts" | grep -v "log\|audit"
 
@@ -409,7 +399,7 @@ grep -rn "login\|logout\|password" --include="*.ts" | grep -v "log\|audit"
 grep -rn "console\.log.*password\|token\|secret" --include="*.ts"
 ```
 
-### Requirements
+### Requisitos
 
 ```typescript
 // Security events to log
@@ -435,18 +425,17 @@ interface AuditLog {
   details: Record<string, unknown>;
   success: boolean;
 }
-```
-
----
+```---
 
 ## A10:2021 – SSRF
 
-### Description
-Server-Side Request Forgery occurs when fetching a remote resource without validating user-supplied URL.
+### Descripción
+La falsificación de solicitudes del lado del servidor ocurre cuando se recupera un recurso remoto sin validar la URL proporcionada por el usuario.
 
-### Detection Patterns
+### Patrones de detección
 
 ```bash
+
 # URL from user input
 grep -rn "fetch\|axios\|request\|http\.get" --include="*.ts" | \
   grep "req\.\(body\|query\|params\)"
@@ -455,7 +444,7 @@ grep -rn "fetch\|axios\|request\|http\.get" --include="*.ts" | \
 grep -rn "url\s*=.*req\." --include="*.ts"
 ```
 
-### Vulnerable Code
+### Código vulnerable
 
 ```typescript
 // SSRF vulnerability
@@ -465,7 +454,7 @@ app.get('/fetch', async (req, res) => {
 });
 ```
 
-### Fixed Code
+### Código fijo
 
 ```typescript
 import { URL } from 'url';
@@ -489,21 +478,19 @@ app.get('/fetch', async (req, res) => {
   const response = await fetch(url.toString());
   res.json(await response.json());
 });
-```
+```---
 
----
+## Tabla de referencia rápida
 
-## Quick Reference Table
-
-| ID | Name | Key Mitigation |
+| identificación | Nombre | Mitigación clave |
 |----|------|----------------|
-| A01 | Broken Access Control | Authorization checks on every endpoint |
-| A02 | Cryptographic Failures | Strong algorithms, no hardcoded secrets |
-| A03 | Injection | Parameterized queries, input validation |
-| A04 | Insecure Design | Threat modeling, rate limiting |
-| A05 | Security Misconfiguration | Security headers, minimal error info |
-| A06 | Vulnerable Components | Regular dependency updates |
-| A07 | Auth Failures | Strong auth, session management |
-| A08 | Integrity Failures | SRI, signed updates |
-| A09 | Logging Failures | Audit logs, monitoring |
-| A10 | SSRF | URL validation, allowlists |
+| A01 | Control de acceso roto | Comprobaciones de autorización en cada punto final |
+| A02 | Fallos criptográficos | Algoritmos potentes, sin secretos codificados |
+| A03 | Inyección | Consultas parametrizadas, validación de entradas |
+| A04 | Diseño inseguro | Modelado de amenazas, limitación de tasas |
+| A05 | Configuración incorrecta de seguridad | Encabezados de seguridad, información mínima de error |
+| A06 | Componentes vulnerables | Actualizaciones periódicas de dependencias |
+| A07 | Fallos de autenticación | Autenticación fuerte, gestión de sesiones |
+| A08 | Fallos de integridad | SRI, actualizaciones firmadas |
+| A09 | Fallos de registro | Registros de auditoría, seguimiento |
+| A10 | SSRF | Validación de URL, listas permitidas |

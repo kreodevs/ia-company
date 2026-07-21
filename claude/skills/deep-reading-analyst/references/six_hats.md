@@ -1,356 +1,350 @@
-# Six Thinking Hats Framework
+# Marco de los Seis Sombreros para Pensar
 
-## Overview
+## Descripción general
 
-Structured method to examine ideas from six distinct perspectives. Wear one hat at a time to avoid confusion.
+Método estructurado para examinar ideas desde seis perspectivas distintas. Use un sombrero a la vez para evitar confusiones.
 
-**Purpose:** Separate thinking modes, reduce conflict, ensure comprehensive analysis.
+**Propósito:** Separar modos de pensamiento, reducir conflictos y garantizar un análisis integral.
 
-## The Six Hats
+## Los seis sombreros
 
-### 🎩 White Hat: Facts & Data
+### 🎩 Sombrero blanco: hechos y datos
 
-**Focus:** Objective information only
+**Enfoque:** Sólo información objetiva
 
-**Questions:**
-- What facts do we have?
-- What data is available?
-- What information is missing?
-- What are the numbers?
-- How do we verify this?
+**Preguntas:**
+- ¿Qué hechos tenemos?
+- ¿Qué datos están disponibles?
+- ¿Qué información falta?
+- ¿Cuáles son los números?
+- ¿Cómo verificamos esto?
 
-**Language:**
-- "According to..."
-- "The data shows..."
-- "We know that..."
-- "We don't know..."
+**Idioma:**
+- "Según..."
+- "Los datos muestran..."
+- "Sabemos que..."
+- "No lo sabemos..."
 
-**In Content Analysis:**
-- Extract all factual claims
-- Note cited sources
-- Identify missing data
-- Separate facts from interpretations
+**En Análisis de Contenido:**
+- Extraer todas las afirmaciones fácticas.
+- Tenga en cuenta las fuentes citadas
+- Identificar datos faltantes
+- Separar hechos de interpretaciones.
 
-**Template:**
-```markdown
-## Known Facts
-- [Verifiable fact 1]
-- [Verifiable fact 2]
+**Plantilla:**```markdown
+## Hechos conocidos
+- [Hecho verificable 1]
+- [Hecho verificable 2]
 
-## Missing Information
-- [ ] [Gap 1]
-- [ ] [Gap 2]
+## Información faltante
+- [ ] [Brecha 1]
+- [ ] [Brecha 2]
 
-## Data Sources
-- [Citation 1]: [Quality rating]
+## Fuentes de datos
+- [Cita 1]: [Calificación de calidad]
 ```
 
 ---
 
-### 🎩 Red Hat: Emotions & Intuition
+### 🎩 Red Hat: emociones e intuición
 
-**Focus:** Gut feelings, hunches, intuitive responses
+**Enfoque:** Intuiciones, corazonadas, respuestas intuitivas
 
-**Questions:**
-- What's my immediate reaction?
-- What does my gut say?
-- What emotions does this evoke?
-- What's my intuition telling me?
+**Preguntas:**
+- ¿Cuál es mi reacción inmediata?
+- ¿Qué dice mi instinto?
+- ¿Qué emociones evoca esto?
+- ¿Qué me dice mi intuición?
 
-**Language:**
-- "I feel that..."
-- "My gut says..."
-- "This makes me uncomfortable because..."
-- "I'm excited about..."
+**Idioma:**
+- "Siento que..."
+- "Mi instinto dice..."
+- "Esto me incomoda porque..."
+- "Estoy emocionado por..."
 
-**In Content Analysis:**
-- Note emotional response while reading
-- Identify what triggers strong feelings
-- Trust instincts about credibility
-- Recognize persuasive emotional appeals in text
+**En Análisis de Contenido:**
+- Notar la respuesta emocional mientras lee.
+- Identificar qué desencadena sentimientos fuertes.
+- Instintos de confianza sobre la credibilidad.
+- Reconocer apelaciones emocionales persuasivas en el texto.
 
-**Template:**
-```markdown
-## Immediate Reactions
-- [Emotion] at [specific part]
+**Plantilla:**```markdown
+## Reacciones inmediatas
+- [Emoción] en [parte específica]
 
-## Gut Feelings
-- Something feels off about: [intuition]
-- Exciting/Compelling: [what resonates]
+## Corazonadas
+- Algo no encaja en: [intuición]
+- Emocionante/Convincente: [qué resuena]
 
-## Emotional Triggers in Text
-- Author uses [emotion] to persuade
+## Disparadores emocionales en el texto
+- El autor usa [emoción] para persuadir
 ```
 
-**Important:** No justification needed. This is pure feeling.
+**Importante:** No se necesita justificación. Esto es puro sentimiento.
 
 ---
 
-### 🎩 Black Hat: Caution & Risks
+### 🎩 Sombrero negro: precauciones y riesgos
 
-**Focus:** Critical judgment, potential problems
+**Enfoque:** Juicio crítico, problemas potenciales
 
-**Questions:**
-- What could go wrong?
-- What are the risks?
-- What's unrealistic?
-- Where's the weakness?
-- What are the downsides?
+**Preguntas:**
+- ¿Qué podría salir mal?
+- ¿Cuáles son los riesgos?
+- ¿Qué es poco realista?
+- ¿Dónde está la debilidad?
+- ¿Cuáles son las desventajas?
 
-**Language:**
-- "A problem is..."
-- "This won't work because..."
-- "The risk here is..."
-- "We're overlooking..."
+**Idioma:**
+- "Un problema es..."
+- "Esto no funcionará porque..."
+- "El riesgo aquí es..."
+- "Estamos pasando por alto..."
 
-**In Content Analysis:**
-- Identify logical flaws
-- Note unsupported claims
-- Point out potential failures
-- Question feasibility
-- Consider unintended consequences
+**En Análisis de Contenido:**
+- Identificar fallos lógicos.
+- Tenga en cuenta las afirmaciones no fundamentadas
+- Señalar posibles fallos.
+- Pregunta de viabilidad
+- Considere las consecuencias no deseadas
 
-**Template:**
-```markdown
-## Logical Weaknesses
-- [Flaw 1] in reasoning
+**Plantilla:**```markdown
+## Debilidades lógicas
+- [Falla 1] en el razonamiento
 
-## Risks If Applied
-- Risk: [consequence]
-- When it fails: [scenario]
+## Riesgos si se aplica
+- Riesgo: [consecuencia]
+- Cuando falla: [escenario]
 
-## Missing Considerations
-- Doesn't account for: [factor]
+## Consideraciones faltantes
+- No tiene en cuenta: [factor]
 
-## Overly Optimistic Claims
-- [Claim] seems unrealistic because [reason]
+## Afirmaciones demasiado optimistas
+- [Afirmación] parece poco realista porque [razón]
 ```
 
-**Important:** This is critical, not cynical. Necessary for risk assessment.
+**Importante:** Esto es crítico, no cínico. Necesario para la evaluación de riesgos.
 
 ---
 
-### 🎩 Yellow Hat: Benefits & Optimism
+### 🎩 Sombrero Amarillo: Beneficios y Optimismo
 
-**Focus:** Positive aspects, value, opportunities
+**Enfoque:** Aspectos positivos, valor, oportunidades
 
-**Questions:**
-- What's the value here?
-- What are the benefits?
-- Why would this work?
-- What's the best-case scenario?
-- What opportunities does this create?
+**Preguntas:**
+- ¿Cuál es el valor aquí?
+- ¿Cuáles son los beneficios?
+- ¿Por qué funcionaría esto?
+- ¿Cuál es el mejor de los casos?
+- ¿Qué oportunidades crea esto?
 
-**Language:**
-- "The benefit is..."
-- "This could work because..."
-- "The value here is..."
-- "An opportunity is..."
+**Idioma:**
+- "El beneficio es..."
+- "Esto podría funcionar porque..."
+- "El valor aquí es..."
+- "Una oportunidad es..."
 
-**In Content Analysis:**
-- Extract valuable insights
-- Identify strong arguments
-- Note practical applications
-- Find novel perspectives
-- Recognize what advances the field
+**En Análisis de Contenido:**
+- Extraer información valiosa
+- Identificar argumentos fuertes
+- Nota aplicaciones prácticas
+- Encuentra perspectivas novedosas
+- Reconocer lo que hace avanzar el campo.
 
-**Template:**
-```markdown
-## Key Value Propositions
-- Valuable insight: [what's useful]
+**Plantilla:**```markdown
+## Propuestas de valor clave
+- Idea valiosa: [qué es útil]
 
-## Strong Points
-- Well-supported: [argument]
+## Puntos fuertes
+- Bien respaldado: [argumento]
 
-## Potential Applications
-- Could be used for: [use case]
+## Aplicaciones potenciales
+- Podría usarse para: [caso de uso]
 
-## Novel Contributions
-- New perspective on: [topic]
+## Contribuciones novedosas
+- Nueva perspectiva sobre: [tema]
 
-## Best-Case Outcome
-If fully applied: [positive scenario]
+## Mejor escenario posible
+Si se aplica por completo: [escenario positivo]
 ```
 
-**Important:** Be realistic but generous. Find genuine value.
+**Importante:** Sea realista pero generoso. Encuentre valor genuino.
 
 ---
 
-### 🎩 Green Hat: Creativity & Alternatives
+### 🎩 Sombrero Verde: Creatividad y Alternativas
 
-**Focus:** New ideas, possibilities, innovations
+**Enfoque:** Nuevas ideas, posibilidades, innovaciones
 
-**Questions:**
-- What else is possible?
-- How else could we think about this?
-- What's a creative alternative?
-- What if we combined X with Y?
-- What's unconventional?
+**Preguntas:**
+- ¿Qué más es posible?
+- ¿De qué otra manera podríamos pensar en esto?
+- ¿Cuál es una alternativa creativa?
+- ¿Y si combinamos X con Y?
+- ¿Qué es poco convencional?
 
-**Language:**
-- "What if..."
-- "Another way to look at it..."
-- "We could also..."
-- "An alternative is..."
+**Idioma:**
+- "¿Y si..."
+- "Otra forma de verlo..."
+- "También podríamos..."
+- "Una alternativa es..."
 
-**In Content Analysis:**
-- Extend the author's ideas further
-- Generate alternatives to proposed solutions
-- Combine with other frameworks
-- Apply to new domains
-- Challenge assumptions creatively
+**En Análisis de Contenido:**
+- Ampliar aún más las ideas del autor.
+- Generar alternativas a las soluciones propuestas.
+- Combinar con otros marcos
+- Aplicar a nuevos dominios
+- Desafiar las suposiciones de forma creativa.
 
-**Template:**
-```markdown
-## Extensions of Ideas
-- Taking [concept] further: [new application]
+**Plantilla:**```markdown
+## Extensiones de ideas
+- Llevando [concepto] más lejos: [nueva aplicación]
 
-## Alternative Approaches
-Instead of [author's method], what if: [alternative]
+## Enfoques alternativos
+En lugar de [método del autor], ¿y si: [alternativa]
 
-## Creative Combinations
-- [Idea from text] + [other framework] = [new insight]
+## Combinaciones creativas
+- [Idea del texto] + [otro marco] = [nueva idea]
 
-## Unconventional Applications
-- Apply this to [unexpected domain]
+## Aplicaciones poco convencionales
+- Aplicar esto a [dominio inesperado]
 
-## "What If" Scenarios
-- What if [assumption] were reversed?
+## Escenarios "¿Y si?"
+- ¿Y si [supuesto] se invirtiera?
 ```
 
-**Important:** No criticism in green hat mode. All ideas welcome.
+**Importante:** No hay críticas en el modo sombrero verde. Todas las ideas son bienvenidas.
 
 ---
 
-### 🎩 Blue Hat: Process & Meta-Thinking
+### 🎩 Sombrero azul: proceso y metapensamiento
 
-**Focus:** Managing thinking, overview, conclusions
+**Enfoque:** Gestión del pensamiento, descripción general, conclusiones.
 
-**Questions:**
-- What have we covered?
-- What thinking mode do we need now?
-- What's the summary?
-- What's next?
-- How should we think about this?
+**Preguntas:**
+- ¿Qué hemos cubierto?
+- ¿Qué modo de pensar necesitamos ahora?
+- ¿Cuál es el resumen?
+- ¿Qué sigue?
+- ¿Cómo deberíamos pensar en esto?
 
-**Language:**
-- "We've covered..."
-- "The next step is..."
-- "In summary..."
-- "We need to focus on..."
+**Idioma:**
+- "Hemos cubierto..."
+- "El siguiente paso es..."
+- "En resumen..."
+- "Necesitamos centrarnos en..."
 
-**In Content Analysis:**
-- Decide which hats to use when
-- Synthesize findings from all hats
-- Determine next steps
-- Plan learning strategy
-- Monitor the analysis process
+**En Análisis de Contenido:**
+- Decidir qué sombreros usar cuando
+- Sintetizar los hallazgos de todos los sombreros.
+- Determinar los próximos pasos.
+- Planificar la estrategia de aprendizaje.
+- Monitorear el proceso de análisis.
 
-**Template:**
-```markdown
-## Analysis Process
-1. White: Gathered facts
-2. Red: Noted reactions  
-3. Black: Identified risks
-4. Yellow: Found value
-5. Green: Generated alternatives
+**Plantilla:**```markdown
+## Proceso de análisis
+1. Blanco: Hechos recopilados
+2. Rojo: Reacciones anotadas  
+3. Negro: Riesgos identificados
+4. Amarillo: Valor encontrado
+5. Verde: Alternativas generadas
 
-## Synthesis
-Combining all perspectives:
-- [Integrated insight]
+## Síntesis
+Combinando todas las perspectivas:
+- [Idea integrada]
 
-## Next Steps
-- [ ] Further research: [area]
-- [ ] Practical test: [action]
-- [ ] Deep dive: [topic]
+## Próximos pasos
+- [ ] Investigación adicional: [área]
+- [ ] Prueba práctica: [acción]
+- [ ] Profundización: [tema]
 
-## Time Investment
-Worth [X] time because [reason]
+## Inversión de tiempo
+Vale [X] tiempo porque [razón]
 ```
 
-**Important:** Blue hat organizes the other hats. It's the conductor.
+**Importante:** El sombrero azul organiza los demás sombreros. Es el conductor.
 
 ---
 
-## Usage Patterns
+## Patrones de uso
 
-### Quick Evaluation (15 min)
-White → Red → Yellow → Black → Blue
+### Evaluación rápida (15 min)
+Blanco → Rojo → Amarillo → Negro → Azul
 
-### Deep Analysis (60 min)  
-White → Red → Black → Yellow → Green → Blue → (Revisit any hat) → Blue
+### Análisis profundo (60 min)  
+Blanco → Rojo → Negro → Amarillo → Verde → Azul → (Revisita cualquier sombrero) → Azul
 
-### Problem-Solving
-White → Red → Green → Yellow → Black → Green → Blue
+### Resolución de problemas
+Blanco → Rojo → Verde → Amarillo → Negro → Verde → Azul
 
-### Decision-Making
-White → Yellow → Black → Red → Blue
+### Toma de decisiones
+Blanco → Amarillo → Negro → Rojo → Azul
 
-## Rules of Engagement
+## Reglas de compromiso
 
-1. **One hat at a time** - Don't mix modes
-2. **Everyone wears same hat** - Parallel thinking (if group)
-3. **Separate person from hat** - You're not "the critical person," you're wearing black hat
-4. **Time-box** - Set limits per hat
-5. **Blue hat controls** - Decides sequence and timing
+1. **Un sombrero a la vez** - No mezcle modos
+2. **Todos usan el mismo sombrero** - Pensamiento paralelo (si es grupo)
+3. **Persona separada del sombrero** - No eres "la persona crítica", llevas un sombrero negro
+4. **Time-box** - Establece límites por sombrero
+5. **Controles del sombrero azul**: decide la secuencia y el momento
 
-## Common Mistakes
+## Errores comunes
 
-❌ **Mixing hats** - "This is good (yellow) but risky (black)"
-✅ **Separate:** Yellow session: "This is good because X." Then Black session: "The risk is Y."
+❌ **Combinación de sombreros** - "Esto es bueno (amarillo) pero arriesgado (negro)"
+✅ **Separado:** Sesión amarilla: "Esto es bueno porque X." Luego sesión de Black: "El riesgo es Y".
 
-❌ **Judging feelings** - "That's irrational" during red hat
-✅ **Accept feelings:** All emotions noted without judgment
+❌ **Juzgar los sentimientos** - "Eso es irracional" durante el sombrero rojo
+✅ **Aceptar sentimientos:** Todas las emociones anotadas sin juzgar
 
-❌ **Weak yellow** - "I guess there's some value..."
-✅ **Genuine optimism:** Really find the good
+❌ **Amarillo débil** - "Supongo que tiene algún valor..."
+✅ **Optimismo genuino:** Realmente encuentra lo bueno
 
-❌ **Staying too long** - 30 min per hat
-✅ **Move on:** 5-10 min per hat usually sufficient
+❌ **Permanecer demasiado tiempo** - 30 minutos por sombrero
+✅ **Continúa:** 5-10 minutos por gorro suele ser suficiente
 
-## Application to Reading
+## Aplicación a la lectura
 
-**When to use which hat:**
+**Cuándo usar qué sombrero:**
 
-- **Understanding stage:** White (facts), Red (reactions)
-- **Evaluation stage:** Black (critique), Yellow (value)
-- **Application stage:** Green (ideas), Blue (synthesis)
+- **Etapa de comprensión:** Blanco (hechos), Rojo (reacciones)
+- **Etapa de evaluación:** Negro (crítica), Amarillo (valor)
+- **Etapa de solicitud:** Verde (ideas), Azul (síntesis)
 
-**Full Cycle:**
-1. White: What does the text actually say?
-2. Red: How do I feel about it?
-3. Black: What's wrong with it?
-4. Yellow: What's right with it?
-5. Green: What else could we do with this?
-6. Blue: So what? Now what?
+**Ciclo completo:**
+1. White: ¿Qué dice realmente el texto?
+2. Rojo: ¿Cómo me siento al respecto?
+3. Negro: ¿Qué tiene de malo?
+4. Amarillo: ¿Qué tiene de bueno?
+5. Verde: ¿Qué más podríamos hacer con esto?
+6. Azul: ¿Y qué? ¿Y ahora qué?
 
-## Integration with Other Models
+## Integración con otros modelos
 
-- **After First Principles:** Use hats to evaluate rebuilt argument
-- **After Systems Mapping:** Use yellow/black on leverage points
-- **Before Critical Thinking:** Use red to surface biases
-- **During Synthesis:** Use blue to organize findings
+- **Después de los primeros principios:** Use sombreros para evaluar el argumento reconstruido
+- **Después del mapeo de sistemas:** Use amarillo/negro en los puntos de apalancamiento
+- **Antes del pensamiento crítico:** Utilice el rojo para sacar a la luz los prejuicios
+- **Durante la síntesis:** Use azul para organizar los hallazgos
 
-## Output Format
+## Formato de salida
 
 ```markdown
-# Six Hats Analysis: [Content Title]
+# Análisis de Seis Sombreros: [Título del contenido]
 
-## 🎩 White: Facts
-[Objective data]
+## 🎩 Blanco: Hechos
+[Datos objetivos]
 
-## 🎩 Red: Feelings  
-[Emotional response]
+## 🎩 Rojo: Sentimientos  
+[Respuesta emocional]
 
-## 🎩 Black: Cautions
-[Risks and weaknesses]
+## 🎩 Negro: Precauciones
+[Riesgos y debilidades]
 
-## 🎩 Yellow: Benefits
-[Value and opportunities]
+## 🎩 Amarillo: Beneficios
+[Valor y oportunidades]
 
-## 🎩 Green: Possibilities
-[Creative extensions]
+## 🎩 Verde: Posibilidades
+[Extensiones creativas]
 
-## 🎩 Blue: Conclusions
-[Synthesis and next steps]
+## 🎩 Azul: Conclusiones
+[Síntesis y próximos pasos]
 ```

@@ -1,229 +1,227 @@
 ---
 name: startup-financial-modeling
-description: This skill should be used when the user asks to "create financial projections", "build a financial model", "forecast revenue", "calculate burn rate", "estimate runway", "model cash flow", or requests 3-5 year financial planning for a startup.
+description: Esta habilidad debe usarse cuando el usuario solicita "crear proyecciones financieras", "construir un modelo financiero", "pronosticar ingresos", "calcular la tasa de consumo", "estimar la pista", "modelar el flujo de caja" o solicita una planificación financiera de 3 a 5 años para una startup.
 version: 1.0.0
 ---
 
-# Startup Financial Modeling
+# Modelado financiero de inicio
 
-Build comprehensive 3-5 year financial models with revenue projections, cost structures, cash flow analysis, and scenario planning for early-stage startups.
+Cree modelos financieros integrales de 3 a 5 años con proyecciones de ingresos, estructuras de costos, análisis de flujo de efectivo y planificación de escenarios para empresas emergentes en etapa inicial.
 
-## Overview
+## Descripción general
 
-Financial modeling provides the quantitative foundation for startup strategy, fundraising, and operational planning. Create realistic projections using cohort-based revenue modeling, detailed cost structures, and scenario analysis to support decision-making and investor presentations.
+El modelado financiero proporciona la base cuantitativa para la estrategia de inicio, la recaudación de fondos y la planificación operativa. Cree proyecciones realistas utilizando modelos de ingresos basados ​​en cohortes, estructuras de costos detalladas y análisis de escenarios para respaldar la toma de decisiones y las presentaciones a los inversionistas.
 
-## Core Components
+## Componentes principales
 
-### Revenue Model
+### Modelo de ingresos
 
-**Cohort-Based Projections:**
-Build revenue from customer acquisition and retention by cohort.
+**Proyecciones basadas en cohortes:**
+Genere ingresos a partir de la adquisición y retención de clientes por cohorte.
 
-**Formula:**
+**Fórmula:**
 
 ```
 MRR = Σ (Cohort Size × Retention Rate × ARPU)
 ARR = MRR × 12
-```
+```**Entradas clave:**
 
-**Key Inputs:**
+- Adquisiciones mensuales de nuevos clientes.
+- Tasas de retención de clientes por mes
+- Ingresos medios por usuario (ARPU)
+- Supuestos de precios y embalaje.
+- Ingresos de expansión (ventas adicionales, ventas cruzadas)
 
-- Monthly new customer acquisitions
-- Customer retention rates by month
-- Average revenue per user (ARPU)
-- Pricing and packaging assumptions
-- Expansion revenue (upsells, cross-sells)
+### Estructura de costos
 
-### Cost Structure
+**Categorías de gastos operativos:**
 
-**Operating Expenses Categories:**
+1. **Costo de bienes vendidos (COGS)**
+   - Alojamiento e infraestructura
+   - Tarifas de procesamiento de pagos
+   - Atención al cliente (parte variable)
+   - Servicios de terceros por cliente
 
-1. **Cost of Goods Sold (COGS)**
-   - Hosting and infrastructure
-   - Payment processing fees
-   - Customer support (variable portion)
-   - Third-party services per customer
+2. **Ventas y marketing (S&M)**
+   - Costo de adquisición de clientes (CAC)
+   - Programas de marketing y publicidad.
+   - Compensación del equipo de ventas.
+   - Herramientas y software de marketing.
 
-2. **Sales & Marketing (S&M)**
-   - Customer acquisition cost (CAC)
-   - Marketing programs and advertising
-   - Sales team compensation
-   - Marketing tools and software
+3. **Investigación y desarrollo (I+D)**
+   - Compensación del equipo de ingeniería.
+   - Gestión de productos
+   - Diseño y UX
+   - Herramientas e infraestructura de desarrollo.
 
-3. **Research & Development (R&D)**
-   - Engineering team compensation
-   - Product management
-   - Design and UX
-   - Development tools and infrastructure
+4. **General y administrativo (G&A)**
+   - Equipo ejecutivo
+   - Finanzas, legal, RR.HH.
+   - Oficina e instalaciones
+   - Seguros y cumplimiento
 
-4. **General & Administrative (G&A)**
-   - Executive team
-   - Finance, legal, HR
-   - Office and facilities
-   - Insurance and compliance
+### Análisis de flujo de caja
 
-### Cash Flow Analysis
+**Componentes:**
 
-**Components:**
+- Saldo de caja inicial
+- Entradas de efectivo (ingresos, recaudación de fondos)
+- Salidas de efectivo (gastos operativos, CapEx)
+- Saldo de caja final
+- Tasa de quema mensual
+- Pista (meses de efectivo restantes)
 
-- Beginning cash balance
-- Cash inflows (revenue, fundraising)
-- Cash outflows (operating expenses, CapEx)
-- Ending cash balance
-- Monthly burn rate
-- Runway (months of cash remaining)
-
-**Formula:**
+**Fórmula:**
 
 ```
 Runway = Current Cash Balance / Monthly Burn Rate
 Monthly Burn = Monthly Revenue - Monthly Expenses
 ```
 
-### Headcount Planning
+### Planificación de personal
 
-**Role-Based Hiring Plan:**
-Track headcount by department and role.
+**Plan de contratación basado en roles:**
+Realice un seguimiento del personal por departamento y función.
 
-**Key Metrics:**
+**Métricas clave:**
 
-- Fully-loaded cost per employee
-- Revenue per employee
-- Headcount by department (% of total)
+- Costo por empleado totalmente cargado
+- Ingresos por empleado
+- Plantilla por departamento (% del total)
 
-**Typical Ratios (Early-Stage SaaS):**
+**Proporciones típicas (SaaS en etapa inicial):**
 
-- Engineering: 40-50%
-- Sales & Marketing: 25-35%
-- G&A: 10-15%
-- Customer Success: 5-10%
+- Ingeniería: 40-50%
+- Ventas y marketing: 25-35%
+- Generales y administrativos: 10-15%
+- Éxito del cliente: 5-10%
 
-## Financial Model Structure
+## Estructura del modelo financiero
 
-### Three-Scenario Framework
+### Marco de tres escenarios
 
-**Conservative Scenario (P10):**
+**Escenario Conservador (P10):**
 
-- Slower customer acquisition
-- Lower pricing or conversion
-- Higher churn rates
-- Extended sales cycles
-- Used for cash management
+- Adquisición de clientes más lenta
+- Precios más bajos o conversión
+- Mayores tasas de abandono
+- Ciclos de ventas extendidos.
+- Se utiliza para la gestión de efectivo.
 
-**Base Scenario (P50):**
+**Escenario base (P50):**
 
-- Most likely outcomes
-- Realistic assumptions
-- Primary planning scenario
-- Used for board reporting
+- Resultados más probables
+- Supuestos realistas
+- Escenario de planificación primaria
+- Se utiliza para informes de la junta directiva.
 
-**Optimistic Scenario (P90):**
+**Escenario optimista (P90):**
 
-- Faster growth
-- Better unit economics
-- Lower churn
-- Used for upside planning
+- Crecimiento más rápido
+- Mejor economía unitaria
+- Menor abandono
+- Se utiliza para la planificación positiva.
 
-### Time Horizon
+### Horizonte temporal
 
-**Detailed Projections: 3 Years**
+**Proyecciones detalladas: 3 años**
 
-- Monthly detail for Year 1
-- Monthly detail for Year 2
-- Quarterly detail for Year 3
+- Detalle mensual para el año 1
+- Detalle mensual para el año 2
+- Detalle trimestral del año 3.
 
-**High-Level Projections: Years 4-5**
+**Proyecciones de alto nivel: años 4-5**
 
-- Annual projections
-- Key metrics only
-- Support long-term planning
+- Proyecciones anuales
+- Solo métricas clave
+- Apoyar la planificación a largo plazo.
 
-## Step-by-Step Process
+## Proceso paso a paso
 
-### Step 1: Define Business Model
+### Paso 1: Definir el modelo de negocio
 
-Clarify revenue model and pricing.
+Aclarar el modelo de ingresos y los precios.
 
-**SaaS Model:**
+**Modelo SaaS:**
 
-- Subscription pricing tiers
-- Annual vs. monthly contracts
-- Free trial or freemium approach
-- Expansion revenue strategy
+- Niveles de precios de suscripción
+- Contratos anuales versus mensuales
+- Prueba gratuita o enfoque freemium
+- Estrategia de expansión de ingresos
 
-**Marketplace Model:**
+**Modelo de mercado:**
 
-- GMV projections
-- Take rate (% of transactions)
-- Buyer and seller economics
-- Transaction frequency
+- Proyecciones GMV
+- Tasa de toma (% de transacciones)
+- Economía del comprador y del vendedor.
+- Frecuencia de transacción
 
-**Transactional Model:**
+**Modelo Transaccional:**
 
-- Transaction volume
-- Revenue per transaction
-- Frequency and seasonality
+- Volumen de transacciones
+- Ingresos por transacción
+- Frecuencia y estacionalidad
 
-### Step 2: Build Revenue Projections
+### Paso 2: Crear proyecciones de ingresos
 
-Use cohort-based methodology for accuracy.
+Utilice una metodología basada en cohortes para mayor precisión.
 
-**Monthly Customer Acquisition:**
-Define new customers acquired each month.
+**Adquisición de Clientes Mensual:**
+Definir nuevos clientes adquiridos cada mes.
 
-**Retention Curve:**
-Model customer retention over time.
+**Curva de retención:**
+Modele la retención de clientes a lo largo del tiempo.
 
-**Typical SaaS Retention:**
+**Retención típica de SaaS:**
 
-- Month 1: 100%
-- Month 3: 90%
-- Month 6: 85%
-- Month 12: 75%
-- Month 24: 70%
+- Mes 1: 100%
+- Mes 3: 90%
+- Mes 6: 85%
+- Mes 12: 75%
+- Mes 24: 70%
 
-**Revenue Calculation:**
-For each cohort, calculate retained customers × ARPU for each month.
+**Cálculo de ingresos:**
+Para cada cohorte, calcule los clientes retenidos × ARPU para cada mes.
 
-### Step 3: Model Cost Structure
+### Paso 3: Modelo de estructura de costos
 
-Break down costs by category and behavior.
+Desglose los costos por categoría y comportamiento.
 
-**Fixed vs. Variable:**
+**Fijo vs. Variable:**
 
-- Fixed: Salaries, software, rent
-- Variable: Hosting, payment processing, support
+- Fijo: Salarios, software, alquiler.
+- Variable: Alojamiento, procesamiento de pagos, soporte.
 
-**Scaling Assumptions:**
+**Supuestos de escala:**
 
-- COGS as % of revenue
-- S&M as % of revenue (CAC payback)
-- R&D growth rate
-- G&A as % of total expenses
+- COGS como % de los ingresos
+- S&M como % de los ingresos (reembolso de CAC)
+- Tasa de crecimiento de la I+D
+- G&A como % de los gastos totales
 
-### Step 4: Create Hiring Plan
+### Paso 4: crear un plan de contratación
 
-Model headcount growth by role and department.
+Modele el crecimiento de la plantilla por función y departamento.
 
-**Inputs:**
+**Entradas:**
 
-- Starting headcount
-- Hiring velocity by role
-- Fully-loaded compensation by role
-- Benefits and taxes (typically 1.3-1.4x salary)
+- Plantilla inicial
+- Velocidad de contratación por rol.
+- Compensación completa por rol
+- Beneficios e impuestos (normalmente entre 1,3 y 1,4 veces el salario)
 
-**Example:**
+**Ejemplo:**
 
 ```
 Engineer: $150K salary × 1.35 = $202K fully-loaded
 Sales Rep: $100K OTE × 1.30 = $130K fully-loaded
 ```
 
-### Step 5: Project Cash Flow
+### Paso 5: Flujo de caja del proyecto
 
-Calculate monthly cash position and runway.
+Calcular la posición de caja mensual y la pista de aterrizaje.
 
-**Monthly Cash Flow:**
+**Flujo de caja mensual:**
 
 ```
 Beginning Cash
@@ -231,9 +229,7 @@ Beginning Cash
 - Operating Expenses Paid
 - CapEx
 = Ending Cash
-```
-
-**Runway Calculation:**
+```**Cálculo de pista:**
 
 ```
 If Ending Cash < 0:
@@ -243,71 +239,69 @@ Else:
   Runway = Ending Cash / Average Monthly Burn
 ```
 
-### Step 6: Calculate Key Metrics
+### Paso 6: Calcular métricas claveRealice un seguimiento de las métricas importantes para el escenario.
 
-Track metrics that matter for stage.
-
-**Revenue Metrics:**
+**Métricas de ingresos:**
 
 - MRR / ARR
-- Growth rate (MoM, YoY)
-- Revenue by segment or cohort
+- Tasa de crecimiento (MoM, YoY)
+- Ingresos por segmento o cohorte
 
-**Unit Economics:**
+**Unidad de Economía:**
 
-- CAC (Customer Acquisition Cost)
-- LTV (Lifetime Value)
-- CAC Payback Period
-- LTV / CAC Ratio
+- CAC (Costo de Adquisición de Clientes)
+- LTV (valor de por vida)
+- Período de recuperación de CAC
+- Relación LTV/CAC
 
-**Efficiency Metrics:**
+**Métricas de eficiencia:**
 
-- Burn multiple (Net Burn / Net New ARR)
-- Magic number (Net New ARR / S&M Spend)
-- Rule of 40 (Growth % + Profit Margin %)
+- Grabar múltiples (Net Burn / Net New ARR)
+- Número mágico (Nuevo ARR neto / Gasto S&M)
+- Regla del 40 (% de crecimiento + % de margen de beneficio)
 
-**Cash Metrics:**
+**Métricas de efectivo:**
 
-- Monthly burn rate
-- Runway (months)
-- Cash efficiency
+- Tasa de quema mensual
+- Pista (meses)
+- Eficiencia de efectivo
 
-### Step 7: Scenario Analysis
+### Paso 7: Análisis del escenario
 
-Create three scenarios with different assumptions.
+Cree tres escenarios con diferentes supuestos.
 
-**Variable Assumptions:**
+**Supuestos variables:**
 
-- Customer acquisition rate (±30%)
-- Churn rate (±20%)
-- Average contract value (±15%)
+- Tasa de adquisición de clientes (±30%)
+- Tasa de abandono (±20%)
+- Valor medio del contrato (±15%)
 - CAC (±25%)
 
-**Fixed Assumptions:**
+**Supuestos fijos:**
 
-- Pricing structure
-- Core operating expenses
-- Hiring plan (adjust timing, not roles)
+- Estructura de precios
+- Gastos operativos básicos
+- Plan de contratación (ajustar tiempos, no roles)
 
-## Business Model Templates
+## Plantillas de modelos de negocio
 
-### SaaS Financial Model
+### Modelo financiero SaaS
 
-**Revenue Drivers:**
+**Impulsores de ingresos:**
 
-- New MRR (customers × ARPU)
-- Expansion MRR (upsells)
-- Contraction MRR (downgrades)
-- Churned MRR (lost customers)
+- Nuevo MRR (clientes × ARPU)
+- Expansión MRR (upsells)
+- Contracción MRR (bajas)
+- MRR agitado (clientes perdidos)
 
-**Key Ratios:**
+**Proporciones clave:**
 
-- Gross margin: 75-85%
-- S&M as % revenue: 40-60% (early stage)
-- CAC payback: < 12 months
-- Net retention: 100-120%
+- Margen bruto: 75-85%
+- S&M como % de ingresos: 40-60% (etapa inicial)
+- Recuperación de CAC: < 12 meses
+- Retención neta: 100-120%
 
-**Example Projection:**
+**Ejemplo de proyección:**
 
 ```
 Year 1: $500K ARR, 50 customers, $100K MRR by Dec
@@ -315,21 +309,21 @@ Year 2: $2.5M ARR, 200 customers, $208K MRR by Dec
 Year 3: $8M ARR, 600 customers, $667K MRR by Dec
 ```
 
-### Marketplace Financial Model
+### Modelo financiero del mercado
 
-**Revenue Drivers:**
+**Impulsores de ingresos:**
 
-- GMV (Gross Merchandise Value)
-- Take rate (% of GMV)
-- Net revenue = GMV × Take rate
+- GMV (Valor Bruto de Mercancía)
+- Tasa de toma (% del GMV)
+- Ingresos netos = GMV × Tasa de toma
 
-**Key Ratios:**
+**Proporciones clave:**
 
-- Take rate: 10-30% depending on category
-- CAC for buyers vs. sellers
-- Contribution margin: 60-70%
+- Tarifa de toma: 10-30% dependiendo de la categoría
+- CAC para compradores versus vendedores
+- Margen de contribución: 60-70%
 
-**Example Projection:**
+**Ejemplo de proyección:**
 
 ```
 Year 1: $5M GMV, 15% take rate = $750K revenue
@@ -337,54 +331,52 @@ Year 2: $20M GMV, 15% take rate = $3M revenue
 Year 3: $60M GMV, 15% take rate = $9M revenue
 ```
 
-### E-Commerce Financial Model
+### Modelo financiero de comercio electrónico
 
-**Revenue Drivers:**
+**Impulsores de ingresos:**
 
-- Traffic (visitors)
-- Conversion rate
-- Average order value (AOV)
-- Purchase frequency
+- Tráfico (visitantes)
+- Tasa de conversión
+- Valor medio del pedido (AOV)
+- Frecuencia de compra
 
-**Key Ratios:**
+**Proporciones clave:**
 
-- Gross margin: 40-60%
-- Contribution margin: 20-35%
-- CAC payback: 3-6 months
+- Margen bruto: 40-60%
+- Margen de contribución: 20-35%
+- Recuperación de CAC: 3-6 meses
 
-### Services / Agency Financial Model
+### Servicios / Modelo financiero de agencia
 
-**Revenue Drivers:**
+**Impulsores de ingresos:**
 
-- Billable hours or projects
-- Hourly rate or project fee
-- Utilization rate
-- Team capacity
+- Horas o proyectos facturables
+- Tarifa por hora o tarifa de proyecto
+- Tasa de utilización
+- Capacidad del equipo
 
-**Key Ratios:**
+**Proporciones clave:**
 
-- Gross margin: 50-70%
-- Utilization: 70-85%
-- Revenue per employee
+- Margen bruto: 50-70%
+- Utilización: 70-85%
+- Ingresos por empleado
 
-## Fundraising Integration
+## Integración de recaudación de fondos
 
-### Funding Scenario Modeling
+### Modelado de escenarios de financiación
 
-**Pre-Money Valuation:**
-Based on metrics and comparables.
+**Valoración previa al dinero:**
+Basado en métricas y comparables.
 
-**Dilution:**
+**Dilución:**
 
 ```
 Post-Money = Pre-Money + Investment
 Dilution % = Investment / Post-Money
-```
+```**Uso de fondos:**
+Asignar fondos para ampliar la pista y alcanzar hitos.
 
-**Use of Funds:**
-Allocate funding to extend runway and achieve milestones.
-
-**Example:**
+**Ejemplo:**
 
 ```
 Raise: $5M at $20M pre-money
@@ -398,97 +390,95 @@ Use of Funds:
 - Working Capital: $0.5M (10%)
 ```
 
-### Milestone-Based Planning
+### Planificación basada en hitos
 
-**Identify Key Milestones:**
+**Identificar hitos clave:**
 
-- Product launch
-- First $1M ARR
-- Break-even on CAC
-- Series A fundraise
+- Lanzamiento de producto
+- Primer ARR de 1 millón de dólares
+- Punto de equilibrio en CAC
+- Recaudación de fondos de la Serie A
 
-**Funding Amount:**
-Ensure runway to achieve next milestone + 6 months buffer.
+**Monto de financiación:**
+Asegurar la pista para lograr el próximo hito + 6 meses de reserva.
 
-## Common Pitfalls
+## Errores comunes
 
-**Pitfall 1: Overly Optimistic Revenue**
+**Error 1: Ingresos demasiado optimistas**
 
-- New startups rarely hit aggressive projections
-- Use conservative customer acquisition assumptions
-- Model realistic churn rates
+- Las nuevas empresas rara vez alcanzan proyecciones agresivas
+- Utilice supuestos conservadores de adquisición de clientes.
+- Modelar tasas de abandono realistas
 
-**Pitfall 2: Underestimating Costs**
+**Error 2: Subestimar los costos**
 
-- Add 20% buffer to expense estimates
-- Include fully-loaded compensation
-- Account for software and tools
+- Agregar un 20% de reserva a las estimaciones de gastos
+- Incluir compensación completa
+- Cuenta de software y herramientas.
 
-**Pitfall 3: Ignoring Cash Flow Timing**
+**Error 3: Ignorar el momento del flujo de efectivo**
 
-- Revenue ≠ cash (payment terms)
-- Expenses paid before revenue collected
-- Model cash conversion carefully
+- Ingresos ≠ efectivo (condiciones de pago)
+- Gastos pagados antes de los ingresos recaudados.
+- Modele cuidadosamente la conversión de efectivo.
 
-**Pitfall 4: Static Headcount**
+**Error 4: Plantilla estática**
 
-- Hiring takes time (3-6 months to fill roles)
-- Ramp time for productivity (3-6 months)
-- Account for attrition (10-15% annually)
+- La contratación lleva tiempo (de 3 a 6 meses para cubrir los puestos)
+- Tiempo de rampa para la productividad (3-6 meses)
+- Cuenta de deserción (10-15% anual)
 
-**Pitfall 5: Not Scenario Planning**
+**Error 5: No planificar escenarios**
 
-- Single scenario is never accurate
-- Always model conservative case
-- Plan for what you'll do if base case fails
+- Un escenario único nunca es exacto
+- Siempre modele un caso conservador.
+- Planifique lo que hará si el caso base falla
 
-## Model Validation
+## Validación del modelo
 
-**Sanity Checks:**
+**Controles de cordura:**
 
-- [ ] Revenue growth rate is achievable (3x in Year 2, 2x in Year 3)
-- [ ] Unit economics are realistic (LTV/CAC > 3, payback < 18 months)
-- [ ] Burn multiple is reasonable (< 2.0 in Year 2-3)
-- [ ] Headcount scales with revenue (revenue per employee growing)
-- [ ] Gross margin is appropriate for business model
-- [ ] S&M spending aligns with CAC and growth targets
+- [] La tasa de crecimiento de los ingresos es alcanzable (3 veces en el año 2, 2 veces en el año 3)
+- [ ] La economía unitaria es realista (LTV/CAC > 3, recuperación < 18 meses)
+- [] Grabar varias veces es razonable (< 2,0 en el año 2-3)
+- [ ] La plantilla aumenta con los ingresos (los ingresos por empleado aumentan)
+- [ ] El margen bruto es apropiado para el modelo de negocio.
+- [ ] El gasto en S&M se alinea con el CAC y los objetivos de crecimiento
 
-**Benchmark Against Peers:**
-Compare key metrics to similar companies at similar stage.
+**Parámetro comparativo con sus pares:**
+Compare métricas clave con empresas similares en etapas similares.
 
-**Investor Feedback:**
-Share model with advisors or investors for feedback on assumptions.
+**Comentarios de los inversores:**
+Comparta el modelo con asesores o inversores para obtener comentarios sobre los supuestos.
 
-## Additional Resources
+## Recursos adicionales
 
-### Reference Files
+### Archivos de referencia
 
-For detailed model structures and advanced techniques:
+Para estructuras de modelos detalladas y técnicas avanzadas:
 
-- **`references/model-templates.md`** - Complete financial model templates by business model
-- **`references/unit-economics.md`** - Deep dive on CAC, LTV, payback, and efficiency metrics
-- **`references/fundraising-scenarios.md`** - Modeling funding rounds and dilution
+- ** `references/model-templates.md`** - Plantillas completas de modelos financieros por modelo de negocio
+- ** `references/unit-economics.md`** - Análisis profundo de CAC, LTV, recuperación de la inversión y métricas de eficiencia
+- ** `references/fundraising-scenarios.md`** - Modelado de rondas de financiación y dilución
 
-### Example Files
+### Archivos de ejemplo
 
-Working financial models with formulas:
+Modelos financieros de trabajo con fórmulas:
 
-- **`examples/saas-financial-model.md`** - Complete 3-year SaaS model with cohort analysis
-- **`examples/marketplace-model.md`** - Marketplace GMV and take rate projections
-- **`examples/scenario-analysis.md`** - Three-scenario framework with sensitivities
+- ** `examples/saas-financial-model.md`** - Modelo SaaS completo de 3 años con análisis de cohortes
+- ** `examples/marketplace-model.md`** - GMV del mercado y proyecciones de tasas de adquisición
+- ** `examples/scenario-analysis.md`** - Marco de tres escenarios con sensibilidades
 
-## Quick Start
+## Inicio rápido
 
-To create a startup financial model:
+Para crear un modelo financiero de inicio:1. **Definir modelo de negocio**: generadores de ingresos y precios
+2. **Ingresos del proyecto**: basado en cohortes con retención
+3. **Costos modelo**: COGS, S&M, I+D, G&A por mes
+4. **Planificar plantilla**: contratación por función y departamento
+5. **Calcular flujo de caja** - Ingresos - gastos = quemado/pista
+6. **Métricas de cálculo**: CAC, LTV, grabación múltiple, pista
+7. **Crea escenarios** - Conservador, básico, optimista
+8. **Validar supuestos** - Verificación de cordura y punto de referencia
+9. **Integrar la recaudación de fondos**: modelo de rondas de financiación e hitos
 
-1. **Define business model** - Revenue drivers and pricing
-2. **Project revenue** - Cohort-based with retention
-3. **Model costs** - COGS, S&M, R&D, G&A by month
-4. **Plan headcount** - Hiring by role and department
-5. **Calculate cash flow** - Revenue - expenses = burn/runway
-6. **Compute metrics** - CAC, LTV, burn multiple, runway
-7. **Create scenarios** - Conservative, base, optimistic
-8. **Validate assumptions** - Sanity check and benchmark
-9. **Integrate fundraising** - Model funding rounds and milestones
-
-For complete templates and formulas, reference the `references/` and `examples/` files.
+Para obtener plantillas y fórmulas completas, consulte los archivos `references/` y`examples/`.

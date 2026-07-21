@@ -1,12 +1,12 @@
-# Authentication & Authorization Patterns
+# Patrones de autenticación y autorización
 
-Secure patterns for identity verification and access control.
+Patrones seguros para verificación de identidad y control de acceso.
 
-## Authentication Methods
+## Métodos de autenticación
 
-### Password-Based
+### Basado en contraseña
 
-#### Password Storage
+#### Almacenamiento de contraseñas
 
 ```typescript
 // ✅ Correct: bcrypt with cost factor
@@ -20,7 +20,7 @@ async function hashPassword(password: string): Promise<string> {
 async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
-```
+``
 
 ```typescript
 // ✅ Alternative: Argon2id (recommended for new systems)
@@ -40,7 +40,7 @@ async function verifyPassword(password: string, hash: string): Promise<boolean> 
 }
 ```
 
-#### Password Requirements
+#### Requisitos de contraseña
 
 ```typescript
 interface PasswordPolicy {
@@ -53,7 +53,7 @@ interface PasswordPolicy {
   checkCommonPasswords: true;  // Block common passwords
   checkBreached: true;         // Check Have I Been Pwned
 }
-```
+``
 
 ```typescript
 // Check against breached passwords
@@ -69,13 +69,11 @@ async function isPasswordBreached(password: string): Promise<boolean> {
   
   return text.includes(suffix);
 }
-```
+```---
 
----
+### Autenticación JWT
 
-### JWT Authentication
-
-#### Token Structure
+#### Estructura del token
 
 ```typescript
 interface JWTPayload {
@@ -89,7 +87,7 @@ interface JWTPayload {
 }
 ```
 
-#### Secure JWT Implementation
+#### Implementación segura de JWT
 
 ```typescript
 import jwt from 'jsonwebtoken';
@@ -126,7 +124,7 @@ function verifyAccessToken(token: string): JWTPayload {
 }
 ```
 
-#### Refresh Token Rotation
+#### Actualizar rotación de token
 
 ```typescript
 interface RefreshToken {
@@ -162,13 +160,11 @@ async function refreshTokens(refreshToken: string): Promise<TokenPair> {
   
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 }
-```
+```---
 
----
+### Autenticación basada en sesiones
 
-### Session-Based Authentication
-
-#### Secure Session Configuration
+#### Configuración de sesión segura
 
 ```typescript
 import session from 'express-session';
@@ -194,7 +190,7 @@ app.use(session({
 }));
 ```
 
-#### Session Regeneration
+#### Regeneración de sesión
 
 ```typescript
 // Always regenerate session on login
@@ -221,13 +217,11 @@ function validateSession(req: Request, res: Response, next: NextFunction) {
   }
   next();
 }
-```
+```---
 
----
+## Patrones de autorización
 
-## Authorization Patterns
-
-### Role-Based Access Control (RBAC)
+### Control de acceso basado en roles (RBAC)
 
 ```typescript
 enum Role {
@@ -263,7 +257,7 @@ function requireRole(...roles: Role[]) {
 app.delete('/api/users/:id', authenticate, requireRole(Role.ADMIN), deleteUser);
 ```
 
-### Permission-Based Access Control
+### Control de acceso basado en permisos
 
 ```typescript
 enum Permission {
@@ -299,7 +293,7 @@ function requirePermission(...permissions: Permission[]) {
 }
 ```
 
-### Resource-Based Authorization
+### Autorización basada en recursos
 
 ```typescript
 // Ownership check middleware
@@ -326,13 +320,11 @@ async function requireOwnership(resourceType: string) {
 
 // Usage
 app.put('/api/posts/:id', authenticate, requireOwnership('post'), updatePost);
-```
+```---
 
----
+## Autenticación multifactor
 
-## Multi-Factor Authentication
-
-### TOTP Implementation
+### Implementación de TOTP
 
 ```typescript
 import speakeasy from 'speakeasy';
@@ -393,7 +385,7 @@ function verifyTOTP(secret: string, token: string): boolean {
 }
 ```
 
-### Recovery Codes
+### Códigos de recuperación
 
 ```typescript
 async function generateRecoveryCodes(userId: string): Promise<string[]> {
@@ -428,13 +420,11 @@ async function useRecoveryCode(userId: string, code: string): Promise<boolean> {
   
   return false;
 }
-```
+```---
 
----
+## Controles de seguridad
 
-## Security Controls
-
-### Account Lockout
+### Bloqueo de cuenta
 
 ```typescript
 const MAX_ATTEMPTS = 5;
@@ -475,7 +465,7 @@ async function checkAccountLock(req: Request, res: Response, next: NextFunction)
 }
 ```
 
-### Password Reset Security
+### Seguridad de restablecimiento de contraseña
 
 ```typescript
 async function requestPasswordReset(email: string): Promise<void> {
@@ -527,13 +517,11 @@ async function resetPassword(token: string, newPassword: string): Promise<void> 
   // Invalidate all sessions
   await Session.deleteMany({ userId: reset.userId });
 }
-```
+```---
 
----
+## Integración OAuth/OIDC
 
-## OAuth/OIDC Integration
-
-### State Parameter (CSRF Prevention)
+### Parámetro de estado (prevención CSRF)
 
 ```typescript
 async function initiateOAuth(req: Request, res: Response) {

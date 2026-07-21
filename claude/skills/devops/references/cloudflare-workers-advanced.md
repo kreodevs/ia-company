@@ -1,11 +1,10 @@
-# Cloudflare Workers Advanced Patterns
+# Patrones avanzados de los trabajadores de Cloudflare
 
-Advanced techniques for optimization, performance, and complex workflows.
+Técnicas avanzadas de optimización, rendimiento y flujos de trabajo complejos.
 
-## Session Reuse and Connection Pooling
+## Reutilización de sesiones y agrupación de conexiones
 
-### Durable Objects for Persistent Sessions
-```typescript
+### Objetos duraderos para sesiones persistentes```typescript
 export class Browser {
   state: DurableObjectState;
   browser: any;
@@ -41,11 +40,7 @@ export class Browser {
     }
   }
 }
-```
-
-## Multi-Tier Caching Strategy
-
-```typescript
+```## Estrategia de almacenamiento en caché de varios niveles```typescript
 const CACHE_TTL = 3600;
 
 export default {
@@ -79,11 +74,7 @@ export default {
     return response;
   }
 };
-```
-
-## WebSocket with Durable Objects
-
-```typescript
+```## WebSocket con objetos duraderos```typescript
 export class ChatRoom {
   state: DurableObjectState;
   sessions: Set<WebSocket>;
@@ -114,11 +105,7 @@ export class ChatRoom {
     this.sessions.delete(ws);
   }
 }
-```
-
-## Queue-Based Crawler
-
-```typescript
+```## Queue-Based Crawler```typescript
 export default {
   async queue(batch: MessageBatch<any>, env: Env): Promise<void> {
     const browser = await puppeteer.launch(env.MYBROWSER);
@@ -145,11 +132,7 @@ export default {
     await browser.close();
   }
 };
-```
-
-## Authentication Pattern
-
-```typescript
+```## Patrón de autenticación```typescript
 import { sign, verify } from 'hono/jwt';
 
 async function authenticate(request: Request, env: Env): Promise<any> {
@@ -175,11 +158,7 @@ export default {
     }
   }
 };
-```
-
-## Code Splitting
-
-```typescript
+```## Code Splitting```typescript
 // Lazy load large dependencies
 export default {
   async fetch(request: Request): Promise<Response> {
@@ -193,11 +172,7 @@ export default {
     return new Response('OK');
   }
 };
-```
-
-## Batch Operations with D1
-
-```typescript
+```## Operaciones por lotes con D1```typescript
 // Efficient bulk inserts
 const statements = users.map(user =>
   env.DB.prepare('INSERT INTO users (name, email) VALUES (?, ?)')
@@ -205,11 +180,7 @@ const statements = users.map(user =>
 );
 
 await env.DB.batch(statements);
-```
-
-## Stream Processing
-
-```typescript
+```## Stream Processing```typescript
 const { readable, writable } = new TransformStream({
   transform(chunk, controller) {
     // Process chunk
@@ -219,11 +190,7 @@ const { readable, writable } = new TransformStream({
 
 response.body.pipeTo(writable);
 return new Response(readable);
-```
-
-## AI-Powered Web Scraper
-
-```typescript
+```## AI-Powered Web Scraper```typescript
 import { Ai } from '@cloudflare/ai';
 
 export default {
@@ -250,35 +217,31 @@ export default {
     return Response.json(response);
   }
 };
-```
+```## Optimización del rendimiento
 
-## Performance Optimization
+### Tamaño del paquete
+- Mantenga los trabajadores <1 MB agrupados
+- Eliminar dependencias no utilizadas
+- Usar división de código
+- Consultar con:`wrangler deploy --dry-run --outdir=dist`
 
-### Bundle Size
-- Keep Workers <1MB bundled
-- Remove unused dependencies
-- Use code splitting
-- Check with: `wrangler deploy --dry-run --outdir=dist`
+### Arranques en frío
+- Minimizar el código de inicialización
+- Usar enlaces en lugar de buscar
+- Evitar grandes importaciones al más alto nivel.
 
-### Cold Starts
-- Minimize initialization code
-- Use bindings over fetch
-- Avoid large imports at top level
+### Gestión de memoria
+- Cerrar páginas cuando haya terminado:`await page.close()`
+- Desconectar navegadores:`await browser.disconnect()`
+- Implementar alarmas de limpieza en Objetos Durables
 
-### Memory Management
-- Close pages when done: `await page.close()`
-- Disconnect browsers: `await browser.disconnect()`
-- Implement cleanup alarms in Durable Objects
+### Optimización de solicitudes
+- Utilice el filtrado del lado del servidor con`--filter`
+- Operaciones por lotes con D1`.batch()`
+- Transmitir respuestas grandes
+- Implementar un almacenamiento en caché adecuado
 
-### Request Optimization
-- Use server-side filtering with `--filter`
-- Batch operations with D1 `.batch()`
-- Stream large responses
-- Implement proper caching
-
-## Monitoring & Debugging
-
-```bash
+## Monitoreo y depuración```bash
 # Real-time logs
 wrangler tail --format pretty
 
@@ -290,23 +253,21 @@ wrangler deployments list
 
 # Rollback
 wrangler rollback [version-id]
-```
+```## Lista de verificación de producción
 
-## Production Checklist
+- [] Se implementó el manejo de errores en varias etapas.
+- [] Limitación de velocidad configurada
+- [] Estrategia de almacenamiento en caché implementada
+- [] Secretos gestionados con`wrangler secret`
+- [ ] Controles de salud implementados
+- [ ] Alertas de monitoreo configuradas
+- [] Reutilización de sesiones para renderizado del navegador
+- [] Limpieza de recursos (páginas, navegadores)
+- [] Configuraciones de tiempo de espera adecuadas
+- [] Configuración de canalización de CI/CD
 
-- [ ] Multi-stage error handling implemented
-- [ ] Rate limiting configured
-- [ ] Caching strategy in place
-- [ ] Secrets managed with `wrangler secret`
-- [ ] Health checks implemented
-- [ ] Monitoring alerts configured
-- [ ] Session reuse for browser rendering
-- [ ] Resource cleanup (pages, browsers)
-- [ ] Proper timeout configurations
-- [ ] CI/CD pipeline set up
+## Recursos
 
-## Resources
-
-- Advanced Patterns: https://developers.cloudflare.com/workers/examples/
-- Durable Objects: https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-- Performance: https://developers.cloudflare.com/workers/platform/limits/
+- Patrones avanzados: https://developers.cloudflare.com/workers/examples/
+- Objetos duraderos: https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
+- Rendimiento: https://developers.cloudflare.com/workers/platform/limits/

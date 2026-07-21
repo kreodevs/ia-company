@@ -1,38 +1,38 @@
 ---
-title: Search Intent Mapping
-impact: MEDIUM-HIGH
-tags: search-intent, user-intent, content-alignment, serp-analysis, journey-mapping
+título: Mapeo de intención de búsqueda
+impacto: MEDIO-ALTO
+Etiquetas: intención de búsqueda, intención del usuario, alineación de contenido, análisis de serp, mapeo de viaje
 ---
 
-## Search Intent Mapping
+## Mapeo de intención de búsqueda
 
-**Impact: MEDIUM-HIGH**
+**Impacto: MEDIO-ALTO**
 
-Search intent is why someone searches, not what they type. Ranking #1 for a keyword with wrong intent means high bounce rates and no conversions. Match intent perfectly, and lower-authority pages beat stronger competitors.
+La intención de búsqueda es el motivo por el que alguien busca, no lo que escribe. Ocupar el puesto número 1 para una palabra clave con una intención incorrecta significa altas tasas de rebote y ninguna conversión. Haga coincidir la intención perfectamente y las páginas con menor autoridad vencerán a los competidores más fuertes.
 
-### Intent Classification Framework
+### Marco de clasificación de intenciones
 
-| Intent Type | User Goal | Content Match | Example Query |
+| Tipo de intención | Objetivo del usuario | Coincidencia de contenido | Consulta de ejemplo |
 |-------------|-----------|---------------|---------------|
-| **Informational** | Learn something | Blog posts, guides, tutorials | "what is secrets management" |
-| **Navigational** | Find specific site/page | Brand pages, product pages | "infisical login" |
-| **Commercial** | Research before buying | Comparisons, reviews, lists | "best secrets management tools" |
-| **Transactional** | Complete an action | Product, pricing, signup pages | "infisical pricing" |
+| **Informativo** | Aprende algo | Publicaciones de blog, guías, tutoriales | "qué es la gestión de secretos" |
+| **Navegación** | Buscar sitio/página específica | Páginas de marcas, páginas de productos | "inicio de sesión infisical" |
+| **Comercial** | Investiga antes de comprar | Comparaciones, reseñas, listas | "las mejores herramientas de gestión de secretos" |
+| **Transaccional** | Completa una acción | Productos, precios, páginas de registro | "precios infiscales" |
 
-### Intent Signals in Keywords
+### Señales de intención en palabras clave
 
-| Signal | Intent | Example |
+| Señal | Intención | Ejemplo |
 |--------|--------|---------|
-| **what, why, how** | Informational | "how to rotate api keys" |
-| **[brand name]** | Navigational | "hashicorp vault docs" |
-| **best, top, vs, review** | Commercial | "vault vs aws secrets manager" |
-| **buy, pricing, demo, trial** | Transactional | "secrets management pricing" |
-| **[location]** | Local (often commercial) | "security consultants near me" |
-| **[year]** | Informational/Commercial | "best ci/cd tools 2024" |
+| **qué, por qué, cómo** | Informativo | "cómo rotar claves API" |
+| **[nombre de marca]** | Navegación | "documentos de la bóveda de Hashicorp" |
+| **mejor, mejor, vs, reseña** | Comercial | "administrador de secretos de bóveda vs aws" |
+| **compra, precios, demostración, prueba** | Transaccional | "precios de gestión de secretos" |
+| **[ubicación]** | Local (a menudo comercial) | "consultores de seguridad cerca de mí" |
+| **[año]** | Informativo/Comercial | "mejores herramientas ci/cd 2024" |
 
-### SERP-Based Intent Analysis
+### Análisis de intención basado en SERP
 
-The SERP tells you what Google thinks the intent is:
+El SERP le dice cuál cree Google que es la intención:
 
 ```
 Search: "secrets management"
@@ -47,7 +47,7 @@ SERP Analysis:
 Content strategy: Long-form educational guide, not product page
 ```
 
-### Good Intent Matching
+### Coincidencia de buenas intenciones
 
 ```
 Query: "kubernetes secrets vs configmaps"
@@ -73,7 +73,7 @@ Good match:
 ✓ No hard sell, no pricing push
 ```
 
-### Bad Intent Mismatch
+### Falta de coincidencia de malas intenciones
 
 ```
 Query: "kubernetes secrets vs configmaps"
@@ -97,7 +97,7 @@ Bad match:
 ✗ Google will demote this result
 ```
 
-### Intent Evolution Through Funnel
+### Evolución de la intención a través del embudo
 
 ```
 Awareness → Consideration → Decision
@@ -119,18 +119,18 @@ Awareness → Consideration → Decision
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Content Type by Intent
+### Tipo de contenido por intención
 
-| Intent | Primary Content Types | CTA Approach |
+| Intención | Tipos de contenido principal | Enfoque de CTA |
 |--------|----------------------|--------------|
-| **Informational** | Blog posts, guides, tutorials, glossary | Soft (newsletter, related content) |
-| **Navigational** | Homepage, product pages, docs | Direct (login, get started) |
-| **Commercial** | Comparisons, reviews, best-of lists | Medium (try free, see demo) |
-| **Transactional** | Pricing, signup, checkout | Strong (buy now, start trial) |
+| **Informativo** | Publicaciones de blog, guías, tutoriales, glosario | Soft (boletín, contenido relacionado) |
+| **Navegación** | Página de inicio, páginas de productos, documentos | Directo (iniciar sesión, comenzar) |
+| **Comercial** | Comparaciones, reseñas, listas de lo mejor | Medio (pruébelo gratis, vea la demostración) |
+| **Transaccional** | Precios, registro, pago | Fuerte (compre ahora, comience la prueba) |
 
-### Mixed Intent Keywords
+### Palabras clave con intenciones mixtas
 
-Some keywords have multiple valid intents:
+Algunas palabras clave tienen múltiples intenciones válidas:
 
 ```
 Query: "secrets management"
@@ -149,41 +149,41 @@ Don't create product page for this query — it matches
 minority of intent, won't rank well
 ```
 
-### Intent Validation Checklist
+### Lista de verificación de validación de intenciones
 
-Before creating content:
+Antes de crear contenido:
 
-- [ ] Searched the exact keyword
-- [ ] Noted what type of content ranks (blog, product, tool)
-- [ ] Identified dominant content format (guide, list, comparison)
-- [ ] Checked SERP features (PAA indicates informational)
-- [ ] Analyzed word count of top results
-- [ ] Verified content type matches user expectations
-- [ ] Planned appropriate CTA for the intent
+- [] Buscó la palabra clave exacta
+- [] Observó qué tipo de contenido se clasifica (blog, producto, herramienta)
+- [ ] Formato de contenido dominante identificado (guía, lista, comparación)
+- [] Funciones SERP marcadas (PAA indica informativo)
+- [] Recuento de palabras analizadas de los mejores resultados
+- [] El tipo de contenido verificado coincide con las expectativas del usuario.
+- [] CTA apropiado planificado para la intención
 
-### SERP Intent Indicators
+### Indicadores de intención SERP
 
-| SERP Element | Indicates |
+| Elemento SERP | Indica |
 |--------------|-----------|
-| **PAA boxes** | Informational (people want to learn) |
-| **Shopping results** | Transactional (ready to buy) |
-| **Local pack** | Local intent (looking for nearby) |
-| **Knowledge panel** | Navigational/Informational |
-| **Image pack** | Visual search (how things look) |
-| **Video results** | Tutorial/how-to intent |
-| **News carousel** | Current events, timely info |
-| **No SERP features** | Ambiguous or niche intent |
+| **Cajas PAA** | Informativo (la gente quiere aprender) |
+| **Resultados de compras** | Transaccional (listo para comprar) |
+| **Paquete local** | Intención local (buscando cerca) |
+| **Panel de conocimiento** | Navegación/Informativo |
+| **Paquete de imágenes** | Búsqueda visual (cómo se ven las cosas) |
+| **Resultados de vídeo** | Tutorial/intención práctica |
+| **Carrusel de noticias** | Eventos actuales, información oportuna |
+| **Sin funciones SERP** | Intención ambigua o de nicho |
 
-### Intent Mapping for Content Planning
+### Mapeo de intenciones para la planificación de contenidos
 
-| Keyword | Volume | Current Rank | SERP Intent | Our Content | Match? |
+| Palabra clave | Volumen | Clasificación actual | Intención SERP | Nuestro contenido | ¿Fósforo? |
 |---------|--------|--------------|-------------|-------------|--------|
-| "secrets management" | 5,400 | 12 | Informational | Guide | Yes |
-| "vault vs aws secrets" | 880 | - | Commercial | None | Need to create |
-| "infisical pricing" | 320 | 1 | Transactional | Pricing page | Yes |
-| "best secrets tools" | 720 | 45 | Commercial | Product page | No (mismatch!) |
+| "gestión de secretos" | 5.400 | 12 | Informativo | Guía | Sí |
+| "secretos de bóveda vs aws" | 880 | - | Comercial | Ninguno | Necesidad de crear |
+| "precios infiscales" | 320 | 1 | Transaccional | Página de precios | Sí |
+| "las mejores herramientas secretas" | 720 | 45 | Comercial | Página del producto | No (¡no coincide!) |
 
-### Fixing Intent Mismatches
+### Solucionar discrepancias de intención
 
 ```
 Problem: Ranking poorly for "best secrets management tools"
@@ -207,7 +207,7 @@ Fix options:
    └── Focus on keywords where you can match
 ```
 
-### Intent-Based Internal Linking
+### Enlaces internos basados ​​en la intención
 
 ```
 Link from informational → commercial:
@@ -224,25 +224,25 @@ Link from transactional → informational:
 secrets-management) to understand the basics first."
 ```
 
-### Measuring Intent Alignment
+### Medición de la alineación de la intención
 
-| Metric | Good Alignment | Bad Alignment |
-|--------|----------------|---------------|
-| **Bounce rate** | <50% | >70% |
-| **Time on page** | >2 minutes (informational) | <30 seconds |
-| **Pages per session** | >1.5 | 1.0 |
-| **Scroll depth** | >60% | <20% |
-| **Conversions** | Meeting intent-appropriate goals | Zero/minimal |
+| Métrica | Buena alineación | Mala alineación |
+|--------|----------------|------------------------|
+| **Tasa de rebote** | <50% | >70% |
+| **Tiempo en la página** | >2 minutos (informativo) | <30 segundos |
+| **Páginas por sesión** | >1,5 | 1.0 |
+| **Profundidad de desplazamiento** | >60% | <20% |
+| **Conversiones** | Cumplir objetivos apropiados para la intención | Cero/mínimo |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Forcing product pages** — Trying to rank product page for informational queries
-- **Ignoring SERP** — Not checking what actually ranks before writing
-- **Same content everywhere** — Same page targeting multiple intents
-- **Hard sell on informational** — Aggressive CTAs on educational content
-- **No CTAs on commercial** — Missing conversion opportunity
-- **Keyword-only focus** — Targeting keyword without understanding intent
-- **Static intent mapping** — Intent can shift; check SERPs regularly
-- **Assuming intent** — "I think users want..." vs checking actual SERP
-- **Ignoring mixed intent** — Not addressing multiple needs in content
-- **Wrong metrics** — Measuring bounces on transactional like informational
+- **Forzar páginas de productos**: intentar clasificar la página del producto para consultas informativas
+- **Ignorar SERP**: no verificar lo que realmente se clasifica antes de escribir
+- **Mismo contenido en todas partes**: la misma página dirigida a múltiples intenciones
+- **Venta dura de contenido informativo**: CTA agresivos sobre contenido educativo
+- **No hay CTA en comerciales**: oportunidad de conversión perdida
+- **Enfoque solo en palabras clave**: orientación a palabras clave sin comprender la intención
+- **Mapeo de intención estática**: la intención puede cambiar; comprobar las SERP con regularidad
+- **Asumiendo intención** — "Creo que los usuarios quieren..." versus verificar el SERP real
+- **Ignorar intenciones mixtas**: no abordar múltiples necesidades en el contenido
+- **Métricas incorrectas**: medición de rebotes en transacciones como informativas

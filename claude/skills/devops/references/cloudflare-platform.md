@@ -1,87 +1,87 @@
-# Cloudflare Platform Overview
+# Visión general de Cloudflare Platform
 
-Cloudflare Developer Platform: comprehensive edge computing ecosystem for full-stack applications on global network across 300+ cities.
+Cloudflare Developer Platform: ecosistema integral de edge computing para aplicaciones full-stack en una red global con presencia en más de 300 ciudades.
 
-## Core Concepts
+## Conceptos centrales
 
-### Edge Computing Model
+### Modelo de edge computing
 
-**Global Network:**
-- Code runs on servers in 300+ cities globally
-- Requests execute from nearest location
-- Ultra-low latency (<50ms typical)
-- Automatic failover and redundancy
+**Red global:**
+- El código se ejecuta en servidores en más de 300 ciudades a nivel mundial
+- Las solicitudes se procesan desde la ubicación más cercana
+- Latencia ultrabaja (<50 ms típico)
+- Failover y redundancia automáticos
 
 **V8 Isolates:**
-- Lightweight execution environments (faster than containers)
-- Millisecond cold starts
-- Zero infrastructure management
-- Automatic scaling
-- Pay-per-request pricing
+- Entornos de ejecución ligeros (más rápidos que contenedores)
+- Cold starts en milisegundos
+- Cero gestión de infraestructura
+- Escalado automático
+- Precio por solicitud
 
-### Key Components
+### Componentes clave
 
-**Workers** - Serverless functions on edge
-- HTTP/scheduled/queue/email handlers
-- JavaScript/TypeScript/Python/Rust support
-- Max 50ms CPU (free), 30s (paid)
-- 128MB memory limit
+**Workers** - Funciones serverless en el edge
+- Handlers HTTP/programados/cola/email
+- Soporte JavaScript/TypeScript/Python/Rust
+- Máx. 50 ms CPU (gratis), 30 s (de pago)
+- Límite de memoria: 128 MB
 
-**D1** - SQLite database with global read replication
-- Standard SQLite syntax
-- Single-writer consistency
-- Global read replication
-- 25GB database size limit
-- Batch operations for transactions
+**D1** - Base de datos SQLite con replicación global de lecturas
+- Sintaxis SQLite estándar
+- Consistencia de un solo escritor
+- Replicación global de lecturas
+- Límite de tamaño: 25 GB
+- Operaciones batch para transacciones
 
-**KV** - Distributed key-value store
-- Sub-millisecond reads (edge-cached)
-- Eventual consistency (~60s globally)
-- 25MB value size limit
-- Automatic TTL expiration
-- Best for: cache, sessions, feature flags
+**KV** - Almacén clave-valor distribuido
+- Lecturas submilisegundo (cacheadas en el edge)
+- Consistencia eventual (~60 s globalmente)
+- Límite de valor: 25 MB
+- Expiración TTL automática
+- Ideal para: caché, sesiones, feature flags
 
-**R2** - Object storage (S3-compatible)
-- Zero egress fees (huge cost advantage)
-- Unlimited storage
-- 5TB object size limit
-- S3-compatible API
-- Multipart upload support
+**R2** - Almacenamiento de objetos (compatible con S3)
+- Cero tarifas de egress (gran ventaja de costo)
+- Almacenamiento ilimitado
+- Límite de objeto: 5 TB
+- API compatible con S3
+- Soporte de multipart upload
 
-**Durable Objects** - Stateful compute with WebSockets
-- Single-instance coordination (strong consistency)
-- Persistent storage (1GB limit paid)
-- WebSocket support
-- Automatic hibernation
+**Durable Objects** - Compute con estado y WebSockets
+- Coordinación de instancia única (consistencia fuerte)
+- Almacenamiento persistente (límite 1 GB de pago)
+- Soporte WebSocket
+- Hibernación automática
 
-**Queues** - Message queue system
-- At-least-once delivery
-- Automatic retries (exponential backoff)
-- Dead-letter queue support
-- Batch processing
+**Queues** - Sistema de colas de mensajes
+- Entrega at-least-once
+- Reintentos automáticos (backoff exponencial)
+- Soporte dead-letter queue
+- Procesamiento por lotes
 
-**Pages** - Static site hosting + serverless functions
-- Git integration (auto-deploy)
-- Directory-based routing
-- Framework support (Next.js, Remix, Astro, SvelteKit)
-- Built-in preview deployments
+**Pages** - Hosting de sitios estáticos + funciones serverless
+- Integración Git (auto-deploy)
+- Enrutamiento basado en directorios
+- Soporte de frameworks (Next.js, Remix, Astro, SvelteKit)
+- Preview deployments integrados
 
-**Workers AI** - Run AI models on edge
+**Workers AI** - Ejecutar modelos de IA en el edge
 - LLMs (Llama 3, Mistral, Gemma, Qwen)
-- Image generation (Stable Diffusion, DALL-E)
+- Generación de imágenes (Stable Diffusion, DALL-E)
 - Embeddings (BGE, GTE)
-- Speech recognition (Whisper)
-- No GPU management required
+- Reconocimiento de voz (Whisper)
+- Sin gestión de GPU
 
-**Browser Rendering** - Headless browser automation
-- Puppeteer/Playwright support
-- Screenshots, PDFs, web scraping
-- Session reuse for cost optimization
-- MCP server support for AI agents
+**Browser Rendering** - Automatización de navegador headless
+- Soporte Puppeteer/Playwright
+- Capturas, PDFs, web scraping
+- Reutilización de sesiones para optimizar costos
+- Soporte MCP server para agentes de IA
 
-## Architecture Patterns
+## Patrones de arquitectura
 
-### Full-Stack Application
+### Aplicación full-stack
 
 ```
 ┌─────────────────────────────────────────┐
@@ -102,7 +102,7 @@ Cloudflare Developer Platform: comprehensive edge computing ecosystem for full-s
 └────┘ └────┘ └────┘ └────┘ └────────────┘
 ```
 
-### Polyglot Storage Pattern
+### Patrón de almacenamiento políglota
 
 ```typescript
 export default {
@@ -130,22 +130,22 @@ export default {
 };
 ```
 
-## Wrangler CLI Essentials
+## Esenciales de Wrangler CLI
 
-### Installation
+### Instalación
 ```bash
 npm install -g wrangler
 wrangler login
 wrangler init my-worker
 ```
 
-### Core Commands
+### Comandos principales
 ```bash
-# Development
+# Desarrollo
 wrangler dev                    # Local dev server
 wrangler dev --remote          # Dev on real edge
 
-# Deployment
+# Despliegue
 wrangler deploy                # Deploy to production
 wrangler deploy --dry-run      # Preview changes
 
@@ -162,7 +162,7 @@ wrangler secret put SECRET_NAME
 wrangler secret list
 ```
 
-### Resource Management
+### Gestión de recursos
 ```bash
 # D1
 wrangler d1 create my-db
@@ -177,14 +177,14 @@ wrangler r2 bucket create my-bucket
 wrangler r2 object put my-bucket/file.txt --file=./file.txt
 ```
 
-## Configuration (wrangler.toml)
+## Configuración (wrangler.toml)
 
 ```toml
 name = "my-worker"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-# Environment variables
+# Variables de entorno
 [vars]
 ENVIRONMENT = "production"
 
@@ -224,32 +224,32 @@ binding = "AI"
 crons = ["0 0 * * *"]
 ```
 
-## Best Practices
+## Buenas prácticas
 
-### Performance
-- Keep Workers lightweight (<1MB bundled)
-- Use bindings over fetch (faster than HTTP)
-- Leverage KV and Cache API for frequently accessed data
-- Use D1 batch for multiple queries
-- Stream large responses
+### Rendimiento
+- Mantén Workers ligeros (<1 MB empaquetado)
+- Usa bindings en lugar de fetch (más rápido que HTTP)
+- Aprovecha KV y Cache API para datos frecuentes
+- Usa batch de D1 para múltiples consultas
+- Transmite respuestas grandes
 
-### Security
-- Use `wrangler secret` for API keys
-- Separate production/staging/development environments
-- Validate user input
-- Implement rate limiting (KV or Durable Objects)
-- Configure proper CORS headers
+### Seguridad
+- Usa `wrangler secret` para API keys
+- Separa entornos production/staging/development
+- Valida entrada de usuario
+- Implementa rate limiting (KV o Durable Objects)
+- Configura headers CORS adecuados
 
-### Cost Optimization
-- R2 for large files (zero egress fees vs S3)
-- KV for caching (reduce D1/R2 requests)
-- Request deduplication with caching
-- Efficient D1 queries (proper indexing)
-- Monitor usage via Cloudflare Analytics
+### Optimización de costos
+- R2 para archivos grandes (cero egress vs S3)
+- KV para caché (reduce solicitudes D1/R2)
+- Deduplicación de solicitudes con caché
+- Consultas D1 eficientes (indexación adecuada)
+- Monitorea uso vía Cloudflare Analytics
 
-## Decision Matrix
+## Matriz de decisión
 
-| Need | Choose |
+| Necesidad | Elegir |
 |------|--------|
 | Sub-millisecond reads | KV |
 | SQL queries | D1 |
@@ -262,7 +262,7 @@ crons = ["0 0 * * *"]
 | AI inference | Workers AI |
 | Static site hosting | Pages |
 
-## Resources
+## Recursos
 
 - Docs: https://developers.cloudflare.com
 - Wrangler: https://developers.cloudflare.com/workers/wrangler/

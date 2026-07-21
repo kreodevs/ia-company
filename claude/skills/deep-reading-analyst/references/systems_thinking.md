@@ -1,101 +1,101 @@
-# Systems Thinking Framework
+# Marco de pensamiento sistémico
 
-## Core Principle
+## Principio central
 
-Understand parts in relation to the whole. Systems are more than the sum of parts due to interactions.
+Comprende las partes en relación con el todo. Los sistemas son más que la suma de las partes debido a las interacciones.
 
-## Key System Elements
+## Elementos clave del sistema
 
-### 1. Components (Elements)
-The individual parts of the system
+### 1. Componentes (Elementos)
+Las partes individuales del sistema
 
-### 2. Relationships (Interconnections)  
-How components influence each other
+### 2. Relaciones (Interconexiones)
+Cómo los componentes se influyen mutuamente
 
-### 3. Purpose (Function)
-What the system is designed to achieve
+### 3. Propósito (Función)
+Lo que el sistema está diseñado para lograr
 
-### 4. Boundaries
-What's inside vs. outside the system
+### 4. Límites
+Qué está dentro vs. fuera del sistema
 
-## Causal Loop Analysis
+## Análisis de bucles causales
 
-### Reinforcing Loop (Positive Feedback)
-Creates exponential growth or collapse
+### Bucle de refuerzo (Retroalimentación positiva)
+Crea crecimiento o colapso exponencial
 
 ```
 A increases → B increases → A increases further → ...
 ```
 
-**Examples:**
+**Ejemplos:**
 - Network effects: More users → More value → More users
 - Panic: Fear → Selling → Price drop → More fear
 - Expertise: Skill → Opportunities → More practice → More skill
 
-**Symbol:** R (Reinforcing)
+**Símbolo:** R (Reinforcing)
 
-### Balancing Loop (Negative Feedback)
-Creates stability and resistance to change
+### Bucle de equilibrio (Retroalimentación negativa)
+Crea estabilidad y resistencia al cambio
 
 ```
 A increases → B increases → A decreases → B decreases → ...
 ```
 
-**Examples:**
+**Ejemplos:**
 - Thermostat: Temp up → Heating off → Temp down → Heating on
 - Supply/Demand: Price up → Demand down → Price down
 - Homeostasis: Blood sugar up → Insulin up → Blood sugar down
 
-**Symbol:** B (Balancing)
+**Símbolo:** B (Balancing)
 
-## Mapping Template
+## Plantilla de mapeo
 
 ```markdown
-## System Components
-- Component A: [Role/function]
-- Component B: [Role/function]
-- Component C: [Role/function]
+## Componentes del sistema
+- Componente A: [Rol/función]
+- Componente B: [Rol/función]
+- Componente C: [Rol/función]
 
-## Key Relationships
+## Relaciones clave
 
-[A] ──+──> [B]  (A increases B)
+[A] ──+──> [B]  (A aumenta B)
        |
-       └──-──> [C]  (A decreases C)
+       └──-──> [C]  (A disminuye C)
 
-## Feedback Loops
+## Bucles de retroalimentación
 
-### Loop 1: [Name] (R/B)
+### Bucle 1: [Nombre] (R/B)
 A → B → C → A
-Effect: [Exponential growth / Stabilization]
+Efecto: [Crecimiento exponencial / Estabilización]
 
-## System Behavior Over Time
+## Comportamiento del sistema en el tiempo
 
-Current state: [X]
-If X increases: [Trace effects through system]
-If X decreases: [Trace effects through system]
+Estado actual: [X]
+Si X aumenta: [Rastrear efectos en el sistema]
+Si X disminuye: [Rastrear efectos en el sistema]
 ```
 
-## Leverage Points
+## Puntos de apalancamiento
 
-Places to intervene (Donella Meadows' hierarchy, strongest to weakest):
+Lugares para intervenir (jerarquía de Donella Meadows, de más fuerte a más débil):
 
-1. **Paradigms** - Mental models underlying the system
-2. **Goals** - Purpose of the system
-3. **System structure** - Feedback loop architecture
-4. **Delays** - Response time between cause and effect
-5. **Balancing loops** - Strength of stabilizing forces
-6. **Reinforcing loops** - Strength of amplifying forces
-7. **Information flows** - Who knows what, when
-8. **Rules** - Incentives, constraints
-9. **Buffers** - Stabilizing stocks
-10. **Stock-flow structures** - Physical components
-11. **Parameters** - Numbers (least effective)
+1. **Paradigmas** - Modelos mentales subyacentes al sistema
+2. **Objetivos** - Propósito del sistema
+3. **Estructura del sistema** - Arquitectura de bucles de retroalimentación
+4. **Retrasos** - Tiempo de respuesta entre causa y efecto
+5. **Bucles de equilibrio** - Fuerza de fuerzas estabilizadoras
+6. **Bucles de refuerzo** - Fuerza de fuerzas amplificadoras
+7. **Flujos de información** - Quién sabe qué, cuándo
+8. **Reglas** - Incentivos, restricciones
+9. **Buffers** - Stocks estabilizadores
+10. **Estructuras stock-flujo** - Componentes físicos
+11. **Parámetros** - Números (menos efectivo)
 
-**Insight:** Most people tweak parameters (#11), but changing paradigms (#1) is far more powerful.
+**Insight:** La mayoría ajusta parámetros (#11), pero cambiar paradigmas (#1) es mucho más poderoso.
 
-## Cross-Domain Pattern Recognition
+## Reconocimiento de patrones entre dominios
 
-### Similar System Patterns Across Fields
+### Patrones de sistema similares en distintos campos
 
 **Tragedy of the Commons:**
 - Environment: Overfishing
@@ -115,100 +115,100 @@ Places to intervene (Donella Meadows' hierarchy, strongest to weakest):
 - Personal: Skill plateaus
 - Resources: Oil production peak
 
-## Analysis Questions
+## Preguntas de análisis
 
-### Structure
-- What are the key components?
-- What connects them?
-- Where are the feedback loops?
+### Estructura
+- ¿Cuáles son los componentes clave?
+- ¿Qué los conecta?
+- ¿Dónde están los bucles de retroalimentación?
 
-### Behavior
-- What patterns emerge over time?
-- What's amplifying? (Reinforcing loops)
-- What's stabilizing? (Balancing loops)
+### Comportamiento
+- ¿Qué patrones emergen con el tiempo?
+- ¿Qué se amplifica? (Bucles de refuerzo)
+- ¿Qué se estabiliza? (Bucles de equilibrio)
 
-### Dynamics
-- What happens if X increases 10x?
-- Where are delays causing problems?
-- What's the bottleneck?
+### Dinámica
+- ¿Qué pasa si X aumenta 10x?
+- ¿Dónde los retrasos causan problemas?
+- ¿Cuál es el cuello de botella?
 
-### Boundaries
-- What's outside this system but affects it?
-- Where do we draw the line?
-- What external factors matter?
+### Límites
+- ¿Qué está fuera de este sistema pero lo afecta?
+- ¿Dónde trazamos la línea?
+- ¿Qué factores externos importan?
 
-## Systems Archetypes
+## Arquetipos de sistemas
 
 ### 1. Shifting the Burden
-Short-term fix → Undermines long-term solution
-**Example:** Taking painkillers (symptom) vs. fixing posture (cause)
+Solución a corto plazo → Socava la solución a largo plazo
+**Ejemplo:** Tomar analgésicos (síntoma) vs. corregir postura (causa)
 
 ### 2. Escalation
-Both sides respond to each other, spiraling up
-**Example:** Arms race, price wars, social media arguments
+Ambas partes responden mutuamente, espiral ascendente
+**Ejemplo:** Carrera armamentista, guerras de precios, discusiones en redes sociales
 
 ### 3. Success to the Successful
-Winner gets advantages that compound
-**Example:** Rich get richer, bestseller lists, platform dominance
+El ganador obtiene ventajas que se acumulan
+**Ejemplo:** Los ricos se enriquecen, listas de bestsellers, dominancia de plataformas
 
 ### 4. Fixes That Fail
-Solution works initially but creates worse problem
-**Example:** Antibiotic resistance, traffic lanes inducing demand
+La solución funciona inicialmente pero crea un problema peor
+**Ejemplo:** Resistencia a antibióticos, carriles de tráfico que inducen demanda
 
 ### 5. Growth and Underinvestment
-Growth stalls because capacity wasn't built
-**Example:** Startup success → Can't scale → Service degrades
+El crecimiento se estanca porque no se construyó capacidad
+**Ejemplo:** Éxito de startup → No puede escalar → Servicio se degrada
 
-## Application to Content Analysis
+## Aplicación al análisis de contenido
 
-When reading about any topic:
+Al leer sobre cualquier tema:
 
-1. **Map the system**
-   - List key elements mentioned
-   - Draw connections between them
+1. **Mapea el sistema**
+   - Lista elementos clave mencionados
+   - Dibuja conexiones entre ellos
 
-2. **Identify loops**
-   - What reinforces growth/decline?
-   - What creates balance/limits?
+2. **Identifica bucles**
+   - ¿Qué refuerza crecimiento/declive?
+   - ¿Qué crea equilibrio/límites?
 
-3. **Predict dynamics**
-   - If X changes, what cascades follow?
-   - Where will this lead in 1 year? 5 years?
+3. **Predice dinámicas**
+   - Si X cambia, ¿qué cascadas siguen?
+   - ¿A dónde llevará esto en 1 año? ¿5 años?
 
-4. **Find leverage**
-   - Where is the author intervening?
-   - Are there better leverage points?
+4. **Encuentra apalancamiento**
+   - ¿Dónde interviene el autor?
+   - ¿Hay mejores puntos de apalancamiento?
 
-5. **Connect to other domains**
-   - What similar patterns exist elsewhere?
-   - Can solutions from other fields apply?
+5. **Conecta con otros dominios**
+   - ¿Qué patrones similares existen en otros lugares?
+   - ¿Pueden aplicarse soluciones de otros campos?
 
-## Cross-Reference to Other Fields
+## Referencia cruzada con otros campos
 
 ```markdown
-## Concept in Article
-[Core idea from content]
+## Concepto en el artículo
+[Idea central del contenido]
 
-## Similar Patterns In:
+## Patrones similares en:
 
-**Economics:** [How this shows up]
-**Biology:** [How this shows up]  
-**Psychology:** [How this shows up]
-**Technology:** [How this shows up]
-**History:** [How this shows up]
+**Economía:** [Cómo aparece]
+**Biología:** [Cómo aparece]  
+**Psicología:** [Cómo aparece]
+**Tecnología:** [Cómo aparece]
+**Historia:** [Cómo aparece]
 
-## Transferable Insights
-If this pattern exists across domains, then:
-- [Universal principle 1]
-- [Universal principle 2]
+## Ideas transferibles
+Si este patrón existe en varios dominios, entonces:
+- [Principio universal 1]
+- [Principio universal 2]
 ```
 
-## Warning: Systems Thinking Pitfalls
+## Advertencia: trampas del pensamiento sistémico
 
-- **Over-complicating:** Not everything needs a full system map
-- **Analysis paralysis:** Perfect map vs. good enough understanding
-- **Ignoring human agency:** People can change system rules
-- **Determinism:** Systems have probability, not certainty
-- **Closed thinking:** Real systems have open boundaries
+- **Sobrecomplicar:** No todo necesita un mapa de sistema completo
+- **Parálisis por análisis:** Mapa perfecto vs. comprensión suficiente
+- **Ignorar agencia humana:** Las personas pueden cambiar las reglas del sistema
+- **Determinismo:** Los sistemas tienen probabilidad, no certeza
+- **Pensamiento cerrado:** Los sistemas reales tienen límites abiertos
 
-**Balance:** Use systems thinking to understand dynamics, not to predict perfectly.
+**Equilibrio:** Usa el pensamiento sistémico para comprender dinámicas, no para predecir perfectamente.

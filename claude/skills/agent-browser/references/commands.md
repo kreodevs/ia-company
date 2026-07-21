@@ -1,8 +1,8 @@
-# Command Reference
+# Referencia de comando
 
-Complete reference for all agent-browser commands. For quick start and common patterns, see SKILL.md.
+Referencia completa para todos los comandos del agente-navegador. Para un inicio rápido y patrones comunes, consulte SKILL.md.
 
-## Navigation
+## Navegación
 
 ```bash
 agent-browser open <url>      # Navigate to URL (aliases: goto, navigate)
@@ -15,7 +15,7 @@ agent-browser close           # Close browser (aliases: quit, exit)
 agent-browser connect 9222    # Connect to browser via CDP port
 ```
 
-## Snapshot (page analysis)
+## Instantánea (análisis de página)
 
 ```bash
 agent-browser snapshot            # Full accessibility tree
@@ -25,7 +25,7 @@ agent-browser snapshot -d 3       # Limit depth to 3
 agent-browser snapshot -s "#main" # Scope to CSS selector
 ```
 
-## Interactions (use @refs from snapshot)
+## Interacciones (use @refs de la instantánea)
 
 ```bash
 agent-browser click @e1           # Click
@@ -48,7 +48,7 @@ agent-browser drag @e1 @e2        # Drag and drop
 agent-browser upload @e1 file.pdf # Upload files
 ```
 
-## Get Information
+## Obtener información
 
 ```bash
 agent-browser get text @e1        # Get element text
@@ -62,7 +62,7 @@ agent-browser get box @e1         # Get bounding box
 agent-browser get styles @e1      # Get computed styles (font, color, bg, etc.)
 ```
 
-## Check State
+## Verificar estado
 
 ```bash
 agent-browser is visible @e1      # Check if visible
@@ -70,7 +70,7 @@ agent-browser is enabled @e1      # Check if enabled
 agent-browser is checked @e1      # Check if checked
 ```
 
-## Screenshots and PDF
+## Capturas de pantalla y PDF
 
 ```bash
 agent-browser screenshot          # Save to temporary directory
@@ -79,7 +79,7 @@ agent-browser screenshot --full   # Full page
 agent-browser pdf output.pdf      # Save as PDF
 ```
 
-## Video Recording
+## Grabación de vídeo
 
 ```bash
 agent-browser record start ./demo.webm    # Start recording
@@ -99,7 +99,7 @@ agent-browser wait --load networkidle      # Wait for network idle (or -l)
 agent-browser wait --fn "window.ready"     # Wait for JS condition (or -f)
 ```
 
-## Mouse Control
+## Control del ratón
 
 ```bash
 agent-browser mouse move 100 200      # Move mouse
@@ -108,7 +108,7 @@ agent-browser mouse up left           # Release button
 agent-browser mouse wheel 100         # Scroll wheel
 ```
 
-## Semantic Locators (alternative to refs)
+## Localizadores semánticos (alternativa a las referencias)
 
 ```bash
 agent-browser find role button click --name "Submit"
@@ -124,7 +124,7 @@ agent-browser find last ".item" click
 agent-browser find nth 2 "a" hover
 ```
 
-## Browser Settings
+## Configuración del navegador
 
 ```bash
 agent-browser set viewport 1920 1080          # Set viewport size
@@ -137,7 +137,7 @@ agent-browser set media dark                  # Emulate color scheme
 agent-browser set media light reduced-motion  # Light mode + reduced motion
 ```
 
-## Cookies and Storage
+## Cookies y almacenamiento
 
 ```bash
 agent-browser cookies                     # Get all cookies
@@ -160,7 +160,7 @@ agent-browser network requests                 # View tracked requests
 agent-browser network requests --filter api    # Filter requests
 ```
 
-## Tabs and Windows
+## Pestañas y ventanas
 
 ```bash
 agent-browser tab                 # List tabs
@@ -191,11 +191,10 @@ agent-browser dialog dismiss        # Dismiss dialog
 agent-browser eval "document.title"          # Simple expressions only
 agent-browser eval -b "<base64>"             # Any JavaScript (base64 encoded)
 agent-browser eval --stdin                   # Read script from stdin
-```
-
-Use `-b`/`--base64` or `--stdin` for reliable execution. Shell escaping with nested quotes and special characters is error-prone.
+```Use`-b`/`--base64` or`--stdin` para una ejecución confiable. El escape del shell con comillas anidadas y caracteres especiales es propenso a errores.
 
 ```bash
+
 # Base64 encode your script, then:
 agent-browser eval -b "ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignW3NyYyo9Il9uZXh0Il0nKQ=="
 
@@ -206,14 +205,14 @@ Array.from(links).map(a => a.href);
 EOF
 ```
 
-## State Management
+## Gestión del Estado
 
 ```bash
 agent-browser state save auth.json    # Save cookies, storage, auth state
 agent-browser state load auth.json    # Restore saved state
 ```
 
-## Global Options
+## Opciones globales
 
 ```bash
 agent-browser --session <name> ...    # Isolated browser session
@@ -232,7 +231,7 @@ agent-browser --version               # Show version (-V)
 agent-browser <command> --help        # Show detailed help for a command
 ```
 
-## Debugging
+## Depuración
 
 ```bash
 agent-browser --headed open example.com   # Show browser window
@@ -247,7 +246,7 @@ agent-browser trace start                 # Start recording trace
 agent-browser trace stop trace.zip        # Stop and save trace
 ```
 
-## Environment Variables
+## Variables de entorno
 
 ```bash
 AGENT_BROWSER_SESSION="mysession"            # Default session name

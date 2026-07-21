@@ -1,211 +1,231 @@
-# Community Led Growth - Sharp Edges
+# Crecimiento liderado por la comunidad: bordes nítidos
 
-## Ghost Town Community
+## Comunidad de pueblo fantasma
 
-### **Id**
-ghost-town-community
-### **Summary**
-Launching community that sits empty
-### **Severity**
-high
-### **Situation**
-Community exists but nobody engages
-### **Why**
-  Launched before critical mass.
-  No seeding strategy.
-  Members don't see value in participating.
+### **Identificación**
+comunidad-de-pueblo-fantasma
+
+### **Resumen**
+Lanzamiento de una comunidad que está vacía
+
+### **Severidad**
+alto
+
+### **Situación**
+La comunidad existe pero nadie participa
+
+### **Por qué**
+  Lanzado antes de la masa crítica.
+  Sin estrategia de siembra.
+  Los miembros no ven valor en participar.
   
-### **Solution**
-  ## Preventing Ghost Town Communities
+
+### **Solución**
+  ## Prevención de comunidades de pueblos fantasma
   
-  ### Pre-Launch Requirements
+  ### Requisitos previos al lanzamiento
   
-  **Critical Mass Calculation**
-  ```
+  **Cálculo de masa crítica**
+
+```
   For active community:
   - 10% of members post monthly
   - Need 5+ posts/day for engagement feel
   
   Minimum members = 5 posts × 30 days / 10% = 1,500 members
   Or: Seed 50 posts/week manually until organic
-  ```
   
-  ### Seeding Strategies
+
+```
+
+### Estrategias de siembra
   
-  **1. Founding Member Program**
-  - Recruit 50-100 engaged users first
-  - Private beta before public launch
-  - Create content backlog
-  - Establish norms and culture
+  **1. Programa de miembros fundadores**
+  - Reclute primero entre 50 y 100 usuarios comprometidos.
+  - Beta privada antes del lanzamiento público.
+  - Crear acumulación de contenido
+  - Establecer normas y cultura.
   
-  **2. Content Seeding**
-  ```
+  **2. Siembra de contenido**
+
+```
   Before launch:
   - 30+ discussion threads
   - 10+ resource posts
   - 5+ pinned welcome content
   - Responding activity visible
-  ```
+  ```**3. Lanzamiento impulsado por eventos**
+  - Lanzamiento en/alrededor del evento
+  - Actividad inmediata de los asistentes.
+  - Impulso desde el primer día
   
-  **3. Event-Driven Launch**
-  - Launch at/around event
-  - Immediate activity from attendees
-  - Momentum from day one
+  ### Guía de recuperación
   
-  ### Recovery Playbook
+  Si ya es un pueblo fantasma:
+  1. No eliminar: parece un fracaso
+  2. Relanzamiento suave con programa fundador
+  3. Aumentar drásticamente la actividad de las semillas.
+  4. Considere la posibilidad de pivotar la plataforma si la audiencia no coincide
   
-  If already ghost town:
-  1. Don't delete - looks like failure
-  2. Soft-relaunch with founding program
-  3. Dramatically increase seeded activity
-  4. Consider platform pivot if audience mismatch
+  ### Umbrales de salud
   
-  ### Health Thresholds
-  
-  | Metric | Healthy | At Risk | Ghost Town |
+  | Métrica | Saludable | En riesgo | Pueblo fantasma |
   |--------|---------|---------|------------|
-  | Posts/day | 5+ | 1-5 | <1 |
-  | Response rate | >50% | 20-50% | <20% |
-  | Active members | >10% | 5-10% | <5% |
+  | Publicaciones/día | 5+ | 1-5 | <1 |
+  | Tasa de respuesta | >50% | 20-50% | <20% |
+  | Miembros activos | >10% | 5-10% | <5% |
   
-### **Symptoms**
-  - New posts get no responses
-  - Same 3 people post everything
-  - Weeks between activities
-### **Detection Pattern**
-community launch|engagement|active members
 
-## Ambassador Burnout
+### **Síntomas**
+  - Las nuevas publicaciones no obtienen respuestas.
+  - Las mismas 3 personas publican todo.
+  - Semanas entre actividades
 
-### **Id**
-ambassador-burnout
-### **Summary**
-Losing ambassadors to exhaustion
-### **Severity**
-high
-### **Situation**
-Top contributors stop contributing
-### **Why**
-  Over-relying on few people.
-  No boundaries on asks.
-  Recognition not matching effort.
+### **Patrón de detección**
+lanzamiento comunitario|compromiso|miembros activos
+
+## Embajador agotado
+
+### **Identificación**
+agotamiento del embajador
+
+### **Resumen**
+Perder embajadores hasta el agotamiento
+
+### **Severidad**
+alto
+
+### **Situación**
+Los principales contribuyentes dejan de contribuir
+
+### **Por qué**
+  Depender demasiado de pocas personas.
+  No hay límites para las solicitudes.
+  El reconocimiento no coincide con el esfuerzo.
   
-### **Solution**
-  ## Preventing Ambassador Burnout
+
+### **Solución**
+  ## Prevenir el agotamiento de los embajadores
   
-  ### Warning Signs
+  ### Señales de advertencia
   
-  - Declining activity from top contributors
-  - Complaints about workload
-  - Ghosting on commitments
-  - Negative sentiment in feedback
+  - Disminución de la actividad de los principales contribuyentes
+  - Quejas sobre la carga de trabajo.
+  - Fantasma en los compromisos
+  - Sentimiento negativo en los comentarios.
   
-  ### Prevention Framework
+  ### Marco de prevención
   
-  **1. Set Clear Expectations**
-  ```
+  **1. Establezca expectativas claras**
+
+```
   Ambassador agreement includes:
   - Maximum hours/month expected
   - Types of activities
   - How to say no
   - Break/sabbatical policy
-  ```
-  
-  **2. Rotate Responsibilities**
-  ```
+  ```**2. Rotar responsabilidades**
+
+```
   Month 1: Ambassador A leads events
   Month 2: Ambassador A does content, B leads events
   Month 3: Ambassador A rests, B does content
-  ```
-  
-  **3. Scale the Load**
-  ```
+  ```**3. Escale la carga**
+
+```
   When community grows:
   - Add more ambassadors (not more work per person)
   - Automate repetitive tasks
   - Create self-serve resources
-  ```
+  ```**4. Esfuerzo de igualación de reconocimiento**
   
-  **4. Recognition Matching Effort**
-  
-  | Effort Level | Recognition |
+  | Nivel de esfuerzo | Reconocimiento |
   |--------------|-------------|
-  | Light (2-4 hrs/mo) | Swag, early access |
-  | Medium (8-12 hrs/mo) | Above + stipend, events |
-  | Heavy (20+ hrs/mo) | Above + compensation, advisory role |
+  | Luz (2-4 horas/mes) | Swag, acceso anticipado |
+  | Medio (8-12 horas/mes) | Arriba + estipendio, eventos |
+  | Pesado (más de 20 horas/mes) | Arriba + compensación, función asesora |
   
-  ### Burnout Recovery
+  ### Recuperación del agotamiento
   
-  1. Acknowledge and thank
-  2. Offer break without judgment
-  3. Reduce scope when they return
-  4. Add capacity to team
+  1. Reconocer y agradecer
+  2. Ofrecer un descanso sin juzgar
+  3. Reducir el alcance cuando regresen
+  4. Agregue capacidad al equipo
   
-  ### Healthy Program Metrics
+  ### Métricas del programa saludable
   
-  | Metric | Target |
+  | Métrica | Objetivo |
   |--------|--------|
-  | Ambassador tenure | >12 months avg |
-  | Churn rate | <25% annually |
-  | NPS of ambassadors | >50 |
-  | Workload spread | No one >25% of output |
+  | Duración del embajador | >12 meses promedio |
+  | Tasa de abandono | <25% anual |
+  | NPS de embajadores | >50 |
+  | Distribución de la carga de trabajo | Nadie >25% de la producción |
   
-### **Symptoms**
-  - Top contributors going quiet
-  - Declining commitment fulfillment
-  - Complaints in feedback sessions
-### **Detection Pattern**
-ambassador|champion|contributor
 
-## Community Attribution Gaps
+### **Síntomas**
+  - Los principales contribuyentes se quedan callados.
+  - Disminución del cumplimiento de compromisos.
+  - Quejas en sesiones de feedback
 
-### **Id**
-community-attribution-gaps
-### **Summary**
-Can't prove community's business value
-### **Severity**
-medium
-### **Situation**
-Leadership questions community investment
-### **Why**
-  No attribution system in place.
-  Qualitative value not quantified.
-  ROI calculation missing.
+### **Patrón de detección**
+embajador|campeón|colaborador
+
+## Brechas de atribución comunitaria
+
+### **Identificación**
+brechas-de-atribución-comunitaria
+
+### **Resumen**
+No se puede probar el valor comercial de la comunidad.
+
+### **Severidad**
+medio
+
+### **Situación**
+El liderazgo cuestiona la inversión comunitaria
+
+### **Por qué**
+  No existe ningún sistema de atribución.
+  Valor cualitativo no cuantificado.
+  Falta el cálculo del ROI.
   
-### **Solution**
-  ## Building Community Attribution
+
+### **Solución**
+  ## Construyendo atribución comunitaria
   
-  ### Quick-Win Attribution
+  ### Atribución de ganancia rápida
   
-  **1. Survey Attribution**
-  ```
+  **1. Atribución de encuesta**
+
+```
   Signup survey:
   "How did you hear about us?"
   - Community/forum
   - Community event
   - Friend/colleague (community member)
   - User content (tutorial, review)
-  ```
-  
-  **2. Referral Tracking**
-  ```
+  ```**2. Seguimiento de referencias**
+
+```
   Ambassador referral links:
   product.com/signup?ref=ambassador-name
   
   Track: Signups, conversions, LTV
-  ```
-  
-  **3. Event Attribution**
-  ```
+  ```**3. Atribución de evento**
+
+```
   Event → Registration → Signup within 30 days
   
   Track: Event-attributed conversions
-  ```
   
-  ### Advanced Attribution
+
+```
+
+### Atribución avanzada
   
-  **Cohort Analysis**
-  ```
+  **Análisis de cohorte**
+
+```
   Compare users who:
   A) Joined community before purchase
   B) Never joined community
@@ -215,10 +235,9 @@ Leadership questions community investment
   - LTV
   - Retention
   - NPS
-  ```
-  
-  **Influence Tracking**
-  ```
+  ```**Seguimiento de influencia**
+
+```
   Tag users who touch community:
   - Viewed community content
   - Asked/answered question
@@ -226,11 +245,13 @@ Leadership questions community investment
   - Connected with ambassador
   
   Attribute % of conversion to community
-  ```
   
-  ### ROI Framework
-  
-  ```
+
+```
+
+### Marco de retorno de la inversión
+
+```
   Quarterly Community ROI
   
   Value Created:
@@ -248,150 +269,168 @@ Leadership questions community investment
   Total Cost: $X
   
   ROI: (Value - Cost) / Cost = X%
-  ```
   
-### **Symptoms**
-  - What's the ROI of community?
-  - Budget pressure on community team
-  - Can't justify headcount
-### **Detection Pattern**
-community ROI|attribution|value
 
-## Platform Mismatch
+```
 
-### **Id**
-platform-mismatch
-### **Summary**
-Wrong community platform for audience
-### **Severity**
-medium
-### **Situation**
-Engagement low despite good content
-### **Why**
-  Platform doesn't match user behavior.
-  Friction too high.
-  Features don't support use case.
+### **Síntomas**
+  - ¿Cuál es el retorno de la inversión de la comunidad?
+  - Presión presupuestaria sobre el equipo comunitario.
+  - No se puede justificar la plantilla
+
+### **Patrón de detección**
+ROI de la comunidad|atribución|valor
+
+## Falta de coincidencia de plataforma
+
+### **Identificación**
+falta de coincidencia de plataforma
+
+### **Resumen**
+Plataforma comunitaria incorrecta para la audiencia
+
+### **Severidad**
+medio
+
+### **Situación**
+Compromiso bajo a pesar del buen contenido
+
+### **Por qué**
+  La plataforma no coincide con el comportamiento del usuario.
+  Fricción demasiado alta.
+  Las funciones no admiten casos de uso.
   
-### **Solution**
-  ## Platform-Audience Fit
+
+### **Solución**
+  ## Ajuste plataforma-audiencia
   
-  ### Audience Analysis
+  ### Análisis de audiencia
   
-  **Developer/Technical Audience**
-  - Prefer: Discord, GitHub Discussions, Discourse
-  - Avoid: Facebook, LinkedIn groups
-  - Why: Technical features, code formatting, integrations
+  **Desarrollador/Audiencia técnica**
+  - Preferir: Discord, Discusiones de GitHub, Discurso
+  - Evitar: Facebook, grupos de LinkedIn
+  - Por qué: características técnicas, formato de código, integraciones.
   
-  **Business/Marketing Audience**
-  - Prefer: Slack, Circle, LinkedIn
-  - Avoid: Discord, IRC
-  - Why: Professional feel, familiar interface
+  **Audiencia empresarial/de marketing**
+  - Prefiero: Slack, Circle, LinkedIn
+  - Evitar: Discord, IRC
+  - Por qué: sensación profesional, interfaz familiar
   
-  **Consumer/General Audience**
-  - Prefer: Facebook, Discord, Reddit
-  - Avoid: Enterprise platforms
-  - Why: Where they already are
+  **Consumidor/Público General**
+  - Preferir: Facebook, Discord, Reddit
+  - Evitar: plataformas empresariales
+  - Por qué: donde ya están
   
-  ### Platform Selection Matrix
+  ### Matriz de selección de plataforma
   
-  | Need | Forum (Discourse) | Chat (Discord) | Social (Circle) |
+  | Necesidad | Foro (Discurso) | Charla (Discordia) | Social (Círculo) |
   |------|-------------------|----------------|-----------------|
-  | Long-form discussion | ✓✓✓ | ✗ | ✓ |
-  | Real-time chat | ✗ | ✓✓✓ | ✓ |
-  | SEO value | ✓✓✓ | ✗ | ✓ |
-  | Events/courses | ✓ | ✓ | ✓✓✓ |
-  | Knowledge base | ✓✓✓ | ✗ | ✓ |
+  | Discusión larga | ✓ ✓ ✓ | ✗ | ✓ |
+  | Chat en tiempo real | ✗ | ✓ ✓ ✓ | ✓ |
+  | Valor SEO | ✓ ✓ ✓ | ✗ | ✓ |
+  | Eventos/cursos | ✓ | ✓ | ✓ ✓ ✓ |
+  | Base de conocimientos | ✓ ✓ ✓ | ✗ | ✓ |
   
-  ### Migration Decision
+  ### Decisión de migración
   
-  Migrate when:
-  - Engagement consistently <20% of expected
-  - User feedback strongly negative
-  - Business needs changed
-  - Current platform limiting growth
+  Migrar cuando:
+  - Compromiso consistentemente <20% de lo esperado
+  - Comentarios de los usuarios muy negativos.
+  - Las necesidades comerciales cambiaron.
+  - La plataforma actual limita el crecimiento.
   
-  Don't migrate when:
-  - Just "grass is greener"
-  - No clear user demand
-  - Migration cost > benefit
+  No migre cuando:
+  - Simplemente "la hierba es más verde"
+  - No hay una demanda clara de los usuarios.
+  - Costo de migración > beneficio
   
-### **Symptoms**
-  - Users complain about platform
-  - Low signup-to-active ratio
-  - Alternative communities forming elsewhere
-### **Detection Pattern**
-platform|Discord|Slack|forum
 
-## Scaling Too Fast
+### **Síntomas**
+  - Los usuarios se quejan de la plataforma.
+  - Baja proporción de registro a activo
+  - Se forman comunidades alternativas en otros lugares
 
-### **Id**
-scaling-too-fast
-### **Summary**
-Growing community beyond management capacity
-### **Severity**
-medium
-### **Situation**
-Quality drops as community grows
-### **Why**
-  Moderation can't keep up.
-  Culture diluted.
-  Signal-to-noise ratio drops.
+### **Patrón de detección**
+plataforma|Discord|Slack|foro
+
+## Escalar demasiado rápido
+
+### **Identificación**
+escalando demasiado rápido
+
+### **Resumen**
+Comunidad en crecimiento más allá de la capacidad de gestión
+
+### **Severidad**
+medio
+
+### **Situación**
+La calidad disminuye a medida que la comunidad crece
+
+### **Por qué**
+  La moderación no puede seguir el ritmo.
+  Cultivo diluido.
+  La relación señal-ruido cae.
   
-### **Solution**
-  ## Controlled Community Scaling
+
+### **Solución**
+  ## Escalamiento comunitario controlado
   
-  ### Scaling Thresholds
+  ### Umbrales de escala
   
-  | Members | Team Needed | Focus |
+  | Miembros | Equipo necesario | Enfoque |
   |---------|-------------|-------|
-  | 0-500 | 0.5 FTE | Culture, founding members |
-  | 500-2000 | 1 FTE | Structure, programs |
-  | 2000-10000 | 2-3 FTE | Moderation, automation |
-  | 10000+ | 3-5+ FTE | Sub-communities, delegation |
+  | 0-500 | 0,5 ETC | Cultura, miembros fundadores |
+  | 500-2000 | 1 tiempo completo | Estructura, programas |
+  | 2000-10000 | 2-3 tiempo completo | Moderación, automatización |
+  | 10000+ | 3-5+ tiempo completo | Subcomunidades, delegación |
   
-  ### Quality Control at Scale
+  ### Control de calidad a escala
   
-  **1. Moderation Scaling**
-  ```
+  **1. Escala de moderación**
+
+```
   Early: Founder/team moderates
   Growth: Add volunteer moderators
   Scale: Moderation tools + volunteers + staff
-  ```
-  
-  **2. Culture Documentation**
-  ```
+  ```**2. Documentación cultural**
+
+```
   Create and enforce:
   - Community guidelines
   - Quality standards
   - Escalation paths
   - Recognition of good behavior
-  ```
-  
-  **3. Sub-Community Structure**
-  ```
+  ```**3. Estructura subcomunitaria**
+
+```
   Main community
   ├── Beginner zone
   ├── Advanced users
   ├── Regional groups
   └── Topic-specific
-  ```
   
-  ### Growth Gates
+
+```
+
+### Puertas de crecimiento
   
-  **Consider gating when:**
-  - Moderation backlog growing
-  - Quality complaints increasing
-  - Core members disengaging
+  **Considere la posibilidad de cerrar puertas cuando:**
+  - Crece el retraso en la moderación
+  - Las quejas sobre la calidad aumentan
+  - Los miembros principales se desconectan
   
-  **Gating options:**
-  - Application process
-  - Invite-only periods
-  - Qualification requirements
-  - Waitlist
+  **Opciones de puerta:**
+  - Proceso de solicitud
+  - Períodos solo por invitación
+  - Requisitos de calificación
+  - Lista de espera
   
-### **Symptoms**
-  - Quality complaints from long-time members
-  - Moderation team overwhelmed
-  - Core contributors leaving
-### **Detection Pattern**
-scaling|growth|moderation
+
+### **Síntomas**
+  - Quejas de calidad de miembros antiguos.
+  - Equipo de moderación abrumado
+  - Los principales contribuyentes se van
+
+### **Patrón de detección**
+escalamiento|crecimiento|moderación

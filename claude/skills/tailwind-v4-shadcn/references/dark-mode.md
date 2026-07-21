@@ -1,18 +1,18 @@
-# Dark Mode Implementation
+# Implementación del modo oscuro
 
-## Overview
+## Descripción general
 
-Tailwind v4 + shadcn/ui dark mode requires:
-1. `ThemeProvider` component to manage state
-2. `.dark` class toggling on `<html>` element
-3. localStorage persistence
-4. System theme detection
+El modo oscuro Tailwind v4 + shadcn/ui requiere:
+1. `ThemeProvider` componente para gestionar el estado
+2. `.dark` cambio de clase activado`<html>` elemento
+3. persistencia del almacenamiento local
+4. Detección de temas del sistema
 
 ---
 
-## ThemeProvider Component
+## Componente ThemeProvider
 
-### Full Implementation
+### Implementación completa
 
 ```typescript
 // src/components/theme-provider.tsx
@@ -93,7 +93,7 @@ export const useTheme = () => {
 }
 ```
 
-### Wrap Your App
+### Envuelve tu aplicación
 
 ```typescript
 // src/main.tsx
@@ -106,17 +106,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </React.StrictMode>,
 )
-```
+```---
 
----
+## Componente de alternancia de tema
 
-## Theme Toggle Component
-
-### Using shadcn/ui Dropdown Menu
+### Usando el menú desplegable shadcn/ui
 
 ```bash
 pnpm dlx shadcn@latest add dropdown-menu
-```
+``
 
 ```typescript
 // src/components/mode-toggle.tsx
@@ -156,13 +154,11 @@ export function ModeToggle() {
     </DropdownMenu>
   )
 }
-```
+```---
 
----
+## Cómo funciona
 
-## How It Works
-
-### Theme Flow
+### Flujo del tema
 
 ```
 User selects theme → setTheme() called
@@ -182,7 +178,7 @@ CSS variables update (.dark overrides :root)
 UI updates automatically
 ```
 
-### System Theme Detection
+### Detección de temas del sistema
 
 ```typescript
 if (theme === 'system') {
@@ -190,50 +186,46 @@ if (theme === 'system') {
     .matches ? 'dark' : 'light'
   root.classList.add(systemTheme)
 }
-```
-
-This respects the user's OS preference when "System" is selected.
+```Esto respeta la preferencia del sistema operativo del usuario cuando se selecciona "Sistema".
 
 ---
 
-## Common Issues
+## Problemas comunes
 
-### Issue: Dark mode not switching
+### Problema: el modo oscuro no cambia
 
-**Cause:** Theme provider not wrapping app
-**Fix:** Ensure `<ThemeProvider>` wraps your app in `main.tsx`
+**Causa:** El proveedor del tema no ajusta la aplicación
+**Solución:** Asegurar `<ThemeProvider>` envuelve tu aplicación en`main.tsx`### Problema: el tema se restablece al actualizar la página
 
-### Issue: Theme resets on page refresh
+**Causa:** el almacenamiento local no funciona
+**Solución:** Verifique la configuración de privacidad del navegador, agregue respaldo de almacenamiento de sesión
 
-**Cause:** localStorage not working
-**Fix:** Check browser privacy settings, add sessionStorage fallback
+### Problema: Flash de un tema incorrecto al cargar
 
-### Issue: Flash of wrong theme on load
+**Causa:** Tema aplicado después del renderizado inicial.
+**Solución:** Agregar secuencia de comandos en línea a `index.html`(avanzado)
 
-**Cause:** Theme applied after initial render
-**Fix:** Add inline script to `index.html` (advanced)
+### Problema: los iconos no cambian
 
-### Issue: Icons not changing
-
-**Cause:** CSS transitions not working
-**Fix:** Verify icon classes use `dark:` variants for animations
+**Causa:** Las transiciones CSS no funcionan
+**Solución:** Verificar el uso de clases de íconos `dark:` variantes para animaciones
 
 ---
 
-## Testing Checklist
+## Lista de verificación de pruebas
 
-- [ ] Light mode displays correctly
-- [ ] Dark mode displays correctly
-- [ ] System mode respects OS setting
-- [ ] Theme persists after page refresh
-- [ ] Toggle component shows current state
-- [ ] All text has proper contrast
-- [ ] No flash of wrong theme on load
-- [ ] Works in incognito mode (graceful fallback)
+- [] El modo de luz se muestra correctamente
+- [] El modo oscuro se muestra correctamente
+- [] El modo del sistema respeta la configuración del sistema operativo
+- [] El tema persiste después de actualizar la página.
+- [] El componente de alternancia muestra el estado actual
+- [] Todo el texto tiene el contraste adecuado.
+- [] No aparece ningún tema incorrecto al cargar
+- [] Funciona en modo incógnito (retroceso elegante)
 
 ---
 
-## Official Documentation
+## Documentación oficial
 
-- shadcn/ui Dark Mode (Vite): https://ui.shadcn.com/docs/dark-mode/vite
-- Tailwind Dark Mode: https://tailwindcss.com/docs/dark-mode
+- Modo oscuro shadcn/ui (Vite): https://ui.shadcn.com/docs/dark-mode/vite
+- Modo oscuro Tailwind: https://tailwindcss.com/docs/dark-mode

@@ -1,130 +1,124 @@
-# Financial Unit Economics Templates
+# Plantillas de economía de unidades financieras
 
-Quick-start templates for calculating CAC, LTV, contribution margin, and cohort analysis.
+Plantillas de inicio rápido para calcular CAC, LTV, margen de contribución y análisis de cohortes.
 
-## Unit Definition Template
+## Plantilla de definición de unidad
 
-**Business model**: [Subscription / Transactional / Marketplace / Freemium / Enterprise]
+**Modelo de negocio**: [Suscripción / Transaccional / Marketplace / Freemium / Enterprise]
 
-**Unit of analysis**: [What are you measuring?]
-- Customer (entire relationship)
-- Subscription (per subscription period)
-- Transaction (per purchase)
-- Product SKU (per product sold)
-- User (active user)
+**Unidad de análisis**: [¿Qué estás midiendo?]
+- Cliente (toda la relación)
+- Suscripción (por período de suscripción)
+- Transacción (por compra)
+- SKU del producto (por producto vendido)
+- Usuario (usuario activo)
 
-**Time period**: [Monthly / Quarterly / Annual cohorts]
+**Periodo de tiempo**: [Cohortes mensuales/trimestrales/anuales]
 
-**Segments** (if analyzing by segment):
-- [ ] Acquisition channel (paid search, organic, referral, etc.)
-- [ ] Customer type (B2B vs B2C, SMB vs Enterprise)
-- [ ] Geography (US, EU, APAC)
-- [ ] Product tier (Free, Pro, Enterprise)
+**Segmentos** (si se analiza por segmento):
+- [ ] Canal de adquisición (búsqueda paga, orgánica, referencia, etc.)
+- [] Tipo de cliente (B2B vs B2C, SMB vs Enterprise)
+- [] Geografía (EE.UU., UE, APAC)
+- [] Nivel de producto (Gratis, Pro, Empresarial)
 
 ---
 
-## CAC Calculation Template
+## Plantilla de cálculo CAC
 
-**Customer Acquisition Cost (CAC)** = Total acquisition costs ÷ New customers acquired
+**Costo de adquisición de clientes (CAC)** = Costos totales de adquisición ÷ Nuevos clientes adquiridos
 
-### Fully-Loaded CAC
+### CAC completamente cargado
 
-**Sales & Marketing Costs** (period: [Month/Quarter/Year])
+**Costos de ventas y marketing** (período: [Mes/Trimestre/Año])
 
-| Cost Category | Amount | Notes |
+| Categoría de costo | Cantidad | Notas |
 |---------------|--------|-------|
-| **Marketing spend** | $[X] | Paid ads, content marketing, events, tools |
-| **Sales team salaries** | $[X] | Base + commission + benefits |
-| **Sales tools & software** | $[X] | CRM, sales engagement, analytics |
-| **Marketing team salaries** | $[X] | Marketers, designers, contractors |
-| **Overhead allocation** | $[X] | % of office, admin costs attributable to S&M |
-| **Other** | $[X] | [Specify] |
-| **Total S&M Cost** | **$[X]** | Sum of above |
+| **Gasto en marketing** | $[X] | Anuncios pagos, marketing de contenidos, eventos, herramientas |
+| **Salarios del equipo de ventas** | $[X] | Base + comisión + beneficios |
+| **Herramientas y software de ventas** | $[X] | CRM, compromiso de ventas, análisis |
+| **Salarios del equipo de marketing** | $[X] | Comercializadores, diseñadores, contratistas |
+| **Asignación de gastos generales** | $[X] | % de costes de oficina y administración atribuibles a S&M |
+| **Otro** | $[X] | [Especificar] |
+| **Costo total de S&M** | **$[X]** | Suma de lo anterior |
 
-**New customers acquired** (same period): [N]
+**Nuevos clientes adquiridos** (mismo periodo): [N]
 
-**CAC = $[Total Cost] ÷ [N customers] = $[CAC per customer]**
+**CAC = $[Costo total] ÷ [N clientes] = $[CAC por cliente]**
 
-### CAC by Channel
+### CAC por canal
 
-Break down CAC by acquisition channel to identify most/least efficient channels.
+Desglose el CAC por canal de adquisición para identificar los canales más/menos eficientes.
 
-| Channel | S&M Spend | New Customers | CAC | Notes |
+| Canal | Gasto en S&M | Nuevos clientes | CAC | Notas |
 |---------|-----------|---------------|-----|-------|
-| Paid Search | $[X] | [N] | $[X/N] | [Google Ads, Bing] |
-| Paid Social | $[X] | [N] | $[X/N] | [Facebook, LinkedIn, etc.] |
-| Content/SEO | $[X] | [N] | $[X/N] | [Organic, blog, SEO tools] |
-| Referral | $[X] | [N] | $[X/N] | [Referral program costs] |
-| Direct | $[X] | [N] | $[X/N] | [Type-in, brand awareness] |
-| Other | $[X] | [N] | $[X/N] | [Specify] |
-| **Total** | **$[X]** | **[N]** | **$[Blended CAC]** | Fully-loaded blended CAC |
+| Búsqueda pagada | $[X] | [N] | $[X/N] | [Anuncios de Google, Bing] |
+| Redes sociales pagadas | $[X] | [N] | $[X/N] | [Facebook, LinkedIn, etc.] |
+| Contenido/SEO | $[X] | [N] | $[X/N] | [Orgánico, blog, herramientas SEO] |
+| Referencia | $[X] | [N] | $[X/N] | [Costos del programa de recomendación] |
+| Directo | $[X] | [N] | $[X/N] | [Escribiendo, reconocimiento de marca] |
+| Otro | $[X] | [N] | $[X/N] | [Especificar] |
+| **Totales** | **$[X]** | **[N]** | **$[CAC combinado]** | CAC combinado completamente cargado |
 
-**Insight**: [Which channels are most/least efficient? Where to increase/decrease spend?]
+**Perspectiva**: [¿Qué canales son más o menos eficientes? ¿Dónde aumentar/disminuir el gasto?]
 
 ---
 
-## LTV Calculation Template
+## Plantilla de cálculo de LTV
 
-**Lifetime Value (LTV)** = Revenue over customer lifetime × Gross margin %
+**Valor de por vida (LTV)** = Ingresos durante la vida del cliente × % de margen bruto
 
-Choose calculation method based on business model:
+Elija el método de cálculo según el modelo de negocio:
 
-### LTV (Subscription Model)
+### LTV (modelo de suscripción)
 
 ```
 LTV = ARPU × Gross Margin % ÷ Monthly Churn Rate
-```
+```**Entradas**:
+- **ARPU** (ingresos promedio por usuario): $[X]/mes
+- **% de margen bruto**: [X]% (ingresos - COGS) ÷ ingresos
+- **Tasa de abandono mensual**: [X]% (clientes perdidos ÷ clientes iniciales)
 
-**Inputs**:
-- **ARPU** (Average Revenue Per User): $[X]/month
-- **Gross Margin %**: [X]% (Revenue - COGS) ÷ Revenue
-- **Monthly Churn Rate**: [X]% (customers lost ÷ starting customers)
+**Cálculo**:
+- **Vida útil del cliente** = 1 ÷ Tasa de abandono = 1 ÷ [X]% = [Y] meses
+- **LTV** = $[ARPU] × [Y meses] × [% de margen bruto] = **$[LTV]**
 
-**Calculation**:
-- **Customer Lifetime** = 1 ÷ Churn Rate = 1 ÷ [X]% = [Y] months
-- **LTV** = $[ARPU] × [Y months] × [Gross Margin %] = **$[LTV]**
-
-### LTV (Transactional Model)
+### LTV (modelo transaccional)
 
 ```
 LTV = AOV × Purchase Frequency × Gross Margin % × Customer Lifetime (years)
-```
+```**Entradas**:
+- **AOV** (Valor promedio del pedido): $[X] por transacción
+- **Frecuencia de compra**: [Y] compras/año
+- **Margen bruto %**: [Z]%
+- **Vida útil del cliente**: [N] años
 
-**Inputs**:
-- **AOV** (Average Order Value): $[X] per transaction
-- **Purchase Frequency**: [Y] purchases/year
-- **Gross Margin %**: [Z]%
-- **Customer Lifetime**: [N] years
+**Cálculo**:
+- **Ingresos anuales por cliente** = $[AOV] × [Frecuencia] = $[X]/año
+- **LTV** = $[Ingresos anuales] × [Años de vida útil] × [% de margen bruto] = **$[LTV]**
 
-**Calculation**:
-- **Annual Revenue per Customer** = $[AOV] × [Frequency] = $[X]/year
-- **LTV** = $[Annual Revenue] × [Lifetime years] × [Gross Margin %] = **$[LTV]**
-
-### LTV (Marketplace / Platform)
+### LTV (Mercado/Plataforma)
 
 ```
 LTV = GMV per user × Take Rate × Gross Margin % ÷ Churn Rate
-```
+```**Entradas**:
+- **GMV por usuario** (mensual): $[X]
+- **Tasa de aceptación**: [Y]% (% de GMV de la plataforma)
+- **% de margen bruto**: [Z]% (después de costos variables)
+- **Tasa de abandono mensual**: [C]%
 
-**Inputs**:
-- **GMV per user** (monthly): $[X]
-- **Take Rate**: [Y]% (platform's % of GMV)
-- **Gross Margin %**: [Z]% (after variable costs)
-- **Monthly Churn Rate**: [C]%
+**Cálculo**:
+- **Ingresos mensuales por usuario** = $[GMV] × [Take Rate] = $[X]/mes
+- **Vida útil del cliente** = 1 ÷ [Curn] = [Y] meses
+- **LTV** = $[Revisión mensual] × [Vida útil] × [% de margen bruto] = **$[LTV]**
 
-**Calculation**:
-- **Monthly Revenue per User** = $[GMV] × [Take Rate] = $[X]/month
-- **Customer Lifetime** = 1 ÷ [Churn] = [Y] months
-- **LTV** = $[Monthly Rev] × [Lifetime] × [Gross Margin %] = **$[LTV]**
+### LTV por cohorte (retención observada)
 
-### LTV by Cohort (Observed Retention)
+Más preciso: utilice datos de retención reales de cohortes.
 
-More accurate: Use actual retention data from cohorts.
+**Tabla de retención de cohorte de ejemplo** (% de clientes restantes):
 
-**Example Cohort Retention Table** (% of customers remaining):
-
-| Month | Cohort Jan | Cohort Feb | Cohort Mar | Average |
-|-------|------------|------------|------------|---------|
+| Mes | Cohorte enero | Cohorte febrero | Cohorte marzo | Promedio |
+|-------|------------|------------|------------|-----------------|
 | 0 | 100% | 100% | 100% | 100% |
 | 1 | 95% | 94% | 96% | 95% |
 | 2 | 88% | 86% | 89% | 88% |
@@ -132,178 +126,176 @@ More accurate: Use actual retention data from cohorts.
 | 6 | 65% | 62% | - | 64% |
 | 12 | 45% | - | - | 45% |
 
-**LTV Calculation**:
-- Sum: Month 0 revenue + (Month 1 retention × revenue) + (Month 2 retention × revenue) + ...
-- **LTV** = ARPU × Gross Margin × Σ(retention %) = **$[X]**
+**Cálculo LTV**:
+- Suma: Ingresos del mes 0 + (Retención del mes 1 × ingresos) + (Retención del mes 2 × ingresos) +...
+- **LTV** = ARPU × Margen bruto × Σ(% de retención) = **$[X]**
 
 ---
 
-## Contribution Margin Template
+## Plantilla de margen de contribución
 
-**Contribution Margin %** = (Revenue - Variable Costs) ÷ Revenue
+**Margen de contribución %** = (Ingresos - Costos variables) ÷ Ingresos
 
-### Revenue & Variable Costs
+### Ingresos y costos variables
 
-| Item | Per Unit | Notes |
+| Artículo | Por unidad | Notas |
 |------|----------|-------|
-| **Revenue** | $[X] | Subscription fee / Sale price / Transaction value |
-| **Variable Costs:** | | (costs that scale with each unit) |
-| - COGS | $[X] | Product cost, manufacturing |
-| - Hosting / Infrastructure | $[X] | Per-user server costs |
-| - Payment processing | $[X] | Stripe/PayPal fees (~2-3%) |
-| - Support | $[X] | Per-customer support time |
-| - Shipping | $[X] | Fulfillment, delivery |
-| - Other variable | $[X] | [Specify] |
-| **Total Variable Costs** | **$[Y]** | Sum |
-| **Contribution Margin** | **$[X - Y]** | Revenue - Variable Costs |
-| **Contribution Margin %** | **[(X-Y)/X]%** | Margin as % |
+| **Ingresos** | $[X] | Cuota de suscripción / Precio de venta / Valor de transacción |
+| **Costos variables:** | | (costos que escalan con cada unidad) |
+| - Dientes | $[X] | Costo del producto, fabricación |
+| - Alojamiento / Infraestructura | $[X] | Costos del servidor por usuario |
+| - Procesamiento de pagos | $[X] | Tarifas de Stripe/PayPal (~2-3%) |
+| - Soporte | $[X] | Tiempo de atención por cliente |
+| - Envío | $[X] | Cumplimiento, entrega |
+| - Otras variables | $[X] | [Especificar] |
+| **Costos variables totales** | **$[Y]** | Suma |
+| **Margen de contribución** | **$[X-Y]** | Ingresos - Costos variables |
+| **Margen de contribución %** | **[(X-Y)/X]%** | Margen como % |
 
-**Interpretation**:
-- **High margin (>60%)**: Strong unit economics, room for high CAC
-- **Medium margin (40-60%)**: Acceptable, need disciplined CAC management
-- **Low margin (<40%)**: Challenging, requires very efficient acquisition or high LTV
+**Interpretación**:
+- **Alto margen (>60%)**: Economía unitaria sólida, espacio para un CAC alto
+- **Margen medio (40-60%)**: Aceptable, necesita una gestión disciplinada del CAC
+- **Margen bajo (<40%)**: desafiante, requiere una adquisición muy eficiente o un LTV alto
 
-**Levers to improve margin**:
-- [ ] Increase pricing (improve revenue per unit)
-- [ ] Reduce COGS (negotiate supplier costs, economies of scale)
-- [ ] Optimize infrastructure (reduce hosting costs per user)
-- [ ] Automate support (reduce manual support time)
-- [ ] Negotiate payment fees (lower processing costs)
+**Palancas para mejorar el margen**:
+- [] Aumentar el precio (mejorar los ingresos por unidad)
+- [ ] Reducir COGS (negociar costos de proveedores, economías de escala)
+- [ ] Optimizar la infraestructura (reducir los costos de alojamiento por usuario)
+- [] Automatizar el soporte (reducir el tiempo de soporte manual)
+- [ ] Negociar tarifas de pago (menores costos de procesamiento)
 
 ---
 
-## Cohort Analysis Template
+## Plantilla de análisis de cohorte
 
-Track retention, LTV, and payback by customer acquisition cohort (month, channel, segment).
+Realice un seguimiento de la retención, el LTV y la recuperación de la inversión por cohorte de adquisición de clientes (mes, canal, segmento).
 
-### Retention Cohort Table
+### Tabla de cohorte de retención
 
-| Cohort (Month Acquired) | M0 | M1 | M2 | M3 | M6 | M12 | LTV | CAC | LTV/CAC | Payback (months) |
-|-------------------------|----|----|----|----|----|----|-----|-----|---------|------------------|
-| Jan 2024 | 100% | 92% | 84% | 78% | 62% | 42% | $1,200 | $300 | 4.0 | 4.5 |
-| Feb 2024 | 100% | 90% | 81% | 75% | 60% | - | $1,150 | $320 | 3.6 | 5.0 |
-| Mar 2024 | 100% | 93% | 86% | 80% | 65% | - | $1,300 | $280 | 4.6 | 4.0 |
-| Apr 2024 | 100% | 91% | 83% | 77% | - | - | $1,100 | $350 | 3.1 | 5.5 |
-| **Average** | **100%** | **91.5%** | **83.5%** | **77.5%** | **62.3%** | **42%** | **$1,188** | **$313** | **3.8** | **4.8** |
+| Cohorte (mes de adquisición) | M0 | M1 | M2 | M3 | M6 | M12 | TVL | CAC | LTV/CAC | Recuperación (meses) |
+|---------------------------------|----|----|----|----|----|----|-----|-----|---------|------------------|
+| enero de 2024 | 100% | 92% | 84% | 78% | 62% | 42% | $1,200 | $300 | 4.0 | 4.5 |
+| febrero de 2024 | 100% | 90% | 81% | 75% | 60% | - | $1,150 | $320 | 3.6 | 5.0 |
+| marzo de 2024 | 100% | 93% | 86% | 80% | 65% | - | $1,300 | $280 | 4.6 | 4.0 |
+| abril de 2024 | 100% | 91% | 83% | 77% | - | - | $1,100 | $350 | 3.1 | 5.5 |
+| **Promedio** | **100%** | **91,5%** | **83,5%** | **77,5%** | **62,3%** | **42%** | **$1,188** | **$313** | **3,8** | **4,8** |
 
-**Insights**:
-- [Are newer cohorts performing better or worse than older cohorts?]
-- [Which cohorts have best/worst retention?]
-- [Is LTV improving over time?]
-- [Is CAC increasing or decreasing?]
+**Perspectivas**:
+- [¿Las cohortes más nuevas tienen un rendimiento mejor o peor que las cohortes más antiguas?]
+- [¿Qué cohortes tienen mejor/peor retención?]
+- [¿Está mejorando el LTV con el tiempo?]
+- [¿El CAC está aumentando o disminuyendo?]
 
-### Cohort by Channel
+### Cohorte por canal
 
-| Channel | # Customers | Avg LTV | Avg CAC | LTV/CAC | 12M Retention | Payback (months) |
+| Canal | # Clientes | LTV promedio | CAC promedio | LTV/CAC | Retención de 12M | Recuperación (meses) |
 |---------|-------------|---------|---------|---------|---------------|------------------|
-| Paid Search | 500 | $800 | $250 | 3.2 | 35% | 6.0 |
-| Organic | 300 | $1,500 | $150 | 10.0 | 55% | 3.0 |
-| Referral | 200 | $1,800 | $100 | 18.0 | 60% | 2.5 |
-| Paid Social | 400 | $700 | $300 | 2.3 | 30% | 7.0 |
-| **Total** | **1,400** | **$1,050** | **$225** | **4.7** | **42%** | **5.0** |
+| Búsqueda pagada | 500 | $800 | $250 | 3.2 | 35% | 6.0 |
+| Orgánico | 300 | $1,500 | $150 | 10.0 | 55% | 3.0 |
+| Referencia | 200 | $1,800 | $100 | 18.0 | 60% | 2.5 |
+| Redes sociales pagadas | 400 | $700 | $300 | 2.3 | 30% | 7.0 |
+| **Totales** | **1.400** | **$1,050** | **$225** | **4,7** | **42%** | **5.0** |
 
-**Insights**:
-- [Best channels: Referral (high LTV, low CAC, fast payback, high retention)]
-- [Worst channels: Paid Social (low LTV, high CAC, slow payback, low retention)]
-- [Action: Increase referral investment, reduce or pause paid social]
+**Perspectivas**:
+- [Mejores canales: referencia (LTV alto, CAC bajo, recuperación rápida, retención alta)]
+- [Peores canales: redes sociales pagadas (LTV bajo, CAC alto, recuperación lenta, retención baja)]
+- [Acción: aumentar la inversión en referencias, reducir o pausar las redes sociales pagas]
 
 ---
 
-## Interpretation Template
+## Plantilla de interpretación
 
-### LTV/CAC Ratio Analysis
+### Análisis del ratio LTV/CAC
 
-**Your LTV/CAC**: [X:1]
-
-| Range | Assessment | Action |
+**Su LTV/CAC**: [X:1]| Gama | Evaluación | Acción |
 |-------|------------|--------|
-| <1:1 | **Unsustainable**: Losing money on every customer | Stop growth, fix model or pivot |
-| 1:1 - 2:1 | **Marginal**: Barely profitable | Don't scale yet, improve retention or reduce CAC |
-| 2:1 - 3:1 | **Acceptable**: Unit economics work | Optimize before scaling |
-| 3:1 - 5:1 | **Good**: Can profitably grow | Scale marketing spend |
-| >5:1 | **Excellent**: Strong economics | Aggressive scale, raise capital |
+| <1:1 | **Insostenible**: Perder dinero con cada cliente | Detener el crecimiento, arreglar el modelo o pivotar |
+| 1:1 - 2:1 | **Marginal**: Apenas rentable | No escale todavía, mejore la retención o reduzca el CAC |
+| 2:1 - 3:1 | **Aceptable**: Trabajo de economía unitaria | Optimizar antes de escalar |
+| 3:1 - 5:1 | **Bueno**: Puede crecer de manera rentable | Escalar el gasto en marketing |
+| >5:1 | **Excelente**: Economía sólida | Escala agresiva, reunir capital |
 
-**Your assessment**: [Based on ratio above]
+**Su evaluación**: [Basado en la proporción anterior]
 
-### Payback Period Analysis
+### Análisis del período de recuperación
 
-**Your Payback Period**: [X] months
+**Su período de recuperación**: [X] meses
 
-| Range | Assessment | Cash Impact |
+| Gama | Evaluación | Impacto en efectivo |
 |-------|------------|-------------|
-| <6 months | **Excellent**: Fast capital recovery | Can reinvest quickly, fuel growth |
-| 6-12 months | **Good**: Reasonable payback | Manageable cash needs |
-| 12-18 months | **Acceptable**: Slower recovery | Need patient capital |
-| >18 months | **Challenging**: Long payback | High cash burn, risky |
+| <6 meses | **Excelente**: Rápida recuperación del capital | Puede reinvertir rápidamente e impulsar el crecimiento |
+| 6-12 meses | **Bueno**: Recuperación razonable | Necesidades de efectivo manejables |
+| 12-18 meses | **Aceptable**: Recuperación más lenta | Necesita capital paciente |
+| >18 meses | **Desafiante**: Recuperación a largo plazo | Alto consumo de efectivo y riesgoso |
 
-**Your assessment**: [Based on payback above]
+**Su evaluación**: [Basado en la recuperación anterior]
 
-### Combined Decision Framework
+### Marco de decisión combinado
 
-| Your Metrics | Recommendation |
-|--------------|----------------|
-| LTV/CAC: [X:1] | [Assessment from table above] |
-| Payback: [Y] months | [Assessment from table above] |
-| Gross Margin: [Z]% | [Good ≥60% (SaaS) / ≥40% (ecommerce), or needs improvement] |
-| **Overall** | **[Stop / Optimize / Scale / Aggressive Scale]** |
+| Tus métricas | Recomendación |
+|----------------------|----------------|
+| LTV/CAC: [X:1] | [Evaluación del cuadro anterior] |
+| Recuperación de la inversión: [Y] meses | [Evaluación del cuadro anterior] |
+| Margen bruto: [Z]% | [Bueno ≥60% (SaaS) / ≥40% (comercio electrónico), o necesita mejorar] |
+| **En general** | **[Detener / Optimizar / Escalar / Escalar agresivamente]** |
 
-### Recommendations
+### Recomendaciones
 
-**Pricing**:
-- [ ] [Increase price to improve margin and LTV]
-- [ ] [Add premium tier for upsell]
-- [ ] [Reduce price to increase conversion]
-- [ ] [No change needed]
+**Precio**:
+- [ ] [Aumentar precio para mejorar margen y LTV]
+- [ ] [Agregar nivel premium para ventas adicionales]
+- [ ] [Reducir el precio para aumentar la conversión]
+- [ ] [No se necesitan cambios]
 
-**Channels**:
-- [ ] [Increase spend on: [channels with best LTV/CAC]]
-- [ ] [Reduce or pause spend on: [channels with poor LTV/CAC]]
-- [ ] [Test new channels: [suggestions]]
+**Canales**:
+- [ ] [Aumentar gasto en: [canales con mejor LTV/CAC]]
+- [ ] [Reducir o pausar el gasto en: [canales con LTV/CAC deficiente]]
+- [ ] [Probar nuevos canales: [sugerencias]]
 
-**Retention**:
-- [ ] [Improve onboarding to reduce early churn]
-- [ ] [Add features to increase engagement]
-- [ ] [Customer success program for high-value customers]
-- [ ] [Loyalty/referral program to increase repeat]
+**Retención**:
+- [ ] [Mejorar la incorporación para reducir la deserción temprana]
+- [] [Agregar funciones para aumentar la participación]
+- [ ] [Programa de éxito del cliente para clientes de alto valor]
+- [ ] [Programa de fidelización/recomendación para aumentar la repetición]
 
-**Growth**:
-- [ ] [Scale aggressively: Economics support growth]
-- [ ] [Optimize first: Improve metrics before scaling]
-- [ ] [Pause growth: Fix unit economics]
+**Crecimiento**:
+- [ ] [Escale agresivamente: la economía apoya el crecimiento]
+- [ ] [Optimizar primero: mejorar las métricas antes de escalar]
+- [ ] [Pausar el crecimiento: arreglar la economía unitaria]
 
-**Cash & Fundraising**:
-- [ ] [Raise funding to fuel growth (if LTV/CAC >3:1 and payback <12 months)]
-- [ ] [Focus on profitability (if LTV/CAC 2-3:1 and payback 12-18 months)]
-- [ ] [Reduce burn (if LTV/CAC <2:1)]
+**Efectivo y recaudación de fondos**:
+- [ ] [Recaudar financiación para impulsar el crecimiento (si LTV/CAC >3:1 y recuperación <12 meses)]
+- [ ] [Centrarse en la rentabilidad (si LTV/CAC 2-3:1 y recuperación de la inversión 12-18 meses)]
+- [ ] [Reducir el consumo (si LTV/CAC <2:1)]
 
 ---
 
-## Quick Example: SaaS Startup
+## Ejemplo rápido: inicio de SaaS
 
-**Unit**: Customer (subscription)
+**Unidad**: Cliente (suscripción)
 
-**CAC**: $20k marketing, 100 customers → **$200 CAC**
+**CAC**: marketing de 20.000 dólares, 100 clientes → **CAC de 200 dólares**
 
 **LTV**:
-- ARPU: $100/month
-- Gross Margin: 80%
-- Monthly Churn: 5% → Lifetime = 1/0.05 = 20 months
+-ARPU: $100/mes
+- Margen Bruto: 80%
+- Rotación mensual: 5% → Vida útil = 1/0,05 = 20 meses
 - **LTV** = $100 × 20 × 80% = **$1,600**
 
-**Metrics**:
-- **LTV/CAC**: $1,600 / $200 = **8:1** ✓ Excellent
-- **Payback**: $200 ÷ ($100 × 80%) = **2.5 months** ✓ Excellent
-- **Gross Margin**: **80%** ✓ Strong
+**Métricas**:
+- **LTV/CAC**: $1,600 / $200 = **8:1** ✓ Excelente
+- **Reembolso**: $200 ÷ ($100 × 80%) = **2,5 meses** ✓ Excelente
+- **Margen bruto**: **80%** ✓ Fuerte
 
-**Recommendation**: **Aggressive scale**. Economics are excellent (8:1 LTV/CAC, 2.5 month payback). Raise capital, increase marketing spend 2-3×, hire sales team, expand to new channels.
+**Recomendación**: **Escala agresiva**. La economía es excelente (LTV/CAC de 8:1, recuperación de la inversión en 2,5 meses). Recaudar capital, aumentar el gasto en marketing entre 2 y 3 veces, contratar un equipo de ventas y expandirse a nuevos canales.
 
 ---
 
-## Common Mistakes to Avoid
+## Errores comunes que se deben evitar
 
-1. **Not using cohort data**: Don't average retention across all time periods. Recent cohorts may behave differently.
-2. **Excluding costs**: Don't forget sales salaries, support, payment fees, refunds.
-3. **Vanity LTV**: Don't project 5-year LTV with 1 month of data. Use observed retention only.
-4. **Ignoring channels**: Don't blend CAC across all channels. Analyze each separately.
-5. **Fixed vs variable costs**: Don't include fixed costs (engineering, rent) in contribution margin. Only variable costs that scale with units.
-6. **Not updating**: Re-calculate quarterly. Unit economics change as you scale, market shifts, competition intensifies.
+1. **No utilizar datos de cohorte**: no promedie la retención en todos los períodos de tiempo. Las cohortes recientes pueden comportarse de manera diferente.
+2. **Excluyendo costos**: No olvide salarios de ventas, soporte, tarifas de pago, reembolsos.
+3. **Vanity LTV**: No proyecte LTV de 5 años con 1 mes de datos. Utilice únicamente retención observada.
+4. **Ignorar canales**: no mezcle CAC en todos los canales. Analiza cada uno por separado.
+5. **Costos fijos versus costos variables**: no incluya los costos fijos (ingeniería, alquiler) en el margen de contribución. Solo costos variables que aumentan con las unidades.
+6. **Sin actualizar**: Vuelva a calcular trimestralmente. La economía unitaria cambia a medida que se escala, el mercado cambia y la competencia se intensifica.

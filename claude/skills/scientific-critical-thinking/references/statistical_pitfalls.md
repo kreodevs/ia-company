@@ -1,506 +1,500 @@
-# Common Statistical Pitfalls
+# Errores estadísticos comunes
 
-## P-Value Misinterpretations
+## Interpretaciones erróneas del valor P
 
-### Pitfall 1: P-Value = Probability Hypothesis is True
-**Misconception:** p = .05 means 5% chance the null hypothesis is true.
+### Error 1: Valor P = La hipótesis de probabilidad es cierta
+**Concepto erróneo:** p = 0,05 significa que hay un 5% de probabilidad de que la hipótesis nula sea cierta.
 
-**Reality:** P-value is the probability of observing data this extreme (or more) *if* the null hypothesis is true. It says nothing about the probability the hypothesis is true.
+**Realidad:** El valor P es la probabilidad de observar datos tan extremos (o más) *si* la hipótesis nula es cierta. No dice nada sobre la probabilidad de que la hipótesis sea cierta.
 
-**Correct interpretation:** "If there were truly no effect, we would observe data this extreme only 5% of the time."
+**Interpretación correcta:** "Si realmente no hubiera ningún efecto, observaríamos datos tan extremos sólo el 5% de las veces".
 
-### Pitfall 2: Non-Significant = No Effect
-**Misconception:** p > .05 proves there's no effect.
+### Error 2: No significativo = Sin efecto
+**Concepto erróneo:** p > .05 demuestra que no hay ningún efecto.
 
-**Reality:** Absence of evidence ≠ evidence of absence. Non-significant results may indicate:
-- Insufficient statistical power
-- True effect too small to detect
-- High variability
-- Small sample size
+**Realidad:** Ausencia de evidencia ≠ evidencia de ausencia. Los resultados no significativos pueden indicar:
+- Poder estadístico insuficiente
+- El efecto real es demasiado pequeño para detectarlo.
+- Alta variabilidad
+- Tamaño de muestra pequeño
 
-**Better approach:**
-- Report confidence intervals
-- Conduct power analysis
-- Consider equivalence testing
+**Mejor enfoque:**
+- Informar intervalos de confianza.
+- Realizar análisis de potencia.
+- Considere las pruebas de equivalencia
 
-### Pitfall 3: Significant = Important
-**Misconception:** Statistical significance means practical importance.
+### Error 3: Significativo = Importante
+**Concepto erróneo:** Significancia estadística significa importancia práctica.
 
-**Reality:** With large samples, trivial effects become "significant." A statistically significant 0.1 IQ point difference is meaningless in practice.
+**Realidad:** Con muestras grandes, los efectos triviales se vuelven "significativos". Una diferencia estadísticamente significativa de 0,1 puntos de coeficiente intelectual no tiene sentido en la práctica.
 
-**Better approach:**
-- Report effect sizes
-- Consider practical significance
-- Use confidence intervals
+**Mejor enfoque:**
+- Tamaños de efecto de informe
+- Considere la importancia práctica.
+- Utilice intervalos de confianza.
 
-### Pitfall 4: P = .049 vs. P = .051
-**Misconception:** These are meaningfully different because one crosses the .05 threshold.
+### Error 4: P = 0,049 frente a P = 0,051
+**Concepción errónea:** Estos son significativamente diferentes porque uno cruza el umbral de 0,05.
 
-**Reality:** These represent nearly identical evidence. The .05 threshold is arbitrary.
+**Realidad:** Estos representan evidencia casi idéntica. El umbral de 0,05 es arbitrario.
 
-**Better approach:**
-- Treat p-values as continuous measures of evidence
-- Report exact p-values
-- Consider context and prior evidence
+**Mejor enfoque:**
+- Tratar los valores p como medidas continuas de evidencia.
+- Informar valores p exactos
+- Considerar el contexto y la evidencia previa.
 
-### Pitfall 5: One-Tailed Tests Without Justification
-**Misconception:** One-tailed tests are free extra power.
+### Error 5: Pruebas unilaterales sin justificación
+**Concepto erróneo:** Las pruebas de una cola son potencia adicional gratuita.
 
-**Reality:** One-tailed tests assume effects can only go one direction, which is rarely true. They're often used to artificially boost significance.
+**Realidad:** Las pruebas de una cola suponen que los efectos sólo pueden ir en una dirección, lo cual rara vez es cierto. A menudo se utilizan para aumentar artificialmente la importancia.
 
-**When appropriate:** Only when effects in one direction are theoretically impossible or equivalent to null.
+**Cuando corresponda:** Sólo cuando los efectos en una dirección sean teóricamente imposibles o equivalentes a nulos.
 
-## Multiple Comparisons Problems
+## Problemas de comparaciones múltiples
 
-### Pitfall 6: Multiple Testing Without Correction
-**Problem:** Testing 20 hypotheses at p < .05 gives ~65% chance of at least one false positive.
+### Error 6: Pruebas múltiples sin corrección
+**Problema:** Probar 20 hipótesis con p < 0,05 da aproximadamente un 65 % de posibilidades de que se produzca al menos un falso positivo.
 
-**Examples:**
-- Testing many outcomes
-- Testing many subgroups
-- Conducting multiple interim analyses
-- Testing at multiple time points
+**Ejemplos:**
+- Probar muchos resultados
+- Probar muchos subgrupos
+- Realización de múltiples análisis intermedios.
+- Pruebas en múltiples momentos
 
-**Solutions:**
-- Bonferroni correction (divide α by number of tests)
-- False Discovery Rate (FDR) control
-- Prespecify primary outcome
-- Treat exploratory analyses as hypothesis-generating
+**Soluciones:**
+- Corrección de Bonferroni (dividir α por el número de pruebas)
+- Control de tasa de descubrimiento falso (FDR)
+- Preespecificar el resultado primario
+- Tratar los análisis exploratorios como generadores de hipótesis.
 
-### Pitfall 7: Subgroup Analysis Fishing
-**Problem:** Testing many subgroups until finding significance.
+### Error 7: Pesca de análisis de subgrupos
+**Problema:** Probar muchos subgrupos hasta encontrar significancia.
 
-**Why problematic:**
-- Inflates false positive rate
-- Often reported without disclosure
-- "Interaction was significant in women" may be random
+**Por qué es problemático:**
+- Infla la tasa de falsos positivos
+- A menudo se informa sin divulgación.
+- "La interacción fue significativa en las mujeres" puede ser aleatorio
 
-**Solutions:**
-- Prespecify subgroups
-- Use interaction tests, not separate tests
-- Require replication
-- Correct for multiple comparisons
+**Soluciones:**
+- Preespecificar subgrupos
+- Utilice pruebas de interacción, no pruebas separadas.
+- Requerir replicación
+- Correcto para comparaciones múltiples
 
-### Pitfall 8: Outcome Switching
-**Problem:** Analyzing many outcomes, reporting only significant ones.
+### Error 8: cambio de resultados
+**Problema:** Analizar muchos resultados y reportar solo los significativos.
 
-**Detection signs:**
-- Secondary outcomes emphasized
-- Incomplete outcome reporting
-- Discrepancy between registration and publication
+**Signos de detección:**
+- Se enfatizan los resultados secundarios.
+- Informe de resultados incompleto
+- Discrepancia entre registro y publicación
 
-**Solutions:**
-- Preregister all outcomes
-- Report all planned outcomes
-- Distinguish primary from secondary
+**Soluciones:**
+- Preregistrar todos los resultados
+- Informar todos los resultados planificados.
+- Distinguir primaria de secundaria.
 
-## Sample Size and Power Issues
+## Problemas de potencia y tamaño de muestra
 
-### Pitfall 9: Underpowered Studies
-**Problem:** Small samples have low probability of detecting true effects.
+### Error 9: Estudios con poca potencia
+**Problema:** Las muestras pequeñas tienen baja probabilidad de detectar efectos reales.
 
-**Consequences:**
-- High false negative rate
-- Significant results more likely to be false positives
-- Overestimated effect sizes (when significant)
+**Consecuencias:**
+- Alta tasa de falsos negativos
+- Es más probable que los resultados significativos sean falsos positivos.
+- Tamaños del efecto sobreestimados (cuando son significativos)
 
-**Solutions:**
-- Conduct a priori power analysis
-- Aim for 80-90% power
-- Consider effect size from prior research
+**Soluciones:**
+- Realizar un análisis de potencia a priori.
+- Apunta a 80-90% de potencia
+- Considere el tamaño del efecto de investigaciones anteriores.
 
-### Pitfall 10: Post-Hoc Power Analysis
-**Problem:** Calculating power after seeing results is circular and uninformative.
+### Error 10: Análisis de potencia post-hoc
+**Problema:** Calcular la potencia después de ver los resultados es circular y poco informativo.
 
-**Why useless:**
-- Non-significant results always have low "post-hoc power"
-- It recapitulates the p-value without new information
+**Por qué inútil:**
+- Los resultados no significativos siempre tienen un bajo "poder post hoc"
+- Recapitula el valor p sin nueva información.
 
-**Better approach:**
-- Calculate confidence intervals
-- Plan replication with adequate sample
-- Conduct prospective power analysis for future studies
+**Mejor enfoque:**
+- Calcular intervalos de confianza.
+- Plan de replicación con muestra adecuada.
+- Realizar análisis de potencia prospectivos para futuros estudios.
 
-### Pitfall 11: Small Sample Fallacy
-**Problem:** Trusting results from very small samples.
+### Error 11: Falacia de muestra pequeña
+**Problema:** Confiar en resultados de muestras muy pequeñas.
 
-**Issues:**
-- High sampling variability
-- Outliers have large influence
-- Assumptions of tests violated
-- Confidence intervals very wide
+**Problemas:**
+- Alta variabilidad de muestreo
+- Los valores atípicos tienen una gran influencia
+- Supuestos de pruebas violados.
+- Intervalos de confianza muy amplios.
 
-**Guidelines:**
-- Be skeptical of n < 30
-- Check assumptions carefully
-- Consider non-parametric tests
-- Replicate findings
+**Pautas:**
+- Sea escéptico con n < 30
+- Verifique las suposiciones cuidadosamente
+- Considere pruebas no paramétricas.
+- Replicar hallazgos
 
-## Effect Size Misunderstandings
+## Malentendidos sobre el tamaño del efecto### Error 12: Ignorar el tamaño del efecto
+**Problema:** Centrarse sólo en la importancia, no en la magnitud.
 
-### Pitfall 12: Ignoring Effect Size
-**Problem:** Focusing only on significance, not magnitude.
+**Por qué es problemático:**
+- Importancia ≠ importancia
+- No se puede comparar entre estudios
+- No informa decisiones prácticas.
 
-**Why problematic:**
-- Significance ≠ importance
-- Can't compare across studies
-- Doesn't inform practical decisions
+**Soluciones:**
+- Informe siempre los tamaños del efecto
+- Utilizar medidas estandarizadas (d, r, η² de Cohen)
+- Interpretar usando convenciones de campo.
+- Considerar una diferencia mínima clínicamente importante.
 
-**Solutions:**
-- Always report effect sizes
-- Use standardized measures (Cohen's d, r, η²)
-- Interpret using field conventions
-- Consider minimum clinically important difference
+### Error 13: malinterpretar los tamaños de efectos estandarizados
+**Problema:** Tratar el d = 0,5 de Cohen como "medio" sin contexto.
 
-### Pitfall 13: Misinterpreting Standardized Effect Sizes
-**Problem:** Treating Cohen's d = 0.5 as "medium" without context.
+**Realidad:**
+- Las normas específicas del campo varían
+- Algunos campos tienen efectos típicos más grandes.
+- La importancia en el mundo real depende del contexto.
 
-**Reality:**
-- Field-specific norms vary
-- Some fields have larger typical effects
-- Real-world importance depends on context
+**Mejor enfoque:**
+- Comparar con efectos en el mismo dominio.
+- Considerar las implicaciones prácticas.
+- Mire también los tamaños de los efectos sin procesar
 
-**Better approach:**
-- Compare to effects in same domain
-- Consider practical implications
-- Look at raw effect sizes too
+### Error 14: Confundir la variación explicada con la importancia
+**Problema:** "Solo explica el 5% de la variación" = sin importancia.
 
-### Pitfall 14: Confusing Explained Variance with Importance
-**Problem:** "Only explains 5% of variance" = unimportant.
+**Realidad:**
+- La altura explica ~5% de la variación en el salario de los jugadores de la NBA, pero es crucial
+- Los fenómenos complejos tienen muchos pequeños contribuyentes.
+- Precisión predictiva ≠ importancia causal
 
-**Reality:**
-- Height explains ~5% of variation in NBA player salary but is crucial
-- Complex phenomena have many small contributors
-- Predictive accuracy ≠ causal importance
+**Consideración:** El contexto importa más que el porcentaje por sí solo.
 
-**Consideration:** Context matters more than percentage alone.
+## Correlación y causalidad
 
-## Correlation and Causation
+### Error 15: La correlación implica causalidad
+**Problema:** Inferir causalidad a partir de la correlación.
 
-### Pitfall 15: Correlation Implies Causation
-**Problem:** Inferring causation from correlation.
+**Explicaciones alternativas:**
+- Causación inversa (B causa A, no A causa B)
+- Confusión (C causa tanto A como B)
+- Coincidencia
+- Sesgo de selección
 
-**Alternative explanations:**
-- Reverse causation (B causes A, not A causes B)
-- Confounding (C causes both A and B)
-- Coincidence
-- Selection bias
+**Criterios de causalidad:**
+- Precedencia temporal
+- Covariación
+- No hay alternativas plausibles
+- Idealmente: manipulación experimental.
 
-**Criteria for causation:**
-- Temporal precedence
-- Covariation
-- No plausible alternatives
-- Ideally: experimental manipulation
+### Escollo 16: Falacia ecológica
+**Problema:** Inferir relaciones a nivel individual a partir de datos a nivel de grupo.
 
-### Pitfall 16: Ecological Fallacy
-**Problem:** Inferring individual-level relationships from group-level data.
+**Ejemplo:** Los países con más consumo de chocolate tienen más premios Nobel no significa que comer chocolate te haga ganar premios Nobel.
 
-**Example:** Countries with more chocolate consumption have more Nobel laureates doesn't mean eating chocolate makes you win Nobels.
+**Por qué es problemático:** Las correlaciones a nivel de grupo pueden no ser válidas a nivel individual.
 
-**Why problematic:** Group-level correlations may not hold at individual level.
+### Escollo 17: La paradoja de Simpson
+**Problema:** La tendencia aparece en grupos pero se invierte cuando se combina (o viceversa).
 
-### Pitfall 17: Simpson's Paradox
-**Problem:** Trend appears in groups but reverses when combined (or vice versa).
+**Ejemplo:** El tratamiento parece peor en general pero mejor en cada subgrupo.
 
-**Example:** Treatment appears worse overall but better in every subgroup.
+**Causa:** Variable de confusión distribuida de manera diferente entre los grupos.
 
-**Cause:** Confounding variable distributed differently across groups.
+**Solución:** Considere los factores de confusión y observe el nivel de análisis adecuado.
 
-**Solution:** Consider confounders and look at appropriate level of analysis.
+## Errores de regresión y modelado
 
-## Regression and Modeling Pitfalls
+### Error 18: sobreajuste
+**Problema:** El modelo se ajusta bien a los datos de muestra pero no generaliza.
 
-### Pitfall 18: Overfitting
-**Problem:** Model fits sample data well but doesn't generalize.
+**Causas:**
+- Demasiados predictores en relación con el tamaño de la muestra
+- Ruido de ajuste en lugar de señal.
+- Sin validación cruzada
 
-**Causes:**
-- Too many predictors relative to sample size
-- Fitting noise rather than signal
-- No cross-validation
+**Soluciones:**
+- Utilice validación cruzada
+- Regresión penalizada (LASSO, cresta)
+- Conjunto de prueba independiente
+- Modelos más simples
 
-**Solutions:**
-- Use cross-validation
-- Penalized regression (LASSO, ridge)
-- Independent test set
-- Simpler models
+### Error 19: Extrapolación más allá del rango de datos
+**Problema:** Predecir fuera del rango de datos observados.
 
-### Pitfall 19: Extrapolation Beyond Data Range
-**Problem:** Predicting outside the range of observed data.
+**Por qué peligroso:**
+- Es posible que las relaciones no se mantengan fuera del rango observado
+- Mayor incertidumbre que no se refleja en las predicciones.
 
-**Why dangerous:**
-- Relationships may not hold outside observed range
-- Increased uncertainty not reflected in predictions
+**Solución:** Sólo interpolar; evitar la extrapolación.
 
-**Solution:** Only interpolate; avoid extrapolation.
+### Error 20: Ignorar los supuestos del modelo
+**Problema:** Usar pruebas estadísticas sin verificar suposiciones.
 
-### Pitfall 20: Ignoring Model Assumptions
-**Problem:** Using statistical tests without checking assumptions.
+**Infracciones comunes:**
+- No normalidad (para pruebas paramétricas)
+- Heteroscedasticidad (varianzas desiguales)
+- No independencia
+- Linealidad
+- Sin multicolinealidad
 
-**Common violations:**
-- Non-normality (for parametric tests)
-- Heteroscedasticity (unequal variances)
-- Non-independence
-- Linearity
-- No multicollinearity
+**Soluciones:**
+- Verificar supuestos con diagnóstico.
+- Utilice métodos robustos
+- Transformar datos
+- Utilizar alternativas no paramétricas apropiadas
 
-**Solutions:**
-- Check assumptions with diagnostics
-- Use robust methods
-- Transform data
-- Use appropriate non-parametric alternatives
+### Error 21: Tratar las covariables no significativas como si eliminaran los factores de confusión
+**Problema:** "Controlamos por X y no fue significativo, por lo que no es un factor de confusión".
 
-### Pitfall 21: Treating Non-Significant Covariates as Eliminating Confounding
-**Problem:** "We controlled for X and it wasn't significant, so it's not a confounder."
+**Realidad:** Las covariables no significativas aún pueden ser factores de confusión importantes. Importancia ≠ confusión.
 
-**Reality:** Non-significant covariates can still be important confounders. Significance ≠ confounding.
+**Solución:** Incluir covariables teóricamente importantes independientemente de su importancia.
 
-**Solution:** Include theoretically important covariates regardless of significance.
+### Error 22: Efectos de enmascaramiento de colinealidad
+**Problema:** Cuando los predictores están altamente correlacionados, los efectos reales pueden parecer no significativos.
 
-### Pitfall 22: Collinearity Masking Effects
-**Problem:** When predictors are highly correlated, true effects may appear non-significant.
+**Manifestaciones:**
+- Grandes errores estándar
+- Coeficientes inestables
+- Cambios de signo al agregar/eliminar variables
 
-**Manifestations:**
-- Large standard errors
-- Unstable coefficients
-- Sign changes when adding/removing variables
+**Detección:**
+- Factores de inflación de varianza (VIF)
+- Matrices de correlación
 
-**Detection:**
-- Variance Inflation Factors (VIF)
-- Correlation matrices
+**Soluciones:**
+- Eliminar predictores redundantes
+- Combinar variables correlacionadas
+- Utilizar métodos de regularización.
 
-**Solutions:**
-- Remove redundant predictors
-- Combine correlated variables
-- Use regularization methods
+## Usos indebidos de pruebas específicas
 
-## Specific Test Misuses
+### Error 23: Prueba T para múltiples grupos
+**Problema:** Realizar múltiples pruebas t en lugar de ANOVA.
 
-### Pitfall 23: T-Test for Multiple Groups
-**Problem:** Conducting multiple t-tests instead of ANOVA.
+**Por qué está mal:** Infla dramáticamente la tasa de error tipo I.
 
-**Why wrong:** Inflates Type I error rate dramatically.
+**Enfoque correcto:**
+- Utilice ANOVA primero
+- Seguir con comparaciones planificadas o pruebas post-hoc con corrección
 
-**Correct approach:**
-- Use ANOVA first
-- Follow with planned comparisons or post-hoc tests with correction
+### Error 24: Correlación de Pearson para relaciones no lineales
+**Problema:** Uso de la r de Pearson para relaciones curvas.**Por qué es engañoso:** r mide únicamente relaciones lineales.
 
-### Pitfall 24: Pearson Correlation for Non-Linear Relationships
-**Problem:** Using Pearson's r for curved relationships.
+**Soluciones:**
+- Verifique primero los diagramas de dispersión
+- Utilice ρ de Spearman para relaciones monótonas.
+- Considere modelos polinomiales o no lineales.
 
-**Why misleading:** r measures linear relationships only.
+### Error 25: Chi cuadrado con frecuencias esperadas pequeñas
+**Problema:** Prueba de chi-cuadrado con recuentos de células esperados < 5.
 
-**Solutions:**
-- Check scatterplots first
-- Use Spearman's ρ for monotonic relationships
-- Consider polynomial or non-linear models
+**Por qué está mal:** Viola los supuestos de la prueba, los valores p son inexactos.
 
-### Pitfall 25: Chi-Square with Small Expected Frequencies
-**Problem:** Chi-square test with expected cell counts < 5.
+**Soluciones:**
+- Prueba exacta de Fisher
+- Combinar categorías
+- Aumentar el tamaño de la muestra.
 
-**Why wrong:** Violates test assumptions, p-values inaccurate.
+### Error 26: Pruebas emparejadas versus independientes
+**Problema:** Uso de pruebas de muestras independientes para datos pareados (o viceversa).
 
-**Solutions:**
-- Fisher's exact test
-- Combine categories
-- Increase sample size
+**Por qué está mal:**
+- Desperdicio de energía (datos pareados analizados como independientes)
+- Viola el supuesto de independencia (datos independientes analizados en pares)
 
-### Pitfall 26: Paired vs. Independent Tests
-**Problem:** Using independent samples test for paired data (or vice versa).
+**Solución:** Prueba de coincidencia con el diseño.
 
-**Why wrong:**
-- Wastes power (paired data analyzed as independent)
-- Violates independence assumption (independent data analyzed as paired)
+## Interpretaciones erróneas del intervalo de confianza
 
-**Solution:** Match test to design.
+### Error 27: IC del 95% = Probabilidad del 95% Valor verdadero dentro
+**Concepto erróneo:** "95% de probabilidad de que el valor real esté en este intervalo".
 
-## Confidence Interval Misinterpretations
+**Realidad:** El valor real está o no en este intervalo específico. Si repitiéramos el estudio muchas veces, el 95% de los intervalos resultantes contendrían el valor real.
 
-### Pitfall 27: 95% CI = 95% Probability True Value Inside
-**Misconception:** "95% chance the true value is in this interval."
+**Mejor interpretación:** "Tenemos un 95 % de confianza en que este intervalo contiene el valor real".
 
-**Reality:** The true value either is or isn't in this specific interval. If we repeated the study many times, 95% of resulting intervals would contain the true value.
+### Error 28: CI superpuestos = no hay diferencia
+**Problema:** Suponer que los intervalos de confianza superpuestos no significan una diferencia significativa.
 
-**Better interpretation:** "We're 95% confident this interval contains the true value."
+**Realidad:** Los IC superpuestos son menos estrictos que las pruebas de diferencias. Dos IC pueden superponerse aunque la diferencia entre grupos sea significativa.
 
-### Pitfall 28: Overlapping CIs = No Difference
-**Problem:** Assuming overlapping confidence intervals mean no significant difference.
+**Pauta:** La superposición de la estimación puntual con otros IC es más relevante que la superposición de intervalos.
 
-**Reality:** Overlapping CIs are less stringent than difference tests. Two CIs can overlap while the difference between groups is significant.
+### Error 29: ignorar el ancho de CI
+**Problema:** Centrarse únicamente en si CI incluye cero, no precisión.
 
-**Guideline:** Overlap of point estimate with other CI is more relevant than overlap of intervals.
+**Por qué es importante:** Los IC amplios indican una alta incertidumbre. Los efectos "significativos" con IC enormes son menos convincentes.
 
-### Pitfall 29: Ignoring CI Width
-**Problem:** Focusing only on whether CI includes zero, not precision.
+**Considere:** Tanto la importancia como la precisión.
 
-**Why important:** Wide CIs indicate high uncertainty. "Significant" effects with huge CIs are less convincing.
+## Confusiones bayesianas versus frecuentistas
 
-**Consider:** Both significance and precision.
+### Error 30: Mezclar interpretaciones bayesianas y frecuentistas
+**Problema:** Hacer afirmaciones bayesianas a partir de análisis frecuentistas.
 
-## Bayesian vs. Frequentist Confusions
+**Ejemplos:**
+- "La hipótesis de probabilidad es verdadera" (bayesiana) a partir del valor p (frecuentista)
+- "Evidencia de nulo" de un resultado no significativo (el frecuentador no puede admitir nulo)
 
-### Pitfall 30: Mixing Bayesian and Frequentist Interpretations
-**Problem:** Making Bayesian statements from frequentist analyses.
+**Solución:**
+- Sea claro sobre el marco.
+- Utilice métodos bayesianos para preguntas bayesianas.
+- Utilizar factores de Bayes para comparar hipótesis.
 
-**Examples:**
-- "Probability hypothesis is true" (Bayesian) from p-value (frequentist)
-- "Evidence for null" from non-significant result (frequentist can't support null)
+### Error 31: Ignorar la probabilidad previa
+**Problema:** Tratar todas las hipótesis como igualmente probables inicialmente.
 
-**Solution:**
-- Be clear about framework
-- Use Bayesian methods for Bayesian questions
-- Use Bayes factors to compare hypotheses
+**Realidad:** Las afirmaciones extraordinarias necesitan pruebas extraordinarias. La plausibilidad previa importa.
 
-### Pitfall 31: Ignoring Prior Probability
-**Problem:** Treating all hypotheses as equally likely initially.
+**Considerar:**
+- Plausibilidad dado el conocimiento existente.
+- Plausibilidad del mecanismo
+- Tarifas base
 
-**Reality:** Extraordinary claims need extraordinary evidence. Prior plausibility matters.
+## Problemas de transformación de datos
 
-**Consider:**
-- Plausibility given existing knowledge
-- Mechanism plausibility
-- Base rates
+### Error 32: dicotomizar variables continuas
+**Problema:** Dividir variables continuas en límites arbitrarios.
 
-## Data Transformation Issues
+**Consecuencias:**
+- Pérdida de información y poder.
+- Distinciones arbitrarias
+- Descartar las diferencias individuales
 
-### Pitfall 32: Dichotomizing Continuous Variables
-**Problem:** Splitting continuous variables at arbitrary cutoffs.
+**Excepciones:** Puntos de corte clínicamente significativos con una fuerte justificación.
 
-**Consequences:**
-- Loss of information and power
-- Arbitrary distinctions
-- Discarding individual differences
+**Mejor:** Mantenga la continuidad o utilice varias categorías.
 
-**Exceptions:** Clinically meaningful cutoffs with strong justification.
+### Error 33: intentar múltiples transformaciones
+**Problema:** Probar muchas transformaciones hasta encontrar significado.
 
-**Better:** Keep continuous or use multiple categories.
+**Por qué es problemático:** Infla el error tipo I, es una forma de p-hacking.
 
-### Pitfall 33: Trying Multiple Transformations
-**Problem:** Testing many transformations until finding significance.
+**Mejor enfoque:**
+- Preespecificar transformaciones
+- Utilice transformaciones basadas en teoría.
+- Corregir para pruebas múltiples si se explora
 
-**Why problematic:** Inflates Type I error, is a form of p-hacking.
+## Problemas de datos faltantes
 
-**Better approach:**
-- Prespecify transformations
-- Use theory-driven transformations
-- Correct for multiple testing if exploring
+### Error 34: Eliminación por lista de forma predeterminada
+**Problema:** Eliminación automática de todos los casos a los que les faltan datos.
 
-## Missing Data Problems
+**Consecuencias:**
+- Potencia reducida
+- Posible sesgo si los datos no faltan completamente al azar (MCAR)
 
-### Pitfall 34: Listwise Deletion by Default
-**Problem:** Automatically deleting all cases with any missing data.
+**Mejores enfoques:**
+- Imputación múltiple
+- Métodos de máxima verosimilitud
+- Analizar patrones de falta.
 
-**Consequences:**
-- Reduced power
-- Potential bias if data not missing completely at random (MCAR)
+### Error 35: Ignorar los mecanismos de datos faltantes
+**Problema:** No considerar por qué faltan datos.
 
-**Better approaches:**
-- Multiple imputation
-- Maximum likelihood methods
-- Analyze missingness patterns
+**Tipos:**
+- MCAR (Falta completamente al azar): Es seguro eliminarlo
+- MAR (Falta al azar): Puede imputar
+- MNAR (Falta no al azar): puede sesgar los resultados
 
-### Pitfall 35: Ignoring Missing Data Mechanisms
-**Problem:** Not considering why data are missing.
+**Solución:** Analizar patrones, utilizar métodos apropiados, considerar análisis de sensibilidad.
 
-**Types:**
-- MCAR (Missing Completely at Random): Safe to delete
-- MAR (Missing at Random): Can impute
-- MNAR (Missing Not at Random): May bias results
+## Problemas de publicación e informes
 
-**Solution:** Analyze patterns, use appropriate methods, consider sensitivity analyses.
+### Error 36: Informes selectivos
+**Problema:** Reportar únicamente resultados significativos o análisis favorables.
 
-## Publication and Reporting Issues
+**Consecuencias:**
+- La literatura parece más consistente que la realidad.
+- Metanálisis sesgados
+- Esfuerzo de investigación desperdiciado
 
-### Pitfall 36: Selective Reporting
-**Problem:** Only reporting significant results or favorable analyses.
+**Soluciones:**
+- Preinscripción
+- Informar todos los análisis.
+- Utilizar pautas de presentación de informes (CONSORT, PRISMA, etc.)### Error 37: redondear a p < 0,05
+**Problema:** Informar valores p exactos de forma selectiva (p. ej., p = 0,049 pero p < 0,05 para 0,051).
 
-**Consequences:**
-- Literature appears more consistent than reality
-- Meta-analyses biased
-- Wasted research effort
+**Por qué es problemático:** Oculta los valores cercanos al umbral y permite evadir la detección de p-hacking.
 
-**Solutions:**
-- Preregistration
-- Report all analyses
-- Use reporting guidelines (CONSORT, PRISMA, etc.)
+**Mejor:** Informe siempre los valores p exactos.
 
-### Pitfall 37: Rounding to p < .05
-**Problem:** Reporting exact p-values selectively (e.g., p = .049 but p < .05 for .051).
+### Error 38: No compartir datos
+**Problema:** No hacer que los datos estén disponibles para verificación o reanálisis.
 
-**Why problematic:** Obscures values near threshold, enables p-hacking detection evasion.
+**Consecuencias:**
+- No se pueden verificar los resultados
+- No se puede incluir en los metanálisis
+- Obstaculiza el progreso científico
 
-**Better:** Always report exact p-values.
+**Mejores prácticas:** Comparta datos a menos que las preocupaciones de privacidad lo prohíban.
 
-### Pitfall 38: No Data Sharing
-**Problem:** Not making data available for verification or reanalysis.
+## Validación cruzada y generalización
 
-**Consequences:**
-- Can't verify results
-- Can't include in meta-analyses
-- Hinders scientific progress
+### Error 39: Sin validación cruzada
+**Problema:** Probar el modelo con los mismos datos utilizados para crearlo.
 
-**Best practice:** Share data unless privacy concerns prohibit.
+**Consecuencia:** Estimaciones de rendimiento demasiado optimistas.
 
-## Cross-Validation and Generalization
+**Soluciones:**
+- Dividir datos (entrenamiento/prueba)
+- Validación cruzada K-fold
+- Muestra de validación independiente
 
-### Pitfall 39: No Cross-Validation
-**Problem:** Testing model on same data used to build it.
+### Error 40: fuga de datos
+**Problema:** Información del equipo de prueba que se filtra en el entrenamiento.
 
-**Consequence:** Overly optimistic performance estimates.
+**Ejemplos:**
+- Normalizar antes de dividir
+- Selección de funciones en el conjunto de datos completo
+- Incluyendo información temporal.
 
-**Solutions:**
-- Split data (train/test)
-- K-fold cross-validation
-- Independent validation sample
+**Consecuencia:** Métricas de rendimiento infladas.
 
-### Pitfall 40: Data Leakage
-**Problem:** Information from test set leaking into training.
+**Prevención:** Todas las decisiones de preprocesamiento se toman utilizando únicamente datos de entrenamiento.
 
-**Examples:**
-- Normalizing before splitting
-- Feature selection on full dataset
-- Including temporal information
+## Errores del metanálisis
 
-**Consequence:** Inflated performance metrics.
+### Escollo 41: Manzanas y Naranjas
+**Problema:** Combinar estudios con diferentes diseños, poblaciones o medidas.
 
-**Prevention:** All preprocessing decisions made using only training data.
+**Equilibrio:** Necesita homogeneidad pero también integralidad.
 
-## Meta-Analysis Pitfalls
+**Soluciones:**
+- Criterios de inclusión claros
+- Análisis de subgrupos
+- Metarregresión para moderadores.
 
-### Pitfall 41: Apples and Oranges
-**Problem:** Combining studies with different designs, populations, or measures.
+### Error 42: ignorar el sesgo de publicación
+**Problema:** Los estudios publicados sobreestiman resultados significativos.
 
-**Balance:** Need homogeneity but also comprehensiveness.
+**Consecuencias:** Efectos sobreestimados en los metanálisis.
 
-**Solutions:**
-- Clear inclusion criteria
-- Subgroup analyses
-- Meta-regression for moderators
-
-### Pitfall 42: Ignoring Publication Bias
-**Problem:** Published studies overrepresent significant results.
-
-**Consequences:** Overestimated effects in meta-analyses.
-
-**Detection:**
-- Funnel plots
-- Trim-and-fill
+**Detección:**
+- Gráficos de embudo
+- Recortar y rellenar
 - PET-PEESE
-- P-curve analysis
+- Análisis de curva P
 
-**Solutions:**
-- Include unpublished studies
-- Register reviews
-- Use bias-correction methods
+**Soluciones:**
+- Incluir estudios inéditos
+- Registrar reseñas
+- Utilizar métodos de corrección de sesgos.
 
-## General Best Practices
+## Mejores prácticas generales
 
-1. **Preregister studies** - Distinguish confirmatory from exploratory
-2. **Report transparently** - All analyses, not just significant ones
-3. **Check assumptions** - Don't blindly apply tests
-4. **Use appropriate tests** - Match test to data and design
-5. **Report effect sizes** - Not just p-values
-6. **Consider practical significance** - Not just statistical
-7. **Replicate findings** - One study is rarely definitive
-8. **Share data and code** - Enable verification
-9. **Use confidence intervals** - Show uncertainty
-10. **Think causally carefully** - Most research is correlational
+1. **Estudios previos al registro** - Distinga los confirmatorios de los exploratorios
+2. **Informar de forma transparente**: todos los análisis, no solo los significativos
+3. **Verifique los supuestos** - No aplique pruebas a ciegas
+4. **Utilice pruebas apropiadas** - Haga coincidir la prueba con los datos y el diseño
+5. **Tamaños de los efectos del informe**: no solo valores p
+6. **Considere la importancia práctica**: no solo estadística
+7. **Replicar hallazgos** - Un estudio rara vez es definitivo
+8. **Compartir datos y código** - Habilitar verificación
+9. **Utilice intervalos de confianza**: muestre incertidumbre
+10. **Piense causalmente con cuidado**: la mayoría de las investigaciones son correlacionales

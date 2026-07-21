@@ -1,130 +1,126 @@
 ---
 name: market-sizing-analysis
-description: This skill should be used when the user asks to "calculate TAM", "determine SAM", "estimate SOM", "size the market", "calculate market opportunity", "what's the total addressable market", or requests market sizing analysis for a startup or business opportunity.
+description: Esta habilidad debe usarse cuando el usuario solicita "calcular TAM", "determinar SAM", "estimar SOM", "dimensionar el mercado", "calcular oportunidades de mercado", "cuál es el mercado total direccionable" o solicita un análisis del tamaño del mercado para una startup u oportunidad de negocio.
 version: 1.0.0
 ---
 
-# Market Sizing Analysis
+# Análisis de dimensionamiento del mercado
 
-Comprehensive market sizing methodologies for calculating Total Addressable Market (TAM), Serviceable Available Market (SAM), and Serviceable Obtainable Market (SOM) for startup opportunities.
+Metodologías integrales de dimensionamiento del mercado para calcular el mercado total direccionable (TAM), el mercado disponible con servicio (SAM) y el mercado obtenible con servicio (SOM) para oportunidades de inicio.
 
-## Overview
+## Descripción general
 
-Market sizing provides the foundation for startup strategy, fundraising, and business planning. Calculate market opportunity using three complementary methodologies: top-down (industry reports), bottom-up (customer segment calculations), and value theory (willingness to pay).
+El dimensionamiento del mercado proporciona la base para la estrategia de inicio, la recaudación de fondos y la planificación empresarial. Calcule las oportunidades de mercado utilizando tres metodologías complementarias: de arriba hacia abajo (informes de la industria), de abajo hacia arriba (cálculos de segmentos de clientes) y teoría del valor (disposición a pagar).
 
-## Core Concepts
+## Conceptos básicos
 
-### The Three-Tier Market Framework
+### El marco del mercado de tres niveles
 
-**TAM (Total Addressable Market)**
+**TAM (Mercado Total Direccionable)**
 
-- Total revenue opportunity if achieving 100% market share
-- Defines the universe of potential customers
-- Used for long-term vision and market validation
-- Example: All email marketing software revenue globally
+- Oportunidad de ingresos totales si se logra el 100% de participación de mercado
+- Define el universo de clientes potenciales.
+- Se utiliza para visión a largo plazo y validación de mercado.
+- Ejemplo: todos los ingresos del software de marketing por correo electrónico a nivel mundial
 
-**SAM (Serviceable Available Market)**
+**SAM (Mercado disponible para servicio)**
 
-- Portion of TAM targetable with current product/service
-- Accounts for geographic, segment, or capability constraints
-- Represents realistic addressable opportunity
-- Example: AI-powered email marketing for e-commerce in North America
+- Porción de TAM a la que se puede dirigir con el producto/servicio actual
+- Cuentas para restricciones geográficas, de segmento o de capacidad.
+- Representa una oportunidad realista y abordable.
+- Ejemplo: marketing por correo electrónico impulsado por IA para el comercio electrónico en América del Norte
 
-**SOM (Serviceable Obtainable Market)**
+**SOM (mercado obtenible y útil)**
 
-- Realistic market share achievable in 3-5 years
-- Accounts for competition, resources, and market dynamics
-- Used for financial projections and fundraising
-- Example: 2-5% of SAM based on competitive landscape
+- Cuota de mercado realista alcanzable en 3-5 años
+- Cuentas de competencia, recursos y dinámica del mercado.
+- Se utiliza para proyecciones financieras y recaudación de fondos.
+- Ejemplo: 2-5% de SAM según el panorama competitivo
 
-### When to Use Each Methodology
+### Cuándo utilizar cada metodología
 
-**Top-Down Analysis**
+**Análisis de arriba hacia abajo**
 
-- Use when established market research exists
-- Best for mature, well-defined markets
-- Validates market existence and growth
-- Starts with industry reports and narrows down
+- Usar cuando exista una investigación de mercado establecida.
+- Lo mejor para mercados maduros y bien definidos
+- Valida la existencia y el crecimiento del mercado.
+- Comienza con informes de la industria y se reduce
 
-**Bottom-Up Analysis**
+**Análisis ascendente**
 
-- Use when targeting specific customer segments
-- Best for new or niche markets
-- Most credible for investors
-- Builds from customer data and pricing
+- Úselo cuando se dirija a segmentos de clientes específicos
+- Lo mejor para mercados nuevos o especializados
+- Más creíble para los inversores.
+- Se construye a partir de datos y precios de clientes.
 
-**Value Theory**
+**Teoría del valor**
 
-- Use when creating new market categories
-- Best for disruptive innovations
-- Estimates based on value creation
-- Calculates willingness to pay for problem solution
+- Úselo al crear nuevas categorías de mercado.
+- Lo mejor para innovaciones disruptivas
+- Estimaciones basadas en la creación de valor.
+- Calcula la disposición a pagar por la solución del problema.
 
-## Three-Methodology Framework
+## Marco de tres metodologías
 
-### Methodology 1: Top-Down Analysis
+### Metodología 1: Análisis de arriba hacia abajo
 
-Start with total market size and narrow to addressable segments.
+Comience con el tamaño total del mercado y limite los segmentos a los que se puede dirigir.
 
-**Process:**
+**Proceso:**
 
-1. Identify total market category from research reports
-2. Apply geographic filters (target regions)
-3. Apply segment filters (target industries/customers)
-4. Calculate competitive positioning adjustments
+1. Identifique la categoría total del mercado a partir de informes de investigación.
+2. Aplicar filtros geográficos (regiones de destino)
+3. Aplicar filtros de segmento (industrias/clientes objetivo)
+4. Calcular ajustes de posicionamiento competitivo.
 
-**Formula:**
+**Fórmula:**
 
 ```
 TAM = Total Market Category Size
 SAM = TAM × Geographic % × Segment %
 SOM = SAM × Realistic Capture Rate (2-5%)
-```
+```**Cuándo usarlo:** Mercados establecidos con investigación disponible (por ejemplo, SaaS, fintech, comercio electrónico)
 
-**When to use:** Established markets with available research (e.g., SaaS, fintech, e-commerce)
+**Fortalezas:** Rápido, utiliza datos creíbles, valida la existencia en el mercado.
 
-**Strengths:** Quick, uses credible data, validates market existence
+**Limitaciones:** Puede sobreestimarse para categorías nuevas, menos granulares
 
-**Limitations:** May overestimate for new categories, less granular
+### Metodología 2: Análisis ascendente
 
-### Methodology 2: Bottom-Up Analysis
+Construya el tamaño del mercado a partir de cálculos de segmentos de clientes.
 
-Build market size from customer segment calculations.
+**Proceso:**
 
-**Process:**
+1. Definir segmentos de clientes objetivo
+2. Estimar el número de clientes potenciales por segmento
+3. Determinar el ingreso promedio por cliente
+4. Calcule tasas de penetración realistas
 
-1. Define target customer segments
-2. Estimate number of potential customers per segment
-3. Determine average revenue per customer
-4. Calculate realistic penetration rates
-
-**Formula:**
+**Fórmula:**
 
 ```
 TAM = Σ (Segment Size × Annual Revenue per Customer)
 SAM = TAM × (Segments You Can Serve / Total Segments)
 SOM = SAM × Realistic Penetration Rate (Year 3-5)
-```
+```**Cuándo utilizar:** B2B, nichos de mercado, segmentos de clientes específicos
 
-**When to use:** B2B, niche markets, specific customer segments
+**Fortalezas:** Más creíble para los inversores, granular y defendible
 
-**Strengths:** Most credible for investors, granular, defensible
+**Limitaciones:** Requiere una investigación detallada del cliente y requiere mucho tiempo.
 
-**Limitations:** Requires detailed customer research, time-intensive
+### Metodología 3: Teoría del valor
 
-### Methodology 3: Value Theory
+Calcular en función del valor creado y la disposición a pagar.
 
-Calculate based on value created and willingness to pay.
+**Proceso:**
 
-**Process:**
+1. Identificar el problema que se está resolviendo
+2. Cuantificar el costo actual del problema (tiempo, dinero, ineficiencia)
+3. Calcular el valor de la solución (ahorros, ganancias, eficiencia)
+4. Estimar la disposición a pagar (normalmente entre el 10 % y el 30 % del valor)
+5. Multiplicar por base de clientes direccionables
 
-1. Identify problem being solved
-2. Quantify current cost of problem (time, money, inefficiency)
-3. Calculate value of solution (savings, gains, efficiency)
-4. Estimate willingness to pay (typically 10-30% of value)
-5. Multiply by addressable customer base
-
-**Formula:**
+**Fórmula:**
 
 ```
 Value per Customer = Problem Cost × % Solved by Solution
@@ -132,320 +128,310 @@ Price per Customer = Value × Willingness to Pay % (10-30%)
 TAM = Total Potential Customers × Price per Customer
 SAM = TAM × % Meeting Buy Criteria
 SOM = SAM × Realistic Adoption Rate
-```
+```**Cuándo usarlo:** Nuevas categorías, innovaciones disruptivas, mercados existentes poco claros
 
-**When to use:** New categories, disruptive innovations, unclear existing markets
+**Fortalezas:** Muestra creación de valor, trabaja para nuevos mercados.
 
-**Strengths:** Shows value creation, works for new markets
+**Limitaciones:** Requiere suposiciones, más difíciles de validar
 
-**Limitations:** Requires assumptions, harder to validate
+## Proceso paso a paso
 
-## Step-by-Step Process
+### Paso 1: Definir el mercado
 
-### Step 1: Define the Market
+Especifique claramente qué mercado se está midiendo.
 
-Clearly specify what market is being measured.
+**Preguntas para responder:**
 
-**Questions to answer:**
+- ¿Qué problema se está resolviendo?
+- ¿Quiénes son los clientes objetivo?
+- ¿Cuál es la categoría de producto/servicio?
+- ¿Cuál es el alcance geográfico?
+- ¿Cuál es el horizonte temporal?
 
-- What problem is being solved?
-- Who are the target customers?
-- What's the product/service category?
-- What's the geographic scope?
-- What's the time horizon?
+**Ejemplo:**
 
-**Example:**
+- Problema: las empresas de comercio electrónico luchan con la automatización del marketing por correo electrónico
+- Clientes: tiendas de comercio electrónico con ingresos anuales de >1 millón de dólares
+- Categoría: software de marketing por correo electrónico impulsado por IA
+- Geografía: Norteamérica inicialmente, expansión global.
+- Horizonte: oportunidad de 3-5 años
 
-- Problem: E-commerce companies struggle with email marketing automation
-- Customers: E-commerce stores with >$1M annual revenue
-- Category: AI-powered email marketing software
-- Geography: North America initially, global expansion
-- Horizon: 3-5 year opportunity
+### Paso 2: recopilar fuentes de datos
 
-### Step 2: Gather Data Sources
+Identificar datos creíbles para los cálculos.
 
-Identify credible data for calculations.
+**Fuentes de arriba hacia abajo:**- Informes de investigación de la industria (Gartner, Forrester, IDC)
+- Estadísticas gubernamentales (censo, BLS, asociaciones comerciales)
+- Presentaciones y ganancias de empresas públicas.
+- Empresas de investigación de mercado (Statista, CB Insights, PitchBook)
 
-**Top-Down Sources:**
+**Fuentes ascendentes:**
 
-- Industry research reports (Gartner, Forrester, IDC)
-- Government statistics (Census, BLS, trade associations)
-- Public company filings and earnings
-- Market research firms (Statista, CB Insights, PitchBook)
+- Entrevistas y encuestas a clientes.
+- Datos de ventas y registros de CRM.
+- Bases de datos de la industria (LinkedIn, ZoomInfo, Crunchbase)
+- Inteligencia competitiva
+- Investigación académica
 
-**Bottom-Up Sources:**
+**Fuentes de la teoría del valor:**
 
-- Customer interviews and surveys
-- Sales data and CRM records
-- Industry databases (LinkedIn, ZoomInfo, Crunchbase)
-- Competitive intelligence
-- Academic research
+- Cuantificación de problemas del cliente.
+- Estudios de tiempo/coste
+- Estudios de casos de retorno de la inversión
+- Investigación de precios y encuestas de disposición a pagar.
 
-**Value Theory Sources:**
+### Paso 3: Calcular TAM
 
-- Customer problem quantification
-- Time/cost studies
-- ROI case studies
-- Pricing research and willingness-to-pay surveys
+Aplicar la metodología elegida para determinar el mercado total.
 
-### Step 3: Calculate TAM
+**Para vista de arriba hacia abajo:**
 
-Apply chosen methodology to determine total market.
+1. Encuentre el tamaño total de la categoría a partir de la investigación.
+2. Fuente de datos del documento y año
+3. Aplique la tasa de crecimiento si es necesario
+4. Validar con múltiples fuentes
 
-**For Top-Down:**
+**Para ascendentes:**
 
-1. Find total category size from research
-2. Document data source and year
-3. Apply growth rate if needed
-4. Validate with multiple sources
+1. Cuente el total de clientes potenciales
+2. Calcule el ingreso anual promedio por cliente.
+3. Multiplica para obtener TAM
+4. Desglosar por segmento
 
-**For Bottom-Up:**
+**Para la teoría del valor:**
 
-1. Count total potential customers
-2. Calculate average annual revenue per customer
-3. Multiply to get TAM
-4. Break down by segment
+1. Cuantificar la base total de clientes direccionables
+2. Calcular el valor por cliente
+3. Estimar el precio en función del valor.
+4. Multiplicar por TAM
 
-**For Value Theory:**
+### Paso 4: Calcular SAM
 
-1. Quantify total addressable customer base
-2. Calculate value per customer
-3. Estimate pricing based on value
-4. Multiply for TAM
+Limitar el TAM al mercado direccionable y útil.
 
-### Step 4: Calculate SAM
+**Aplicar filtros:**
 
-Narrow TAM to serviceable addressable market.
+- Restricciones geográficas (regiones a las que puede prestar servicio)
+- Limitaciones del producto (características que tienes actualmente)
+- Requisitos del cliente (tamaño, industria, caso de uso)
+- Acceso al canal de distribución.
+- Restricciones regulatorias o de cumplimiento
 
-**Apply Filters:**
-
-- Geographic constraints (regions you can serve)
-- Product limitations (features you currently have)
-- Customer requirements (size, industry, use case)
-- Distribution channel access
-- Regulatory or compliance restrictions
-
-**Formula:**
+**Fórmula:**
 
 ```
 SAM = TAM × (% matching all filters)
-```
+```**Ejemplo:**
 
-**Example:**
+- TAM: marketing por correo electrónico global valorado en 10.000 millones de dólares
+- Filtro geográfico: 40% (Norteamérica)
+- Filtro de producto: 30% (enfoque en comercio electrónico)
+- Filtro de funciones: 60% (necesita capacidades de IA)
+- SAM = 10.000 millones de dólares × 0,40 × 0,30 × 0,60 = 720 millones de dólares
 
-- TAM: $10B global email marketing
-- Geographic filter: 40% (North America)
-- Product filter: 30% (e-commerce focus)
-- Feature filter: 60% (need AI capabilities)
-- SAM = $10B × 0.40 × 0.30 × 0.60 = $720M
+### Paso 5: Calcular SOM
 
-### Step 5: Calculate SOM
+Determinar una cuota de mercado realista y obtenible.
 
-Determine realistic obtainable market share.
+**Considerar:**
 
-**Consider:**
+- Cuota de mercado actual de los competidores.
+- Cuota de mercado típica para nuevos participantes (2-5%)
+- Recursos disponibles (financiación, equipo, tiempo)
+- Eficacia de comercialización
+- Ventajas competitivas
+- Tiempo para lograrlo (normalmente de 3 a 5 años)
 
-- Current market share of competitors
-- Typical market share for new entrants (2-5%)
-- Resources available (funding, team, time)
-- Go-to-market effectiveness
-- Competitive advantages
-- Time to achieve (3-5 years typically)
-
-**Conservative Approach:**
+**Enfoque conservador:**
 
 ```
 SOM (Year 3) = SAM × 2%
 SOM (Year 5) = SAM × 5%
-```
+```**Ejemplo:**
 
-**Example:**
+-SAM: 720 millones de dólares
+- Año 3 SOM: $720 millones × 2% = $14,4 millones
+- Año 5 SOM: $720 millones × 5% = $36 millones
 
-- SAM: $720M
-- Year 3 SOM: $720M × 2% = $14.4M
-- Year 5 SOM: $720M × 5% = $36M
+### Paso 6: Validar y triangular
 
-### Step 6: Validate and Triangulate
+Verificación cruzada utilizando múltiples métodos.
 
-Cross-check using multiple methods.
+**Técnicas de Validación:**
 
-**Validation Techniques:**
+1. Compare los resultados de arriba hacia abajo y de abajo hacia arriba (debe estar dentro del 30%)
+2. Comparar los ingresos de las empresas públicas en el espacio
+3. Validar las suposiciones sobre el recuento de clientes.
+4. Supuestos de fijación de precios basados en pruebas sensoriales
+5. Revisar con expertos de la industria
+6. Compare con categorías de mercado similares
 
-1. Compare top-down and bottom-up results (should be within 30%)
-2. Check against public company revenues in space
-3. Validate customer count assumptions
-4. Sense-check pricing assumptions
-5. Review with industry experts
-6. Compare to similar market categories
+**Banderas rojas:**
 
-**Red Flags:**
+- TAM que es demasiado pequeño (< mil millones de dólares para empresas emergentes respaldadas por capital de riesgo)
+- TAM demasiado grande (no respaldado por datos)
+- SOM demasiado agresivo (> 10% en 5 años para un nuevo entrante)
+- Inconsistencia entre metodologías (>50% de diferencia)
 
-- TAM that's too small (< $1B for VC-backed startups)
-- TAM that's too large (unsupported by data)
-- SOM that's too aggressive (> 10% in 5 years for new entrant)
-- Inconsistency between methodologies (> 50% difference)
+## Consideraciones específicas de la industria
 
-## Industry-Specific Considerations
+### Mercados SaaS
 
-### SaaS Markets
+**Métricas clave:**
 
-**Key Metrics:**
+- Número de negocios potenciales en el segmento objetivo.
+- Valor medio del contrato (ACV)
+- Tasas típicas de penetración en el mercado
+- Potencial de ingresos de expansión
 
-- Number of potential businesses in target segment
-- Average contract value (ACV)
-- Typical market penetration rates
-- Expansion revenue potential
-
-**TAM Calculation:**
+**Cálculo de TAM:**
 
 ```
 TAM = Total Target Companies × Average ACV × (1 + Expansion Rate)
 ```
 
-### Marketplace Markets
+### Mercados de mercado
 
-**Key Metrics:**
+**Métricas clave:**
 
-- Gross Merchandise Value (GMV) of category
-- Take rate (% of GMV you capture)
-- Total transactions or users
+- Valor Bruto de Mercancía (GMV) de la categoría
+- Tasa de captura (% del GMV que capturas)
+- Total de transacciones o usuarios
 
-**TAM Calculation:**
+**Cálculo de TAM:**
 
 ```
 TAM = Total Category GMV × Expected Take Rate
 ```
 
-### Consumer Markets
+### Mercados de consumo
 
-**Key Metrics:**
+**Métricas clave:**
 
-- Total addressable users/households
-- Average revenue per user (ARPU)
-- Engagement frequency
+- Total de usuarios/hogares direccionables
+- Ingresos medios por usuario (ARPU)
+- Frecuencia de participación
 
-**TAM Calculation:**
+**Cálculo de TAM:**
 
 ```
 TAM = Total Users × ARPU × Purchase Frequency per Year
 ```
 
-### B2B Services
+### Servicios B2B
 
-**Key Metrics:**
+**Métricas clave:**
 
-- Number of target companies by size/industry
-- Average project value or retainer
-- Typical buying frequency
+- Número de empresas objetivo por tamaño/industria
+- Valor medio del proyecto o anticipo
+- Frecuencia de compra típica
 
-**TAM Calculation:**
+**Cálculo de TAM:**
 
 ```
 TAM = Total Target Companies × Average Deal Size × Deals per Year
 ```
 
-## Presenting Market Sizing
+## Presentación del dimensionamiento del mercado
 
-### For Investors
+### Para inversores
 
-**Structure:**
+**Estructura:**
 
-1. Market definition and problem scope
-2. TAM/SAM/SOM with methodology
-3. Data sources and assumptions
-4. Growth projections and drivers
-5. Competitive landscape context
+1. Definición del mercado y alcance del problema.
+2. TAM/SAM/SOM con metodología
+3. Fuentes de datos y supuestos
+4. Proyecciones e impulsores del crecimiento
+5. Contexto del panorama competitivo
 
-**Key Points:**
+**Puntos clave:**
 
-- Lead with bottom-up calculation (most credible)
-- Show triangulation with top-down
-- Explain conservative assumptions
-- Link to revenue projections
-- Highlight market growth rate
+- Liderar con cálculo ascendente (más creíble)
+- Mostrar triangulación con vista de arriba hacia abajo.
+- Explicar supuestos conservadores.
+- Enlace a proyecciones de ingresos.
+- Destacar la tasa de crecimiento del mercado.
 
-### For Strategy
+### Para estrategia
 
-**Structure:**
+**Estructura:**
 
-1. Addressable customer segments
-2. Prioritization by opportunity size
-3. Entry strategy by segment
-4. Expected penetration timeline
-5. Resource requirements
+1. Segmentos de clientes direccionables
+2. Priorización por tamaño de oportunidad
+3. Estrategia de entrada por segmento
+4. Cronograma de penetración esperado
+5. Necesidades de recursos
 
-**Key Points:**
+**Puntos clave:**
 
-- Focus on SAM and SOM
-- Show segment-level detail
-- Connect to go-to-market plan
-- Identify expansion opportunities
-- Discuss competitive positioning
+- Centrarse en SAM y SOM
+- Mostrar detalles a nivel de segmento
+- Conéctese al plan de comercialización
+- Identificar oportunidades de expansión.
+- Discutir el posicionamiento competitivo.
 
-## Common Mistakes to Avoid
+## Errores comunes que se deben evitar
 
-**Mistake 1: Confusing TAM with SAM**
+**Error 1: Confundir TAM con SAM**
 
-- Don't claim entire market as addressable
-- Apply realistic product/geographic constraints
-- Be honest about serviceable market
+- No afirmes que todo el mercado es direccionable
+- Aplicar restricciones realistas de producto/geográficas.
+- Sea honesto acerca del mercado útil.**Error 2: SOM demasiado agresivo**
 
-**Mistake 2: Overly Aggressive SOM**
+- Los nuevos participantes rara vez capturan > 5% en 5 años.
+- Cuenta de competencia y recursos.
+- Mostrar una línea de tiempo de rampa realista
 
-- New entrants rarely capture > 5% in 5 years
-- Account for competition and resources
-- Show realistic ramp timeline
+**Error 3: Usar solo de arriba hacia abajo**
 
-**Mistake 3: Using Only Top-Down**
+- Los inversores prefieren la validación ascendente
+- La estrategia vertical por sí sola carece de credibilidad
+- Triangular siempre con múltiples métodos
 
-- Investors prefer bottom-up validation
-- Top-down alone lacks credibility
-- Always triangulate with multiple methods
+**Error 4: Seleccionar datos**
 
-**Mistake 4: Cherry-Picking Data**
+- Utilice fuentes de datos recientes y consistentes
+- No mezclar metodologías de forma inapropiada
+- Documentar todas las suposiciones claramente
 
-- Use consistent, recent data sources
-- Don't mix methodologies inappropriately
-- Document all assumptions clearly
+**Error 5: Ignorar la dinámica del mercado**
 
-**Mistake 5: Ignoring Market Dynamics**
+- Contabilizar el crecimiento/disminución del mercado.
+- Considere la intensidad competitiva
+- Considere los costos y barreras del cambio
 
-- Account for market growth/decline
-- Consider competitive intensity
-- Factor in switching costs and barriers
+## Recursos adicionales
 
-## Additional Resources
+### Archivos de referencia
 
-### Reference Files
+Para metodologías y marcos detallados:
 
-For detailed methodologies and frameworks:
+- ** `references/methodology-deep-dive.md`** - Guía completa de cada metodología con hojas de trabajo paso a paso
+- ** `references/data-sources.md`** - Lista seleccionada de fuentes, bases de datos y herramientas de investigación de mercado
+- ** `references/industry-templates.md`** - Plantillas específicas para mercados SaaS, Marketplace, consumo, B2B y fintech
 
-- **`references/methodology-deep-dive.md`** - Comprehensive guide to each methodology with step-by-step worksheets
-- **`references/data-sources.md`** - Curated list of market research sources, databases, and tools
-- **`references/industry-templates.md`** - Specific templates for SaaS, marketplace, consumer, B2B, and fintech markets
+### Archivos de ejemplo
 
-### Example Files
+Ejemplos de trabajo con cálculos completos:
 
-Working examples with complete calculations:
+- ** `examples/saas-market-sizing.md`** - TAM/SAM/SOM completo para un producto B2B SaaS
+- ** `examples/marketplace-sizing.md`** - Cálculo de oportunidad de mercado de la plataforma Marketplace
+- ** `examples/value-theory-example.md`** - Dimensionamiento del mercado basado en el valor para la innovación disruptiva
 
-- **`examples/saas-market-sizing.md`** - Complete TAM/SAM/SOM for a B2B SaaS product
-- **`examples/marketplace-sizing.md`** - Marketplace platform market opportunity calculation
-- **`examples/value-theory-example.md`** - Value-based market sizing for disruptive innovation
+Utilice estos ejemplos como plantillas para su propio análisis del tamaño del mercado. Cada uno incluye números reales, fuentes de datos y suposiciones documentadas claramente.
 
-Use these examples as templates for your own market sizing analysis. Each includes real numbers, data sources, and assumptions documented clearly.
+## Inicio rápido
 
-## Quick Start
+Para realizar análisis de dimensionamiento del mercado:
 
-To perform market sizing analysis:
+1. **Definir el mercado** - Problema, clientes, categoría, geografía
+2. **Elija metodología** - Ascendente (preferido) o descendente + triangulación
+3. **Recopilar datos**: informes de la industria, datos de clientes, inteligencia competitiva
+4. **Calcular TAM** - Aplicar fórmula de metodología
+5. **Restringido a SAM**: aplique filtros de producto, geográfico y de segmento
+6. **Estimación de SOM**: tasa de captura realista del 2 al 5 %
+7. **Validar** - Verificación cruzada con métodos alternativos
+8. **Documento**: muestra metodología, fuentes y supuestos.
+9. **Presente** - Estructura para audiencia (inversores, estrategia, operaciones)
 
-1. **Define the market** - Problem, customers, category, geography
-2. **Choose methodology** - Bottom-up (preferred) or top-down + triangulation
-3. **Gather data** - Industry reports, customer data, competitive intelligence
-4. **Calculate TAM** - Apply methodology formula
-5. **Narrow to SAM** - Apply product, geographic, segment filters
-6. **Estimate SOM** - 2-5% realistic capture rate
-7. **Validate** - Cross-check with alternative methods
-8. **Document** - Show methodology, sources, assumptions
-9. **Present** - Structure for audience (investors, strategy, operations)
-
-For detailed step-by-step guidance on each methodology, reference the files in `references/` directory. For complete worked examples, see `examples/` directory.
+Para obtener orientación detallada paso a paso sobre cada metodología, consulte los archivos en el directorio`references/`. Para ver ejemplos completos, consulte el directorio` examples/`.

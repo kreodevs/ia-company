@@ -1,10 +1,10 @@
-# Google Cloud Platform with gcloud CLI
+# Google Cloud Platform con la CLI de gcloud
 
-Comprehensive guide for gcloud CLI - command-line interface for Google Cloud Platform.
+Guía completa para gcloud CLI: interfaz de línea de comandos para Google Cloud Platform.
 
-## Installation
+## Instalación
 
-### Linux
+###Linux
 ```bash
 curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz
 tar -xf google-cloud-cli-linux-x86_64.tar.gz
@@ -12,22 +12,22 @@ tar -xf google-cloud-cli-linux-x86_64.tar.gz
 ./google-cloud-sdk/bin/gcloud init
 ```
 
-### Debian/Ubuntu
+###Debian/Ubuntu
 ```bash
 echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 sudo apt-get update && sudo apt-get install google-cloud-cli
 ```
 
-### macOS
+### MacOS
 ```bash
 curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-darwin-arm.tar.gz
 tar -xf google-cloud-cli-darwin-arm.tar.gz
 ./google-cloud-sdk/install.sh
 ```
 
-## Authentication
+## Autenticación
 
-### User Account
+### Cuenta de usuario
 ```bash
 # Login with browser
 gcloud auth login
@@ -42,7 +42,7 @@ gcloud auth list
 gcloud config set account user@example.com
 ```
 
-### Service Account
+### Cuenta de servicio
 ```bash
 # Activate with key file
 gcloud auth activate-service-account SA_EMAIL --key-file=key.json
@@ -61,7 +61,7 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
   --role="roles/compute.admin"
 ```
 
-### Service Account Impersonation (Recommended)
+### Suplantación de cuenta de servicio (recomendado)
 ```bash
 # Impersonate for single command
 gcloud compute instances list \
@@ -74,11 +74,11 @@ gcloud config set auth/impersonate_service_account SA_EMAIL
 gcloud config unset auth/impersonate_service_account
 ```
 
-Why impersonation? Short-lived credentials, no key files, centralized management.
+¿Por qué suplantación de identidad? Credenciales de corta duración, sin archivos clave, gestión centralizada.
 
-## Configuration Management
+## Gestión de configuración
 
-### Named Configurations
+### Configuraciones con nombre
 ```bash
 # Create configuration
 gcloud config configurations create dev
@@ -101,9 +101,9 @@ gcloud config list
 gcloud config configurations delete dev
 ```
 
-### Multi-Environment Pattern
+### Patrón multiambiente
 ```bash
-# Development
+# Desarrollo
 gcloud config configurations create dev
 gcloud config set project my-project-dev
 gcloud config set account dev@example.com
@@ -119,7 +119,7 @@ gcloud config set project my-project-prod
 gcloud config set auth/impersonate_service_account prod-sa@project.iam.gserviceaccount.com
 ```
 
-## Project Management
+## Gestión de proyectos
 
 ```bash
 # List projects
@@ -142,7 +142,7 @@ gcloud services enable container.googleapis.com
 gcloud services list
 ```
 
-## Output Formats
+## Formatos de salida
 
 ```bash
 # JSON (recommended for scripting)
@@ -162,7 +162,7 @@ gcloud compute instances list \
   --format="table(name,zone,machineType,status)"
 ```
 
-## Filtering
+## Filtrado
 
 ```bash
 # Server-side filtering (efficient)
@@ -178,9 +178,9 @@ gcloud compute instances list \
 gcloud compute instances list --filter="NOT status=TERMINATED"
 ```
 
-## CI/CD Integration
+## Integración CI/CD
 
-### GitHub Actions
+### Acciones de GitHub
 ```yaml
 name: Deploy to GCP
 
@@ -222,27 +222,27 @@ deploy:
     - main
 ```
 
-## Best Practices
+## Mejores prácticas
 
-### Security
-- Never commit credentials
-- Use service account impersonation
-- Grant minimal IAM permissions
-- Rotate keys regularly
+### Seguridad
+- Nunca confirmes credenciales
+- Usar suplantación de cuenta de servicio
+- Otorgar permisos mínimos de IAM
+- Rotar las llaves regularmente
 
-### Performance
-- Use server-side filtering: `--filter`
-- Limit output: `--limit=10`
-- Project only needed fields: `--format="value(name)"`
-- Batch operations with `--async`
+### Actuación
+- Utilice filtrado del lado del servidor:`--filter`
+- Limitar la salida:`--limit=10`
+- Proyecto sólo campos necesarios:`--format="value(name)"`
+- Operaciones por lotes con`--async`
 
-### Maintainability
-- Use named configurations for environments
-- Document commands
-- Use environment variables
-- Implement error handling and retries
+### Mantenibilidad
+- Utilice configuraciones con nombre para entornos.
+- Comandos de documentos
+- Utilizar variables de entorno.
+- Implementar manejo de errores y reintentos.
 
-## Troubleshooting
+## Solución de problemas
 
 ```bash
 # Check authentication
@@ -265,33 +265,33 @@ gcloud config configurations delete default
 gcloud init
 ```
 
-## Quick Reference
+## Referencia rápida
 
-| Task | Command |
+| Tarea | Comando |
 |------|---------|
-| Initialize | `gcloud init` |
-| Login | `gcloud auth login` |
-| Set project | `gcloud config set project PROJECT_ID` |
-| List resources | `gcloud [SERVICE] list` |
-| Create resource | `gcloud [SERVICE] create RESOURCE` |
-| Delete resource | `gcloud [SERVICE] delete RESOURCE` |
-| Get help | `gcloud [SERVICE] --help` |
+| Inicializar |`gcloud init` |
+| Iniciar sesión |`gcloud auth login` |
+| Establecer proyecto |`gcloud config set project PROJECT_ID` |
+| Listar recursos |`gcloud [SERVICE] list` |
+| Crear recurso |`gcloud [SERVICE] create RESOURCE` |
+| Eliminar recurso |`gcloud [SERVICE] delete RESOURCE` |
+| Obtener ayuda |`gcloud [SERVICE] --help` |
 
-## Global Flags
+## Banderas globales
 
-| Flag | Purpose |
+| Bandera | Propósito |
 |------|---------|
-| `--project` | Override project |
-| `--format` | Output format (json, yaml, csv) |
-| `--filter` | Server-side filter |
-| `--limit` | Limit results |
-| `--quiet` | Suppress prompts |
-| `--verbosity` | Log level (debug, info, warning, error) |
-| `--async` | Don't wait for operation |
+| `--project`| Anular proyecto |
+| `--format`| Formato de salida (json, yaml, csv) |
+| `--filter`| Filtro del lado del servidor |
+| `--limit`| Limitar resultados |
+| `--quiet`| Suprimir mensajes |
+| `--verbosity`| Nivel de registro (depuración, información, advertencia, error) |
+| `--async`| No esperes a la operación |
 
-## Resources
+## Recursos
 
-- gcloud Reference: https://cloud.google.com/sdk/gcloud/reference
-- Installation: https://cloud.google.com/sdk/docs/install
-- Authentication: https://cloud.google.com/docs/authentication
-- Cheatsheet: https://cloud.google.com/sdk/docs/cheatsheet
+- Referencia de gcloud: https://cloud.google.com/sdk/gcloud/reference
+- Instalación: https://cloud.google.com/sdk/docs/install
+- Autenticación: https://cloud.google.com/docs/authentication
+- Hoja de referencia: https://cloud.google.com/sdk/docs/cheatsheet

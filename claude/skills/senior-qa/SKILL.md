@@ -1,209 +1,211 @@
 ---
 name: senior-qa
-description: Comprehensive QA and testing skill for quality assurance, test automation, and testing strategies for ReactJS, NextJS, NodeJS applications. Includes test suite generation, coverage analysis, E2E testing setup, and quality metrics. Use when designing test strategies, writing test cases, implementing test automation, performing manual testing, or analyzing test coverage.
+description: Skill integral de QA y testing para assurance de calidad, automatización de tests y estrategias de testing para aplicaciones ReactJS, NextJS, NodeJS. Incluye generación de test suites, análisis de coverage, setup E2E y métricas de calidad. Usar al diseñar estrategias de test, escribir casos de test, implementar automatización, realizar testing manual o analizar test coverage.
 ---
 
-# Senior Qa
+# Senior QA
 
-Complete toolkit for senior qa with modern tools and best practices.
+Toolkit completo para senior QA con herramientas modernas y mejores prácticas.
 
-## Quick Start
+## Inicio rápido
 
-### Main Capabilities
+### Capacidades principales
 
-This skill provides three core capabilities through automated scripts:
+Este skill proporciona tres capacidades core mediante scripts automatizados:
 
 ```bash
-# Script 1: Test Suite Generator
+
+# Script 1: Generador de suite de pruebas
 python scripts/test_suite_generator.py [options]
 
-# Script 2: Coverage Analyzer
+# Script 2: Analizador de cobertura
 python scripts/coverage_analyzer.py [options]
 
-# Script 3: E2E Test Scaffolder
+# Script 3: Scaffolder de pruebas E2E
 python scripts/e2e_test_scaffolder.py [options]
 ```
 
-## Core Capabilities
+## Capacidades core
 
 ### 1. Test Suite Generator
 
-Automated tool for test suite generator tasks.
+Herramienta automatizada para tareas de generación de test suites.
 
 **Features:**
-- Automated scaffolding
-- Best practices built-in
-- Configurable templates
+- Scaffolding automatizado
+- Best practices integradas
+- Templates configurables
 - Quality checks
 
-**Usage:**
+**Uso:**
+
 ```bash
 python scripts/test_suite_generator.py <project-path> [options]
 ```
 
 ### 2. Coverage Analyzer
 
-Comprehensive analysis and optimization tool.
+Herramienta de análisis y optimización integral.
 
 **Features:**
-- Deep analysis
-- Performance metrics
-- Recommendations
-- Automated fixes
+- Análisis profundo
+- Métricas de rendimiento
+- Recomendaciones
+- Correcciones automatizadas
 
-**Usage:**
+**Uso:**
+
 ```bash
 python scripts/coverage_analyzer.py <target-path> [--verbose]
 ```
 
 ### 3. E2E Test Scaffolder
 
-Advanced tooling for specialized tasks.
+Tooling avanzado para tareas especializadas.
 
 **Features:**
-- Expert-level automation
-- Custom configurations
-- Integration ready
-- Production-grade output
+- Automatización nivel experto
+- Configuraciones custom
+- Listo para integración
+- Output production-grade
 
-**Usage:**
+**Uso:**
+
 ```bash
 python scripts/e2e_test_scaffolder.py [arguments] [options]
 ```
 
-## Reference Documentation
+## Documentación de referencia
 
-### Testing Strategies
+### Estrategias de testing
 
-Comprehensive guide available in `references/testing_strategies.md`:
+Guía integral en`references/testing_strategies.md`:
 
-- Detailed patterns and practices
-- Code examples
-- Best practices
-- Anti-patterns to avoid
-- Real-world scenarios
+- Patrones y prácticas detallados
+- Ejemplos de código
+- Mejores prácticas
+- Anti-patrones a evitar
+- Escenarios del mundo real
 
-### Test Automation Patterns
+### Patrones de automatización de tests
 
-Complete workflow documentation in `references/test_automation_patterns.md`:
+Documentación completa de workflow en`references/test_automation_patterns.md`:
 
-- Step-by-step processes
-- Optimization strategies
-- Tool integrations
+- Procesos paso a paso
+- Estrategias de optimización
+- Integraciones de tools
 - Performance tuning
-- Troubleshooting guide
+- Guía de troubleshooting
 
-### Qa Best Practices
+### Mejores prácticas QA
 
-Technical reference guide in `references/qa_best_practices.md`:
+Guía de referencia técnica en`references/qa_best_practices.md`:
 
-- Technology stack details
-- Configuration examples
-- Integration patterns
-- Security considerations
-- Scalability guidelines
+- Detalles del tech stack
+- Ejemplos de configuración
+- Patrones de integración
+- Consideraciones de seguridad
+- Directrices de escalabilidad
 
-## Tech Stack
+## Tech stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
+**Lenguajes:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
 **Frontend:** React, Next.js, React Native, Flutter
 **Backend:** Node.js, Express, GraphQL, REST APIs
 **Database:** PostgreSQL, Prisma, NeonDB, Supabase
 **DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
 **Cloud:** AWS, GCP, Azure
 
-## Development Workflow
+## Workflow de desarrollo
 
-### 1. Setup and Configuration
+### 1. Setup y configuración
 
 ```bash
-# Install dependencies
+
+# Instalar dependencias
 npm install
+
 # or
 pip install -r requirements.txt
 
-# Configure environment
+# Configurar entorno
 cp .env.example .env
 ```
 
-### 2. Run Quality Checks
+### 2. Ejecutar controles de calidad
 
 ```bash
-# Use the analyzer script
+
+# Usar el script analizador
 python scripts/coverage_analyzer.py .
 
-# Review recommendations
-# Apply fixes
+# Revisar recomendaciones
+
+# Aplicar correcciones
 ```
 
-### 3. Implement Best Practices
+### 3. Implementar mejores prácticas
 
-Follow the patterns and practices documented in:
-- `references/testing_strategies.md`
-- `references/test_automation_patterns.md`
-- `references/qa_best_practices.md`
+Sigue los patrones documentados en:
+- `references/testing_strategies.md`-` references/test_automation_patterns.md`-` references/qa_best_practices.md`## Resumen de mejores prácticas
 
-## Best Practices Summary
+### Calidad de código
+- Seguir patrones establecidos
+- Escribir tests comprehensivos
+- Documentar decisiones
+- Revisar regularmente
 
-### Code Quality
-- Follow established patterns
-- Write comprehensive tests
-- Document decisions
-- Review regularly
+### Rendimiento
+- Medir antes de optimizar
+- Usar caching apropiado
+- Optimizar critical paths
+- Monitorear en producción
 
-### Performance
-- Measure before optimizing
-- Use appropriate caching
-- Optimize critical paths
-- Monitor in production
+### Seguridad
+- Validar todas las entradas
+- Usar queries parametrizadas
+- Implementar autenticación adecuada
+- Mantener dependencias actualizadas
 
-### Security
-- Validate all inputs
-- Use parameterized queries
-- Implement proper authentication
-- Keep dependencies updated
+### Mantenibilidad
+- Escribir código claro
+- Usar naming consistente
+- Añadir comentarios útiles
+- Mantenerlo simple
 
-### Maintainability
-- Write clear code
-- Use consistent naming
-- Add helpful comments
-- Keep it simple
-
-## Common Commands
+## Comandos comunes
 
 ```bash
-# Development
+
+# Desarrollo
 npm run dev
 npm run build
 npm run test
 npm run lint
 
-# Analysis
+# Análisis
 python scripts/coverage_analyzer.py .
 python scripts/e2e_test_scaffolder.py --analyze
 
-# Deployment
+# Despliegue
 docker build -t app:latest .
 docker-compose up -d
 kubectl apply -f k8s/
 ```
 
-## Troubleshooting
+## Solución de problemas
 
-### Common Issues
+### Problemas comunes
 
-Check the comprehensive troubleshooting section in `references/qa_best_practices.md`.
+Consulta la sección integral de troubleshooting en`references/qa_best_practices.md`.
 
-### Getting Help
+### Obtener ayuda
 
-- Review reference documentation
-- Check script output messages
-- Consult tech stack documentation
-- Review error logs
+- Revisar documentación de referencia
+- Revisar mensajes de output de scripts
+- Consultar documentación del tech stack
+- Revisar logs de error
 
-## Resources
+## Recursos
 
-- Pattern Reference: `references/testing_strategies.md`
-- Workflow Guide: `references/test_automation_patterns.md`
-- Technical Guide: `references/qa_best_practices.md`
-- Tool Scripts: `scripts/` directory
+- Referencia de patrones: `references/testing_strategies.md`- Guía de workflow:` references/test_automation_patterns.md`- Guía técnica:` references/qa_best_practices.md`- Scripts de herramientas: directorio` scripts/`

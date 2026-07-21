@@ -1,14 +1,14 @@
 ---
-role: user-documentation
-summary: |
-  User-facing help for websh. Quick start, full command cheatsheet, examples.
+rol: documentación de usuario
+resumen: |
+  Ayuda orientada al usuario para websh. Inicio rápido, hoja de referencia de comandos completa, ejemplos.
 ---
 
-# websh Help
+# websh Ayuda
 
-A Unix-like shell for the web. Navigate URLs like directories, query pages with familiar commands.
+Un shell tipo Unix para la web. Navegue por URL como directorios, consulte páginas con comandos familiares.
 
-## Quick Start
+## Inicio rápido
 
 ```
 websh                                # start the shell
@@ -21,219 +21,219 @@ cat .title                           # extract text by selector
 back                                 # go back
 ```
 
-## Starter Bookmarks
+## Marcadores iniciales
 
-websh comes with bookmarks for interesting public sites:
+websh viene con marcadores para sitios públicos interesantes:
 
-| Shortcut | Site |
+| Atajo | Sitio |
 |----------|------|
-| `go hn` | Hacker News |
-| `go lobsters` | Lobsters |
-| `go tildes` | Tildes |
-| `go wiby` | Wiby (indie search) |
-| `go marginalia` | Marginalia (indie search) |
-| `go wiki` | Wikipedia |
-| `go sourcehut` | Sourcehut |
-| `go arena` | Are.na |
+| `go hn`| Noticias de piratas informáticos |
+| `go lobsters`| Langostas |
+| `go tildes`| Tildes |
+| `go wiby`| Wiby (búsqueda independiente) |
+| `go marginalia`| Marginalia (búsqueda independiente) |
+| `go wiki`| Wikipedia |
+| `go sourcehut`| Fuentehut |
+| `go arena`| Are.na |
 
-Add your own with `bookmark <name>`.
-
----
-
-## Command Cheatsheet
-
-### Navigation
-
-| Command | Description |
-|---------|-------------|
-| `cd <url>` | Go to URL |
-| `cd -` | Go to previous URL |
-| `cd ~` | Go to start (clear navigation) |
-| `pwd` | Show current URL |
-| `back` / `forward` | Navigate history |
-| `follow <n>` | Follow nth link |
-| `follow "text"` | Follow link containing text |
-| `refresh` | Re-fetch current page |
-| `chroot <url>` | Restrict navigation to URL prefix |
-
-### Query & Extract
-
-| Command | Description |
-|---------|-------------|
-| `ls` | List all links |
-| `ls -l` | List with URLs |
-| `ls <selector>` | List elements matching selector |
-| `cat <selector>` | Extract text content |
-| `grep <pattern>` | Search/filter by pattern |
-| `grep -i` | Case-insensitive |
-| `grep -v` | Invert match |
-| `stat` | Show page metadata |
-| `source` | View raw HTML |
-| `dom` | Show DOM tree |
-
-### Prefetching
-
-| Command | Description |
-|---------|-------------|
-| `prefetch` | Show crawl status |
-| `prefetch on/off` | Enable/disable eager crawl |
-| `prefetch <url>` | Manually prefetch a URL |
-| `prefetch --depth <n>` | Set prefetch depth |
-| `crawl <url>` | Explicit deep crawl |
-| `queue` | Show crawl queue |
-
-### Search & Discovery
-
-| Command | Description |
-|---------|-------------|
-| `find <pattern>` | Recursive search/crawl |
-| `find -depth <n>` | Crawl n levels deep |
-| `locate <term>` | Search all cached pages |
-| `tree` | Show site structure |
-| `which <link>` | Resolve redirects |
-
-### Text Processing
-
-| Command | Description |
-|---------|-------------|
-| `head <n>` | First n items |
-| `tail <n>` | Last n items |
-| `sort` | Sort output |
-| `sort -r` | Reverse sort |
-| `uniq` | Remove duplicates |
-| `wc` | Count lines/words |
-| `wc --links` | Count links |
-| `cut -f <n>` | Extract field |
-| `tr` | Transform characters |
-| `sed 's/a/b/'` | Stream edit |
-
-### Comparison
-
-| Command | Description |
-|---------|-------------|
-| `diff <url1> <url2>` | Compare two pages |
-| `diff -t 1h` | Compare to 1 hour ago |
-| `diff --wayback <date>` | Compare to Wayback snapshot |
-
-### Monitoring
-
-| Command | Description |
-|---------|-------------|
-| `watch <url>` | Monitor for changes |
-| `watch -n 30` | Poll every 30 seconds |
-| `watch --notify` | System notification on change |
-| `ping <url>` | Check if site is up |
-| `traceroute <url>` | Show redirect chain |
-| `time <cmd>` | Measure execution time |
-
-### Jobs & Background
-
-| Command | Description |
-|---------|-------------|
-| `<cmd> &` | Run in background |
-| `ps` | Show running tasks |
-| `jobs` | List background jobs |
-| `fg %<n>` | Bring job to foreground |
-| `bg %<n>` | Continue in background |
-| `kill %<n>` | Cancel job |
-| `wait` | Wait for all jobs |
-
-### Environment & Auth
-
-| Command | Description |
-|---------|-------------|
-| `env` | Show environment |
-| `export VAR=val` | Set variable |
-| `export HEADER_X=val` | Set request header |
-| `export COOKIE_x=val` | Set cookie |
-| `unset VAR` | Remove variable |
-| `whoami` | Show logged-in identity |
-| `login` | Interactive login |
-| `logout` | Clear session |
-| `su <profile>` | Switch profile |
-
-### Mounting
-
-| Command | Description |
-|---------|-------------|
-| `mount <api> <path>` | Mount API as directory |
-| `mount -t github ...` | Mount GitHub API |
-| `mount -t rss ...` | Mount RSS feed |
-| `umount <path>` | Unmount |
-| `df` | Show mounts and cache usage |
-| `quota` | Show rate limits |
-
-### Archives & Snapshots
-
-| Command | Description |
-|---------|-------------|
-| `tar -c <file> <urls>` | Archive pages |
-| `tar -x <file>` | Extract archive |
-| `snapshot` | Save timestamped version |
-| `snapshot -l` | List snapshots |
-| `wayback <url>` | List Wayback snapshots |
-| `wayback <url> <date>` | Fetch from Wayback |
-
-### Site Metadata
-
-| Command | Description |
-|---------|-------------|
-| `robots` | Show robots.txt |
-| `sitemap` | Show sitemap.xml |
-| `headers` | Show HTTP headers |
-| `cookies` | Manage cookies |
-
-### Interaction
-
-| Command | Description |
-|---------|-------------|
-| `click <selector>` | Click element |
-| `submit <form>` | Submit form |
-| `type <sel> "text"` | Fill input |
-| `scroll` | Trigger infinite scroll |
-| `screenshot <file>` | Capture page |
-
-### Scheduling
-
-| Command | Description |
-|---------|-------------|
-| `cron "<sched>" <cmd>` | Schedule recurring |
-| `at "<time>" <cmd>` | Schedule one-time |
-| `cron -l` | List scheduled |
-
-### Aliases & Shortcuts
-
-| Command | Description |
-|---------|-------------|
-| `alias name='cmd'` | Create alias |
-| `alias` | List aliases |
-| `unalias name` | Remove alias |
-| `ln -s <url> <name>` | Create URL shortcut |
-
-### State & History
-
-| Command | Description |
-|---------|-------------|
-| `history` | Show command history |
-| `!!` | Repeat last command |
-| `!<n>` | Repeat command n |
-| `bookmark <name>` | Save current URL |
-| `bookmarks` | List bookmarks |
-| `go <name>` | Go to bookmark |
-
-### File Operations
-
-| Command | Description |
-|---------|-------------|
-| `save <path>` | Save page to file |
-| `save --parsed` | Save extracted markdown |
-| `tee <file>` | Save while displaying |
-| `xargs <cmd>` | Build commands from input |
-| `parallel` | Run in parallel |
+Añade el tuyo propio con`bookmark <name>`.
 
 ---
 
-## Pipes & Redirection
+## Hoja de referencia de comandos
+
+### Navegación
+
+| Comando | Descripción |
+|---------|-------------|
+| `cd <url>`| Go to URL |
+| `cd -`| Ir a la URL anterior |
+| `cd ~`| Ir al inicio (borrar navegación) |
+| `pwd`| Mostrar URL actual |
+| `back`/` forward`| Navegar por el historial |
+| `follow <n>`| Siga el enésimo enlace |
+| `follow "text"`| Siga el enlace que contiene texto |
+| `refresh`| Volver a buscar la página actual |
+| `chroot <url>`| Restringir la navegación al prefijo de URL |
+
+### Consulta y extracción
+
+| Comando | Descripción |
+|---------|-------------|
+| `ls`| Listar todos los enlaces |
+| `ls -l`| Lista con URL |
+| `ls <selector>`| Lista de elementos que coinciden con el selector |
+| `cat <selector>`| Extraer contenido de texto |
+| `grep <pattern>`| Buscar/filtrar por patrón |
+| `grep -i`| No distingue entre mayúsculas y minúsculas |
+| `grep -v`| Invertir coincidencia |
+| `stat`| Mostrar metadatos de la página |
+| `source`| Ver HTML sin formato |
+| `dom`| Mostrar árbol DOM |
+
+### Captación previa
+
+| Comando | Descripción |
+|---------|-------------|
+| `prefetch`| Mostrar estado de rastreo |
+| `prefetch on/off`| Activar/desactivar el rastreo ansioso |
+| `prefetch <url>`| Precargar manualmente una URL |
+| `prefetch --depth <n>`| Establecer profundidad de captación previa |
+| `crawl <url>`| Rastreo profundo explícito |
+| `queue`| Mostrar cola de rastreo |
+
+### Búsqueda y descubrimiento
+
+| Comando | Descripción |
+|---------|-------------|
+| `find <pattern>`| Búsqueda/rastreo recursivo |
+| `find -depth <n>`| Arrastre n niveles profundos |
+| `locate <term>`| Buscar todas las páginas almacenadas en caché |
+| `tree`| Mostrar estructura del sitio |
+| `which <link>`| Resolver redirecciones |
+
+### Procesamiento de texto
+
+| Comando | Descripción |
+|---------|-------------|
+| `head <n>`| Primeros n artículos |
+| `tail <n>`| Últimos n artículos |
+| `sort`| Ordenar salida |
+| `sort -r`| Clasificación inversa |
+| `uniq`| Eliminar duplicados |
+| `wc`| Contar líneas/palabras |
+| `wc --links`| Contar enlaces |
+| `cut -f <n>`| Extraer campo |
+| `tr`| Transformar personajes |
+| `sed 's/a/b/'`| Edición de secuencia |
+
+### Comparación
+
+| Comando | Descripción |
+|---------|-------------|
+| `diff <url1> <url2>`| Comparar dos páginas |
+| `diff -t 1h`| Comparar con hace 1 hora |
+| `diff --wayback <date>`| Comparar con la instantánea de Wayback |
+
+### Monitoreo
+
+| Comando | Descripción |
+|---------|-------------|
+| `watch <url>`| Monitorear cambios |
+| `watch -n 30`| Encuesta cada 30 segundos |
+| `watch --notify`| Notificación del sistema sobre cambios |
+| `ping <url>`| Compruebe si el sitio está activo |
+| `traceroute <url>`| Mostrar cadena de redireccionamiento |
+| `time <cmd>`| Medir el tiempo de ejecución |
+
+### Empleos y antecedentes
+
+| Comando | Descripción |
+|---------|-------------|
+| `<cmd> &`| Ejecutar en segundo plano |
+| `ps`| Mostrar tareas en ejecución |
+| `jobs`| Listar trabajos en segundo plano |
+| `fg %<n>`| Poner el trabajo en primer plano |
+| `bg %<n>`| Continuar en segundo plano |
+| `kill %<n>`| Cancelar trabajo |
+| `wait`| Espere todos los trabajos |
+
+### Medio ambiente y autenticación
+
+| Comando | Descripción |
+|---------|-------------|
+| `env`| Mostrar entorno |
+| `export VAR=val`| Establecer variable |
+| `export HEADER_X=val`| Establecer encabezado de solicitud |
+| `export COOKIE_x=val`| Establecer galleta |
+| `unset VAR`| Eliminar variable |
+| `whoami`| Mostrar identidad iniciada sesión |
+| `login`| Inicio de sesión interactivo |
+| `logout`| Borrar sesión |
+| `su <profile>`| Cambiar perfil |
+
+### Montaje
+
+| Comando | Descripción |
+|---------|-------------|
+| `mount <api> <path>`| Montar API como directorio |
+| `mount -t github ...`| Montar API de GitHub |
+| `mount -t rss ...`| Montar canal RSS |
+| `umount <path>`| Unmount |
+| `df`| Mostrar montajes y uso de caché |
+| `quota`| Mostrar límites de tarifas |
+
+### Archivos e instantáneas
+
+| Comando | Descripción |
+|---------|-------------|
+| `tar -c <file> <urls>`| Páginas de archivo |
+| `tar -x <file>`| Extraer archivo |
+| `snapshot`| Guardar versión con marca de tiempo |
+| `snapshot -l`| Lista de instantáneas |
+| `wayback <url>`| Lista de instantáneas de Wayback |
+| `wayback <url> <date>`| Obtener de Wayback |
+
+### Metadatos del sitio
+
+| Comando | Descripción |
+|---------|-------------|
+| `robots`| Mostrar robots.txt |
+| `sitemap`| Mostrar mapa del sitio.xml |
+| `headers`| Mostrar encabezados HTTP |
+| `cookies`| Gestionar cookies |
+
+### Interacción
+
+| Comando | Descripción |
+|---------|-------------|
+| `click <selector>`| Haga clic en elemento |
+| `submit <form>`| Enviar formulario |
+| `type <sel> "text"`| Llenar entrada |
+| `scroll`| Activar desplazamiento infinito |
+| `screenshot <file>`| Capturar página |
+
+### Programación
+
+| Comando | Descripción |
+|---------|-------------|
+| `cron "<sched>" <cmd>`| Horario recurrente |
+| `at "<time>" <cmd>`| Agendar una sola vez |
+| `cron -l`| Lista programada |
+
+### Alias y atajos
+
+| Comando | Descripción |
+|---------|-------------|
+| `alias name='cmd'`| Crear alias |
+| `alias`| Listar alias |
+| `unalias name`| Eliminar alias |
+| `ln -s <url> <name>`| Crear acceso directo a URL |
+
+### Estado e Historia
+
+| Comando | Descripción |
+|---------|-------------|
+| `history`| Mostrar historial de comandos |
+| `!!`| Repita el último comando |
+| `!<n>`| Repetir comando n |
+| `bookmark <name>`| Guardar URL actual |
+| `bookmarks`| Lista de favoritos |
+| `go <name>`| Ir al marcador |
+
+### Operaciones de archivos
+
+| Comando | Descripción |
+|---------|-------------|
+| `save <path>`| Guardar página en archivo |
+| `save --parsed`| Guardar descuento extraído |
+| `tee <file>`| Guardar mientras se muestra |
+| `xargs <cmd>`| Construya comandos desde la entrada |
+| `parallel`| Ejecutar en paralelo |
+
+---
+
+## Tuberías y redirección
 
 ```
 ls | grep "AI" | head 5              # pipe commands
@@ -241,13 +241,11 @@ ls > links.txt                       # write to file
 ls >> links.txt                      # append to file
 ls | tee links.txt                   # save and display
 cd $(wayback https://x.com 2020)     # command substitution
-```
+```---
 
----
+## Selectores
 
-## Selectors
-
-CSS selectors work with `ls`, `cat`, `click`:
+Los selectores CSS funcionan con`ls`,` cat`,` click`:
 
 ```
 cat .article          # class
@@ -257,13 +255,11 @@ cat .post .title      # descendant
 cat h1:first          # first match
 ls nav a              # links in nav
 click button.submit   # button with class
-```
+```---
 
----
+## Ejemplos
 
-## Examples
-
-### Browse Hacker News
+### Explorar noticias sobre piratas informáticos
 
 ```
 cd https://news.ycombinator.com
@@ -274,7 +270,7 @@ cat .comment | head 20               # read comments
 back
 ```
 
-### Research a topic
+### Investigar un tema
 
 ```
 cd https://en.wikipedia.org/wiki/Unix
@@ -284,14 +280,15 @@ follow "History"
 bookmark unix-history
 ```
 
-### Monitor a page
+### Monitorear una página
 
 ```
 watch https://status.example.com -n 30 --notify
+
 # Polls every 30s, notifies on change
 ```
 
-### Mount GitHub API
+### Montar API de GitHub
 
 ```
 mount https://api.github.com /gh
@@ -301,50 +298,57 @@ cd /gh/repos/torvalds/linux
 ls issues | head 10
 ```
 
-### Compare page over time
+### Comparar página a lo largo del tiempo
 
 ```
 cd https://example.com
 snapshot "before"
+
 # ... wait ...
 refresh
 diff --snapshot "before"
 ```
 
-### Batch fetch
+### Recuperación por lotes
 
 ```
 parallel cd ::: https://a.com https://b.com https://c.com
 locate "error" | head 10
 ```
 
-### Search across cached pages
+### Buscar en páginas almacenadas en caché
 
 ```
 locate "authentication"
+
 # Searches all cached pages instantly
 
 locate -i "OAuth" --urls
+
 # Case-insensitive, show URLs
 ```
 
-### Prefetching for instant navigation
+### Precarga para navegación instantánea
 
 ```
 cd https://news.ycombinator.com
+
 # Automatically prefetches visible links in background
 
 prefetch
+
 # Check prefetch progress
 
 follow 3
+
 # Instant! Already cached.
 
 prefetch off
+
 # Disable for slow connections
 ```
 
-### Archive research
+### Investigación de archivos
 
 ```
 cd https://paper1.com &
@@ -354,7 +358,7 @@ wait
 tar -cz research.tar.gz https://paper1.com https://paper2.com https://paper3.com
 ```
 
-### Set auth headers
+### Establecer encabezados de autenticación
 
 ```
 export HEADER_Authorization="Bearer mytoken"
@@ -362,30 +366,27 @@ cd https://api.example.com/protected
 cat .
 ```
 
-### Schedule monitoring
+### Monitoreo de horarios
 
 ```
 cron "0 * * * *" 'cd https://news.com && ls | head 5 >> hourly.txt'
 cron "0 9 * * *" 'snapshot "daily"'
-```
+```---
+
+## Cómo funciona
+
+cuando tu `cd` a una URL:
+
+1. **Fetch**: descarga el HTML
+2. **Caché**: se guarda en `.websh/cache/`3. **Extracto**: el agente de haiku en segundo plano se analiza en rebajas enriquecidas
+
+Comandos como `ls`,` grep`,` cat`trabaje con contenido almacenado en caché: al instante, sin necesidad de volver a buscarlo.
+
+Las API montadas funcionan de manera similar: las respuestas de API se almacenan en caché y son navegables.
 
 ---
 
-## How It Works
-
-When you `cd` to a URL:
-
-1. **Fetch** — Downloads the HTML
-2. **Cache** — Saves to `.websh/cache/`
-3. **Extract** — Background haiku agent parses into rich markdown
-
-Commands like `ls`, `grep`, `cat` work on cached content—instant, no refetching.
-
-Mounted APIs work similarly—API responses cached and navigable.
-
----
-
-## Files
+## Archivos
 
 ```
 .websh/
@@ -395,13 +396,11 @@ Mounted APIs work similarly—API responses cached and navigable.
 ├── bookmarks.md    # saved URLs
 ├── profiles/       # auth profiles
 └── snapshots/      # saved versions
-```
+```---
 
----
+## Lenguaje Natural
 
-## Natural Language
-
-websh understands intent, not just commands. These all work:
+websh entiende la intención, no sólo los comandos. Todos estos funcionan:
 
 ```
 links                    → ls
@@ -412,36 +411,31 @@ show me the title        → cat title
 go back                  → back
 how many links?          → wc --links
 download this            → save
-```
-
-Just say what you want. websh will figure it out.
+```Sólo di lo que quieras. websh lo resolverá.
 
 ---
 
-## Tips
+## Consejos
 
-- **Instant navigation**: Links are prefetched automatically—`follow` is usually instant
-- **Use indexes**: `ls` numbers links, `follow 3` clicks the 4th
-- **Pipe everything**: `ls | grep "foo" | head 5 | tee results.txt`
-- **Background long tasks**: `cd https://slow-site.com &`
-- **Search your cache**: `locate` searches all cached pages instantly
-- **Mount APIs**: `mount` makes REST APIs navigable like directories
-- **Compare over time**: `snapshot` + `diff --snapshot`
-- **Schedule checks**: `cron` for recurring, `at` for one-time
-- **Control prefetch**: `prefetch off` for slow connections, `prefetch` to check progress
+- **Navegación instantánea**: los enlaces se obtienen automáticamente— `follow` suele ser instantáneo
+- **Usar índices**: `ls` enlaces de números,`follow 3` hace clic en el 4to
+- **Tubería todo**: `ls | grep "foo" | head 5 | tee results.txt`- **Tareas largas en segundo plano**:` cd https://slow-site.com &`- **Busca en tu caché**:` locate`busca todas las páginas almacenadas en caché al instante
+- **Montar API**: `mount` hace que las API REST sean navegables como directorios
+- **Comparar a lo largo del tiempo**: `snapshot`+` diff --snapshot`- **Controles de horarios**:` cron`para recurrente,` at`por una sola vez
+- **Control de captación previa**: `prefetch off` para conexiones lentas,`prefetch` para comprobar el progreso
 
 ---
 
-## Limitations
+## Limitaciones
 
-- **JavaScript sites**: Some content requires JS to render
-- **Authentication**: `login` is best-effort, may need manual cookies
-- **Rate limits**: Respect site limits, use `quota` to check
-- **Interaction**: `click`, `submit` limited without full browser
+- **Sitios de JavaScript**: algunos contenidos requieren JS para renderizarse
+- **Autenticación**: `login` es el mejor esfuerzo, es posible que necesite cookies manuales
+- **Límites de tarifas**: Respete los límites del sitio, use `quota` comprobar
+- **Interacción**:`click`,` submit`limitado sin navegador completo
 
 ---
 
-## Getting Help
+## Obtener ayuda
 
 ```
 help                 # this help

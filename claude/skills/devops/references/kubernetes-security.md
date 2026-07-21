@@ -1,8 +1,8 @@
-# Kubernetes Security
+# Seguridad en Kubernetes
 
-## RBAC (Role-Based Access Control)
+## RBAC (control de acceso basado en roles)
 
-### Role (namespace-scoped)
+### Role (alcance de namespace)
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -32,13 +32,13 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-### Verify Permissions
+### Verificar permisos
 ```bash
 kubectl auth can-i get pods --as=system:serviceaccount:default:my-sa
 kubectl get roles,rolebindings -n default
 ```
 
-## Pod Security (Restricted)
+## Seguridad de pods (Restricted)
 
 ```yaml
 spec:
@@ -56,15 +56,15 @@ spec:
         drop: ["ALL"]
 ```
 
-Enable on namespace:
+Habilitar en namespace:
 ```bash
 kubectl label namespace default \
   pod-security.kubernetes.io/enforce=restricted
 ```
 
-## Network Policies
+## Políticas de red
 
-### Default Deny
+### Denegación por defecto
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -75,7 +75,7 @@ spec:
   policyTypes: [Ingress, Egress]
 ```
 
-### Allow Specific
+### Permitir específico
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -92,4 +92,4 @@ spec:
     - { protocol: TCP, port: 8080 }
 ```
 
-See `kubernetes-security-advanced.md` for secrets, ClusterRoles, and checklist.
+Consulta `kubernetes-security-advanced.md` para secrets, ClusterRoles y checklist.

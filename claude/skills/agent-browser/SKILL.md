@@ -1,24 +1,24 @@
 ---
 name: agent-browser
-description: Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to "open a website", "fill out a form", "click a button", "take a screenshot", "scrape data from a page", "test this web app", "login to a site", "automate browser actions", or any task requiring programmatic web interaction.
+description: CLI de automatización de navegador para AI agents. Usar cuando el usuario necesite interactuar con sitios web, incluyendo navegar páginas, rellenar formularios, hacer clic en botones, capturar screenshots, extraer datos, probar web apps o automatizar cualquier tarea de navegador. Se activa con solicitudes como "abrir un sitio web", "rellenar un formulario", "hacer clic en un botón", "tomar screenshot", "extraer datos de una página", "probar esta web app", "iniciar sesión en un sitio", "automatizar acciones del navegador", o cualquier tarea que requiera interacción web programática.
 allowed-tools: Bash(agent-browser:*)
 ---
 
-# Browser Automation with agent-browser
+# Automatización de navegador con agent-browser
 
-## Core Workflow
+## Flujo de trabajo core
 
-Every browser automation follows this pattern:
+Toda automatización de navegador sigue este patrón:
 
-1. **Navigate**: `agent-browser open <url>`
-2. **Snapshot**: `agent-browser snapshot -i` (get element refs like `@e1`, `@e2`)
-3. **Interact**: Use refs to click, fill, select
-4. **Re-snapshot**: After navigation or DOM changes, get fresh refs
+1. **Navegar**: `agent-browser open <url>`2. **Instantánea**:` agent-browser snapshot -i`(obtener refs de elementos como`@e1`,`@e2`)
+3. **Interactuar**: Usar refs para click, fill, select
+4. **Re-snapshot**: Tras navegación o cambios en el DOM, obtener refs frescos
 
 ```bash
 agent-browser open https://example.com/form
 agent-browser snapshot -i
-# Output: @e1 [input type="email"], @e2 [input type="password"], @e3 [button] "Submit"
+
+# Salida: @e1 [input type="email"], @e2 [input type="password"], @e3 [button] "Submit"
 
 agent-browser fill @e1 "user@example.com"
 agent-browser fill @e2 "password123"
@@ -27,9 +27,10 @@ agent-browser wait --load networkidle
 agent-browser snapshot -i  # Check result
 ```
 
-## Essential Commands
+## Comandos esenciales
 
 ```bash
+
 # Navigation
 agent-browser open <url>              # Navigate (aliases: goto, navigate)
 agent-browser close                   # Close browser
@@ -65,9 +66,9 @@ agent-browser screenshot --full       # Full page screenshot
 agent-browser pdf output.pdf          # Save as PDF
 ```
 
-## Common Patterns
+## Patrones comunes
 
-### Form Submission
+### Envío de formulario
 
 ```bash
 agent-browser open https://example.com/signup
@@ -80,9 +81,10 @@ agent-browser click @e5
 agent-browser wait --load networkidle
 ```
 
-### Authentication with State Persistence
+### Autenticación con persistencia de estado
 
 ```bash
+
 # Login once and save state
 agent-browser open https://app.example.com/login
 agent-browser snapshot -i
@@ -97,7 +99,7 @@ agent-browser state load auth.json
 agent-browser open https://app.example.com/dashboard
 ```
 
-### Data Extraction
+### Extracción de datos
 
 ```bash
 agent-browser open https://example.com/products
@@ -110,7 +112,7 @@ agent-browser snapshot -i --json
 agent-browser get text @e1 --json
 ```
 
-### Parallel Sessions
+### Sesiones en paralelo
 
 ```bash
 agent-browser --session site1 open https://site-a.com
@@ -122,7 +124,7 @@ agent-browser --session site2 snapshot -i
 agent-browser session list
 ```
 
-### Visual Browser (Debugging)
+### Navegador visual (depuración)
 
 ```bash
 agent-browser --headed open https://example.com
@@ -130,18 +132,20 @@ agent-browser highlight @e1          # Highlight element
 agent-browser record start demo.webm # Record session
 ```
 
-### Local Files (PDFs, HTML)
+### Archivos locales (PDFs, HTML)
 
 ```bash
+
 # Open local files with file:// URLs
 agent-browser --allow-file-access open file:///path/to/document.pdf
 agent-browser --allow-file-access open file:///path/to/page.html
 agent-browser screenshot output.png
 ```
 
-### iOS Simulator (Mobile Safari)
+### Simulador de iOS (Safari móvil)
 
 ```bash
+
 # List available iOS simulators
 agent-browser device list
 
@@ -159,19 +163,17 @@ agent-browser -p ios screenshot mobile.png
 
 # Close session (shuts down simulator)
 agent-browser -p ios close
-```
+```**Requisitos:** macOS con Xcode, Appium (` npm install -g appium && appium driver install xcuitest`)
 
-**Requirements:** macOS with Xcode, Appium (`npm install -g appium && appium driver install xcuitest`)
+**Dispositivos reales:** Funciona con dispositivos iOS físicos si están preconfigurados. Usar `--device "<UDID>"` donde UDID viene de`xcrun xctrace list devices`.
 
-**Real devices:** Works with physical iOS devices if pre-configured. Use `--device "<UDID>"` where UDID is from `xcrun xctrace list devices`.
+## Ciclo de vida de refs (importante)
 
-## Ref Lifecycle (Important)
+Los refs (`@e1`,`@e2`, etc.) se invalidan cuando la página cambia. Siempre re-snapshot después de:
 
-Refs (`@e1`, `@e2`, etc.) are invalidated when the page changes. Always re-snapshot after:
-
-- Clicking links or buttons that navigate
-- Form submissions
-- Dynamic content loading (dropdowns, modals)
+- Clic en enlaces o botones que navegan
+- Envíos de formulario
+- Carga de contenido dinámico (dropdowns, modals)
 
 ```bash
 agent-browser click @e5              # Navigates to new page
@@ -179,9 +181,9 @@ agent-browser snapshot -i            # MUST re-snapshot
 agent-browser click @e1              # Use new refs
 ```
 
-## Semantic Locators (Alternative to Refs)
+## Localizadores semánticos (alternativa a refs)
 
-When refs are unavailable or unreliable, use semantic locators:
+Cuando los refs no están disponibles o son poco fiables, usa localizadores semánticos:
 
 ```bash
 agent-browser find text "Sign In" click
@@ -191,24 +193,24 @@ agent-browser find placeholder "Search" type "query"
 agent-browser find testid "submit-btn" click
 ```
 
-## Deep-Dive Documentation
+## Documentación detallada
 
-| Reference | When to Use |
+| Referencia | Cuándo usar |
 |-----------|-------------|
-| [references/commands.md](references/commands.md) | Full command reference with all options |
-| [references/snapshot-refs.md](references/snapshot-refs.md) | Ref lifecycle, invalidation rules, troubleshooting |
-| [references/session-management.md](references/session-management.md) | Parallel sessions, state persistence, concurrent scraping |
-| [references/authentication.md](references/authentication.md) | Login flows, OAuth, 2FA handling, state reuse |
-| [references/video-recording.md](references/video-recording.md) | Recording workflows for debugging and documentation |
-| [references/proxy-support.md](references/proxy-support.md) | Proxy configuration, geo-testing, rotating proxies |
+| [references/commands.md](references/commands.md) | Referencia completa de comandos con todas las opciones |
+| [references/snapshot-refs.md](references/snapshot-refs.md) | Ciclo de vida de refs, reglas de invalidación, troubleshooting |
+| [references/session-management.md](references/session-management.md) | Sesiones paralelas, persistencia de estado, scraping concurrente |
+| [references/authentication.md](references/authentication.md) | Flujos de login, OAuth, manejo 2FA, reutilización de estado |
+| [references/video-recording.md](references/video-recording.md) | Workflows de grabación para debugging y documentación |
+| [references/proxy-support.md](references/proxy-support.md) | Configuración de proxy, geo-testing, proxies rotativos |
 
-## Ready-to-Use Templates
+## Templates listos para usar
 
-| Template | Description |
+| Template | Descripción |
 |----------|-------------|
-| [templates/form-automation.sh](templates/form-automation.sh) | Form filling with validation |
-| [templates/authenticated-session.sh](templates/authenticated-session.sh) | Login once, reuse state |
-| [templates/capture-workflow.sh](templates/capture-workflow.sh) | Content extraction with screenshots |
+| [templates/form-automation.sh](templates/form-automation.sh) | Relleno de formularios con validación |
+| [templates/authenticated-session.sh](templates/authenticated-session.sh) | Login una vez, reutilizar estado |
+| [templates/capture-workflow.sh](templates/capture-workflow.sh) | Extracción de contenido con screenshots |
 
 ```bash
 ./templates/form-automation.sh https://example.com/form

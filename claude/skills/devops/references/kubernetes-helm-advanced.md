@@ -1,6 +1,6 @@
-# Helm Advanced - Templates & Hooks
+# Helm avanzado — plantillas y hooks
 
-## Template Variables
+## Variables de template
 ```yaml
 # templates/deployment.yaml
 apiVersion: apps/v1
@@ -20,7 +20,7 @@ spec:
         {{- end }}
 ```
 
-## Helper Templates
+## Plantillas helper
 ```yaml
 # templates/_helpers.tpl
 {{- define "mychart.fullname" -}}
@@ -51,9 +51,9 @@ spec:
       restartPolicy: Never
 ```
 
-Hook types: `pre-install`, `post-install`, `pre-upgrade`, `post-upgrade`
+Tipos de hooks: `pre-install`, `post-install`, `pre-upgrade`, `post-upgrade`
 
-## Packaging
+## Empaquetado
 ```bash
 helm package mychart
 helm repo index . --url https://charts.example.com
@@ -62,9 +62,9 @@ helm repo add myrepo https://charts.example.com
 helm install myapp myrepo/mychart
 ```
 
-## Commands
+## Comandos
 
-| Command | Purpose |
+| Comando | Propósito |
 |---------|---------|
 | `helm create` | Create |
 | `helm lint` | Validate |

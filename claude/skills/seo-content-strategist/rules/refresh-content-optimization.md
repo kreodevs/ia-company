@@ -1,29 +1,29 @@
 ---
-title: Content Refresh & Optimization
-impact: HIGH
-tags: content-refresh, optimization, decay, historical-optimization, content-audit
+título: Actualización y optimización de contenido
+impacto: ALTO
+Etiquetas: actualización de contenido, optimización, deterioro, optimización histórica, auditoría de contenido
 ---
 
-## Content Refresh & Optimization
+## Actualización y optimización de contenido
 
-**Impact: HIGH**
+**Impacto: ALTO**
 
-Content decay is inevitable — rankings drop, information becomes outdated, competitors publish better versions. Refreshing existing content often delivers better ROI than creating new content. A page that once ranked #3 can return to #3 faster than a new page can get there.
+El deterioro del contenido es inevitable: las clasificaciones caen, la información queda obsoleta y los competidores publican mejores versiones. Actualizar el contenido existente a menudo ofrece un mejor retorno de la inversión que crear contenido nuevo. Una página que alguna vez ocupó el puesto número 3 puede volver al puesto 3 más rápido de lo que puede llegar una página nueva.
 
-### Content Decay Signals
+### Señales de deterioro del contenido
 
-| Signal | How to Detect | Priority |
+| Señal | Cómo detectar | Prioridad |
 |--------|---------------|----------|
-| **Ranking drop** | Position decreased 5+ spots | High |
-| **Traffic decline** | >20% drop YoY | High |
-| **CTR decrease** | Lower click-through rate | Medium |
-| **Engagement drop** | Higher bounce, less time on page | Medium |
-| **Outdated info** | Year references, old stats | High |
-| **Broken elements** | Dead links, missing images | High |
-| **SERP changes** | Different content now ranking | High |
-| **Competitor publish** | New content outranking yours | Medium |
+| **Caída de clasificación** | Posición disminuida 5+ puntos | Alto |
+| **Disminución del tráfico** | Caída >20% interanual | Alto |
+| **Disminución del CTR** | Menor tasa de clics | Medio |
+| **Caída de participación** | Mayor rebote, menos tiempo en la página | Medio |
+| **Información desactualizada** | Referencias del año, estadísticas antiguas | Alto |
+| **Elementos rotos** | Enlaces muertos, imágenes faltantes | Alto |
+| **Cambios de SERP** | Contenido diferente ahora clasificado | Alto |
+| **Publicación de la competencia** | Nuevo contenido que supera al tuyo | Medio |
 
-### Content Audit Framework
+### Marco de auditoría de contenido
 
 ```
 1. Export all content (URL, traffic, rankings)
@@ -41,18 +41,18 @@ Content decay is inevitable — rankings drop, information becomes outdated, com
    └── Prune → Redirect, consolidate, or delete
 ```
 
-### Content Decision Matrix
+### Matriz de decisión de contenido
 
-| Traffic | Rankings | Content Quality | Action |
+| Tráfico | Clasificaciones | Calidad del contenido | Acción |
 |---------|----------|-----------------|--------|
-| High | Top 5 | Good | Maintain, protect |
-| High | Declining | Good | Quick refresh |
-| Medium | 6-20 | Good | Optimize for top 3 |
-| Low | 20+ | Good | Major refresh |
-| Low | None | Poor | Prune or consolidate |
-| None | None | Any | Delete or redirect |
+| Alto | Los 5 mejores | Bueno | Mantener, proteger |
+| Alto | En declive | Bueno | Actualización rápida |
+| Medio | 6-20 | Bueno | Optimizar para los 3 primeros |
+| Bajo | 20+ | Bueno | Actualización importante |
+| Bajo | Ninguno | Pobre | Podar o consolidar |
+| Ninguno | Ninguno | Cualquiera | Eliminar o redirigir |
 
-### Good Refresh Strategy
+### Buena estrategia de actualización
 
 ```
 Original post: "Kubernetes Secrets Best Practices"
@@ -76,7 +76,7 @@ Refresh checklist:
 Result: Back to position 4 within 6 weeks
 ```
 
-### Bad Refresh Strategy
+### Mala estrategia de actualización
 
 ```
 ✗ Just changing the date:
@@ -97,37 +97,37 @@ Result: Back to position 4 within 6 weeks
   → Lost all existing link equity
 ```
 
-### Refresh Priority Framework
+### Actualizar marco de prioridades
 
-Score each article (1-5 scale):
+Califique cada artículo (escala 1-5):
 
-| Factor | Weight | Score |
+| factor | Peso | Puntuación |
 |--------|--------|-------|
-| **Current traffic** | 30% | How much do you have to lose? |
-| **Ranking potential** | 25% | Currently #8-20 = high potential |
-| **Business value** | 25% | Drives conversions, key topic |
-| **Refresh effort** | 20% | Quick win vs major rewrite |
+| **Tráfico actual** | 30% | ¿Cuánto tienes que perder? |
+| **Potencial de clasificación** | 25% | Actualmente #8-20 = alto potencial |
+| **Valor comercial** | 25% | Impulsa las conversiones, tema clave |
+| **Esfuerzo de actualización** | 20% | Ganancia rápida versus reescritura importante |
 
-Prioritize highest combined scores first.
+Priorice primero las puntuaciones combinadas más altas.
 
-### What to Update in a Refresh
+### Qué actualizar en una actualización
 
-| Element | When to Update | How to Update |
-|---------|----------------|---------------|
-| **Title tag** | CTR declining or SERP changed | Test new angle, add year |
-| **Meta description** | CTR below benchmark | Rewrite for click appeal |
-| **Intro paragraph** | Hook is weak | Lead with value, curiosity |
-| **Statistics** | Data older than 1 year | Find current stats, cite sources |
-| **Screenshots** | UI has changed | Capture current interface |
-| **Code examples** | Technology updated | Test and update syntax |
-| **Internal links** | New related content exists | Link to recent posts |
-| **External links** | Links broken or outdated | Replace with current sources |
-| **FAQ section** | PAA questions not covered | Add questions people ask |
-| **Competitor gaps** | Ranking content covers more | Match and exceed depth |
+| Elemento | Cuándo actualizar | Cómo actualizar |
+|---------|----------------|-----------------------|
+| **Etiqueta de título** | CTR en declive o SERP cambiado | Pruebe un nuevo ángulo, agregue año |
+| **Meta descripción** | CTR por debajo del punto de referencia | Reescribir para atraer clics |
+| **Párrafo de introducción** | El gancho es débil | Liderar con valor, curiosidad |
+| **Estadísticas** | Datos anteriores a 1 año | Encuentre estadísticas actuales, cite fuentes |
+| **Capturas de pantalla** | La interfaz de usuario ha cambiado | Capturar la interfaz actual |
+| **Ejemplos de código** | Tecnología actualizada | Probar y actualizar la sintaxis |
+| **Enlaces internos** | Existe nuevo contenido relacionado | Enlace a publicaciones recientes |
+| **Enlaces externos** | Enlaces rotos u obsoletos | Reemplazar con fuentes actuales |
+| **Sección de preguntas frecuentes** | Preguntas de la PAA no cubiertas | Agregar preguntas que hace la gente |
+| **Brechas entre competidores** | El contenido de clasificación cubre más | Igualar y superar la profundidad |
 
-### Content Consolidation Strategy
+### Estrategia de consolidación de contenido
 
-When you have multiple weak posts on similar topics:
+Cuando tienes varias publicaciones débiles sobre temas similares:
 
 ```
 Before consolidation:
@@ -147,7 +147,7 @@ After consolidation:
 Result: 1 strong page > 4 weak pages competing
 ```
 
-### Consolidation Decision Tree
+### Árbol de decisión de consolidación
 
 ```
 Do you have multiple posts on same/similar topic?
@@ -161,7 +161,7 @@ Do you have multiple posts on same/similar topic?
     └── No → Individual optimization
 ```
 
-### Historical Optimization Process
+### Proceso de optimización histórica
 
 ```
 Monthly process:
@@ -182,9 +182,9 @@ Monthly process:
 4. Track position changes over 2-4 weeks
 ```
 
-### Quick Win Optimization
+### Optimización de ganancia rápida
 
-For pages ranking #4-10:
+Para páginas con clasificación del 4 al 10:
 
 ```
 High-impact, low-effort changes:
@@ -207,36 +207,36 @@ High-impact, low-effort changes:
 These alone can push from #7 → #3
 ```
 
-### Refresh Timing Guidelines
+### Actualizar pautas de tiempo
 
-| Content Type | Refresh Frequency | Full Review |
+| Tipo de contenido | Frecuencia de actualización | Revisión completa |
 |--------------|-------------------|-------------|
-| **Pillar pages** | Quarterly | Annually |
-| **How-to guides** | Every 6 months | When tech changes |
-| **Product comparisons** | Quarterly | When products update |
-| **News/trends** | Monthly | Archive when stale |
-| **Evergreen fundamentals** | Annually | Every 2 years |
-| **Tool/resource lists** | Quarterly | Semi-annually |
+| **Páginas pilares** | Trimestral | Anualmente |
+| **Guías prácticas** | Cada 6 meses | Cuando la tecnología cambia |
+| **Comparaciones de productos** | Trimestral | Cuando se actualizan los productos |
+| **Noticias/tendencias** | Mensual | Archivar cuando esté obsoleto |
+| **Fundamentos perennes** | Anualmente | Cada 2 años |
+| **Listas de herramientas/recursos** | Trimestral | Semestralmente |
 
-### Measuring Refresh Success
+### Medición del éxito de la actualización
 
-| Metric | Timeframe | Success Indicator |
+| Métrica | Plazo | Indicador de éxito |
 |--------|-----------|-------------------|
-| **Rankings** | 2-4 weeks | Position improved 3+ spots |
-| **Traffic** | 4-8 weeks | Organic traffic up 25%+ |
-| **CTR** | 2-4 weeks | Click rate improved |
-| **Engagement** | 4 weeks | Bounce rate down, time up |
-| **Conversions** | 4-8 weeks | Goal completions increased |
+| **Clasificaciones** | 2-4 semanas | Posición mejorada 3+ puntos |
+| **Tráfico** | 4-8 semanas | El tráfico orgánico aumentó un 25%+ |
+| **CTR** | 2-4 semanas | Tasa de clics mejorada |
+| **Compromiso** | 4 semanas | Baja la tasa de rebote, aumenta el tiempo |
+| **Conversiones** | 4-8 semanas | Aumentaron los cumplimientos de goles |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Date manipulation** — Changing date without real updates
-- **Shallow updates** — Adding a paragraph to "refresh" a post
-- **Ignoring SERP changes** — Not checking what's ranking now
-- **Preserving weak content** — Every word doesn't need to stay
-- **Breaking URLs** — Changing URLs loses link equity
-- **Refresh and forget** — Not measuring if refresh worked
-- **Over-consolidating** — Merging posts that target different intents
-- **Abandoning winners** — Not protecting content that's performing
-- **Random refresh** — No prioritization strategy
-- **One-time audits** — Should be continuous process
+- **Manipulación de fecha**: cambio de fecha sin actualizaciones reales
+- **Actualizaciones superficiales**: agregar un párrafo para "actualizar" una publicación
+- **Ignorar cambios SERP**: no comprobar qué clasificación está ahora
+- **Preservar el contenido débil**: no es necesario que cada palabra permanezca
+- **Romper URL**: al cambiar las URL se pierde valor de enlace
+- **Actualizar y olvidar**: no se mide si la actualización funcionó
+- **Consolidación excesiva**: fusionar publicaciones que apuntan a diferentes intenciones
+- **Abandonar ganadores**: no proteger el contenido que funciona
+- **Actualización aleatoria**: sin estrategia de priorización
+- **Auditorías únicas**: debe ser un proceso continuo

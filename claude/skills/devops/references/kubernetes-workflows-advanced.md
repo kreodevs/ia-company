@@ -1,6 +1,6 @@
-# Kubernetes Workflows Advanced
+# Flujos de trabajo avanzados en Kubernetes
 
-## CI/CD Pipeline
+## Pipeline CI/CD
 ```yaml
 # GitHub Actions
 name: Build and Deploy
@@ -50,7 +50,7 @@ commonLabels:
   app: myapp
 ```
 
-### Prod Overlay
+### Overlay de producción
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

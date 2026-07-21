@@ -1,30 +1,30 @@
 ---
 name: product-strategist
-description: Expert product strategy covering market analysis, competitive positioning, go-to-market planning, and product-led growth.
+description: Estrategia de productos experta que cubre análisis de mercado, posicionamiento competitivo, planificación de comercialización y crecimiento impulsado por productos.
 version: 1.0.0
 author: Claude Skills
 category: product-design
 tags: [strategy, market-analysis, gtm, positioning, growth]
 ---
 
-# Product Strategist
+# Estratega de producto
 
-Expert-level product strategy for market success.
+Estrategia de producto de nivel experto para el éxito en el mercado.
 
-## Core Competencies
+## Competencias básicas
 
-- Market analysis
-- Competitive positioning
-- Go-to-market strategy
-- Product-led growth
-- Business modeling
-- Strategic planning
-- Portfolio management
-- Partnership strategy
+- Análisis de mercado
+- Posicionamiento competitivo
+- Estrategia de comercialización
+- Crecimiento impulsado por el producto
+- Modelado de negocios
+- Planificación estratégica
+- Gestión de cartera
+- Estrategia de asociación
 
-## Market Analysis
+## Análisis de mercado
 
-### Market Sizing (TAM/SAM/SOM)
+### Dimensionamiento del mercado (TAM/SAM/SOM)
 
 ```
 TAM (Total Addressable Market)
@@ -43,60 +43,61 @@ SOM (Serviceable Obtainable Market)
 └── Example: 5% of SAM = $100M
 ```
 
-### Market Analysis Framework
+### Marco de análisis de mercado
 
 ```markdown
+
 # Market Analysis: [Market Name]
 
-## Market Size
+## Tamaño de mercado
 - TAM: $[X]B ([growth rate]% CAGR)
 - SAM: $[X]B
 - SOM: $[X]M
 
-## Market Dynamics
+## Dinámica de mercado
 
-### Growth Drivers
+### Impulsores de crecimiento
 1. [Driver 1] - [Impact]
 2. [Driver 2] - [Impact]
 
-### Market Barriers
+### Barreras de mercado
 1. [Barrier 1] - [Mitigation]
 2. [Barrier 2] - [Mitigation]
 
-### Trends
+### Tendencias
 - [Trend 1]: [Description]
 - [Trend 2]: [Description]
 
-## Customer Segments
+## Segmentos de clientes
 
 | Segment | Size | Growth | Need | Willingness to Pay |
 |---------|------|--------|------|-------------------|
 | [Seg A] | [%] | [%] | [Need] | [$] |
 | [Seg B] | [%] | [%] | [Need] | [$] |
 
-## Competitive Landscape
+## Panorama competitivo
 [See competitive analysis section]
 
-## Key Success Factors
+## Factores clave de éxito
 1. [Factor 1]
 2. [Factor 2]
 3. [Factor 3]
 ```
 
-## Competitive Analysis
+## Análisis competitivo
 
-### Competitive Matrix
+### Matriz Competitiva
 
-| Factor | Us | Competitor A | Competitor B |
+| factor | Nosotros | Competidor A | Competidor B |
 |--------|-----|--------------|--------------|
-| Price | $X | $Y | $Z |
-| Feature 1 | ★★★ | ★★ | ★★★★ |
-| Feature 2 | ★★★★ | ★★★ | ★★ |
-| UX | ★★★★ | ★★ | ★★★ |
-| Support | ★★★ | ★★★★ | ★★ |
-| Integration | ★★★★ | ★★★ | ★★★★ |
+| Precio | $X | $Y | $ Z |
+| Característica 1 | ★★★ | ★★ | ★★★★ |
+| Característica 2 | ★★★★ | ★★★ | ★★ |
+| Experiencia de usuario | ★★★★ | ★★ | ★★★ |
+| Soporte | ★★★ | ★★★★ | ★★ |
+| Integración | ★★★★ | ★★★ | ★★★★ |
 
-### Porter's Five Forces
+### Las cinco fuerzas de Porter
 
 ```
 THREAT OF NEW ENTRANTS: [Low/Med/High]
@@ -122,7 +123,7 @@ COMPETITIVE RIVALRY: [Low/Med/High]
 - Differentiation: [Assessment]
 ```
 
-### Competitive Positioning Map
+### Mapa de posicionamiento competitivo
 
 ```
                     High Price
@@ -138,9 +139,9 @@ COMPETITIVE RIVALRY: [Low/Med/High]
                     Low Price
 ```
 
-## Positioning Strategy
+## Estrategia de posicionamiento
 
-### Positioning Statement
+### Declaración de posicionamiento
 
 ```
 FOR [target customer]
@@ -151,7 +152,7 @@ UNLIKE [competitive alternative]
 OUR PRODUCT [primary differentiation]
 ```
 
-### Value Proposition Canvas
+### Lienzo de propuesta de valor
 
 ```
 CUSTOMER PROFILE                 VALUE MAP
@@ -167,64 +168,65 @@ CUSTOMER PROFILE                 VALUE MAP
 └─────────────────────┘         └─────────────────────┘
 ```
 
-### Messaging Framework
+### Marco de mensajería
 
-| Audience | Pain Point | Our Solution | Proof Point |
+| Audiencia | Punto de dolor | Nuestra solución | Punto de prueba |
 |----------|------------|--------------|-------------|
-| [Buyer] | [Pain] | [Solution] | [Evidence] |
-| [User] | [Pain] | [Solution] | [Evidence] |
-| [Influencer] | [Pain] | [Solution] | [Evidence] |
+| [Comprador] | [Dolor] | [Solución] | [Evidencia] |
+| [Usuario] | [Dolor] | [Solución] | [Evidencia] |
+| [Influenciador] | [Dolor] | [Solución] | [Evidencia] |
 
-## Go-to-Market Strategy
+## Estrategia de comercialización
 
-### GTM Plan Template
+### Plantilla de plan GTM
 
 ```markdown
+
 # Go-to-Market Plan: [Product/Feature]
 
-## Overview
+## Visión general
 - Launch date: [Date]
 - Target segment: [Segment]
 - Revenue target: $[X] by [Date]
 
-## Target Customer
+## Cliente objetivo
 - Ideal Customer Profile (ICP)
 - Buyer personas
 - Decision-making process
 
-## Positioning
+## Posicionamiento
 - Positioning statement
 - Key messages (3)
 - Competitive differentiators
 
-## Pricing Strategy
+## Estrategia de precios
 - Pricing model: [Model]
 - Price points: [Tiers]
 - Packaging: [Bundles]
 
-## Channel Strategy
+## Estrategia de canales
 | Channel | Role | Investment | Target |
 |---------|------|------------|--------|
 | Direct Sales | [Role] | [%] | [Goal] |
 | Self-serve | [Role] | [%] | [Goal] |
 | Partners | [Role] | [%] | [Goal] |
 
-## Marketing Plan
+## Plan de marketing
 - Pre-launch: [Activities]
 - Launch: [Activities]
 - Post-launch: [Activities]
 
-## Sales Enablement
+## Habilitación comercial
 - Training program
 - Sales collateral
 - Demo environments
 
-## Success Metrics
+## Métricas de éxito
 - [Metric 1]: [Target]
 - [Metric 2]: [Target]
 - [Metric 3]: [Target]
 
-## Timeline
+## Cronograma
 | Phase | Activities | Dates |
 |-------|-----------|-------|
 | Pre-launch | [List] | [Dates] |
@@ -232,7 +234,7 @@ CUSTOMER PROFILE                 VALUE MAP
 | Post-launch | [List] | [Dates] |
 ```
 
-### Launch Checklist
+### Lista de verificación de lanzamiento
 
 ```
 PRE-LAUNCH (T-30 days)
@@ -259,9 +261,9 @@ POST-LAUNCH (T+30 days)
 □ Optimization plan created
 ```
 
-## Product-Led Growth
+## Crecimiento impulsado por el producto
 
-### PLG Metrics
+### Métricas de PLG
 
 ```
 ACQUISITION
@@ -290,7 +292,7 @@ REFERRAL
 └── Referral sign-ups
 ```
 
-### PLG Flywheel
+### Volante PLG
 
 ```
          ┌──────────────────────────┐
@@ -314,9 +316,9 @@ REFERRAL
     └─────────┘              └─────────────┘
 ```
 
-## Business Modeling
+## Modelado de negocios
 
-### Business Model Canvas
+### Lienzo de modelo de negocio
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -336,7 +338,7 @@ REFERRAL
 └──────────────────────────────┴──────────────────────────────┘
 ```
 
-### Unit Economics
+### Unidad de Economía
 
 ```
 LTV (Lifetime Value)
@@ -355,25 +357,26 @@ CAC Payback
 = $500 / ($100 × 70%) = 7.1 months
 ```
 
-## Reference Materials
+## Materiales de referencia
 
-- `references/market_analysis.md` - Market research frameworks
-- `references/competitive_intel.md` - Competitive analysis methods
-- `references/gtm_playbook.md` - Go-to-market strategies
-- `references/plg_guide.md` - Product-led growth tactics
+- `references/market_analysis.md`- Marcos de investigación de mercados
+- `references/competitive_intel.md`- Métodos de análisis competitivo
+- `references/gtm_playbook.md`- Estrategias de comercialización
+- `references/plg_guide.md`- Tácticas de crecimiento basadas en productos
 
-## Scripts
+## Guiones
 
 ```bash
-# Market sizing calculator
+
+# Calculadora de tamaño de mercado
 python scripts/market_sizing.py --segment enterprise --geo north_america
 
-# Competitive tracker
+# Seguimiento competitivo
 python scripts/competitive_tracker.py --competitors comp1,comp2,comp3
 
-# GTM timeline generator
+# Generador de cronograma GTM
 python scripts/gtm_timeline.py --launch-date 2024-03-01
 
-# Unit economics calculator
+# Calculadora de unit economics
 python scripts/unit_economics.py --arpu 100 --margin 0.7 --lifetime 36
 ```

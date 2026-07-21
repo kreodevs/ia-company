@@ -1,16 +1,16 @@
 ---
-title: Content Performance Measurement
-impact: MEDIUM
-tags: analytics, measurement, kpis, reporting, attribution, seo-metrics
+título: Medición del rendimiento del contenido
+impacto: MEDIO
+Etiquetas: análisis, medición, kpis, informes, atribución, seo-métrica
 ---
 
-## Content Performance Measurement
+## Medición del rendimiento del contenido
 
-**Impact: MEDIUM**
+**Impacto: MEDIO**
 
-What gets measured gets improved. But measuring the wrong things leads to wrong decisions — vanity metrics feel good while real opportunities go unnoticed. Effective SEO measurement connects content to business outcomes.
+Lo que se mide se mejora. Pero medir las cosas equivocadas conduce a decisiones equivocadas: las métricas vanidosas sientan bien, mientras que las oportunidades reales pasan desapercibidas. La medición efectiva de SEO conecta el contenido con los resultados comerciales.
 
-### SEO Metrics Hierarchy
+### Jerarquía de métricas de SEO
 
 ```
 Business Outcomes (What matters)
@@ -34,27 +34,27 @@ Health Metrics (What enables success)
 └── Technical errors
 ```
 
-### Primary SEO KPIs
+### KPI de SEO principales
 
-| Metric | What It Measures | Target | Tool |
+| Métrica | Qué mide | Objetivo | Herramienta |
 |--------|------------------|--------|------|
-| **Organic Traffic** | Total non-paid visitors | +20% QoQ | GA4, Search Console |
-| **Organic Conversions** | Goals from organic | Varies | GA4 |
-| **Non-brand Traffic** | Traffic not searching your brand | +25% QoQ | Search Console filter |
-| **Top 10 Keywords** | Keywords ranking page 1 | +15% QoQ | Ahrefs, Semrush |
-| **Avg. Position** | Average ranking across keywords | Improving | Search Console |
+| **Tráfico orgánico** | Total de visitantes no pagados | +20% intertrimestral | GA4, Consola de búsqueda |
+| **Conversiones orgánicas** | Objetivos de lo orgánico | Varía | GA4 |
+| **Tráfico sin marca** | Tráfico que no busca tu marca | +25% intertrimestral | Filtro de consola de búsqueda |
+| **Las 10 palabras clave principales** | Clasificación de palabras clave página 1 | +15% intertrimestral | Ahrefs, Semrush |
+| **Promedio Posición** | Clasificación promedio entre palabras clave | Mejorando | Consola de búsqueda |
 
-### Ranking Metrics That Matter
+### Métricas de clasificación que importan
 
-| Position Range | Significance | Action |
+| Rango de posición | Importancia | Acción |
 |----------------|--------------|--------|
-| **#1-3** | Primary traffic capture | Protect, don't tinker |
-| **#4-10** | Visible but low CTR | Optimize for quick wins |
-| **#11-20** | Page 2, minimal traffic | Need content improvement |
-| **#21-50** | Tracking distance | Major optimization or rebuild |
-| **#51+** | Not competitive | Evaluate if worth pursuing |
+| **#1-3** | Captura de tráfico primario | Protege, no juegues |
+| **#4-10** | CTR visible pero bajo | Optimice para obtener ganancias rápidas |
+| **#11-20** | Página 2, tráfico mínimo | Necesita mejorar el contenido |
+| **#21-50** | Distancia de seguimiento | Optimización o reconstrucción importante |
+| **#51+** | No competitivo | Evaluar si vale la pena seguirlo |
 
-### Good SEO Dashboard
+### Buen panel de SEO
 
 ```
 Monthly SEO Report Structure:
@@ -95,46 +95,46 @@ BACKLINKS
 └── Notable links acquired
 ```
 
-### Search Console Metrics
+### Métricas de Search Console
 
-| Report | Key Metric | What to Look For |
+| Informe | Métrica clave | Qué buscar |
 |--------|------------|------------------|
-| **Performance** | Clicks, Impressions, CTR, Position | Trends over time |
-| **Pages** | Traffic by URL | Top performers, decliners |
-| **Queries** | Traffic by keyword | Opportunities, losses |
-| **Index Coverage** | Indexed pages | Errors, exclusions |
-| **Core Web Vitals** | LCP, INP, CLS | Pages needing work |
-| **Mobile Usability** | Mobile issues | Fix errors |
+| **Rendimiento** | Clics, Impresiones, CTR, Posición | Tendencias a lo largo del tiempo |
+| **Páginas** | Tráfico por URL | Los de mejor desempeño, los declinantes |
+| **Consultas** | Tráfico por palabra clave | Oportunidades, pérdidas |
+| **Cobertura del índice** | Páginas indexadas | Errores, exclusiones |
+| **Ventajas web principales** | LCP, INP, CLS | Páginas que necesitan trabajo |
+| **Usabilidad móvil** | Problemas móviles | Corregir errores |
 
-### CTR Benchmarks by Position
+### Puntos de referencia de CTR por puesto
 
-| Position | Expected CTR | Notes |
+| Posición | CTR esperado | Notas |
 |----------|--------------|-------|
-| **#1** | 25-35% | Higher with SERP features |
-| **#2** | 12-18% | Still strong |
-| **#3** | 8-12% | Worth optimizing title/meta |
-| **#4-5** | 5-8% | Declining returns |
-| **#6-10** | 2-5% | Need to break into top 5 |
-| **#11+** | <2% | Page 2 is invisible |
+| **#1** | 25-35% | Más alto con funciones SERP |
+| **#2** | 12-18% | Sigue fuerte |
+| **#3** | 8-12% | Vale la pena optimizar título/meta |
+| **#4-5** | 5-8% | Rentabilidades decrecientes |
+| **#6-10** | 2-5% | Necesidad de entrar en el top 5 |
+| **#11+** | <2% | La página 2 es invisible |
 
-**Low CTR relative to position = optimize title/meta description**
+**CTR bajo en relación con la posición = optimizar título/meta descripción**
 
-### Content-Level Tracking
+### Seguimiento a nivel de contenido
 
-For each important content piece:
+Para cada pieza de contenido importante:
 
-| Metric | Timeframe | Why It Matters |
+| Métrica | Plazo | Por qué es importante |
 |--------|-----------|----------------|
-| **Organic sessions** | Weekly | Traffic trend |
-| **Primary keyword rank** | Weekly | Position changes |
-| **CTR** | Monthly | SERP appeal |
-| **Bounce rate** | Monthly | Content relevance |
-| **Avg. time on page** | Monthly | Engagement quality |
-| **Conversions** | Monthly | Business impact |
-| **Backlinks acquired** | Monthly | Authority building |
-| **Internal links** | Quarterly | Site architecture |
+| **Sesiones orgánicas** | Semanal | Tendencia del tráfico |
+| **Clasificación de palabras clave principales** | Semanal | Cambios de posición |
+| **CTR** | Mensual | Apelación SERP |
+| **Tasa de rebote** | Mensual | Relevancia del contenido |
+| **Promedio tiempo en la página** | Mensual | Calidad del compromiso |
+| **Conversiones** | Mensual | Impacto empresarial |
+| **Vínculos de retroceso adquiridos** | Mensual | Edificio de autoridad |
+| **Enlaces internos** | Trimestral | Arquitectura del sitio |
 
-### Good Content Performance Analysis
+### Buen análisis del rendimiento del contenido
 
 ```
 Analysis: "Kubernetes Secrets Guide" performance review
@@ -152,7 +152,7 @@ Action: Protect rankings, update quarterly, add internal links
         from new related content
 ```
 
-### Bad Content Performance Analysis
+### Análisis de rendimiento de contenido incorrecto
 
 ```
 Analysis: "Docker Secrets Tutorial" performance review
@@ -175,7 +175,7 @@ Investigation:
 Action: Major refresh or consolidate into broader Docker guide
 ```
 
-### Attribution for SEO
+### Atribución para SEO
 
 ```
 Multi-touch attribution for organic:
@@ -198,41 +198,41 @@ Recommendation: Use position-based (40% first, 40% last, 20% middle)
 for balanced view of SEO impact
 ```
 
-### Organic Conversion Tracking
+### Seguimiento de conversiones orgánicas
 
-| Conversion Type | How to Track | Attribution |
+| Tipo de conversión | Cómo realizar un seguimiento | Atribución |
 |-----------------|--------------|-------------|
-| **Direct** | Goal on organic landing page | First touch |
-| **Assisted** | Organic in conversion path | Multi-touch |
-| **Post-impression** | Visited organically, converted later | Time-decay |
+| **Directo** | Objetivo en la página de destino orgánica | Primer toque |
+| **Asistido** | Orgánico en camino de conversión | Multitáctil |
+| **Post-impresión** | Visitado orgánicamente, convertido más tarde | Decaimiento del tiempo |
 
-Setup in GA4:
-- Create segment for organic traffic
-- Track micro-conversions (email signup, content download)
-- Track macro-conversions (demo, trial, purchase)
-- Set up funnel visualization
+Configuración en GA4:
+- Crear segmento para tráfico orgánico.
+- Seguimiento de microconversiones (registro de correo electrónico, descarga de contenido)
+- Seguimiento de macroconversiones (demostración, prueba, compra)
+- Configurar la visualización del embudo
 
-### Reporting Frequency
+### Frecuencia de informes
 
-| Report | Frequency | Audience | Focus |
+| Informe | Frecuencia | Audiencia | Enfoque |
 |--------|-----------|----------|-------|
-| **Executive** | Monthly | Leadership | ROI, revenue, strategic metrics |
-| **Team** | Weekly | Marketing team | Tactical metrics, progress |
-| **Content** | Monthly | Content team | Per-page performance |
-| **Technical** | Weekly | Dev/SEO team | Errors, crawl issues, CWV |
-| **Competitive** | Quarterly | Strategy | Market share, gaps |
+| **Ejecutivo** | Mensual | Liderazgo | ROI, ingresos, métricas estratégicas |
+| **Equipo** | Semanal | Equipo de marketing | Métricas tácticas, progreso |
+| **Contenido** | Mensual | Equipo de contenido | Rendimiento por página |
+| **Técnico** | Semanal | Equipo de desarrollo/SEO | Errores, problemas de rastreo, CWV |
+| **Competitivo** | Trimestral | Estrategia | Cuota de mercado, brechas |
 
-### Competitive Benchmarking
+### Evaluación comparativa competitiva
 
-| Metric | How to Compare |
+| Métrica | Cómo comparar |
 |--------|----------------|
-| **Share of voice** | Keyword rankings vs competitors |
-| **Domain authority** | Ahrefs/Moz domain rating |
-| **Content gap** | Keywords they rank for, you don't |
-| **Link gap** | Sites linking to them, not you |
-| **SERP features** | Who owns snippets, PAA |
+| **Cuota de voz** | Clasificaciones de palabras clave frente a competidores |
+| **Autoridad de dominio** | Calificación de dominio Ahrefs/Moz |
+| **Brecha de contenido** | Palabras clave para las que ellos clasifican, tú no |
+| **Brecha de enlace** | Sitios que enlazan con ellos, no con usted |
+| **Funciones SERP** | ¿Quién posee los fragmentos?, PAA |
 
-### Forecasting Organic Growth
+### Previsión del crecimiento orgánico
 
 ```
 Conservative forecast model:
@@ -253,26 +253,26 @@ Quarter 2: 56,500 + 5,000 + 2,825 - 1,130
 Present forecast with confidence intervals (actual ± 20%)
 ```
 
-### Tool Stack for SEO Measurement
+### Pila de herramientas para la medición de SEO
 
-| Function | Free Tools | Paid Tools |
+| Función | Herramientas gratuitas | Herramientas pagas |
 |----------|------------|------------|
-| **Traffic** | GA4, Search Console | — |
-| **Rankings** | Search Console (sampled) | Ahrefs, Semrush, Moz |
-| **Backlinks** | — | Ahrefs, Majestic, Moz |
-| **Technical** | Screaming Frog (500 URLs), PageSpeed | Screaming Frog, Sitebulb |
-| **Competitive** | — | Ahrefs, Semrush, SpyFu |
-| **Reporting** | Looker Studio | Various BI tools |
+| **Tráfico** | GA4, Consola de búsqueda | — |
+| **Clasificaciones** | Consola de búsqueda (muestra) | Ahrefs, Semrush, Moz |
+| **Vínculos de retroceso** | — | Ahrefs, Majestuoso, Moz |
+| **Técnico** | Screaming Frog (500 URL), PageSpeed ​​| Rana gritadora, Sitebulb |
+| **Competitivo** | — | Ahrefs, Semrush, SpyFu |
+| **Informes** | Estudio Looker | Varias herramientas de BI |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Vanity metrics** — Celebrating traffic with no conversions
-- **Daily ranking checks** — Rankings fluctuate; weekly is sufficient
-- **Ignoring mobile** — 60%+ traffic is mobile; segment reporting
-- **No benchmarking** — Numbers mean nothing without context
-- **Position obsession** — #4 to #3 matters more than #34 to #28
-- **All-traffic focus** — Non-brand traffic shows real SEO impact
-- **Short timeframes** — SEO needs 3-6 month windows
-- **Last-click only** — Misses awareness content value
-- **No segmentation** — Blog vs docs vs product pages differ
-- **Manual reporting** — Automate dashboards, spend time on analysis
+- **Métricas personalizadas**: celebrando el tráfico sin conversiones
+- **Comprobaciones diarias de clasificación**: las clasificaciones fluctúan; semanalmente es suficiente
+- **Ignorando dispositivos móviles**: más del 60% del tráfico es móvil; informes de segmento
+- **Sin evaluación comparativa**: los números no significan nada sin contexto
+- **Obsesión por la posición**: del 4 al 3 importan más que del 34 al 28
+- **Enfoque en todo el tráfico**: el tráfico que no es de marca muestra un impacto SEO real
+- **Plazos de tiempo cortos**: el SEO necesita periodos de 3 a 6 meses
+- **Último clic únicamente**: se pierde el valor del contenido de reconocimiento
+- **Sin segmentación**: el blog, los documentos y las páginas de productos difieren
+- **Informes manuales**: automatice paneles y dedique tiempo al análisis

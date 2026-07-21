@@ -1,25 +1,26 @@
-# Proxy Support
+# Soporte de proxy
 
-Proxy configuration for geo-testing, rate limiting avoidance, and corporate environments.
+Configuración de proxy para pruebas geográficas, evitación de limitaciones de velocidad y entornos corporativos.
 
-**Related**: [commands.md](commands.md) for global options, [SKILL.md](../SKILL.md) for quick start.
+**Relacionado**: [commands.md](commands.md) para opciones globales, [SKILL.md](../SKILL.md) para inicio rápido.
 
-## Contents
+## Contenidos
 
-- [Basic Proxy Configuration](#basic-proxy-configuration)
-- [Authenticated Proxy](#authenticated-proxy)
-- [SOCKS Proxy](#socks-proxy)
-- [Proxy Bypass](#proxy-bypass)
-- [Common Use Cases](#common-use-cases)
-- [Verifying Proxy Connection](#verifying-proxy-connection)
-- [Troubleshooting](#troubleshooting)
-- [Best Practices](#best-practices)
+- [Configuración básica de proxy](#configuración-proxy-básica)
+- [Proxy autenticado](#proxy-autenticado)
+- [Proxy SOCKS](#socks-proxy)
+- [Omitir proxy](#proxy-bypass)
+- [Casos de uso comunes](#casos-de-uso-comunes)
+- [Verificando conexión de proxy](#verificando-conexión-proxy)
+- [Solución de problemas](#solución de problemas)
+- [Mejores prácticas](#mejores-practicas)
 
-## Basic Proxy Configuration
+## Configuración básica de proxy
 
-Set proxy via environment variable before starting:
+Configure el proxy a través de la variable de entorno antes de comenzar:
 
 ```bash
+
 # HTTP proxy
 export HTTP_PROXY="http://proxy.example.com:8080"
 agent-browser open https://example.com
@@ -34,11 +35,12 @@ export HTTPS_PROXY="http://proxy.example.com:8080"
 agent-browser open https://example.com
 ```
 
-## Authenticated Proxy
+## Proxy autenticado
 
-For proxies requiring authentication:
+Para servidores proxy que requieren autenticación:
 
 ```bash
+
 # Include credentials in URL
 export HTTP_PROXY="http://username:password@proxy.example.com:8080"
 agent-browser open https://example.com
@@ -47,6 +49,7 @@ agent-browser open https://example.com
 ## SOCKS Proxy
 
 ```bash
+
 # SOCKS5 proxy
 export ALL_PROXY="socks5://proxy.example.com:1080"
 agent-browser open https://example.com
@@ -56,23 +59,25 @@ export ALL_PROXY="socks5://user:pass@proxy.example.com:1080"
 agent-browser open https://example.com
 ```
 
-## Proxy Bypass
+## Omisión de proxy
 
-Skip proxy for specific domains:
+Omitir proxy para dominios específicos:
 
 ```bash
+
 # Bypass proxy for local addresses
 export NO_PROXY="localhost,127.0.0.1,.internal.company.com"
 agent-browser open https://internal.company.com  # Direct connection
 agent-browser open https://external.com          # Via proxy
 ```
 
-## Common Use Cases
+## Casos de uso comunes
 
-### Geo-Location Testing
+### Pruebas de ubicación geográfica
 
 ```bash
 #!/bin/bash
+
 # Test site from different regions using geo-located proxies
 
 PROXIES=(
@@ -94,10 +99,11 @@ for proxy in "${PROXIES[@]}"; do
 done
 ```
 
-### Rotating Proxies for Scraping
+### Proxies rotativos para scraping
 
 ```bash
 #!/bin/bash
+
 # Rotate through proxy list to avoid rate limiting
 
 PROXY_LIST=(
@@ -125,10 +131,11 @@ for i in "${!URLS[@]}"; do
 done
 ```
 
-### Corporate Network Access
+### Acceso a la red corporativa
 
 ```bash
 #!/bin/bash
+
 # Access internal sites via corporate proxy
 
 export HTTP_PROXY="http://corpproxy.company.com:8080"
@@ -142,20 +149,23 @@ agent-browser open https://external-vendor.com
 agent-browser open https://intranet.company.com
 ```
 
-## Verifying Proxy Connection
+## Verificando la conexión proxy
 
 ```bash
+
 # Check your apparent IP
 agent-browser open https://httpbin.org/ip
 agent-browser get text body
+
 # Should show proxy's IP, not your real IP
 ```
 
-## Troubleshooting
+## Solución de problemas
 
-### Proxy Connection Failed
+### Error en la conexión de proxy
 
 ```bash
+
 # Test proxy connectivity first
 curl -x http://proxy.example.com:8080 https://httpbin.org/ip
 
@@ -163,26 +173,28 @@ curl -x http://proxy.example.com:8080 https://httpbin.org/ip
 export HTTP_PROXY="http://user:pass@proxy.example.com:8080"
 ```
 
-### SSL/TLS Errors Through Proxy
+### Errores SSL/TLS a través del proxy
 
-Some proxies perform SSL inspection. If you encounter certificate errors:
+Algunos servidores proxy realizan inspección SSL. Si encuentra errores de certificado:
 
 ```bash
+
 # For testing only - not recommended for production
 agent-browser open https://example.com --ignore-https-errors
 ```
 
-### Slow Performance
+### Rendimiento lento
 
 ```bash
+
 # Use proxy only when necessary
 export NO_PROXY="*.cdn.com,*.static.com"  # Direct CDN access
 ```
 
-## Best Practices
+## Mejores prácticas
 
-1. **Use environment variables** - Don't hardcode proxy credentials
-2. **Set NO_PROXY appropriately** - Avoid routing local traffic through proxy
-3. **Test proxy before automation** - Verify connectivity with simple requests
-4. **Handle proxy failures gracefully** - Implement retry logic for unstable proxies
-5. **Rotate proxies for large scraping jobs** - Distribute load and avoid bans
+1. **Utilice variables de entorno**: no codifique las credenciales del proxy
+2. **Establezca NO_PROXY apropiadamente** - Evite enrutar el tráfico local a través del proxy
+3. **Pruebe el proxy antes de la automatización**: verifique la conectividad con solicitudes simples
+4. **Maneje las fallas de proxy con elegancia**: implemente una lógica de reintento para servidores proxy inestables
+5. **Rote los servidores proxy para trabajos de scraping grandes**: distribuya la carga y evite prohibiciones

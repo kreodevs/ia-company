@@ -1,15 +1,15 @@
-# Multi-Source Comparison Matrix
+# Matriz de comparación de múltiples fuentes
 
-## Overview
+## Descripción general
 
-Use when analyzing multiple articles, papers, or perspectives on the same topic. Systematically compare to synthesize insights.
+Úselo al analizar múltiples artículos, artículos o perspectivas sobre el mismo tema. Comparar sistemáticamente para sintetizar conocimientos.
 
-## Standard Comparison Matrix
+## Matriz de comparación estándar
 
 ```markdown
 # Comparative Analysis: [Topic]
 
-## Sources Overview
+## Resumen de fuentes
 
 | Source | Type | Author Expertise | Date | Bias/Lens |
 |--------|------|-----------------|------|-----------|
@@ -19,7 +19,7 @@ Use when analyzing multiple articles, papers, or perspectives on the same topic.
 
 ---
 
-## Key Claims Matrix
+## Matriz de afirmaciones clave
 
 | Claim/Question | Source 1 | Source 2 | Source 3 | Consensus? |
 |----------------|----------|----------|----------|------------|
@@ -29,7 +29,7 @@ Use when analyzing multiple articles, papers, or perspectives on the same topic.
 
 ---
 
-## Evidence Quality
+## Calidad de la evidencia
 
 | Source | Evidence Type | Strength (1-5) | Notes |
 |--------|---------------|----------------|-------|
@@ -41,15 +41,15 @@ Use when analyzing multiple articles, papers, or perspectives on the same topic.
 
 ## Agreement vs. Disagreement
 
-### Universal Agreement
+### Acuerdo universal
 All sources agree on:
 - [Point 1]
 - [Point 2]
 
-### Partial Consensus  
+### Consenso parcial  
 Sources 1 & 2 agree on [X], but Source 3 argues [Y]
 
-### Complete Divergence
+### Divergencia total
 On [Topic], views split:
 - Source 1: [View]
 - Source 2: [View]
@@ -57,19 +57,19 @@ On [Topic], views split:
 
 ---
 
-## Synthesized Insights
+## Ideas sintetizadas
 
-### What We Know with Confidence
+### Lo que sabemos con confianza
 Based on convergent evidence across sources:
 1. [High-confidence insight]
 2. [High-confidence insight]
 
-### Open Questions
+### Preguntas abiertas
 Where sources disagree or lack data:
 - [Unresolved question 1]
 - [Unresolved question 2]
 
-### Integrated Framework
+### Marco integrado
 Combining the best from each source:
 [Synthesis that incorporates multiple perspectives]
 
@@ -88,7 +88,7 @@ Combining the best from each source:
 
 ---
 
-## Recommended Reading Order
+## Orden de lectura recomendado
 
 For someone new to this topic:
 1. Read [Source X] first because [reason]
@@ -98,9 +98,9 @@ For someone new to this topic:
 
 ---
 
-## Method Comparison Matrix
+## Matriz de comparación de métodos
 
-When sources describe different methods/approaches:
+Cuando las fuentes describen diferentes métodos/enfoques:
 
 ```markdown
 # Method Comparison: [Topic]
@@ -111,7 +111,7 @@ When sources describe different methods/approaches:
 | [Method B] | [Source 2] | [Use case] | [Weakness] | Hard | [Outcome] |
 | [Method C] | [Source 3] | [Use case] | [Weakness] | Medium | [Outcome] |
 
-## Recommendation
+## Recomendación
 Use [Method X] when [condition]
 Use [Method Y] when [condition]
 Combine [X + Y] for [scenario]
@@ -119,17 +119,17 @@ Combine [X + Y] for [scenario]
 
 ---
 
-## Viewpoint Spectrum
+## Espectro de punto de vista
 
-When sources represent different positions on a spectrum:
+Cuando las fuentes representan diferentes posiciones en un espectro:
 
 ```markdown
 # Viewpoint Spectrum: [Topic]
 
-## The Question
+## La pregunta
 [Central question being debated]
 
-## The Spectrum
+## El espectro
 
 [Extreme Position A] ←―――――――――――→ [Extreme Position B]
         ↑                    ↑                    ↑
@@ -153,16 +153,16 @@ When sources represent different positions on a spectrum:
 **Strongest point:** [Best argument]
 **Weakest point:** [Vulnerability]
 
-## My Position
+## Mi posición
 After reviewing all perspectives:
 [Where you land on spectrum and why]
 ```
 
 ---
 
-## Evolution Over Time Matrix
+## Matriz de evolución en el tiempo
 
-When tracking how understanding of a topic evolved:
+Al realizar un seguimiento de cómo evolucionó la comprensión de un tema:
 
 ```markdown
 # Evolution of Thought: [Topic]
@@ -173,21 +173,21 @@ When tracking how understanding of a topic evolved:
 | [Era 2] | [Source/Author] | [New understanding] | [Next shift] |
 | [Era 3] | [Source/Author] | [Current view] | [Open questions] |
 
-## Pattern Analysis
+## Análisis de patrones
 **What stayed constant:** [Enduring truths]
 **What repeatedly changed:** [Unstable assumptions]
 **Current frontier:** [What we're figuring out now]
 
-## Lessons from History
+## Lecciones de la historia
 - [Historical pattern 1 and implication]
 - [Historical pattern 2 and implication]
 ```
 
 ---
 
-## Interdisciplinary Comparison
+## Comparación interdisciplinaria
 
-When same topic is analyzed from different fields:
+Cuando un mismo tema se analiza desde diferentes campos:
 
 ```markdown
 # Multi-Disciplinary View: [Topic]
@@ -199,7 +199,7 @@ When same topic is analyzed from different fields:
 | Sociology | [Source] | [Question] | [Insight] | [Blind spot] |
 | Biology | [Source] | [Question] | [Insight] | [Blind spot] |
 
-## Synthesis
+## Síntesis
 **Complementary insights:**
 - Economics sees [X], Psychology explains [Y], together they reveal [Z]
 
@@ -211,15 +211,15 @@ When same topic is analyzed from different fields:
 - Economics misses [X] that Sociology provides
 - Psychology overlooks [Y] that Biology explains
 
-## Integrated Model
+## Modelo integrado
 [Diagram or description combining multiple lenses]
 ```
 
 ---
 
-## Practical Comparison
+## Comparación práctica
 
-For how-to content from multiple sources:
+Para contenido instructivo de múltiples fuentes:
 
 ```markdown
 # Implementation Comparison: [Skill/Method]
@@ -228,7 +228,7 @@ For how-to content from multiple sources:
 1. [Universally recommended step]
 2. [Universally recommended step]
 
-## Variations
+## Variaciones
 
 | Aspect | Source 1 Approach | Source 2 Approach | Source 3 Approach |
 |--------|-------------------|-------------------|-------------------|
@@ -244,7 +244,7 @@ For how-to content from multiple sources:
 | Source 2 | [Y%] | [What users say] | [Credibility] |
 | Source 3 | [Z%] | [What users say] | [Credibility] |
 
-## Personalized Recommendation
+## Recomendación personalizada
 For someone like me ([my context]):
 - Use [Source X's method] for [reason]
 - Skip [Source Y's suggestion] because [reason]
@@ -253,20 +253,20 @@ For someone like me ([my context]):
 
 ---
 
-## Conflict Resolution Template
+## Plantilla de resolución de conflictos
 
-When sources directly contradict:
+Cuando las fuentes contradicen directamente:
 
 ```markdown
 # Resolving Contradiction: [Specific Claim]
 
-## The Contradiction
+## La contradicción
 **Source 1 claims:** [Statement]
 **Source 2 claims:** [Opposite statement]
 
-## Investigating the Conflict
+## Investigando el conflicto
 
-### Possible Reasons for Disagreement
+### Posibles razones del desacuerdo
 
 1. **Different Definitions**
    - Does Source 1 define [term] as [X]?
@@ -291,7 +291,7 @@ When sources directly contradict:
 5. **One is Wrong**
    - [Analysis of which source has flawed reasoning]
 
-### Resolution
+### Resolución
 [Which source is more reliable for this specific claim and why]
 OR
 [How both can be true depending on context]
@@ -301,30 +301,30 @@ OR
 
 ---
 
-## Usage Guidelines
+## Pautas de uso
 
-**When to use comparison matrices:**
-- Reading 3+ sources on same topic
-- Encountering conflicting information
-- Trying to synthesize best practices
-- Building comprehensive understanding
-- Making informed decisions
+**Cuándo usar matrices de comparación:**
+- Leer más de 3 fuentes sobre el mismo tema.
+- Encontrar información contradictoria.
+- Intentar sintetizar las mejores prácticas.
+- Construir una comprensión integral
+- Tomar decisiones informadas
 
-**How to populate:**
-1. Read each source independently first (use standard note template)
-2. Identify common themes/questions across sources
-3. Create matrix structure based on what you're comparing
-4. Fill in each source's position
-5. Analyze patterns and synthesize
+**Cómo completar:**
+1. Primero lea cada fuente de forma independiente (use la plantilla de notas estándar)
+2. Identificar temas/preguntas comunes entre las fuentes.
+3. Crea una estructura matricial basada en lo que estás comparando.
+4. Complete la posición de cada fuente.
+5. Analizar patrones y sintetizar.
 
-**Common mistakes:**
-- ❌ Forcing false equivalence (not all views equally valid)
-- ❌ Cherry-picking to support predetermined view
-- ❌ Ignoring publication quality/expertise differences
-- ❌ Missing the forest for the trees (over-detailed comparison)
+**Errores comunes:**
+- ❌ Forzar una equivalencia falsa (no todas las opiniones son igualmente válidas)
+- ❌ Selección selectiva para admitir una vista predeterminada
+- ❌ Ignorar las diferencias en la calidad/experiencia de la publicación
+- ❌ Falta el bosque por los árboles (comparación demasiado detallada)
 
-**Best practices:**
-- ✅ Weight sources by credibility
-- ✅ Look for convergent evidence
-- ✅ Note what's settled vs. debated
-- ✅ Identify your own biases in interpretation
+**Mejores prácticas:**
+- ✅ Fuentes de peso por credibilidad
+- ✅ Buscar evidencia convergente
+- ✅ Tenga en cuenta lo que está resuelto versus lo que se debate
+- ✅ Identifica tus propios sesgos en la interpretación

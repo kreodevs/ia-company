@@ -1,20 +1,14 @@
-# Common Gotchas & Solutions
+# Errores y soluciones comunes
 
-## Critical Failures (Will Break Your Build)
+## Fallos críticos (romperán tu construcción)
 
-### 1. `:root` Inside `@layer base`
-
-❌ **WRONG:**
-```css
+### 1. `:root` Inside`@layer base`❌ **WRONG:**```css
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
   }
 }
-```
-
-✅ **CORRECT:**
-```css
+```✅ **CORRECT:**```css
 :root {
   --background: hsl(0 0% 100%);
 }
@@ -24,16 +18,13 @@
     background-color: var(--background);
   }
 }
-```
-
-**Why:** Tailwind v4 strips CSS outside `@theme`/`@layer`, but `:root` must be at root level.
+```**Por qué:** Tailwind v4 elimina el CSS del exterior`@theme`/`@layer`, but`:root` debe estar a nivel de raíz.
 
 ---
 
-### 2. Nested `@theme` Directive
+### 2. Anidado `@theme` Directiva
 
-❌ **WRONG:**
-```css
+❌ **MAL:**```css
 @theme {
   --color-primary: hsl(0 0% 0%);
 }
@@ -43,10 +34,7 @@
     --color-primary: hsl(0 0% 100%);
   }
 }
-```
-
-✅ **CORRECT:**
-```css
+```✅ **CORRECT:**```css
 :root {
   --primary: hsl(0 0% 0%);
 }
@@ -58,39 +46,30 @@
 @theme inline {
   --color-primary: var(--primary);
 }
-```
-
-**Why:** Tailwind v4 doesn't support `@theme` inside selectors.
+```**Por qué:** Tailwind v4 no es compatible`@theme` Selectores internos.
 
 ---
 
-### 3. Double `hsl()` Wrapping
+### 3. Doble `hsl()` Envoltura
 
-❌ **WRONG:**
-```css
+❌ **MAL:**```css
 @layer base {
   body {
     background-color: hsl(var(--background));
   }
 }
-```
-
-✅ **CORRECT:**
-```css
+```✅ **CORRECT:**```css
 @layer base {
   body {
     background-color: var(--background);  /* Already has hsl() */
   }
 }
-```
-
-**Why:** Variables already contain `hsl()`, double-wrapping creates `hsl(hsl(...))`.
+```**Por qué:** Las variables ya contienen` hsl()`, la doble envoltura crea` hsl(hsl(...))`.
 
 ---
 
-### 4. Colors in `tailwind.config.ts`
+### 4. Colores en `tailwind.config.ts`❌ **WRONG:**
 
-❌ **WRONG:**
 ```typescript
 // tailwind.config.ts
 export default {
@@ -102,9 +81,8 @@ export default {
     }
   }
 }
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```typescript
 // Delete tailwind.config.ts entirely OR leave it empty
 export default {}
@@ -115,27 +93,21 @@ export default {}
     "config": ""  // ← Empty string
   }
 }
-```
-
-**Why:** Tailwind v4 completely ignores `theme.extend.colors`.
+```**Por qué:** Tailwind v4 ignora por completo` theme.extend.colors`.
 
 ---
 
-### 5. Missing `@theme inline` Mapping
+### 5. Missing `@theme inline` Mapeo
 
-❌ **WRONG:**
-```css
+❌ **MAL:**```css
 :root {
   --background: hsl(0 0% 100%);
 }
 
 /* No @theme inline block */
-```
+```Result:` bg-background`la clase no existe
 
-Result: `bg-background` class doesn't exist
-
-✅ **CORRECT:**
-```css
+✅ **CORRECTO:**```css
 :root {
   --background: hsl(0 0% 100%);
 }
@@ -143,39 +115,36 @@ Result: `bg-background` class doesn't exist
 @theme inline {
   --color-background: var(--background);
 }
-```
-
-**Why:** `@theme inline` generates the utility classes.
+```**Why:**`@theme inline` genera las clases de utilidad.
 
 ---
 
-## Configuration Gotchas
+## Errores de configuración
 
-### 6. Wrong components.json Config
+### 6. Configuración de componentes.json incorrecta
 
-❌ **WRONG:**
+❌ **MAL:**
+
 ```json
 {
   "tailwind": {
     "config": "tailwind.config.ts"  // ← No!
   }
 }
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```json
 {
   "tailwind": {
     "config": ""  // ← Empty for v4
   }
 }
-```
+```---
 
----
+### 7. Uso de PostCSS en lugar del complemento Vite
 
-### 7. Using PostCSS Instead of Vite Plugin
+❌ **MAL:**
 
-❌ **WRONG:**
 ```typescript
 // vite.config.ts
 export default defineConfig({
@@ -183,28 +152,25 @@ export default defineConfig({
     postcss: './postcss.config.js'  // Old v3 way
   }
 })
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```typescript
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()]  // v4 way
 })
-```
+```---
 
----
+### 8. Faltan alias de ruta
 
-### 8. Missing Path Aliases
+❌ **MAL:**
 
-❌ **WRONG:**
 ```typescript
 // tsconfig.json has no paths
 import { Button } from '../../components/ui/button'
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```json
 // tsconfig.app.json
 {
@@ -215,103 +181,92 @@ import { Button } from '../../components/ui/button'
     }
   }
 }
-```
+``
 
 ```typescript
 import { Button } from '@/components/ui/button'
-```
+```---
 
----
+## Errores del sistema de color
 
-## Color System Gotchas
+### 9. Usando `dark:` Variantes de colores semánticos
 
-### 9. Using `dark:` Variants for Semantic Colors
+❌ **MAL:**
 
-❌ **WRONG:**
 ```tsx
 <div className="bg-primary dark:bg-primary-dark" />
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```tsx
 <div className="bg-primary" />
-```
-
-**Why:** With proper CSS variable setup, `bg-primary` automatically responds to theme.
+```**Por qué:** Con la configuración adecuada de variables CSS,` bg-primary`responde automáticamente al tema.
 
 ---
 
-### 10. Hardcoded Color Values
+### 10. Valores de color codificados
 
-❌ **WRONG:**
+❌ **MAL:**
+
 ```tsx
 <div className="bg-blue-600 dark:bg-blue-400" />
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```tsx
 <div className="bg-primary" />  {/* Or bg-info, bg-success, etc. */}
-```
-
-**Why:** Semantic tokens enable theme switching and reduce repetition.
+```**Por qué:** Los tokens semánticos permiten cambiar de tema y reducir la repetición.
 
 ---
 
-## Component Gotchas
+## Problemas con los componentes
 
-### 11. Missing `cn()` Utility
+### 11. Desaparecido `cn()` Utilidad
 
-❌ **WRONG:**
+❌ **MAL:**
+
 ```tsx
-<div className={`base ${isActive && 'active'}`} />
-```
+<div className={ `base ${isActive && 'active'}`} />
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```tsx
 import { cn } from '@/lib/utils'
 <div className={cn("base", isActive && "active")} />
-```
-
-**Why:** `cn()` properly merges and deduplicates Tailwind classes.
+```**Why:**` cn()`fusiona y deduplica adecuadamente las clases de Tailwind.
 
 ---
 
-### 12. Empty String in Radix Select
+### 12. Cadena vacía en Radix Select
 
-❌ **WRONG:**
+❌ **MAL:**
+
 ```tsx
 <SelectItem value="">Select an option</SelectItem>
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```tsx
 <SelectItem value="placeholder">Select an option</SelectItem>
-```
-
-**Why:** Radix UI Select doesn't allow empty string values.
+```**Por qué:** Radix UI Select no permite valores de cadena vacíos.
 
 ---
 
-## Installation Gotchas
+## Errores de instalación
 
-### 13. Wrong Tailwind Package
+### 13. Paquete de viento de cola incorrecto
 
-❌ **WRONG:**
+❌ **MAL:**
+
 ```bash
 npm install tailwindcss@^3.4.0  # v3
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```bash
 npm install tailwindcss@^4.1.0  # v4
 npm install @tailwindcss/vite
-```
+```---
 
----
+### 14. Dependencias faltantes
 
-### 14. Missing Dependencies
+❌ **MAL:**
 
-❌ **WRONG:**
 ```json
 {
   "dependencies": {
@@ -319,9 +274,8 @@ npm install @tailwindcss/vite
     // Missing @tailwindcss/vite
   }
 }
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```json
 {
   "dependencies": {
@@ -334,41 +288,36 @@ npm install @tailwindcss/vite
     "@types/node": "^24.0.0"
   }
 }
-```
+```---
 
----
+### 17. Error de importación de tw-animate-css (PROBLEMA DEL MUNDO REAL)
 
-### 17. tw-animate-css Import Error (REAL-WORLD ISSUE)
+❌ **MAL:**
 
-❌ **WRONG:**
 ```bash
 npm install tailwindcss-animate  # Deprecated package
-```
-
-```css
+`````css
 @import "tw-animate-css";  # Package doesn't exist in v4
-```
+```✅ **CORRECT:**
 
-✅ **CORRECT:**
 ```bash
+
 # Don't install tailwindcss-animate at all
+
 # Use native CSS animations or @tailwindcss/motion
-```
+```**Why:**
+- `tailwindcss-animate` está en desuso en Tailwind v4
+- Provoca errores de importación durante la compilación.
+- Es posible que los documentos shadcn/ui aún hagan referencia a él (obsoleto)
+- La habilidad maneja las animaciones de manera diferente en v4.
 
-**Why:**
-- `tailwindcss-animate` is deprecated in Tailwind v4
-- Causes import errors during build
-- shadcn/ui docs may still reference it (outdated)
-- The skill handles animations differently in v4
-
-**Impact:** Build failure, requires manual CSS file cleanup
+**Impacto:** Error de compilación; requiere limpieza manual del archivo CSS
 
 ---
 
-### 18. Duplicate @layer base After shadcn init (REAL-WORLD ISSUE)
+### 18. Duplicar la base de @layer después de shadcn init (PROBLEMA DEL MUNDO REAL)
 
-❌ **WRONG:**
-```css
+❌ **MAL:**```css
 /* After running shadcn init, you might have: */
 @layer base {
   body {
@@ -381,10 +330,7 @@ npm install tailwindcss-animate  # Deprecated package
     border-color: hsl(var(--border));
   }
 }
-```
-
-✅ **CORRECT:**
-```css
+```✅ **CORRECT:**```css
 /* Merge into single @layer base block */
 @layer base {
   * {
@@ -396,74 +342,68 @@ npm install tailwindcss-animate  # Deprecated package
     color: var(--foreground);
   }
 }
-```
+```**Why:**
+- `shadcn init` agrega el suyo`@layer base` bloquear
+- Resultados en declaraciones de capas duplicadas
+- Puede causar problemas inesperados de prioridad de CSS
+- Fácil de pasar por alto durante la configuración
 
-**Why:**
-- `shadcn init` adds its own `@layer base` block
-- Results in duplicate layer declarations
-- Can cause unexpected CSS priority issues
-- Easy to miss during setup
+**Prevención:**
+- comprobar `src/index.css` inmediatamente después de correr`shadcn init`- Fusionar cualquier duplicado`@layer base` bloques
+- Mantenga solo una sección de la capa base
 
-**Prevention:**
-- Check `src/index.css` immediately after running `shadcn init`
-- Merge any duplicate `@layer base` blocks
-- Keep only one base layer section
-
-**Impact:** CSS priority issues, harder to debug styling problems
+**Impacto:** Problemas de prioridad de CSS, problemas de estilo más difíciles de depurar
 
 ---
 
-## Testing Gotchas
+## Problemas de prueba
 
-### 15. Not Testing Both Themes
+### 15. No probar ambos temas
 
-❌ **WRONG:**
-Only testing in light mode
+❌ **MAL:**
+Solo probando en modo ligero
 
-✅ **CORRECT:**
-Test in:
-- Light mode
-- Dark mode
-- System mode
-- Both initial load and toggle
-
----
-
-### 16. Not Checking Contrast
-
-❌ **WRONG:**
-Colors look good but fail WCAG
-
-✅ **CORRECT:**
-- Use browser DevTools Lighthouse
-- Check contrast ratios (4.5:1 minimum)
-- Test with actual users
+✅ **CORRECTO:**
+Prueba en:
+- Modo de luz
+- Modo oscuro
+- Modo del sistema
+- Tanto la carga inicial como la alternancia
 
 ---
 
-## Quick Diagnosis
+### 16. No comprobar el contraste
 
-**Symptoms → Likely Cause:**
+❌ **MAL:**
+Los colores se ven bien pero fallan WCAG
 
-| Symptom | Likely Cause |
+✅ **CORRECTO:**
+- Utilice el navegador DevTools Lighthouse
+- Verifique las relaciones de contraste (mínimo 4,5:1)
+- Prueba con usuarios reales.
+
+---
+
+## Diagnóstico rápido
+
+**Síntomas → Causa probable:**
+
+| Síntoma | Causa probable |
 |---------|-------------|
-| `bg-primary` doesn't work | Missing `@theme inline` mapping |
-| Colors all black/white | Double `hsl()` wrapping |
-| Dark mode not switching | Missing ThemeProvider |
-| Build fails | `tailwind.config.ts` exists with theme config |
-| Text invisible | Wrong contrast colors |
-| `@/` imports fail | Missing path aliases in tsconfig |
+| `bg-primary` no funciona | Desaparecido`@theme inline` cartografía |
+| Colores todo negro/blanco | Doble `hsl()` embalaje |
+| El modo oscuro no cambia | Proveedor de temas faltante |
+| La compilación falla | `tailwind.config.ts` existe con la configuración del tema |
+| Texto invisible | Colores de contraste incorrectos |
+| `@/` las importaciones fracasan | Faltan alias de ruta en tsconfig |
 
 ---
 
-## Prevention Checklist
+## Lista de verificación de prevención
 
-Before deploying:
-- [ ] No `tailwind.config.ts` file (or it's empty)
-- [ ] `components.json` has `"config": ""`
-- [ ] All colors have `hsl()` wrapper in `:root`
-- [ ] `@theme inline` maps all variables
-- [ ] `@layer base` doesn't wrap `:root`
-- [ ] Theme provider wraps app
-- [ ] Tested in both light and dark modes
-- [ ] All text has sufficient contrast
+Antes de implementar:
+- [ ] No `tailwind.config.ts` archivo (o está vacío)
+- [ ] `components.json` has`"config": ""`- [] Todos los colores tienen` hsl()`envoltorio en`:root`- [ ]`@theme inline` mapea todas las variables
+- [ ] `@layer base` no se envuelve`:root`- [] El proveedor de temas envuelve la aplicación
+- [] Probado tanto en modo claro como oscuro
+- [] Todo el texto tiene suficiente contraste.

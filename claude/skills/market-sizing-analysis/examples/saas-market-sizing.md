@@ -1,50 +1,48 @@
-# SaaS Market Sizing Example: AI-Powered Email Marketing for E-Commerce
+# Ejemplo de dimensionamiento del mercado de SaaS: marketing por correo electrónico impulsado por IA para el comercio electrónico
 
-Complete TAM/SAM/SOM calculation for a B2B SaaS startup using bottom-up and top-down methodologies.
+Complete el cálculo de TAM/SAM/SOM para una startup B2B SaaS utilizando metodologías ascendentes y descendentes.
 
-## Company Overview
+## Descripción general de la empresa
 
-**Product:** AI-powered email marketing automation platform
-**Target:** E-commerce companies with $1M+ annual revenue
-**Geography:** North America (initial), global expansion planned
-**Pricing:** $500/month average (scales by email volume)
-**Timeline:** 3-5 year market opportunity
+**Producto:** Plataforma de automatización de marketing por correo electrónico basada en IA
+**Objetivo:** Empresas de comercio electrónico con ingresos anuales superiores a 1 millón de dólares
+**Geografía:** América del Norte (inicial), expansión global planificada
+**Precio:** $500/mes promedio (escala según el volumen de correo electrónico)
+**Cronograma:** Oportunidad de mercado de 3 a 5 años
 
-## Methodology 1: Bottom-Up Analysis (Primary)
+## Metodología 1: Análisis ascendente (primario)
 
-### Step 1: Define Target Customer Segments
+### Paso 1: Definir los segmentos de clientes objetivo
 
-**Segment Criteria:**
+**Criterios de segmento:**
 
-- E-commerce companies (D2C and marketplace sellers)
-- $1M+ in annual revenue
-- North America based
-- Currently using email marketing
+- Empresas de comercio electrónico (D2C y vendedores de mercado)
+- Más de 1 millón de dólares en ingresos anuales
+- Basado en Norteamérica
+- Actualmente utiliza marketing por correo electrónico.
 
-**Segment Breakdown:**
+**Desglose de segmentos:**
 
-| Segment               | Annual Revenue | Count  | ACV     | Priority |
+| Segmento | Ingresos anuales | Contar | ACV | Prioridad |
 | --------------------- | -------------- | ------ | ------- | -------- |
-| Small E-commerce      | $1M-$5M        | 85,000 | $3,600  | High     |
-| Mid-Market E-commerce | $5M-$50M       | 18,000 | $9,600  | High     |
-| Enterprise E-commerce | $50M+          | 2,500  | $24,000 | Medium   |
+| Pequeño comercio electrónico | $1 millón-$5 millones | 85.000 | $3,600 | Alto |
+| Comercio electrónico para el mercado medio | $5 millones-$50 millones | 18.000 | $9,600 | Alto |
+| Comercio electrónico empresarial | 50 millones de dólares+ | 2.500 | $24,000 | Medio |
 
-**Data Sources:**
+**Fuentes de datos:**
 
-- U.S. Census Bureau: E-commerce business counts
-- Shopify, BigCommerce, WooCommerce: Published merchant counts
-- Statista: E-commerce market statistics
-- LinkedIn Sales Navigator: Company search validation
+- Oficina del Censo de EE.UU.: el comercio electrónico cuenta
+- Shopify, BigCommerce, WooCommerce: recuentos de comerciantes publicados
+- Statista: estadísticas del mercado del comercio electrónico
+- LinkedIn Sales Navigator: validación de búsqueda de empresas
 
-### Step 2: Calculate TAM (Total Addressable Market)
+### Paso 2: Calcular TAM (mercado total direccionable)
 
-**Formula:**
+**Fórmula:**
 
 ```
 TAM = Σ (Segment Count × Annual Contract Value)
-```
-
-**Calculation:**
+```**Cálculo:**
 
 ```
 Small E-commerce:   85,000 × $3,600  = $306M
@@ -52,39 +50,37 @@ Mid-Market:         18,000 × $9,600  = $173M
 Enterprise:          2,500 × $24,000 = $60M
                                       --------
 TAM (North America):                  $539M
-```
+```**Multiplicador de expansión global:**
 
-**Global Expansion Multiplier:**
+- América del Norte = 35% del mercado mundial de comercio electrónico
+- TAM global = 539 millones de dólares / 0,35 = 1,54 mil millones de dólares
 
-- North America = 35% of global e-commerce market
-- Global TAM = $539M / 0.35 = $1.54B
+**TAM = 1,54 mil millones de dólares a nivel mundial, 539 millones de dólares en América del Norte**
 
-**TAM = $1.54B globally, $539M North America**
+### Paso 3: Calcular SAM (mercado disponible utilizable)
 
-### Step 3: Calculate SAM (Serviceable Available Market)
+**Filtros aplicados:**
 
-**Filters Applied:**
+1. **Filtro geográfico: solo Norteamérica (año 1-2)**
+   - TAM base: 539 millones de dólares
+   - Filtro: 100% (a partir de Norteamérica)
+   - Resultado: 539 millones de dólares
 
-1. **Geographic Filter: North America Only (Year 1-2)**
-   - Base TAM: $539M
-   - Filter: 100% (starting in North America)
-   - Result: $539M
+2. **Filtro de capacidad del producto: Clientes preparados para IA**
+   - Clientes listos para adoptar el marketing por correo electrónico con IA
+   - Excluye: empresas con necesidades básicas de correo electrónico únicamente
+   - Filtro: 45% (basado en datos de encuestas)
+   - Resultado: 539 millones de dólares × 0,45 = 242 millones de dólares
 
-2. **Product Capability Filter: AI-Ready Customers**
-   - Customers ready to adopt AI email marketing
-   - Excludes: Companies with basic email needs only
-   - Filter: 45% (based on survey data)
-   - Result: $539M × 0.45 = $242M
+3. **Filtro de herramientas actual: mercado de conmutación direccionable**
+   - Clientes que utilizan herramientas existentes y que cambiarían
+   - Excluye: soluciones personalizadas recientemente cambiadas
+   - Filtro: 70% (típico mercado de conmutación B2B SaaS)
+   - Resultado: 242 millones de dólares × 0,70 = 169 millones de dólares
 
-3. **Current Tool Filter: Addressable Switching Market**
-   - Customers using incumbent tools who would switch
-   - Excludes: Recently switched, custom built solutions
-   - Filter: 70% (typical B2B SaaS switching market)
-   - Result: $242M × 0.70 = $169M
+**SAM = 169 millones de dólares**
 
-**SAM = $169M**
-
-**SAM Breakdown by Segment:**
+**Desglose de SAM por segmento:**
 
 ```
 Small E-commerce:   $306M × 0.45 × 0.70 = $96M (57%)
@@ -92,30 +88,28 @@ Mid-Market:         $173M × 0.45 × 0.70 = $54M (32%)
 Enterprise:         $60M × 0.45 × 0.70  = $19M (11%)
 ```
 
-### Step 4: Calculate SOM (Serviceable Obtainable Market)
+### Paso 4: Calcular SOM (mercado obtenible y útil)
 
-**Market Share Assumptions:**
+**Supuestos de participación de mercado:**
 
-**Year 3 Target: 2.5% of SAM**
+**Objetivo del año 3: 2,5% de SAM**
 
-- Typical new entrant market share
-- Requires strong product-market fit
-- Assumes $10M in funding for GTM
+- Cuota de mercado típica de nuevos entrantes.
+- Requiere un fuerte ajuste entre el producto y el mercado.
+- Asume 10 millones de dólares de financiación para GTM
 
-**Year 5 Target: 5% of SAM**
+**Objetivo del año 5: 5% de SAM**
 
-- Achievable with scale and brand
-- Requires effective sales and marketing
-- Assumes additional funding for growth
+- Alcanzable con escala y marca.
+- Requiere ventas y marketing efectivos.
+- Asume financiación adicional para el crecimiento.
 
-**Calculation:**
+**Cálculo:**
 
 ```
 SOM (Year 3) = $169M × 2.5% = $4.2M ARR
 SOM (Year 5) = $169M × 5.0% = $8.5M ARR
-```
-
-**SOM by Segment (Year 5):**
+```**SOM por segmento (año 5):**
 
 ```
 Small E-commerce:   $96M × 5% = $4.8M ARR (565 customers)
@@ -125,188 +119,186 @@ Enterprise:         $19M × 5% = $1.0M ARR (42 customers)
 Total:                          $8.5M ARR (888 customers)
 ```
 
-### Bottom-Up Summary
+### Resumen ascendente
 
-| Metric           | North America | Notes                                  |
+| Métrica | América del Norte | Notas |
 | ---------------- | ------------- | -------------------------------------- |
-| **TAM**          | $539M         | All e-commerce $1M+ revenue            |
-| **SAM**          | $169M         | AI-ready, addressable switching market |
-| **SOM (Year 3)** | $4.2M         | 2.5% market share, 495 customers       |
-| **SOM (Year 5)** | $8.5M         | 5% market share, 888 customers         |
+| **TAM** | 539 millones de dólares | Todo el comercio electrónico con ingresos superiores a 1 millón de dólares |
+| **SAM** | 169 millones de dólares | Mercado de conmutación direccionable y preparado para IA |
+| **SOM (Año 3)** | 4,2 millones de dólares | 2,5% de cuota de mercado, 495 clientes |
+| **SOM (Año 5)** | 8,5 millones de dólares | 5% de cuota de mercado, 888 clientes |
 
-## Methodology 2: Top-Down Analysis (Validation)
+## Metodología 2: Análisis de arriba hacia abajo (Validación)
 
-### Step 1: Identify Total Market Category
+### Paso 1: Identificar la categoría total del mercado
 
-**Market Category:** Email Marketing Software
-**Source:** Gartner Market Share Report (2024)
+**Categoría de mercado:** Software de marketing por correo electrónico
+**Fuente:** Informe de participación de mercado de Gartner (2024)
 
-**Global Email Marketing Software Market:**
+**Mercado global de software de marketing por correo electrónico:**
 
-- Market Size: $7.5B (2024)
-- Growth Rate: 12% CAGR
-- Geography: Worldwide
+- Tamaño del mercado: 7.500 millones de dólares (2024)
+- Tasa de crecimiento: 12% CAGR
+- Geografía: Mundial
 
-**Data Source:** Gartner, "Market Share: Email Marketing Software, Worldwide, 2024"
+**Fuente de datos:** Gartner, "Cuota de mercado: software de marketing por correo electrónico, en todo el mundo, 2024"
 
-### Step 2: Apply Geographic Filter
+### Paso 2: Aplicar filtro geográfico
 
-**North America Market Share:**
+**Cuota de mercado de América del Norte:**
 
-- North America = 40% of global software spending
-- Email Marketing NA = $7.5B × 0.40 = $3.0B
+- América del Norte = 40% del gasto mundial en software
+- Marketing por correo electrónico NA = 7.500 millones de dólares × 0,40 = 3.000 millones de dólares
 
-### Step 3: Apply Segment Filters
+### Paso 3: aplicar filtros de segmento
 
-**E-Commerce Focus:**
+**Enfoque en comercio electrónico:**
 
-- E-commerce email marketing = 25% of total email marketing
-- E-commerce segment = $3.0B × 0.25 = $750M
+- Marketing por correo electrónico de comercio electrónico = 25% del marketing por correo electrónico total
+- Segmento de comercio electrónico = 3.000 millones de dólares × 0,25 = 750 millones de dólares
 
-**$1M+ Revenue Filter:**
+**Filtro de ingresos de más de 1 millón de dólares:**
 
-- Companies with $1M+ revenue = 65% of e-commerce market
-- TAM = $750M × 0.65 = $488M
+- Empresas con ingresos superiores a 1 millón de dólares = 65 % del mercado de comercio electrónico
+- TAM = 750 millones de dólares × 0,65 = 488 millones de dólares
 
-**AI-Powered Subset:**
+**Subconjunto impulsado por IA:**
 
-- AI-powered email marketing = 35% of market (growing rapidly)
-- SAM = $488M × 0.35 = $171M
+- Marketing por correo electrónico impulsado por IA = 35% del mercado (creciendo rápidamente)
+- SAM = 488 millones de dólares × 0,35 = 171 millones de dólares
 
-### Top-Down Summary
+### Resumen de arriba hacia abajo
 
-| Metric  | Amount | Calculation                        |
+| Métrica | Cantidad | Cálculo |
 | ------- | ------ | ---------------------------------- |
-| **TAM** | $488M  | NA e-commerce email marketing $1M+ |
-| **SAM** | $171M  | AI-powered subset                  |
+| **TAM** | 488 millones de dólares | NA comercio electrónico marketing por correo electrónico más de 1 millón de dólares |
+| **SAM** | 171 millones de dólares | Subconjunto impulsado por IA |
 
-## Triangulation and Validation
+## Triangulación y Validación
 
-### Comparing Methodologies
+### Comparando metodologías
 
-| Metric  | Bottom-Up | Top-Down | Variance |
+| Métrica | De abajo hacia arriba | De arriba hacia abajo | Variación |
 | ------- | --------- | -------- | -------- |
-| **TAM** | $539M     | $488M    | +10%     |
-| **SAM** | $169M     | $171M    | -1%      |
+| **TAM** | 539 millones de dólares | 488 millones de dólares | +10% |
+| **SAM** | 169 millones de dólares | 171 millones de dólares | -1% |
 
-**Validation Result:** ✅ Excellent alignment (< 2% variance on SAM)
+**Resultado de la validación:** ✅ Excelente alineación (< 2 % de variación en SAM)
 
-**Why alignment matters:**
+**Por qué es importante la alineación:**
 
-- Bottom-up and top-down within 10% gives high confidence
-- SAM alignment of 1% is exceptional
-- Use bottom-up as primary (more granular)
-- Reference top-down for validation
+- Las acciones ascendentes y descendentes dentro del 10% brindan una alta confianza
+- La alineación SAM del 1% es excepcional
+- Utilice el modo ascendente como principal (más granular)
+- Referencia de arriba hacia abajo para validación.
 
-### Public Company Validation
+### Validación de empresa pública
 
-**Klaviyo (Public, KVYO):**
+**Klaviyo (Público, KVYO):**
 
-- 2024 Revenue: ~$700M
-- Focus: E-commerce email/SMS marketing
-- Market Share: ~46% of our SAM
-- Validates large e-commerce email market exists
+- Ingresos 2024: ~$700 millones
+- Enfoque: marketing por correo electrónico/SMS de comercio electrónico
+- Participación de mercado: ~46% de nuestro SAM
+- Valida la existencia de un gran mercado de correo electrónico de comercio electrónico
 
-**Mailchimp (Intuit-owned):**
+**Mailchimp (propiedad de Intuit):**
 
-- 2024 Revenue: ~$800M (estimated)
-- Broader focus, includes SMBs
-- Significant e-commerce customer base
+- Ingresos 2024: ~$800 millones (estimado)
+- Enfoque más amplio, incluye PYMES
+- Importante base de clientes de comercio electrónico.
 
-**Validation:** Market leaders have $700M-$800M revenue, supporting $1.5B+ global TAM
+**Validación:** Los líderes del mercado tienen ingresos de entre 700 y 800 millones de dólares y respaldan un TAM global de más de 1.500 millones de dólares.
 
-### Sanity Checks
+### Controles de cordura
 
-**Customer Count Check:**
-✅ 888 customers at Year 5 (5% market share) = reasonable
-✅ Implies ~14,000 total addressable customers
-✅ Aligns with estimated 105,000 e-commerce cos $1M+ in NA
+**Verificación de recuento de clientes:**
+✅ 888 clientes en el año 5 (5% de participación de mercado) = razonable
+✅ Implica ~14.000 clientes direccionables en total
+✅ Se alinea con un estimado de 105 000 comercios electrónicos por valor de más de 1 millón de dólares en NA
 
-**Average Revenue Check:**
-✅ $8.5M ARR / 888 customers = $9,571 ACV
-✅ Within expected range of $3.6K-$24K by segment
-✅ Weighted average makes sense given segment mix
+**Verificación de ingresos promedio:**
+✅ $8,5 millones de ARR / 888 clientes = $9,571 ACV
+✅ Dentro del rango esperado de $3,6 mil a $24 mil por segmento
+✅ El promedio ponderado tiene sentido dada la combinación de segmentos
 
-**Market Share Check:**
-✅ 5% market share in Year 5 is achievable for well-funded startup
-✅ Lower than Klaviyo (46%), appropriate for new entrant
-✅ Room for growth beyond Year 5
+**Verificación de participación de mercado:**
+✅ Se puede lograr una participación de mercado del 5% en el año 5 para una startup bien financiada
+✅ Inferior a Klaviyo (46%), apropiado para nuevo participante
+✅ Espacio para crecer más allá del año 5
 
-## Growth Projections
+## Proyecciones de crecimiento
 
-### Market Growth Assumptions
+### Supuestos de crecimiento del mercado
 
-**Email Marketing Market CAGR: 12%**
+**CAGR del mercado de marketing por correo electrónico: 12%**
 
-- Source: Gartner market forecast
-- Drivers: E-commerce growth, marketing automation adoption
+- Fuente: Previsión de mercado de Gartner.
+- Impulsores: crecimiento del comercio electrónico, adopción de la automatización del marketing
 
-**AI Subset Growth: 25% CAGR**
+**Crecimiento del subconjunto de IA: 25% CAGR**
 
-- Higher than overall market
-- AI adoption accelerating in marketing
-- More companies seeking AI-powered tools
+- Más alto que el mercado general
+- La adopción de la IA se acelera en el marketing
+- Más empresas que buscan herramientas impulsadas por IA
 
-### SAM Evolution (5-Year Forecast)
+### Evolución SAM (previsión de 5 años)
 
-| Year | SAM   | Growth | Notes                      |
+| Año | SAM | Crecimiento | Notas |
 | ---- | ----- | ------ | -------------------------- |
-| 2026 | $169M | -      | Starting point             |
-| 2027 | $211M | +25%   | AI adoption accelerating   |
-| 2028 | $264M | +25%   | Mainstream adoption begins |
-| 2029 | $330M | +25%   | AI becomes table stakes    |
-| 2030 | $413M | +25%   | Market maturity            |
+| 2026 | 169 millones de dólares | - | Punto de partida |
+| 2027 | 211 millones de dólares | +25% | La adopción de la IA se acelera |
+| 2028 | 264 millones de dólares | +25% | Comienza la adopción generalizada |
+| 2029 | 330 millones de dólares | +25% | La IA se convierte en algo en juego |
+| 2030 | 413 millones de dólares | +25% | Madurez del mercado |
 
-**Growing SAM Impact:**
+**Impacto creciente de SAM:**
 
-- Year 5 SOM of 5% applied to $413M SAM = $20.6M potential
-- Provides headroom for growth
-- Supports expansion beyond initial 5% share
+- Año 5 SOM del 5 % aplicado a $413 millones de SAM = $20,6 millones de potencial
+- Proporciona margen para el crecimiento.
+- Apoya la expansión más allá del 5% de participación inicial
 
-## Competitive Context
+## Contexto competitivo
 
-### Market Share Distribution
+### Distribución de cuota de mercado
 
-**Current Leaders:**
+**Líderes actuales:**
 
-- Klaviyo: ~46% share
-- Mailchimp: ~35% share
-- Others: ~19% share (fragmented)
+- Klaviyo: ~46% de participación
+- Mailchimp: ~35% de participación
+- Otros: ~19% de participación (fragmentado)
 
-**Market Dynamics:**
+**Dinámica del mercado:**
 
-- Two dominant players
-- Long tail of smaller competitors
-- Opportunity in AI-differentiated positioning
-- Typical SaaS market consolidation pattern
+- Dos jugadores dominantes
+- Larga cola de competidores más pequeños
+- Oportunidad en posicionamiento diferenciado por IA
+- Patrón típico de consolidación del mercado SaaS
 
-**Implications for SOM:**
+**Implicaciones para SOM:**- Una participación del 5% requiere una fuerte diferenciación
+- Las capacidades de IA podrían generar entre un 10% y un 15% de participación a largo plazo.
+- Potencial de adquisición si no se puede alcanzar la escala
 
-- 5% share requires strong differentiation
-- AI capabilities could drive 10-15% share long-term
-- Acquisition potential if unable to reach scale
+## Validación de Tesis de Inversión
 
-## Investment Thesis Validation
+### Puntuación de oportunidad de mercado: ✅ Fuerte
 
-### Market Opportunity Score: ✅ Strong
+**Positivos:**
+✅ Gran mercado: TAM global de más de 1.500 millones de dólares
+✅ Mercado en crecimiento: 12% CAGR, 25% para el subconjunto de IA
+✅ Direccionable: SAM de 169 millones de dólares con camino claro hacia los clientes
+✅ Alcanzable: $8,5 millones de ARR razonable en el año 5
+✅ Validación: las empresas públicas demuestran que existe mercado
 
-**Positives:**
-✅ Large market: $1.5B+ global TAM
-✅ Growing market: 12% CAGR, 25% for AI subset
-✅ Addressable: $169M SAM with clear path to customers
-✅ Achievable: $8.5M Year 5 ARR reasonable
-✅ Validation: Public companies prove market exists
+**Riesgos:**
+⚠️ Competencia: Klaviyo y Mailchimp son fuertes
+⚠️ Costos de cambio: los clientes invirtieron en las herramientas actuales
+⚠️ Cuota de mercado: el 5% requiere una ejecución excelente
 
-**Risks:**
-⚠️ Competition: Klaviyo and Mailchimp are strong
-⚠️ Switching costs: Customers invested in current tools
-⚠️ Market share: 5% requires excellent execution
+**Veredicto:** La oportunidad de mercado respalda resultados a escala de riesgo (posible salida de más de 100 millones de dólares)
 
-**Verdict:** Market opportunity supports venture-scale outcome ($100M+ exit possible)
+## Presentación a inversores
 
-## Presentation to Investors
-
-### Slide 1: Market Opportunity Summary
+### Diapositiva 1: Resumen de oportunidades de mercado
 
 ```
 AI-Powered Email Marketing for E-Commerce
@@ -319,7 +311,7 @@ Market Growing 25% CAGR (AI subset)
 Validated by Klaviyo ($700M revenue)
 ```
 
-### Slide 2: Bottom-Up Validation
+### Diapositiva 2: Validación ascendente
 
 ```
 Target: 105,000 E-Commerce Companies ($1M+ revenue)
@@ -332,7 +324,7 @@ Segment Breakdown:
 Year 5: 888 customers, $8.5M ARR (5% market share)
 ```
 
-### Slide 3: Market Validation
+### Diapositiva 3: Validación del mercado
 
 ```
 Top-Down: $171M SAM (Gartner + market filters)
@@ -345,33 +337,33 @@ Public Company Validation:
 Demonstrates large, proven market
 ```
 
-## Key Takeaways
+## Conclusiones clave
 
-**Market Sizing Results:**
+**Resultados del dimensionamiento del mercado:**
 
-- TAM: $1.5B globally, $539M North America
-- SAM: $169M (North America, AI-ready customers)
-- SOM: $4.2M (Year 3), $8.5M (Year 5)
+- TAM: 1.500 millones de dólares a nivel mundial, 539 millones de dólares en Norteamérica
+- SAM: 169 millones de dólares (Norteamérica, clientes preparados para IA)
+- SOM: 4,2 millones de dólares (año 3), 8,5 millones de dólares (año 5)
 
-**Methodology:**
+**Metodología:**
 
-- Bottom-up primary (most granular and credible)
-- Top-down validation (<2% variance on SAM)
-- Public company validation (Klaviyo, Mailchimp)
+- Primarias ascendentes (más granulares y creíbles)
+- Validación de arriba hacia abajo (<2% de variación en SAM)
+- Validación de empresas públicas (Klaviyo, Mailchimp)
 
-**Investment Implications:**
+**Implicaciones de inversión:**
 
-- Market supports venture-scale outcome
-- 5% market share achievable with strong execution
-- Growing market (25% CAGR) provides tailwinds
-- Competitive but differentiated positioning possible
+- El mercado respalda los resultados a escala de riesgo
+- 5% de participación de mercado alcanzable con una ejecución sólida
+- El mercado en crecimiento (25% CAGR) proporciona vientos de cola
+- Posible posicionamiento competitivo pero diferenciado.
 
-**Next Steps:**
+**Próximos pasos:**
 
-1. Validate pricing assumptions with customer research
-2. Refine segment prioritization based on GTM capacity
-3. Update SAM annually as market evolves
-4. Track Klaviyo/Mailchimp as competitive benchmarks
-5. Monitor AI adoption rates in e-commerce segment
+1. Validar los supuestos de fijación de precios con la investigación de clientes.
+2. Refinar la priorización de segmentos según la capacidad de GTM
+3. Actualizar SAM anualmente a medida que evoluciona el mercado
+4. Realice un seguimiento de Klaviyo/Mailchimp como puntos de referencia competitivos
+5. Monitorear las tasas de adopción de IA en el segmento de comercio electrónico
 
-This bottom-up market sizing provides a defensible, data-driven foundation for business planning and fundraising.
+Este dimensionamiento del mercado ascendente proporciona una base defendible basada en datos para la planificación empresarial y la recaudación de fondos.

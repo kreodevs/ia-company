@@ -1,103 +1,103 @@
-# Email Copy Guidelines
+# Pautas para copiar correos electrónicos
 
-## Structure
+## Estructura
 
-1. **Hook**: First line grabs attention
-2. **Context**: Why this matters to them
-3. **Value**: The useful content
-4. **CTA**: What to do next
-5. **Sign-off**: Human, warm close
+1. **Gancho**: La primera línea llama la atención
+2. **Contexto**: Por qué esto les importa
+3. **Valor**: El contenido útil
+4. **CTA**: Qué hacer a continuación
+5. **Adiós**: cierre humano y cálido
 
-## Formatting
+## Formato
 
-- Short paragraphs (1-3 sentences)
-- White space between sections
-- Bullet points for scanability
-- Bold for emphasis (sparingly)
-- Mobile-first (most read on phone)
+- Párrafos cortos (1-3 oraciones)
+- Espacio en blanco entre secciones.
+- Viñetas de escaneabilidad
+- Negrita para dar énfasis (con moderación)
+- Móvil primero (más leído en el teléfono)
 
-## Tone
+## Tono
 
-- Conversational, not formal
-- First-person (I/we) and second-person (you)
-- Active voice
-- Match your brand but lean friendly
-- Read it out loud—does it sound human?
+- Conversacional, no formal.
+- Primera persona (yo/nosotros) y segunda persona (tú)
+- Voz activa
+- Combina con tu marca pero es amigable
+- Léelo en voz alta. ¿Suena humano?
 
-## Length
+## Longitud
 
-- Shorter is usually better
-- 50-125 words for transactional
-- 150-300 words for educational
-- 300-500 words for story-driven
-- If it's long, it better be good
+- Cuanto más corto suele ser mejor
+- 50-125 palabras para transaccional
+- 150-300 palabras para educación.
+- 300-500 palabras para historias
+- Si es largo, más vale que sea bueno.
 
-## CTA Buttons vs. Links
+## Botones CTA versus enlaces
 
-- Buttons: Primary actions, high-visibility
-- Links: Secondary actions, in-text
-- One clear primary CTA per email
-- Button text: Action + outcome
-
----
-
-## Personalization
-
-### Merge Fields
-- First name (fallback to "there" or "friend")
-- Company name (B2B)
-- Relevant data (usage, plan, etc.)
-
-### Dynamic Content
-- Based on segment
-- Based on behavior
-- Based on stage
-
-### Triggered Emails
-- Action-based sends
-- More relevant than time-based
-- Examples: Feature used, milestone hit, inactivity
+- Botones: Acciones primarias, alta visibilidad.
+- Enlaces: acciones secundarias, en el texto.
+- Una CTA principal clara por correo electrónico
+- Texto del botón: Acción + resultado
 
 ---
 
-## Segmentation Strategies
+## Personalización
 
-### By Behavior
-- Openers vs. non-openers
-- Clickers vs. non-clickers
-- Active vs. inactive
+### Fusionar campos
+- Nombre (recurrir a "allí" o "amigo")
+- Nombre de la empresa (B2B)
+- Datos relevantes (uso, plan, etc.)
 
-### By Stage
-- Trial vs. paid
-- New vs. long-term
-- Engaged vs. at-risk
+### Contenido dinámico
+- Basado en segmento
+- Basado en el comportamiento
+- Basado en el escenario
 
-### By Profile
-- Industry/role (B2B)
-- Use case / goal
-- Company size
+### Correos electrónicos activados
+- Envíos basados en acciones
+- Más relevante que el basado en el tiempo
+- Ejemplos: función utilizada, hito alcanzado, inactividad
 
 ---
 
-## Testing and Optimization
+## Estrategias de segmentación
 
-### What to Test
-- Subject lines (highest impact)
-- Send times
-- Email length
-- CTA placement and copy
-- Personalization level
-- Sequence timing
+### Por comportamiento
+- Abridores versus no abridores
+- Personas que hacen clic versus personas que no hacen clic
+- Activo versus inactivo
 
-### How to Test
-- A/B test one variable at a time
-- Sufficient sample size
-- Statistical significance
-- Document learnings
+### Por etapa
+- Prueba versus pago
+- Nuevo versus largo plazo
+- Comprometidos versus en riesgo
 
-### Metrics to Track
-- Open rate (benchmark: 20-40%)
-- Click rate (benchmark: 2-5%)
-- Unsubscribe rate (keep under 0.5%)
-- Conversion rate (specific to sequence goal)
-- Revenue per email (if applicable)
+### Por perfil
+- Industria/rol (B2B)
+- Caso de uso/objetivo
+- Tamaño de la empresa
+
+---
+
+## Pruebas y optimización
+
+### Qué probar
+- Líneas de asunto (mayor impacto)
+- Enviar tiempos
+- Longitud del correo electrónico
+- Colocación y copia de CTA.
+- Nivel de personalización
+- Sincronización de secuencia
+
+### Cómo realizar la prueba
+- Prueba A/B una variable a la vez
+- Tamaño de muestra suficiente
+- Significancia estadística
+- Documentar los aprendizajes.
+
+### Métricas a seguir
+- Tasa de apertura (punto de referencia: 20-40%)
+- Tasa de clics (punto de referencia: 2-5%)
+- Tasa de baja (mantener por debajo del 0,5%)
+- Tasa de conversión (específica del objetivo de la secuencia)
+- Ingresos por correo electrónico (si corresponde)

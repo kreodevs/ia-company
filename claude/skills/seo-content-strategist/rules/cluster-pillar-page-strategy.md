@@ -1,16 +1,16 @@
 ---
-title: Content Cluster & Pillar Page Strategy
-impact: CRITICAL
-tags: clusters, pillar-pages, content-architecture, topical-authority, internal-linking
+título: Grupo de contenido y estrategia de página pilar
+impacto: CRÍTICO
+Etiquetas: clústeres, páginas pilares, arquitectura de contenido, autoridad temática, enlaces internos
 ---
 
-## Content Cluster & Pillar Page Strategy
+## Estrategia de página pilar y grupo de contenido
 
-**Impact: CRITICAL**
+**Impacto: CRÍTICO**
 
-Content clusters establish topical authority — the signal that tells Google you're the definitive resource on a topic. A well-architected cluster can outrank individual pages from higher-authority domains.
+Los grupos de contenido establecen la autoridad temática: la señal que le dice a Google que eres el recurso definitivo sobre un tema. Un clúster bien diseñado puede superar a las páginas individuales de dominios de mayor autoridad.
 
-### Cluster Architecture
+### Arquitectura de clúster
 
 ```
                     ┌─────────────────────────────┐
@@ -40,22 +40,23 @@ Content clusters establish topical authority — the signal that tells Google yo
                        Pillar Page
 ```
 
-### Pillar Page Types
+### Tipos de páginas de pilares
 
-| Type | Structure | Best For | Example |
+| Tipo | Estructura | Mejor para | Ejemplo |
 |------|-----------|----------|---------|
-| **10x Content** | Comprehensive guide | Broad topics | "Complete Guide to Secrets Management" |
-| **Resource Pillar** | Curated links/tools | Tool categories | "50+ DevSecOps Tools" |
-| **Product Pillar** | Feature-focused | Product SEO | "Platform Security Features" |
+| **10x Contenido** | Guía completa | Temas amplios | "Guía completa para la gestión de secretos" |
+| **Pilar de recursos** | Enlaces/herramientas seleccionados | Categorías de herramientas | "Más de 50 herramientas DevSecOps" |
+| **Pilar de Producto** | Centrado en funciones | SEO de producto | "Funciones de seguridad de la plataforma" |
 
-### Good Pillar Page Structure
+### Buena estructura de página de pilar
 
 ```markdown
+
 # The Complete Guide to [Topic] (2024)
 
 [Hook: Why this matters, what's at stake]
 
-## Table of Contents
+## Tabla de contenidos
 - [Linked sections for navigation]
 
 ## What is [Topic]? (Definition + Context)
@@ -84,14 +85,14 @@ Content clusters establish topical authority — the signal that tells Google yo
 ## Common [Topic] Mistakes
 [What to avoid]
 
-## Getting Started with [Topic]
+## Primeros pasos con [Tema]
 [Next steps, CTA]
 
-## FAQ
+## Preguntas frecuentes
 [Answer related questions from PAA]
 ```
 
-### Bad Pillar Page Structure
+### Estructura de página de pilar incorrecta
 
 ```markdown
 ✗ Thin pillar that just links out:
@@ -116,25 +117,25 @@ encryption, authentication, authorization, networking...]
 (Too broad, unfocused, impossible to maintain)
 ```
 
-### Cluster Content Guidelines
+### Pautas de contenido del clúster
 
-| Level | Word Count | Depth | Link Strategy |
+| Nivel | Recuento de palabras | Profundidad | Estrategia de enlace |
 |-------|------------|-------|---------------|
-| **Pillar** | 3,000-5,000 | Comprehensive overview | Links to all clusters |
-| **Cluster Hub** | 1,500-2,500 | Subtopic deep-dive | Links to pillar + related posts |
-| **Supporting Posts** | 800-1,500 | Specific questions | Links to cluster hub + pillar |
+| **Pilar** | 3.000-5.000 | Descripción general completa | Enlaces a todos los clusters |
+| **Centro de clúster** | 1.500-2.500 | Subtema profundo | Enlaces a pilar + publicaciones relacionadas |
+| **Publicaciones de apoyo** | 800-1.500 | Preguntas específicas | Enlaces al centro + pilar del clúster |
 
-### Internal Linking Rules
+### Reglas de enlaces internos
 
-| From | To | Anchor Text |
+| Desde | A | Texto ancla |
 |------|----|-------------|
-| **Pillar** | All cluster articles | Descriptive, keyword-rich |
-| **Cluster** | Pillar (always) | Primary keyword |
-| **Cluster** | Related clusters | Natural, contextual |
-| **Supporting** | Parent cluster | Keyword variation |
-| **Supporting** | Pillar | Primary keyword |
+| **Pilar** | Todos los artículos del grupo | Descriptivo, rico en palabras clave |
+| **Clúster** | Pilar (siempre) | Palabra clave principal |
+| **Clúster** | Clústeres relacionados | Naturales, contextuales |
+| **Apoyo** | Grupo principal | Variación de palabras clave |
+| **Apoyo** | Pilar | Palabra clave principal |
 
-### Good Internal Linking
+### Buen enlace interno
 
 ```markdown
 In a cluster article about Kubernetes secrets:
@@ -149,7 +150,7 @@ that handles encryption, rotation, and access control."
 ✓ Adds value for the reader
 ```
 
-### Bad Internal Linking
+### Enlace interno incorrecto
 
 ```markdown
 ✗ For more information, click here.
@@ -166,24 +167,24 @@ that handles encryption, rotation, and access control."
   (No context, no anchor text value)
 ```
 
-### Cluster Planning Template
+### Plantilla de planificación de grupos
 
-| Element | Details |
+| Elemento | Detalles |
 |---------|---------|
-| **Topic Cluster** | [Core topic] |
-| **Pillar Page** | [URL, primary keyword] |
-| **Target Audience** | [Who this serves] |
-| **Business Goal** | [Awareness, leads, product adoption] |
+| **Grupo de temas** | [Tema principal] |
+| **Página del pilar** | [URL, palabra clave principal] |
+| **Público objetivo** | [A quién le sirve] |
+| **Objetivo comercial** | [Concienciación, clientes potenciales, adopción de productos] |
 
-**Cluster Articles:**
+**Artículos del grupo:**
 
-| Article | Primary Keyword | Intent | Status |
+| Artículo | Palabra clave principal | Intención | Estado |
 |---------|-----------------|--------|--------|
-| [Title 1] | [keyword] | [intent] | [draft/published] |
-| [Title 2] | [keyword] | [intent] | [draft/published] |
-| [Title 3] | [keyword] | [intent] | [draft/published] |
+| [Título 1] | [palabra clave] | [intención] | [borrador/publicado] |
+| [Título 2] | [palabra clave] | [intención] | [borrador/publicado] |
+| [Título 3] | [palabra clave] | [intención] | [borrador/publicado] |
 
-### Cluster Expansion Strategy
+### Estrategia de expansión del clúster
 
 ```
 Phase 1: Foundation
@@ -204,32 +205,32 @@ Phase 3: Breadth
 └── Programmatic variations
 ```
 
-### Measuring Cluster Success
+### Medición del éxito del clúster
 
-| Metric | What to Track | Target |
+| Métrica | Qué rastrear | Objetivo |
 |--------|---------------|--------|
-| **Pillar Rankings** | Position for head term | Top 10 → Top 3 |
-| **Cluster Rankings** | % of cluster articles ranking | >60% in top 20 |
-| **Internal CTR** | Clicks between cluster pages | Increasing |
-| **Topic Traffic** | Total organic to cluster | +50% in 6 months |
-| **Topical Authority** | Rankings for related terms | Expanding |
+| **Ranking de pilares** | Posición para el término principal | Top 10 → Top 3 |
+| **Clasificaciones de grupos** | % del ranking de artículos del grupo | >60% entre los 20 primeros |
+| **CTR interno** | Clics entre páginas del grupo | Creciente |
+| **Tráfico de temas** | Total orgánico al cluster | +50% en 6 meses |
+| **Autoridad temática** | Clasificaciones de términos relacionados | Ampliando |
 
-### Cluster Maintenance
+### Mantenimiento del clúster
 
-| Cadence | Action |
+| Cadencia | Acción |
 |---------|--------|
-| **Monthly** | Check pillar rankings, fix broken internal links |
-| **Quarterly** | Update pillar with new information, add new cluster articles |
-| **Bi-annually** | Major pillar refresh, consolidate underperforming articles |
-| **Annually** | Full cluster audit, restructure if needed |
+| **Mensual** | Verifique las clasificaciones de los pilares, corrija los enlaces internos rotos |
+| **Trimestral** | Actualizar pilar con nueva información, agregar nuevos artículos del grupo |
+| **Semestral** | Importante actualización de pilares y consolidación de artículos de bajo rendimiento |
+| **Anualmente** | Auditoría completa del clúster, reestructuración si es necesario |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Orphan articles** — Content not linked to any cluster
-- **Flat architecture** — All articles at same level, no hierarchy
-- **Pillar neglect** — Building clusters without maintaining pillar
-- **Over-optimization** — Every link uses exact-match anchor text
-- **Cluster sprawl** — Too many articles diluting topic focus
-- **One-way linking** — Cluster articles don't link back to pillar
-- **Duplicate intent** — Multiple articles targeting same keyword
-- **Ignoring cannibalization** — Multiple pages competing for same query
+- **Artículos huérfanos**: contenido no vinculado a ningún grupo
+- **Arquitectura plana** — Todos los artículos al mismo nivel, sin jerarquía
+- **Negligencia del pilar**: construcción de grupos sin mantenimiento del pilar
+- **Optimización excesiva**: cada enlace utiliza texto de anclaje de coincidencia exacta
+- **Expansión del grupo**: demasiados artículos que diluyen el enfoque del tema
+- **Enlace unidireccional**: los artículos del grupo no se vinculan al pilar
+- **Intención duplicada**: varios artículos dirigidos a la misma palabra clave
+- **Ignorar la canibalización**: varias páginas compiten por la misma consulta

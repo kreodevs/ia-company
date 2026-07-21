@@ -1,478 +1,470 @@
-# Logical Fallacies in Scientific Discourse
+# Falacias lógicas en el discurso científico
 
-## Fallacies of Causation
+## Falacias de causalidad
 
-### 1. Post Hoc Ergo Propter Hoc (After This, Therefore Because of This)
-**Description:** Assuming that because B happened after A, A caused B.
+### 1. Post Hoc Ergo Propter Hoc (Después de esto, luego por esto)
+**Descripción:** Suponiendo que debido a que B sucedió después de A, A causó B.
 
-**Examples:**
-- "I took this supplement and my cold went away, so the supplement cured my cold."
-- "Autism diagnoses increased after vaccine schedules changed, so vaccines cause autism."
-- "I wore my lucky socks and won the game, so the socks caused the win."
+**Ejemplos:**
+- "Tomé este suplemento y mi resfriado desapareció, así que el suplemento me curó el resfriado".
+- "Los diagnósticos de autismo aumentaron después de que cambiaron los calendarios de vacunación, por lo que las vacunas causan autismo".
+- "Me puse mis calcetines de la suerte y gané el juego, así que los calcetines provocaron la victoria".
 
-**Why fallacious:** Temporal sequence is necessary but not sufficient for causation. Correlation ≠ causation.
+**Por qué es falaz:** La secuencia temporal es necesaria pero no suficiente para la causalidad. Correlación ≠ causalidad.
 
-**Related:** *Cum hoc ergo propter hoc* (with this, therefore because of this) - correlation mistaken for causation even without temporal order.
+**Relacionado:** *Cum hoc ergo propter hoc* (con esto, por lo tanto a causa de esto): correlación confundida con causalidad incluso sin orden temporal.
 
-### 2. Confusing Correlation with Causation
-**Description:** Assuming correlation implies direct causal relationship.
+### 2. Confundir correlación con causalidad
+**Descripción:** Asumir correlación implica una relación causal directa.
 
-**Examples:**
-- "Countries that eat more chocolate have more Nobel Prize winners, so chocolate makes you smarter."
-- "Ice cream sales correlate with drowning deaths, so ice cream causes drowning."
+**Ejemplos:**
+- "Los países que comen más chocolate tienen más premios Nobel, por eso el chocolate te hace más inteligente".
+- "Las ventas de helados se correlacionan con las muertes por ahogamiento, por lo que el helado provoca ahogamientos".
 
-**Reality:** Often due to confounding variables (hot weather causes both ice cream sales and swimming).
+**Realidad:** A menudo debido a variables confusas (el clima cálido provoca tanto la venta de helados como la natación).
 
-### 3. Reverse Causation
-**Description:** Confusing cause and effect direction.
+### 3. Causalidad inversa
+**Descripción:** Dirección confusa de causa y efecto.
 
-**Examples:**
-- "Depression is associated with inflammation, so inflammation causes depression." (Could be: depression causes inflammation)
-- "Wealthy people are healthier, so wealth causes health." (Could be: health enables wealth accumulation)
+**Ejemplos:**
+- "La depresión está asociada con la inflamación, por lo que la inflamación causa depresión". (Podría ser: la depresión causa inflamación)
+- “La gente rica es más sana, por eso la riqueza causa salud”. (Podría ser: la salud permite la acumulación de riqueza)
 
-**Solution:** Longitudinal studies and experimental designs to establish temporal order.
+**Solución:** Estudios longitudinales y diseños experimentales para establecer orden temporal.
 
-### 4. Single Cause Fallacy
-**Description:** Attributing complex phenomena to one cause when multiple factors contribute.
+### 4. Falacia de causa única
+**Descripción:** Atribuir fenómenos complejos a una causa cuando contribuyen múltiples factores.
 
-**Examples:**
-- "Crime is caused by poverty." (Ignores many other contributing factors)
-- "Heart disease is caused by fat intake." (Oversimplifies multifactorial disease)
+**Ejemplos:**
+- "El crimen es causado por la pobreza". (Ignora muchos otros factores contribuyentes)
+- "Las enfermedades cardíacas son causadas por la ingesta de grasas". (Simplifica demasiado la enfermedad multifactorial)
 
-**Reality:** Most outcomes have multiple contributing causes.
+**Realidad:** La mayoría de los resultados tienen múltiples causas contribuyentes.
 
-## Fallacies of Generalization
+## Falacias de generalización
 
-### 5. Hasty Generalization
-**Description:** Drawing broad conclusions from insufficient evidence.
+### 5. Generalización apresurada
+**Descripción:** Sacar conclusiones amplias a partir de evidencia insuficiente.
 
-**Examples:**
-- "My uncle smoked and lived to 90, so smoking isn't dangerous."
-- "This drug worked in 5 patients, so it's effective for everyone."
-- "I saw three black swans, so all swans are black."
+**Ejemplos:**
+- "Mi tío fumó y vivió hasta los 90 años, por lo que fumar no es peligroso."
+- "Este medicamento funcionó en 5 pacientes, por lo que es efectivo para todos".
+- "Vi tres cisnes negros, así que todos los cisnes son negros".
 
-**Why fallacious:** Small, unrepresentative samples don't support universal claims.
+**Por qué es falaz:** Las muestras pequeñas y no representativas no respaldan afirmaciones universales.
 
-### 6. Anecdotal Fallacy
-**Description:** Using personal experience or isolated examples as proof.
+### 6. Falacia anecdótica
+**Descripción:** Utilizando experiencia personal o ejemplos aislados como prueba.
 
-**Examples:**
-- "I know someone who survived cancer using alternative medicine, so it works."
-- "My grandmother never exercised and lived to 100, so exercise is unnecessary."
+**Ejemplos:**
+- “Conozco a alguien que sobrevivió al cáncer usando medicina alternativa, así que funciona”.
+- "Mi abuela nunca hizo ejercicio y vivió hasta los 100 años, por lo que el ejercicio es innecesario".
 
-**Why fallacious:** Anecdotes are unreliable due to selection bias, memory bias, and confounding. Plural of anecdote ≠ data.
+**Por qué falaz:** Las anécdotas no son confiables debido al sesgo de selección, al sesgo de memoria y a la confusión. Plural de anécdota ≠ dato.
 
-### 7. Cherry Picking (Suppressing Evidence)
-**Description:** Selecting only evidence that supports your position while ignoring contradictory evidence.
+### 7. Selección de cerezas (suprimiendo evidencia)
+**Descripción:** Seleccionar solo evidencia que respalde su posición e ignorar la evidencia contradictoria.
 
-**Examples:**
-- Citing only studies showing supplement benefits while ignoring null findings
-- Highlighting successful predictions while ignoring failed ones
-- Showing graphs that start at convenient points
+**Ejemplos:**
+- Citar sólo estudios que muestran beneficios de los suplementos e ignorar los resultados nulos.
+- Destacar las predicciones exitosas e ignorar las fallidas.
+- Mostrar gráficos que comienzan en puntos convenientes
 
-**Detection:** Look for systematic reviews, not individual studies.
+**Detección:** Busque revisiones sistemáticas, no estudios individuales.
 
-### 8. Ecological Fallacy
-**Description:** Inferring individual characteristics from group statistics.
+### 8. Falacia ecológica
+**Descripción:** Inferir características individuales a partir de estadísticas grupales.
 
-**Example:**
-- "Average income in this neighborhood is high, so this person must be wealthy."
-- "This country has low disease rates, so any individual from there is unlikely to have disease."
+**Ejemplo:**
+- “El ingreso promedio en este barrio es alto, por lo que esta persona debe ser rica”.
+- "Este país tiene bajas tasas de enfermedad, por lo que es poco probable que cualquier individuo de allí tenga la enfermedad".
 
-**Why fallacious:** Group-level patterns don't necessarily apply to individuals.
+**Por qué es falaz:** Los patrones a nivel de grupo no se aplican necesariamente a los individuos.
 
-## Fallacies of Authority and Tradition
+## Falacias de autoridad y tradición
 
-### 9. Appeal to Authority (Argumentum ad Verecundiam)
-**Description:** Accepting claims because an authority figure said them, without evidence.
+### 9. Apelación a la autoridad (Argumentum ad Verecundiam)
+**Descripción:** Aceptar afirmaciones porque una figura de autoridad las dijo, sin pruebas.
 
-**Examples:**
-- "Dr. X says this treatment works, so it must." (If Dr. X provides no data)
-- "Einstein believed in God, so God exists." (Einstein's physics expertise doesn't transfer)
-- "99% of doctors recommend..." (Appeal to majority + authority without evidence)
+**Ejemplos:**
+- "El Dr. X dice que este tratamiento funciona, así que así debe ser". (Si el Dr. X no proporciona datos)
+- "Einstein creía en Dios, por eso Dios existe". (La experiencia en física de Einstein no se transfiere)
+- “El 99% de los médicos recomiendan…” (Apelación a la mayoría + autoridad sin pruebas)
 
-**Valid use of authority:** Experts providing evidence-based consensus in their domain.
+**Uso válido de la autoridad:** Expertos que brindan consenso basado en evidencia en su dominio.
 
-**Invalid:** Authority opinions without evidence, or outside their expertise.
+**Inválido:** Opiniones de autoridad sin evidencia, o fuera de su competencia.
 
-### 10. Appeal to Antiquity/Tradition
-**Description:** Assuming something is true or good because it's old or traditional.
+### 10. Apelación a la Antigüedad/Tradición
+**Descripción:** Asumir que algo es verdadero o bueno porque es antiguo o tradicional.
 
-**Examples:**
-- "Traditional medicine has been used for thousands of years, so it must work."
-- "This theory has been accepted for decades, so it must be correct."
+**Ejemplos:**
+- “La medicina tradicional se ha utilizado durante miles de años, por eso debe funcionar”.
+- “Esta teoría ha sido aceptada durante décadas, por lo que debe ser correcta”.**Por qué falaz:** La edad no determina la validez. Muchas viejas creencias han sido refutadas.
 
-**Why fallacious:** Age doesn't determine validity. Many old beliefs have been disproven.
+### 11. Apelación a la novedad
+**Descripción:** Suponer que algo es mejor porque es nuevo.
 
-### 11. Appeal to Novelty
-**Description:** Assuming something is better because it's new.
+**Ejemplos:**
+- "Este es el último tratamiento, por lo que debe ser superior".
+- "Nuevas investigaciones anulan todo lo que sabíamos". (A menudo exagerado)
 
-**Examples:**
-- "This is the latest treatment, so it must be superior."
-- "New research overturns everything we knew." (Often overstated)
+**Por qué falaz:** Nuevo ≠ mejor. Los tratamientos establecidos a menudo superan a los novedosos.
 
-**Why fallacious:** New ≠ better. Established treatments often outperform novel ones.
+## Falacias de relevancia
 
-## Fallacies of Relevance
+### 12. Ad Hominem (Atacar a la persona)
+**Descripción:** Atacar a la persona que presenta el argumento en lugar del argumento en sí.
 
-### 12. Ad Hominem (Attack the Person)
-**Description:** Attacking the person making the argument rather than the argument itself.
+**Tipos:**
+- **Abusivo:** "Es un idiota, por lo que su teoría es errónea".
+- **Circustancial:** "Está financiada por la industria, por lo que sus hallazgos son falsos".
+- **Tu Quoque:** "Usted fuma, por lo que su argumento antitabaco no es válido".
 
-**Types:**
-- **Abusive:** "He's an idiot, so his theory is wrong."
-- **Circumstantial:** "She's funded by industry, so her findings are false."
-- **Tu Quoque:** "You smoke, so your anti-smoking argument is invalid."
+**Por qué falaz:** Las características personales no determinan la validez del argumento.
 
-**Why fallacious:** Personal characteristics don't determine argument validity.
+**Nota:** Vale la pena señalar los conflictos de intereses, pero no invalidan la evidencia.
 
-**Note:** Conflicts of interest are worth noting but don't invalidate evidence.
+### 13. Falacia genética
+**Descripción:** Juzgar algo basándose en su origen más que en sus méritos.
 
-### 13. Genetic Fallacy
-**Description:** Judging something based on its origin rather than its merits.
+**Ejemplos:**
+- "Esta idea surgió de una compañía farmacéutica, por lo que está mal."
+- "Los antiguos griegos creían esto, por lo que está desactualizado".
 
-**Examples:**
-- "This idea came from a drug company, so it's wrong."
-- "Ancient Greeks believed this, so it's outdated."
+**Mejor enfoque:** Evalúe la evidencia independientemente de la fuente.
 
-**Better approach:** Evaluate evidence regardless of source.
+### 14. Apelar a la emoción
+**Descripción:** Manipular emociones en lugar de presentar pruebas.
 
-### 14. Appeal to Emotion
-**Description:** Manipulating emotions instead of presenting evidence.
+**Tipos:**
+- **Apelación al miedo:** “Si no vacunas, tu hijo morirá”.
+- **Apelación a la compasión:** "Piense en los pacientes que sufren y necesitan este tratamiento no probado".
+- **Apelación a los halagos:** "La gente inteligente como tú lo sabe..."
 
-**Types:**
-- **Appeal to fear:** "If you don't vaccinate, your child will die."
-- **Appeal to pity:** "Think of the suffering patients who need this unproven treatment."
-- **Appeal to flattery:** "Smart people like you know that..."
+**Por qué falaz:** Las reacciones emocionales no determinan la verdad.
 
-**Why fallacious:** Emotional reactions don't determine truth.
+### 15. Apelación a las consecuencias (Argumentum ad Consequentiam)
+**Descripción:** Argumentar que algo es verdadero/falso basándose en si las consecuencias son deseables.
 
-### 15. Appeal to Consequences (Argumentum ad Consequentiam)
-**Description:** Arguing something is true/false based on whether consequences are desirable.
+**Ejemplos:**
+- "El cambio climático no puede ser real porque las soluciones dañarían la economía."
+- “El libre albedrío debe existir porque sin él la moral es imposible”.
 
-**Examples:**
-- "Climate change can't be real because the solutions would hurt the economy."
-- "Free will must exist because without it, morality is impossible."
+**Por qué falaz:** La realidad es independiente de lo que deseamos que sea verdad.
 
-**Why fallacious:** Reality is independent of what we wish were true.
+### 16. Apelación a la naturaleza (falacia naturalista)
+**Descripción:** Asumir que "natural" significa bueno, seguro o eficaz.
 
-### 16. Appeal to Nature (Naturalistic Fallacy)
-**Description:** Assuming "natural" means good, safe, or effective.
+**Ejemplos:**
+- "Este tratamiento es natural, por lo que es seguro".
+- "La comida ecológica es natural, por lo que es más saludable".
+- "Las vacunas no son naturales, por eso son dañinas".
 
-**Examples:**
-- "This treatment is natural, so it's safe."
-- "Organic food is natural, so it's healthier."
-- "Vaccines are unnatural, so they're harmful."
+**Por qué falaz:**
+- Muchas cosas naturales son mortales (arsénico, veneno de serpiente, huracanes)
+- Muchas cosas sintéticas son beneficiosas (antibióticos, vacunas)
+- "Natural" suele estar mal definido
 
-**Why fallacious:**
-- Many natural things are deadly (arsenic, snake venom, hurricanes)
-- Many synthetic things are beneficial (antibiotics, vaccines)
-- "Natural" is often poorly defined
+### 17. Falacia moralista
+**Descripción:** Suponiendo que lo que debería ser verdad es verdad.
 
-### 17. Moralistic Fallacy
-**Description:** Assuming what ought to be true is true.
+**Ejemplos:**
+- "No debería haber diferencias de sexo en las habilidades, por eso no existen".
+- "La gente debe ser racional, y así lo son".
 
-**Examples:**
-- "There shouldn't be sex differences in ability, so they don't exist."
-- "People should be rational, so they are."
+**Por qué falaz:** Los deseos sobre la realidad no cambian la realidad.
 
-**Why fallacious:** Desires about reality don't change reality.
+## Falacias de estructura
 
-## Fallacies of Structure
+### 18. Falsa dicotomía (falso dilema)
+**Descripción:** Presentando sólo dos opciones cuando existen más.
 
-### 18. False Dichotomy (False Dilemma)
-**Description:** Presenting only two options when more exist.
+**Ejemplos:**
+- "O estás con nosotros o contra nosotros".
+- "Es genético o ambiental". (Por lo general ambos)
+- "O el tratamiento funciona o no". (Ignora los efectos parciales)
 
-**Examples:**
-- "Either you're with us or against us."
-- "It's either genetic or environmental." (Usually both)
-- "Either the treatment works or it doesn't." (Ignores partial effects)
+**Realidad:** La mayoría de los problemas tienen múltiples opciones y tonos de gris.
 
-**Reality:** Most issues have multiple options and shades of gray.
+### 19. Petición de principio (razonamiento circular)
+**Descripción:** Asumiendo lo que estás tratando de probar.
 
-### 19. Begging the Question (Circular Reasoning)
-**Description:** Assuming what you're trying to prove.
+**Ejemplos:**
+- "Este medicamento funciona porque tiene propiedades curativas". (¿Cuáles son las propiedades curativas? ¡Que funciona!)
+- "Dios existe porque la Biblia lo dice, y la Biblia es verdadera porque es la palabra de Dios".
 
-**Examples:**
-- "This medicine works because it has healing properties." (What are healing properties? That it works!)
-- "God exists because the Bible says so, and the Bible is true because it's God's word."
+**Detección:** Comprobar si la conclusión está oculta en el local.
 
-**Detection:** Check if the conclusion is hidden in the premises.
+### 20. Mover las porterías
+**Descripción:** Estándares cambiantes de evidencia después de que se cumplen los estándares iniciales.
 
-### 20. Moving the Goalposts
-**Description:** Changing standards of evidence after initial standards are met.
+**Ejemplo:**
+- Escéptico: "Muéstrame un estudio".
+- [Muestra estudio]
+- Escéptico: "Ese es sólo un estudio; muéstrenme un metanálisis".
+- [Muestra metanálisis]
+- Escéptico: "Pero los metanálisis tienen limitaciones..."
 
-**Example:**
-- Skeptic: "Show me one study."
-- [Shows study]
-- Skeptic: "That's just one study; show me a meta-analysis."
-- [Shows meta-analysis]
-- Skeptic: "But meta-analyses have limitations..."
+**Por qué es problemático:** Ninguna cantidad de evidencia será suficiente.
 
-**Why problematic:** No amount of evidence will ever be sufficient.
+### 21. Pendiente resbaladiza
+**Descripción:** Argumentar que un paso conducirá inevitablemente a resultados extremos sin justificación.
 
-### 21. Slippery Slope
-**Description:** Arguing that one step will inevitably lead to extreme outcomes without justification.
+**Ejemplo:**
+- "Si permitimos la edición de genes para enfermedades, terminaremos con bebés de diseño y eugenesia".
 
-**Example:**
-- "If we allow gene editing for disease, we'll end up with designer babies and eugenics."
+**Cuando sea válido:** Si es realmente probable que se tomen pasos intermedios.
 
-**When valid:** If intermediate steps are actually likely.
+**Cuando es falaz:** Si la cadena de eventos es especulativa sin evidencia.
 
-**When fallacious:** If chain of events is speculative without evidence.
+### 22. Hombre de paja
+**Descripción:** Tergiversar un argumento para facilitar el ataque.
 
-### 22. Straw Man
-**Description:** Misrepresenting an argument to make it easier to attack.
+**Ejemplo:**
+- Posición: "Deberíamos enseñar la evolución en las escuelas".
+- Hombre de paja: "¿Entonces crees que deberíamos decirles a los niños que son sólo monos?"**Detección:** Pregunta: ¿Es esto realmente lo que afirman?
 
-**Example:**
-- Position: "We should teach evolution in schools."
-- Straw man: "So you think we should tell kids they're just monkeys?"
+## Falacias del razonamiento estadístico y científico
 
-**Detection:** Ask: Is this really what they're claiming?
+### 23. Falacia del francotirador de Texas
+**Descripción:** Seleccionar grupos de datos para que se ajusten a un patrón, como disparar flechas y luego dibujar objetivos a su alrededor.
 
-## Fallacies of Statistical and Scientific Reasoning
+**Ejemplos:**
+- Encontrar grupos de cáncer y reclamar causas ambientales (sin tener en cuenta la agrupación aleatoria)
+- Minería de datos hasta encontrar correlaciones significativas.
 
-### 23. Texas Sharpshooter Fallacy
-**Description:** Cherry-picking data clusters to fit a pattern, like shooting arrows then drawing targets around them.
+**Por qué falaz:** Los patrones en los datos aleatorios son inevitables; encontrarlos no prueba la causalidad.
 
-**Examples:**
-- Finding cancer clusters and claiming environmental causes (without accounting for random clustering)
-- Data mining until finding significant correlations
+### 24. Falacia de la tasa base
+**Descripción:** Ignorar la probabilidad previa al evaluar la evidencia.
 
-**Why fallacious:** Patterns in random data are inevitable; finding them doesn't prove causation.
+**Ejemplo:**
+- La enfermedad afecta al 0,1% de la población; la prueba tiene una precisión del 99%
+- Prueba positiva ≠ 99% de probabilidad de enfermedad
+- En realidad, ~9 % de probabilidad (debido a que los falsos positivos superan a los verdaderos positivos)
 
-### 24. Base Rate Fallacy
-**Description:** Ignoring prior probability when evaluating evidence.
+**Solución:** Utilice el razonamiento bayesiano; Considere las tarifas base.
 
-**Example:**
-- Disease affects 0.1% of population; test is 99% accurate
-- Positive test ≠ 99% probability of disease
-- Actually ~9% probability (due to false positives exceeding true positives)
+### 25. La falacia del fiscal
+**Descripción:** Confundir P(Evidencia|Inocente) con P(Inocente|Evidencia).
 
-**Solution:** Use Bayesian reasoning; consider base rates.
+**Ejemplo:**
+- "La probabilidad de que esta coincidencia de ADN se produzca por casualidad es de 1 entre 1 millón, por lo que sólo hay una probabilidad de 1 entre 1 millón de que el acusado sea inocente".
 
-### 25. Prosecutor's Fallacy
-**Description:** Confusing P(Evidence|Innocent) with P(Innocent|Evidence).
+**Por qué es falaz:** Ignora las tasas base y la probabilidad previa.
 
-**Example:**
-- "The probability of this DNA match occurring by chance is 1 in 1 million, so there's only a 1 in 1 million chance the defendant is innocent."
+### 26. Falacia de McNamara (falacia cuantitativa)
+**Descripción:** Centrarse solo en lo que se puede medir fácilmente e ignorar factores importantes no medidos.
 
-**Why fallacious:** Ignores base rates and prior probability.
+**Ejemplo:**
+- Juzgar la calidad de la escuela sólo por los resultados de las pruebas (ignorando la creatividad, las habilidades sociales y la ética)
+- Medir la atención sanitaria únicamente mediante resultados cuantificables (ignorando la calidad de vida)
 
-### 26. McNamara Fallacy (Quantitative Fallacy)
-**Description:** Focusing only on what can be easily measured while ignoring important unmeasured factors.
+**Cita:** "No todo lo que cuenta se puede contar, y no todo lo que se puede contar cuenta".
 
-**Example:**
-- Judging school quality only by test scores (ignoring creativity, social skills, ethics)
-- Measuring healthcare only by quantifiable outcomes (ignoring quality of life)
+### 27. Falacia de comparaciones múltiples
+**Descripción:** No se tiene en cuenta el aumento de la tasa de falsos positivos al probar muchas hipótesis.
 
-**Quote:** "Not everything that counts can be counted, and not everything that can be counted counts."
+**Ejemplo:**
+- Probar 20 hipótesis con p < 0,05 da ~65% de probabilidad de al menos un falso positivo
+- Afirmar que el color de gominola X causa acné después de probar 20 colores
 
-### 27. Multiple Comparisons Fallacy
-**Description:** Not accounting for increased false positive rate when testing many hypotheses.
+**Solución:** Corregir para comparaciones múltiples (Bonferroni, FDR).
 
-**Example:**
-- Testing 20 hypotheses at p < .05 gives ~65% chance of at least one false positive
-- Claiming jellybean color X causes acne after testing 20 colors
+### 28. Cosificación (hipotatización)
+**Descripción:** Tratar conceptos abstractos como si fueran cosas concretas.
 
-**Solution:** Correct for multiple comparisons (Bonferroni, FDR).
+**Ejemplos:**
+- "La evolución quiere que los organismos sobrevivan". (La evolución no "quiere")
+- "El gen de la inteligencia" (La inteligencia no es un gen)
+- "La naturaleza selecciona..." (La naturaleza no selecciona conscientemente)
 
-### 28. Reification (Hypostatization)
-**Description:** Treating abstract concepts as if they were concrete things.
+**Por qué es problemático:** Puede llevar a pensamientos confusos sobre los mecanismos.
 
-**Examples:**
-- "Evolution wants organisms to survive." (Evolution doesn't "want")
-- "The gene for intelligence" (Intelligence isn't one gene)
-- "Nature selects..." (Nature doesn't consciously select)
+## Falacias de alcance y definición
 
-**Why problematic:** Can lead to confused thinking about mechanisms.
+### 29. Ningún verdadero escocés
+**Descripción:** Excluye retroactivamente contraejemplos mediante la redefinición de criterios.
 
-## Fallacies of Scope and Definition
+**Ejemplo:**
+- “Ningún remedio natural tiene efectos secundarios”.
+- "Pero la hiedra venenosa es natural y provoca reacciones".
+- "Bueno, ningún remedio natural *verdadero* tiene efectos secundarios."
 
-### 29. No True Scotsman
-**Description:** Retroactively excluding counterexamples by redefining criteria.
+**Por qué es falaz:** Mueve las porterías para proteger la afirmación contra la falsificación.
 
-**Example:**
-- "No natural remedy has side effects."
-- "But poison ivy is natural and causes reactions."
-- "Well, no *true* natural remedy has side effects."
+### 30. Equivocación
+**Descripción:** Usar una palabra con múltiples significados de manera inconsistente.
 
-**Why fallacious:** Moves goalposts to protect claim from falsification.
+**Ejemplo:**
+- "La evolución es sólo una teoría. Las teorías son conjeturas. Así que la evolución es sólo una conjetura".
+- (Combina "teoría" coloquial con "teoría" científica)
 
-### 30. Equivocation
-**Description:** Using a word with multiple meanings inconsistently.
+**Detección:** Compruebe si los términos clave se utilizan de forma coherente.
 
-**Example:**
-- "Evolution is just a theory. Theories are guesses. So evolution is just a guess."
-- (Conflates colloquial "theory" with scientific "theory")
+### 31. Ambigüedad
+**Descripción:** Usar un lenguaje vago que puede interpretarse de múltiples maneras.
 
-**Detection:** Check if key terms are used consistently.
+**Ejemplo:**
+- "Sanación cuántica" (¿Qué significa aquí "cuántica"?)
+- "Natural" (¿Animales? ¿No sintéticos? ¿Orgánicos? ¿Comunes?)
 
-### 31. Ambiguity
-**Description:** Using vague language that can be interpreted multiple ways.
+**Por qué es problemático:** Las afirmaciones se vuelven infalsables cuando los términos no están definidos.
 
-**Example:**
-- "Quantum healing" (What does "quantum" mean here?)
-- "Natural" (Animals? Not synthetic? Organic? Common?)
+### 32. Falacia de la proyección mental
+**Descripción:** Proyectar construcciones mentales en la realidad.
 
-**Why problematic:** Claims become unfalsifiable when terms are undefined.
+**Ejemplo:**
+- Suponer que las categorías que existen en el lenguaje existen en la naturaleza.
+- "¿En qué cromosoma está el gen X?" cuando X es poligénico y parcialmente ambiental
 
-### 32. Mind Projection Fallacy
-**Description:** Projecting mental constructs onto reality.
+**Mejor:** Reconocer que las categorías humanas pueden no tallar la naturaleza en las articulaciones.
 
-**Example:**
-- Assuming categories that exist in language exist in nature
-- "Which chromosome is the gene for X on?" when X is polygenic and partially environmental
+## Falacias específicas de la ciencia
 
-**Better:** Recognize human categories may not carve nature at the joints.
+### 33. Gambito Galileo
+**Descripción:** "Se rieron de Galileo y él tenía razón, así que si se ríen de mí, yo también debo tener razón".
 
-## Fallacies Specific to Science
+**Por qué falaz:**
+- Se rieron de Galileo, y tenía razón.
+- También se rieron de innumerables chiflados que se equivocaban.
+- Ser un outsider no te hace tener razón
 
-### 33. Galileo Gambit
-**Description:** "They laughed at Galileo, and he was right, so if they're laughing at me, I must be right too."
+**Realidad:** Las ideas revolucionarias suelen estar bien respaldadas por pruebas.
 
-**Why fallacious:**
-- They laughed at Galileo, and he was right
-- They also laughed at countless crackpots who were wrong
-- Being an outsider doesn't make you right
+### 34. Argumento de la ignorancia (Ad Ignorantiam)
+**Descripción:** Suponer que algo es cierto porque no se ha demostrado que sea falso (o viceversa).
 
-**Reality:** Revolutionary ideas are usually well-supported by evidence.
+**Ejemplos:**
+- "Nadie ha demostrado que la homeopatía no funcione, entonces funciona".
+- "No hemos encontrado evidencia de daño, por lo que debe ser seguro."**Por qué falaz:** Ausencia de evidencia ≠ evidencia de ausencia (aunque puede serlo, dependiendo de lo mucho que hayamos buscado).
 
-### 34. Argument from Ignorance (Ad Ignorantiam)
-**Description:** Assuming something is true because it hasn't been proven false (or vice versa).
+**Carga de la prueba:** Recae sobre el reclamante, no sobre el escéptico.
 
-**Examples:**
-- "No one has proven homeopathy doesn't work, so it works."
-- "We haven't found evidence of harm, so it must be safe."
+### 35. Dios de los huecos
+**Descripción:** Explicar lagunas en el conocimiento invocando causas sobrenaturales o infalsificables.
 
-**Why fallacious:** Absence of evidence ≠ evidence of absence (though it can be, depending on how hard we've looked).
+**Ejemplos:**
+- "No entendemos completamente la conciencia, por eso debe ser espiritual".
+- "Esta complejidad no puede surgir de forma natural, por lo que hay que diseñarla".
 
-**Burden of proof:** Falls on the claimant, not the skeptic.
+**Por qué es problemático:**
+- Llena los vacíos con falta de explicaciones.
+- Desalienta una investigación genuina
+- La historia muestra que los vacíos se llenan con explicaciones naturales.
 
-### 35. God of the Gaps
-**Description:** Explaining gaps in knowledge by invoking supernatural or unfalsifiable causes.
+### 36. Falacia del Nirvana (Falacia de la solución perfecta)
+**Descripción:** Rechazar soluciones porque son imperfectas.
 
-**Examples:**
-- "We don't fully understand consciousness, so it must be spiritual."
-- "This complexity couldn't arise naturally, so it must be designed."
+**Ejemplos:**
+- "Las vacunas no son 100% efectivas, por lo que no valen nada."
+- "Esta dieta no funciona para todos, por eso no funciona".
 
-**Why problematic:**
-- Fills gaps with non-explanations
-- Discourages genuine investigation
-- History shows gaps get filled by natural explanations
+**Realidad:** La mayoría de las intervenciones son parciales; la perfección es rara.
 
-### 36. Nirvana Fallacy (Perfect Solution Fallacy)
-**Description:** Rejecting solutions because they're imperfect.
+**Mejor:** Compare con alternativas, no con la perfección.
 
-**Examples:**
-- "Vaccines aren't 100% effective, so they're worthless."
-- "This diet doesn't work for everyone, so it doesn't work."
+### 37. Alegato especial
+**Descripción:** Aplicar estándares a los demás pero no a uno mismo.
 
-**Reality:** Most interventions are partial; perfection is rare.
+**Ejemplos:**
+-"Mis anécdotas cuentan como evidencia, pero las tuyas no."
+- "La medicina convencional necesita ECA, pero mi alternativa no".
+- "La correlación no implica causalidad, excepto cuando respalda mi punto de vista".
 
-**Better:** Compare to alternatives, not to perfection.
+**Por qué es falaz:** Los estándares de evidencia deben aplicarse de manera consistente.
 
-### 37. Special Pleading
-**Description:** Applying standards to others but not to oneself.
+### 38. Infalsificabilidad
+**Descripción:** Formular afirmaciones de manera que no se puedan probar ni refutar.
 
-**Examples:**
-- "My anecdotes count as evidence, but yours don't."
-- "Mainstream medicine needs RCTs, but my alternative doesn't."
-- "Correlation doesn't imply causation—except when it supports my view."
+**Ejemplos:**
+- "Esta energía no puede ser detectada por ningún instrumento."
+- "Funciona, pero sólo si realmente crees."
+- "Los fracasos demuestran que la conspiración es aún más profunda".
 
-**Why fallacious:** Evidence standards should apply consistently.
+**Por qué es problemático:** Las afirmaciones infalsables no son científicas; no se pueden probar.
 
-### 38. Unfalsifiability
-**Description:** Formulating claims in ways that cannot be tested or disproven.
+**Buena ciencia:** Hace predicciones específicas y comprobables.
 
-**Examples:**
-- "This energy can't be detected by any instrument."
-- "It works, but only if you truly believe."
-- "Failures prove the conspiracy is even deeper."
+### 39. Afirmando el Consecuente
+**Descripción:** Si A, entonces B. B es verdadero. Por tanto, A es verdadera.
 
-**Why problematic:** Unfalsifiable claims aren't scientific; they can't be tested.
+**Ejemplo:**
+- "Si el medicamento funciona, los síntomas mejoran. Los síntomas mejoraron. Por lo tanto, el medicamento funcionó".
+- (Podría ser placebo, historia natural, regresión a la media)
 
-**Good science:** Makes specific, testable predictions.
+**Por qué falaz:** Otras causas podrían producir el mismo resultado.
 
-### 39. Affirming the Consequent
-**Description:** If A, then B. B is true. Therefore, A is true.
+**Forma válida:** Modus ponens: Si A, entonces B. A es verdadero. Por tanto, B es verdadera.
 
-**Example:**
-- "If the drug works, symptoms improve. Symptoms improved. Therefore, the drug worked."
-- (Could be placebo, natural history, regression to mean)
+### 40. Negar el antecedente
+**Descripción:** Si A, entonces B. A es falso. Por tanto, B es falso.
 
-**Why fallacious:** Other causes could produce the same outcome.
+**Ejemplo:**
+- "Si tienes fiebre, tienes infección. No tienes fiebre. Por lo tanto, no tienes infección".
 
-**Valid form:** Modus ponens: If A, then B. A is true. Therefore, B is true.
+**Por qué falaz:** B puede ser verdadero incluso cuando A es falso.
 
-### 40. Denying the Antecedent
-**Description:** If A, then B. A is false. Therefore, B is false.
+## Evitar falacias lógicas
 
-**Example:**
-- "If you have fever, you have infection. You don't have fever. Therefore, you don't have infection."
+### Pasos prácticos
 
-**Why fallacious:** B can be true even when A is false.
+1. **Identifique el reclamo** - ¿Qué se está argumentando exactamente?
 
-## Avoiding Logical Fallacies
+2. **Identifique la evidencia** - ¿Qué respalda el reclamo?
 
-### Practical Steps
+3. **Comprueba la lógica** - ¿La evidencia realmente respalda la afirmación?
 
-1. **Identify the claim** - What exactly is being argued?
+4. **Busque suposiciones ocultas** - ¿En qué creencias no declaradas se basa el argumento?
 
-2. **Identify the evidence** - What supports the claim?
+5. **Considere alternativas** - ¿Qué otras explicaciones se ajustan a la evidencia?
 
-3. **Check the logic** - Does the evidence actually support the claim?
+6. **Compruebe si hay manipulación emocional** - ¿El argumento se basa en sentimientos más que en hechos?
 
-4. **Look for hidden assumptions** - What unstated beliefs does the argument rely on?
+7. **Evaluar la fuente** - ¿Existen conflictos de intereses? ¿Está esto dentro de su experiencia?
 
-5. **Consider alternatives** - What other explanations fit the evidence?
+8. **Busque el equilibrio** - ¿Se abordan de manera justa los contraargumentos?
 
-6. **Check for emotional manipulation** - Is the argument relying on feelings rather than facts?
+9. **Evaluar la evidencia** - ¿Es anecdótica, observacional o experimental? ¿Qué tan fuerte?
 
-7. **Evaluate the source** - Are there conflicts of interest? Is this within their expertise?
+10. **Sea caritativo** - Interprete los argumentos en su forma más fuerte (hombre de acero, no hombre de paja).
 
-8. **Look for balance** - Are counterarguments addressed fairly?
+### Preguntas para hacer
 
-9. **Assess the evidence** - Is it anecdotal, observational, or experimental? How strong?
+- ¿La conclusión está respaldada por las premisas?
+- ¿Existen suposiciones no expresadas?
+- ¿Es la evidencia relevante para la conclusión?
+- ¿Se reconocen los contraargumentos?
+- ¿Podrían explicaciones alternativas explicar la evidencia?
+- ¿Es coherente el razonamiento?
+- ¿Están los términos definidos claramente?
+- ¿Se están seleccionando pruebas cuidadosamente?
+- ¿Se están manipulando las emociones?
+- ¿Se aplicaría este razonamiento de manera coherente a otros casos?
 
-10. **Be charitable** - Interpret arguments in their strongest form (steel man, not straw man).
+### Patrones comunes
 
-### Questions to Ask
+**Buenos argumentos:**
+- Términos claramente definidos
+- Pruebas pertinentes y suficientes
+- Estructura lógica válida
+- Reconoce limitaciones y alternativas.
+- Conclusiones proporcionales
+- Transparente sobre la incertidumbre
+- Aplica estándares consistentes
 
-- Is the conclusion supported by the premises?
-- Are there unstated assumptions?
-- Is the evidence relevant to the conclusion?
-- Are counterarguments acknowledged?
-- Could alternative explanations account for the evidence?
-- Is the reasoning consistent?
-- Are terms defined clearly?
-- Is evidence being cherry-picked?
-- Are emotions being manipulated?
-- Would this reasoning apply consistently to other cases?
+**Pobres argumentos:**
+- Definiciones vagas o cambiantes
+- Evidencia irrelevante o insuficiente
+- Saltos lógicos
+- Ignora la contraevidencia.
+- Conclusiones sobrereclamadas
+- Falsa certeza
+- Doble rasero
 
-### Common Patterns
-
-**Good Arguments:**
-- Clearly defined terms
-- Relevant, sufficient evidence
-- Valid logical structure
-- Acknowledges limitations and alternatives
-- Proportional conclusions
-- Transparent about uncertainty
-- Applies consistent standards
-
-**Poor Arguments:**
-- Vague or shifting definitions
-- Irrelevant or insufficient evidence
-- Logical leaps
-- Ignores counterevidence
-- Overclaimed conclusions
-- False certainty
-- Double standards
-
-## Remember
-
-- **Fallacious reasoning doesn't mean the conclusion is false** - just that this argument doesn't support it.
-- **Identifying fallacies isn't about winning** - it's about better understanding reality.
-- **We all commit fallacies** - recognizing them in ourselves is as important as in others.
-- **Charity principle** - Interpret arguments generously; don't assume bad faith.
-- **Focus on claims, not people** - Ad hominem goes both ways.
+## Recuerda- **El razonamiento falaz no significa que la conclusión sea falsa** - sólo que este argumento no la respalda.
+- **Identificar falacias no se trata de ganar**, se trata de comprender mejor la realidad.
+- **Todos cometemos falacias** - reconocerlas en nosotros mismos es tan importante como en los demás.
+- **Principio de caridad** - Interpretar los argumentos con generosidad; No asumas mala fe.
+- **Céntrese en las reclamaciones, no en las personas** - Ad hominem va en ambos sentidos.

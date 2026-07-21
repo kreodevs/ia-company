@@ -1,402 +1,402 @@
-# Output Templates
+# Plantillas de salida
 
-## 1. Standard Learning Notes
+## 1. Notas de aprendizaje estándar
 
 ```markdown
-# [Article Title] - Learning Notes
+# [Título del artículo] - Notas de aprendizaje
 
-**Author:** [Name] | **Source:** [URL/Publication] | **Date:** [When read]  
-**Reading Time:** [X minutes] | **My Purpose:** [Why I read this]
-
----
-
-## 🎯 One-Sentence Summary
-[Capture the essence in one sentence]
+**Autor:** [Nombre] | **Fuente:** [URL/Publicación] | **Fecha:** [Cuándo lo leí]  
+**Tiempo de lectura:** [X minutos] | **Mi propósito:** [Por qué lo leí]
 
 ---
 
-## 📊 Structure at a Glance
-
-**Main Thesis:** [Core argument]
-
-**Supporting Pillars:**
-1. [Main point 1]
-2. [Main point 2]  
-3. [Main point 3]
+## 🎯 Resumen en una frase
+[Captura la esencia en una frase]
 
 ---
 
-## 💡 Key Insights (Top 3)
+## 📊 Estructura de un vistazo
 
-### 1. [Insight Name]
-**What:** [Description in my own words]  
-**Why it matters:** [Significance]  
-**How to use:** [Application]
+**Tesis principal:** [Argumento central]
 
-### 2. [Insight Name]
-**What:** [Description]
-**Why it matters:** [Significance]
-**How to use:** [Application]
-
-### 3. [Insight Name]
-**What:** [Description]
-**Why it matters:** [Significance]
-**How to use:** [Application]
+**Pilares de apoyo:**
+1. [Punto principal 1]
+2. [Punto principal 2]  
+3. [Punto principal 3]
 
 ---
 
-## 🔍 Critical Analysis
+## 💡 Ideas clave (Top 3)
 
-### Strengths
-- ✅ [What's well-argued]
-- ✅ [Strong evidence]
+### 1. [Nombre de la idea]
+**Qué:** [Descripción con mis propias palabras]  
+**Por qué importa:** [Significado]  
+**Cómo aplicarlo:** [Aplicación]
 
-### Weaknesses
-- ⚠️ [Logical gap]
-- ⚠️ [Weak support]
+### 2. [Nombre de la idea]
+**Qué:** [Descripción]
+**Por qué importa:** [Significado]
+**Cómo aplicarlo:** [Aplicación]
 
-### Unanswered Questions
-- ❓ [Question 1]
-- ❓ [Question 2]
-
----
-
-## 🔗 Connections
-
-**Reminds me of:**
-- [Other book/article/concept]
-- [Personal experience]
-
-**Contradicts:**
-- [Opposing viewpoint I've encountered]
-
-**Builds on:**
-- [Prior knowledge this extends]
+### 3. [Nombre de la idea]
+**Qué:** [Descripción]
+**Por qué importa:** [Significado]
+**Cómo aplicarlo:** [Aplicación]
 
 ---
 
-## 📝 Key Quotes & Context
+## 🔍 Análisis crítico
 
-> "[Quote 1]"
+### Fortalezas
+- ✅ [Qué está bien argumentado]
+- ✅ [Evidencia sólida]
 
-Why notable: [My interpretation]
+### Debilidades
+- ⚠️ [Brecha lógica]
+- ⚠️ [Soporte débil]
 
-> "[Quote 2]"
-
-Why notable: [My interpretation]
-
----
-
-## 🎯 Action Items
-
-**Immediate (This Week):**
-- [ ] [Specific action]
-- [ ] [Specific action]
-
-**Short-term (This Month):**
-- [ ] [Specific action]
-
-**Long-term:**
-- [ ] [Specific action]
+### Preguntas sin respuesta
+- ❓ [Pregunta 1]
+- ❓ [Pregunta 2]
 
 ---
 
-## 🔖 Further Exploration
+## 🔗 Conexiones
 
-**To Read:**
-- [Related article/book]
-- [Author's other work]
+**Me recuerda a:**
+- [Otro libro/artículo/concepto]
+- [Experiencia personal]
 
-**To Discuss:**
-- [Question for peers/mentor]
+**Contradice:**
+- [Punto de vista opuesto que he encontrado]
 
-**To Test:**
-- [Hypothesis to validate]
+**Se apoya en:**
+- [Conocimiento previo que esto extiende]
 
 ---
 
-## 💭 Personal Reflection
+## 📝 Citas clave y contexto
 
-[How has this changed my thinking?]
-[What surprised me?]
-[What will I do differently?]
+> "[Cita 1]"
+
+Por qué destaca: [Mi interpretación]
+
+> "[Cita 2]"
+
+Por qué destaca: [Mi interpretación]
+
+---
+
+## 🎯 Acciones
+
+**Inmediatas (esta semana):**
+- [ ] [Acción específica]
+- [ ] [Acción específica]
+
+**Corto plazo (este mes):**
+- [ ] [Acción específica]
+
+**Largo plazo:**
+- [ ] [Acción específica]
+
+---
+
+## 🔖 Exploración adicional
+
+**Para leer:**
+- [Artículo/libro relacionado]
+- [Otra obra del autor]
+
+**Para discutir:**
+- [Pregunta para colegas/mentor]
+
+**Para probar:**
+- [Hipótesis a validar]
+
+---
+
+## 💭 Reflexión personal
+
+[¿Cómo ha cambiado mi forma de pensar?]
+[¿Qué me sorprendió?]
+[¿Qué haré diferente?]
 ```
 
 ---
 
-## 2. Concept Map Template
+## 2. Plantilla de mapa conceptual
 
 ```markdown
-# Concept Map: [Topic]
+# Mapa conceptual: [Tema]
 
-## Core Concept
-[Central idea in one box]
+## Concepto central
+[Idea central en un recuadro]
 
-## Related Concepts
+## Conceptos relacionados
 
-### Direct Connections
-[Concept A] ←→ [Core] : [Relationship]
-[Concept B] ←→ [Core] : [Relationship]
+### Conexiones directas
+[Concepto A] ←→ [Central] : [Relación]
+[Concepto B] ←→ [Central] : [Relación]
 
-### Secondary Connections  
-[Concept C] ←→ [Concept A] : [Relationship]
+### Conexiones secundarias  
+[Concepto C] ←→ [Concepto A] : [Relación]
 
-## Hierarchy
-[Broader concept]
+## Jerarquía
+[Concepto más amplio]
     ↓
-[Core concept]
+[Concepto central]
     ↓
-├─ [Specific example 1]
-├─ [Specific example 2]
-└─ [Specific example 3]
+├─ [Ejemplo específico 1]
+├─ [Ejemplo específico 2]
+└─ [Ejemplo específico 3]
 
-## Cross-Domain Parallels
-- In [Field A]: This is like [Analogy]
-- In [Field B]: This is like [Analogy]
+## Paralelos entre dominios
+- En [Campo A]: Esto es como [Analogía]
+- En [Campo B]: Esto es como [Analogía]
 ```
 
 ---
 
-## 3. Argument Analysis Template
+## 3. Plantilla de análisis de argumentos
 
 ```markdown
-# Argument Analysis: [Article Title]
+# Análisis de argumentos: [Título del artículo]
 
-## The Claim
-**Main Thesis:** [What author argues]
+## La afirmación
+**Tesis principal:** [Qué argumenta el autor]
 
-## The Support
+## El soporte
 
-### Evidence Presented
-1. [Evidence 1]
-   - Type: [Data/Anecdote/Study/Expert opinion]
-   - Strength: ⭐⭐⭐⭐⭐ (1-5)
-   - Notes: [Assessment]
+### Evidencia presentada
+1. [Evidencia 1]
+   - Tipo: [Datos/Anécdota/Estudio/Opinión de experto]
+   - Fortaleza: ⭐⭐⭐⭐⭐ (1-5)
+   - Notas: [Evaluación]
 
-2. [Evidence 2]
-   - Type: [Type]
-   - Strength: ⭐⭐⭐
-   - Notes: [Assessment]
+2. [Evidencia 2]
+   - Tipo: [Tipo]
+   - Fortaleza: ⭐⭐⭐
+   - Notas: [Evaluación]
 
-### Logical Structure
-[Premise 1] + [Premise 2] → [Conclusion]
+### Estructura lógica
+[Premisa 1] + [Premisa 2] → [Conclusión]
 
-**Valid?** [Yes/No/Partially]
-**Sound?** [Yes/No - are premises true?]
+**¿Válido?** [Sí/No/Parcialmente]
+**¿Sólido?** [Sí/No — ¿son ciertas las premisas?]
 
-## Counter-Arguments
+## Contraargumentos
 
-### Acknowledged by Author
-- [Counter-point mentioned]
-- [Author's response]
-- [My assessment of response]
+### Reconocidos por el autor
+- [Contraargumento mencionado]
+- [Respuesta del autor]
+- [Mi evaluación de la respuesta]
 
-### Not Addressed
-- [Missing counter-argument 1]
-- [Missing counter-argument 2]
+### No abordados
+- [Contraargumento faltante 1]
+- [Contraargumento faltante 2]
 
-## Alternative Explanations
-The data could also mean:
-- [Alternative 1]
-- [Alternative 2]
+## Explicaciones alternativas
+Los datos también podrían significar:
+- [Alternativa 1]
+- [Alternativa 2]
 
-## Verdict
-**Overall Assessment:** [Rating + reasoning]
-**When argument is strongest:** [Context]
-**When argument is weakest:** [Context]
+## Veredicto
+**Evaluación general:** [Calificación + razonamiento]
+**Cuando el argumento es más fuerte:** [Contexto]
+**Cuando el argumento es más débil:** [Contexto]
 ```
 
 ---
 
-## 4. Practical Application Template
+## 4. Plantilla de aplicación práctica
 
 ```markdown
-# Application Plan: [Concept from Article]
+# Plan de aplicación: [Concepto del artículo]
 
-## Current Situation
-**Problem I'm facing:** [Specific issue]
-**Why this concept is relevant:** [Connection]
+## Situación actual
+**Problema que enfrento:** [Problema específico]
+**Por qué este concepto es relevante:** [Conexión]
 
-## The Concept
-[Brief explanation in my words]
+## El concepto
+[Explicación breve con mis palabras]
 
-## Application Strategy
+## Estrategia de aplicación
 
-### Phase 1: Test (Week 1)
-**Experiment:** [Small, low-risk test]
-**Measure:** [How I'll know if it works]
-**Expected outcome:** [Hypothesis]
+### Fase 1: Prueba (Semana 1)
+**Experimento:** [Prueba pequeña y de bajo riesgo]
+**Medir:** [Cómo sabré si funciona]
+**Resultado esperado:** [Hipótesis]
 
-### Phase 2: Refine (Week 2-3)
-**Based on test results:**
-- If works: [How to expand]
-- If doesn't work: [What to adjust]
+### Fase 2: Refinamiento (Semanas 2-3)
+**Según resultados de la prueba:**
+- Si funciona: [Cómo expandir]
+- Si no funciona: [Qué ajustar]
 
-### Phase 3: Integrate (Month 2)
-**Full implementation:** [How to make it routine]
+### Fase 3: Integración (Mes 2)
+**Implementación completa:** [Cómo convertirlo en rutina]
 
-## Success Metrics
-- **Leading indicator:** [Early signal]
-- **Lagging indicator:** [Long-term outcome]
+## Métricas de éxito
+- **Indicador adelantado:** [Señal temprana]
+- **Indicador rezagado:** [Resultado a largo plazo]
 
-## Obstacles & Solutions
-| Potential Obstacle | Mitigation Strategy |
+## Obstáculos y soluciones
+| Obstáculo potencial | Estrategia de mitigación |
 |--------------------|---------------------|
-| [Obstacle 1] | [How to handle] |
-| [Obstacle 2] | [How to handle] |
+| [Obstáculo 1] | [Cómo manejarlo] |
+| [Obstáculo 2] | [Cómo manejarlo] |
 
-## Check-in Schedule
-- [ ] Day 7: [Review question]
-- [ ] Day 30: [Review question]
-- [ ] Day 90: [Review question]
+## Calendario de revisión
+- [ ] Día 7: [Pregunta de revisión]
+- [ ] Día 30: [Pregunta de revisión]
+- [ ] Día 90: [Pregunta de revisión]
 ```
 
 ---
 
-## 5. Compare & Contrast Template
+## 5. Plantilla de comparación y contraste
 
 ```markdown
-# Comparison: [Source 1] vs [Source 2]
+# Comparación: [Fuente 1] vs [Fuente 2]
 
-## On [Topic/Question]
+## Sobre [Tema/Pregunta]
 
-### [Source 1] Position
-**Core claim:** [What they argue]
-**Key evidence:** [Main support]
-**Assumptions:** [What they take as given]
+### Posición de [Fuente 1]
+**Afirmación central:** [Qué argumentan]
+**Evidencia clave:** [Soporte principal]
+**Supuestos:** [Qué dan por hecho]
 
-### [Source 2] Position  
-**Core claim:** [What they argue]
-**Key evidence:** [Main support]
-**Assumptions:** [What they take as given]
+### Posición de [Fuente 2]  
+**Afirmación central:** [Qué argumentan]
+**Evidencia clave:** [Soporte principal]
+**Supuestos:** [Qué dan por hecho]
 
-## Points of Agreement
-1. [Overlap 1]
-2. [Overlap 2]
+## Puntos de acuerdo
+1. [Coincidencia 1]
+2. [Coincidencia 2]
 
-## Points of Divergence
-| Aspect | Source 1 | Source 2 |
+## Puntos de divergencia
+| Aspecto | Fuente 1 | Fuente 2 |
 |--------|----------|----------|
-| [Dimension] | [View] | [View] |
-| [Dimension] | [View] | [View] |
+| [Dimensión] | [Visión] | [Visión] |
+| [Dimensión] | [Visión] | [Visión] |
 
-## Analysis
-**Why they disagree:**
-- Different values: [Explanation]
-- Different data: [Explanation]  
-- Different frames: [Explanation]
+## Análisis
+**Por qué discrepan:**
+- Valores distintos: [Explicación]
+- Datos distintos: [Explicación]  
+- Marcos distintos: [Explicación]
 
-**Who's more convincing and why:**
-[Assessment with reasoning]
+**Quién es más convincente y por qué:**
+[Evaluación con razonamiento]
 
-**Synthesis:**
-[Can we integrate both views? Middle ground?]
+**Síntesis:**
+[¿Podemos integrar ambas visiones? ¿Punto intermedio?]
 ```
 
 ---
 
-## 6. Quick Reference Card
+## 6. Tarjeta de referencia rápida
 
 ```markdown
-# Quick Ref: [Topic]
+# Ref. rápida: [Tema]
 
-## The Concept
-[2-3 sentence explanation]
+## El concepto
+[Explicación en 2-3 frases]
 
-## When to Use
-- ✅ [Situation 1]
-- ✅ [Situation 2]
-- ❌ NOT for [Situation 3]
+## Cuándo usar
+- ✅ [Situación 1]
+- ✅ [Situación 2]
+- ❌ NO para [Situación 3]
 
-## Key Steps
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+## Pasos clave
+1. [Paso 1]
+2. [Paso 2]
+3. [Paso 3]
 
-## Remember
-💡 [Most important insight]
-⚠️ [Common mistake to avoid]
+## Recordar
+💡 [Idea más importante]
+⚠️ [Error común a evitar]
 
-## Example
-[One concrete scenario showing application]
+## Ejemplo
+[Un escenario concreto que muestra la aplicación]
 ```
 
 ---
 
-## 7. Feynman Technique Template
+## 7. Plantilla de técnica de Feynman
 
 ```markdown
-# Teach [Concept]
+# Enseñar [Concepto]
 
-## Explain Like I'm 5
-[Simplest possible explanation, no jargon]
+## Explicar como si tuviera 5 años
+[Explicación lo más simple posible, sin jerga]
 
-## Key Analogy
-[Concept] is like [everyday thing] because [reasoning]
+## Analogía clave
+[Concepto] es como [cosa cotidiana] porque [razonamiento]
 
-## The Steps (Simple)
-1. [First, you...]
-2. [Then, you...]
-3. [Finally, you...]
+## Los pasos (simples)
+1. [Primero, tú...]
+2. [Luego, tú...]
+3. [Finalmente, tú...]
 
-## Common Confusion
-**People often think:** [Misconception]
-**But actually:** [Correction]
-**Why the confusion:** [Reason]
+## Confusión común
+**La gente suele pensar:** [Concepto erróneo]
+**Pero en realidad:** [Corrección]
+**Por qué la confusión:** [Razón]
 
-## Test Questions
-1. [Question to check understanding]
-2. [Question to check understanding]
+## Preguntas de prueba
+1. [Pregunta para comprobar comprensión]
+2. [Pregunta para comprobar comprensión]
 
-## Gaps I Found
-While explaining, I realized I don't fully understand:
-- [Gap 1]
-- [Gap 2]
+## Brechas que encontré
+Al explicar, me di cuenta de que no entiendo del todo:
+- [Brecha 1]
+- [Brecha 2]
 
-**Need to review:** [Specific sections/concepts]
+**Necesito repasar:** [Secciones/conceptos específicos]
 ```
 
 ---
 
-## 8. Decision Matrix Template
+## 8. Plantilla de matriz de decisiones
 
 ```markdown
-# Should I [Action Based on Reading]?
+# ¿Debo [Acción basada en la lectura]?
 
-## Options
-1. [Option A - fully implement]
-2. [Option B - partially implement]
-3. [Option C - don't implement]
+## Opciones
+1. [Opción A — implementar por completo]
+2. [Opción B — implementar parcialmente]
+3. [Opción C — no implementar]
 
-## Evaluation Criteria
+## Criterios de evaluación
 
-| Criterion | Weight | Option A | Option B | Option C |
+| Criterio | Peso | Opción A | Opción B | Opción C |
 |-----------|--------|----------|----------|----------|
-| [Impact] | 40% | 8/10 | 5/10 | 1/10 |
-| [Effort] | 30% | 3/10 | 7/10 | 10/10 |
-| [Risk] | 20% | 6/10 | 8/10 | 10/10 |
-| [Alignment] | 10% | 9/10 | 7/10 | 2/10 |
+| [Impacto] | 40% | 8/10 | 5/10 | 1/10 |
+| [Esfuerzo] | 30% | 3/10 | 7/10 | 10/10 |
+| [Riesgo] | 20% | 6/10 | 8/10 | 10/10 |
+| [Alineación] | 10% | 9/10 | 7/10 | 2/10 |
 | **Total** | | **X.X** | **X.X** | **X.X** |
 
-## Decision
-[Chosen option] because [reasoning]
+## Decisión
+[Opción elegida] porque [razonamiento]
 
-## Implementation Plan
-[If proceeding, link to practical application template]
+## Plan de implementación
+[Si procede, enlazar a la plantilla de aplicación práctica]
 ```
 
 ---
 
-## Usage Guide
+## Guía de uso
 
-**For Different Goals:**
+**Para diferentes objetivos:**
 
-- **Just learning:** Use Template #1 (Standard Notes)
-- **Deep understanding:** Use Template #2 (Concept Map) + #7 (Feynman)
-- **Critical evaluation:** Use Template #3 (Argument Analysis)
-- **Taking action:** Use Template #4 (Application Plan)
-- **Comparing sources:** Use Template #5 (Compare & Contrast)
-- **Quick reference:** Use Template #6 (Reference Card)
-- **Making decisions:** Use Template #8 (Decision Matrix)
+- **Recién estoy aprendiendo:** Utilice la plantilla n.º 1 (Notas estándar)
+- **Comprensión profunda:** Utilice la plantilla n.° 2 (mapa conceptual) + n.° 7 (Feynman)
+- **Evaluación crítica:** Utilice la plantilla n.° 3 (análisis de argumentos)
+- **Tomando medidas:** Utilice la plantilla n.º 4 (Plan de aplicación)
+- **Comparación de fuentes:** Utilice la plantilla n.° 5 (comparar y contrastar)
+- **Referencia rápida:** Utilice la plantilla n.º 6 (Tarjeta de referencia)
+- **Tomar decisiones:** Utilice la plantilla n.° 8 (Matriz de decisiones)
 
-**Combine as needed:** Many analyses benefit from multiple templates.
+**Combine según sea necesario:** Muchos análisis se benefician de múltiples plantillas.

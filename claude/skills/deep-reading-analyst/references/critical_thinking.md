@@ -1,10 +1,10 @@
-# Critical Thinking Framework
+# Marco de pensamiento crítico
 
-## Argument Quality Assessment
+## Evaluación de calidad del argumento
 
-### Evidence Evaluation Matrix
+### Matriz de evaluación de evidencia
 
-| Evidence Type | Strength | Red Flags |
+| Tipo de evidencia | Fortaleza | Señales de alerta |
 |--------------|----------|-----------|
 | Peer-reviewed research | High | Sample size, conflicts of interest |
 | Original data | High | Collection methodology, bias |
@@ -13,102 +13,102 @@
 | Anecdotes | Low | Not representative |
 | "Studies show..." (no citation) | Very Low | Vague, unverifiable |
 
-### Logical Fallacy Checklist
+### Checklist de falacias lógicas
 
-**Causal Fallacies:**
+**Falacias causales:**
 - [ ] Post hoc (A before B ≠ A caused B)
 - [ ] Correlation ≠ Causation
 - [ ] Oversimplified cause (single factor explains complex phenomenon)
 
-**Evidence Fallacies:**
+**Falacias de evidencia:**
 - [ ] Cherry-picking (selective evidence)
 - [ ] Survivorship bias (only successful cases visible)
 - [ ] Hasty generalization (small sample → broad claim)
 
-**Rhetorical Fallacies:**
+**Falacias retóricas:**
 - [ ] Ad hominem (attack person, not argument)
 - [ ] Appeal to authority (without expertise in relevant field)
 - [ ] Strawman (misrepresenting opponent's position)
 - [ ] Slippery slope (extreme outcome without justification)
 - [ ] False dichotomy (only 2 options when more exist)
 
-**Statistical Fallacies:**
+**Falacias estadísticas:**
 - [ ] Base rate neglect (ignoring prior probability)
 - [ ] Absolute vs. relative risk confusion
 - [ ] Misleading averages (mean hiding distribution)
 
-## Critical Questions Protocol
+## Protocolo de preguntas críticas
 
-### Level 1: Comprehension
-- What is the core claim?
-- What evidence supports it?
-- What are the key assumptions?
+### Nivel 1: Comprensión
+- ¿Cuál es la afirmación central?
+- ¿Qué evidencia la respalda?
+- ¿Cuáles son los supuestos clave?
 
-### Level 2: Analysis
-- Is the evidence sufficient for the claim?
-- Are there logical gaps?
-- What's missing from this argument?
+### Nivel 2: Análisis
+- ¿La evidencia es suficiente para la afirmación?
+- ¿Hay brechas lógicas?
+- ¿Qué falta en este argumento?
 
-### Level 3: Evaluation
-- How strong is this argument overall?
-- What would strengthen/weaken it?
-- What are alternative explanations?
+### Nivel 3: Evaluación
+- ¿Qué tan sólido es el argumento en conjunto?
+- ¿Qué lo fortalecería/debilitaría?
+- ¿Cuáles son explicaciones alternativas?
 
-### Level 4: Synthesis
-- How does this fit with other knowledge?
-- Where might the author be correct despite flaws?
-- What's the charitable interpretation?
+### Nivel 4: Síntesis
+- ¿Cómo encaja con otro conocimiento?
+- ¿Dónde podría el autor tener razón a pesar de los defectos?
+- ¿Cuál es la interpretación caritativa?
 
-## Source Credibility Assessment
+## Evaluación de credibilidad de fuentes
 
-**Author Background:**
-- Relevant expertise in the field?
-- Potential conflicts of interest?
-- Track record of accuracy?
+**Antecedentes del autor:**
+- ¿Experiencia relevante en el campo?
+- ¿Posibles conflictos de interés?
+- ¿Historial de precisión?
 
-**Publication Context:**
-- Peer-reviewed? Editorial standards?
-- Primary source or interpretation?
-- Publication date (currency)?
+**Contexto de publicación:**
+- ¿Revisado por pares? ¿Estándares editoriales?
+- ¿Fuente primaria o interpretación?
+- ¿Fecha de publicación (actualidad)?
 
-**Motivation Analysis:**
-- What's the author's goal? (inform/persuade/sell)
-- Who benefits from this claim?
-- What's the intended audience?
+**Análisis de motivación:**
+- ¿Cuál es el objetivo del autor? (informar/persuadir/vender)
+- ¿Quién se beneficia de esta afirmación?
+- ¿Cuál es la audiencia prevista?
 
-## Counter-Evidence Search
+## Búsqueda de contraevidencia
 
-When analyzing strong claims, actively look for:
-1. Studies with opposite findings
-2. Expert disagreement
-3. Failed replications
-4. Boundary conditions (when doesn't it work?)
+Al analizar afirmaciones fuertes, busca activamente:
+1. Estudios con hallazgos opuestos
+2. Desacuerdo entre expertos
+3. Replicaciones fallidas
+4. Condiciones límite (¿cuándo no funciona?)
 
-## Balanced Evaluation Template
+## Plantilla de evaluación equilibrada
 
 ```markdown
-## Argument Strengths
-- [What's well-supported]
-- [Strong evidence points]
+## Fortalezas del argumento
+- [Qué está bien respaldado]
+- [Puntos de evidencia sólida]
 
-## Argument Weaknesses  
-- [Logical gaps]
-- [Weak or missing evidence]
+## Debilidades del argumento  
+- [Brechas lógicas]
+- [Evidencia débil o faltante]
 
-## Unanswered Questions
-- [What the argument doesn't address]
+## Preguntas sin respuesta
+- [Qué no aborda el argumento]
 
-## Conditional Truth
-This argument is strongest when: [context]
-This argument is weakest when: [context]
+## Verdad condicional
+Este argumento es más fuerte cuando: [contexto]
+Este argumento es más débil cuando: [contexto]
 ```
 
-## Steelmanning Practice
+## Práctica de steelmanning
 
-Before criticizing, construct the **strongest possible version** of the argument:
-1. Fill in logical gaps charitably
-2. Add best possible supporting evidence
-3. Address obvious objections
-4. THEN evaluate this strongest version
+Antes de criticar, construye la **versión más sólida posible** del argumento:
+1. Completa brechas lógicas de forma caritativa
+2. Añade la mejor evidencia de apoyo posible
+3. Aborda objeciones obvias
+4. ENTONCES evalúa esta versión más fuerte
 
-This prevents attacking strawmen and ensures fair evaluation.
+Esto evita atacar hombres de paja y garantiza una evaluación justa.

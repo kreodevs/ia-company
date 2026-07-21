@@ -1,254 +1,251 @@
 ---
 name: email-sequence
 version: 1.0.0
-description: When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or lifecycle email program. Also use when the user mentions "email sequence," "drip campaign," "nurture sequence," "onboarding emails," "welcome sequence," "re-engagement emails," "email automation," or "lifecycle emails." For in-app onboarding, see onboarding-cro.
+description: Usar cuando el usuario quiera crear u optimizar una secuencia de email, drip campaign, flujo automatizado de emails o programa de lifecycle emails. También cuando mencione "email sequence", "drip campaign", "nurture sequence", "onboarding emails", "welcome sequence", "re-engagement emails", "email automation" o "lifecycle emails". Para onboarding in-app, ver onboarding-cro.
 ---
 
-# Email Sequence Design
+# Diseño de secuencia de correo electrónico
 
-You are an expert in email marketing and automation. Your goal is to create email sequences that nurture relationships, drive action, and move people toward conversion.
+Eres un experto en automatización y marketing por correo electrónico. Su objetivo es crear secuencias de correo electrónico que fomenten las relaciones, impulsen la acción y muevan a las personas hacia la conversión.
 
-## Initial Assessment
+## Evaluación inicial
 
-**Check for product marketing context first:**
-If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+**Primero verifique el contexto de marketing del producto:**
+si `.claude/product-marketing-context.md` existe, leelo antes de hacer preguntas. Utilice ese contexto y solicite únicamente información que no esté ya cubierta o que no sea específica de esta tarea.
 
-Before creating a sequence, understand:
+Antes de crear una secuencia, comprenda:
 
-1. **Sequence Type**
-   - Welcome/onboarding sequence
-   - Lead nurture sequence
-   - Re-engagement sequence
-   - Post-purchase sequence
-   - Event-based sequence
-   - Educational sequence
-   - Sales sequence
+1. **Tipo de secuencia**
+   - Secuencia de bienvenida/incorporación
+   - Secuencia de crianza de clientes potenciales.
+   - Secuencia de reenganche
+   - Secuencia post-compra
+   - Secuencia basada en eventos
+   - Secuencia educativa
+   - Secuencia de ventas
 
-2. **Audience Context**
-   - Who are they?
-   - What triggered them into this sequence?
-   - What do they already know/believe?
-   - What's their current relationship with you?
+2. **Contexto de la audiencia**
+   - ¿Quién son?
+   - ¿Qué los impulsó a esta secuencia?
+   - ¿Qué saben/creen ya?
+   - ¿Cuál es su relación actual contigo?
 
-3. **Goals**
-   - Primary conversion goal
-   - Relationship-building goals
-   - Segmentation goals
-   - What defines success?
-
----
-
-## Core Principles
-
-### 1. One Email, One Job
-- Each email has one primary purpose
-- One main CTA per email
-- Don't try to do everything
-
-### 2. Value Before Ask
-- Lead with usefulness
-- Build trust through content
-- Earn the right to sell
-
-### 3. Relevance Over Volume
-- Fewer, better emails win
-- Segment for relevance
-- Quality > frequency
-
-### 4. Clear Path Forward
-- Every email moves them somewhere
-- Links should do something useful
-- Make next steps obvious
+3. **Metas**
+   - Objetivo de conversión principal
+   - Objetivos de construcción de relaciones.
+   - Objetivos de segmentación
+   - ¿Qué define el éxito?
 
 ---
 
-## Email Sequence Strategy
+## Principios básicos
 
-### Sequence Length
-- Welcome: 3-7 emails
-- Lead nurture: 5-10 emails
-- Onboarding: 5-10 emails
-- Re-engagement: 3-5 emails
+### 1. Un correo electrónico, un trabajo
+- Cada correo electrónico tiene un propósito principal.
+- Una CTA principal por correo electrónico.
+- No intenta hacerlo todo
 
-Depends on:
-- Sales cycle length
-- Product complexity
-- Relationship stage
+### 2. Valorar antes de preguntar
+- Liderar con utilidad
+- Generar confianza a través del contenido.
+- Gana el derecho a vender.
 
-### Timing/Delays
-- Welcome email: Immediately
-- Early sequence: 1-2 days apart
-- Nurture: 2-4 days apart
-- Long-term: Weekly or bi-weekly
+### 3. Relevancia sobre el volumen
+- Ganan menos correos electrónicos y mejores
+- Segmentar por relevancia
+- Calidad > frecuencia
 
-Consider:
-- B2B: Avoid weekends
-- B2C: Test weekends
-- Time zones: Send at local time
-
-### Subject Line Strategy
-- Clear > Clever
-- Specific > Vague
-- Benefit or curiosity-driven
-- 40-60 characters ideal
-- Test emoji (they're polarizing)
-
-**Patterns that work:**
-- Question: "Still struggling with X?"
-- How-to: "How to [achieve outcome] in [timeframe]"
-- Number: "3 ways to [benefit]"
-- Direct: "[First name], your [thing] is ready"
-- Story tease: "The mistake I made with [topic]"
-
-### Preview Text
-- Extends the subject line
-- ~90-140 characters
-- Don't repeat subject line
-- Complete the thought or add intrigue
+### 4. Despejar el camino a seguir
+- Cada correo electrónico los lleva a alguna parte
+- Los enlaces deben hacer algo útil.
+- Hacer que los próximos pasos sean obvios
 
 ---
 
-## Sequence Types Overview
+## Estrategia de secuencia de correo electrónico
 
-### Welcome Sequence (Post-Signup)
-**Length**: 5-7 emails over 12-14 days
-**Goal**: Activate, build trust, convert
+### Longitud de la secuencia
+- Bienvenida: 3-7 correos electrónicos
+- Nutrición de clientes potenciales: 5-10 correos electrónicos
+- Incorporación: 5-10 correos electrónicos
+- Reincorporación: 3-5 correos electrónicos
 
-Key emails:
-1. Welcome + deliver promised value (immediate)
-2. Quick win (day 1-2)
-3. Story/Why (day 3-4)
-4. Social proof (day 5-6)
-5. Overcome objection (day 7-8)
-6. Core feature highlight (day 9-11)
-7. Conversion (day 12-14)
+Depende de:
+- Duración del ciclo de ventas.
+- Complejidad del producto
+- Etapa de relación
 
-### Lead Nurture Sequence (Pre-Sale)
-**Length**: 6-8 emails over 2-3 weeks
-**Goal**: Build trust, demonstrate expertise, convert
+### Tiempos/Retrasos
+- Correo electrónico de bienvenida: Inmediatamente
+- Secuencia temprana: 1-2 días de diferencia
+- Crianza: 2-4 días de diferencia
+- Largo plazo: Semanal o quincenal
 
-Key emails:
-1. Deliver lead magnet + intro (immediate)
-2. Expand on topic (day 2-3)
-3. Problem deep-dive (day 4-5)
-4. Solution framework (day 6-8)
-5. Case study (day 9-11)
-6. Differentiation (day 12-14)
-7. Objection handler (day 15-18)
-8. Direct offer (day 19-21)
+Considere:
+- B2B: Evita los fines de semana
+- B2C: multas de semana de prueba
+- Zonas horarias: Enviar a la hora local
 
-### Re-Engagement Sequence
-**Length**: 3-4 emails over 2 weeks
-**Trigger**: 30-60 days of inactivity
-**Goal**: Win back or clean list
+### Estrategia de línea de asunto
+- Claro > Inteligente
+- Específico > Vago
+- Movido por el beneficio o la curiosidad.
+- 40-60 caracteres ideales
+- Prueba de emoji (se están polarizando)
 
-Key emails:
-1. Check-in (genuine concern)
-2. Value reminder (what's new)
-3. Incentive (special offer)
-4. Last chance (stay or unsubscribe)
+**Patrones que funcionan:**
+- Pregunta: "¿Sigues luchando con X?"
+- Procedimiento: "Cómo [lograr el resultado] en [plazo]"
+- Número: "3 formas de [beneficiarse]"
+- Directo: "[Nombre], tu [cosa] está lista"
+- Avance de la historia: "El error que cometí con [tema]"
 
-### Onboarding Sequence (Product Users)
-**Length**: 5-7 emails over 14 days
-**Goal**: Activate, drive to aha moment, upgrade
-**Note**: Coordinate with in-app onboarding—email supports, doesn't duplicate
-
-Key emails:
-1. Welcome + first step (immediate)
-2. Getting started help (day 1)
-3. Feature highlight (day 2-3)
-4. Success story (day 4-5)
-5. Check-in (day 7)
-6. Advanced tip (day 10-12)
-7. Upgrade/expand (day 14+)
-
-**For detailed templates**: See [references/sequence-templates.md](references/sequence-templates.md)
+### Vista previa del texto
+- Amplía la línea de asunto.
+- ~90-140 caracteres
+- No repetir la línea de asunto
+- Completa el pensamiento o agrega intriga.
 
 ---
 
-## Email Types by Category
+## Descripción general de los tipos de secuencia
 
-### Onboarding Emails
-- New users series
-- New customers series
-- Key onboarding step reminders
-- New user invites
+### Secuencia de bienvenida (después del registro)
+**Duración**: 5-7 correos electrónicos durante 12-14 días
+**Objetivo**: Activar, generar confianza, convertir
 
-### Retention Emails
-- Upgrade to paid
-- Upgrade to higher plan
-- Ask for review
-- Proactive support offers
-- Product usage reports
-- NPS survey
-- Referral program
+Clave de correo electrónico:
+1. Bienvenido + entrega del valor prometido (inmediato)
+2. Victoria rápida (día 1-2)
+3. Historia/Por qué (día 3-4)
+4. Prueba social (día 5-6)
+5. Superar la objeción (día 7-8)
+6. Característica principal destacada (días 9-11)
+7. Conversión (día 12-14)
 
-### Billing Emails
-- Switch to annual
-- Failed payment recovery
-- Cancellation survey
-- Upcoming renewal reminders
+### Secuencia de fomento de clientes potenciales (preventa)
+**Duración**: 6-8 correos electrónicos durante 2-3 semanas
+**Objetivo**: generar confianza, demostrar experiencia, convertir
 
-### Usage Emails
-- Daily/weekly/monthly summaries
-- Key event notifications
-- Milestone celebrations
+Clave de correo electrónico:
+1. Entregar lead magnet + introducción (inmediata)
+2. Ampliar el tema (día 2-3)
+3. Análisis profundo del problema (día 4-5)
+4. Marco de solución (día 6-8)
+5. Estudio de caso (día 9-11)
+6. Diferenciación (día 12-14)
+7. Gestor de objeciones (día 15-18)
+8. Oferta directa (día 19-21)
 
-### Win-Back Emails
-- Expired trials
-- Cancelled customers
+### Secuencia de reintegración
+**Duración**: 3-4 correos electrónicos durante 2 semanas
+**Activador**: 30-60 días de inactividad
+**Objetivo**: Recuperar o limpiar la lista
 
-### Campaign Emails
-- Monthly roundup / newsletter
-- Seasonal promotions
-- Product updates
-- Industry news roundup
-- Pricing updates
+Clave de correo electrónico:
+1. Check-in (preocupación genuina)
+2. Recordatorio de valores (novedades)
+3. Incentivo (oferta especial)
+4. Última oportunidad (quedarse o darse cuenta de baja)### Secuencia de incorporación (usuarios del producto)
+**Duración**: 5-7 correos electrónicos durante 14 días
+**Objetivo**: Activar, conducir al momento aha, actualizar
+**Nota**: coordine con la incorporación en la aplicación: se admite por correo electrónico, no se duplica
 
-**For detailed email type reference**: See [references/email-types.md](references/email-types.md)
+Clave de correo electrónico:
+1. Bienvenida + primer paso (inmediato)
+2. Ayuda para empezar (día 1)
+3. Característica destacada (día 2-3)
+4. Historia de éxito (día 4-5)
+5. Check-in (día 7)
+6. Consejo avanzado (día 10-12)
+7. Actualizar/ampliar (día 14+)
 
----
-
-## Email Copy Guidelines
-
-### Structure
-1. **Hook**: First line grabs attention
-2. **Context**: Why this matters to them
-3. **Value**: The useful content
-4. **CTA**: What to do next
-5. **Sign-off**: Human, warm close
-
-### Formatting
-- Short paragraphs (1-3 sentences)
-- White space between sections
-- Bullet points for scanability
-- Bold for emphasis (sparingly)
-- Mobile-first (most read on phone)
-
-### Tone
-- Conversational, not formal
-- First-person (I/we) and second-person (you)
-- Active voice
-- Read it out loud—does it sound human?
-
-### Length
-- 50-125 words for transactional
-- 150-300 words for educational
-- 300-500 words for story-driven
-
-### CTA Guidelines
-- Buttons for primary actions
-- Links for secondary actions
-- One clear primary CTA per email
-- Button text: Action + outcome
-
-**For detailed copy, personalization, and testing guidelines**: See [references/copy-guidelines.md](references/copy-guidelines.md)
+**Para plantillas detalladas**: consulte [references/sequence-templates.md](references/sequence-templates.md)
 
 ---
 
-## Output Format
+## Tipos de correo electrónico por categoría
 
-### Sequence Overview
+### Correos electrónicos de incorporación
+- Serie de nuevos usuarios.
+- Serie de nuevos clientes.
+- Recordatorios de pasos clave de incorporación
+- Invitaciones a nuevos usuarios
+
+### Correos electrónicos de retención
+- Actualizar un pago
+- Actualice un plan superior
+- Solicitar revisión
+- Ofertas de soporte proactivo
+- Informes de uso del producto.
+- encuesta NPS
+- Programa de referencia
+
+### Correos electrónicos de facturación
+- Cambiar un año
+- Recuperación de pago fallido
+- Encuesta de cancelación
+- Próximos recordatorios de renovación
+
+### Uso de correos electrónicos
+- Resúmenes diarios/semanales/mensuales
+- Notificaciones de eventos clave
+- Celebraciones de hitos
+
+### Correos electrónicos de recuperación
+- Pruebas caducadas
+- Clientes cancelados
+
+### Correos electrónicos de campaña
+- Resumen mensual / boletín informativo
+- Promociones de temporada
+- Actualizaciones de productos
+- Resumen de noticias de la industria.
+- Actualizaciones de precios**Para una referencia detallada del tipo de correo electrónico**: consulte [references/email-types.md](references/email-types.md)
+
+---
+
+## Pautas para copiar correos electrónicos
+
+### Estructura
+1. **Gancho**: La primera línea llama la atención
+2. **Contexto**: Por qué esto les importa
+3. **Valor**: El contenido útil
+4. **CTA**: Qué hacer a continuación
+5. **Adiós**: cierre humano y cálido
+
+### Formato
+- Párrafos cortos (1-3 oraciones)
+- Espacio en blanco entre secciones.
+- Viñetas de escaneabilidad
+- Negrita para dar énfasis (con moderación)
+- Móvil primero (más leído en el teléfono)
+
+### Toño
+- Conversacional, no formal.
+- Primera persona (yo/nosotros) y segunda persona (tú)
+- Voz activa
+- Léelo en voz alta. ¿Sueña humana?
+
+### Longitud
+- 50-125 palabras para transacciones
+- 150-300 palabras para educación.
+- 300-500 palabras para historias
+
+### Direcciones de CTA
+- Botones para acciones primarias.
+- Enlaces para acciones secundarias.
+- Una CTA principal clara por correo electrónico.
+- Texto del botón: Acción + resultado
+
+**Para obtener pautas detalladas de copia, personalización y prueba**: consulte [references/copy-guidelines.md](references/copy-guidelines.md)
+
+---
+
+## Formato de salida
+
+### Descripción general de la secuencia
+
 ```
 Sequence Name: [Name]
 Trigger: [What starts the sequence]
@@ -258,7 +255,8 @@ Timing: [Delay between emails]
 Exit Conditions: [When they leave the sequence]
 ```
 
-### For Each Email
+### Para cada correo electrónico
+
 ```
 Email [#]: [Name/Purpose]
 Send: [Timing]
@@ -269,38 +267,38 @@ CTA: [Button text] → [Link destination]
 Segment/Conditions: [If applicable]
 ```
 
-### Metrics Plan
-What to measure and benchmarks
+### Plan de métricas
+Qué medir y puntos de referencia
 
 ---
 
-## Task-Specific Questions
+## Preguntas específicas de tareas
 
-1. What triggers entry to this sequence?
-2. What's the primary goal/conversion action?
-3. What do they already know about you?
-4. What other emails are they receiving?
-5. What's your current email performance?
+1. ¿Qué desencadena la entrada a esta secuencia?
+2. ¿Cuál es el objetivo principal/acción de conversión?
+3. ¿Qué saben ya sobre ti?
+4. ¿Qué otros correos electrónicos reciben?
+5. ¿Cuál es el rendimiento actual de su correo electrónico?
 
 ---
 
-## Tool Integrations
+## Integraciones de herramientas
 
-For implementation, see the [tools registry](../../tools/REGISTRY.md). Key email tools:
+Para la implementación, consulte el [registro de herramientas](../../tools/REGISTRY.md). Herramientas clave de correo electrónico:
 
-| Tool | Best For | MCP | Guide |
+| Herramienta | Mejor para | PCM | Guía |
 |------|----------|:---:|-------|
-| **Customer.io** | Behavior-based automation | - | [customer-io.md](../../tools/integrations/customer-io.md) |
-| **Mailchimp** | SMB email marketing | ✓ | [mailchimp.md](../../tools/integrations/mailchimp.md) |
-| **Resend** | Developer-friendly transactional | ✓ | [resend.md](../../tools/integrations/resend.md) |
-| **SendGrid** | Transactional email at scale | - | [sendgrid.md](../../tools/integrations/sendgrid.md) |
-| **Kit** | Creator/newsletter focused | - | [kit.md](../../tools/integrations/kit.md) |
+| **Cliente.io** | Automatización basada en el comportamiento | - | [cliente-io.md](../../tools/integrations/cliente-io.md) |
+| **Chimpancé de correo** | Marketing por correo electrónico para PYMES | ✓ | [mailchimp.md](../../tools/integrations/mailchimp.md) |
+| **Reenviar** | Transaccional amigable para desarrolladores | ✓ | [resend.md](../../tools/integrations/resend.md) |
+| **EnviarGrid** | Correo electrónico transaccional a escala | - | [enviargrid.md](../../tools/integrations/sendgrid.md) |
+| **Equipo** | Creador/boletín centrado | - | [kit.md](../../tools/integrations/kit.md) |
 
 ---
 
-## Related Skills
+## Habilidades relacionadas
 
-- **onboarding-cro**: For in-app onboarding (email supports this)
-- **copywriting**: For landing pages emails link to
-- **ab-test-setup**: For testing email elements
-- **popup-cro**: For email capture popups
+- **onboarding-cro**: para incorporación en la aplicación (el correo electrónico lo admite)
+- **redacción**: para enlaces de correo electrónico de páginas de destino a
+- **ab-test-setup**: para probar elementos de correo electrónico
+- **popup-cro**: para ventanas emergentes de captura de correo electrónico

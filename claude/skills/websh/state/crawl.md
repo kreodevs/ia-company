@@ -1,21 +1,21 @@
 ---
-role: crawl-management
-summary: |
-  Eager link crawling for websh. After fetching a page, automatically prefetch
-  linked pages 1-2 layers deep in background. Makes navigation feel instant.
-see-also:
-  - cache.md: Cache structure
-  - ../shell.md: Shell semantics
-  - ../commands.md: Command reference
+rol: gestión de rastreo
+resumen: |
+  Rastreo ansioso de enlaces en busca de websh. Después de buscar una página, realizar una búsqueda previa automática
+  páginas vinculadas 1-2 capas en el fondo. Hace que la navegación parezca instantánea.
+ver también:
+  - cache.md: estructura de caché
+  - ../shell.md: Semántica del shell
+  - ../commands.md: referencia de comando
 ---
 
-# websh Eager Crawl
+# websh Rastreo ansioso
 
-When you `cd` to a URL, websh can automatically prefetch linked pages in the background. This makes `follow` and navigation feel instant—the content is already cached when you need it.
+cuando tu `cd` a una URL, websh puede buscar automáticamente páginas vinculadas en segundo plano. Esto hace`follow` y la navegación se siente instantánea: el contenido ya está almacenado en caché cuando lo necesita.
 
 ---
 
-## How It Works
+## Cómo funciona
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -45,18 +45,17 @@ When you `cd` to a URL, websh can automatically prefetch linked pages in the bac
 │   Queue its links for next layer...                       │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
-```
-
-The user gets their prompt back immediately. All crawling happens async.
+```El usuario recibe su aviso inmediatamente. Todo el rastreo se realiza de forma asincrónica.
 
 ---
 
-## Crawl Settings
+## Configuración de rastreo
 
-Stored in `.websh/session.md` under Environment:
+almacenado en `.websh/session.md` en Medio Ambiente:
 
 ```markdown
-## Environment
+
+## Entorno
 
 EAGER_CRAWL: true
 CRAWL_DEPTH: 2
@@ -66,18 +65,18 @@ CRAWL_MAX_CONCURRENT: 5
 CRAWL_DELAY_MS: 200
 ```
 
-### Setting Descriptions
+### Descripciones de configuración
 
-| Variable | Default | Description |
+| Variables | Predeterminado | Descripción |
 |----------|---------|-------------|
-| `EAGER_CRAWL` | `true` | Enable/disable eager crawling |
-| `CRAWL_DEPTH` | `2` | How many layers deep to prefetch |
-| `CRAWL_SAME_DOMAIN` | `true` | Only crawl same-domain links |
-| `CRAWL_MAX_PER_PAGE` | `20` | Max links to prefetch per page |
-| `CRAWL_MAX_CONCURRENT` | `5` | Max simultaneous fetches |
-| `CRAWL_DELAY_MS` | `200` | Delay between requests (rate limit) |
+| `EAGER_CRAWL`|` true`| Activar/desactivar el rastreo ansioso |
+| `CRAWL_DEPTH`|`2`| ¿Cuántas capas de profundidad precargar?
+| `CRAWL_SAME_DOMAIN`|` true`| Rastrear únicamente enlaces del mismo dominio |
+| `CRAWL_MAX_PER_PAGE`|`20`| Enlaces máximos para precargar por página |
+| `CRAWL_MAX_CONCURRENT`|`5`| Recuperaciones simultáneas máximas |
+| `CRAWL_DELAY_MS`|`200`| Retraso entre solicitudes (límite de tarifa) |
 
-### Changing Settings
+### Cambiar configuración
 
 ```
 export EAGER_CRAWL=false           # disable eager crawl
@@ -85,32 +84,31 @@ export CRAWL_DEPTH=3               # go 3 layers deep
 export CRAWL_SAME_DOMAIN=false     # include external links
 prefetch off                       # shortcut to disable
 prefetch on --depth 3              # enable with depth 3
-```
+```---
 
----
+## Cola de rastreo
 
-## Crawl Queue
-
-Track in `.websh/crawl-queue.md`:
+Seguimiento`.websh/crawl-queue.md`:
 
 ```markdown
+
 # websh crawl queue
 
-## Active Crawl
+## Rastreo activo
 
 origin: https://news.ycombinator.com
 started: 2026-01-24T10:30:00Z
 depth: 2
 same_domain: true
 
-## In Progress
+## En progreso
 
 | Slug | URL | Depth | Status |
 |------|-----|-------|--------|
 | news-ycombinator-com-item-id-41234567 | https://news.ycombinator.com/item?id=41234567 | 1 | extracting |
 | news-ycombinator-com-item-id-41234568 | https://news.ycombinator.com/item?id=41234568 | 1 | fetching |
 
-## Queued
+## En cola
 
 | URL | Depth | Priority |
 |-----|-------|----------|
@@ -118,33 +116,31 @@ same_domain: true
 | https://news.ycombinator.com/item?id=41234570 | 1 | 3 |
 ...
 
-## Completed
+## Completado
 
 | Slug | URL | Depth | Links Found |
 |------|-----|-------|-------------|
 | news-ycombinator-com | https://news.ycombinator.com | 0 | 30 |
 
-## Skipped
+## Omitido
 
 | URL | Reason |
 |-----|--------|
 | https://external.com/article | external (same_domain=true) |
 | https://news.ycombinator.com/login | already cached |
-```
+```---
 
----
+## Algoritmo de prioridad
 
-## Priority Algorithm
+Los enlaces tienen prioridad para el rastreo:
 
-Links are prioritized for crawling:
+1. **Posición en la página**: los enlaces que aparecen antes tienen mayor prioridad
+2. **Mismo dominio**: enlaces internos antes que externos
+3. **Señales de contenido**: enlaces en el contenido principal > navegación/pie de página
+4. **Evita duplicados**: omite las URL que ya están almacenadas en caché
+5. **Omitir lo que no sea contenido**: ignora el inicio de sesión, el cierre de sesión, la configuración, etc.
 
-1. **Position on page** — Links appearing earlier get higher priority
-2. **Same domain** — Internal links before external
-3. **Content signals** — Links in main content > nav/footer
-4. **Avoid duplicates** — Skip already-cached URLs
-5. **Skip non-content** — Ignore login, logout, settings, etc.
-
-### Link Scoring
+### Puntuación de enlaces
 
 ```python
 def score_link(link, index, is_same_domain, in_main_content):
@@ -162,33 +158,32 @@ def score_link(link, index, is_same_domain, in_main_content):
         score -= 1000
 
     return score
-```
+```---
 
----
+## El mensaje del agente de rastreo
 
-## The Crawl Agent Prompt
+Después de que la extracción de la página inicial complete el Paso 1, genere este agente:
 
-After initial page extraction completes Pass 1, spawn this agent:
+```markdown
 
-````markdown
 # websh Eager Crawl Agent
 
 You are prefetching linked pages for websh to make navigation instant.
 
-## Origin Page
+## Página de origen
 
 URL: {url}
 Slug: {slug}
 Parsed file: {parsed_path}
 
-## Settings
+## Configuración
 
 depth: {depth}
 same_domain: {same_domain}
 max_per_page: {max_per_page}
 max_concurrent: {max_concurrent}
 
-## Task
+## Tarea
 
 1. Read the parsed markdown file to get the link list
 2. Filter and prioritize links:
@@ -200,45 +195,47 @@ max_concurrent: {max_concurrent}
 4. Track progress in .websh/crawl-queue.md
 5. If depth > 1, queue discovered links for next layer
 
-## Rate Limiting
+## Limitación de tasa
 
 - Max {max_concurrent} concurrent fetches
 - {delay_ms}ms delay between spawning new tasks
 - Be respectful of the origin server
 
-## Spawn Pattern
+## Patrón de spawn
 
 For each URL to prefetch:
 
-```python
-Task(
-    description=f"websh: prefetch {slug}",
-    prompt=FETCH_AND_EXTRACT_PROMPT,  # Same as cd uses
-    subagent_type="general-purpose",
-    model="haiku",
-    run_in_background=True
+```pitón
+Tarea (
+    descripción=f"websh: captación previa {slug}",
+    Prompt=FETCH_AND_EXTRACT_PROMPT, # Igual que los usos del CD
+    subagent_type="propósito general",
+    modelo="haiku",
+    run_in_background=Verdadero
 )
+
 ```
 
-## Completion
+
+## Finalización
 
 When all links at all depths are processed:
 1. Update crawl-queue.md with final stats
 2. Log completion: "Prefetch complete: {n} pages cached from {origin}"
 
-## Graceful Handling
+## Manejo elegante
 
 - If a fetch fails, log and continue with others
 - If rate limited, back off and retry
 - Never block on slow sites—move to next link
-- User can cancel with `kill %crawl` or `prefetch stop`
-````
+- User can cancel with `kill %crawl` or ` prefetch stop`
+```
 
 ---
 
-## Depth-2 Crawling
+## Profundidad-2 Arrastrándose
 
-When depth > 1, the crawl continues recursively:
+Cuando la profundidad > 1, el rastreo continúa de forma recursiva:
 
 ```
 Layer 0: cd https://news.ycombinator.com
@@ -251,12 +248,13 @@ Layer 2: prefetch top 20 links from each Layer 1 page
          → but skip duplicates across all layers
 ```
 
-### Deduplication
+### Deduplicación
 
-The crawl queue tracks all URLs seen:
+La cola de rastreo rastrea todas las URL vistas:
 
 ```markdown
-## Seen URLs
+
+## URLs vistas
 
 (URLs already cached, in progress, or queued—don't crawl again)
 
@@ -264,27 +262,25 @@ The crawl queue tracks all URLs seen:
 - https://news.ycombinator.com/item?id=41234567
 - https://news.ycombinator.com/item?id=41234568
 ...
-```
-
-This prevents re-crawling the same URL at different depths.
+```Esto evita volver a rastrear la misma URL en diferentes profundidades.
 
 ---
 
-## Commands
+## Comandos
 
-| Command | Description |
+| Comando | Descripción |
 |---------|-------------|
-| `prefetch` | Show current crawl status |
-| `prefetch on` | Enable eager crawl |
-| `prefetch off` | Disable eager crawl |
-| `prefetch <url>` | Manually prefetch a specific URL |
-| `prefetch --depth N` | Set crawl depth |
-| `prefetch --stop` | Stop current crawl |
-| `crawl <url>` | Explicit full crawl of URL |
-| `crawl --depth N` | Set depth for explicit crawl |
-| `queue` | Show crawl queue |
+| `prefetch`| Mostrar estado de rastreo actual |
+| `prefetch on`| Habilitar rastreo ansioso |
+| `prefetch off`| Desactivar rastreo ansioso |
+| `prefetch <url>`| Precargar manualmente una URL específica |
+| `prefetch --depth N`| Establecer profundidad de rastreo |
+| `prefetch --stop`| Detener el rastreo actual |
+| `crawl <url>`| Rastreo completo explícito de URL |
+| `crawl --depth N`| Establecer profundidad para rastreo explícito |
+| `queue`| Mostrar cola de rastreo |
 
-### prefetch status output
+### salida de estado de captación previa
 
 ```
 Eager crawl: enabled
@@ -299,13 +295,11 @@ Recent:
   [✓] news-ycombinator-com-item-id-41234567 (12 links)
   [✓] news-ycombinator-com-item-id-41234568 (8 links)
   [→] news-ycombinator-com-item-id-41234569 (fetching...)
-```
+```---
 
----
+## Integración con cd
 
-## Integration with cd
-
-The `cd` command triggers eager crawl after extraction begins:
+el `cd` El comando desencadena un rastreo ansioso después de que comienza la extracción:
 
 ```python
 def cd(url):
@@ -330,46 +324,42 @@ def cd(url):
             model="haiku",
             run_in_background=True
         )
-```
-
-The crawl agent waits for links to be available, then starts prefetching.
+```El agente de rastreo espera a que los enlaces estén disponibles y luego comienza a buscar previamente.
 
 ---
 
-## Performance Considerations
+## Consideraciones de rendimiento
 
-### Why Eager Crawl?
+### ¿Por qué gatear ansioso?
 
-| Without eager crawl | With eager crawl |
+| Sin rastreo ansioso | Con rastreo ansioso |
 |---------------------|------------------|
-| `follow 3` → wait for fetch | `follow 3` → instant (cached) |
-| `back` → might need refetch | `back` → instant (cached) |
-| Exploring feels slow | Exploring feels instant |
+| `follow 3`→ esperar a buscar |` follow 3`→ instantáneo (en caché) |
+| `back`→ podría ser necesario volver a buscar |` back`→ instantáneo (en caché) |
+| Explorar se siente lento | Explorar se siente instantáneo |
 
-### Cost/Benefit
+### Costo/Beneficio
 
-| Pros | Cons |
+| Ventajas | Contras |
 |------|------|
-| Navigation feels instant | Uses more bandwidth |
-| Content ready when needed | More disk space for cache |
-| Natural browsing flow | May fetch pages never visited |
-| Works offline for cached pages | Background CPU usage |
+| La navegación se siente instantánea | Utiliza más ancho de banda |
+| Contenido listo cuando sea necesario | Más espacio en disco para caché |
+| Flujo de navegación natural | Puede recuperar páginas nunca visitadas |
+| Funciona sin conexión para páginas almacenadas en caché | Uso de CPU en segundo plano |
 
-### When to Disable
+### Cuándo desactivar
 
 ```
 prefetch off
-```
-
-Disable eager crawl when:
-- On metered connection
-- Crawling large/slow sites
-- Disk space constrained
-- Only visiting one page
+```Deshabilite el rastreo ansioso cuando:
+- En conexión medida
+- Rastreo de sitios grandes/lentos
+- Espacio en disco limitado
+- Solo visitar una página
 
 ---
 
-## Example Session
+## Sesión de ejemplo
 
 ```
 ~> cd https://news.ycombinator.com
@@ -408,40 +398,34 @@ The State of AI in 2026
 news.ycombinator.com/item> back
 
 news.ycombinator.com> (cached)         # Also instant
-```
+```---
 
----
+## robots.txt Respeto
 
-## robots.txt Respect
-
-Before crawling, check robots.txt:
+Antes de rastrear, consulte robots.txt:
 
 ```python
 def should_crawl(url, domain):
     robots = get_robots(domain)  # cached
     return robots.can_fetch("websh/1.0", url)
-```
-
-If disallowed, skip the URL and log:
+```Si no está permitido, omita la URL e inicie sesión:
 
 ```markdown
-## Skipped
+
+## Omitido
 
 | URL | Reason |
 |-----|--------|
 | https://example.com/private | disallowed by robots.txt |
-```
+```---
 
----
+## Cancelación
 
-## Cancellation
-
-User can stop crawl at any time:
+El usuario puede detener el rastreo en cualquier momento:
 
 ```
 prefetch stop
+
 # or
 kill %crawl
-```
-
-This cancels pending fetches but keeps already-cached content.
+```Esto cancela las recuperaciones pendientes pero mantiene el contenido ya almacenado en caché.

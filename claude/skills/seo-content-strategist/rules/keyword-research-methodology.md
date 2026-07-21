@@ -1,16 +1,16 @@
 ---
-title: Keyword Research Methodology
-impact: CRITICAL
-tags: keywords, research, topics, search-volume, difficulty
+título: Metodología de investigación de palabras clave
+impacto: CRÍTICO
+etiquetas: palabras clave, investigación, temas, volumen de búsqueda, dificultad
 ---
 
-## Keyword Research Methodology
+## Metodología de investigación de palabras clave
 
-**Impact: CRITICAL**
+**Impacto: CRÍTICO**
 
-Keyword research is the foundation of SEO strategy. Target the wrong keywords and everything downstream fails — great content that nobody searches for, or high-volume terms you'll never rank for.
+La investigación de palabras clave es la base de la estrategia de SEO. Apunte a las palabras clave incorrectas y todo lo posterior fallará: contenido excelente que nadie busca o términos de gran volumen que nunca clasificará.
 
-### Keyword Research Process
+### Proceso de investigación de palabras clave
 
 ```
 1. Seed Keywords
@@ -29,39 +29,39 @@ Keyword research is the foundation of SEO strategy. Target the wrong keywords an
    └── Assign keywords to content pieces
 ```
 
-### Keyword Metrics That Matter
+### Métricas de palabras clave que importan
 
-| Metric | What It Means | How to Use |
+| Métrica | Lo que significa | Cómo utilizar |
 |--------|---------------|------------|
-| **Search Volume** | Monthly searches | Ceiling for traffic potential |
-| **Keyword Difficulty** | Competition level (0-100) | Realistic ranking potential |
-| **CPC** | What advertisers pay | Proxy for commercial value |
-| **Click Potential** | % of searches that click | Beware zero-click queries |
-| **Trend** | Volume direction | Growing > declining keywords |
-| **SERP Features** | What appears in results | Affects CTR and strategy |
+| **Volumen de búsqueda** | Búsquedas mensuales | Techo para el potencial de tráfico |
+| **Dificultad de palabras clave** | Nivel de competición (0-100) | Potencial de clasificación realista |
+| **CPC** | Lo que pagan los anunciantes | Proxy de valor comercial |
+| **Haga clic en Potencial** | % de búsquedas que hacen clic | Cuidado con las consultas sin clic |
+| **Tendencia** | Dirección del volumen | Palabras clave en crecimiento > en declive |
+| **Funciones SERP** | Qué aparece en los resultados | Afecta el CTR y la estrategia |
 
-### Keyword Difficulty Guidelines
+### Pautas de dificultad de palabras clave
 
-| Difficulty Score | Site Requirement | Timeline |
+| Puntuación de dificultad | Requisito del sitio | Línea de tiempo |
 |------------------|------------------|----------|
-| **0-20** | New sites can rank | 1-3 months |
-| **21-40** | Some authority needed | 3-6 months |
-| **41-60** | Established domain | 6-12 months |
-| **61-80** | Strong authority | 12-18 months |
-| **81-100** | Major brand/site | 18+ months or avoid |
+| **0-20** | Los nuevos sitios pueden clasificarse | 1-3 meses |
+| **21-40** | Se necesita cierta autoridad | 3-6 meses |
+| **41-60** | Dominio establecido | 6-12 meses |
+| **61-80** | Autoridad fuerte | 12-18 meses |
+| **81-100** | Marca/sitio principal | 18+ meses o evitar |
 
-### Seed Keyword Sources
+### Fuentes de palabras clave iniciales
 
-| Source | Example | Best For |
+| Fuente | Ejemplo | Mejor para |
 |--------|---------|----------|
-| **Product features** | "API key rotation" | Product-led content |
-| **Customer problems** | "how to prevent data breaches" | Problem-aware audience |
-| **Competitor analysis** | Terms competitors rank for | Gap identification |
-| **Sales conversations** | What prospects ask about | High-intent terms |
-| **Support tickets** | Common questions | FAQ and help content |
-| **Industry terms** | "secrets management" | Category content |
+| **Características del producto** | "Rotación de claves API" | Contenido basado en productos |
+| **Problemas del cliente** | "cómo prevenir las violaciones de datos" | Audiencia consciente de los problemas |
+| **Análisis de la competencia** | Términos para los que se clasifican los competidores | Identificación de brechas |
+| **Conversaciones de ventas** | ¿Qué preguntan los prospectos? Términos de alta intención |
+| **Boletos de soporte** | Preguntas comunes | Preguntas frecuentes y contenido de ayuda |
+| **Términos de la industria** | "gestión de secretos" | Contenido de la categoría |
 
-### Good Keyword Research
+### Buena investigación de palabras clave
 
 ```
 ✓ Primary keyword: "kubernetes secrets management"
@@ -83,7 +83,7 @@ Keyword research is the foundation of SEO strategy. Target the wrong keywords an
   └── "Kubernetes secrets vs external secrets"
 ```
 
-### Bad Keyword Research
+### Investigación de palabras clave incorrectas
 
 ```
 ✗ Target: "security"
@@ -106,43 +106,41 @@ Keyword research is the foundation of SEO strategy. Target the wrong keywords an
   └── "secrets management tools comparison"
 ```
 
-### Keyword Intent Classification
+### Clasificación de intención de palabras clave
 
-| Signal | Informational | Commercial | Transactional |
+| Señal | Informativo | Comercial | Transaccional |
 |--------|---------------|------------|---------------|
-| **Modifiers** | how, what, why, guide | best, top, vs, review | buy, pricing, demo, trial |
-| **SERP type** | Blog posts, wikis | Listicles, comparisons | Product pages, pricing |
-| **User stage** | Awareness | Consideration | Decision |
-| **Content fit** | Educational | Evaluative | Conversion |
+| **Modificadores** | cómo, qué, por qué, guía | mejor, mejor, vs, revisión | comprar, precios, demostración, prueba |
+| **Tipo SERP** | Publicaciones de blogs, wikis | Listas, comparaciones | Páginas de productos, precios |
+| **Etapa de usuario** | Conciencia | Consideración | Decisión |
+| **Ajuste del contenido** | Educativo | Evaluativo | Conversión |
 
-### Keyword Opportunity Score
+### Puntuación de oportunidad de palabra clave
 
-Calculate: `(Volume × Intent Score × Click Rate) / Difficulty`
-
-| Factor | Scoring |
+Calcular: `(Volume × Intent Score × Click Rate) / Difficulty`| factor | Puntuación |
 |--------|---------|
-| **Volume** | Raw number |
-| **Intent Score** | Info=1, Commercial=3, Transactional=5 |
-| **Click Rate** | % of SERPs with organic clicks (check for zero-click) |
-| **Difficulty** | 1-100 from tool |
+| **Volumen** | Número bruto |
+| **Puntuación de intención** | Información=1, Comercial=3, Transaccional=5 |
+| **Porcentaje de clics** | % de SERP con clics orgánicos (verifique si hay cero clics) |
+| **Dificultad** | 1-100 de la herramienta |
 
-Higher score = better opportunity.
+Puntuación más alta = mejor oportunidad.
 
-### Long-Tail Strategy
+### Estrategia de cola larga
 
-| Term Type | Example | Characteristics |
-|-----------|---------|-----------------|
-| **Head** | "secrets management" | High volume, high difficulty, broad intent |
-| **Body** | "secrets management for startups" | Medium volume, medium difficulty |
-| **Long-tail** | "how to rotate api keys in kubernetes" | Low volume, low difficulty, specific intent |
+| Tipo de término | Ejemplo | Características |
+|-----------|-----------------|-----------------|
+| **Cabeza** | "gestión de secretos" | Alto volumen, alta dificultad, intención amplia |
+| **Cuerpo** | "Gestión de secretos para startups" | Volumen medio, dificultad media |
+| **Cola larga** | "cómo rotar claves de API en Kubernetes" | Volumen bajo, dificultad baja, intención específica |
 
-**Long-tail advantages:**
-- Easier to rank
-- Higher conversion rate
-- More specific content
-- Builds topical authority for head terms
+**Ventajas de cola larga:**
+- Más fácil de clasificar
+- Mayor tasa de conversión
+- Contenido más específico
+- Crea autoridad temática para los términos principales.
 
-### Competitor Keyword Gap Analysis
+### Análisis de la brecha de palabras clave de la competencia
 
 ```
 1. Identify 3-5 direct competitors
@@ -162,38 +160,38 @@ Higher score = better opportunity.
 5. Prioritize by opportunity score
 ```
 
-### Question Keyword Mining
+### Pregunta Minería de palabras clave
 
-| Source | How to Access |
+| Fuente | Cómo acceder |
 |--------|---------------|
-| **People Also Ask** | Google SERP → expand PAA boxes |
-| **Related Searches** | Bottom of Google SERP |
-| **Answer the Public** | answerthepublic.com |
-| **AlsoAsked** | alsoasked.com |
-| **Reddit/Quora** | Search `site:reddit.com [topic]` |
-| **Customer calls** | Record and transcribe sales/support calls |
+| **La gente también pregunta** | Google SERP → expandir cuadros PAA |
+| **Búsquedas relacionadas** | Parte inferior de Google SERP |
+| **Responde al público** | respuestaalpublico.com |
+| **También preguntado** | tambiénasked.com |
+| **Reddit/Qoora** | Buscar `site:reddit.com [topic]`|
+| **Llamadas de clientes** | Grabar y transcribir llamadas de ventas/soporte |
 
-### Keyword Research Checklist
+### Lista de verificación de investigación de palabras clave
 
-- [ ] Identified 5-10 seed keywords from product/customer research
-- [ ] Expanded to 100+ keyword variations using tools
-- [ ] Classified all keywords by intent
-- [ ] Checked SERP for each primary keyword
-- [ ] Identified keyword difficulty and realistic targets
-- [ ] Grouped keywords into topic clusters
-- [ ] Mapped keywords to funnel stages
-- [ ] Found question keywords for each topic
-- [ ] Analyzed competitor keyword gaps
-- [ ] Prioritized by opportunity score
-- [ ] Assigned keywords to content pieces
+- [] Se identificaron entre 5 y 10 palabras clave iniciales a partir de una investigación de productos/clientes.
+- [] Ampliado a más de 100 variaciones de palabras clave mediante herramientas
+- [] Clasificó todas las palabras clave por intención
+- [] SERP verificado para cada palabra clave principal
+- [] Dificultad de palabras clave identificadas y objetivos realistas
+- [] Palabras clave agrupadas en grupos de temas
+- [] Palabras clave asignadas a etapas del embudo
+- [] Palabras clave de preguntas encontradas para cada tema
+- [] Se analizaron las lagunas de palabras clave de la competencia.
+- [] Priorizado por puntuación de oportunidad
+- [] Palabras clave asignadas a piezas de contenido
 
-### Anti-Patterns
+### Antipatrones
 
-- **Volume obsession** — Chasing 50k/mo terms you'll never rank for
-- **Ignoring intent** — Ranking #1 for wrong intent = 90% bounce rate
-- **Keyword hoarding** — Researching 1,000 keywords, executing on 10
-- **Tool over-reliance** — Tools estimate; SERP analysis confirms
-- **Static research** — Search behavior changes; refresh quarterly
-- **Skipping SERP analysis** — Difficulty score means nothing without checking actual results
-- **One keyword per page** — Modern SEO targets topic clusters, not single keywords
-- **Ignoring zero-click** — Some keywords have no click-through opportunity
+- **Obsesión por el volumen**: persiguiendo términos de 50 000 al mes para los que nunca clasificarás
+- **Ignorar la intención**: Clasificación número 1 por intención incorrecta = 90 % de tasa de rebote
+- **Acaparamiento de palabras clave**: investiga 1000 palabras clave y ejecuta 10
+- **Exceso de dependencia de herramientas** — Estimación de herramientas; El análisis SERP lo confirma
+- **Investigación estática**: cambios en el comportamiento de búsqueda; actualizar trimestralmente
+- **Omitir el análisis SERP**: la puntuación de dificultad no significa nada sin comprobar los resultados reales
+- **Una palabra clave por página**: el SEO moderno se centra en grupos de temas, no en palabras clave individuales.
+- **Ignorar el clic cero**: algunas palabras clave no tienen oportunidad de hacer clic

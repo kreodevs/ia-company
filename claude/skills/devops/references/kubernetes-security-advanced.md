@@ -1,6 +1,6 @@
-# Kubernetes Security Advanced
+# Seguridad avanzada en Kubernetes
 
-## ClusterRole (cluster-wide)
+## ClusterRole (alcance de cluster)
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -28,7 +28,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-## Secrets Management
+## Gestión de secrets
 
 ```yaml
 apiVersion: v1
@@ -41,7 +41,7 @@ stringData:
   password: secretpassword
 ```
 
-### Mount as env
+### Montar como env
 ```yaml
 env:
 - name: DB_PASSWORD
@@ -51,7 +51,7 @@ env:
       key: password
 ```
 
-### Mount as volume
+### Montar como volumen
 ```yaml
 volumeMounts:
 - name: secret-volume
@@ -63,7 +63,7 @@ volumes:
     secretName: db-credentials
 ```
 
-## Allow DNS (Required for most apps)
+## Permitir DNS (requerido para la mayoría de apps)
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -82,17 +82,17 @@ spec:
     - { protocol: UDP, port: 53 }
 ```
 
-## Security Checklist
+## Checklist de seguridad
 
-- [ ] RBAC with least-privilege roles
+- [ ] RBAC con roles de mínimo privilegio
 - [ ] Pod Security Standards (restricted)
-- [ ] Network policies (default-deny + explicit allow)
-- [ ] Run containers as non-root
-- [ ] Read-only root filesystem
-- [ ] Drop all capabilities
-- [ ] Secrets for sensitive data
-- [ ] Image scanning enabled
-- [ ] Private container registry
-- [ ] Resource quotas and limits
-- [ ] Audit logging enabled
-- [ ] Regular credential rotation
+- [ ] Network policies (denegación por defecto + allow explícito)
+- [ ] Ejecutar contenedores como no root
+- [ ] Sistema de archivos root de solo lectura
+- [ ] Eliminar todas las capabilities
+- [ ] Secrets para datos sensibles
+- [ ] Escaneo de imágenes habilitado
+- [ ] Registro de contenedores privado
+- [ ] Cuotas y límites de recursos
+- [ ] Audit logging habilitado
+- [ ] Rotación regular de credenciales

@@ -1,16 +1,16 @@
 ---
-title: Programmatic SEO Strategy
-impact: MEDIUM-HIGH
-tags: programmatic-seo, template-pages, scale-content, database-driven, automation
+título: Estrategia SEO programática
+impacto: MEDIO-ALTO
+Etiquetas: SEO programático, páginas de plantilla, contenido escalable, basado en bases de datos, automatización
 ---
 
-## Programmatic SEO Strategy
+## Estrategia SEO programática
 
-**Impact: MEDIUM-HIGH**
+**Impacto: MEDIO-ALTO**
 
-Programmatic SEO creates hundreds or thousands of pages from templates and data. Done right, it captures massive long-tail search traffic. Done wrong, it creates thin content that tanks your entire domain. This is high-risk, high-reward SEO.
+El SEO programático crea cientos o miles de páginas a partir de plantillas y datos. Bien hecho, captura tráfico de búsqueda masivo de cola larga. Si se hace mal, crea contenido escaso que arruina todo su dominio. Este es un SEO de alto riesgo y alta recompensa.
 
-### Programmatic SEO Fundamentals
+### Fundamentos de SEO programático
 
 ```
 Traditional SEO: 1 writer → 1 page
@@ -23,28 +23,28 @@ Example:
 └── Traffic: Long-tail search for each comparison
 ```
 
-### When Programmatic SEO Works
+### Cuando funciona el SEO programático
 
-| Criteria | Good Fit | Bad Fit |
+| Criterios | Buen ajuste | Mal ajuste |
 |----------|----------|---------|
-| **Search demand** | Each variation gets searches | Only head term has volume |
-| **Unique data** | Distinct info per page | Same content repeated |
-| **Value added** | Solves user problem | Just keyword variations |
-| **Scale** | 100+ page opportunity | <50 pages (do manually) |
-| **Data availability** | Clean, structured data exists | Would require scraping/guessing |
+| **Demanda de búsqueda** | Cada variación recibe búsquedas | Sólo el término principal tiene volumen |
+| **Datos únicos** | Información distinta por página | Mismo contenido repetido |
+| **Valor añadido** | Resuelve el problema del usuario | Solo variaciones de palabras clave |
+| **Escala** | Oportunidad de más de 100 páginas | <50 páginas (hacerlo manualmente) |
+| **Disponibilidad de datos** | Existen datos limpios y estructurados | Requeriría raspar/adivinar |
 
-### Successful Programmatic Examples
+### Ejemplos programáticos exitosos
 
-| Site | Template | Why It Works |
+| Sitio | Plantilla | Por qué funciona |
 |------|----------|--------------|
-| **Zapier** | "[App] + [App] integrations" | 25k+ combo pages, real integration data |
-| **NomadList** | "Cost of living in [City]" | Unique data per city |
-| **G2** | "[Product] reviews" | User-generated reviews, each page unique |
-| **Wise** | "[Currency] to [Currency] converter" | Live exchange data, real utility |
-| **Ahrefs** | "SEO audit for [Website]" | Actual tool output, unique per domain |
-| **Webflow** | "[Keyword] website templates" | Real templates to browse |
+| **Zapier** | "Integraciones [Aplicación] + [Aplicación]" | Más de 25.000 páginas combinadas, datos de integración reales |
+| **Lista de nómadas** | "Costo de vida en [Ciudad]" | Datos únicos por ciudad |
+| **G2** | "Reseñas de [producto]" | Reseñas generadas por usuarios, cada página única |
+| **Sabio** | "Convertidor de [Moneda] a [Moneda]" | Intercambio de datos en vivo, utilidad real |
+| **Ahrefs** | "Auditoría SEO para [Sitio web]" | Salida real de la herramienta, única por dominio |
+| **Flujo web** | "Plantillas de sitios web [palabra clave]" | Plantillas reales para navegar |
 
-### Template Page Structure
+### Estructura de la página de plantilla
 
 ```
 URL: /compare/[tool-a]-vs-[tool-b]
@@ -83,7 +83,7 @@ URL: /compare/[tool-a]-vs-[tool-b]
 └────────────────────────────────────────────────────┘
 ```
 
-### Good Programmatic Content
+### Buen contenido programático
 
 ```
 ✓ /tools/kubernetes-secrets-management
@@ -101,7 +101,7 @@ Search intent: Find K8s secrets tool
 Value: Comprehensive, current, helps decision
 ```
 
-### Bad Programmatic Content
+### Contenido programático incorrecto
 
 ```
 ✗ /secrets-management-in-[city]
@@ -124,19 +124,19 @@ Page shows:
 - Thin unique content per page
 ```
 
-### Content Uniqueness Requirements
+### Requisitos de singularidad del contenido
 
-| Element | Uniqueness Level | How to Achieve |
+| Elemento | Nivel de unicidad | Cómo lograrlo |
 |---------|------------------|----------------|
-| **Title** | Must be unique | Dynamic variables |
-| **H1** | Must be unique | Dynamic variables |
-| **Meta description** | Should be unique | Template with variables |
-| **Body intro** | Somewhat unique | Conditional text blocks |
-| **Core data** | Must be unique | Database-driven |
-| **Analysis** | Should be unique | Conditional logic |
-| **FAQs** | Can be templated | Customize 2-3 per page |
+| **Título** | Debe ser único | Variables dinámicas |
+| **H1** | Debe ser único | Variables dinámicas |
+| **Meta descripción** | Debe ser único | Plantilla con variables |
+| **Introducción al cuerpo** | Algo único | Bloques de texto condicionales |
+| **Datos básicos** | Debe ser único | Basado en bases de datos |
+| **Análisis** | Debe ser único | Lógica condicional |
+| **Preguntas frecuentes** | Se puede crear plantilla | Personaliza 2-3 por página |
 
-### Programmatic Implementation
+### Implementación programática
 
 ```
 Technical stack options:
@@ -161,19 +161,19 @@ Key requirements:
 - Robots.txt for crawl control
 ```
 
-### Data Quality Checklist
+### Lista de verificación de calidad de datos
 
-Before building programmatic pages:
+Antes de crear páginas programáticas:
 
-- [ ] Data is accurate and verified
-- [ ] Data is regularly updated (automated if possible)
-- [ ] Each record is meaningfully different
-- [ ] Missing data is handled gracefully
-- [ ] Data covers user needs (not just keywords)
-- [ ] Source data is reliable/authoritative
-- [ ] Legal right to use the data
+- [] Los datos son precisos y están verificados.
+- [ ] Los datos se actualizan periódicamente (de forma automatizada si es posible)
+- [] Cada registro es significativamente diferente
+- [] Los datos faltantes se manejan con elegancia
+- [] Los datos cubren las necesidades del usuario (no solo palabras clave)
+- [ ] Los datos de origen son confiables/autorizados
+- [ ] Derecho legal a utilizar los datos
 
-### Internal Linking for Programmatic
+### Enlace interno para programática
 
 ```
 Category hub pages:
@@ -196,19 +196,19 @@ Tool pages:
 │   └── Links to: Related tools (alternatives)
 ```
 
-### Avoiding Thin Content Penalties
+### Evitar sanciones por contenido ligero
 
-| Risk Factor | Mitigation |
+| Factor de riesgo | Mitigación |
 |-------------|------------|
-| **Duplicate content** | Unique data per page, not just variable swapping |
-| **Low word count** | Minimum 500 words unique content |
-| **No user value** | Solve real problems, not just rank |
-| **Poor indexing ratio** | Noindex low-value variations |
-| **Keyword stuffing** | Natural language, readable content |
-| **No internal links** | Hub and spoke architecture |
-| **Orphan pages** | Every page linked from somewhere |
+| **Contenido duplicado** | Datos únicos por página, no sólo intercambio de variables |
+| **Bajo recuento de palabras** | Mínimo 500 palabras contenido único |
+| **Sin valor para el usuario** | Resuelva problemas reales, no sólo de clasificación |
+| **Bajo índice de indexación** | Variaciones de bajo valor de Noindex |
+| **Relleno de palabras clave** | Lenguaje natural, contenido legible |
+| **Sin enlaces internos** | Arquitectura de cubo y radio |
+| **Páginas huérfanas** | Cada página enlazada desde algún lugar |
 
-### Quality Tiers for Programmatic
+### Niveles de calidad para programática
 
 ```
 Tier 1 (Full index, full optimization):
@@ -230,35 +230,35 @@ Tier 3 (Noindex or don't create):
 └── Don't waste crawl budget
 ```
 
-### Programmatic SEO Metrics
+### Métricas SEO programáticas
 
-| Metric | What to Track | Target |
+| Métrica | Qué rastrear | Objetivo |
 |--------|---------------|--------|
-| **Indexed pages** | % of pages in Google index | >90% of Tier 1/2 |
-| **Traffic per page** | Avg sessions per programmatic page | Varies by vertical |
-| **Crawl frequency** | How often Google recrawls | Increasing |
-| **CTR** | Click-through rate | >2% average |
-| **Bounce rate** | Users leaving immediately | <70% |
-| **Cannibalization** | Pages competing for same query | Minimal |
+| **Páginas indexadas** | % de páginas en el índice de Google | >90% del Nivel 1/2 |
+| **Tráfico por página** | Promedio de sesiones por página programática | Varía según la vertical |
+| **Frecuencia de rastreo** | ¿Con qué frecuencia Google vuelve a rastrear? Creciente |
+| **CTR** | Tasa de clics | >2% promedio |
+| **Tasa de rebote** | Usuarios que salen inmediatamente | <70% |
+| **Canibalización** | Páginas que compiten por la misma consulta | Mínimo |
 
-### Scaling Considerations
+### Consideraciones de escala
 
-| Page Count | Considerations |
+| Número de páginas | Consideraciones |
 |------------|----------------|
-| **100-500** | Manual review possible, high quality |
-| **500-5,000** | Automated QA needed, tier pages |
-| **5,000-50,000** | Careful crawl budget, hub pages critical |
-| **50,000+** | Crawl budget management, dynamic rendering |
+| **100-500** | Revisión manual posible, alta calidad |
+| **500-5000** | Se necesita control de calidad automatizado, páginas de niveles |
+| **5.000-50.000** | Presupuesto de rastreo cuidadoso, páginas centrales críticas |
+| **50.000+** | Gestión del presupuesto de rastreo, renderizado dinámico |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Thin content at scale** — 100-word template pages tank domain
-- **Keyword stuffing** — [Location] + [keyword] everywhere
-- **No real search demand** — Building pages nobody searches for
-- **Duplicate content** — Same content with different URLs
-- **Over-indexing** — Indexing every variation wastes crawl budget
-- **Stale data** — Programmatic pages with outdated information
-- **No user value** — Pages exist only to rank, not to help
-- **Ignoring quality tiers** — Treating all variations equally
-- **Poor internal linking** — Orphan pages don't get crawled/ranked
-- **No measurement** — Flying blind on what's working
+- **Contenido reducido a escala**: dominio de tanque de páginas de plantilla de 100 palabras
+- **Relleno de palabras clave** — [Ubicación] + [palabra clave] en todas partes
+- **Sin demanda de búsqueda real**: creación de páginas que nadie busca
+- **Contenido duplicado**: el mismo contenido con diferentes URL
+- **Sobreindexación**: indexar cada variación desperdicia el presupuesto de rastreo
+- **Datos obsoletos**: páginas programáticas con información desactualizada
+- **Sin valor para el usuario**: las páginas existen solo para clasificar, no para ayudar
+- **Ignorar niveles de calidad**: tratar todas las variaciones por igual
+- **Enlaces internos deficientes**: las páginas huérfanas no se rastrean ni clasifican
+- **Sin medición** — Volando a ciegas sobre lo que funciona

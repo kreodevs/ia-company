@@ -1,144 +1,144 @@
-# Mental Models Framework
+# Marco de modelos mentales
 
-## Overview
+## Descripción general
 
-Mental Models is the thinking approach championed by Charlie Munger—applying multiple models from different disciplines to analyze problems, avoiding the limitations of single-perspective thinking.
+Modelos mentales es el enfoque de pensamiento defendido por Charlie Munger: aplica múltiples modelos de diferentes disciplinas para analizar problemas, evitando las limitaciones del pensamiento de perspectiva única.
 
-**Core Principle**: "To a man with only a hammer, every problem looks like a nail."
+**Principio fundamental**: "Para un hombre que sólo tiene un martillo, cada problema parece un clavo".
 
-## When to Use
+## Cuándo utilizar
 
-Ideal for:
-- 📊 Understanding complex problems from multiple angles
-- 🔍 Avoiding cognitive biases and blind spots
-- 💡 Finding innovative solutions
-- 🎯 Making important decisions
-- 📚 Cross-disciplinary learning and knowledge integration
+Ideal para:
+- 📊 Comprender problemas complejos desde múltiples ángulos
+- 🔍 Evitar sesgos cognitivos y puntos ciegos
+- 💡 Encontrar soluciones innovadoras
+- 🎯 Tomar decisiones importantes
+- 📚 Aprendizaje interdisciplinario e integración de conocimientos.
 
-## Core Mental Models Toolkit
+## Kit de herramientas de modelos mentales básicos
 
-### 1. General Thinking Models
+### 1. Modelos de pensamiento generales
 
-#### First Principles
-- Strip away assumptions to fundamentals
-- Rebuild from basic truths
-- Application: Analyze article's core assumptions
+#### Primeros principios
+- Reducir los supuestos a los fundamentos
+- Reconstruir a partir de verdades básicas.
+- Aplicación: analizar los supuestos centrales del artículo.
 
-#### Compounding
-- Long-term accumulation creates exponential growth
-- Small improvements compound over time
-- Application: Evaluate long-term strategies in content
+#### Compuesto
+- La acumulación a largo plazo crea un crecimiento exponencial.
+- Las pequeñas mejoras se acumulan con el tiempo.
+- Aplicación: Evaluar estrategias a largo plazo en contenidos.
 
-#### Opportunity Cost
-- Choosing one option means forgoing others
-- Evaluate trade-offs
-- Application: Analyze the cost of recommended approaches
+#### Costo de oportunidad
+- Elegir una opción significa renunciar a otras.
+- Evaluar compensaciones
+- Aplicación: Analizar el costo de los enfoques recomendados.
 
-### 2. Physics Models
+### 2. Modelos de física
 
-#### Leverage
-- Small force creates large results
-- Find the critical leverage points
-- Application: Identify key action points in articles
+#### Apalancamiento
+- Una pequeña fuerza crea grandes resultados
+- Encuentra los puntos críticos de apalancamiento.
+- Aplicación: identificar puntos de acción clave en artículos
 
-#### Inertia
-- Systems tend to maintain current state
-- Change requires additional energy
-- Application: Understand resistance to change
+#### Inercia
+- Los sistemas tienden a mantener el estado actual.
+- El cambio requiere energía adicional
+- Aplicación: Comprender la resistencia al cambio.
 
-#### Critical Mass
-- Qualitative change occurs after reaching threshold
-- Accumulation to breakthrough
-- Application: Evaluate when tipping points occur
+#### Masa crítica
+- El cambio cualitativo ocurre después de alcanzar el umbral.
+- Acumulación para avanzar
+- Aplicación: evaluar cuándo se producen puntos de inflexión
 
-### 3. Biology Models
+### 3. Modelos biológicos
 
-#### Evolution
-- Survival of the fittest, continuous iteration
-- Small experiments, rapid adaptation
-- Application: Analyze adaptive strategies in content
+#### Evolución
+- Supervivencia del más apto, iteración continua.
+- Pequeños experimentos, rápida adaptación.
+- Aplicación: Analizar estrategias adaptativas en contenidos.
 
-#### Ecosystem
-- Complex networks of interdependence
-- Balance and diversity
-- Application: Understand systemic issues
+#### Ecosistema
+- Redes complejas de interdependencia
+- Equilibrio y diversidad
+- Aplicación: comprender los problemas sistémicos
 
-#### Red Queen Effect
-- Must keep running to stay in same place
-- Continuous progress in competitive environments
-- Application: Evaluate competitive strategies
+#### Efecto Reina Roja
+- Debes seguir corriendo para permanecer en el mismo lugar.
+- Progreso continuo en entornos competitivos.
+- Aplicación: Evaluar estrategias competitivas.
 
-### 4. Psychology Models
+### 4. Modelos de psicología
 
-#### Cognitive Biases
-- Confirmation bias, anchoring, availability heuristic
-- Systematic thinking errors
-- Application: Identify logical flaws in arguments
+#### Sesgos cognitivos
+- Sesgo de confirmación, anclaje, heurística de disponibilidad.
+- Errores de pensamiento sistemático.
+- Aplicación: Identificar fallas lógicas en los argumentos.
 
-#### Loss Aversion
-- Motivation to avoid losses > gain benefits
-- Asymmetric risk decision-making
-- Application: Understand decision motivations
+#### Aversión a la pérdida
+- Motivación para evitar pérdidas > obtener beneficios
+- Toma de decisiones de riesgo asimétrica
+- Aplicación: Comprender las motivaciones de decisión.
 
-#### Social Proof
-- Herd mentality and group influence
-- Others' behavior affects judgment
-- Application: Analyze persuasive power of arguments
+#### Prueba social
+- Mentalidad de rebaño e influencia de grupo.
+- El comportamiento de los demás afecta el juicio.
+- Aplicación: Analizar el poder persuasivo de los argumentos.
 
-### 5. Economics Models
+### 5. Modelos económicos
 
-#### Supply and Demand
-- Price determined by market equilibrium
-- Scarcity creates value
-- Application: Analyze market-related articles
+#### Oferta y demanda
+- Precio determinado por el equilibrio del mercado.
+- La escasez crea valor.
+- Aplicación: Analizar artículos relacionados con el mercado.
 
-#### Marginal Utility
-- Value of additional units decreases
-- Optimal point isn't maximum
-- Application: Evaluate resource allocation recommendations
+#### Utilidad marginal
+- El valor de las unidades adicionales disminuye
+- El punto óptimo no es el máximo.
+- Aplicación: Evaluar recomendaciones de asignación de recursos.
 
-#### Incentives
-- "Show me the incentive and I'll show you the outcome"
-- People respond to incentives
-- Application: Understand motivations behind behaviors
+#### Incentivos
+- "Muéstrame el incentivo y te mostraré el resultado"
+- La gente responde a los incentivos.
+- Aplicación: Comprender las motivaciones detrás de los comportamientos.
 
-### 6. Mathematics/Statistics Models
+### 6. Modelos matemáticos/estadísticos
 
-#### Normal Distribution
-- Most cases cluster around average
-- Extreme cases are rare
-- Application: Evaluate probabilities and risks
+#### Distribución normal
+- La mayoría de los casos se agrupan alrededor del promedio.
+- Los casos extremos son raros
+- Aplicación: Evaluar probabilidades y riesgos.
 
-#### Power Law
-- 80/20 rule (Pareto Principle)
-- Few factors produce most results
-- Application: Identify key factors
+#### Ley de potencia
+- Regla 80/20 (Principio de Pareto)
+- Pocos factores producen la mayoría de los resultados.
+- Aplicación: Identificar factores clave
 
-#### Regression to the Mean
-- Extreme results tend toward average
-- Avoid overreaction to outliers
-- Application: Evaluate representativeness of exceptional cases
+#### Regresión a la media
+- Los resultados extremos tienden a ser promedio.
+- Evite reaccionar exageradamente ante valores atípicos
+- Aplicación: Evaluar la representatividad de casos excepcionales.
 
-### 7. Systems Thinking Models
+### 7. Modelos de pensamiento sistémico
 
-#### Feedback Loops
-- Positive feedback: amplifying effects
-- Negative feedback: balancing stability
-- Application: Identify causal relationships
+#### Bucles de retroalimentación
+- Retroalimentación positiva: efectos amplificadores.
+- Retroalimentación negativa: equilibrar la estabilidad
+- Aplicación: Identificar relaciones causales.
 
-#### Emergence
-- Whole is greater than sum of parts
-- System-level properties
-- Application: Understand complex systems
+#### Emergencia
+- El todo es mayor que la suma de las partes.
+- Propiedades a nivel de sistema
+- Aplicación: Comprender sistemas complejos
 
-#### Bottleneck
-- Critical constraint limiting system performance
-- Optimizing bottleneck yields maximum benefit
-- Application: Find core problems
+#### Cuello de botella
+- Restricción crítica que limita el rendimiento del sistema.
+- La optimización del cuello de botella produce el máximo beneficio
+- Aplicación: encontrar problemas centrales
 
-## Application Method
+## Método de aplicación
 
-### Step 1: Identify Problem Type
+### Paso 1: Identificar el tipo de problema
 
 ```markdown
 Problem Classification:
@@ -148,9 +148,9 @@ Problem Classification:
 - [ ] Competition problem → Use: Evolution, Red Queen effect, Game theory
 ```
 
-### Step 2: Apply Multiple Models
+### Paso 2: aplicar varios modelos
 
-**Rule**: Use at least 3 models from different disciplines
+**Regla**: Utiliza al menos 3 modelos de diferentes disciplinas
 
 ```markdown
 ## Multi-Perspective Analysis
@@ -171,7 +171,7 @@ Problem Classification:
 - Conclusion: [Understand behavioral motivations]
 ```
 
-### Step 3: Find Model Intersections
+### Paso 3: encontrar intersecciones del modelo
 
 ```markdown
 ## Cross-Model Insights
@@ -184,10 +184,10 @@ Intersection discoveries:
 2. [Contradiction] → [Issue requiring further analysis]
 ```
 
-### Step 4: Synthesize Judgment
+### Paso 4: Sintetizar el juicio
 
 ```markdown
-## Integrated Conclusion
+## Conclusión integrada
 
 Based on multi-model analysis:
 - ✅ Strongly supported views: [List]
@@ -200,99 +200,99 @@ Meta-cognitive check:
 - Over-reliance on any single model?
 ```
 
-## Practical Example
+## Ejemplo práctico
 
-### Example: Analyzing Startup Article
+### Ejemplo: análisis del artículo de inicio
 
-**Article Claim**: "Rapid growth is key to startup success"
+**Reivindicación del artículo**: "El crecimiento rápido es clave para el éxito de una startup"
 
-#### Multi-Model Analysis:
+#### Análisis multimodelo:
 
-**1. Ecosystem Model (Biology)**
-- Insight: Too-rapid growth can disrupt organizational "ecosystem balance"
-- Risk: Culture dilution, quality decline
+**1. Modelo de ecosistema (biología)**
+- Perspectiva: un crecimiento demasiado rápido puede alterar el "equilibrio del ecosistema" organizacional
+- Riesgo: Dilución del cultivo, disminución de la calidad.
 
-**2. Critical Mass Model (Physics)**
-- Insight: Must reach certain scale to survive
-- Support: Network effects require user base
+**2. Modelo de masa crítica (Física)**
+- Insight: debe alcanzar cierta escala para sobrevivir.
+- Soporte: los efectos de red requieren una base de usuarios
 
-**3. Marginal Utility Model (Economics)**
-- Insight: Growth benefits diminish
-- Question: Is unlimited growth speed pursuit rational?
+**3. Modelo de utilidad marginal (Economía)**
+- Insight: Los beneficios del crecimiento disminuyen
+- Pregunta: ¿Es racional perseguir una velocidad de crecimiento ilimitada?
 
-**4. Feedback Loop Model (Systems)**
-- Insight: Rapid growth → resource strain → quality drop → user churn (negative feedback)
-- Risk: Growth trap
+**4. Modelo de bucle de retroalimentación (sistemas)**
+- Insight: Crecimiento rápido → escasez de recursos → caída de calidad → abandono de usuarios (comentarios negativos)
+- Riesgo: Trampa de crecimiento
 
-**Synthesized Judgment**:
-- ✅ Article valid: Early stage needs rapid market validation
-- ⚠️  Missing: Sustainable vs. growth-at-all-costs
-- ❌ Overlooked: Industry/stage-specific growth rhythms
+**Sentencia sintetizada**:
+- ✅ Artículo válido: La etapa inicial necesita una rápida validación del mercado
+- ⚠️ Falta: crecimiento sostenible versus crecimiento a toda costa
+- ❌ Pasado por alto: ritmos de crecimiento específicos de la industria/etapa
 
-## Common Pitfalls
+## Errores comunes
 
-### ❌ Wrong Usage
+### ❌ Uso incorrecto
 
-1. **Model Misuse**: Force-fitting irrelevant models
-2. **Single Dependency**: Actually using only one model, pretending it's multiple
-3. **Over-complexity**: Piling models without real insights
-4. **Ignoring Context**: Not considering specific situational differences
+1. **Uso indebido de modelos**: modelos irrelevantes que se ajustan a la fuerza
+2. **Dependencia única**: en realidad se usa solo un modelo, pretendiendo que es múltiple
+3. **Exceso de complejidad**: acumulación de modelos sin conocimientos reales
+4. **Ignorar el contexto**: no considerar diferencias situacionales específicas
 
-### ✅ Correct Usage
+### ✅ Uso correcto
 
-1. **Choose Relevance**: Select models related to problem essence
-2. **Apply Deeply**: Truly understand model applicability
-3. **Seek Conflicts**: Pay special attention to model contradictions
-4. **Stay Flexible**: Adjust model selection based on new information
+1. **Elija Relevancia**: seleccione modelos relacionados con la esencia del problema
+2. **Aplicar profundamente**: comprender verdaderamente la aplicabilidad del modelo
+3. **Buscar conflictos**: prestar especial atención a las contradicciones del modelo
+4. **Manténgase flexible**: ajuste la selección del modelo según la nueva información
 
-## Building Your Model Library
+## Construyendo su biblioteca de modelos
 
-### Beginner Level (Essential)
-- First principles
-- Opportunity cost
-- Compounding
-- Feedback loops
-- Cognitive biases
+### Nivel principiante (esencial)
+- Primeros principios
+- Costo de oportunidad
+- Compuesto
+- Bucles de retroalimentación
+- Sesgos cognitivos
 
-### Intermediate Level (Expansion)
-- Ecosystem
-- Power law
-- Emergence
-- Red Queen effect
-- Game theory
+### Nivel Intermedio (Expansión)
+- Ecosistema
+- Ley de potencia
+- Emergencia
+- Efecto Reina Roja
+- Teoría de juegos
 
-### Advanced Level (Specialization)
-- Deepen based on your domain
-- Cross-disciplinary integration
-- Create your own model combinations
+### Nivel Avanzado (Especialización)
+- Profundiza en función de tu dominio
+- Integración transdisciplinar
+- Crea tus propias combinaciones de modelos.
 
-## Learning Recommendations
+## Recomendaciones de aprendizaje
 
-1. **Broad Reading**: Study classics from different disciplines
-2. **Deliberate Practice**: Try applying 3+ models to every problem
-3. **Build Index**: Maintain personal "model → use case" catalog
-4. **Reflect**: Note which model combinations work especially well
-5. **Teach Others**: Explaining models deepens understanding
+1. **Lectura amplia**: Estudia clásicos de diferentes disciplinas
+2. **Práctica deliberada**: intente aplicar más de 3 modelos a cada problema
+3. **Índice de compilación**: mantener el catálogo personal de "modelo → caso de uso"
+4. **Reflexiona**: observa qué combinaciones de modelos funcionan especialmente bien
+5. **Enseñar a otros**: explicar los modelos profundiza la comprensión
 
-## Recommended Resources
+## Recursos recomendados
 
-**Books**:
-- "Poor Charlie's Almanack" - Charlie Munger
-- "The Art of Thinking Clearly" - Rolf Dobelli
-- "Principles" - Ray Dalio
-- "Super Thinking" - Gabriel Weinberg
+**Libros**:
+- "Almanaque del pobre Charlie" - Charlie Munger
+- "El arte de pensar con claridad" - Rolf Dobelli
+- "Principios" - Ray Dalio
+- "Superpensamiento" - Gabriel Weinberg
 
-**Key Quote**:
-> "You must know the big ideas in the big disciplines and use them routinely—all of them, not just a few."
-> — Charlie Munger
+**Cita clave**:
+> "Debes conocer las grandes ideas de las grandes disciplinas y utilizarlas de forma rutinaria: todas, no sólo unas pocas".
+> —Charlie Munger
 
-## Integration with Other Frameworks
+## Integración con otros marcos
 
-- **Critical Thinking**: Mental models help identify argument blind spots
-- **Systems Thinking**: Provides more tools for analyzing systems
-- **First Principles**: Can serve as one of the mental models
-- **Six Thinking Hats**: Complementary multi-perspective method
+- **Pensamiento crítico**: los modelos mentales ayudan a identificar los puntos ciegos de los argumentos
+- **Pensamiento sistémico**: proporciona más herramientas para analizar sistemas
+- **Primeros principios**: Puede servir como uno de los modelos mentales.
+- **Seis sombreros para pensar**: método complementario de múltiples perspectivas
 
 ---
 
-**Remember**: The goal of mental models isn't using more models, but gaining deeper insights. Quality > Quantity.
+**Recuerde**: El objetivo de los modelos mentales no es utilizar más modelos, sino obtener conocimientos más profundos. Calidad > Cantidad.

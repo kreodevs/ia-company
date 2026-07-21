@@ -1,15 +1,13 @@
-# Advanced Usage Patterns
+# Patrones de uso avanzados
 
-**Purpose**: Advanced customization and component patterns for experienced Tailwind v4 + shadcn/ui developers
-**When to Load**: User asks for custom colors beyond defaults, advanced component patterns, composition best practices, or component customization
+**Propósito**: Personalización avanzada y patrones de componentes para desarrolladores experimentados de Tailwind v4 + shadcn/ui
+**Cuándo cargar**: el usuario solicita colores personalizados más allá de los valores predeterminados, patrones de componentes avanzados, mejores prácticas de composición o personalización de componentes.
 
 ---
 
-## Custom Colors
+## Colores personalizados
 
-Add new semantic colors beyond the default palette:
-
-```css
+Agregue nuevos colores semánticos más allá de la paleta predeterminada:```css
 :root {
   --brand: hsl(280 65% 60%);
   --brand-foreground: hsl(0 0% 100%);
@@ -24,70 +22,64 @@ Add new semantic colors beyond the default palette:
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
 }
-```
+```**Usage:**
 
-**Usage:**
 ```tsx
 <div className="bg-brand text-brand-foreground">Branded Component</div>
-```
-
-**Key Pattern**: Define CSS variable in `:root`/`.dark`, then reference in `@theme inline` with `--color-` prefix.
+```**Patrón clave**: Defina la variable CSS en`:root`/`.dark`, luego referencia en`@theme inline` with`--color-` prefijo.
 
 ---
 
-## Migration from Tailwind v3
+## Migración desde Tailwind v3
 
-For complete v3 → v4 migration steps, see `references/migration-guide.md`.
+Para conocer los pasos completos de migración v3 → v4, consulte`references/migration-guide.md`.
 
-**Quick Summary**:
-- Remove `tailwind.config.js` (v4 uses CSS configuration)
-- Convert hardcoded colors to CSS variables
-- Update plugin syntax: `require('tailwindcss/plugin')(plugin)` in v3 config → `@plugin "plugin-name"` in CSS
-- Change Vite plugin: `require('tailwindcss')` or `import tailwindcss from 'tailwindcss'` in v3 → `import tailwindcss from '@tailwindcss/vite'` in v4
+**Resumen rápido**:
+- Quitar `tailwind.config.js`(v4 usa configuración CSS)
+- Convertir colores codificados en variables CSS
+- Actualizar la sintaxis del complemento: `require('tailwindcss/plugin')(plugin)` en configuración v3 →`@plugin "plugin-name"` en CSS
+- Cambiar el complemento Vite: `require('tailwindcss')` or`import tailwindcss from 'tailwindcss'` in v3 →`import tailwindcss from '@tailwindcss/vite'` en v4
 
 ---
 
-## Component Best Practices
+## Mejores prácticas de componentes
 
-### 1. Always Use Semantic Tokens
+### 1. Utilice siempre tokens semánticos
 
-**✅ CORRECT:**
+** ✅ CORRECTO: **
+
 ```tsx
 <Button variant="destructive">Delete</Button>
-```
+```**❌ WRONG:**
 
-**❌ WRONG:**
 ```tsx
 <Button className="bg-red-600">Delete</Button>
-```
-
-**Why**: Semantic tokens (`destructive`, `primary`, `secondary`) adapt to theme changes. Hardcoded colors break dark mode and theme customization.
+```**Por qué**: tokens semánticos (` destructive`,` primary`,` secondary`) adaptarse a los cambios de tema. Los colores codificados rompen el modo oscuro y la personalización del tema.
 
 ---
 
-### 2. Use `cn()` for Conditional Styling
+### 2. Uso `cn()` para estilo condicional
 
-**Import:**
+**Importar:**
+
 ```tsx
 import { cn } from "@/lib/utils"
-```
+```**Usage:**
 
-**Usage:**
 ```tsx
 <div className={cn(
   "base-class",
   isActive && "active-class",
   hasError && "error-class"
 )} />
-```
-
-**What `cn()` does**: Merges Tailwind classes intelligently (later classes override earlier ones).
+```**What` cn()`hace**: fusiona las clases de Tailwind de forma inteligente (las clases posteriores anulan las anteriores).
 
 ---
 
-### 3. Compose shadcn/ui Components
+### 3. Componer componentes shadcn/ui
 
-**Pattern:**
+**Patrón:**
+
 ```tsx
 <Dialog>
   <DialogTrigger asChild>
@@ -99,17 +91,15 @@ import { cn } from "@/lib/utils"
     </DialogHeader>
   </DialogContent>
 </Dialog>
-```
-
-**Key Concept**: Use composition (wrapping components) rather than customization (passing props).
+```**Concepto clave**: Utilice composición (componentes envolventes) en lugar de personalización (pasando accesorios).
 
 ---
 
-## Advanced Patterns
+## Patrones avanzados
 
-### Conditional Theme Variables
+### Variables de tema condicionales
 
-Apply different variables based on state:
+Aplicar diferentes variables según el estado:
 
 ```tsx
 <div className={cn(
@@ -119,23 +109,17 @@ Apply different variables based on state:
 )} />
 ```
 
-### Custom Radius Tokens
+### Fichas de radio personalizadas
 
-Add semantic border radius:
-
-```css
+Agregar radio de borde semántico:```css
 @theme inline {
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
 }
-```
+```Usage:` className="rounded-[var(--radius-lg)]"`### Patrón de variantes de componentes
 
-Usage: `className="rounded-[var(--radius-lg)]"`
-
-### Component Variants Pattern
-
-Use `cva()` from `class-variance-authority` for complex variants:
+uso `cva()` from`class-variance-authority` para variantes complejas:
 
 ```tsx
 import { cva } from "class-variance-authority"
@@ -160,12 +144,10 @@ const buttonVariants = cva(
     },
   }
 )
-```
+```---
 
----
+## Recursos oficiales
 
-## Official Resources
-
-- Tailwind v4 Docs: https://tailwindcss.com/blog/tailwindcss-v4-beta
+- Documentos de Tailwind v4: https://tailwindcss.com/blog/tailwindcss-v4-beta
 - shadcn/ui: https://ui.shadcn.com
-- class-variance-authority: https://cva.style/docs
+- autoridad de variación de clase: https://cva.style/docs

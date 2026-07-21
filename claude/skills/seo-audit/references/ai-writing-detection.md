@@ -1,190 +1,188 @@
-# AI Writing Detection
+# Detección de escritura AI
 
-Words, phrases, and punctuation patterns commonly associated with AI-generated text. Avoid these to ensure writing sounds natural and human.
+Palabras, frases y patrones de puntuación comúnmente asociados con el texto generado por IA. Evítelos para asegurarse de que la escritura suene natural y humana.
 
-Sources: Grammarly (2025), Microsoft 365 Life Hacks (2025), GPTHuman (2025), Walter Writes (2025), Textero (2025), Plagiarism Today (2025), Rolling Stone (2025), MDPI Blog (2025)
+Fuentes: Grammarly (2025), Microsoft 365 Life Hacks (2025), GPTHuman (2025), Walter Writes (2025), Textero (2025), Plagiarism Today (2025), Rolling Stone (2025), MDPI Blog (2025)
 
 ---
 
-## Em Dashes: The Primary AI Tell
+## Em Dashes: la principal indicación de la IA
 
-**The em dash (—) has become one of the most reliable markers of AI-generated content.**
+**El guión largo (—) se ha convertido en uno de los marcadores más confiables de contenido generado por IA.**
 
-Em dashes are longer than hyphens (-) and are used for emphasis, interruptions, or parenthetical information. While they have legitimate uses in writing, AI models drastically overuse them.
+Los guiones largos son más largos que los guiones (-) y se utilizan para dar énfasis, interrupciones o información entre paréntesis. Si bien tienen usos legítimos por escrito, los modelos de IA los abusan drásticamente.
 
-### Why Em Dashes Signal AI Writing
-- AI models were trained on edited books, academic papers, and style guides where em dashes appear frequently
-- AI uses em dashes as a shortcut for sentence variety instead of commas, colons, or parentheses
-- Most human writers rarely use em dashes because they don't exist as a standard keyboard key
-- The overuse is so consistent that it has become the unofficial signature of ChatGPT writing
+### Por qué Em Dashes señala la escritura de IA
+- Los modelos de IA se entrenaron en libros editados, artículos académicos y guías de estilo donde aparecen guiones con frecuencia.
+- La IA utiliza guiones como atajo para variar las oraciones en lugar de comas, dos puntos o paréntesis.
+- La mayoría de los escritores humanos rara vez usan guiones porque no existen como una tecla de teclado estándar.
+- El uso excesivo es tan constante que se ha convertido en la firma no oficial de los escritos de ChatGPT.
 
-### What To Do Instead
-| Instead of | Use |
+### Qué hacer en su lugar
+| En lugar de | Uso |
 |------------|-----|
-| The results—which were surprising—showed... | The results, which were surprising, showed... |
-| This approach—unlike traditional methods—allows... | This approach, unlike traditional methods, allows... |
-| The study found—as expected—that... | The study found, as expected, that... |
-| Communication skills—both written and verbal—are essential | Communication skills (both written and verbal) are essential |
+| Los resultados, que fueron sorprendentes, mostraron... | Los resultados, que fueron sorprendentes, mostraron... |
+| Este enfoque, a diferencia de los métodos tradicionales, permite... | Este enfoque, a diferencia de los métodos tradicionales, permite... |
+| El estudio encontró, como se esperaba, que... | El estudio encontró, como se esperaba, que... |
+| Las habilidades de comunicación, tanto escritas como verbales, son esenciales | Las habilidades de comunicación (tanto escritas como verbales) son esenciales |
 
-### Guidelines
-- Use commas for most parenthetical information
-- Use colons to introduce explanations or lists
-- Use parentheses for supplementary information
-- Reserve em dashes for rare, deliberate emphasis only
-- If you find yourself using more than one em dash per page, revise
+### Directrices
+- Utilice comas para la mayor parte de la información entre paréntesis.
+- Utilice dos puntos para introducir explicaciones o listas.
+- Utilice paréntesis para información complementaria.
+- Reserve los guiones solo para dar énfasis poco frecuente y deliberado
+- Si utiliza más de un guión largo por página, revise
 
 ---
 
-## Overused Verbs
+## Verbos usados en exceso
 
-| Avoid | Use Instead |
+| Evitar | Usar en su lugar |
 |-------|-------------|
-| delve (into) | explore, examine, investigate, look at |
-| leverage | use, apply, draw on |
-| optimise | improve, refine, enhance |
-| utilise | use |
-| facilitate | help, enable, support |
-| foster | encourage, support, develop, nurture |
-| bolster | strengthen, support, reinforce |
-| underscore | emphasise, highlight, stress |
-| unveil | reveal, show, introduce, present |
-| navigate | manage, handle, work through |
-| streamline | simplify, make more efficient |
-| enhance | improve, strengthen |
-| endeavour | try, attempt, effort |
-| ascertain | find out, determine, establish |
-| elucidate | explain, clarify, make clear |
+| profundizar (en) | explorar, examinar, investigar, mirar |
+| apalancamiento | utilizar, aplicar, aprovechar |
+| optimizar | mejorar, refinar, potenciar |
+| utilizar | uso |
+| facilitar | ayuda, habilitar, soporte |
+| acoger | alentar, apoyar, desarrollar, nutrir |
+| reforzar | fortalecer, apoyar, reforzar |
+| guión bajo | enfatizar, resaltar, subrayar |
+| develar | revelar, mostrar, presentar, presentar |
+| navegar | gestionar, manejar, resolver |
+| racionalizar | simplificar, hacer más eficiente |
+| mejorar | mejorar, fortalecer |
+| esfuerzo | intento, intento, esfuerzo |
+| determinar | averiguar, determinar, establecer |
+| dilucidar | explicar, aclarar, dejar claro |
 
 ---
 
-## Overused Adjectives
+## Adjetivos usados en exceso
 
-| Avoid | Use Instead |
+| Evitar | Usar en su lugar |
 |-------|-------------|
-| robust | strong, reliable, thorough, solid |
-| comprehensive | complete, thorough, full, detailed |
-| pivotal | key, critical, central, important |
-| crucial | important, key, essential, critical |
-| vital | important, essential, necessary |
-| transformative | significant, important, major |
-| cutting-edge | new, advanced, recent, modern |
-| groundbreaking | new, original, significant |
-| innovative | new, original, creative |
-| seamless | smooth, easy, effortless |
-| intricate | complex, detailed, complicated |
-| nuanced | subtle, complex, detailed |
-| multifaceted | complex, varied, diverse |
-| holistic | complete, whole, comprehensive |
+| robusto | fuerte, confiable, minucioso, sólido |
+| integral | completo, minucioso, completo, detallado |
+| fundamental | clave, crítica, central, importante |
+| crucial | importante, clave, esencial, crítico |
+| vital | importante, imprescindible, necesario |
+| transformador | significativo, importante, mayor |
+| vanguardia | nuevo, avanzado, reciente, moderno |
+| innovador | nuevo, original, significativo |
+| innovador | nuevo, original, creativo |
+| sin costuras | suave, fácil, sin esfuerzo |
+| intrincado | complejo, detallado, complicado |
+| matizado | sutil, complejo, detallado |
+| multifacético | complejo, variado, diverso |
+| holístico | completo, completo, integral |
 
 ---
 
-## Overused Transitions and Connectors
+## Transiciones y conectores usados en exceso
 
-| Avoid | Use Instead |
+| Evitar | Usar en su lugar |
 |-------|-------------|
-| furthermore | also, in addition, and |
-| moreover | also, and, besides |
-| notwithstanding | despite, even so, still |
-| that being said | however, but, still |
-| at its core | essentially, fundamentally, basically |
-| to put it simply | in short, simply put |
-| it is worth noting that | note that, importantly |
-| in the realm of | in, within, regarding |
-| in the landscape of | in, within |
-| in today's [anything] | currently, now, today |
+| además | también, además, y |
+| además | también, y, además |
+| no obstante | a pesar, aun así, todavía |
+| dicho esto | sin embargo, pero, aún así |
+| en su núcleo | esencialmente, fundamentalmente, básicamente |
+| en pocas palabras | en resumen, en pocas palabras |
+| vale la pena señalar que | tenga en cuenta que, lo más importante |
+| en el ámbito de | en, dentro, con respecto a |
+| en el paisaje de | en, dentro |
+| en el [cualquier cosa] de hoy | actualmente, ahora, hoy |
 
 ---
 
-## Phrases That Signal AI Writing
+## Frases que señalan la escritura con IA
 
-### Opening Phrases to Avoid
-- "In today's fast-paced world..."
-- "In today's digital age..."
-- "In an era of..."
-- "In the ever-evolving landscape of..."
-- "In the realm of..."
-- "It's important to note that..."
-- "Let's delve into..."
-- "Imagine a world where..."
+### Frases iniciales que se deben evitar
+- "En el mundo acelerado de hoy..."
+- "En la era digital actual..."
+- "En una era de..."
+- "En el paisaje en constante evolución de..."
+- "En el reino de..."
+- "Es importante señalar que..."
+- "Vamos a profundizar en..."
+- "Imagínate un mundo donde..."
 
-### Transitional Phrases to Avoid
-- "That being said..."
-- "With that in mind..."
-- "It's worth mentioning that..."
-- "At its core..."
-- "To put it simply..."
-- "In essence..."
-- "This begs the question..."
+### Frases de transición que se deben evitar
+- "Dicho esto..."
+- "Con eso en mente..."
+- "Cabe mencionar que..."
+- "En esencia..."
+- "Para decirlo simplemente..."
+- "En esencia..."
+- "Esto plantea la pregunta..."### Frases finales que se deben evitar
+- "En conclusión..."
+- "Para resumir..."
+- "Al [hacer X], puedes [lograr Y]..."
+- "En el análisis final..."
+- "Considerando todo..."
+- "Al final del día..."
 
-### Concluding Phrases to Avoid
-- "In conclusion..."
-- "To sum up..."
-- "By [doing X], you can [achieve Y]..."
-- "In the final analysis..."
-- "All things considered..."
-- "At the end of the day..."
-
-### Structural Patterns to Avoid
-- "Whether you're a [X], [Y], or [Z]..." (listing three examples after "whether")
-- "It's not just [X], it's also [Y]..."
-- "Think of [X] as [elaborate metaphor]..."
-- Starting sentences with "By" followed by a gerund: "By understanding X, you can Y..."
+### Patrones estructurales a evitar
+- "Si eres [X], [Y] o [Z]..." (se enumeran tres ejemplos después de "si")
+- "No es solo [X], también es [Y]..."
+- "Piensa en [X] como [metáfora elaborada]..."
+- Iniciar frases con "By" seguido de un gerundio: "Al entender X, puedes Y..."
 
 ---
 
-## Filler Words and Empty Intensifiers
+## Palabras de relleno e intensificadores vacíos
 
-These words often add nothing to meaning. Remove them or find specific alternatives:
+Estas palabras a menudo no añaden nada al significado. Elimínelos o busque alternativas específicas:
 
-- absolutely
-- actually
-- basically
-- certainly
-- clearly
-- definitely
-- essentially
-- extremely
-- fundamentally
-- incredibly
-- interestingly
-- naturally
-- obviously
-- quite
-- really
-- significantly
-- simply
-- surely
-- truly
-- ultimately
-- undoubtedly
-- very
+- absolutamente
+- en realidad
+- básicamente
+- ciertamente
+- claramente
+- definitivamente
+- esencialmente
+- extremadamente
+- fundamentalmente
+- increíblemente
+- curiosamente
+- naturalmente
+- obviamente
+- bastante
+- realmente
+- significativamente
+- simplemente
+- seguramente
+- verdaderamente
+- en última instancia
+- sin duda
+- muy
 
 ---
 
-## Academic-Specific AI Tells
+## La IA académica específica indica
 
-| Avoid | Use Instead |
+| Evitar | Usar en su lugar |
 |-------|-------------|
-| shed light on | clarify, explain, reveal |
-| pave the way for | enable, allow, make possible |
-| a myriad of | many, numerous, various |
-| a plethora of | many, numerous, several |
-| paramount | very important, essential, critical |
-| pertaining to | about, regarding, concerning |
-| prior to | before |
-| subsequent to | after |
-| in light of | because of, given, considering |
-| with respect to | about, regarding, for |
-| in terms of | regarding, for, about |
-| the fact that | that (or rewrite sentence) |
+| arrojar luz sobre | aclarar, explicar, revelar |
+| allanar el camino para | habilitar, permitir, hacer posible |
+| una miríada de | muchos, numerosos, varios |
+| una gran cantidad de | muchos, numerosos, varios |
+| primordial | muy importante, imprescindible, crítico |
+| perteneciente a | acerca de, respecto a, respecto a |
+| antes de | antes |
+| posterior a | después |
+| a la luz de | debido a, dado, considerando |
+| con respecto a | acerca de, respecto a, para |
+| en términos de | respecto a, para, acerca de |
+| el hecho de que | eso (o reescribir la oración) |
 
 ---
 
-## How to Self-Check
+## Cómo autocomprobar
 
-1. Read your text aloud. If phrases sound unnatural in speech, revise them
-2. Ask: "Would I say this in a conversation with a colleague?"
-3. Check for repetitive sentence structures
-4. Look for clusters of the words listed above
-5. Ensure varied sentence lengths (not all similar length)
-6. Verify each intensifier adds genuine meaning
+1. Lee tu texto en voz alta. Si las frases suenan poco naturales en el habla, revíselas.
+2. Pregunte: "¿Diría esto en una conversación con un colega?"
+3. Compruebe si hay estructuras de oraciones repetitivas.
+4. Busque grupos de las palabras enumeradas anteriormente.
+5. Asegúrese de que las oraciones tengan longitudes variadas (no todas de longitud similar)
+6. Verifique que cada intensificador agregue un significado genuino

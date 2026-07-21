@@ -1,14 +1,14 @@
-# Deep Research Skill - Quick Start Guide
+# Deep Research Skill - Guía de inicio rápido
 
-## What is This?
+## ¿Qué es esto?
 
-A comprehensive research engine for Claude Code that **matches and exceeds** Claude Desktop's "Advanced Research" feature. It conducts enterprise-grade deep research with extended reasoning, multi-source synthesis, and citation-backed reports.
+Un motor de investigación integral para Claude Code que **iguala y supera** la función "Advanced Research" de Claude Desktop. Realiza investigación profunda de nivel empresarial con razonamiento extendido, síntesis multi-fuente e informes respaldados por citas.
 
-## How to Use
+## Cómo usar
 
-### Simple Invocation (Recommended)
+### Invocación simple (recomendada)
 
-Just ask Claude Code to use deep research:
+Solo pide a Claude Code que use deep research:
 
 ```
 Use deep research to analyze the current state of AI agent frameworks in 2025
@@ -22,7 +22,7 @@ Deep research: Should we migrate from PostgreSQL to Supabase?
 Use deep research in ultradeep mode to review recent advances in longevity science
 ```
 
-### Direct CLI Usage
+### Uso directo por CLI
 
 ```bash
 # Standard research (6 phases, ~5-10 minutes)
@@ -46,94 +46,94 @@ python3 ~/.claude/skills/deep-research/research_engine.py \
   --mode ultradeep
 ```
 
-## Research Modes Explained
+## Modos de investigación explicados
 
-| Mode | Phases | Time | Use When |
+| Modo | Fases | Tiempo | Usar cuando |
 |------|--------|------|----------|
-| **Quick** | 3 | 2-5 min | Initial exploration, simple questions |
-| **Standard** | 6 | 5-10 min | Most research needs (default) |
-| **Deep** | 8 | 10-20 min | Complex topics, important decisions |
-| **UltraDeep** | 8+ | 20-45 min | Critical analysis, comprehensive reports |
+| **Quick** | 3 | 2-5 min | Exploración inicial, preguntas simples |
+| **Standard** | 6 | 5-10 min | La mayoría de necesidades de investigación (por defecto) |
+| **Deep** | 8 | 10-20 min | Temas complejos, decisiones importantes |
+| **UltraDeep** | 8+ | 20-45 min | Análisis crítico, informes comprehensivos |
 
-## What You Get
+## Qué obtienes
 
-Every research report includes:
+Cada informe de investigación incluye:
 
-- **Executive Summary** - Key findings in 3-5 bullets
-- **Detailed Analysis** - With full citations [1], [2], [3]
-- **Synthesis & Insights** - Novel insights beyond sources
-- **Limitations & Caveats** - What's uncertain or missing
-- **Recommendations** - Actionable next steps
-- **Full Bibliography** - All sources with credibility scores
-- **Methodology Appendix** - How research was conducted
+- **Executive Summary** - Hallazgos clave en 3-5 viñetas
+- **Detailed Analysis** - Con citas completas [1], [2], [3]
+- **Synthesis & Insights** - Insights novedosos más allá de las fuentes
+- **Limitations & Caveats** - Qué es incierto o falta
+- **Recommendations** - Próximos pasos accionables
+- **Full Bibliography** - Todas las fuentes con puntuaciones de credibilidad
+- **Methodology Appendix** - Cómo se realizó la investigación
 
-## Output Location
+## Ubicación de salida
 
-All research is saved to:
+Toda la investigación se guarda en:
 ```
 ~/.claude/research_output/
 ```
 
-Format: `research_report_YYYYMMDD_HHMMSS.md`
+Formato: `research_report_YYYYMMDD_HHMMSS.md`
 
-## Features That Beat Claude Desktop Research
+## Funciones que superan a Claude Desktop Research
 
-✅ **8-Phase Pipeline** - More thorough than Claude Desktop's approach
-✅ **Multiple Research Modes** - Choose depth vs speed
-✅ **Source Credibility Scoring** - Evaluates each source (0-100 score)
-✅ **Graph-of-Thoughts** - Non-linear exploration with branching reasoning
-✅ **Citation Management** - Automatic tracking and bibliography generation
-✅ **Critique Phase** - Built-in red-team analysis of findings
-✅ **Refine Phase** - Addresses gaps before finalizing
-✅ **Local File Integration** - Can search your codebase/docs
-✅ **Code Execution** - Can run analyses and validations
+✅ **Pipeline de 8 fases** - Más exhaustivo que el enfoque de Claude Desktop
+✅ **Múltiples modos de investigación** - Elige profundidad vs velocidad
+✅ **Puntuación de credibilidad de fuentes** - Evalúa cada fuente (puntuación 0-100)
+✅ **Graph-of-Thoughts** - Exploración no lineal con razonamiento ramificado
+✅ **Gestión de citas** - Seguimiento automático y generación de bibliografía
+✅ **Fase de crítica** - Análisis red-team integrado de hallazgos
+✅ **Fase de refinamiento** - Aborda brechas antes de finalizar
+✅ **Integración con archivos locales** - Puede buscar en tu codebase/docs
+✅ **Ejecución de código** - Puede ejecutar análisis y validaciones
 
-## Example Use Cases
+## Casos de uso de ejemplo
 
-### Technology Evaluation
+### Evaluación tecnológica
 ```
 Use deep research to compare Next.js 15 vs Remix vs Astro for my project
 ```
 
-### Market Analysis
+### Análisis de mercado
 ```
 Deep research: What are the key trends in longevity biotech funding 2023-2025?
 ```
 
-### Technical Decision
+### Decisión técnica
 ```
 Use deep research to help me choose between Auth0, Clerk, and Supabase Auth
 ```
 
-### Scientific Review
+### Revisión científica
 ```
 Use deep research in ultradeep mode to summarize senolytics research progress
 ```
 
-### Competitive Intelligence
+### Inteligencia competitiva
 ```
 Deep research: Who are the top 5 competitors in the AI code assistant space?
 ```
 
-## Quality Standards
+## Estándares de calidad
 
-Every report guarantees:
-- ✅ 10+ distinct sources (unless highly specialized topic)
-- ✅ 3+ source verification for major claims
-- ✅ Full citation tracking
-- ✅ Credibility assessment for each source
-- ✅ Limitations documented
-- ✅ Methodology explained
+Cada informe garantiza:
+- ✅ 10+ fuentes distintas (salvo temas muy especializados)
+- ✅ Verificación con 3+ fuentes para afirmaciones importantes
+- ✅ Seguimiento completo de citas
+- ✅ Evaluación de credibilidad por fuente
+- ✅ Limitaciones documentadas
+- ✅ Metodología explicada
 
-## Tips for Best Results
+## Consejos para mejores resultados
 
-1. **Be Specific** - "Compare X vs Y for use case Z" is better than "Tell me about X"
-2. **State Your Goal** - "Help me decide..." vs "Give me an overview..."
-3. **Choose Right Mode** - Use Quick for exploration, Deep for decisions
-4. **Check Scope First** - Review Phase 1 output to ensure on track
-5. **Use Citations** - Drill deeper by asking about specific sources [1], [2], etc.
+1. **Sé específico** - "Compare X vs Y for use case Z" es mejor que "Tell me about X"
+2. **Indica tu objetivo** - "Help me decide..." vs "Give me an overview..."
+3. **Elige el modo correcto** - Usa Quick para exploración, Deep para decisiones
+4. **Revisa el alcance primero** - Revisa la salida de la Fase 1 para confirmar el rumbo
+5. **Usa las citas** - Profundiza preguntando sobre fuentes específicas [1], [2], etc.
 
-## Architecture
+## Arquitectura
 
 ```
 deep-research/
@@ -147,21 +147,21 @@ deep-research/
 └── requirements.txt        # No external deps needed!
 ```
 
-## No Dependencies Required!
+## ¡Sin dependencias requeridas!
 
-The skill uses only Python standard library - no pip install needed for basic usage.
+La skill usa solo la biblioteca estándar de Python — no se necesita pip install para uso básico.
 
-## Version
+## Versión
 
-**v1.0** - Released 2025-11-04
+**v1.0** - Lanzado 2025-11-04
 
-Built to match and exceed Claude Desktop's Advanced Research feature.
+Construido para igualar y superar la función Advanced Research de Claude Desktop.
 
 ---
 
-**Ready to use?** Just type:
+**¿Listo para usar?** Solo escribe:
 ```
 Use deep research to [your question here]
 ```
 
-Claude Code will automatically load this skill and execute the research pipeline!
+¡Claude Code cargará automáticamente esta skill y ejecutará el pipeline de investigación!

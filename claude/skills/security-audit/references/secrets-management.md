@@ -1,27 +1,28 @@
-# Secrets Management
+# Gestión de secretos
 
-Secure handling of sensitive configuration and credentials.
+Manejo seguro de configuraciones y credenciales confidenciales.
 
-## Secret Detection
+## Detección secreta
 
-### Common Secret Patterns
+### Patrones secretos comunes
 
-| Type | Regex Pattern | Example |
+| Tipo | Patrón de expresiones regulares | Ejemplo |
 |------|---------------|---------|
-| AWS Access Key | `AKIA[0-9A-Z]{16}` | `AKIAIOSFODNN7EXAMPLE` |
-| AWS Secret Key | `[A-Za-z0-9/+=]{40}` | 40-char base64 string |
-| GitHub Token | `ghp_[a-zA-Z0-9]{36}` | `ghp_xxxxxxxxxxxx...` |
-| GitHub OAuth | `gho_[a-zA-Z0-9]{36}` | `gho_xxxxxxxxxxxx...` |
-| Slack Token | `xox[baprs]-[0-9a-zA-Z]{10,}` | `xoxb-123456789-...` |
-| Stripe Key | `sk_live_[0-9a-zA-Z]{24,}` | `sk_live_51H...` |
-| Google API | `AIza[0-9A-Za-z-_]{35}` | `AIzaSyA...` |
-| Private Key | `-----BEGIN.*PRIVATE KEY-----` | PEM format |
-| Connection String | `(mongodb|postgres|mysql)://` | DB URLs |
-| Generic API Key | `[aA]pi[_-]?[kK]ey.*['\"][a-zA-Z0-9]{16,}` | Various |
+| Clave de acceso de AWS | `AKIA[0-9A-Z]{16}`|` AKIAIOSFODNN7EXAMPLE`|
+| Clave secreta de AWS | `[A-Za-z0-9/+=]{40}`| Cadena base64 de 40 caracteres |
+| Ficha de GitHub | `ghp_[a-zA-Z0-9]{36}`|` ghp_xxxxxxxxxxxx...`|
+| GitHub OAuth | `gho_[a-zA-Z0-9]{36}`|` gho_xxxxxxxxxxxx...`|
+| Ficha floja | `xox[baprs]-[0-9a-zA-Z]{10,}`|` xoxb-123456789-...`|
+| Clave de rayas | `sk_live_[0-9a-zA-Z]{24,}`|` sk_live_51H...`|
+| API de Google | `AIza[0-9A-Za-z-_]{35}`|` AIzaSyA...`|
+| Clave privada | `-----BEGIN.*PRIVATE KEY-----`| Formato PEM |
+| Cadena de conexión | `(mongodb|postgres|mysql)://`| URL de bases de datos |
+| Clave API genérica | `[aA]pi[_-]?[kK]ey.*['\"][a-zA-Z0-9]{16,}`| Varios |
 
-### Detection Tools
+### Herramientas de detección
 
 ```bash
+
 # Gitleaks - scan repository
 gitleaks detect --source . --verbose
 gitleaks detect --source . --report-format json --report-path leaks.json
@@ -40,10 +41,11 @@ grep -rn "-----BEGIN.*PRIVATE KEY" --include="*"
 grep -rn "password\s*=\s*['\"][^'\"]\+" --include="*.ts"
 ```
 
-### Pre-commit Hook
+### Gancho de confirmación previa
 
 ```bash
 #!/bin/bash
+
 # .git/hooks/pre-commit
 
 # Run gitleaks
@@ -54,19 +56,19 @@ if command -v gitleaks &> /dev/null; then
     exit 1
   fi
 fi
-```
+```---
 
----
+## Variables de entorno
 
-## Environment Variables
-
-### Secure .env Handling
+### Manejo seguro de .env
 
 ```bash
+
 # .env file structure
+
 # Use descriptive names, never commit real values
 
-# Database
+# Base de datos
 DATABASE_URL=postgres://user:password@localhost:5432/myapp
 
 # API Keys
@@ -82,10 +84,9 @@ AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
 ```
 
-### .gitignore Patterns
+### Patrones .gitignore```gitignore
 
-```gitignore
-# Environment files
+# Archivos de entorno
 .env
 .env.local
 .env.*.local
@@ -108,7 +109,7 @@ config/local.json
 secrets/
 ```
 
-### Validation
+### Validación
 
 ```typescript
 import { z } from 'zod';
@@ -137,13 +138,11 @@ function validateEnv() {
 }
 
 export const env = validateEnv();
-```
+```---
 
----
+## Gerentes secretos
 
-## Secret Managers
-
-### AWS Secrets Manager
+### Administrador de secretos de AWS
 
 ```typescript
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
@@ -179,7 +178,7 @@ async function getCachedSecret(secretId: string) {
 }
 ```
 
-### HashiCorp Vault
+### Bóveda de HashiCorp
 
 ```typescript
 import Vault from 'node-vault';
@@ -205,24 +204,24 @@ async function authenticateAppRole() {
 }
 ```
 
-### 1Password CLI
+### CLI de 1 contraseña
 
 ```bash
+
 # Load secrets from 1Password
 export DATABASE_URL=$(op read "op://Vault/Database/connection_string")
 export JWT_SECRET=$(op read "op://Vault/JWT/secret")
 
 # Or use op run
 op run --env-file=.env -- npm start
-```
+```---
 
----
+## Secretos de Kubernetes
 
-## Kubernetes Secrets
-
-### Creating Secrets
+### Creando secretos
 
 ```bash
+
 # From literal values
 kubectl create secret generic app-secrets \
   --from-literal=database-url='postgres://...' \
@@ -233,7 +232,7 @@ kubectl create secret generic app-secrets \
   --from-file=.env
 ```
 
-### Secret YAML
+### YAML secreto
 
 ```yaml
 apiVersion: v1
@@ -250,7 +249,7 @@ stringData:
   api-key: my-api-key
 ```
 
-### Using in Pods
+### Uso en pods
 
 ```yaml
 apiVersion: v1
@@ -283,9 +282,10 @@ spec:
         secretName: app-secrets
 ```
 
-### Sealed Secrets (GitOps-safe)
+### Secretos sellados (seguro para GitOps)
 
 ```bash
+
 # Install kubeseal
 brew install kubeseal
 
@@ -296,13 +296,11 @@ kubectl create secret generic app-secrets \
   kubeseal --format yaml > sealed-secret.yaml
 
 # The sealed secret can be safely committed to git
-```
+```---
 
----
+## Rotación secreta
 
-## Secret Rotation
-
-### Rotation Strategy
+### Estrategia de rotación
 
 ```typescript
 interface SecretRotation {
@@ -321,7 +319,7 @@ interface SecretRotation {
 }
 ```
 
-### JWT Secret Rotation
+### Rotación secreta de JWT
 
 ```typescript
 interface JWTConfig {
@@ -352,7 +350,7 @@ function signToken(payload: JWTPayload, config: JWTConfig): string {
 }
 ```
 
-### API Key Rotation
+### Rotación de clave API
 
 ```typescript
 // API key rotation workflow
@@ -383,15 +381,14 @@ async function rotateAPIKey(userId: string): Promise<void> {
   
   // 5. Scheduled job removes expired keys
 }
-```
+```---
 
----
+## Secretos de CI/CD
 
-## CI/CD Secrets
-
-### GitHub Actions
+### Acciones de GitHub
 
 ```yaml
+
 # Use encrypted secrets
 jobs:
   deploy:
@@ -404,9 +401,10 @@ jobs:
         run: npm run deploy
 ```
 
-### GitLab CI
+### EN GitLab
 
 ```yaml
+
 # Use CI/CD variables (masked + protected)
 deploy:
   script:
@@ -417,9 +415,10 @@ deploy:
     - main
 ```
 
-### Security Best Practices
+### Mejores prácticas de seguridad
 
 ```yaml
+
 # ✅ Good: Secrets only in secure env
 steps:
   - run: npm run deploy
@@ -433,13 +432,11 @@ steps:
 # ❌ Bad: Echoing secrets
 steps:
   - run: echo ${{ secrets.MY_SECRET }}
-```
+```---
 
----
+## Patrones de aplicación
 
-## Application Patterns
-
-### Config Module
+### Módulo de configuración
 
 ```typescript
 // config/index.ts
@@ -490,7 +487,7 @@ export function getConfig(): Config {
 }
 ```
 
-### Never Log Secrets
+### Nunca registres secretos
 
 ```typescript
 // ❌ Bad: Logging sensitive data
@@ -514,37 +511,35 @@ function sanitizeForLogging(obj: Record<string, unknown>): Record<string, unknow
   
   return sanitized;
 }
-```
+```---
 
----
+## Lista de verificación de auditoría
 
-## Audit Checklist
+### Revisión de código
 
-### Code Review
+- [] No hay secretos en el código fuente.
+- [] No hay secretos en los comentarios.
+- [] archivos .env en .gitignore
+- [] No hay secretos en los mensajes de error.
+- [] No hay secretos en los registros.
 
-- [ ] No secrets in source code
-- [ ] No secrets in comments
-- [ ] .env files in .gitignore
-- [ ] No secrets in error messages
-- [ ] No secrets in logs
+### Repositorio
 
-### Repository
+- [] Ganchos de confirmación previa configurados
+- [] Historial de Git analizado en busca de secretos.
+- [ ] .gitignore incluye patrones secretos
+- [] Escaneo secreto de GitHub habilitado
 
-- [ ] Pre-commit hooks configured
-- [ ] Git history scanned for secrets
-- [ ] .gitignore includes secret patterns
-- [ ] GitHub secret scanning enabled
+### Infraestructura
 
-### Infrastructure
-
-- [ ] Secrets in secret manager (not env vars on host)
-- [ ] Rotation policy defined
-- [ ] Access audit logging enabled
-- [ ] Least privilege access
+- [] Secretos en el administrador de secretos (no variables de entorno en el host)
+- [ ] Política de rotación definida
+- [] Acceso al registro de auditoría habilitado
+- [] Acceso con privilegios mínimos
 
 ### CI/CD
 
-- [ ] Secrets not printed in logs
-- [ ] Secrets masked in output
-- [ ] Protected branches for secrets
-- [ ] No secrets in build artifacts
+- [] Secretos no impresos en registros
+- [] Secretos enmascarados en la salida
+- [] Ramas protegidas para secretos
+- [] No hay secretos en los artefactos de construcción.

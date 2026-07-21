@@ -1,16 +1,16 @@
 ---
-title: Technical SEO for SaaS Sites
-impact: HIGH
-tags: technical-seo, site-architecture, crawlability, indexation, core-web-vitals, schema
+título: SEO técnico para sitios SaaS
+impacto: ALTO
+Etiquetas: SEO técnico, arquitectura del sitio, rastreabilidad, indexación, core-web-vitals, esquema
 ---
 
-## Technical SEO for SaaS Sites
+## SEO técnico para sitios SaaS
 
-**Impact: HIGH**
+**Impacto: ALTO**
 
-Technical SEO is the foundation that enables content to rank. A technically sound site with average content outperforms a technically broken site with excellent content. For SaaS, this includes specific challenges around app vs. marketing pages, JavaScript rendering, and documentation.
+El SEO técnico es la base que permite clasificar el contenido. Un sitio técnicamente sólido con contenido promedio supera a un sitio técnicamente defectuoso con contenido excelente. Para SaaS, esto incluye desafíos específicos en torno a aplicaciones versus páginas de marketing, representación de JavaScript y documentación.
 
-### Technical SEO Audit Checklist
+### Lista de verificación de auditoría técnica de SEO
 
 ```
 Crawlability
@@ -42,9 +42,10 @@ Structure
 └── [ ] Redirects are 301 (not 302)
 ```
 
-### Robots.txt for SaaS
+### Robots.txt para SaaS
 
 ```
+
 # Good robots.txt for SaaS site
 
 User-agent: *
@@ -64,7 +65,7 @@ Allow: /app/login
 Sitemap: https://example.com/sitemap.xml
 ```
 
-### Bad Robots.txt Mistakes
+### Errores incorrectos de Robots.txt
 
 ```
 ✗ User-agent: *
@@ -81,39 +82,39 @@ Sitemap: https://example.com/sitemap.xml
   (Bots have to discover sitemap another way)
 ```
 
-### XML Sitemap Best Practices
+### Prácticas recomendadas para mapas de sitios XML
 
-| Rule | Guideline |
+| Regla | Directriz |
 |------|-----------|
-| **Include** | All pages you want indexed |
-| **Exclude** | Thin pages, duplicates, app pages |
-| **Update** | Automatically when content changes |
-| **Size** | Max 50,000 URLs or 50MB per sitemap |
-| **Priority** | Homepage > main pages > blog posts |
-| **Frequency** | Reflect actual update frequency |
+| **Incluir** | Todas las páginas que desea indexar |
+| **Excluir** | Páginas delgadas, duplicadas, páginas de aplicaciones |
+| **Actualización** | Automáticamente cuando cambia el contenido |
+| **Tamaño** | Máximo 50.000 URL o 50 MB por mapa de sitio |
+| **Prioridad** | Página de inicio > páginas principales > publicaciones de blog |
+| **Frecuencia** | Refleja la frecuencia de actualización real |
 
-### Core Web Vitals Targets
+### Objetivos principales de Web Vitals
 
-| Metric | What It Measures | Good | Needs Work | Poor |
+| Métrica | Qué mide | Bueno | Necesita trabajo | Pobre |
 |--------|------------------|------|------------|------|
-| **LCP** | Largest Contentful Paint | <2.5s | 2.5-4s | >4s |
-| **INP** | Interaction to Next Paint | <200ms | 200-500ms | >500ms |
-| **CLS** | Cumulative Layout Shift | <0.1 | 0.1-0.25 | >0.25 |
+| **LCP** | Pintura con contenido más grande | <2,5 s | 2,5-4 s | >4s |
+| **INP** | Interacción con la siguiente pintura | <200 ms | 200-500 ms | >500ms |
+| **CLS** | Cambio de diseño acumulativo | <0,1 | 0,1-0,25 | >0,25 |
 
-### Common CWV Fixes for SaaS Sites
+### Correcciones comunes de CWV para sitios SaaS
 
-| Issue | Cause | Fix |
+| Problema | Causa | Arreglar |
 |-------|-------|-----|
-| **Poor LCP** | Large hero images | Preload, compress, use WebP |
-| **Poor LCP** | Slow server response | CDN, edge caching |
-| **Poor LCP** | Render-blocking JS | Defer non-critical scripts |
-| **Poor INP** | Heavy JavaScript | Code splitting, lazy loading |
-| **Poor INP** | Third-party scripts | Delay analytics, chat widgets |
-| **High CLS** | Images without dimensions | Set width/height attributes |
-| **High CLS** | Dynamic content injection | Reserve space for ads/embeds |
-| **High CLS** | Web fonts | font-display: swap, preload |
+| **LCP deficiente** | Imágenes de héroes grandes | Precargar, comprimir, usar WebP |
+| **LCP deficiente** | Respuesta lenta del servidor | CDN, almacenamiento en caché perimetral |
+| **LCP deficiente** | JS de bloqueo de renderizado | Aplazar scripts no críticos |
+| **INP deficiente** | JavaScript pesado | División de código, carga diferida |
+| **INP deficiente** | Scripts de terceros | Análisis de retrasos, widgets de chat |
+| **CLS alto** | Imágenes sin dimensiones | Establecer atributos de ancho/alto |
+| **CLS alto** | Inyección de contenido dinámico | Reservar espacio para anuncios/inserciones |
+| **CLS alto** | Fuentes web | visualización de fuentes: intercambio, precarga |
 
-### JavaScript SEO for SaaS
+### JavaScript SEO para SaaS
 
 ```
 Common issue: Marketing site uses same React/Next.js stack as app
@@ -132,21 +133,19 @@ Solutions:
 └── Check "View Rendered Source" vs "View Source"
 ```
 
-### Canonical Tag Implementation
+### Implementación de etiquetas canónicas
 
-| Scenario | Canonical Should Point To |
-|----------|---------------------------|
-| **Single URL, no variants** | Self-referencing canonical |
-| **www vs non-www** | Preferred version |
-| **HTTP vs HTTPS** | HTTPS version |
-| **With/without trailing slash** | Chosen standard |
-| **Paginated content** | Usually self-referencing |
-| **Filtered/sorted versions** | Base URL (no parameters) |
-| **Syndicated content** | Original source |
+| Escenario | Canonical debería señalar |
+|----------|---------------------|
+| **URL única, sin variantes** | Canónico autorreferencial |
+| **www frente a no www** | Versión preferida |
+| **HTTP frente a HTTPS** | Versión HTTPS |
+| **Con/sin barra diagonal** | Estándar elegido |
+| **Contenido paginado** | Generalmente autorreferencial |
+| **Versiones filtradas/ordenadas** | URL base (sin parámetros) |
+| **Contenido distribuido** | Fuente original |
 
-### Good Canonical Implementation
-
-```html
+### Buena implementación canónica```html
 <!-- On page: https://example.com/blog/secrets-management -->
 <link rel="canonical" href="https://example.com/blog/secrets-management" />
 
@@ -157,9 +156,7 @@ Solutions:
 <link rel="canonical" href="https://example.com/tools" />
 ```
 
-### Bad Canonical Mistakes
-
-```html
+### Malos errores canónicos```html
 ✗ Canonical to homepage from every page
   <link rel="canonical" href="https://example.com/" />
   (Tells Google all your pages are duplicates of homepage)
@@ -175,7 +172,7 @@ Solutions:
   (Google guesses, often incorrectly)
 ```
 
-### Site Architecture for SaaS
+### Arquitectura del sitio para SaaS
 
 ```
 Good structure:
@@ -201,19 +198,19 @@ example.com/
     └── /company/careers/
 ```
 
-### Schema Markup for SaaS
+### Marcado de esquema para SaaS
 
-| Page Type | Schema Type | Key Properties |
+| Tipo de página | Tipo de esquema | Propiedades clave |
 |-----------|-------------|----------------|
-| **Homepage** | Organization | name, logo, sameAs |
-| **Product page** | SoftwareApplication | name, operatingSystem, offers |
-| **Blog post** | Article | headline, author, datePublished |
-| **FAQ page** | FAQPage | mainEntity (questions/answers) |
-| **How-to** | HowTo | step, tool, supply |
-| **Pricing** | Product + Offer | price, priceCurrency |
-| **Documentation** | TechArticle | dependencies, proficiencyLevel |
+| **Página de inicio** | Organización | nombre, logotipo, igual que |
+| **Página del producto** | Aplicación de software | nombre, sistema operativo, ofertas |
+| **Entrada de blog** | Artículo | titular, autor, fecha de publicación |
+| **Página de preguntas frecuentes** | Página de preguntas frecuentes | mainEntity (preguntas/respuestas) |
+| **Cómo hacerlo** | Cómo | paso, herramienta, suministro |
+| **Precios** | Producto + Oferta | precio, precioMoneda |
+| **Documentación** | Artículo técnico | dependencias, nivel de competencia |
 
-### Good Schema for Blog Post
+### Buen esquema para publicación de blog
 
 ```json
 {
@@ -238,18 +235,18 @@ example.com/
 }
 ```
 
-### Redirect Best Practices
+### Mejores prácticas de redireccionamiento
 
-| Situation | Redirect Type | Notes |
+| Situación | Tipo de redireccionamiento | Notas |
 |-----------|---------------|-------|
-| **Permanent move** | 301 | Passes ~90% link equity |
-| **Temporary move** | 302 | No link equity passed |
-| **URL change** | 301 | Old URL → new URL |
-| **Domain change** | 301 | Every old URL → equivalent new URL |
-| **HTTP → HTTPS** | 301 | Required for HTTPS migration |
-| **Deleted page** | 301 to relevant page | Don't 404 pages with backlinks |
+| **Mudanza permanente** | 301 | Pasa ~90% de equidad de enlace |
+| **Mudanza temporal** | 302 | No se aprobó la equidad del enlace |
+| **Cambio de URL** | 301 | URL antigua → URL nueva |
+| **Cambio de dominio** | 301 | Cada URL antigua → URL nueva equivalente |
+| **HTTP → HTTPS** | 301 | Requerido para la migración HTTPS |
+| **Página eliminada** | 301 a la página relevante | No 404 páginas con vínculos de retroceso |
 
-### Common Redirect Mistakes
+### Errores comunes de redireccionamiento
 
 ```
 ✗ Redirect chains:
@@ -268,37 +265,37 @@ example.com/
   (Should redirect to most relevant page)
 ```
 
-### Mobile Optimization
+### Optimización móvil
 
-| Element | Requirement |
+| Elemento | Requisito |
 |---------|-------------|
-| **Responsive design** | Single URL for mobile/desktop |
-| **Tap targets** | Minimum 48px spacing |
-| **Font size** | Minimum 16px base |
-| **Viewport** | meta viewport tag set |
-| **No horizontal scroll** | Content fits screen width |
-| **Touch-friendly** | No hover-dependent features |
+| **Diseño responsivo** | URL única para móvil/escritorio |
+| **Toca objetivos** | Espaciado mínimo de 48 píxeles |
+| **Tamaño de fuente** | Base mínima de 16px |
+| **Ventana gráfica** | conjunto de etiquetas de meta ventana gráfica |
+| **Sin desplazamiento horizontal** | El contenido se ajusta al ancho de la pantalla |
+| **Amigable al tacto** | Sin funciones que dependan del desplazamiento |
 
-### Site Speed Tools
+### Herramientas de velocidad del sitio
 
-| Tool | What It Measures | When to Use |
+| Herramienta | Qué mide | Cuándo utilizar |
 |------|------------------|-------------|
-| **PageSpeed Insights** | CWV, performance score | Individual page analysis |
-| **Chrome DevTools** | Network, rendering, JS | Deep debugging |
-| **WebPageTest** | Waterfall, filmstrip | Detailed load analysis |
-| **GTmetrix** | Combined metrics | Quick overview |
-| **Search Console** | CWV across site | Site-wide monitoring |
-| **Lighthouse CI** | Automated testing | CI/CD integration |
+| **Información de PageSpeed** | CWV, puntuación de rendimiento | Análisis de páginas individuales |
+| **Herramientas de desarrollo de Chrome** | Red, renderizado, JS | Depuración profunda |
+| **Prueba de página web** | Cascada, tira de película | Análisis de carga detallado |
+| **GTmetrix** | Métricas combinadas | Descripción rápida |
+| **Consola de búsqueda** | CWV en todo el sitio | Monitoreo de todo el sitio |
+| **Faro CI** | Pruebas automatizadas | Integración CI/CD |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Blocking JS/CSS in robots.txt** — Google can't render pages properly
-- **Soft 404s** — Page returns 200 but shows "not found" content
-- **Orphan pages** — No internal links pointing to page
-- **Infinite scroll without pagination** — Bots can't access content
-- **Faceted navigation mess** — Creates thousands of crawlable filter URLs
-- **No HTTPS** — Ranking factor, user trust issue
-- **Slow hosting** — >3s load time kills rankings and conversions
-- **Mixed content** — HTTPS page loading HTTP resources
-- **Missing alt tags on critical images** — Accessibility and SEO issue
-- **App and marketing on same subdomain** — Confuses crawlers
+- **Bloqueo de JS/CSS en robots.txt**: Google no puede representar las páginas correctamente
+- **Soft 404s**: la página devuelve 200 pero muestra contenido "no encontrado"
+- **Páginas huérfanas**: no hay enlaces internos que apunten a la página
+- **Desplazamiento infinito sin paginación**: los bots no pueden acceder al contenido
+- **Desorden de navegación por facetas**: crea miles de URL de filtro rastreables
+- **Sin HTTPS**: factor de clasificación, problema de confianza del usuario
+- **Hospedaje lento**: >3 segundos de tiempo de carga acaban con las clasificaciones y las conversiones
+- **Contenido mixto**: página HTTPS que carga recursos HTTP
+- **Faltan etiquetas alt en imágenes críticas**: problema de accesibilidad y SEO
+- **Aplicación y marketing en el mismo subdominio**: confunde a los rastreadores

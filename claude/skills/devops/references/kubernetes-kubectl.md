@@ -1,6 +1,6 @@
-# kubectl Essential Commands
+# Comandos esenciales de kubectl
 
-## Cluster & Node
+## Cluster y nodos
 ```bash
 kubectl cluster-info
 kubectl get nodes
@@ -10,7 +10,7 @@ kubectl drain <node-name> --ignore-daemonsets
 kubectl uncordon <node-name>
 ```
 
-## Pod Operations
+## Operaciones con pods
 ```bash
 kubectl get pods -A                     # All namespaces
 kubectl get pods -o wide                # Extended info
@@ -30,7 +30,7 @@ kubectl set image deployment/myapp app=myapp:v2
 kubectl delete -f manifest.yaml
 ```
 
-## Service & Network
+## Servicio y red
 ```bash
 kubectl port-forward service/myapp 8080:8080
 kubectl get svc
@@ -38,7 +38,7 @@ kubectl exec -it <pod-name> -- curl http://service:8080
 kubectl exec -it <pod-name> -- nslookup kubernetes.default
 ```
 
-## Debugging (Get → Describe → Logs)
+## Depuración (Get → Describe → Logs)
 ```bash
 kubectl get pods -o wide
 kubectl get events -n <ns> --sort-by='.lastTimestamp'
@@ -46,7 +46,7 @@ kubectl describe pod <pod-name>
 kubectl logs <pod-name> -c <container>
 ```
 
-## Output & Filtering
+## Salida y filtrado
 ```bash
 kubectl get pods -o json
 kubectl get pods -o yaml
@@ -57,7 +57,7 @@ kubectl get pods -w                     # Watch
 
 ## Flags
 
-| Flag | Purpose |
+| Flag | Propósito |
 |------|---------|
 | `-n` | Namespace |
 | `-A` | All namespaces |
@@ -65,7 +65,7 @@ kubectl get pods -w                     # Watch
 | `-l` | Label selector |
 | `-w` | Watch |
 
-## Aliases
+## Alias
 ```bash
 alias k='kubectl'
 alias kgp='kubectl get pods'

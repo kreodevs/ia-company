@@ -1,6 +1,6 @@
 ---
 name: deep-analysis
-description: Analytical thinking patterns for comprehensive evaluation, code audits, security analysis, and performance reviews. Provides structured templates for thorough investigation with extended thinking support.
+description: Patrones de pensamiento analítico para evaluaciones integrales, auditorías de código, análisis de seguridad y revisiones de desempeño. Proporciona plantillas estructuradas para una investigación exhaustiva con apoyo de pensamiento ampliado.
 allowed-tools:
   - Bash
   - Read
@@ -27,36 +27,35 @@ triggers:
   - performance analysis
   - code audit
 ---
+# Habilidad de análisis profundo
 
-# Deep Analysis Skill
+Plantillas analíticas integrales para investigaciones, auditorías y evaluaciones exhaustivas que aprovechan las capacidades de pensamiento ampliadas.
 
-Comprehensive analytical templates for thorough investigation, audits, and evaluations leveraging extended thinking capabilities.
+## Cuándo utilizar
 
-## When to Use
+- **Auditorías de código** que requieren revisión sistemática
+- **Evaluaciones de seguridad** y modelado de amenazas
+- **Análisis de rendimiento** y planificación de optimización
+- **Revisiones de arquitectura** y evaluación de deuda técnica
+- **Autopsias de incidentes** y análisis de causa raíz
+- **Auditorías de cumplimiento** y evaluaciones de riesgos
 
-- **Code audits** requiring systematic review
-- **Security assessments** and threat modeling
-- **Performance analysis** and optimization planning
-- **Architecture reviews** and technical debt assessment
-- **Incident post-mortems** and root cause analysis
-- **Compliance audits** and risk assessments
+## Plantillas de análisis
 
-## Analysis Templates
-
-### Code Audit Template
+### Plantilla de auditoría de código
 
 ```markdown
-## Code Audit Report
+## Informe de auditoría de código
 
 **Repository**: [repo-name]
 **Scope**: [files/modules audited]
 **Date**: [YYYY-MM-DD]
 **Auditor**: Claude + [Human reviewer]
 
-### Executive Summary
+### Resumen ejecutivo
 [2-3 sentence overview of findings]
 
-### Audit Criteria
+### Criterios de auditoría
 - [ ] Code quality and maintainability
 - [ ] Security vulnerabilities
 - [ ] Performance concerns
@@ -64,24 +63,24 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 - [ ] Documentation completeness
 - [ ] Dependency health
 
-### Critical Findings
+### Hallazgos críticos
 | ID | Severity | Location | Issue | Recommendation |
 |----|----------|----------|-------|----------------|
 | C1 | Critical | file:line | [Issue] | [Fix] |
 | C2 | Critical | file:line | [Issue] | [Fix] |
 
-### High Priority Findings
+### Hallazgos de alta prioridad
 | ID | Severity | Location | Issue | Recommendation |
 |----|----------|----------|-------|----------------|
 | H1 | High | file:line | [Issue] | [Fix] |
 
-### Medium Priority Findings
+### Hallazgos de prioridad media
 [...]
 
 ### Low Priority / Suggestions
 [...]
 
-### Metrics
+### Métricas
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
 | Test Coverage | 75% | 80% | ⚠️ |
@@ -89,7 +88,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | Technical Debt | 4.2d | <3d | ❌ |
 | Security Score | 8/10 | 9/10 | ⚠️ |
 
-### Recommendations
+### Recomendaciones
 1. **Immediate**: [Critical fixes]
 2. **Short-term**: [Within sprint]
 3. **Long-term**: [Tech debt reduction]
@@ -100,7 +99,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 - [ ] Audit findings documented in backlog
 ```
 
-### Security Threat Model Template
+### Plantilla de modelo de amenazas a la seguridad
 
 ```markdown
 ## Threat Model: [System/Component Name]
@@ -109,33 +108,31 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 **Last Updated**: [YYYY-MM-DD]
 **Classification**: [Internal/Confidential]
 
-### System Overview
+### Visión general del sistema
 [Brief description of the system being modeled]
 
-### Assets
+### Activos
 | Asset | Description | Sensitivity | Owner |
 |-------|-------------|-------------|-------|
 | User Data | PII, credentials | Critical | Auth Team |
 | API Keys | Service credentials | High | DevOps |
 | Business Data | Transactions | High | Product |
 
-### Trust Boundaries
-```
-┌─────────────────────────────────────────┐
-│           External (Untrusted)          │
-│  [Internet Users] [Third-party APIs]    │
-└──────────────────┬──────────────────────┘
-                   │ WAF/Load Balancer
-┌──────────────────┴──────────────────────┐
-│              DMZ (Semi-trusted)         │
-│  [API Gateway] [CDN] [Public Services]  │
-└──────────────────┬──────────────────────┘
-                   │ Internal Firewall
-┌──────────────────┴──────────────────────┐
-│           Internal (Trusted)            │
-│  [App Servers] [Databases] [Queues]     │
-└─────────────────────────────────────────┘
-```
+### Límites de confianza
+```┌──────────────────── ─────────────────────┐
+│ Externo (no confiable) │
+│ [Usuarios de Internet] [API de terceros] │
+└──────────────────┬─ ─────────────────────┘
+                   │ WAF/equilibrador de carga
+┌──────────────────┴─ ─────────────────────┐
+│ DMZ (Semiconfiable) │
+│ [Puerta de enlace API] [CDN] [Servicios públicos] │
+└──────────────────┬─ ─────────────────────┘
+                   │ Cortafuegos interno
+┌──────────────────┴─ ─────────────────────┐
+│ Interno (Confiable) │
+│ [Servidores de aplicaciones] [Bases de datos] [Colas] │
+└──────────────────── ─────────────────────┘```
 
 ### Threat Categories (STRIDE)
 
@@ -163,20 +160,20 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 #### Elevation of Privilege
 [...]
 
-### Attack Vectors
+### Vectores de ataque
 1. **Vector 1**: [Description]
    - Entry point: [Where]
    - Technique: [How]
    - Mitigation: [Defense]
 
-### Risk Matrix
+### Matriz de riesgos
 | Threat | Likelihood | Impact | Risk Score | Priority |
 |--------|------------|--------|------------|----------|
 | T1     | High       | Critical | 9 | P1 |
 | T2     | Medium     | High | 6 | P2 |
 | T3     | Low        | Medium | 3 | P3 |
 
-### Security Controls
+### Controles de seguridad
 | Control | Type | Status | Coverage |
 |---------|------|--------|----------|
 | WAF | Preventive | ✅ Active | External |
@@ -184,25 +181,25 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | DAST | Detective | ⚠️ Partial | Runtime |
 | Encryption | Preventive | ✅ Active | Data |
 
-### Recommendations
+### Recomendaciones
 1. [Priority 1 recommendations]
 2. [Priority 2 recommendations]
 3. [Priority 3 recommendations]
 ```
 
-### Performance Analysis Template
+### Plantilla de análisis de rendimiento
 
 ```markdown
-## Performance Analysis Report
+## Informe de análisis de rendimiento
 
 **System**: [System name]
 **Period**: [Date range]
 **Environment**: [Production/Staging]
 
-### Executive Summary
+### Resumen ejecutivo
 [Key findings and recommendations]
 
-### Performance Metrics
+### Métricas de rendimiento
 
 #### Response Times
 | Endpoint | P50 | P95 | P99 | Target | Status |
@@ -225,7 +222,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | Disk I/O | 30% | 55% | 70% | ✅ |
 | Network | 25% | 40% | 60% | ✅ |
 
-### Bottleneck Analysis
+### Análisis de cuellos de botella
 
 #### Identified Bottlenecks
 1. **Database Queries** (High Impact)
@@ -240,7 +237,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
    - Impact: GC pauses, OOM risks
    - Fix: Implement streaming/pagination
 
-### Load Test Results
+### Resultados de pruebas de carga
 | Scenario | Users | Duration | Errors | Avg Response |
 |----------|-------|----------|--------|--------------|
 | Baseline | 100 | 10min | 0% | 120ms |
@@ -248,7 +245,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | Peak | 1000 | 15min | 2.3% | 450ms |
 | Stress | 2000 | 5min | 15% | 2.1s |
 
-### Optimization Recommendations
+### Recomendaciones de optimización
 
 #### Quick Wins (This Sprint)
 1. Add database indexes - Expected: 40% improvement
@@ -265,7 +262,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 2. Event-driven architecture
 3. Edge computing deployment
 
-### Capacity Planning
+### Planificación de capacidad
 | Timeframe | Expected Load | Current Capacity | Gap | Action |
 |-----------|---------------|------------------|-----|--------|
 | 3 months | +25% | 5,000 RPS | ✅ | Monitor |
@@ -273,22 +270,20 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | 12 months | +100% | 5,000 RPS | ❌ | Redesign |
 ```
 
-### Architecture Review Template
+### Plantilla de revisión de arquitectura
 
 ```markdown
-## Architecture Review
+## Revisión de arquitectura
 
 **System**: [System name]
 **Version**: [Current architecture version]
 **Review Date**: [YYYY-MM-DD]
 **Participants**: [Team members]
 
-### Current Architecture
+### Arquitectura actual
 
 #### System Diagram
-```
-[Include architecture diagram or ASCII representation]
-```
+```[Incluir diagrama de arquitectura o representación ASCII]```
 
 #### Components
 | Component | Purpose | Technology | Owner |
@@ -305,7 +300,7 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 4. Core API → Database
 5. Response → User
 
-### Evaluation Criteria
+### Criterios de evaluación
 
 #### Scalability
 | Aspect | Current | Target | Gap | Score |
@@ -328,14 +323,14 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 | Documentation | Partial | Complete | Yes | 5/10 |
 | Test coverage | 70% | 85% | Yes | 7/10 |
 
-### Technical Debt Assessment
+### Evaluación de deuda técnica
 | Item | Impact | Effort | Priority | Age |
 |------|--------|--------|----------|-----|
 | Legacy auth system | High | High | P1 | 2y |
 | Monolithic API | Medium | High | P2 | 1.5y |
 | Missing monitoring | Medium | Low | P1 | 1y |
 
-### Recommendations
+### Recomendaciones
 
 #### Immediate (0-3 months)
 1. [Recommendation 1]
@@ -349,15 +344,15 @@ Comprehensive analytical templates for thorough investigation, audits, and evalu
 1. [Recommendation 1]
 2. [Recommendation 2]
 
-### Decision Log
+### Registro de decisiones
 | Decision | Rationale | Alternatives Considered | Date |
 |----------|-----------|------------------------|------|
 | [Decision 1] | [Why] | [Options] | [Date] |
 ```
 
-## Integration with Extended Thinking
+## Integración con pensamiento extendido
 
-For deep analysis tasks, use maximum thinking budget:
+Para tareas de análisis profundo, utilice el presupuesto máximo de pensamiento:
 
 ```python
 response = client.messages.create(
@@ -377,18 +372,18 @@ response = client.messages.create(
 )
 ```
 
-## Best Practices
+## Mejores prácticas
 
-1. **Use appropriate templates**: Match template to analysis type
-2. **Be systematic**: Follow the template structure completely
-3. **Quantify findings**: Use metrics and severity ratings
-4. **Prioritize actionable**: Focus on findings that can be fixed
-5. **Document evidence**: Link to specific code/logs/data
-6. **Track progress**: Update findings as they're addressed
+1. **Utilice plantillas adecuadas**: haga coincidir la plantilla con el tipo de análisis
+2. **Sea sistemático**: siga completamente la estructura de la plantilla
+3. **Cuantificar los hallazgos**: utilizar métricas y clasificaciones de gravedad
+4. **Priorizar lo procesable**: centrarse en los hallazgos que se pueden solucionar
+5. **Evidencia documental**: enlace a códigos/registros/datos específicos
+6. **Seguimiento del progreso**: actualice los hallazgos a medida que se abordan
 
-## See Also
+## Ver también
 
-- [[extended-thinking]] - Enable deep reasoning capabilities
-- [[complex-reasoning]] - Reasoning frameworks
-- [[testing]] - Validation strategies
-- [[debugging]] - Issue investigation
+- [[pensamiento extendido]] - Habilita capacidades de razonamiento profundo
+- [[razonamiento-complejo]] - Marcos de razonamiento
+- [[testing]] - Estrategias de validación
+- [[depuración]] - Investigación de problemas

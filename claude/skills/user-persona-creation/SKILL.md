@@ -1,30 +1,31 @@
 ---
 name: user-persona-creation
-description: Create detailed user personas based on research and data. Develop realistic representations of target users to guide product decisions and ensure user-centered design.
+description: Cree personajes de usuario detallados basados ​​en investigaciones y datos. Desarrolle representaciones realistas de los usuarios objetivo para guiar las decisiones de productos y garantizar un diseño centrado en el usuario.
 ---
 
-# User Persona Creation
+# Creación de personajes de usuario
 
-## Overview
+## Descripción general
 
-User personas synthesize research into realistic user profiles that guide design, development, and marketing decisions.
+Los usuarios sintetizan la investigación en perfiles de usuario realistas que guían las decisiones de diseño, desarrollo y marketing.
 
-## When to Use
+## Cuándo utilizar
 
-- Starting product design
-- Feature prioritization
-- Marketing messaging
-- User research synthesis
-- Team alignment on users
-- Journey mapping
-- Success metrics definition
+- Diseño inicial del producto.
+- Priorización de funciones
+- Mensajes de marketing
+- Síntesis de la investigación de usuarios.
+- Alineación del equipo con los usuarios.
+- Mapeo del viaje
+- Definición de métricas de éxito.
 
-## Instructions
+## Instrucciones
 
-### 1. **Research & Data Collection**
+### 1. **Investigación y recopilación de datos**
 
 ```python
-# Gather data for persona development
+
+# Recopilar datos para desarrollo de persona
 
 class PersonaResearch:
     def conduct_interviews(self, target_sample_size=12):
@@ -94,14 +95,14 @@ class PersonaResearch:
         }
 ```
 
-### 2. **Persona Template**
+### 2. **Plantilla personal**
 
 ```yaml
 User Persona: Premium SaaS Buyer
 
 ---
 
-## Demographics
+## Demografía
 
 Name: Sarah Chen
 Age: 34
@@ -114,7 +115,7 @@ Income: $180K salary + 0.5% equity
 
 ---
 
-## Professional Context
+## Contexto profesional
 
 Industry: B2B SaaS (Project Management)
 Company Size: 50-200 employees
@@ -140,7 +141,7 @@ Success Definition:
 
 ---
 
-## Pain Points
+## Puntos de dolor
 
 Current Challenges:
   - Existing tool is slow and outdated
@@ -185,7 +186,7 @@ Decision Drivers:
 
 ---
 
-## Technology Comfort
+## Comodidad tecnológica
 
 Tech Savviness: High (uses 15+ tools daily)
 Mobile Usage: 40% of work on mobile
@@ -195,7 +196,7 @@ Integration Importance: Very high
 
 ---
 
-## Customer Journey
+## Recorrido del cliente
 
 Awareness: Product recommendations from peers
 Consideration: Reviews, demos, talk to customers
@@ -205,7 +206,7 @@ Ongoing: Wants regular feature updates, responsive support
 
 ---
 
-## Communication Preferences
+## Preferencias de comunicación
 
 Prefers: Email and Slack (avoid calls)
 Response Time: 4-24 hours typical
@@ -215,7 +216,7 @@ Format: Data-driven, executive summaries preferred
 
 ---
 
-## Key Quotes
+## Citas clave
 
 "I need something that my team will actually use, not something
 I have to force them to adopt."
@@ -227,7 +228,7 @@ all our devices and workflows."
 
 ---
 
-## Persona Importance
+## Importancia de la persona
 
 Primary Persona: YES (key decision maker)
 Frequency in User Base: 35% of customers
@@ -256,7 +257,7 @@ Success Metrics:
   - Upsell to higher tier within 6 months
 ```
 
-### 3. **Multiple Personas**
+### 3. **Múltiples personas**
 
 ```javascript
 // Create persona set for comprehensive coverage
@@ -329,14 +330,14 @@ class PersonaFramework {
 }
 ```
 
-### 4. **Using Personas**
+### 4. **Usando Personas**
 
 ```yaml
 Applying Personas to Product Decisions:
 
 ---
 
-## Feature Prioritization
+## Priorización de funcionalidades
 
 Feature: Offline Mobile Access
   Sarah's Need: Medium (works with wifi)
@@ -358,7 +359,7 @@ Feature: Bulk Import
 
 ---
 
-## Journey Mapping
+## Mapeo del recorrido
 
 Sarah's Evaluation Journey:
   1. Becomes aware (peer recommendation) → Email request
@@ -378,7 +379,7 @@ Mike's Adoption Journey:
 
 ---
 
-## Marketing Message by Persona
+## Mensaje de marketing por persona
 
 For Sarah (VP Product):
   Headline: "Increase project delivery speed by 30%"
@@ -399,37 +400,37 @@ For Lisa (Admin):
   CTA: "Download admin guide"
 ```
 
-## Best Practices
+## Mejores prácticas
 
-### ✅ DO
-- Base personas on real research, not assumptions
-- Include 2-3 primary personas
-- Make personas specific and detailed
-- Include direct user quotes
-- Update personas based on new data
-- Share personas across organization
-- Use personas for all product decisions
-- Include both goals and pain points
-- Create personas for different user types
-- Document research sources
+### ✅ HACER
+- Basar a las personas en investigaciones reales, no en suposiciones.
+- Incluir 2-3 personas principales
+- Hacer que las personas sean específicas y detalladas.
+- Incluir citas directas de usuarios.
+- Actualizar personas en función de nuevos datos.
+- Compartir personas en toda la organización
+- Utilice personas para todas las decisiones sobre productos.
+- Incluir tanto objetivos como puntos débiles.
+- Crear personas para diferentes tipos de usuarios.
+- Documentar fuentes de investigación.
 
-### ❌ DON'T
-- Create personas without research
-- Create too many personas (>4 primary)
-- Make personas too generic
-- Ignore data in favor of assumptions
-- Create personas, then forget them
-- Use personas only for design
-- Make personas unrealistically perfect
-- Ignore secondary users
-- Keep personas locked away
-- Never update personas
+### ❌ NO LO HAGAS
+- Crea personas sin investigación
+- Crear demasiadas personas (>4 principales)
+- Hacer que las personas sean demasiado genéricas
+- Ignorar datos a favor de suposiciones.
+- Crea personajes y luego olvídalos.
+- Utilice personajes sólo para el diseño.
+- Hacer que las personas sean irrealmente perfectas
+- Ignorar usuarios secundarios
+- Mantener a las personas encerradas
+- Nunca actualices personas
 
-## User Persona Tips
+## Consejos sobre la personalidad del usuario
 
-- Use real quotes from interviews
-- Include both job and personal details
-- Show clear motivations and pain points
-- Make personas memorable and shareable
-- Print and post personas in team space
-- Reference personas in design discussions
+- Utilice citas reales de entrevistas.
+- Incluir datos laborales y personales.
+- Mostrar motivaciones claras y puntos débiles.
+- Hacer que las personas sean memorables y compartibles
+- Imprima y publique personas en el espacio del equipo.
+- Personas de referencia en discusiones de diseño.

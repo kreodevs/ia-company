@@ -1,40 +1,40 @@
 ---
-title: On-Page SEO Optimization
-impact: CRITICAL
-tags: on-page, meta-tags, titles, headers, content-optimization, keywords
+título: Optimización SEO en la página
+impacto: CRÍTICO
+etiquetas: en la página, metaetiquetas, títulos, encabezados, optimización de contenido, palabras clave
 ---
 
-## On-Page SEO Optimization
+## Optimización SEO en la página
 
-**Impact: CRITICAL**
+**Impacto: CRÍTICO**
 
-On-page SEO is where content meets technical optimization. Perfect on-page can't save bad content, but bad on-page can sink great content. Every element should serve both users and search engines.
+El SEO en la página es donde el contenido se encuentra con la optimización técnica. Una página perfecta no puede salvar el contenido malo, pero una página mala puede hundir contenido excelente. Cada elemento debe servir tanto a los usuarios como a los motores de búsqueda.
 
-### On-Page Elements Hierarchy
+### Jerarquía de elementos en la página
 
-| Element | Impact | User-Facing | Search-Facing |
+| Elemento | Impacto | Orientado al usuario | Orientación a la búsqueda |
 |---------|--------|-------------|---------------|
-| **Title Tag** | Very High | Browser tab, SERP | Primary ranking signal |
-| **H1** | High | Page headline | Content topic signal |
-| **Meta Description** | Medium | SERP snippet | Click-through rate |
-| **URL** | Medium | Address bar | Topic signal |
-| **H2-H6** | Medium | Content structure | Subtopic signals |
-| **Body Content** | High | Main content | Topical relevance |
-| **Images** | Medium | Visual content | Alt text, file names |
-| **Internal Links** | High | Navigation | PageRank flow |
-| **Schema** | Medium | Rich snippets | Structured data |
+| **Etiqueta de título** | Muy Alto | Pestaña del navegador, SERP | Señal de clasificación primaria |
+| **H1** | Alto | Titular de la página | Señal de tema de contenido |
+| **Meta descripción** | Medio | Fragmento de SERP | Tasa de clics |
+| **URL** | Medio | Barra de direcciones | Señal de tema |
+| **H2-H6** | Medio | Estructura del contenido | Señales de subtemas |
+| **Contenido del cuerpo** | Alto | Contenido principal | Relevancia de actualidad |
+| **Imágenes** | Medio | Contenido visual | Texto alternativo, nombres de archivos |
+| **Enlaces internos** | Alto | Navegación | Flujo de PageRank |
+| **Esquema** | Medio | Fragmentos enriquecidos | Datos estructurados |
 
-### Title Tag Best Practices
+### Prácticas recomendadas para etiquetas de título
 
-| Rule | Guideline |
+| Regla | Directriz |
 |------|-----------|
-| **Length** | 50-60 characters (avoid truncation) |
-| **Keyword placement** | Primary keyword near the front |
-| **Uniqueness** | Every page needs unique title |
-| **Brand** | Include brand name (usually at end) |
-| **Readability** | Must make sense to humans |
+| **Longitud** | 50-60 caracteres (evitar truncamiento) |
+| **Ubicación de palabras clave** | Palabra clave principal cerca del frente |
+| **Singularidad** | Cada página necesita un título único |
+| **Marca** | Incluya el nombre de la marca (normalmente al final) |
+| **Legibilidad** | Debe tener sentido para los humanos |
 
-### Good Title Tags
+### Buenas etiquetas de título
 
 ```
 ✓ "Kubernetes Secrets Management: Complete Guide (2024) | Infisical"
@@ -48,7 +48,7 @@ On-page SEO is where content meets technical optimization. Perfect on-page can't
   └── How-to format, action-oriented
 ```
 
-### Bad Title Tags
+### Etiquetas de título incorrectas
 
 ```
 ✗ "Home"
@@ -64,17 +64,17 @@ On-page SEO is where content meets technical optimization. Perfect on-page can't
   └── Brand first (wastes prime keyword space)
 ```
 
-### Meta Description Guidelines
+### Pautas de meta descripción
 
-| Rule | Guideline |
+| Regla | Directriz |
 |------|-----------|
-| **Length** | 150-160 characters |
-| **Purpose** | Sell the click, not the product |
-| **Keywords** | Include naturally (bolded in SERP) |
-| **CTA** | Soft call-to-action when appropriate |
-| **Unique** | Every page needs unique description |
+| **Longitud** | 150-160 caracteres |
+| **Propósito** | Vender el clic, no el producto |
+| **Palabras clave** | Incluir de forma natural (en negrita en SERP) |
+| **CTA** | Llamado a la acción suave cuando sea apropiado |
+| **Único** | Cada página necesita una descripción única |
 
-### Good Meta Descriptions
+### Buenas metadescripciones
 
 ```
 ✓ "Learn how to manage secrets in Kubernetes with encryption,
@@ -93,7 +93,7 @@ On-page SEO is where content meets technical optimization. Perfect on-page can't
    └── Lists what comparison covers
 ```
 
-### Bad Meta Descriptions
+### Malas metadescripciones
 
 ```
 ✗ "Welcome to our website. We provide secrets management
@@ -110,17 +110,17 @@ On-page SEO is where content meets technical optimization. Perfect on-page can't
    └── Google will pull random text, likely poor
 ```
 
-### URL Structure
+### Estructura de URL
 
-| Element | Best Practice |
+| Elemento | Mejores prácticas |
 |---------|---------------|
-| **Length** | Keep short (3-5 words after domain) |
-| **Keywords** | Include primary keyword |
-| **Separators** | Use hyphens, not underscores |
-| **Case** | Lowercase only |
-| **Parameters** | Avoid when possible |
+| **Longitud** | Sea breve (3-5 palabras después del dominio) |
+| **Palabras clave** | Incluir palabra clave principal |
+| **Separadores** | Utilice guiones, no guiones bajos |
+| **Caso** | Sólo minúsculas |
+| **Parámetros** | Evitar cuando sea posible |
 
-### Good URLs
+### Buenas URL
 
 ```
 ✓ /guides/kubernetes-secrets-management
@@ -138,7 +138,7 @@ On-page SEO is where content meets technical optimization. Perfect on-page can't
 ✗ /content/article/secrets/management/guide/overview/index.html
 ```
 
-### Header Structure (H1-H6)
+### Estructura del encabezado (H1-H6)
 
 ```
 H1: Main page title (one per page, matches title tag intent)
@@ -154,9 +154,10 @@ H1: Main page title (one per page, matches title tag intent)
 └── H2: Major section
 ```
 
-### Good Header Structure
+### Buena estructura de encabezado
 
 ```markdown
+
 # Kubernetes Secrets Management Guide (H1)
 
 ## What Are Kubernetes Secrets? (H2)
@@ -175,14 +176,14 @@ H1: Main page title (one per page, matches title tag intent)
 
 ## Implementation Guide (H2)
 
-### Prerequisites (H3)
+### Requisitos previos (H3)
 
 ### Step 1: Install the Operator (H3)
 
 ### Step 2: Configure Access (H3)
 ```
 
-### Bad Header Structure
+### Estructura de encabezado incorrecta
 
 ```markdown
 ✗ No H1 on page
@@ -202,47 +203,45 @@ H1: Main page title (one per page, matches title tag intent)
   ## Read More
 ```
 
-### Content Optimization Checklist
+### Lista de verificación de optimización de contenido
 
-**Keyword Usage:**
-- [ ] Primary keyword in first 100 words
-- [ ] Primary keyword in H1 (natural variation OK)
-- [ ] Primary keyword in at least one H2
-- [ ] Secondary keywords distributed naturally
-- [ ] No keyword stuffing (1-2% density max)
+**Uso de palabras clave:**
+- [] Palabra clave principal en las primeras 100 palabras
+- [] Palabra clave principal en H1 (variación natural correcta)
+- [] Palabra clave principal en al menos un H2
+- [] Palabras clave secundarias distribuidas de forma natural
+- [] Sin relleno de palabras clave (densidad máxima del 1-2 %)
 
-**Readability:**
-- [ ] Paragraphs 2-4 sentences max
-- [ ] Subheadings every 200-300 words
-- [ ] Bullet/numbered lists for 3+ items
-- [ ] Bold key phrases (sparingly)
-- [ ] Table of contents for 2,000+ word content
+**Legibilidad:**
+- [ ] Párrafos 2-4 oraciones máximo
+- [ ] Subtítulos cada 200-300 palabras
+- [] Listas con viñetas/numeradas para más de 3 elementos
+- [] Frases clave en negrita (con moderación)
+- [] Tabla de contenido para contenido de más de 2000 palabras
 
-**Media:**
-- [ ] Images with descriptive alt text
-- [ ] Image file names include keywords
-- [ ] Images compressed for performance
-- [ ] Videos embedded (increases time on page)
+**Medios:**
+- [] Imágenes con texto alternativo descriptivo
+- [] Los nombres de los archivos de imagen incluyen palabras clave
+- [] Imágenes comprimidas para mejorar el rendimiento
+- [] Vídeos incrustados (aumenta el tiempo en la página)
 
-**Depth:**
-- [ ] Answers the search query completely
-- [ ] Covers related questions (PAA)
-- [ ] More comprehensive than ranking competitors
-- [ ] Updated with current information
+**Profundidad:**
+- [] Responde la consulta de búsqueda completamente
+- [] Cubre preguntas relacionadas (PAA)
+- [] Más completo que el ranking de competidores
+- [] Actualizado con información actual
 
-### Image Optimization
+### Optimización de imagen
 
-| Element | Best Practice |
+| Elemento | Mejores prácticas |
 |---------|---------------|
-| **Alt text** | Descriptive, includes keyword if natural |
-| **File name** | keyword-description.png (not IMG_12345.png) |
-| **Format** | WebP preferred, PNG for graphics, JPG for photos |
-| **Size** | Compress to <100KB when possible |
-| **Dimensions** | Specify width/height to prevent layout shift |
+| **Texto alternativo** | Descriptivo, incluye palabra clave si es natural |
+| **Nombre de archivo** | descripción-palabra clave.png (no IMG_12345.png) |
+| **Formato** | Se prefiere WebP, PNG para gráficos, JPG para fotos |
+| **Tamaño** | Comprimir a <100 KB cuando sea posible |
+| **Dimensiones** | Especifique ancho/alto para evitar cambios de diseño |
 
-### Good Alt Text
-
-```html
+### Buen texto alternativo```html
 ✓ <img src="kubernetes-secrets-architecture.png"
        alt="Diagram showing Kubernetes secrets flow from external secrets manager to pod">
 
@@ -250,9 +249,7 @@ H1: Main page title (one per page, matches title tag intent)
        alt="HashiCorp Vault dashboard showing secret engine configuration">
 ```
 
-### Bad Alt Text
-
-```html
+### Texto alternativo incorrecto```html
 ✗ <img alt="">
   (Missing alt text)
 
@@ -263,24 +260,24 @@ H1: Main page title (one per page, matches title tag intent)
   (Keyword stuffing)
 ```
 
-### Content Freshness Signals
+### Señales de frescura del contenido
 
-| Signal | How to Implement |
+| Señal | Cómo implementar |
 |--------|------------------|
-| **Publish date** | Display and keep current |
-| **Last updated** | Show when content refreshed |
-| **Year in title** | "Guide (2024)" for evergreen |
-| **Current statistics** | Update annually at minimum |
-| **Working examples** | Test code samples regularly |
+| **Fecha de publicación** | Mostrar y mantener actualizado |
+| **Última actualización** | Mostrar cuando se actualiza el contenido |
+| **Año del título** | "Guía (2024)" para árboles de hoja perenne |
+| **Estadísticas actuales** | Actualizar anualmente como mínimo |
+| **Ejemplos de trabajo** | Pruebe muestras de código con regularidad |
 
-### Anti-Patterns
+### Antipatrones
 
-- **Title/H1 mismatch** — Confuses both users and Google
-- **Keyword stuffing** — Hurts readability, triggers spam filters
-- **Thin content** — <300 words rarely ranks for competitive terms
-- **Missing meta descriptions** — Leaves SERP snippet to chance
-- **Duplicate title tags** — Every page competes with itself
-- **Walls of text** — No formatting kills engagement
-- **Hidden text** — Any technique to hide keywords is spam
-- **Over-optimization** — Keyword in every H2 looks unnatural
-- **Ignoring mobile** — 60%+ traffic is mobile; optimize for it
+- **No coincide título/H1**: confunde tanto a los usuarios como a Google.
+- **Relleno de palabras clave**: perjudica la legibilidad y activa filtros de spam
+- **Contenido reducido**: <300 palabras rara vez se clasifican entre términos competitivos
+- **Faltan meta descripciones**: deja el fragmento de SERP al azar
+- **Etiquetas de título duplicadas**: cada página compite consigo misma
+- **Muros de texto**: ningún formato acaba con la interacción
+- **Texto oculto**: cualquier técnica para ocultar palabras clave es spam.
+- **Optimización excesiva**: la palabra clave en cada H2 no parece natural
+- **Ignorando dispositivos móviles**: más del 60% del tráfico es móvil; optimizar para ello

@@ -1,112 +1,100 @@
-# Migration Guide: Hardcoded Colors → CSS Variables
+# Guía de migración: colores codificados → Variables CSS
 
-## Overview
+## Descripción general
 
-This guide helps you migrate from hardcoded Tailwind colors (`bg-blue-600`) to semantic CSS variables (`bg-primary`).
+Esta guía le ayuda a migrar desde colores Tailwind codificados (`bg-blue-600`) a variables CSS semánticas (` bg-primary`).
 
-**Benefits:**
-- Automatic dark mode support
-- Consistent color usage
-- Single source of truth
-- Easy theme customization
-- Better accessibility
-
----
-
-## Semantic Color Mapping
-
-| Hardcoded Color | CSS Variable | Use Case |
-|----------------|--------------|----------|
-| `bg-red-*` / `text-red-*` | `bg-destructive` / `text-destructive` | Critical issues, errors, delete actions |
-| `bg-green-*` / `text-green-*` | `bg-success` / `text-success` | Success states, positive metrics |
-| `bg-yellow-*` / `text-yellow-*` | `bg-warning` / `text-warning` | Warnings, moderate issues |
-| `bg-blue-*` / `text-blue-*` | `bg-info` or `bg-primary` | Info boxes, primary actions |
-| `bg-gray-*` / `text-gray-*` | `bg-muted` / `text-muted-foreground` | Backgrounds, secondary text |
-| `bg-purple-*` | `bg-info` | Remove - use blue instead |
-| `bg-orange-*` | `bg-warning` | Remove - use yellow instead |
-| `bg-emerald-*` | `bg-success` | Remove - use green instead |
+**Beneficios:**
+- Soporte automático de modo oscuro
+- Uso constante del color
+- Fuente única de verdad.
+- Fácil personalización del tema
+- Mejor accesibilidad
 
 ---
 
-## Migration Patterns
+## Mapeo de colores semánticos
 
-### Pattern 1: Solid Backgrounds
+| Color codificado | Variables CSS | Caso de uso |
+|----------|--------------|----------|
+| `bg-red-*`/` text-red-*`|` bg-destructive`/` text-destructive`| Problemas críticos, errores, acciones de eliminación |
+| `bg-green-*`/` text-green-*`|` bg-success`/` text-success`| Estados de éxito, métricas positivas |
+| `bg-yellow-*`/` text-yellow-*`|` bg-warning`/` text-warning`| Advertencias, problemas moderados |
+| `bg-blue-*`/` text-blue-*`|` bg-info`or` bg-primary`| Cuadros informativos, acciones primarias |
+| `bg-gray-*`/` text-gray-*`|` bg-muted`/` text-muted-foreground`| Fondos, texto secundario |
+| `bg-purple-*`|` bg-info`| Eliminar: use azul en su lugar |
+| `bg-orange-*`|` bg-warning`| Eliminar: use amarillo en su lugar |
+| `bg-emerald-*`|` bg-success`| Eliminar: use verde en su lugar |
 
-❌ **Before:**
+---
+
+## Patrones de migración
+
+### Patrón 1: Fondos sólidos
+
+❌ **Antes:**
+
 ```tsx
 <div className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300">
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 <div className="bg-info/10 text-info">
-```
-
-**Note:** `/10` creates 10% opacity
+```**Note:**`/10` crea un 10% de opacidad
 
 ---
 
-### Pattern 2: Borders
+### Patrón 2: Bordes
 
-❌ **Before:**
+❌ **Antes:**
+
 ```tsx
 <div className="border-2 border-green-200 dark:border-green-800">
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 <div className="border-2 border-success/30">
-```
+```---
 
----
+### Patrón 3: colores del texto
 
-### Pattern 3: Text Colors
+❌ **Antes:**
 
-❌ **Before:**
 ```tsx
 <span className="text-red-600 dark:text-red-400">
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 <span className="text-destructive">
-```
+```---
 
----
+### Patrón 4: Iconos
 
-### Pattern 4: Icons
+❌ **Antes:**
 
-❌ **Before:**
 ```tsx
 <AlertCircle className="text-yellow-500" />
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 <AlertCircle className="text-warning" />
-```
+```---
 
----
+### Patrón 5: Degradados
 
-### Pattern 5: Gradients
+❌ **Antes:**
 
-❌ **Before:**
 ```tsx
 <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 <div className="bg-gradient-to-r from-success/10 to-success/20">
-```
+```---
 
----
+## Migración paso a paso
 
-## Step-by-Step Migration
-
-### Step 1: Add Semantic Colors to CSS
-
-```css
+### Paso 1: Agregar colores semánticos a CSS```css
 /* src/index.css */
 :root {
   /* Add these if not already present */
@@ -143,9 +131,10 @@ This guide helps you migrate from hardcoded Tailwind colors (`bg-blue-600`) to s
 }
 ```
 
-### Step 2: Find Hardcoded Colors
+### Paso 2: buscar colores codificados
 
 ```bash
+
 # Search for background colors
 grep -r "bg-\(red\|yellow\|blue\|green\|purple\|orange\|pink\|emerald\)-[0-9]" src/
 
@@ -156,28 +145,29 @@ grep -r "text-\(red\|yellow\|blue\|green\|purple\|orange\|pink\|emerald\)-[0-9]"
 grep -r "border-\(red\|yellow\|blue\|green\|purple\|orange\|pink\|emerald\)-[0-9]" src/
 ```
 
-### Step 3: Replace Component by Component
+### Paso 3: Reemplazar componente por componente
 
-Start with high-impact components:
-1. Buttons
-2. Badges
-3. Alert boxes
-4. Status indicators
-5. Cards
+Comience con componentes de alto impacto:
+1. Botones
+2. Insignias
+3. Cuadros de alerta
+4. Indicadores de estado
+5. Tarjetas
 
-### Step 4: Test Both Themes
+### Paso 4: Pruebe ambos temas
 
-After each component:
-- [ ] Check light mode appearance
-- [ ] Check dark mode appearance
-- [ ] Verify text contrast
-- [ ] Test hover/active states
+Después de cada componente:
+- [] Verifique la apariencia del modo de luz
+- [] Verifique la apariencia del modo oscuro
+- [] Verificar el contraste del texto
+- [] Prueba de estados flotantes/activos
 
 ---
 
-## Example: Badge Component
+## Ejemplo: componente de insignia
 
-❌ **Before:**
+❌ **Antes:**
+
 ```tsx
 const severityConfig = {
   critical: {
@@ -196,9 +186,8 @@ const severityConfig = {
     border: 'border-blue-500/20',
   }
 }
-```
+```✅ **After:**
 
-✅ **After:**
 ```tsx
 const severityConfig = {
   critical: {
@@ -217,27 +206,26 @@ const severityConfig = {
     border: 'border-info/20',
   }
 }
-```
+```---
+
+## Lista de verificación de pruebas
+
+Después de la migración:
+- [] Todos los niveles de gravedad (crítico/advertencia/información) visualmente distintos
+- [] El texto tiene el contraste adecuado tanto en el modo claro como en el oscuro.
+- [] No quedan clases de color codificadas
+- [] Los estados de desplazamiento funcionan correctamente
+- [] Los degradados se renderizan sin problemas
+- [] Los iconos son visibles y coloreados correctamente
+- [] Los bordes son visibles
+- [] Sin regresiones visuales
 
 ---
 
-## Testing Checklist
-
-After migration:
-- [ ] All severity levels (critical/warning/info) visually distinct
-- [ ] Text has proper contrast in both light and dark modes
-- [ ] No hardcoded color classes remain
-- [ ] Hover states work correctly
-- [ ] Gradients render smoothly
-- [ ] Icons are visible and colored correctly
-- [ ] Borders are visible
-- [ ] No visual regressions
-
----
-
-## Verification Commands
+## Comandos de verificación
 
 ```bash
+
 # Should return 0 results when migration complete
 grep -r "text-red-[0-9]" src/components/
 grep -r "bg-blue-[0-9]" src/components/
@@ -246,68 +234,64 @@ grep -r "border-green-[0-9]" src/components/
 # Verify semantic colors are used
 grep -r "bg-destructive" src/components/
 grep -r "text-success" src/components/
-```
+```---
 
----
+## Impacto en el rendimiento
 
-## Performance Impact
+**Antes:** Cada componente tiene `dark:` variantes
 
-**Before:** Every component has `dark:` variants
 ```tsx
 <div className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
-```
+```**Después:** Clase única, CSS maneja el cambio
 
-**After:** Single class, CSS handles switching
 ```tsx
 <div className="bg-info/10 text-info border-info/30">
-```
-
-**Result:**
-- 60% fewer CSS classes in markup
-- Smaller HTML payload
-- Faster rendering
-- Easier to maintain
+```**Resultado:**
+- 60% menos clases de CSS en marcado
+- Carga útil HTML más pequeña
+- Representación más rápida
+- Más fácil de mantener
 
 ---
 
-## Common Pitfalls
+## Errores comunes
 
-### 1. Forgetting to Map in @theme inline
+### 1. Olvidar el mapa en @theme en línea
 
-Variables defined in `:root` but not mapped → utilities don't exist
+Variables definidas en `:root` pero no mapeado → las utilidades no existen
 
-### 2. Wrong Opacity Syntax
+### 2. Sintaxis de opacidad incorrecta
 
-❌ `bg-success-10` (doesn't work)
-✅ `bg-success/10` (correct)
+❌ `bg-success-10`(no funciona)
+✅ `bg-success/10`(correcto)
 
-### 3. Mixing Approaches
+### 3. Enfoques combinados
 
-Don't mix hardcoded and semantic in same component - choose one approach.
+No mezcle codificación rígida y semántica en el mismo componente: elija un enfoque.
 
-### 4. Not Testing Dark Mode
+### 4. No probar el modo oscuro
 
-Always test both themes during migration.
-
----
-
-## Rollback Plan
-
-If migration causes issues:
-
-1. Keep original components in git history
-2. Use feature flags to toggle new theme
-3. Test with subset of users first
-4. Have monitoring for visual regressions
+Pruebe siempre ambos temas durante la migración.
 
 ---
 
-## Further Customization
+## Plan de reversión
 
-After migration, you can easily:
-- Add new semantic colors
-- Create theme variants (high contrast, etc.)
-- Support multiple brand themes
-- Implement user-selectable color schemes
+Si la migración causa problemas:
 
-All by editing CSS variables - no component changes needed!
+1. Mantenga los componentes originales en el historial de git
+2. Utilice indicadores de funciones para alternar un nuevo tema
+3. Pruebe primero con un subconjunto de usuarios
+4. Tener seguimiento de las regresiones visuales.
+
+---
+
+## Mayor personalización
+
+Después de la migración, puedes fácilmente:
+- Agregar nuevos colores semánticos
+- Crear variantes de tema (alto contraste, etc.)
+- Admite múltiples temas de marca
+- Implementar esquemas de color seleccionables por el usuario
+
+Todo mediante la edición de variables CSS: ¡no se necesitan cambios en los componentes!

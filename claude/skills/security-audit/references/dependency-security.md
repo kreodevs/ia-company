@@ -1,12 +1,13 @@
-# Dependency Security
+# Seguridad de dependencia
 
-Scanning, monitoring, and managing vulnerable dependencies.
+Escanear, monitorear y gestionar dependencias vulnerables.
 
-## npm Audit
+## Auditoría npm
 
-### Basic Usage
+### Uso básico
 
 ```bash
+
 # Standard audit
 npm audit
 
@@ -26,7 +27,7 @@ npm audit fix
 npm audit fix --force
 ```
 
-### Interpreting Results
+### Interpretación de resultados
 
 ```json
 {
@@ -44,18 +45,18 @@ npm audit fix --force
 }
 ```
 
-### Severity Actions
+### Acciones de gravedad
 
-| Severity | Production | Dev Only |
+| Gravedad | Producción | Solo desarrolladores |
 |----------|------------|----------|
-| Critical | Block deploy | Urgent fix |
-| High | Fix within 24h | Fix within week |
-| Moderate | Fix within week | Fix within sprint |
-| Low | Track in backlog | Optional |
+| Crítico | Implementación de bloques | Solución urgente |
+| Alto | Reparar en 24h | Arreglar en una semana |
+| Moderado | Arreglar en una semana | Arreglar dentro del sprint |
+| Bajo | Seguimiento del trabajo pendiente | Opcional |
 
-### Handling False Positives
+### Manejo de falsos positivos
 
-Create `.npmauditrc` or use `package.json`:
+crear `.npmauditrc` or use`package.json`:
 
 ```json
 {
@@ -64,25 +65,22 @@ Create `.npmauditrc` or use `package.json`:
     "GHSA-xxxx-xxxx-xxxx"  
   ]
 }
-```
-
-Document exclusions:
+```Exclusiones de documentos:
 
 ```markdown
-## Security Audit Exclusions
+
+## Exclusiones de auditoría de seguridad
 
 ### GHSA-xxxx-xxxx-xxxx (lodash prototype pollution)
 - **Package**: lodash@4.17.15
 - **Reason**: Only affects `_.template()` which we don't use
 - **Review date**: 2024-01-15
 - **Next review**: 2024-04-15
-```
+```---
 
----
+## auditoría de pip (Python)
 
-## pip-audit (Python)
-
-### Installation
+### Instalación
 
 ```bash
 pip install pip-audit
@@ -91,6 +89,7 @@ pip install pip-audit
 ### Usage
 
 ```bash
+
 # Basic audit
 pip-audit
 
@@ -107,7 +106,7 @@ pip-audit --fix
 pip-audit --strict
 ```
 
-### Safety Check (Alternative)
+### Control de seguridad (alternativa)
 
 ```bash
 pip install safety
@@ -120,13 +119,11 @@ safety check --full-report
 
 # JSON output
 safety check --json > safety-report.json
-```
+```---
 
----
+## Integración Snyk
 
-## Snyk Integration
-
-### CLI Setup
+### Configuración de CLI
 
 ```bash
 npm install -g snyk
@@ -136,6 +133,7 @@ snyk auth
 ### Usage
 
 ```bash
+
 # Test for vulnerabilities
 snyk test
 
@@ -155,9 +153,10 @@ snyk container test <image>
 snyk iac test
 ```
 
-### CI/CD Integration
+### Integración CI/CD
 
 ```yaml
+
 # GitHub Actions
 - name: Run Snyk
   uses: snyk/actions/node@master
@@ -174,9 +173,9 @@ snyk_test:
     - snyk test --severity-threshold=high
 ```
 
-### Snyk Policies
+### Políticas de Snyk
 
-Create `.snyk` file:
+crear `.snyk` file:
 
 ```yaml
 version: v1.25.0
@@ -186,13 +185,11 @@ ignore:
         reason: Only affects _.template() which we don't use
         expires: 2024-06-01
 patch: {}
-```
+```---
 
----
+## Integración CI/CD
 
-## CI/CD Integration
-
-### GitHub Actions
+### Acciones de GitHub
 
 ```yaml
 name: Security Audit
@@ -239,7 +236,7 @@ jobs:
             snyk-results.json
 ```
 
-### GitLab CI
+### EN GitLab
 
 ```yaml
 security-audit:
@@ -261,10 +258,11 @@ security-audit:
     when: always
 ```
 
-### Pre-commit Hook
+### Gancho de confirmación previa
 
 ```bash
 #!/bin/bash
+
 # .git/hooks/pre-commit
 
 echo "Running security audit..."
@@ -274,13 +272,11 @@ if [ $? -ne 0 ]; then
   echo "Security vulnerabilities found. Fix before committing."
   exit 1
 fi
-```
+```---
 
----
+## Configuración del robot dependiente
 
-## Dependabot Configuration
-
-Create `.github/dependabot.yml`:
+crear`.github/dependabot.yml`:
 
 ```yaml
 version: 2
@@ -310,13 +306,11 @@ updates:
     ignore:
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
-```
+```---
 
----
+## Renovar configuración
 
-## Renovate Configuration
-
-Create `renovate.json`:
+crear`renovate.json`:
 
 ```json
 {
@@ -347,23 +341,21 @@ Create `renovate.json`:
   ],
   "schedule": ["before 9am on monday"]
 }
-```
+```---
 
----
+## Seguimiento CVE
 
-## CVE Tracking
+### Monitoreo de fuentes
 
-### Monitoring Sources
-
-| Source | URL | Coverage |
+| Fuente | URL | Cobertura |
 |--------|-----|----------|
-| NVD | nvd.nist.gov | All CVEs |
-| GitHub Advisory | github.com/advisories | npm, pip, etc. |
-| Snyk DB | snyk.io/vuln | npm, pip, etc. |
-| npm Registry | npmjs.com | npm packages |
-| PyPI | pypi.org/security | Python packages |
+| NVD | nvd.nist.gov | Todos los CVE |
+| Aviso de GitHub | github.com/advisories | npm, pip, etc. |
+| SnykDB | snyk.io/vuln | npm, pip, etc. |
+| Registro npm | npmjs.com | paquetes npm |
+| PyPI | pypi.org/seguridad | Paquetes de Python |
 
-### CVE Response Process
+### Proceso de respuesta CVE
 
 ```
 1. Detection (automated)
@@ -389,15 +381,14 @@ Create `renovate.json`:
 
 5. Post-mortem (critical only)
    └── Document lessons learned
-```
+```---
 
----
+## Mejores prácticas para bloquear archivos
 
-## Lock File Best Practices
-
-### npm (package-lock.json)
+### npm (paquete-lock.json)
 
 ```bash
+
 # Always commit lock file
 git add package-lock.json
 
@@ -408,9 +399,10 @@ npm ci  # Not npm install
 npm ci --ignore-scripts
 ```
 
-### Yarn (yarn.lock)
+### Hilo (hilo.lock)
 
 ```bash
+
 # Commit lock file
 git add yarn.lock
 
@@ -424,25 +416,25 @@ yarn audit
 ### pnpm (pnpm-lock.yaml)
 
 ```bash
+
 # Commit lock file
 git add pnpm-lock.yaml
 
 # Frozen install
 pnpm install --frozen-lockfile
 
-# Security audit
+# Auditoría de seguridad
 pnpm audit
-```
+```---
 
----
+## Seguridad de la cadena de suministro
 
-## Supply Chain Security
+### Procedencia del paquete
 
-### Package Provenance
-
-Check npm package signatures:
+Verifique las firmas del paquete npm:
 
 ```bash
+
 # Enable signature verification
 npm config set package-lock-only true
 npm config set audit-level moderate
@@ -451,9 +443,10 @@ npm config set audit-level moderate
 npm audit signatures
 ```
 
-### Scorecard Analysis
+### Análisis del cuadro de mando
 
 ```bash
+
 # Install scorecard
 brew install scorecard
 
@@ -464,9 +457,10 @@ scorecard --repo=github.com/lodash/lodash
 scorecard --npm=lodash
 ```
 
-### SBOM Generation
+### Generación SBOM
 
 ```bash
+
 # Generate with npm
 npm sbom --sbom-format=cyclonedx
 

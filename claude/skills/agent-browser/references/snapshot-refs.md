@@ -1,34 +1,35 @@
-# Snapshot and Refs
+# Instantánea y referencias
 
-Compact element references that reduce context usage dramatically for AI agents.
+Referencias de elementos compactos que reducen drásticamente el uso del contexto para los agentes de IA.
 
-**Related**: [commands.md](commands.md) for full command reference, [SKILL.md](../SKILL.md) for quick start.
+**Relacionado**: [commands.md](commands.md) para una referencia completa de los comandos, [SKILL.md](../SKILL.md) para un inicio rápido.
 
-## Contents
+## Contenidos
 
-- [How Refs Work](#how-refs-work)
-- [Snapshot Command](#the-snapshot-command)
-- [Using Refs](#using-refs)
-- [Ref Lifecycle](#ref-lifecycle)
-- [Best Practices](#best-practices)
-- [Ref Notation Details](#ref-notation-details)
-- [Troubleshooting](#troubleshooting)
+- [Cómo funcionan las referencias](#how-refs-work)
+- [Comando de instantánea] (#el-comando-de-instantánea)
+- [Usando referencias](#using-refs)
+- [Ciclo de vida de referencia](#ciclo de vida de referencia)
+- [Mejores prácticas](#mejores-practicas)
+- [Detalles de notación de referencia](#ref-notation-details)
+- [Solución de problemas](#solución de problemas)
 
-## How Refs Work
+## Cómo funcionan las referencias
 
-Traditional approach:
+Enfoque tradicional:
+
 ```
 Full DOM/HTML → AI parses → CSS selector → Action (~3000-5000 tokens)
-```
+```enfoque agente-navegador:
 
-agent-browser approach:
 ```
 Compact snapshot → @refs assigned → Direct interaction (~200-400 tokens)
 ```
 
-## The Snapshot Command
+## El comando de instantánea
 
 ```bash
+
 # Basic snapshot (shows page structure)
 agent-browser snapshot
 
@@ -36,7 +37,7 @@ agent-browser snapshot
 agent-browser snapshot -i
 ```
 
-### Snapshot Output Format
+### Formato de salida de instantánea
 
 ```
 Page: Example Site - Home
@@ -60,57 +61,62 @@ URL: https://example.com
   @e14 [a] "Privacy Policy"
 ```
 
-## Using Refs
+## Usando referencias
 
-Once you have refs, interact directly:
+Una vez que tengas referencias, interactúa directamente:
 
 ```bash
+
 # Click the "Sign In" button
 agent-browser click @e6
 
-# Fill email input
+# Rellenar email
 agent-browser fill @e10 "user@example.com"
 
-# Fill password
+# Rellenar contraseña
 agent-browser fill @e11 "password123"
 
-# Submit the form
+# Enviar formulario
 agent-browser click @e12
 ```
 
-## Ref Lifecycle
+## Ciclo de vida de referencia
 
-**IMPORTANT**: Refs are invalidated when the page changes!
+**IMPORTANTE**: ¡Las referencias se invalidan cuando la página cambia!
 
 ```bash
-# Get initial snapshot
+
+# Obtener snapshot inicial
 agent-browser snapshot -i
+
 # @e1 [button] "Next"
 
-# Click triggers page change
+# El clic provoca cambio de página
 agent-browser click @e1
 
 # MUST re-snapshot to get new refs!
 agent-browser snapshot -i
+
 # @e1 [h1] "Page 2"  ← Different element now!
 ```
 
-## Best Practices
+## Mejores prácticas
 
-### 1. Always Snapshot Before Interacting
+### 1. Siempre toma una instantánea antes de interactuar
 
 ```bash
-# CORRECT
+
+# CORRECTO
 agent-browser open https://example.com
 agent-browser snapshot -i          # Get refs first
 agent-browser click @e1            # Use ref
 
-# WRONG
+# INCORRECTO
 agent-browser open https://example.com
 agent-browser click @e1            # Ref doesn't exist yet!
 ```
 
-### 2. Re-Snapshot After Navigation
+### 2. Volver a tomar una instantánea después de la navegación
 
 ```bash
 agent-browser click @e5            # Navigates to new page
@@ -118,7 +124,7 @@ agent-browser snapshot -i          # Get new refs
 agent-browser click @e1            # Use new refs
 ```
 
-### 3. Re-Snapshot After Dynamic Changes
+### 3. Nueva instantánea después de cambios dinámicos
 
 ```bash
 agent-browser click @e1            # Opens dropdown
@@ -126,16 +132,17 @@ agent-browser snapshot -i          # See dropdown items
 agent-browser click @e7            # Select item
 ```
 
-### 4. Snapshot Specific Regions
+### 4. Regiones específicas de instantáneas
 
-For complex pages, snapshot specific areas:
+Para páginas complejas, tome instantáneas de áreas específicas:
 
 ```bash
-# Snapshot just the form
+
+# Snapshot solo del formulario
 agent-browser snapshot @e9
 ```
 
-## Ref Notation Details
+## Detalles de notación de referencia
 
 ```
 @e1 [tag type="value"] "text content" placeholder="hint"
@@ -147,7 +154,7 @@ agent-browser snapshot @e9
 └─ Unique ref ID
 ```
 
-### Common Patterns
+### Patrones comunes
 
 ```
 @e1 [button] "Submit"                    # Button with text
@@ -162,31 +169,34 @@ agent-browser snapshot @e9
 @e10 [radio] selected                    # Selected radio
 ```
 
-## Troubleshooting
+## Solución de problemas
 
-### "Ref not found" Error
+### Error "Referencia no encontrada"
 
 ```bash
+
 # Ref may have changed - re-snapshot
 agent-browser snapshot -i
 ```
 
-### Element Not Visible in Snapshot
+### Elemento no visible en la instantánea
 
 ```bash
-# Scroll to reveal element
+
+# Desplazar para revelar elemento
 agent-browser scroll --bottom
 agent-browser snapshot -i
 
-# Or wait for dynamic content
+# O esperar contenido dinámico
 agent-browser wait 1000
 agent-browser snapshot -i
 ```
 
-### Too Many Elements
+### Demasiados elementos
 
 ```bash
-# Snapshot specific container
+
+# Snapshot de contenedor específico
 agent-browser snapshot @e5
 
 # Or use get text for content-only extraction

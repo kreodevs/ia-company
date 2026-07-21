@@ -1,79 +1,80 @@
 ---
 name: ph-community-outreach
-description: Engage Reddit, Indie Hackers, Hacker News and other communities for Product Hunt launches. Use this skill to identify relevant communities, craft appropriate posts, and drive cross-platform engagement without appearing spammy.
+description: Involucre a Reddit, Indie Hackers, Hacker News y otras comunidades para los lanzamientos de Product Hunt. Utilice esta habilidad para identificar comunidades relevantes, crear publicaciones apropiadas e impulsar la participación multiplataforma sin que parezca spam.
 ---
 
-# Product Hunt Community Outreach
+# Alcance comunitario de búsqueda de productos
 
-This skill helps you leverage online communities to amplify your Product Hunt launch while maintaining authenticity and following community guidelines.
+Esta habilidad le ayuda a aprovechar las comunidades en línea para amplificar el lanzamiento de su búsqueda de productos mientras mantiene la autenticidad y sigue las pautas de la comunidad.
 
-## When to Use This Skill
+## Cuándo utilizar esta habilidad
 
-- Identifying communities relevant to your product
-- Crafting community-appropriate posts
-- Timing cross-platform promotion
-- Building relationships before launch
-- Avoiding spam flags and bans
+- Identificar comunidades relevantes para su producto.
+- Elaboración de publicaciones apropiadas para la comunidad.
+- Promoción multiplataforma de sincronización.
+- Construir relaciones antes del lanzamiento.
+- Evitar marcas y prohibiciones de spam
 
-## The Golden Rules
+## Las reglas de oro
 
-### Rule 1: Be a Member First
-- Participate for 2-4 weeks before launch
-- Add value through comments and discussions
-- Build karma/reputation organically
-- Never cold-post your launch
+### Regla 1: Sea miembro primero
+- Participa durante 2-4 semanas antes del lanzamiento.
+- Agregar valor a través de comentarios y discusiones.
+- Desarrollar karma/reputación orgánicamente
+- Nunca publiques tu lanzamiento en frío
 
-### Rule 2: Provide Value, Not Just Promotion
-- Share learnings, not just links
-- Answer questions in your domain
-- Help others with their launches
-- Make posts interesting standalone
+### Regla 2: Proporcionar valor, no sólo promoción
+- Compartir aprendizajes, no solo enlaces.
+- Responde preguntas en tu dominio
+- Ayudar a otros con sus lanzamientos.
+- Hacer que las publicaciones sean interesantes de forma independiente
 
-### Rule 3: Follow Each Community's Rules
-- Read sidebar/rules before posting
-- Check if self-promotion is allowed
-- Note any format requirements
-- Respect moderators
+### Regla 3: Sigue las reglas de cada comunidad
+- Leer la barra lateral/reglas antes de publicar
+- Comprobar si se permite la autopromoción.
+- Tenga en cuenta los requisitos de formato
+- Respetar a los moderadores.
 
-## Platform-by-Platform Guide
+## Guía plataforma por plataforma
 
 ### Reddit
 
-#### Relevant Subreddits
+#### Subreddits relevantes
 
-**General Startup/Product:**
-- r/SideProject (253k) - Very friendly to makers
-- r/startups (960k) - Broader startup discussion
-- r/Entrepreneur (2.4M) - Business-focused
-- r/smallbusiness (1.3M) - SMB audience
-- r/InternetIsBeautiful (17M) - Cool web things
+**Inicio general/Producto:**
+- r/SideProject (253k) - Muy amigable para los creadores
+- r/startups (960k) - Discusión más amplia sobre startups
+- r/Emprendedor (2,4M) - Centrado en el negocio
+- r/smallbusiness (1,3 millones) - Audiencia de pymes
+- r/InternetIsBeautiful (17M) - Cosas interesantes de la web
 
-**Tech/Development:**
-- r/webdev (1.7M) - Web development
-- r/programming (5.6M) - General programming
-- r/learnprogramming (3.5M) - Beginners
-- r/opensource (400k) - Open source projects
-- r/selfhosted (280k) - Self-hosted solutions
+**Tecnología/Desarrollo:**
+- r/webdev (1,7M) - Desarrollo web
+- r/programación (5.6M) - Programación general
+- r/learnprogramming (3,5 millones) - Principiantes
+- r/opensource (400k) - Proyectos de código abierto
+- r/selfhosted (280k) - Soluciones autohospedadas
 
-**Specific Niches:**
-- r/SaaS (44k) - SaaS products
-- r/nocode (120k) - No-code tools
-- r/artificial (1.4M) - AI products
-- r/productivity (1.1M) - Productivity tools
-- r/design (470k) - Design tools
+**Nichos específicos:**
+- r/SaaS (44k) - Productos SaaS
+- r/nocode (120k) - Herramientas sin código
+- r/artificial (1,4 millones) - Productos de IA
+- r/productividad (1,1M) - Herramientas de productividad
+- r/design (470k) - Herramientas de diseño
 
-**Product Hunt Specific:**
-- r/ProductHunters (small but targeted)
+**Búsqueda de producto específica:**
+- r/ProductHunters (pequeño pero específico)
 
-#### Reddit Posting Strategy
+#### Estrategia de publicación en Reddit
 
-**Pre-Launch (2-4 weeks before):**
-1. Join relevant subreddits
-2. Comment helpfully on 10-20 posts
-3. Build karma organically
-4. Observe what content works
+**Prelanzamiento (2-4 semanas antes):**
+1. Únase a subreddits relevantes
+2. Comente de manera útil entre 10 y 20 publicaciones.
+3. Desarrolla karma orgánicamente
+4. Observa qué contenido funciona
 
-**Launch Day Post Template:**
+**Plantilla de publicación del día del lanzamiento:**
+
 ```
 Title: I built [Product] to solve [specific problem] -
        launching on Product Hunt today
@@ -107,31 +108,32 @@ Happy to answer any questions about the build,
 the tech stack, or the journey!
 ```
 
-#### Reddit Best Practices
-- ✓ Post during active hours (9 AM - 5 PM local)
-- ✓ Respond to every comment
-- ✓ Be humble and open to criticism
-- ✓ Share actual value/learnings
-- ✓ Use authentic language
+#### Mejores prácticas de Reddit
+- ✓ Publicar durante el horario activo (de 9 a. m. a 5 p. m. local)
+- ✓ Responder a cada comentario.
+- ✓ Sea humilde y abierto a las críticas.
+- ✓ Compartir valores/aprendizajes reales
+- ✓ Utilice un lenguaje auténtico
 
-#### Reddit Avoid
-- ❌ Posting in 10+ subreddits at once (spam)
-- ❌ Using the same text everywhere
-- ❌ Just dropping a link
-- ❌ Ignoring negative feedback
-- ❌ Posting in large subreddits without karma
+#### Reddit evitar
+- ❌ Publicar en más de 10 subreddits a la vez (spam)
+- ❌ Usar el mismo texto en todas partes
+- ❌ Simplemente dejando caer un enlace
+- ❌ Ignorar los comentarios negativos
+- ❌ Publicar en subreddits grandes sin karma
 
 ---
 
-### Indie Hackers
+### Hackers independientes
 
-#### Why Indie Hackers Works
-- Community of makers/founders
-- Celebrate launches and milestones
-- Value transparency and learning
-- Often reciprocal support
+#### Por qué funcionan los hackers independientes
+- Comunidad de creadores/fundadores
+- Celebrar lanzamientos e hitos.
+- Valorar la transparencia y el aprendizaje.
+- A menudo apoyo recíproco
 
-#### Indie Hackers Post Template
+#### Plantilla de publicación de hackers independientes
+
 ```
 Title: Just launched [Product] on Product Hunt -
        here's what I learned building it
@@ -173,26 +175,27 @@ Website: [Link]
 AMA about the build!
 ```
 
-#### Indie Hackers Best Practices
-- ✓ Share real numbers (transparency wins)
-- ✓ Focus on the journey, not just the product
-- ✓ Engage with other launches too
-- ✓ Join relevant IH groups
-- ✓ Follow up with results post
+#### Mejores prácticas de hackers independientes
+- ✓ Compartir números reales (gana la transparencia)
+- ✓ Céntrese en el viaje, no solo en el producto
+- ✓ Participar también en otros lanzamientos
+- ✓ Únase a grupos IH relevantes
+- ✓ Seguimiento de la publicación de resultados.
 
 ---
 
-### Hacker News
+### Noticias de piratas informáticos
 
-#### Hacker News Reality Check
-- Very high bar for quality
-- Community can be harsh
-- Not for every product
-- Best for: Dev tools, technical products, novel tech
+#### Verificación de la realidad de las noticias de hackers
+- El listón de calidad muy alto
+- La comunidad puede ser dura
+- No para todos los productos
+- Ideal para: herramientas de desarrollo, productos técnicos y tecnología novedosa.
 
-#### HN Post Strategy
+#### Estrategia de publicación de HN
 
-**Show HN Format:**
+**Mostrar formato HN:**
+
 ```
 Title: Show HN: [Product Name] – [Brief description]
 
@@ -214,85 +217,83 @@ I'd appreciate any feedback, especially on:
 Happy to discuss the implementation!
 ```
 
-#### HN Best Practices
-- ✓ Technical substance required
-- ✓ Be ready for tough questions
-- ✓ Respond thoughtfully to criticism
-- ✓ Don't ask for upvotes (ever)
-- ✓ Time it well (morning US)
+#### Mejores prácticas de HN
+- ✓ Se requiere sustancia técnica
+- ✓ Esté preparado para preguntas difíciles
+- ✓ Responder pensativamente a las críticas.
+- ✓ No pidas votos positivos (nunca)
+- ✓ Calcula bien el tiempo (mañana EE. UU.)
 
-#### HN Avoid
-- ❌ Marketing speak
-- ❌ "AI-powered" without substance
-- ❌ Voting rings (will get you banned)
-- ❌ Complaining about downvotes
+#### HN Evitar
+- ❌ Charla de marketing
+- ❌ "Impulsado por IA" sin sustancia
+- ❌ Anillos de votación (te prohibirán)
+- ❌ Quejarse de los votos negativos
 
 ---
 
-### Other Communities
+### Otras comunidades
 
-#### Discord Servers
-- Find servers related to your niche
-- Participate genuinely first
-- Check if #self-promotion channels exist
-- Don't DM spam
+#### Servidores de discordia
+- Encuentra servidores relacionados con tu nicho
+- Participa genuinamente primero.
+- Comprobar si existen canales de #autopromoción
+- No enviar mensajes spam
 
-#### Slack Communities
-- Many industries have Slack groups
-- Similar rules as Discord
-- Often more professional
+#### Comunidades flojas
+- Muchas industrias tienen grupos de Slack
+- Reglas similares a las de Discord.
+- A menudo más profesional
 
-#### Facebook Groups
-- Still relevant for certain niches
-- B2B groups can be valuable
-- Follow group rules strictly
+#### Grupos de Facebook
+- Sigue siendo relevante para ciertos nichos
+- Los grupos B2B pueden ser valiosos
+- Seguir estrictamente las reglas del grupo.
 
-#### Product-Specific Communities
-- Dev.to (developers)
-- Hashnode (developers)
-- Lobste.rs (tech)
-- Designer News (designers)
-- Growth Hackers (marketing)
+#### Comunidades de productos específicos
+- Dev.to (desarrolladores)
+- Hashnode (desarrolladores)
+- Langostas (tecnología)
+- Noticias de diseñadores (diseñadores)
+- Growth Hackers (mercadeo)
 
-## Timing Strategy
+## Estrategia de sincronización
 
-### Pre-Launch (2-4 weeks)
-- [ ] Join all relevant communities
-- [ ] Comment on 20+ posts
-- [ ] Build relationships
-- [ ] Save posts where you can share later
+### Prelanzamiento (2-4 semanas)
+- [] Únase a todas las comunidades relevantes
+- [] Comenta en más de 20 publicaciones
+- [] Construir relaciones
+- [] Guarda publicaciones donde puedas compartirlas más tarde.
 
-### Launch Week
-- [ ] Soft mentions in comments
-- [ ] Help others, mention your launch naturally
-- [ ] Prepare posts for each platform
+### Semana de lanzamiento
+- [] Menciones suaves en los comentarios.
+- [ ] Ayuda a otros, menciona tu lanzamiento de forma natural
+- [] Preparar publicaciones para cada plataforma.
 
-### Launch Day
-- [ ] Space out community posts (not all at once)
-- [ ] Different post for each community
-- [ ] Monitor and respond quickly
+### Día de lanzamiento
+- [] Espaciar las publicaciones de la comunidad (no todas a la vez)
+- [ ] Publicación diferente para cada comunidad.
+- [] Monitorear y responder rápidamente### Post-lanzamiento
+- [ ] Compartir resultados y aprendizajes
+- [] Agradecer a las comunidades
+- [ ] Continuar participando
 
-### Post-Launch
-- [ ] Share results and learnings
-- [ ] Thank communities
-- [ ] Continue participating
+## Lista de verificación de publicaciones de la comunidad
 
-## Community Post Checklist
+### Antes de publicar
+- [ ] ¿Soy un miembro reconocido de esta comunidad?
+- [ ] ¿He leído las reglas?
+- [ ] ¿Está permitida la autopromoción?
+- [] ¿Mi publicación proporciona valor más allá de la promoción?
+- [] ¿Es apropiado el formato de mi publicación?
 
-### Before Posting
-- [ ] Am I a recognized member of this community?
-- [ ] Have I read the rules?
-- [ ] Is self-promotion allowed?
-- [ ] Does my post provide value beyond promotion?
-- [ ] Is my post format appropriate?
+### Después de publicar
+- [ ] Seguimiento de comentarios
+- [] Responder a todos los comentarios
+- [] Agradeciendo a la gente por el apoyo.
+- [] No ponerse a la defensiva ante las críticas.
 
-### After Posting
-- [ ] Monitoring for comments
-- [ ] Responding to all feedback
-- [ ] Thanking people for support
-- [ ] Not getting defensive about criticism
-
-## Output Format
+## Formato de salida
 
 ```
 COMMUNITY OUTREACH PLAN FOR: [Product Name]
