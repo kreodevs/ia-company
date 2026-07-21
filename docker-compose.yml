@@ -51,7 +51,7 @@ services:
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
       WORKSPACE_ROOT: /app
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
-      RUN_SEED: ${RUN_SEED:-true}
+      RUN_SEED: ${RUN_SEED:-false}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
     depends_on:
@@ -64,7 +64,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
       interval: 15s
       timeout: 5s
       retries: 5
