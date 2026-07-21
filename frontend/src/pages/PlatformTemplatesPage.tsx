@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api, type Agent, type Skill, type Workflow } from "../lib/api";
 
 type Tab = "agents" | "skills" | "workflows";
 
 export default function PlatformTemplatesPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("agents");
   const [agents, setAgents] = useState<Agent[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -188,20 +189,40 @@ export default function PlatformTemplatesPage() {
       )}
 
       {tab === "workflows" && (
-        <ul className="space-y-3">
-          {workflows.map((wf) => (
-            <li
-              key={wf.id}
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4"
-            >
-              <div className="font-semibold">{wf.name}</div>
-              <p className="text-sm text-[var(--color-muted-foreground)]">{wf.description}</p>
-              <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
-                {wf.steps.length} steps · {wf.edges.length} edges
-              </p>
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-4">
+          <button
+            onClick={() => {
+              const name = prompt("Workflow template name");
+              if (!name?.trim()) return;
+              void api.admin.templates
+                .createWorkflow({ name: name.trim() })
+                .then((wf) => navigate(`/admin/templates/workflows/${wf.id}`))
+                .catch((err) => setMessage(err instanceof Error ? err.message : "Create failed"));
+            }}
+            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
+          >
+            + Create workflow template
+          </button>
+          <ul className="space-y-3">
+            {workflows.map((wf) => (
+              <li
+                key={wf.id}
+                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4"
+              >
+                <Link
+                  to={`/admin/templates/workflows/${wf.id}`}
+                  className="block hover:opacity-90"
+                >
+                  <div className="font-semibold">{wf.name}</div>
+                  <p className="text-sm text-[var(--color-muted-foreground)]">{wf.description}</p>
+                  <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
+                    {wf.steps.length} steps · {wf.edges.length} edges · Open visual editor →
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

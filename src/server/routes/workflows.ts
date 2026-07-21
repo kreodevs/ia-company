@@ -4,6 +4,7 @@ import { executeWorkflowInBackground } from "../../core/engine.js";
 import { logAudit } from "../../lib/audit.js";
 import { assertTenantCanExecute } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import { updateWorkflowGraph } from "../lib/workflow-graph.js";
 import type { CreateWorkflowInput, ExecuteWorkflowInput } from "../../types/index.js";
 
 export async function workflowRoutes(app: FastifyInstance) {
@@ -107,71 +108,10 @@ export async function workflowRoutes(app: FastifyInstance) {
         const existing = await prisma.workflow.findFirst({ where: { id: workflowId, tenantId } });
         if (!existing) return reply.status(404).send({ error: "Workflow not found" });
 
-        await prisma.$transaction(async (tx) => {
-          await tx.workflow.update({ where: { id: workflowId }, data });
-
-          if (!steps) return;
-
-          const incomingIds = steps
-            .map((s) => s.id)
-            .filter((id): id is string => Boolean(id && !id.startsWith("temp-")));
-
-          if (incomingIds.length > 0) {
-            await tx.workflowStep.deleteMany({
-              where: { workflowId, id: { notIn: incomingIds } },
-            });
-          } else {
-            await tx.workflowStep.deleteMany({ where: { workflowId } });
-          }
-
-          const idMap = new Map<string, string>();
-
-          for (let i = 0; i < steps.length; i++) {
-            const s = steps[i];
-            const stepData = {
-              agentId: s.agentId,
-              stepOrder: s.stepOrder ?? i,
-              label: s.label,
-              positionX: s.positionX ?? 250,
-              positionY: s.positionY ?? i * 150,
-              inputConfig: (s.inputConfig ?? {}) as object,
-              outputConfig: (s.outputConfig ?? {}) as object,
-            };
-
-            if (s.id && !s.id.startsWith("temp-")) {
-              const updated = await tx.workflowStep.update({
-                where: { id: s.id },
-                data: stepData,
-              });
-              idMap.set(s.id, updated.id);
-            } else {
-              const created = await tx.workflowStep.create({
-                data: { workflowId, ...stepData },
-              });
-              if (s.id) idMap.set(s.id, created.id);
-            }
-          }
-
-          if (edges) {
-            await tx.workflowEdge.deleteMany({ where: { workflowId } });
-            await tx.workflowEdge.createMany({
-              data: edges.map((e) => ({
-                workflowId,
-                sourceStepId: idMap.get(e.sourceStepId) ?? e.sourceStepId,
-                targetStepId: idMap.get(e.targetStepId) ?? e.targetStepId,
-                sourceHandle: e.sourceHandle,
-                targetHandle: e.targetHandle,
-              })),
-            });
-          }
-        });
-
-        const workflow = await prisma.workflow.findUnique({
-          where: { id: workflowId },
-          include: {
-            steps: { include: { agent: true }, orderBy: { stepOrder: "asc" } },
-            edges: true,
-          },
+        const workflow = await updateWorkflowGraph(workflowId, {
+          ...data,
+          steps,
+          edges,
         });
 
         return workflow;

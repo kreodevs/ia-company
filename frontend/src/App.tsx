@@ -10,6 +10,7 @@ import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import SettingsPage from "./pages/SettingsPage";
 import PlatformTemplatesPage from "./pages/PlatformTemplatesPage";
+import PlatformWorkflowEditorPage from "./pages/PlatformWorkflowEditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AgentsPage from "./pages/AgentsPage";
@@ -86,6 +87,7 @@ function AppShell() {
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin" element={<SuperAdminDashboardPage />} />
               <Route path="/admin/templates" element={<PlatformTemplatesPage />} />
+              <Route path="/admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
             </Route>
 
             <Route element={<RequireTenantAccess />}>

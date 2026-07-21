@@ -22,7 +22,8 @@ Two login modes at `/login`:
 |-------|---------|
 | `/setup` | First superadmin (auto-redirect if none exists) |
 | `/admin` | Superadmin dashboard (superadmin only) |
-| `/admin/templates` | `PlatformTemplatesPage` | Edit platform agent/skill templates + reseed |
+| `/admin/templates` | `PlatformTemplatesPage` | Edit platform agent/skill/workflow templates + reseed |
+| `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | React Flow canvas for global workflow templates |
 
 ## Pages
 
@@ -36,6 +37,7 @@ Two login modes at `/login`:
 | `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
 | `/settings` | `SettingsPage` | Tenant LLM keys + autonomous workflow schedules (admin only) |
+| `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Superadmin — React Flow editor for global workflow templates |
 
 Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
 

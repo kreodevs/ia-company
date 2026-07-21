@@ -91,7 +91,7 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 
 | Feature | Location |
 |---------|----------|
-| Platform templates | `/admin/templates` — edit global agents/skills, reseed from `.claude/` |
+| Platform templates | `/admin/templates` — edit global agents/skills/workflows (visual graph editor), reseed from `.claude/` |
 | Notifications | Settings → webhook / Slack / email on run complete/fail |
 | Usage limits | Settings → monthly runs/cost/tokens caps |
 | Password reset | `/forgot-password` → email link → `/reset-password` |
@@ -111,12 +111,12 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 | Notifications | `/api/tenant/settings/notifications` |
 | Usage limits | `/api/tenant/settings/limits` |
 | Platform templates | `/api/admin/templates/*` |
+| Platform workflow templates | `GET/POST /api/admin/templates/workflows`, `GET/PUT/DELETE .../workflows/:id` (graph via PUT) |
 | Password reset | `/api/auth/tenant/forgot-password`, `/reset-password` |
 
 ## What's still optional (v3)
 
 - Stripe billing integration and paid plan tiers
-- Full platform workflow template editor (graph canvas for global templates)
 - Deep E2E tests with Postgres + Redis test containers
 
 ## Related docs

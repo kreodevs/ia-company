@@ -279,11 +279,19 @@ export const api = {
           body: JSON.stringify(body),
         }),
       listWorkflows: () => request<Workflow[]>("/admin/templates/workflows"),
-      updateWorkflow: (id: string, body: { name?: string; description?: string }) =>
+      getWorkflow: (id: string) => request<Workflow>(`/admin/templates/workflows/${id}`),
+      createWorkflow: (body: { name: string; description?: string }) =>
+        request<Workflow>("/admin/templates/workflows", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+      updateWorkflow: (id: string, body: unknown) =>
         request<Workflow>(`/admin/templates/workflows/${id}`, {
           method: "PUT",
           body: JSON.stringify(body),
         }),
+      deleteWorkflow: (id: string) =>
+        request<void>(`/admin/templates/workflows/${id}`, { method: "DELETE" }),
     },
   },
   tenantUsers: {

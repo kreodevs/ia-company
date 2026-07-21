@@ -2,7 +2,9 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import { seedPlatformTemplates } from "../../lib/seed-platform.js";
+import { assertPlatformAgent, updateWorkflowGraph } from "../lib/workflow-graph.js";
 import { handleRouteError } from "../lib/request-context.js";
+import type { CreateWorkflowInput } from "../../types/index.js";
 
 const PLATFORM = { tenantId: null } as const;
 
@@ -123,6 +125,7 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
         include: {
           steps: { include: { agent: true }, orderBy: { stepOrder: "asc" } },
           edges: true,
+          _count: { select: { steps: true, edges: true } },
         },
         orderBy: { name: "asc" },
       });
@@ -131,7 +134,55 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
     }
   });
 
-  app.put<{ Params: { id: string }; Body: { name?: string; description?: string } }>(
+  app.get<{ Params: { id: string } }>("/admin/templates/workflows/:id", async (request, reply) => {
+    try {
+      const workflow = await prisma.workflow.findFirst({
+        where: { id: request.params.id, tenantId: null },
+        include: {
+          steps: {
+            include: { agent: { include: { skills: { include: { skill: true } } } } },
+            orderBy: { stepOrder: "asc" },
+          },
+          edges: true,
+        },
+      });
+      if (!workflow) return reply.status(404).send({ error: "Template not found" });
+      return workflow;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Body: { name: string; description?: string } }>(
+    "/admin/templates/workflows",
+    async (request, reply) => {
+      try {
+        const { name, description } = request.body;
+        if (!name?.trim()) {
+          return reply.status(400).send({ error: "Workflow name is required" });
+        }
+
+        const existing = await prisma.workflow.findFirst({
+          where: { tenantId: null, name: name.trim() },
+        });
+        if (existing) {
+          return reply.status(409).send({ error: "Platform workflow name already exists" });
+        }
+
+        const workflow = await prisma.workflow.create({
+          data: { tenantId: null, name: name.trim(), description },
+          include: { steps: { include: { agent: true } }, edges: true },
+        });
+
+        await logAudit(request, "platform.workflow.create", { workflowId: workflow.id, name });
+        return reply.status(201).send(workflow);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.put<{ Params: { id: string }; Body: CreateWorkflowInput }>(
     "/admin/templates/workflows/:id",
     async (request, reply) => {
       try {
@@ -140,12 +191,34 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
         });
         if (!existing) return reply.status(404).send({ error: "Template not found" });
 
-        const workflow = await prisma.workflow.update({
-          where: { id: existing.id },
-          data: request.body,
-        });
-        await logAudit(request, "platform.workflow.update", { workflowId: workflow.id });
+        const { steps, edges, tenantId: _ignored, ...data } = request.body;
+
+        const workflow = await updateWorkflowGraph(
+          existing.id,
+          { ...data, steps, edges },
+          { validateAgentId: assertPlatformAgent },
+        );
+
+        await logAudit(request, "platform.workflow.update", { workflowId: existing.id });
         return workflow;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    "/admin/templates/workflows/:id",
+    async (request, reply) => {
+      try {
+        const existing = await prisma.workflow.findFirst({
+          where: { id: request.params.id, tenantId: null },
+        });
+        if (!existing) return reply.status(404).send({ error: "Template not found" });
+
+        await prisma.workflow.delete({ where: { id: existing.id } });
+        await logAudit(request, "platform.workflow.delete", { workflowId: existing.id });
+        return reply.status(204).send();
       } catch (err) {
         return handleRouteError(reply, err);
       }
