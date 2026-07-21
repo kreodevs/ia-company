@@ -5,7 +5,7 @@ import { seedPlatformTemplates } from "../../lib/seed-platform.js";
 import { syncPlatformTemplatesToTenants } from "../lib/clone-templates.js";
 import { assertPlatformAgent, updateWorkflowGraph } from "../lib/workflow-graph.js";
 import { handleRouteError } from "../lib/request-context.js";
-import type { CreateWorkflowInput } from "../../types/index.js";
+import type { CreateWorkflowInput, CreateAgentInput, CreateSkillInput } from "../../types/index.js";
 
 const PLATFORM = { tenantId: null } as const;
 
@@ -79,6 +79,52 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
     }
   });
 
+  app.post<{ Body: CreateAgentInput }>("/admin/templates/agents", async (request, reply) => {
+    try {
+      const { name, role, systemPrompt, provider, model, temperature, skillIds } = request.body;
+      if (!name?.trim() || !role?.trim() || !systemPrompt?.trim()) {
+        return reply.status(400).send({ error: "Name, role, and systemPrompt are required" });
+      }
+
+      const existing = await prisma.agent.findFirst({
+        where: { tenantId: null, name: name.trim() },
+      });
+      if (existing) {
+        return reply.status(409).send({ error: "Platform agent name already exists" });
+      }
+
+      const agent = await prisma.agent.create({
+        data: {
+          tenantId: null,
+          name: name.trim(),
+          role: role.trim(),
+          systemPrompt,
+          provider: provider ?? "tokenlab",
+          model: model ?? "claude-3-5-sonnet-20241022",
+          temperature: temperature ?? 0.7,
+        },
+      });
+
+      if (skillIds?.length) {
+        for (const skillId of skillIds) {
+          const skill = await prisma.skill.findFirst({ where: { id: skillId, tenantId: null } });
+          if (!skill) continue;
+          await prisma.agentSkill.create({ data: { agentId: agent.id, skillId } });
+        }
+      }
+
+      await logAudit(request, "platform.agent.create", { agentId: agent.id, name: agent.name });
+      return reply.status(201).send(
+        await prisma.agent.findUnique({
+          where: { id: agent.id },
+          include: { skills: { include: { skill: true } } },
+        }),
+      );
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.put<{ Params: { id: string }; Body: Record<string, unknown> }>(
     "/admin/templates/agents/:id",
     async (request, reply) => {
@@ -125,6 +171,38 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
   app.get("/admin/templates/skills", async (_request, reply) => {
     try {
       return prisma.skill.findMany({ where: PLATFORM, orderBy: { name: "asc" } });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Body: CreateSkillInput }>("/admin/templates/skills", async (request, reply) => {
+    try {
+      const { name, description, promptContent } = request.body;
+      if (!name?.trim() || !description?.trim() || !promptContent?.trim()) {
+        return reply
+          .status(400)
+          .send({ error: "Name, description, and promptContent are required" });
+      }
+
+      const existing = await prisma.skill.findFirst({
+        where: { tenantId: null, name: name.trim() },
+      });
+      if (existing) {
+        return reply.status(409).send({ error: "Platform skill name already exists" });
+      }
+
+      const skill = await prisma.skill.create({
+        data: {
+          tenantId: null,
+          name: name.trim(),
+          description,
+          promptContent,
+        },
+      });
+
+      await logAudit(request, "platform.skill.create", { skillId: skill.id, name: skill.name });
+      return reply.status(201).send(skill);
     } catch (err) {
       return handleRouteError(reply, err);
     }

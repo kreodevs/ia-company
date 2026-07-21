@@ -33,6 +33,18 @@ Open `http://localhost` → `/setup` to create superadmin.
 6. First visit: `/setup` (superadmin) → `/admin` → create tenant + owner user.
 7. Tenant users sign in at `/login` → tab **Organization**.
 
+## Email (Resend)
+
+Set in Dokploy / `.env.production` for password reset and email run notifications:
+
+| Variable | Example |
+|----------|---------|
+| `RESEND_API_KEY` | `re_...` from [resend.com](https://resend.com) |
+| `EMAIL_FROM` | `Auto Company <noreply@yourdomain.com>` (verified domain) |
+| `PUBLIC_URL` | `https://your-dokploy-domain.com` |
+
+Without these, the API still runs; email features no-op with a log warning.
+
 ## Entrypoint (`docker/api/entrypoint.sh`)
 
 - Waits for PostgreSQL

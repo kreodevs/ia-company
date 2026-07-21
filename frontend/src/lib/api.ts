@@ -257,9 +257,9 @@ export const api = {
         tenantId: string;
         mode: "merge" | "update";
         stats: {
-          skills: { added: number; updated: number };
-          agents: { added: number; updated: number };
-          workflows: { added: number; updated: number };
+          skills: { added: number; updated: number; linked: number };
+          agents: { added: number; updated: number; linked: number };
+          workflows: { added: number; updated: number; linked: number };
         };
       }>(`/admin/tenants/${id}/sync-templates`, {
         method: "POST",
@@ -290,9 +290,9 @@ export const api = {
             tenantId: string;
             tenantName: string;
             stats: {
-              skills: { added: number; updated: number };
-              agents: { added: number; updated: number };
-              workflows: { added: number; updated: number };
+              skills: { added: number; updated: number; linked: number };
+              agents: { added: number; updated: number; linked: number };
+              workflows: { added: number; updated: number; linked: number };
             };
           }>;
         }>("/admin/templates/sync-tenants", {
@@ -300,12 +300,30 @@ export const api = {
           body: JSON.stringify(body),
         }),
       listAgents: () => request<Agent[]>("/admin/templates/agents"),
+      createAgent: (body: {
+        name: string;
+        role: string;
+        systemPrompt: string;
+        provider?: Agent["provider"];
+        model?: string;
+        temperature?: number;
+        skillIds?: string[];
+      }) =>
+        request<Agent>("/admin/templates/agents", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
       updateAgent: (id: string, body: Partial<Agent> & { skillIds?: string[] }) =>
         request<Agent>(`/admin/templates/agents/${id}`, {
           method: "PUT",
           body: JSON.stringify(body),
         }),
       listSkills: () => request<Skill[]>("/admin/templates/skills"),
+      createSkill: (body: { name: string; description: string; promptContent: string }) =>
+        request<Skill>("/admin/templates/skills", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
       updateSkill: (id: string, body: Partial<Omit<Skill, "id">>) =>
         request<Skill>(`/admin/templates/skills/${id}`, {
           method: "PUT",

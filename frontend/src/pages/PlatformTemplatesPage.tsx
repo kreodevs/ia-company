@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, type Agent, type Skill, type Workflow } from "../lib/api";
+import { api, type Agent, type Skill, type TenantSummary, type Workflow } from "../lib/api";
 
 type Tab = "agents" | "skills" | "workflows";
 
@@ -15,38 +15,47 @@ export default function PlatformTemplatesPage() {
   const [reseedLoading, setReseedLoading] = useState(false);
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncMode, setSyncMode] = useState<"merge" | "update">("merge");
+  const [tenants, setTenants] = useState<TenantSummary[]>([]);
+  const [selectedTenantIds, setSelectedTenantIds] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
   const formatSyncStats = (stats: {
-    skills: { added: number; updated: number };
-    agents: { added: number; updated: number };
-    workflows: { added: number; updated: number };
+    skills: { added: number; updated: number; linked?: number };
+    agents: { added: number; updated: number; linked?: number };
+    workflows: { added: number; updated: number; linked?: number };
   }) => {
     const parts = [
       `${stats.skills.added} skills added`,
       `${stats.skills.updated} skills updated`,
+      stats.skills.linked ? `${stats.skills.linked} skills linked` : "",
       `${stats.agents.added} agents added`,
       `${stats.agents.updated} agents updated`,
+      stats.agents.linked ? `${stats.agents.linked} agents linked` : "",
       `${stats.workflows.added} workflows added`,
       `${stats.workflows.updated} workflows updated`,
-    ].filter((part) => !part.startsWith("0 "));
+      stats.workflows.linked ? `${stats.workflows.linked} workflows linked` : "",
+    ].filter((part) => part && !part.startsWith("0 "));
     return parts.length > 0 ? parts.join(", ") : "No changes";
   };
 
-  const syncToAllTenants = async () => {
-    if (
-      syncMode === "update" &&
-      !confirm(
-        "Update mode overwrites matching tenant agents/skills/workflows from platform templates. Continue?",
-      )
-    ) {
+  const confirmUpdateMode = () => {
+    if (syncMode !== "update") return true;
+    return confirm(
+      "Update mode overwrites matching tenant agents/skills/workflows from platform templates (matched by platform id or name). Continue?",
+    );
+  };
+
+  const syncTenants = async (tenantIds: string[]) => {
+    if (tenantIds.length === 0) {
+      setMessage("Select at least one tenant");
       return;
     }
+    if (!confirmUpdateMode()) return;
 
     setSyncLoading(true);
     setMessage(null);
     try {
-      const result = await api.admin.templates.syncTenants({ all: true, mode: syncMode });
+      const result = await api.admin.templates.syncTenants({ tenantIds, mode: syncMode });
       const summary = result.results
         .map((entry) => `${entry.tenantName}: ${formatSyncStats(entry.stats)}`)
         .join(" · ");
@@ -58,15 +67,20 @@ export default function PlatformTemplatesPage() {
     }
   };
 
+  const syncToAllTenants = () => void syncTenants(tenants.map((t) => t.id));
+
   const load = async () => {
-    const [a, s, w] = await Promise.all([
+    const [a, s, w, t] = await Promise.all([
       api.admin.templates.listAgents(),
       api.admin.templates.listSkills(),
       api.admin.templates.listWorkflows(),
+      api.admin.tenants(),
     ]);
     setAgents(a);
     setSkills(s);
     setWorkflows(w);
+    setTenants(t);
+    setSelectedTenantIds((prev) => prev.filter((id) => t.some((tenant) => tenant.id === id)));
   };
 
   useEffect(() => {
@@ -84,6 +98,41 @@ export default function PlatformTemplatesPage() {
       setMessage(err instanceof Error ? err.message : "Reseed failed");
     } finally {
       setReseedLoading(false);
+    }
+  };
+
+  const createAgent = async () => {
+    const name = prompt("Agent template name");
+    if (!name?.trim()) return;
+    const role = prompt("Role label", name.trim()) ?? name.trim();
+    try {
+      const agent = await api.admin.templates.createAgent({
+        name: name.trim(),
+        role: role.trim(),
+        systemPrompt: `You are ${name.trim()}, ${role.trim()}.`,
+      });
+      await load();
+      setSelectedAgent(agent);
+      setMessage(`Created agent template "${agent.name}"`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Create failed");
+    }
+  };
+
+  const createSkill = async () => {
+    const name = prompt("Skill template name");
+    if (!name?.trim()) return;
+    try {
+      const skill = await api.admin.templates.createSkill({
+        name: name.trim(),
+        description: `Platform skill: ${name.trim()}`,
+        promptContent: `# ${name.trim()}\n\nDescribe how agents should use this skill.`,
+      });
+      await load();
+      setSelectedSkill(skill);
+      setMessage(`Created skill template "${skill.name}"`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Create failed");
     }
   };
 
@@ -137,7 +186,8 @@ export default function PlatformTemplatesPage() {
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
         <h2 className="font-semibold">Sync to existing tenants</h2>
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-          Push platform templates to tenants that already exist. Matching is by name.
+          Push platform templates to existing tenants. Matching uses platform id (rename-safe), then
+          name.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-2 text-sm">
@@ -165,7 +215,34 @@ export default function PlatformTemplatesPage() {
           >
             {syncLoading ? "Syncing…" : "Sync all tenants"}
           </button>
+          <button
+            disabled={syncLoading || selectedTenantIds.length === 0}
+            onClick={() => void syncTenants(selectedTenantIds)}
+            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)] disabled:opacity-50"
+          >
+            {syncLoading ? "Syncing…" : `Sync selected (${selectedTenantIds.length})`}
+          </button>
         </div>
+        {tenants.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {tenants.map((tenant) => (
+              <label key={tenant.id} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={selectedTenantIds.includes(tenant.id)}
+                  onChange={(e) => {
+                    setSelectedTenantIds((prev) =>
+                      e.target.checked
+                        ? [...prev, tenant.id]
+                        : prev.filter((id) => id !== tenant.id),
+                    );
+                  }}
+                />
+                {tenant.name}
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       {message && (
@@ -192,7 +269,14 @@ export default function PlatformTemplatesPage() {
 
       {tab === "agents" && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <ul className="space-y-2">
+          <div className="space-y-2">
+            <button
+              onClick={() => void createAgent()}
+              className="w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+            >
+              + Create agent template
+            </button>
+            <ul className="space-y-2">
             {agents.map((agent) => (
               <li key={agent.id}>
                 <button
@@ -208,7 +292,8 @@ export default function PlatformTemplatesPage() {
                 </button>
               </li>
             ))}
-          </ul>
+            </ul>
+          </div>
           {selectedAgent && (
             <div className="space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <textarea
@@ -230,7 +315,14 @@ export default function PlatformTemplatesPage() {
 
       {tab === "skills" && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <ul className="space-y-2">
+          <div className="space-y-2">
+            <button
+              onClick={() => void createSkill()}
+              className="w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+            >
+              + Create skill template
+            </button>
+            <ul className="space-y-2">
             {skills.map((skill) => (
               <li key={skill.id}>
                 <button
@@ -245,7 +337,8 @@ export default function PlatformTemplatesPage() {
                 </button>
               </li>
             ))}
-          </ul>
+            </ul>
+          </div>
           {selectedSkill && (
             <div className="space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <textarea

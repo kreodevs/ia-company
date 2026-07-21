@@ -15,6 +15,7 @@ export default function SuperAdminDashboardPage() {
   const [ownerPassword, setOwnerPassword] = useState("");
   const [creating, setCreating] = useState(false);
   const [syncingTenantId, setSyncingTenantId] = useState<string | null>(null);
+  const [syncMode, setSyncMode] = useState<"merge" | "update">("merge");
   const [error, setError] = useState<string | null>(null);
   const [auditLogs, setAuditLogs] = useState<Awaited<ReturnType<typeof api.admin.auditLogs>>>([]);
 
@@ -62,6 +63,16 @@ export default function SuperAdminDashboardPage() {
 
   async function handleSyncTenant(tenantId: string, name: string) {
     if (
+      syncMode === "update" &&
+      !confirm(
+        `Update mode overwrites matching templates for "${name}" from platform. Continue?`,
+      )
+    ) {
+      return;
+    }
+
+    if (
+      syncMode === "merge" &&
       !confirm(
         `Sync platform templates to "${name}"? Missing agents, skills, and workflows will be added.`,
       )
@@ -72,10 +83,13 @@ export default function SuperAdminDashboardPage() {
     setSyncingTenantId(tenantId);
     setError(null);
     try {
-      const { stats } = await api.admin.syncTenantTemplates(tenantId, { mode: "merge" });
+      const { stats } = await api.admin.syncTenantTemplates(tenantId, { mode: syncMode });
       await load();
       setError(
-        `Synced ${name}: +${stats.agents.added} agents, +${stats.skills.added} skills, +${stats.workflows.added} workflows`,
+        `Synced ${name} (${syncMode}): +${stats.agents.added} agents, +${stats.skills.added} skills, +${stats.workflows.added} workflows` +
+          (stats.agents.updated + stats.skills.updated + stats.workflows.updated > 0
+            ? ` · updated ${stats.agents.updated + stats.skills.updated + stats.workflows.updated}`
+            : ""),
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sync failed");
@@ -195,7 +209,27 @@ export default function SuperAdminDashboardPage() {
       </div>
 
       <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="mb-4 font-semibold">Tenants</h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-semibold">Tenants</h2>
+          <div className="flex items-center gap-3 text-sm">
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                checked={syncMode === "merge"}
+                onChange={() => setSyncMode("merge")}
+              />
+              Merge
+            </label>
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                checked={syncMode === "update"}
+                onChange={() => setSyncMode("update")}
+              />
+              Update
+            </label>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="text-[var(--color-muted-foreground)]">

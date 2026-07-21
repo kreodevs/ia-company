@@ -111,6 +111,7 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 | Notifications | `/api/tenant/settings/notifications` |
 | Usage limits | `/api/tenant/settings/limits` |
 | Platform templates | `/api/admin/templates/*` |
+| Platform agent/skill create | `POST /api/admin/templates/agents`, `POST /api/admin/templates/skills` |
 | Platform workflow templates | `GET/POST /api/admin/templates/workflows`, `GET/PUT/DELETE .../workflows/:id` (graph via PUT) |
 | Template sync to tenants | `POST /api/admin/templates/sync-tenants`, `POST /api/admin/tenants/:id/sync-templates` |
 | Password reset | `/api/auth/tenant/forgot-password`, `/reset-password` |
@@ -121,13 +122,37 @@ Platform templates are **copied once** when a tenant is created. To push changes
 
 | Mode | Behavior |
 |------|----------|
-| **merge** (default) | Add platform skills/agents/workflows whose **name** is missing in the tenant |
-| **update** | Same as merge, plus overwrite matching names from platform (prompts, workflow graph, skill links) |
+| **merge** (default) | Add platform skills/agents/workflows missing in the tenant |
+| **update** | Same as merge, plus overwrite matching templates (prompts, workflow graph, skill links, **names**) |
+
+Matching order: **`platformSourceId`** (stable platform template id) → fallback to **name**. Renaming a global template and running **update** renames tenant copies linked by id.
 
 - **All tenants:** `/admin/templates` → **Sync all tenants**
-- **One tenant:** `/admin` dashboard → **Sync templates** on a tenant row
+- **Selected tenants:** `/admin/templates` → check tenants → **Sync selected**
+- **One tenant:** `/admin` dashboard → choose Merge/Update → **Sync templates**
 
 Tenant-only customizations (resources with names not on the platform) are never deleted.
+
+## Production checklist
+
+After pulling a new version:
+
+```bash
+docker compose --env-file .env.production pull   # or git pull on server
+docker compose --env-file .env.production up -d --build api worker web
+# Migrations run automatically when RUN_MIGRATIONS=true (api entrypoint)
+```
+
+Required env vars:
+
+| Variable | Purpose |
+|----------|---------|
+| `PUBLIC_URL` | HTTPS URL for cookies, password-reset links |
+| `JWT_SECRET` / `ENCRYPTION_KEY` | Auth + tenant API key encryption |
+| `REDIS_URL` | Worker queue (required in production) |
+| `RESEND_API_KEY` + `EMAIL_FROM` | Password reset + email notifications (optional but recommended) |
+
+Without `RESEND_API_KEY`, password reset and email notifications are skipped (webhook/Slack still work).
 
 ## What's still optional (v3)
 

@@ -74,9 +74,10 @@ enum AgentProvider {
 }
 
 model Agent {
-  id           String        @id @default(cuid())
-  tenantId     String?
-  name         String
+  id               String        @id @default(cuid())
+  tenantId         String?
+  platformSourceId String?
+  name             String
   role         String
   systemPrompt String        @db.Text
   provider     AgentProvider @default(tokenlab)
@@ -93,12 +94,14 @@ model Agent {
 
   @@unique([tenantId, name])
   @@index([tenantId])
+  @@index([tenantId, platformSourceId])
 }
 
 model Skill {
-  id            String   @id @default(cuid())
-  tenantId      String?
-  name          String
+  id               String   @id @default(cuid())
+  tenantId         String?
+  platformSourceId String?
+  name             String
   description   String   @db.Text
   promptContent String   @db.Text
   isActive      Boolean  @default(true)
@@ -110,6 +113,7 @@ model Skill {
 
   @@unique([tenantId, name])
   @@index([tenantId])
+  @@index([tenantId, platformSourceId])
 }
 
 model AgentSkill {
@@ -124,9 +128,10 @@ model AgentSkill {
 // ─── Workflows (React Flow graph) ───────────────────────────────────────────
 
 model Workflow {
-  id          String   @id @default(cuid())
-  tenantId    String?
-  name        String
+  id               String   @id @default(cuid())
+  tenantId         String?
+  platformSourceId String?
+  name             String
   description String?  @db.Text
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -139,6 +144,7 @@ model Workflow {
 
   @@unique([tenantId, name])
   @@index([tenantId])
+  @@index([tenantId, platformSourceId])
 }
 
 model WorkflowStep {

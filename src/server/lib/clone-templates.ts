@@ -1,34 +1,29 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import { findTenantTemplateMatch } from "./template-match.js";
 
 export type TemplateSyncMode = "merge" | "update";
 
 export interface TemplateSyncStats {
-  skills: { added: number; updated: number };
-  agents: { added: number; updated: number };
-  workflows: { added: number; updated: number };
+  skills: { added: number; updated: number; linked: number };
+  agents: { added: number; updated: number; linked: number };
+  workflows: { added: number; updated: number; linked: number };
 }
 
 const emptyStats = (): TemplateSyncStats => ({
-  skills: { added: 0, updated: 0 },
-  agents: { added: 0, updated: 0 },
-  workflows: { added: 0, updated: 0 },
+  skills: { added: 0, updated: 0, linked: 0 },
+  agents: { added: 0, updated: 0, linked: 0 },
+  workflows: { added: 0, updated: 0, linked: 0 },
 });
 
-type PlatformSkill = Awaited<
-  ReturnType<typeof prisma.skill.findMany>
->[number];
+type PlatformSkill = Awaited<ReturnType<typeof prisma.skill.findMany>>[number];
 
 type PlatformAgent = Awaited<
-  ReturnType<
-    typeof prisma.agent.findMany<{ include: { skills: true } }>
-  >
+  ReturnType<typeof prisma.agent.findMany<{ include: { skills: true } }>>
 >[number];
 
 type PlatformWorkflow = Awaited<
-  ReturnType<
-    typeof prisma.workflow.findMany<{ include: { steps: true; edges: true } }>
-  >
+  ReturnType<typeof prisma.workflow.findMany<{ include: { steps: true; edges: true } }>>
 >[number];
 
 async function loadPlatformTemplates() {
@@ -53,22 +48,21 @@ async function copyWorkflowGraphToTenant(
   agentIdMap: Map<string, string>,
   existingWorkflowId?: string,
 ) {
+  const workflowData = {
+    name: platformWorkflow.name,
+    description: platformWorkflow.description,
+    isActive: platformWorkflow.isActive,
+    platformSourceId: platformWorkflow.id,
+  };
+
   const workflow =
     existingWorkflowId != null
       ? await prisma.workflow.update({
           where: { id: existingWorkflowId },
-          data: {
-            description: platformWorkflow.description,
-            isActive: platformWorkflow.isActive,
-          },
+          data: workflowData,
         })
       : await prisma.workflow.create({
-          data: {
-            tenantId,
-            name: platformWorkflow.name,
-            description: platformWorkflow.description,
-            isActive: platformWorkflow.isActive,
-          },
+          data: { tenantId, ...workflowData },
         });
 
   if (existingWorkflowId != null) {
@@ -122,21 +116,21 @@ async function syncSkillsForTenant(
   stats: TemplateSyncStats,
 ) {
   const tenantSkills = await prisma.skill.findMany({ where: { tenantId } });
-  const tenantByName = new Map(tenantSkills.map((skill) => [skill.name, skill]));
   const skillIdMap = new Map<string, string>();
 
   for (const skill of platformSkills) {
-    const existing = tenantByName.get(skill.name);
+    const existing = findTenantTemplateMatch(tenantSkills, skill.id, skill.name);
+    const contentFields = {
+      name: skill.name,
+      description: skill.description,
+      promptContent: skill.promptContent,
+      isActive: skill.isActive,
+      platformSourceId: skill.id,
+    };
 
     if (!existing) {
       const created = await prisma.skill.create({
-        data: {
-          tenantId,
-          name: skill.name,
-          description: skill.description,
-          promptContent: skill.promptContent,
-          isActive: skill.isActive,
-        },
+        data: { tenantId, ...contentFields },
       });
       skillIdMap.set(skill.id, created.id);
       stats.skills.added++;
@@ -145,14 +139,18 @@ async function syncSkillsForTenant(
 
     skillIdMap.set(skill.id, existing.id);
 
+    if (!existing.platformSourceId) {
+      await prisma.skill.update({
+        where: { id: existing.id },
+        data: { platformSourceId: skill.id },
+      });
+      stats.skills.linked++;
+    }
+
     if (mode === "update") {
       await prisma.skill.update({
         where: { id: existing.id },
-        data: {
-          description: skill.description,
-          promptContent: skill.promptContent,
-          isActive: skill.isActive,
-        },
+        data: contentFields,
       });
       stats.skills.updated++;
     }
@@ -172,23 +170,24 @@ async function syncAgentsForTenant(
     where: { tenantId },
     include: { skills: true },
   });
-  const tenantByName = new Map(tenantAgents.map((agent) => [agent.name, agent]));
   const agentIdMap = new Map<string, string>();
 
   for (const agent of platformAgents) {
-    const existing = tenantByName.get(agent.name);
+    const existing = findTenantTemplateMatch(tenantAgents, agent.id, agent.name);
     const agentData = {
+      name: agent.name,
       role: agent.role,
       systemPrompt: agent.systemPrompt,
       provider: agent.provider,
       model: agent.model,
       temperature: agent.temperature,
       isActive: agent.isActive,
+      platformSourceId: agent.id,
     };
 
     if (!existing) {
       const created = await prisma.agent.create({
-        data: { tenantId, name: agent.name, ...agentData },
+        data: { tenantId, ...agentData },
       });
       agentIdMap.set(agent.id, created.id);
 
@@ -205,6 +204,14 @@ async function syncAgentsForTenant(
     }
 
     agentIdMap.set(agent.id, existing.id);
+
+    if (!existing.platformSourceId) {
+      await prisma.agent.update({
+        where: { id: existing.id },
+        data: { platformSourceId: agent.id },
+      });
+      stats.agents.linked++;
+    }
 
     if (mode === "update") {
       await prisma.agent.update({
@@ -236,15 +243,22 @@ async function syncWorkflowsForTenant(
   stats: TemplateSyncStats,
 ) {
   const tenantWorkflows = await prisma.workflow.findMany({ where: { tenantId } });
-  const tenantByName = new Map(tenantWorkflows.map((workflow) => [workflow.name, workflow]));
 
   for (const workflow of platformWorkflows) {
-    const existing = tenantByName.get(workflow.name);
+    const existing = findTenantTemplateMatch(tenantWorkflows, workflow.id, workflow.name);
 
     if (!existing) {
       await copyWorkflowGraphToTenant(tenantId, workflow, agentIdMap);
       stats.workflows.added++;
       continue;
+    }
+
+    if (!existing.platformSourceId) {
+      await prisma.workflow.update({
+        where: { id: existing.id },
+        data: { platformSourceId: workflow.id },
+      });
+      stats.workflows.linked++;
     }
 
     if (mode === "update") {
