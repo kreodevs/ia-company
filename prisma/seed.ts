@@ -6,11 +6,6 @@ import { seedPlatformTemplates } from "../src/lib/seed-platform.ts";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Force cleanup of existing superadmins to allow first-time setup via /setup
-  // Remove this block once the first superadmin is created
-  await prisma.superAdmin.deleteMany();
-  console.log("🗑️ Cleaned up existing superadmins to enable /setup");
-
   await ensurePlatformSettings();
   console.log("🌱 Seeding platform templates (no tenant)…");
   const result = await seedPlatformTemplates(prisma);
