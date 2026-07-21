@@ -14,7 +14,7 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:frontend\"",
     "build": "tsc && npm run build --workspace=frontend",
     "build:server": "tsc",
-    "start": "node dist/server/index.js",
+    "start": "node dist/src/server/index.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",

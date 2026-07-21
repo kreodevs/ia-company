@@ -29,5 +29,5 @@ if [ "$RUN_SEED" = "true" ]; then
   node dist/prisma/seed.js || echo "Seed completed or skipped"
 fi
 
-echo "Starting API on port ${PORT:-3001}…"
-exec node dist/server/index.js
+echo "Starting API on ${PORT:-3001}…"
+exec node dist/src/server/index.js
