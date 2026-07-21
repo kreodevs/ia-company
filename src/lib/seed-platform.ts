@@ -153,6 +153,38 @@ const DEFAULT_WORKFLOWS = [
       "ceo-bezos",
     ],
   },
+  {
+    name: "pricing-and-monetization",
+    description: "Research → CFO → Sales → Munger → CEO",
+    steps: [
+      "research-thompson",
+      "cfo-campbell",
+      "sales-ross",
+      "critic-munger",
+      "ceo-bezos",
+    ],
+  },
+  {
+    name: "weekly-review",
+    description: "Operations → Sales → CFO → QA → CEO",
+    steps: [
+      "operations-pg",
+      "sales-ross",
+      "cfo-campbell",
+      "qa-bach",
+      "ceo-bezos",
+    ],
+  },
+  {
+    name: "opportunity-discovery",
+    description: "Research → CEO → Munger → CFO",
+    steps: [
+      "research-thompson",
+      "ceo-bezos",
+      "critic-munger",
+      "cfo-campbell",
+    ],
+  },
 ];
 
 export async function seedPlatformTemplates(client: PrismaClient) {
