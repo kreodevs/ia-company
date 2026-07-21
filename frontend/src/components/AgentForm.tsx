@@ -16,6 +16,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
     provider: agent?.provider ?? "tokenlab",
     model: agent?.model ?? "claude-3-5-sonnet-20241022",
     temperature: agent?.temperature ?? 0.7,
+    isActive: agent?.isActive ?? true,
     skillIds: agent?.skills.map((s) => s.skill.id) ?? [],
   });
   const [saving, setSaving] = useState(false);
@@ -105,6 +106,15 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
             onChange={(e) => setForm({ ...form, temperature: parseFloat(e.target.value) })}
           />
         </label>
+        <label className="flex items-center gap-2 text-sm md:col-span-2">
+          <input
+            type="checkbox"
+            checked={form.isActive}
+            onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+            className="h-4 w-4"
+          />
+          Active
+        </label>
       </div>
 
       <label className="block text-sm">
@@ -153,6 +163,26 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
         >
           {saving ? "Saving…" : "Save"}
         </button>
+        {agent && (
+          <button
+            type="button"
+            disabled={saving}
+            onClick={async () => {
+              if (!confirm(`Delete agent "${agent.name}"?`)) return;
+              setSaving(true);
+              try {
+                await api.agents.delete(agent.id);
+                onSave();
+              } catch (err) {
+                setError(err instanceof Error ? err.message : "Delete failed");
+                setSaving(false);
+              }
+            }}
+            className="rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10 disabled:opacity-50"
+          >
+            Delete
+          </button>
+        )}
         <button
           type="button"
           onClick={onCancel}
