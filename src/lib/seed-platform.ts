@@ -6,7 +6,9 @@ import {
   warmPlatformSettingsCache,
 } from "./platform-settings.js";
 
-const REPO_ROOT = resolve(import.meta.dirname, "../..");
+const REPO_ROOT = process.env.NODE_ENV === "production" 
+  ? resolve(import.meta.dirname, "../../") 
+  : resolve(import.meta.dirname, "../..");
 
 interface Frontmatter {
   name?: string;
