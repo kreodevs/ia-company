@@ -163,8 +163,8 @@ export default function PlatformTemplatesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div>
           <Link to="/admin" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
             ← Admin
@@ -183,7 +183,7 @@ export default function PlatformTemplatesPage() {
         </button>
       </div>
 
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <div className="shrink-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
         <h2 className="font-semibold">Sync to existing tenants</h2>
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
           Push platform templates to existing tenants. Matching uses platform id (rename-safe), then
@@ -246,12 +246,12 @@ export default function PlatformTemplatesPage() {
       </div>
 
       {message && (
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
+        <p className="shrink-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
           {message}
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         {(["agents", "skills", "workflows"] as Tab[]).map((t) => (
           <button
             key={t}
@@ -268,43 +268,42 @@ export default function PlatformTemplatesPage() {
       </div>
 
       {tab === "agents" && (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-2">
+        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-2">
+          <div className="flex min-h-0 flex-col gap-2">
             <button
               onClick={() => void createAgent()}
-              className="w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+              className="shrink-0 w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
             >
               + Create agent template
             </button>
-            <ul className="space-y-2">
-            {agents.map((agent) => (
-              <li key={agent.id}>
-                <button
-                  onClick={() => setSelectedAgent(agent)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left ${
-                    selectedAgent?.id === agent.id
-                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                      : "border-[var(--color-border)] bg-[var(--color-card)]"
-                  }`}
-                >
-                  <div className="font-medium">{agent.name}</div>
-                  <div className="text-xs text-[var(--color-muted-foreground)]">{agent.role}</div>
-                </button>
-              </li>
-            ))}
+            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+              {agents.map((agent) => (
+                <li key={agent.id}>
+                  <button
+                    onClick={() => setSelectedAgent(agent)}
+                    className={`w-full rounded-xl border px-4 py-3 text-left ${
+                      selectedAgent?.id === agent.id
+                        ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                        : "border-[var(--color-border)] bg-[var(--color-card)]"
+                    }`}
+                  >
+                    <div className="font-medium">{agent.name}</div>
+                    <div className="text-xs text-[var(--color-muted-foreground)]">{agent.role}</div>
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           {selectedAgent && (
-            <div className="space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+            <div className="flex min-h-0 flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <textarea
                 value={selectedAgent.systemPrompt}
                 onChange={(e) => setSelectedAgent({ ...selectedAgent, systemPrompt: e.target.value })}
-                rows={16}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
+                className="min-h-0 flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
               />
               <button
                 onClick={() => void saveAgent()}
-                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
+                className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
               >
                 Save agent template
               </button>
@@ -314,42 +313,41 @@ export default function PlatformTemplatesPage() {
       )}
 
       {tab === "skills" && (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-2">
+        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-2">
+          <div className="flex min-h-0 flex-col gap-2">
             <button
               onClick={() => void createSkill()}
-              className="w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+              className="shrink-0 w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
             >
               + Create skill template
             </button>
-            <ul className="space-y-2">
-            {skills.map((skill) => (
-              <li key={skill.id}>
-                <button
-                  onClick={() => setSelectedSkill(skill)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left ${
-                    selectedSkill?.id === skill.id
-                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                      : "border-[var(--color-border)] bg-[var(--color-card)]"
-                  }`}
-                >
-                  {skill.name}
-                </button>
-              </li>
-            ))}
+            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+              {skills.map((skill) => (
+                <li key={skill.id}>
+                  <button
+                    onClick={() => setSelectedSkill(skill)}
+                    className={`w-full rounded-xl border px-4 py-3 text-left ${
+                      selectedSkill?.id === skill.id
+                        ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                        : "border-[var(--color-border)] bg-[var(--color-card)]"
+                    }`}
+                  >
+                    {skill.name}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           {selectedSkill && (
-            <div className="space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+            <div className="flex min-h-0 flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
               <textarea
                 value={selectedSkill.promptContent}
                 onChange={(e) => setSelectedSkill({ ...selectedSkill, promptContent: e.target.value })}
-                rows={16}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
+                className="min-h-0 flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
               />
               <button
                 onClick={() => void saveSkill()}
-                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
+                className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
               >
                 Save skill template
               </button>
@@ -359,7 +357,7 @@ export default function PlatformTemplatesPage() {
       )}
 
       {tab === "workflows" && (
-        <div className="space-y-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-4">
           <button
             onClick={() => {
               const name = prompt("Workflow template name");
@@ -369,11 +367,11 @@ export default function PlatformTemplatesPage() {
                 .then((wf) => navigate(`/admin/templates/workflows/${wf.id}`))
                 .catch((err) => setMessage(err instanceof Error ? err.message : "Create failed"));
             }}
-            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
+            className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
           >
             + Create workflow template
           </button>
-          <ul className="space-y-3">
+          <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
             {workflows.map((wf) => (
               <li
                 key={wf.id}

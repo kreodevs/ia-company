@@ -32,12 +32,13 @@ function AppShell() {
       {authenticated && <AppHeader />}
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
         <Routes>
-          <Route path="/setup" element={<SetupSuperAdminPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           <Route element={<SetupGate />}>
+            <Route path="/setup" element={<SetupSuperAdminPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin" element={<SuperAdminDashboardPage />} />
               <Route path="/admin/templates" element={<PlatformTemplatesPage />} />
