@@ -12,6 +12,8 @@ Stack for production: **PostgreSQL + Redis + API + Worker + Web (nginx)**.
 | `worker` | same as `api` | internal | Workflow executor + autonomous scheduler |
 | `web` | `docker/web/Dockerfile` | `${WEB_PORT:-80}` | SPA + reverse proxy `/api` → api |
 
+The **web** image installs the `frontend` npm workspace using the **root** `package-lock.json` (there is no `frontend/package-lock.json`).
+
 ## Quick start (local)
 
 ```bash

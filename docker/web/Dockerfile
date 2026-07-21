@@ -1,11 +1,13 @@
 # syntax=docker/dockerfile:1
+# Frontend is an npm workspace — lockfile lives at repo root.
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY frontend/package.json frontend/package-lock.json ./frontend/
+COPY package.json package-lock.json ./
+COPY frontend/package.json ./frontend/
+RUN npm ci --workspace=frontend --include-workspace-root=false --ignore-scripts
+COPY frontend ./frontend
 WORKDIR /app/frontend
-RUN npm ci
-COPY frontend ./
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
