@@ -252,6 +252,19 @@ export const api = {
       ),
     deleteTenant: (id: string) =>
       request<void>(`/admin/tenants/${id}`, { method: "DELETE" }),
+    syncTenantTemplates: (id: string, body?: { mode?: "merge" | "update" }) =>
+      request<{
+        tenantId: string;
+        mode: "merge" | "update";
+        stats: {
+          skills: { added: number; updated: number };
+          agents: { added: number; updated: number };
+          workflows: { added: number; updated: number };
+        };
+      }>(`/admin/tenants/${id}/sync-templates`, {
+        method: "POST",
+        body: JSON.stringify(body ?? {}),
+      }),
     auditLogs: (params?: { tenantId?: string; limit?: number }) => {
       const qs = new URLSearchParams();
       if (params?.tenantId) qs.set("tenantId", params.tenantId);
@@ -265,6 +278,26 @@ export const api = {
       reseed: () =>
         request<{ skills: number; agents: number; workflows: number }>("/admin/templates/reseed", {
           method: "POST",
+        }),
+      syncTenants: (body: {
+        mode?: "merge" | "update";
+        all?: boolean;
+        tenantIds?: string[];
+      }) =>
+        request<{
+          mode: "merge" | "update";
+          results: Array<{
+            tenantId: string;
+            tenantName: string;
+            stats: {
+              skills: { added: number; updated: number };
+              agents: { added: number; updated: number };
+              workflows: { added: number; updated: number };
+            };
+          }>;
+        }>("/admin/templates/sync-tenants", {
+          method: "POST",
+          body: JSON.stringify(body),
         }),
       listAgents: () => request<Agent[]>("/admin/templates/agents"),
       updateAgent: (id: string, body: Partial<Agent> & { skillIds?: string[] }) =>

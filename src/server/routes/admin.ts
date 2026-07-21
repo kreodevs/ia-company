@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { hashPassword } from "../../lib/auth.js";
-import { clonePlatformTemplatesToTenant } from "../lib/clone-templates.js";
+import { clonePlatformTemplatesToTenant, syncPlatformTemplatesToTenant } from "../lib/clone-templates.js";
+import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, HttpError } from "../lib/request-context.js";
 
 function slugify(name: string): string {
@@ -154,6 +155,30 @@ export async function adminRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.post<{ Params: { id: string }; Body: { mode?: "merge" | "update" } }>(
+    "/admin/tenants/:id/sync-templates",
+    async (request, reply) => {
+      try {
+        const tenant = await prisma.tenant.findUnique({ where: { id: request.params.id } });
+        if (!tenant) return reply.status(404).send({ error: "Tenant not found" });
+
+        const mode = request.body?.mode === "update" ? "update" : "merge";
+        const stats = await syncPlatformTemplatesToTenant(tenant.id, mode);
+
+        await logAudit(request, "platform.templates.sync", {
+          tenantId: tenant.id,
+          tenantSlug: tenant.slug,
+          mode,
+          stats,
+        });
+
+        return { tenantId: tenant.id, mode, stats };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 
   app.delete<{ Params: { id: string } }>("/admin/tenants/:id", async (request, reply) => {
     try {

@@ -13,7 +13,50 @@ export default function PlatformTemplatesPage() {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [reseedLoading, setReseedLoading] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncMode, setSyncMode] = useState<"merge" | "update">("merge");
   const [message, setMessage] = useState<string | null>(null);
+
+  const formatSyncStats = (stats: {
+    skills: { added: number; updated: number };
+    agents: { added: number; updated: number };
+    workflows: { added: number; updated: number };
+  }) => {
+    const parts = [
+      `${stats.skills.added} skills added`,
+      `${stats.skills.updated} skills updated`,
+      `${stats.agents.added} agents added`,
+      `${stats.agents.updated} agents updated`,
+      `${stats.workflows.added} workflows added`,
+      `${stats.workflows.updated} workflows updated`,
+    ].filter((part) => !part.startsWith("0 "));
+    return parts.length > 0 ? parts.join(", ") : "No changes";
+  };
+
+  const syncToAllTenants = async () => {
+    if (
+      syncMode === "update" &&
+      !confirm(
+        "Update mode overwrites matching tenant agents/skills/workflows from platform templates. Continue?",
+      )
+    ) {
+      return;
+    }
+
+    setSyncLoading(true);
+    setMessage(null);
+    try {
+      const result = await api.admin.templates.syncTenants({ all: true, mode: syncMode });
+      const summary = result.results
+        .map((entry) => `${entry.tenantName}: ${formatSyncStats(entry.stats)}`)
+        .join(" · ");
+      setMessage(`Synced ${result.results.length} tenant(s) (${result.mode}): ${summary}`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Sync failed");
+    } finally {
+      setSyncLoading(false);
+    }
+  };
 
   const load = async () => {
     const [a, s, w] = await Promise.all([
@@ -89,6 +132,40 @@ export default function PlatformTemplatesPage() {
         >
           {reseedLoading ? "Reseeding…" : "Reseed from .claude/"}
         </button>
+      </div>
+
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <h2 className="font-semibold">Sync to existing tenants</h2>
+        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+          Push platform templates to tenants that already exist. Matching is by name.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="syncMode"
+              checked={syncMode === "merge"}
+              onChange={() => setSyncMode("merge")}
+            />
+            Merge — add missing only
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="syncMode"
+              checked={syncMode === "update"}
+              onChange={() => setSyncMode("update")}
+            />
+            Update — also overwrite matching templates
+          </label>
+          <button
+            disabled={syncLoading}
+            onClick={() => void syncToAllTenants()}
+            className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
+          >
+            {syncLoading ? "Syncing…" : "Sync all tenants"}
+          </button>
+        </div>
       </div>
 
       {message && (

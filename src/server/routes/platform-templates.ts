@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import { seedPlatformTemplates } from "../../lib/seed-platform.js";
+import { syncPlatformTemplatesToTenants } from "../lib/clone-templates.js";
 import { assertPlatformAgent, updateWorkflowGraph } from "../lib/workflow-graph.js";
 import { handleRouteError } from "../lib/request-context.js";
 import type { CreateWorkflowInput } from "../../types/index.js";
@@ -29,6 +30,38 @@ export async function platformTemplateRoutes(app: FastifyInstance) {
       const result = await seedPlatformTemplates(prisma);
       await logAudit(request, "platform.templates.reseed", result);
       return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Body: {
+      mode?: "merge" | "update";
+      all?: boolean;
+      tenantIds?: string[];
+    };
+  }>("/admin/templates/sync-tenants", async (request, reply) => {
+    try {
+      const mode = request.body?.mode === "update" ? "update" : "merge";
+      const tenantIds =
+        request.body?.all === true
+          ? (await prisma.tenant.findMany({ select: { id: true } })).map((t) => t.id)
+          : (request.body?.tenantIds ?? []);
+
+      if (tenantIds.length === 0) {
+        return reply.status(400).send({ error: "Provide tenantIds or set all: true" });
+      }
+
+      const results = await syncPlatformTemplatesToTenants(tenantIds, mode);
+
+      await logAudit(request, "platform.templates.sync_bulk", {
+        mode,
+        tenantCount: tenantIds.length,
+        results,
+      });
+
+      return { mode, results };
     } catch (err) {
       return handleRouteError(reply, err);
     }

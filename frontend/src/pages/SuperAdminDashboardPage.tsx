@@ -14,6 +14,7 @@ export default function SuperAdminDashboardPage() {
   const [ownerName, setOwnerName] = useState("");
   const [ownerPassword, setOwnerPassword] = useState("");
   const [creating, setCreating] = useState(false);
+  const [syncingTenantId, setSyncingTenantId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [auditLogs, setAuditLogs] = useState<Awaited<ReturnType<typeof api.admin.auditLogs>>>([]);
 
@@ -56,6 +57,30 @@ export default function SuperAdminDashboardPage() {
       setError(err instanceof Error ? err.message : "Failed to create tenant");
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleSyncTenant(tenantId: string, name: string) {
+    if (
+      !confirm(
+        `Sync platform templates to "${name}"? Missing agents, skills, and workflows will be added.`,
+      )
+    ) {
+      return;
+    }
+
+    setSyncingTenantId(tenantId);
+    setError(null);
+    try {
+      const { stats } = await api.admin.syncTenantTemplates(tenantId, { mode: "merge" });
+      await load();
+      setError(
+        `Synced ${name}: +${stats.agents.added} agents, +${stats.skills.added} skills, +${stats.workflows.added} workflows`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sync failed");
+    } finally {
+      setSyncingTenantId(null);
     }
   }
 
@@ -111,7 +136,8 @@ export default function SuperAdminDashboardPage() {
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
           <h2 className="font-semibold">Platform templates</h2>
           <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            Seeded from <code>.claude/</code> — cloned when creating a tenant.
+            Seeded from <code>.claude/</code> — cloned on tenant create; sync to existing tenants from
+            Templates.
           </p>
           <ul className="mt-4 space-y-1 text-sm">
             <li>{dashboard.stats.platformTemplates.agents} agent templates</li>
@@ -189,12 +215,21 @@ export default function SuperAdminDashboardPage() {
                   <td className="py-2">{t._count?.users ?? 0}</td>
                   <td className="py-2">{t._count?.workflows ?? 0}</td>
                   <td className="py-2">
-                    <button
-                      onClick={() => void impersonate(t.id).then(() => navigate("/workflows"))}
-                      className="text-[var(--color-primary)] hover:underline"
-                    >
-                      Impersonate
-                    </button>
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={() => void impersonate(t.id).then(() => navigate("/workflows"))}
+                        className="text-[var(--color-primary)] hover:underline"
+                      >
+                        Impersonate
+                      </button>
+                      <button
+                        disabled={syncingTenantId === t.id}
+                        onClick={() => void handleSyncTenant(t.id, t.name)}
+                        className="text-[var(--color-muted-foreground)] hover:underline disabled:opacity-50"
+                      >
+                        {syncingTenantId === t.id ? "Syncing…" : "Sync templates"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

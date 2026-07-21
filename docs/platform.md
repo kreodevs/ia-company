@@ -91,7 +91,7 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 
 | Feature | Location |
 |---------|----------|
-| Platform templates | `/admin/templates` — edit global agents/skills/workflows (visual graph editor), reseed from `.claude/` |
+| Platform templates | `/admin/templates` — edit global agents/skills/workflows (visual graph editor), reseed from `.claude/`, **sync to existing tenants** |
 | Notifications | Settings → webhook / Slack / email on run complete/fail |
 | Usage limits | Settings → monthly runs/cost/tokens caps |
 | Password reset | `/forgot-password` → email link → `/reset-password` |
@@ -112,7 +112,22 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 | Usage limits | `/api/tenant/settings/limits` |
 | Platform templates | `/api/admin/templates/*` |
 | Platform workflow templates | `GET/POST /api/admin/templates/workflows`, `GET/PUT/DELETE .../workflows/:id` (graph via PUT) |
+| Template sync to tenants | `POST /api/admin/templates/sync-tenants`, `POST /api/admin/tenants/:id/sync-templates` |
 | Password reset | `/api/auth/tenant/forgot-password`, `/reset-password` |
+
+## Template sync (existing tenants)
+
+Platform templates are **copied once** when a tenant is created. To push changes to tenants that already exist:
+
+| Mode | Behavior |
+|------|----------|
+| **merge** (default) | Add platform skills/agents/workflows whose **name** is missing in the tenant |
+| **update** | Same as merge, plus overwrite matching names from platform (prompts, workflow graph, skill links) |
+
+- **All tenants:** `/admin/templates` → **Sync all tenants**
+- **One tenant:** `/admin` dashboard → **Sync templates** on a tenant row
+
+Tenant-only customizations (resources with names not on the platform) are never deleted.
 
 ## What's still optional (v3)
 
