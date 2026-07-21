@@ -1,10 +1,12 @@
 import "dotenv/config";
+import { fileURLToPath } from "node:url";
 import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import { agentRoutes } from "./routes/agents.js";
 import { adminRoutes } from "./routes/admin.js";
 import { consensusRoutes } from "./routes/consensus.js";
+import { platformTemplateRoutes } from "./routes/platform-templates.js";
 import { runRoutes } from "./routes/runs.js";
 import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
@@ -17,7 +19,7 @@ const PORT = Number(process.env.PORT ?? 3001);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
 async function buildServer() {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: false });
 
   await app.register(cors, {
     origin: process.env.CORS_ORIGIN ?? true,
@@ -30,37 +32,42 @@ async function buildServer() {
     timeWindow: "1 minute",
   });
 
-  await app.register(async (instance) => {
-    await registerAuthPlugin(instance);
+  await app.register(async (api) => {
+    await registerAuthPlugin(api);
+
+    api.get("/health", async () => ({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+    }));
+
+    await api.register(adminRoutes);
+    await api.register(platformTemplateRoutes);
+    await api.register(tenantUserRoutes);
+    await api.register(tenantSettingsRoutes);
+    await api.register(consensusRoutes);
+    await api.register(scheduleRoutes);
+    await api.register(agentRoutes);
+    await api.register(skillRoutes);
+    await api.register(workflowRoutes);
+    await api.register(runRoutes);
   }, { prefix: "/api" });
-
-  app.get("/api/health", async () => ({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-  }));
-
-  await app.register(adminRoutes, { prefix: "/api" });
-  await app.register(tenantUserRoutes, { prefix: "/api" });
-  await app.register(tenantSettingsRoutes, { prefix: "/api" });
-  await app.register(consensusRoutes, { prefix: "/api" });
-  await app.register(scheduleRoutes, { prefix: "/api" });
-  await app.register(agentRoutes, { prefix: "/api" });
-  await app.register(skillRoutes, { prefix: "/api" });
-  await app.register(workflowRoutes, { prefix: "/api" });
-  await app.register(runRoutes, { prefix: "/api" });
 
   return app;
 }
 
 async function main() {
   const app = await buildServer();
+  app.log.level = "info";
   await app.listen({ port: PORT, host: HOST });
   console.log(`Auto-Company API listening on http://${HOST}:${PORT}`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMain) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
 
 export { buildServer };

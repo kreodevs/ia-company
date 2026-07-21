@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { executeWorkflowInBackground } from "../../core/engine.js";
 import { logAudit } from "../../lib/audit.js";
+import { assertTenantCanExecute } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import type { CreateWorkflowInput, ExecuteWorkflowInput } from "../../types/index.js";
 
@@ -211,6 +212,8 @@ export async function workflowRoutes(app: FastifyInstance) {
           where: { id: request.params.id, tenantId },
         });
         if (!workflow) return reply.status(404).send({ error: "Workflow not found" });
+
+        await assertTenantCanExecute(tenantId);
 
         const runId = await executeWorkflowInBackground(request.params.id, {
           ...request.body,

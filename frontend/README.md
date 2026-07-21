@@ -22,7 +22,7 @@ Two login modes at `/login`:
 |-------|---------|
 | `/setup` | First superadmin (auto-redirect if none exists) |
 | `/admin` | Superadmin dashboard (superadmin only) |
-| `/team` | Tenant user management (owner/admin) |
+| `/admin/templates` | `PlatformTemplatesPage` | Edit platform agent/skill templates + reseed |
 
 ## Pages
 

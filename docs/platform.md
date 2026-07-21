@@ -87,6 +87,17 @@ docker compose --env-file .env.production up -d --build
 
 Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 
+## Features (v2.1)
+
+| Feature | Location |
+|---------|----------|
+| Platform templates | `/admin/templates` — edit global agents/skills, reseed from `.claude/` |
+| Notifications | Settings → webhook / Slack / email on run complete/fail |
+| Usage limits | Settings → monthly runs/cost/tokens caps |
+| Password reset | `/forgot-password` → email link → `/reset-password` |
+| CLI cycle | `scripts/platform/cycle.sh` — HTTP bridge for cron/systemd |
+| Schedule run-now | Settings → Autonomous schedules → **Run now** |
+
 ## API overview
 
 | Area | Prefix |
@@ -97,14 +108,16 @@ Services: `postgres`, `redis`, `api`, `worker`, `web`. Expose only `web`.
 | Consensus | `/api/consensus` |
 | Schedules | `/api/schedules` |
 | Tenant LLM settings | `/api/tenant/settings/llm` |
+| Notifications | `/api/tenant/settings/notifications` |
+| Usage limits | `/api/tenant/settings/limits` |
+| Platform templates | `/api/admin/templates/*` |
+| Password reset | `/api/auth/tenant/forgot-password`, `/reset-password` |
 
-## What's not in v2 yet
+## What's still optional (v3)
 
-- Platform template editor (superadmin UI for global `.claude/` templates)
-- Email/Slack notifications on run completion
-- Password reset for tenant users
-- Billing / per-tenant usage caps beyond `maxCostUsdPerRun`
-- Bridge to the original bash `auto-loop.sh` daemon
+- Stripe billing integration and paid plan tiers
+- Full platform workflow template editor (graph canvas for global templates)
+- Deep E2E tests with Postgres + Redis test containers
 
 ## Related docs
 

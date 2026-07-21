@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SessionPayload } from "../../lib/auth.js";
 import { isSuperAdmin, isTenantAdmin } from "../../lib/auth.js";
+import { UsageLimitError } from "../../lib/usage-limits.js";
 
 export class HttpError extends Error {
   constructor(
@@ -64,6 +65,9 @@ export function requireImpersonatedTenant(request: FastifyRequest): string {
 export function handleRouteError(reply: FastifyReply, err: unknown) {
   if (err instanceof HttpError) {
     return reply.status(err.statusCode).send({ error: err.message });
+  }
+  if (err instanceof UsageLimitError) {
+    return reply.status(429).send({ error: err.message });
   }
   throw err;
 }

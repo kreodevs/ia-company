@@ -176,6 +176,30 @@ export interface AutonomousSchedule {
   createdAt: string;
 }
 
+export interface TenantUsageLimits {
+  tenantId: string;
+  maxRunsPerMonth: number | null;
+  maxCostUsdPerMonth: number | null;
+  maxTokensPerMonth: number | null;
+}
+
+export interface TenantNotificationConfig {
+  tenantId: string;
+  webhookUrl: string | null;
+  slackWebhookUrl: string | null;
+  emailRecipients: string | null;
+  notifyOnComplete: boolean;
+  notifyOnFail: boolean;
+}
+
+export interface TenantMonthlyUsage {
+  periodStart: string;
+  runs: number;
+  totalTokens: number;
+  totalCostUsd: number;
+  limits: TenantUsageLimits;
+}
+
 export interface AuditLogEntry {
   id: string;
   action: string;
@@ -195,6 +219,16 @@ export const api = {
     loginTenant: (body: { tenantSlug: string; email: string; password: string }) =>
       request("/auth/tenant/login", { method: "POST", body: JSON.stringify(body) }),
     logout: () => request<{ ok: boolean }>("/auth/logout", { method: "POST" }),
+    forgotPassword: (body: { tenantSlug: string; email: string }) =>
+      request<{ ok: boolean; message: string }>("/auth/tenant/forgot-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    resetPassword: (body: { token: string; password: string }) =>
+      request<{ ok: boolean }>("/auth/tenant/reset-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     impersonate: (tenantId: string | null) =>
       request<{ impersonatedTenant: TenantSummary | null }>("/auth/impersonate", {
         method: "POST",
@@ -224,6 +258,32 @@ export const api = {
       if (params?.limit) qs.set("limit", String(params.limit));
       const query = qs.toString();
       return request<AuditLogEntry[]>(`/admin/audit-logs${query ? `?${query}` : ""}`);
+    },
+    templates: {
+      summary: () =>
+        request<{ agents: number; skills: number; workflows: number }>("/admin/templates/summary"),
+      reseed: () =>
+        request<{ skills: number; agents: number; workflows: number }>("/admin/templates/reseed", {
+          method: "POST",
+        }),
+      listAgents: () => request<Agent[]>("/admin/templates/agents"),
+      updateAgent: (id: string, body: Partial<Agent> & { skillIds?: string[] }) =>
+        request<Agent>(`/admin/templates/agents/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
+      listSkills: () => request<Skill[]>("/admin/templates/skills"),
+      updateSkill: (id: string, body: Partial<Omit<Skill, "id">>) =>
+        request<Skill>(`/admin/templates/skills/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
+      listWorkflows: () => request<Workflow[]>("/admin/templates/workflows"),
+      updateWorkflow: (id: string, body: { name?: string; description?: string }) =>
+        request<Workflow>(`/admin/templates/workflows/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
     },
   },
   tenantUsers: {
@@ -302,11 +362,26 @@ export const api = {
     update: (id: string, body: { enabled?: boolean; intervalSec?: number }) =>
       request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
+    runNow: (id: string) =>
+      request<{ runId: string; status: string }>(`/schedules/${id}/run-now`, { method: "POST" }),
   },
   tenantSettings: {
     getLlm: () => request<TenantLlmConfig>("/tenant/settings/llm"),
     updateLlm: (body: Partial<TenantLlmConfig & { apiKey?: string }>) =>
       request<TenantLlmConfig>("/tenant/settings/llm", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    getNotifications: () => request<TenantNotificationConfig>("/tenant/settings/notifications"),
+    updateNotifications: (body: Partial<TenantNotificationConfig>) =>
+      request<TenantNotificationConfig>("/tenant/settings/notifications", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    getUsage: () => request<TenantMonthlyUsage>("/tenant/settings/usage"),
+    getLimits: () => request<TenantUsageLimits>("/tenant/settings/limits"),
+    updateLimits: (body: Partial<TenantUsageLimits>) =>
+      request<TenantUsageLimits>("/tenant/settings/limits", {
         method: "PUT",
         body: JSON.stringify(body),
       }),

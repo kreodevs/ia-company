@@ -36,6 +36,8 @@ model Tenant {
   llmConfig TenantLlmConfig?
   schedules AutonomousSchedule[]
   auditLogs AuditLog[]
+  notificationConfig TenantNotificationConfig?
+  usageLimits TenantUsageLimits?
 }
 
 enum TenantUserRole {
@@ -56,6 +58,8 @@ model TenantUser {
   updatedAt    DateTime       @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  passwordResetTokens PasswordResetToken[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -294,4 +298,45 @@ model AuditLog {
 
   @@index([tenantId, createdAt])
   @@index([actorKind, actorId])
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+model TenantNotificationConfig {
+  tenantId         String   @id
+  webhookUrl       String?
+  slackWebhookUrl  String?
+  emailRecipients  String?  @db.Text
+  notifyOnComplete Boolean  @default(true)
+  notifyOnFail     Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ─── Usage limits (monthly caps) ─────────────────────────────────────────────
+
+model TenantUsageLimits {
+  tenantId           String   @id
+  maxRunsPerMonth    Int?
+  maxCostUsdPerMonth Float?
+  maxTokensPerMonth  Int?
+  updatedAt          DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ─── Password reset ──────────────────────────────────────────────────────────
+
+model PasswordResetToken {
+  id           String    @id @default(cuid())
+  tenantUserId String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  usedAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  tenantUser TenantUser @relation(fields: [tenantUserId], references: [id], onDelete: Cascade)
+
+  @@index([tenantUserId])
 }

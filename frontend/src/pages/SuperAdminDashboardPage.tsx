@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import TenantImpersonationSelect from "../components/TenantImpersonationSelect";
 import { useAuth } from "../context/AuthContext";
 import { api, type AdminDashboard } from "../lib/api";
@@ -118,6 +118,12 @@ export default function SuperAdminDashboardPage() {
             <li>{dashboard.stats.platformTemplates.skills} skill templates</li>
             <li>{dashboard.stats.platformTemplates.workflows} workflow templates</li>
           </ul>
+          <Link
+            to="/admin/templates"
+            className="mt-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
+          >
+            Manage templates →
+          </Link>
         </section>
 
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">

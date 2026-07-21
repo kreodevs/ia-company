@@ -85,4 +85,30 @@ export async function scheduleRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.post<{ Params: { id: string } }>("/schedules/:id/run-now", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const schedule = await prisma.autonomousSchedule.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!schedule) return reply.status(404).send({ error: "Schedule not found" });
+
+      const { assertTenantCanExecute } = await import("../../lib/usage-limits.js");
+      const { executeWorkflowInBackground } = await import("../../core/engine.js");
+
+      await assertTenantCanExecute(tenantId);
+
+      const runId = await executeWorkflowInBackground(schedule.workflowId, {
+        tenantId,
+        mergeConsensus: true,
+        syncConsensus: true,
+      });
+
+      await logAudit(request, "schedule.run_now", { scheduleId: schedule.id, runId });
+      return reply.status(202).send({ runId, status: "PENDING" });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

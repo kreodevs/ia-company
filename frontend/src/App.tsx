@@ -9,6 +9,9 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import SettingsPage from "./pages/SettingsPage";
+import PlatformTemplatesPage from "./pages/PlatformTemplatesPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AgentsPage from "./pages/AgentsPage";
 import LoginPage from "./pages/LoginPage";
 import RunDetailPage from "./pages/RunDetailPage";
@@ -46,6 +49,7 @@ function AppShell() {
               </Link>
               <nav className="flex gap-1">
                 {isSuperAdmin && <NavLink to="/admin">Admin</NavLink>}
+                {isSuperAdmin && <NavLink to="/admin/templates">Templates</NavLink>}
                 {activeTenant && (
                   <>
                     <NavLink to="/agents">Agents</NavLink>
@@ -75,10 +79,13 @@ function AppShell() {
         <Routes>
           <Route path="/setup" element={<SetupSuperAdminPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           <Route element={<SetupGate />}>
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin" element={<SuperAdminDashboardPage />} />
+              <Route path="/admin/templates" element={<PlatformTemplatesPage />} />
             </Route>
 
             <Route element={<RequireTenantAccess />}>

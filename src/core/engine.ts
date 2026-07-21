@@ -177,6 +177,11 @@ export class WorkflowExecutor {
         await persistConsensusFromRun(input.tenantId, sharedMemory);
       }
 
+      await this.dispatchRunNotification(runId, input.tenantId, "COMPLETED", {
+        totalTokens,
+        totalCostUsd,
+      });
+
       emitEvent("done", { status: "COMPLETED", totalTokens, totalCostUsd });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -186,9 +191,37 @@ export class WorkflowExecutor {
       });
       await this.appendLog(runId, "error", message);
       emitEvent("error", { message });
+      await this.dispatchRunNotification(runId, input.tenantId, "FAILED", {
+        errorMessage: message,
+      });
       emitEvent("done", { status: "FAILED", error: message });
       throw err;
     }
+  }
+
+  private async dispatchRunNotification(
+    runId: string,
+    tenantId: string | undefined,
+    status: "COMPLETED" | "FAILED",
+    extra: { totalTokens?: number; totalCostUsd?: number; errorMessage?: string },
+  ) {
+    if (!tenantId) return;
+    const run = await prisma.executionRun.findUnique({
+      where: { id: runId },
+      include: { workflow: { select: { name: true } } },
+    });
+    if (!run) return;
+
+    const { notifyRunFinished } = await import("../lib/usage-limits.js");
+    void notifyRunFinished({
+      tenantId,
+      runId,
+      status,
+      workflowName: run.workflow.name,
+      totalCostUsd: extra.totalCostUsd ?? run.totalCostUsd,
+      totalTokens: extra.totalTokens ?? run.totalTokens,
+      errorMessage: extra.errorMessage ?? run.errorMessage,
+    });
   }
 
   private async executeStep(

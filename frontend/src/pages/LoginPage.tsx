@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 type LoginMode = "superadmin" | "tenant";
@@ -104,6 +105,13 @@ export default function LoginPage() {
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
+          {mode === "tenant" && (
+            <p className="text-center text-sm">
+              <Link to="/forgot-password" className="text-[var(--color-primary)] hover:underline">
+                Forgot password?
+              </Link>
+            </p>
+          )}
         </form>
       </div>
     </div>

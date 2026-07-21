@@ -302,6 +302,44 @@ export async function registerAuthPlugin(app: FastifyInstance) {
     return { ok: true };
   });
 
+  app.post<{ Body: { tenantSlug: string; email: string } }>(
+    "/auth/tenant/forgot-password",
+    async (request, reply) => {
+      const { tenantSlug, email } = request.body;
+      if (!tenantSlug?.trim() || !email?.trim()) {
+        return reply.status(400).send({ error: "Organization slug and email are required" });
+      }
+
+      const { createPasswordResetToken } = await import("../../lib/password-reset.js");
+      await createPasswordResetToken(tenantSlug, email);
+
+      return {
+        ok: true,
+        message: "If an account exists, a reset link has been sent.",
+      };
+    },
+  );
+
+  app.post<{ Body: { token: string; password: string } }>(
+    "/auth/tenant/reset-password",
+    async (request, reply) => {
+      const { token, password } = request.body;
+      if (!token || !password) {
+        return reply.status(400).send({ error: "Token and new password are required" });
+      }
+
+      try {
+        const { resetPasswordWithToken } = await import("../../lib/password-reset.js");
+        await resetPasswordWithToken(token, password);
+        return { ok: true };
+      } catch (err) {
+        return reply.status(400).send({
+          error: err instanceof Error ? err.message : "Reset failed",
+        });
+      }
+    },
+  );
+
   app.post<{ Body: { tenantId: string | null } }>(
     "/auth/impersonate",
     { preHandler: [app.requireSuperAdmin] },

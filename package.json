@@ -19,7 +19,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "test": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/crypto.test.ts",
+    "test": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/crypto.test.ts tests/integration/health.test.ts",
     "worker": "tsx src/worker/index.ts",
     "postinstall": "prisma generate"
   },
