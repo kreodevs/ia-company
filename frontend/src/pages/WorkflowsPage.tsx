@@ -27,6 +27,12 @@ export default function WorkflowsPage() {
     }
   };
 
+  const deleteWorkflow = async (id: string, wfName: string) => {
+    if (!confirm(`Delete workflow "${wfName}"?`)) return;
+    await api.workflows.delete(id);
+    await load();
+  };
+
   if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading workflows…</p>;
 
   return (
@@ -51,19 +57,26 @@ export default function WorkflowsPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {workflows.map((wf) => (
-          <Link
+          <div
             key={wf.id}
-            to={`/workflows/${wf.id}`}
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 transition hover:border-[var(--color-primary)]"
+            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5"
           >
-            <h2 className="font-semibold">{wf.name}</h2>
-            <p className="mt-2 line-clamp-2 text-sm text-[var(--color-muted-foreground)]">
-              {wf.description ?? "No description"}
-            </p>
-            <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
-              {wf.steps.length} steps · {wf.edges.length} connections
-            </p>
-          </Link>
+            <Link to={`/workflows/${wf.id}`} className="block transition hover:opacity-90">
+              <h2 className="font-semibold">{wf.name}</h2>
+              <p className="mt-2 line-clamp-2 text-sm text-[var(--color-muted-foreground)]">
+                {wf.description ?? "No description"}
+              </p>
+              <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
+                {wf.steps.length} steps · {wf.edges.length} connections
+              </p>
+            </Link>
+            <button
+              onClick={() => void deleteWorkflow(wf.id, wf.name)}
+              className="mt-3 text-xs text-[var(--color-destructive)] hover:underline"
+            >
+              Delete
+            </button>
+          </div>
         ))}
       </div>
     </div>

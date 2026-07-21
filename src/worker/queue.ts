@@ -8,6 +8,8 @@ export interface WorkflowJobData {
   workflowId: string;
   tenantId?: string;
   initialMemory?: Record<string, unknown>;
+  mergeConsensus?: boolean;
+  syncConsensus?: boolean;
 }
 
 let queue: Queue<WorkflowJobData> | null = null;

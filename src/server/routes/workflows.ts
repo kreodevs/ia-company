@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { executeWorkflowInBackground } from "../../core/engine.js";
+import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import type { CreateWorkflowInput, ExecuteWorkflowInput } from "../../types/index.js";
 
@@ -195,6 +196,14 @@ export async function workflowRoutes(app: FastifyInstance) {
 
   app.post<{ Params: { id: string }; Body: ExecuteWorkflowInput }>(
     "/workflows/:id/execute",
+    {
+      config: {
+        rateLimit: {
+          max: Number(process.env.EXECUTE_RATE_LIMIT_MAX ?? 10),
+          timeWindow: "1 minute",
+        },
+      },
+    },
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
@@ -206,7 +215,16 @@ export async function workflowRoutes(app: FastifyInstance) {
         const runId = await executeWorkflowInBackground(request.params.id, {
           ...request.body,
           tenantId,
+          mergeConsensus: request.body?.mergeConsensus ?? true,
+          syncConsensus: request.body?.syncConsensus ?? true,
         });
+
+        await logAudit(request, "workflow.execute", {
+          workflowId: workflow.id,
+          workflowName: workflow.name,
+          runId,
+        });
+
         return reply.status(202).send({ runId, status: "PENDING" });
       } catch (err) {
         return handleRouteError(reply, err);

@@ -130,7 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       activeTenant: parsed.activeTenant,
       isSuperAdmin: parsed.kind === "superadmin",
       isTenantAdmin:
-        parsed.kind === "tenant" && (tenantRole === "owner" || tenantRole === "admin"),
+        (parsed.kind === "tenant" && (tenantRole === "owner" || tenantRole === "admin")) ||
+        (parsed.kind === "superadmin" && !!parsed.activeTenant),
       refresh,
       loginSuperAdmin,
       loginTenant,

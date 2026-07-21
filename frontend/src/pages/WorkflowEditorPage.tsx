@@ -1,22 +1,30 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import WorkflowCanvas from "../components/WorkflowCanvas";
-import { api, type Agent, type Workflow } from "../lib/api";
+import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
 
 export default function WorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [consensus, setConsensus] = useState<TenantConsensus | null>(null);
   const [saving, setSaving] = useState(false);
   const [executing, setExecuting] = useState(false);
-  const [task, setTask] = useState("Evaluate next product opportunity from consensus.md");
+  const [useConsensus, setUseConsensus] = useState(true);
+  const [taskOverride, setTaskOverride] = useState("");
 
   const load = useCallback(async () => {
     if (!id) return;
-    const [wf, ag] = await Promise.all([api.workflows.get(id), api.agents.list()]);
+    const [wf, ag, consensusDoc] = await Promise.all([
+      api.workflows.get(id),
+      api.agents.list(),
+      api.consensus.get(),
+    ]);
     setWorkflow(wf);
     setAgents(ag);
+    setConsensus(consensusDoc);
+    setTaskOverride(consensusDoc.nextAction ?? "");
   }, [id]);
 
   useEffect(() => {
@@ -54,9 +62,21 @@ export default function WorkflowEditorPage() {
     if (!workflow) return;
     setExecuting(true);
     try {
-      const { runId } = await api.workflows.execute(workflow.id, {
-        initialMemory: { task, nextAction: task },
-      });
+      const body = useConsensus
+        ? {
+            mergeConsensus: true,
+            syncConsensus: true,
+            initialMemory: taskOverride.trim()
+              ? { nextAction: taskOverride.trim(), task: taskOverride.trim() }
+              : undefined,
+          }
+        : {
+            mergeConsensus: false,
+            syncConsensus: false,
+            initialMemory: { task: taskOverride, nextAction: taskOverride },
+          };
+
+      const { runId } = await api.workflows.execute(workflow.id, body);
       navigate(`/runs/${runId}`);
     } finally {
       setExecuting(false);
@@ -77,15 +97,29 @@ export default function WorkflowEditorPage() {
           <h1 className="mt-1 text-2xl font-bold">{workflow.name}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">{workflow.description}</p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-          <label className="block text-sm">
-            Task / memory seed
+        <div className="flex max-w-md flex-col gap-2">
+          <label className="flex items-center gap-2 text-sm">
             <input
-              className="mt-1 w-64 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
-              value={task}
-              onChange={(e) => setTask(e.target.value)}
+              type="checkbox"
+              checked={useConsensus}
+              onChange={(e) => setUseConsensus(e.target.checked)}
+            />
+            Load & sync tenant consensus
+          </label>
+          <label className="block text-sm">
+            {useConsensus ? "Next action override (optional)" : "Task / memory seed"}
+            <input
+              className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
+              value={taskOverride}
+              onChange={(e) => setTaskOverride(e.target.value)}
+              placeholder={consensus?.nextAction ?? "Evaluate next opportunity"}
             />
           </label>
+          {useConsensus && consensus?.content && (
+            <p className="line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
+              Consensus: {consensus.content.slice(0, 120)}…
+            </p>
+          )}
           <button
             onClick={() => void handleExecute()}
             disabled={executing}

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
+import { encryptSecret, maskSecret } from "../../lib/crypto.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
@@ -12,7 +13,20 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const config = await prisma.tenantLlmConfig.findUnique({ where: { tenantId } });
-      return config ?? { tenantId, provider: null, baseUrl: null, defaultModel: null, maxCostUsdPerRun: null };
+      if (!config) {
+        return {
+          tenantId,
+          provider: null,
+          baseUrl: null,
+          defaultModel: null,
+          maxCostUsdPerRun: null,
+          apiKey: null,
+        };
+      }
+      return {
+        ...config,
+        apiKey: maskSecret(config.apiKey),
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -31,11 +45,17 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       const tenantId = requireImpersonatedTenant(request);
       const { provider, apiKey, baseUrl, defaultModel, maxCostUsdPerRun } = request.body;
 
+      const existing = await prisma.tenantLlmConfig.findUnique({ where: { tenantId } });
+      const nextApiKey =
+        apiKey && apiKey !== "••••••••"
+          ? encryptSecret(apiKey)
+          : existing?.apiKey;
+
       const config = await prisma.tenantLlmConfig.upsert({
         where: { tenantId },
         update: {
           provider: provider as never,
-          apiKey,
+          apiKey: nextApiKey,
           baseUrl,
           defaultModel,
           maxCostUsdPerRun,
@@ -43,7 +63,7 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
         create: {
           tenantId,
           provider: provider as never,
-          apiKey,
+          apiKey: apiKey ? encryptSecret(apiKey) : undefined,
           baseUrl,
           defaultModel,
           maxCostUsdPerRun,
@@ -51,7 +71,7 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       });
 
       await logAudit(request, "tenant.llm_config.update", { provider, defaultModel });
-      return { ...config, apiKey: config.apiKey ? "••••••••" : null };
+      return { ...config, apiKey: maskSecret(config.apiKey) };
     } catch (err) {
       return handleRouteError(reply, err);
     }

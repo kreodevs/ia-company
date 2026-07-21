@@ -82,11 +82,16 @@ export async function registerAuthPlugin(app: FastifyInstance) {
     if (!request.session) {
       return reply.status(401).send({ error: "Authentication required" });
     }
+
+    if (request.session.kind === "superadmin") {
+      if (!request.effectiveTenantId) {
+        return reply.status(403).send({ error: "Select a tenant to impersonate" });
+      }
+      return;
+    }
+
     const role = request.session.tenantRole;
-    if (
-      request.session.kind !== "tenant" ||
-      (role !== "owner" && role !== "admin")
-    ) {
+    if (role !== "owner" && role !== "admin") {
       return reply.status(403).send({ error: "Tenant admin access required" });
     }
   });
@@ -202,6 +207,7 @@ export async function registerAuthPlugin(app: FastifyInstance) {
       });
 
       if (!admin || !(await verifyPassword(password, admin.passwordHash))) {
+        await logAudit(request, "auth.login.failed", { kind: "superadmin", email });
         return reply.status(401).send({ error: "Invalid credentials" });
       }
 
@@ -215,6 +221,8 @@ export async function registerAuthPlugin(app: FastifyInstance) {
       };
 
       await signSession(reply, payload);
+
+      await logAudit(request, "auth.login", { kind: "superadmin" });
 
       return {
         kind: "superadmin",
@@ -251,6 +259,11 @@ export async function registerAuthPlugin(app: FastifyInstance) {
       });
 
       if (!user || !user.isActive || !(await verifyPassword(password, user.passwordHash))) {
+        await logAudit(request, "auth.login.failed", {
+          kind: "tenant",
+          email,
+          tenantSlug: tenant.slug,
+        });
         return reply.status(401).send({ error: "Invalid credentials" });
       }
 
@@ -267,6 +280,9 @@ export async function registerAuthPlugin(app: FastifyInstance) {
 
       await signSession(reply, payload);
 
+      request.effectiveTenantId = tenant.id;
+      await logAudit(request, "auth.login", { kind: "tenant", tenantId: tenant.id });
+
       return {
         kind: "tenant",
         tenantUser: {
@@ -280,7 +296,8 @@ export async function registerAuthPlugin(app: FastifyInstance) {
     },
   );
 
-  app.post("/auth/logout", async (_request, reply) => {
+  app.post("/auth/logout", async (request, reply) => {
+    await logAudit(request, "auth.logout", { kind: request.session?.kind });
     reply.clearCookie(SESSION_COOKIE, { path: "/" });
     return { ok: true };
   });

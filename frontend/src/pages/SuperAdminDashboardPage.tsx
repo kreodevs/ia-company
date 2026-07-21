@@ -15,10 +15,18 @@ export default function SuperAdminDashboardPage() {
   const [ownerPassword, setOwnerPassword] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [auditLogs, setAuditLogs] = useState<Awaited<ReturnType<typeof api.admin.auditLogs>>>([]);
 
   const needTenant = (location.state as { needTenant?: boolean } | null)?.needTenant;
 
-  const load = () => api.admin.dashboard().then(setDashboard);
+  const load = async () => {
+    const [dashboardData, logs] = await Promise.all([
+      api.admin.dashboard(),
+      api.admin.auditLogs({ limit: 20 }),
+    ]);
+    setDashboard(dashboardData);
+    setAuditLogs(logs);
+  };
 
   useEffect(() => {
     void load();
@@ -184,6 +192,43 @@ export default function SuperAdminDashboardPage() {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <h2 className="mb-4 font-semibold">Audit log</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-[var(--color-muted-foreground)]">
+              <tr>
+                <th className="pb-2">Time</th>
+                <th className="pb-2">Action</th>
+                <th className="pb-2">Actor</th>
+                <th className="pb-2">Tenant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {auditLogs.map((log) => (
+                <tr key={log.id} className="border-t border-[var(--color-border)]">
+                  <td className="py-2 text-xs text-[var(--color-muted-foreground)]">
+                    {new Date(log.createdAt).toLocaleString()}
+                  </td>
+                  <td className="py-2 font-mono text-xs">{log.action}</td>
+                  <td className="py-2">{log.actorEmail}</td>
+                  <td className="py-2 text-[var(--color-muted-foreground)]">
+                    {log.tenantId ?? "—"}
+                  </td>
+                </tr>
+              ))}
+              {auditLogs.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-4 text-[var(--color-muted-foreground)]">
+                    No audit events yet.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

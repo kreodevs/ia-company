@@ -261,9 +261,17 @@ export const api = {
     get: (id: string) => request<Workflow>(`/workflows/${id}`),
     create: (body: { name: string; description?: string }) =>
       request<Workflow>("/workflows", { method: "POST", body: JSON.stringify(body) }),
+    delete: (id: string) => request<void>(`/workflows/${id}`, { method: "DELETE" }),
     update: (id: string, body: unknown) =>
       request<Workflow>(`/workflows/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    execute: (id: string, body?: { initialMemory?: Record<string, unknown> }) =>
+    execute: (
+      id: string,
+      body?: {
+        initialMemory?: Record<string, unknown>;
+        mergeConsensus?: boolean;
+        syncConsensus?: boolean;
+      },
+    ) =>
       request<{ runId: string }>(`/workflows/${id}/execute`, {
         method: "POST",
         body: JSON.stringify(body ?? {}),

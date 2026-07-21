@@ -20,19 +20,10 @@ async function tickSchedules() {
   });
 
   for (const schedule of due) {
-    const consensus = await prisma.tenantConsensus.findUnique({
-      where: { tenantId: schedule.tenantId },
-    });
-
-    const initialMemory: Record<string, unknown> = {
-      nextAction: consensus?.nextAction ?? "Execute scheduled autonomous cycle",
-      task: consensus?.nextAction,
-      consensus: consensus?.content,
-    };
-
     const runId = await executeWorkflowInBackground(schedule.workflowId, {
       tenantId: schedule.tenantId,
-      initialMemory,
+      mergeConsensus: true,
+      syncConsensus: true,
     });
 
     const nextRunAt = new Date(Date.now() + schedule.intervalSec * 1000);

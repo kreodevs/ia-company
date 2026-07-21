@@ -145,4 +145,8 @@ export interface CreateWorkflowInput {
 export interface ExecuteWorkflowInput {
   initialMemory?: SharedMemory;
   tenantId?: string;
+  /** When true (default), merge tenant consensus into initial memory */
+  mergeConsensus?: boolean;
+  /** When true (default), write shared memory back to tenant consensus on success */
+  syncConsensus?: boolean;
 }

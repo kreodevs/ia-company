@@ -37,6 +37,10 @@ Two login modes at `/login`:
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
 | `/settings` | `SettingsPage` | Tenant LLM keys + autonomous workflow schedules (admin only) |
 
+Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
+
+Workflow execute loads tenant **consensus** by default and syncs results back on completion.
+
 ## Components
 
 - `AgentForm` — agent configuration form with skill multi-select

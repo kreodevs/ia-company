@@ -50,7 +50,7 @@ npm run dev:frontend # UI :5173
 
 First visit: `/setup` → create superadmin → `/admin` → create tenant → impersonate → configure agents/workflows.
 
-Production: see [`docker-compose.yml`](docker-compose.yml) and [`.env.production.example`](.env.production.example).
+Production: see [`docker-compose.yml`](docker-compose.yml), [`.env.production.example`](.env.production.example), and [`docs/platform.md`](docs/platform.md).
 
 The sections below document the **original CLI/daemon workflow** (macOS/WSL) that this platform is inspired by.
 

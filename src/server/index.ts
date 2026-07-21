@@ -1,5 +1,6 @@
 import "dotenv/config";
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import { agentRoutes } from "./routes/agents.js";
 import { adminRoutes } from "./routes/admin.js";
@@ -21,6 +22,12 @@ async function buildServer() {
   await app.register(cors, {
     origin: process.env.CORS_ORIGIN ?? true,
     credentials: true,
+  });
+
+  await app.register(rateLimit, {
+    global: false,
+    max: 100,
+    timeWindow: "1 minute",
   });
 
   await app.register(async (instance) => {

@@ -1,6 +1,9 @@
 import { generateText } from "ai";
 import type { ExecutionStatus, LogLevel } from "@prisma/client";
+import { persistConsensusFromRun } from "../lib/consensus.js";
 import { prisma } from "../lib/prisma.js";
+import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
+import { resolveAgentProviderConfig, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
   AgentWithSkills,
   ExecuteWorkflowInput,
@@ -15,6 +18,12 @@ import { createLanguageModel, estimateCostUsd } from "./providers.js";
 import { createAgentTools } from "./tools.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
+
+interface TenantExecutionContext {
+  workspaceRoot: string;
+  llm: TenantLlmOverrides | null;
+  maxCostUsdPerRun: number | null;
+}
 
 export class WorkflowExecutor {
   private readonly workspaceRoot: string;
@@ -52,6 +61,8 @@ export class WorkflowExecutor {
     emit?: LogEmitter,
   ): Promise<void> {
     const workflow = await this.loadWorkflowGraph(workflowId);
+    const tenantCtx = await this.loadTenantContext(input.tenantId);
+    const syncConsensus = input.syncConsensus !== false;
 
     const emitEvent = (type: ExecutionEvent["type"], data: Record<string, unknown>) => {
       const event: ExecutionEvent = {
@@ -77,6 +88,17 @@ export class WorkflowExecutor {
       let totalTokens = 0;
       let totalCostUsd = 0;
 
+      const assertCostLimit = () => {
+        if (
+          tenantCtx.maxCostUsdPerRun != null &&
+          totalCostUsd >= tenantCtx.maxCostUsdPerRun
+        ) {
+          throw new Error(
+            `Run cost limit exceeded ($${tenantCtx.maxCostUsdPerRun.toFixed(4)} USD)`,
+          );
+        }
+      };
+
       for (const step of orderedSteps) {
         const { isRunCancelled } = await import("../worker/run-control.js");
         if (isRunCancelled(runId)) {
@@ -84,6 +106,8 @@ export class WorkflowExecutor {
           emitEvent("done", { status: "CANCELLED" });
           return;
         }
+
+        assertCostLimit();
 
         emitEvent("step_start", {
           stepId: step.id,
@@ -96,10 +120,17 @@ export class WorkflowExecutor {
           agentId: step.agent.id,
         });
 
-        const result = await this.executeStep(runId, step.agent, step.inputConfig, sharedMemory);
+        const result = await this.executeStep(
+          runId,
+          step.agent,
+          step.inputConfig,
+          sharedMemory,
+          tenantCtx,
+        );
 
         totalTokens += result.usage.totalTokens;
         totalCostUsd += result.usage.estimatedCostUsd;
+        assertCostLimit();
 
         sharedMemory = mergeStepOutput(
           sharedMemory,
@@ -142,6 +173,10 @@ export class WorkflowExecutor {
         sharedMemory: sharedMemory as object,
       });
 
+      if (input.tenantId && syncConsensus) {
+        await persistConsensusFromRun(input.tenantId, sharedMemory);
+      }
+
       emitEvent("done", { status: "COMPLETED", totalTokens, totalCostUsd });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -161,18 +196,16 @@ export class WorkflowExecutor {
     agent: AgentWithSkills,
     inputConfig: StepInputConfig,
     sharedMemory: SharedMemory,
+    tenantCtx: TenantExecutionContext,
   ): Promise<StepResult> {
     const systemPrompt = compileSystemPrompt(agent, sharedMemory, inputConfig);
     const userPrompt = compileUserPrompt(sharedMemory, inputConfig);
 
-    const model = createLanguageModel({
-      provider: agent.provider,
-      model: agent.model,
-      temperature: agent.temperature,
-    });
+    const providerConfig = resolveAgentProviderConfig(agent, tenantCtx.llm);
+    const model = createLanguageModel(providerConfig);
 
     const tools = createAgentTools({
-      workspaceRoot: this.workspaceRoot,
+      workspaceRoot: tenantCtx.workspaceRoot,
       shellTimeoutMs: this.shellTimeoutMs,
       runId,
       onLog: (message, payload) => {
@@ -200,13 +233,37 @@ export class WorkflowExecutor {
         completionTokens,
         totalTokens,
         estimatedCostUsd: estimateCostUsd(
-          agent.provider,
-          agent.model,
+          providerConfig.provider,
+          providerConfig.model,
           promptTokens,
           completionTokens,
         ),
       },
       toolCalls: response.steps?.length ?? 0,
+    };
+  }
+
+  private async loadTenantContext(tenantId?: string): Promise<TenantExecutionContext> {
+    if (!tenantId) {
+      return {
+        workspaceRoot: this.workspaceRoot,
+        llm: null,
+        maxCostUsdPerRun: null,
+      };
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      include: { llmConfig: true },
+    });
+
+    const workspaceRoot = await ensureTenantWorkspace(tenantId, tenant?.slug);
+    const llm = tenantLlmFromRecord(tenant?.llmConfig ?? null);
+
+    return {
+      workspaceRoot,
+      llm,
+      maxCostUsdPerRun: llm?.maxCostUsdPerRun ?? null,
     };
   }
 
@@ -373,6 +430,10 @@ export function compileSystemPrompt(
     "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
   );
 
+  sections.push(
+    "\n## Consensus Handoff\nIf you finalize a cycle decision, set `nextAction` in your reasoning and include a markdown block labeled `consensusUpdate` in shared output when the workflow expects a full consensus rewrite.",
+  );
+
   return sections.join("\n");
 }
 
@@ -478,20 +539,33 @@ export async function executeWorkflowInBackground(
   workflowId: string,
   input: ExecuteWorkflowInput = {},
 ): Promise<string> {
+  let initialMemory = input.initialMemory;
+  if (input.tenantId && input.mergeConsensus !== false) {
+    const { loadConsensusInitialMemory } = await import("../lib/consensus.js");
+    initialMemory = await loadConsensusInitialMemory(input.tenantId, input.initialMemory ?? {});
+  }
+
   const run = await prisma.executionRun.create({
     data: {
       workflowId,
       tenantId: input.tenantId,
       status: "PENDING",
-      sharedMemory: (input.initialMemory ?? {}) as object,
+      sharedMemory: (initialMemory ?? {}) as object,
     },
   });
+
+  const executionInput: ExecuteWorkflowInput = {
+    ...input,
+    initialMemory,
+  };
 
   const jobData = {
     runId: run.id,
     workflowId,
     tenantId: input.tenantId,
-    initialMemory: input.initialMemory as Record<string, unknown> | undefined,
+    initialMemory: initialMemory as Record<string, unknown> | undefined,
+    mergeConsensus: input.mergeConsensus,
+    syncConsensus: input.syncConsensus,
   };
 
   if (process.env.USE_INLINE_EXECUTOR !== "true") {
@@ -505,7 +579,7 @@ export async function executeWorkflowInBackground(
   }
 
   const executor = new WorkflowExecutor();
-  void executor.runExisting(run.id, workflowId, input).catch(() => {
+  void executor.runExisting(run.id, workflowId, executionInput).catch(() => {
     // errors handled inside runExisting
   });
 

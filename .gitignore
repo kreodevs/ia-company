@@ -5,6 +5,8 @@ frontend/node_modules/
 # Build
 dist/
 frontend/dist/
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
 
 # Environment & secrets
 .env
