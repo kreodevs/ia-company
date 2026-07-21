@@ -27,9 +27,11 @@ RUN npm ci --omit=dev && npm install tsx --no-save
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY .claude ./.claude
+COPY claude ./claude
 COPY docker/api/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 3001
 ENTRYPOINT ["/entrypoint.sh"]
+# Note: the entrypoint.sh calls node dist/server/index.js, but with rootDir: ".", it's now dist/src/server/index.js
+

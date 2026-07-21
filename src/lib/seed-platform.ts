@@ -54,7 +54,7 @@ function slugToTitle(slug: string): string {
 
 async function loadAgents() {
   const settings = getPlatformSettingsSync();
-  const agentsDir = join(REPO_ROOT, ".claude", "agents");
+  const agentsDir = join(REPO_ROOT, "claude", "agents");
   const files = (await readdir(agentsDir)).filter((f) => f.endsWith(".md"));
   const agents = [];
 
@@ -97,7 +97,7 @@ function inferSkillsForAgent(slug: string): string[] {
 }
 
 async function loadSkills() {
-  const skillsRoot = join(REPO_ROOT, ".claude", "skills");
+  const skillsRoot = join(REPO_ROOT, "claude", "skills");
   const dirs = await readdir(skillsRoot, { withFileTypes: true });
   const skills = [];
 
