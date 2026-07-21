@@ -26,7 +26,7 @@ fi
 
 if [ "$RUN_SEED" = "true" ]; then
   echo "Seeding platform templates…"
-  npx tsx prisma/seed.ts || echo "Seed completed or skipped"
+  node dist/prisma/seed.js || echo "Seed completed or skipped"
 fi
 
 echo "Starting API on port ${PORT:-3001}…"
