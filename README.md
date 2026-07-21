@@ -19,6 +19,43 @@ Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@
 
 ---
 
+## Platform Edition (v2)
+
+This repository extends the original **Auto Company** concept into a **multi-tenant, self-hosted platform** — inspired by and built upon the ideas, agent personas, and skills from [MaxMiksa/Auto-Company](https://github.com/MaxMiksa/Auto-Company).
+
+| Layer | Stack |
+|-------|--------|
+| API | Node.js · Fastify · Prisma · PostgreSQL |
+| Queue | Redis · BullMQ worker + autonomous scheduler |
+| UI | React · React Flow · Tailwind v4 |
+| Deploy | Docker Compose (Dokploy-ready) |
+
+### Quick start (platform)
+
+```bash
+# 1. Configure environment
+cp .env.example .env
+# Set DATABASE_URL, JWT_SECRET, REDIS_URL, LLM keys
+
+# 2. Database + platform templates
+npm install
+npx prisma migrate dev
+npm run db:seed
+
+# 3. Run API, worker, and frontend
+npm run dev          # API :3001
+npm run worker       # BullMQ + scheduler (separate terminal)
+npm run dev:frontend # UI :5173
+```
+
+First visit: `/setup` → create superadmin → `/admin` → create tenant → impersonate → configure agents/workflows.
+
+Production: see [`docker-compose.yml`](docker-compose.yml) and [`.env.production.example`](.env.production.example).
+
+The sections below document the **original CLI/daemon workflow** (macOS/WSL) that this platform is inspired by.
+
+---
+
 ## Dashboard Preview
 
 ![Auto Company Dashboard](presentation/dashboard-showcase.png)
@@ -347,6 +384,7 @@ Suggested rollout: start with `make start` (foreground), then move to daemon mod
 
 ## Acknowledgments
 
+- **[MaxMiksa/Auto-Company](https://github.com/MaxMiksa/Auto-Company)** — original autonomous AI company project by Zheyuan (Max) Kong (Carnegie Mellon University). This platform edition is **inspired by** that work: same 14-agent expert personas, skills library, and consensus-memory cycle model, reimagined as a multi-tenant web platform.
 - Thanks to [@JasonQWJ](https://github.com/JasonQWJ) and [@cnwillz](https://github.com/cnwillz) for earlier macOS dashboard support proposals and implementation attempts that helped inform the final cross-platform dashboard design released in `v1.1.0`.
 - [nicepkg/auto-company](https://github.com/nicepkg/auto-company) - initial macOS edition
 - [continuous-claude](https://github.com/AnandChowdhary/continuous-claude) - cross-session shared notes

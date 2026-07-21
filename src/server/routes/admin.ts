@@ -120,6 +120,14 @@ export async function adminRoutes(app: FastifyInstance) {
         data: { name: name.trim(), slug },
       });
 
+      await prisma.tenantConsensus.create({
+        data: {
+          tenantId: tenant.id,
+          content: `# ${tenant.name} Consensus\n\nShared memory for autonomous cycles.`,
+          nextAction: "Define the first product or feature to evaluate",
+        },
+      });
+
       const cloned = cloneTemplates
         ? await clonePlatformTemplatesToTenant(tenant.id)
         : { skills: 0, agents: 0, workflows: 0 };
@@ -170,6 +178,19 @@ export async function adminRoutes(app: FastifyInstance) {
       return reply.status(204).send();
     } catch {
       return reply.status(404).send({ error: "Tenant not found" });
+    }
+  });
+
+  app.get("/admin/audit-logs", async (request, reply) => {
+    try {
+      const { tenantId, limit = "50" } = request.query as { tenantId?: string; limit?: string };
+      return prisma.auditLog.findMany({
+        where: tenantId ? { tenantId } : undefined,
+        orderBy: { createdAt: "desc" },
+        take: Math.min(parseInt(limit, 10) || 50, 200),
+      });
+    } catch (err) {
+      return handleRouteError(reply, err);
     }
   });
 }

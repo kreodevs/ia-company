@@ -78,6 +78,13 @@ export class WorkflowExecutor {
       let totalCostUsd = 0;
 
       for (const step of orderedSteps) {
+        const { isRunCancelled } = await import("../worker/run-control.js");
+        if (isRunCancelled(runId)) {
+          await this.updateRunStatus(runId, "CANCELLED", { completedAt: new Date() });
+          emitEvent("done", { status: "CANCELLED" });
+          return;
+        }
+
         emitEvent("step_start", {
           stepId: step.id,
           agentName: step.agent.name,
@@ -411,7 +418,7 @@ function mergeStepOutput(
   return next;
 }
 
-function topologicalSort(workflow: WorkflowGraph) {
+export function topologicalSort(workflow: WorkflowGraph) {
   const stepMap = new Map(workflow.steps.map((s) => [s.id, s]));
   const inDegree = new Map<string, number>();
   const adjacency = new Map<string, string[]>();
@@ -479,6 +486,23 @@ export async function executeWorkflowInBackground(
       sharedMemory: (input.initialMemory ?? {}) as object,
     },
   });
+
+  const jobData = {
+    runId: run.id,
+    workflowId,
+    tenantId: input.tenantId,
+    initialMemory: input.initialMemory as Record<string, unknown> | undefined,
+  };
+
+  if (process.env.USE_INLINE_EXECUTOR !== "true") {
+    try {
+      const { enqueueWorkflowRun } = await import("../worker/queue.js");
+      await enqueueWorkflowRun(jobData);
+      return run.id;
+    } catch (err) {
+      console.warn("Queue unavailable, falling back to inline execution:", err);
+    }
+  }
 
   const executor = new WorkflowExecutor();
   void executor.runExisting(run.id, workflowId, input).catch(() => {

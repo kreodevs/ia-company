@@ -32,6 +32,10 @@ model Tenant {
   workflows Workflow[]
   runs      ExecutionRun[]
   users     TenantUser[]
+  consensus TenantConsensus?
+  llmConfig TenantLlmConfig?
+  schedules AutonomousSchedule[]
+  auditLogs AuditLog[]
 }
 
 enum TenantUserRole {
@@ -224,4 +228,70 @@ model ExecutionLog {
   agent Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
 
   @@index([runId, createdAt])
+}
+
+// ─── Consensus memory (replaces memories/consensus.md per tenant) ───────────
+
+model TenantConsensus {
+  id         String   @id @default(cuid())
+  tenantId   String   @unique
+  content    String   @db.Text
+  nextAction String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ─── Tenant LLM overrides ───────────────────────────────────────────────────
+
+model TenantLlmConfig {
+  tenantId         String         @id
+  provider         AgentProvider?
+  apiKey           String?
+  baseUrl          String?
+  defaultModel     String?
+  maxCostUsdPerRun Float?
+  updatedAt        DateTime       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ─── Autonomous scheduler (replaces auto-loop.sh per tenant) ──────────────────
+
+model AutonomousSchedule {
+  id           String    @id @default(cuid())
+  tenantId     String
+  workflowId   String
+  name         String
+  intervalSec  Int       @default(1800)
+  enabled      Boolean   @default(true)
+  lastRunAt    DateTime?
+  nextRunAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([enabled, nextRunAt])
+  @@index([tenantId])
+}
+
+// ─── Audit trail ────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorKind String
+  actorId   String
+  actorEmail String?
+  action    String
+  tenantId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([actorKind, actorId])
 }

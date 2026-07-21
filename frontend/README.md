@@ -29,10 +29,13 @@ Two login modes at `/login`:
 | Route | Component | Purpose |
 |-------|-----------|---------|
 | `/agents` | `AgentsPage` | CRUD editor for agent personas, models, temperature, skills |
-| `/workflows` | `WorkflowsPage` | List available workflow templates |
+| `/skills` | `SkillsPage` | CRUD editor for tenant skill prompts |
+| `/workflows` | `WorkflowsPage` | List workflows + create new empty workflow |
 | `/workflows/:id` | `WorkflowEditorPage` | React Flow canvas — drag agents, connect nodes, save & execute |
 | `/runs` | `RunsPage` | Historical execution runs with token/cost metrics |
-| `/runs/:id` | `RunDetailPage` | SSE live log stream + shared memory inspector |
+| `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |
+| `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
+| `/settings` | `SettingsPage` | Tenant LLM keys + autonomous workflow schedules (admin only) |
 
 ## Components
 

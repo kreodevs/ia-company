@@ -121,4 +121,29 @@ export async function runRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.post<{ Params: { id: string } }>("/runs/:id/cancel", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const run = await prisma.executionRun.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!run) return reply.status(404).send({ error: "Run not found" });
+      if (run.status === "COMPLETED" || run.status === "FAILED" || run.status === "CANCELLED") {
+        return reply.status(400).send({ error: "Run already finished" });
+      }
+
+      const { requestRunCancellation } = await import("../../worker/run-control.js");
+      requestRunCancellation(run.id);
+
+      await prisma.executionRun.update({
+        where: { id: run.id },
+        data: { status: "CANCELLED", completedAt: new Date() },
+      });
+
+      return { ok: true, status: "CANCELLED" };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

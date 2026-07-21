@@ -12,6 +12,7 @@ export default function RunDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [run, setRun] = useState<ExecutionRun | null>(null);
   const [events, setEvents] = useState<StreamEvent[]>([]);
+  const [cancelling, setCancelling] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,6 +39,19 @@ export default function RunDetailPage() {
     return <p className="text-[var(--color-muted-foreground)]">Loading run…</p>;
   }
 
+  const canCancel = run.status === "PENDING" || run.status === "RUNNING";
+
+  const cancelRun = async () => {
+    if (!id || !canCancel) return;
+    setCancelling(true);
+    try {
+      await api.runs.cancel(id);
+      setRun(await api.runs.get(id));
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -50,6 +64,15 @@ export default function RunDetailPage() {
           {" · "}
           {run.totalTokens.toLocaleString()} tokens · ${run.totalCostUsd.toFixed(4)}
         </p>
+        {canCancel && (
+          <button
+            disabled={cancelling}
+            onClick={() => void cancelRun()}
+            className="mt-3 rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)] disabled:opacity-50"
+          >
+            {cancelling ? "Cancelling…" : "Cancel run"}
+          </button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

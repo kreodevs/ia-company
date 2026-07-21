@@ -6,6 +6,9 @@ import {
 } from "./components/SetupGate";
 import TenantImpersonationSelect from "./components/TenantImpersonationSelect";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import SkillsPage from "./pages/SkillsPage";
+import ConsensusPage from "./pages/ConsensusPage";
+import SettingsPage from "./pages/SettingsPage";
 import AgentsPage from "./pages/AgentsPage";
 import LoginPage from "./pages/LoginPage";
 import RunDetailPage from "./pages/RunDetailPage";
@@ -46,8 +49,11 @@ function AppShell() {
                 {activeTenant && (
                   <>
                     <NavLink to="/agents">Agents</NavLink>
+                    <NavLink to="/skills">Skills</NavLink>
                     <NavLink to="/workflows">Workflows</NavLink>
                     <NavLink to="/runs">Runs</NavLink>
+                    <NavLink to="/consensus">Consensus</NavLink>
+                    {isTenantAdmin && <NavLink to="/settings">Settings</NavLink>}
                     {isTenantAdmin && <NavLink to="/team">Team</NavLink>}
                   </>
                 )}
@@ -78,10 +84,13 @@ function AppShell() {
             <Route element={<RequireTenantAccess />}>
               <Route path="/" element={<WorkflowsPage />} />
               <Route path="/agents" element={<AgentsPage />} />
+              <Route path="/skills" element={<SkillsPage />} />
               <Route path="/workflows" element={<WorkflowsPage />} />
               <Route path="/workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="/runs" element={<RunsPage />} />
               <Route path="/runs/:id" element={<RunDetailPage />} />
+              <Route path="/consensus" element={<ConsensusPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/team" element={<TenantUsersPage />} />
             </Route>
           </Route>

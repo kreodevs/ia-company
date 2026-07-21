@@ -1,7 +1,9 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
 import cookie from "@fastify/cookie";
 import jwt from "@fastify/jwt";
+import rateLimit from "@fastify/rate-limit";
 import { prisma } from "../../lib/prisma.js";
+import { logAudit } from "../../lib/audit.js";
 import {
   SESSION_COOKIE,
   SESSION_MAX_AGE,
@@ -19,6 +21,10 @@ export async function registerAuthPlugin(app: FastifyInstance) {
   }
 
   await app.register(cookie);
+  await app.register(rateLimit, {
+    max: Number(process.env.AUTH_RATE_LIMIT_MAX ?? 30),
+    timeWindow: "1 minute",
+  });
   await app.register(jwt, {
     secret,
     cookie: {
@@ -299,6 +305,8 @@ export async function registerAuthPlugin(app: FastifyInstance) {
       };
 
       await signSession(reply, payload);
+
+      await logAudit(request, "auth.impersonate", { tenantId });
 
       return { impersonatedTenant: await tenantSummary(tenantId) };
     },

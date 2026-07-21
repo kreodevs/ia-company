@@ -20,8 +20,8 @@ if ! nc -z "$DB_HOST" "$DB_PORT" 2>/dev/null; then
 fi
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
-  echo "Applying database schema…"
-  npx prisma db push --skip-generate
+  echo "Applying database migrations…"
+  npx prisma migrate deploy
 fi
 
 if [ "$RUN_SEED" = "true" ]; then

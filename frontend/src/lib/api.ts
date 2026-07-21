@@ -148,6 +148,43 @@ export interface ExecutionLog {
   costUsd?: number;
 }
 
+export interface TenantConsensus {
+  tenantId: string;
+  content: string;
+  nextAction: string | null;
+  updatedAt?: string;
+}
+
+export interface TenantLlmConfig {
+  tenantId: string;
+  provider: string | null;
+  apiKey?: string | null;
+  baseUrl?: string | null;
+  defaultModel: string | null;
+  maxCostUsdPerRun: number | null;
+}
+
+export interface AutonomousSchedule {
+  id: string;
+  tenantId: string;
+  workflowId: string;
+  name: string;
+  intervalSec: number;
+  enabled: boolean;
+  nextRunAt: string | null;
+  lastRunAt: string | null;
+  createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  actorEmail: string;
+  tenantId: string | null;
+  createdAt: string;
+  metadata: Record<string, unknown> | null;
+}
+
 export const api = {
   auth: {
     status: () => request<AuthStatus>("/auth/status"),
@@ -181,6 +218,13 @@ export const api = {
       ),
     deleteTenant: (id: string) =>
       request<void>(`/admin/tenants/${id}`, { method: "DELETE" }),
+    auditLogs: (params?: { tenantId?: string; limit?: number }) => {
+      const qs = new URLSearchParams();
+      if (params?.tenantId) qs.set("tenantId", params.tenantId);
+      if (params?.limit) qs.set("limit", String(params.limit));
+      const query = qs.toString();
+      return request<AuditLogEntry[]>(`/admin/audit-logs${query ? `?${query}` : ""}`);
+    },
   },
   tenantUsers: {
     list: () => request<TenantUser[]>("/tenant/users"),
@@ -205,10 +249,18 @@ export const api = {
   },
   skills: {
     list: () => request<Skill[]>("/skills"),
+    get: (id: string) => request<Skill>(`/skills/${id}`),
+    create: (body: Omit<Skill, "id">) =>
+      request<Skill>("/skills", { method: "POST", body: JSON.stringify(body) }),
+    update: (id: string, body: Partial<Omit<Skill, "id">>) =>
+      request<Skill>(`/skills/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+    delete: (id: string) => request<void>(`/skills/${id}`, { method: "DELETE" }),
   },
   workflows: {
     list: () => request<Workflow[]>("/workflows"),
     get: (id: string) => request<Workflow>(`/workflows/${id}`),
+    create: (body: { name: string; description?: string }) =>
+      request<Workflow>("/workflows", { method: "POST", body: JSON.stringify(body) }),
     update: (id: string, body: unknown) =>
       request<Workflow>(`/workflows/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     execute: (id: string, body?: { initialMemory?: Record<string, unknown> }) =>
@@ -220,6 +272,8 @@ export const api = {
   runs: {
     list: () => request<ExecutionRun[]>("/runs"),
     get: (id: string) => request<ExecutionRun>(`/runs/${id}`),
+    cancel: (id: string) =>
+      request<{ ok: boolean; status: string }>(`/runs/${id}/cancel`, { method: "POST" }),
     streamLogs: (runId: string, onEvent: (data: unknown) => void) => {
       const source = new EventSource(`${API_BASE}/runs/${runId}/logs`, {
         withCredentials: true,
@@ -227,5 +281,26 @@ export const api = {
       source.onmessage = (e) => onEvent(JSON.parse(e.data));
       return () => source.close();
     },
+  },
+  consensus: {
+    get: () => request<TenantConsensus>("/consensus"),
+    update: (body: { content: string; nextAction?: string }) =>
+      request<TenantConsensus>("/consensus", { method: "PUT", body: JSON.stringify(body) }),
+  },
+  schedules: {
+    list: () => request<AutonomousSchedule[]>("/schedules"),
+    create: (body: { name: string; workflowId: string; intervalSec?: number; enabled?: boolean }) =>
+      request<AutonomousSchedule>("/schedules", { method: "POST", body: JSON.stringify(body) }),
+    update: (id: string, body: { enabled?: boolean; intervalSec?: number }) =>
+      request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+    delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
+  },
+  tenantSettings: {
+    getLlm: () => request<TenantLlmConfig>("/tenant/settings/llm"),
+    updateLlm: (body: Partial<TenantLlmConfig & { apiKey?: string }>) =>
+      request<TenantLlmConfig>("/tenant/settings/llm", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
   },
 };

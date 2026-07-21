@@ -3,8 +3,11 @@ import cors from "@fastify/cors";
 import Fastify from "fastify";
 import { agentRoutes } from "./routes/agents.js";
 import { adminRoutes } from "./routes/admin.js";
+import { consensusRoutes } from "./routes/consensus.js";
 import { runRoutes } from "./routes/runs.js";
+import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
+import { tenantSettingsRoutes } from "./routes/tenant-settings.js";
 import { tenantUserRoutes } from "./routes/tenant-users.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
@@ -31,6 +34,9 @@ async function buildServer() {
 
   await app.register(adminRoutes, { prefix: "/api" });
   await app.register(tenantUserRoutes, { prefix: "/api" });
+  await app.register(tenantSettingsRoutes, { prefix: "/api" });
+  await app.register(consensusRoutes, { prefix: "/api" });
+  await app.register(scheduleRoutes, { prefix: "/api" });
   await app.register(agentRoutes, { prefix: "/api" });
   await app.register(skillRoutes, { prefix: "/api" });
   await app.register(workflowRoutes, { prefix: "/api" });

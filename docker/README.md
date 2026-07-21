@@ -1,13 +1,15 @@
 # Docker deployment (Dokploy)
 
-Stack for production: **PostgreSQL + API (Fastify) + Web (nginx)**.
+Stack for production: **PostgreSQL + Redis + API + Worker + Web (nginx)**.
 
 ## Services
 
 | Service | Image / build | Port | Role |
 |---------|---------------|------|------|
 | `postgres` | `postgres:16-alpine` | internal | Database |
+| `redis` | `redis:7-alpine` | internal | BullMQ job queue |
 | `api` | `docker/api/Dockerfile` | internal `:3001` | Node API + Prisma |
+| `worker` | same as `api` | internal | Workflow executor + autonomous scheduler |
 | `web` | `docker/web/Dockerfile` | `${WEB_PORT:-80}` | SPA + reverse proxy `/api` → api |
 
 ## Quick start (local)
@@ -34,16 +36,20 @@ Open `http://localhost` → `/setup` to create superadmin.
 ## Entrypoint (`docker/api/entrypoint.sh`)
 
 - Waits for PostgreSQL
-- `RUN_MIGRATIONS=true` → `prisma db push`
+- `RUN_MIGRATIONS=true` → `prisma migrate deploy`
 - `RUN_SEED=true` → platform templates from `.claude/` (no tenant)
 - Starts `node dist/server/index.js`
+
+The **worker** service reuses the API image but runs `node dist/worker/index.js` directly (no migrations).
 
 ## Volumes
 
 - `postgres_data` — database persistence
+- `redis_data` — queue persistence
 - `workspace_data` → `/app/projects` — agent file tools workspace
 
 ## Health checks
 
 - API: `GET /api/health`
 - Web: nginx `/`
+- Redis: `redis-cli ping`
