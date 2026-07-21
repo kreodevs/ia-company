@@ -40,9 +40,7 @@ services:
       context: .
       dockerfile: docker/api/Dockerfile
     restart: unless-stopped
-    # Si Dokploy enruta la API con su proxy, elimina el mapeo directo "3001:3001" por seguridad.
-    # expose:
-    #   - "3001"
+    # No host ports — Traefik routes agency.jorge-correa.com/api → api:3001
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
