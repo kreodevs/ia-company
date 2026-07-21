@@ -81,6 +81,7 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-auto_company}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-auto_company}?schema=public
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
       WORKSPACE_ROOT: /app
     depends_on:

@@ -43,11 +43,13 @@ Without Resend configured, password reset and email notifications are skipped (w
 ## Entrypoint (`docker/api/entrypoint.sh`)
 
 - Waits for PostgreSQL
-- `RUN_MIGRATIONS=true` → `prisma migrate deploy`
-- `RUN_SEED=true` → platform templates from `.claude/` (no tenant)
-- Starts `node dist/server/index.js`
+- If a custom command is passed (worker service), runs it and skips migrations/API boot
+- Otherwise (`api` service):
+  - `RUN_MIGRATIONS=true` → `prisma migrate deploy`
+  - `RUN_SEED=true` → platform templates from `claude/` (no tenant)
+  - Starts `node dist/src/server/index.js`
 
-The **worker** service reuses the API image but runs `node dist/worker/index.js` directly (no migrations).
+The **worker** service reuses the API image with `command: ["node", "dist/src/worker/index.js"]`.
 
 ## Volumes
 

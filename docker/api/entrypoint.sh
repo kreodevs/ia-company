@@ -19,6 +19,12 @@ if ! nc -z "$DB_HOST" "$DB_PORT" 2>/dev/null; then
   exit 1
 fi
 
+# Custom command (e.g. worker) — skip migrations/seed and do not start the API.
+if [ "$#" -gt 0 ]; then
+  echo "Starting: $*"
+  exec "$@"
+fi
+
 if [ "$RUN_MIGRATIONS" = "true" ]; then
   echo "Applying database migrations…"
   npx prisma migrate deploy
