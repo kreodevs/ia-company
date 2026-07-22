@@ -325,7 +325,7 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, runs] = await Promise.all([
+      const [agents, runs, ideas] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
@@ -351,6 +351,7 @@ export async function productRoutes(app: FastifyInstance) {
             },
           },
         }),
+        listPipelineIdeas(tenantId),
       ]);
 
       const runsForProduct = runs.filter((r) => {
@@ -421,6 +422,11 @@ export async function productRoutes(app: FastifyInstance) {
           : null,
         recentRuns,
         team,
+        pipeline: ideas.slice(0, 6).map((i) => ({
+          id: i.id,
+          title: i.title,
+          interestScore: i.interestScore,
+        })),
       };
     } catch (err) {
       return handleRouteError(reply, err);

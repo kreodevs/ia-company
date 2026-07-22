@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { api, type ProductTeam, type TeamAgent, type TeamAgentStatus } from "../lib/api";
-import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 
 const ROLE_EMOJI: Record<string, string> = {
@@ -24,29 +22,30 @@ const ROLE_EMOJI: Record<string, string> = {
   "sales-ross": "💼",
 };
 
-function avatarColor(name: string): string {
+function avatarGradient(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
   const hue = h % 360;
-  return `linear-gradient(135deg, hsl(${hue} 70% 55%) 0%, hsl(${(hue + 40) % 360} 70% 45%) 100%)`;
+  return `radial-gradient(circle at 30% 25%, hsl(${hue} 90% 70%) 0%, hsl(${hue} 70% 45%) 55%, hsl(${(hue + 25) % 360} 80% 30%) 100%)`;
 }
 
-function statusEmoji(s: TeamAgentStatus): string {
-  if (s === "thinking") return "💡";
-  if (s === "queued") return "⏳";
-  return "🟢";
+function statusRingColor(s: TeamAgentStatus): string {
+  if (s === "thinking") return "rgba(96, 165, 250, 0.85)";
+  if (s === "queued") return "rgba(251, 191, 36, 0.85)";
+  return "rgba(148, 163, 184, 0.45)";
 }
 
-function statusLabelKey(s: TeamAgentStatus): string {
-  if (s === "thinking") return "team.status.thinking";
-  if (s === "queued") return "team.status.queued";
-  return "team.status.idle";
+function positionOnCircle(index: number, total: number, radiusPct: number): { x: number; y: number } {
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  return {
+    x: 50 + Math.cos(angle) * radiusPct,
+    y: 50 + Math.sin(angle) * radiusPct,
+  };
 }
 
 function shortTime(iso: string | null): string {
   if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleString();
+  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function ProductTeamPage() {
@@ -56,172 +55,257 @@ export default function ProductTeamPage() {
 
   const [data, setData] = useState<ProductTeam | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tick, setTick] = useState(0);
+  const [liveNote, setLiveNote] = useState<string | null>(null);
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flashNote = useCallback((note: string) => {
+    setLiveNote(note);
+    if (noteTimer.current) clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(() => setLiveNote(null), 4000);
+  }, []);
+
+  const refresh = useCallback(async () => {
+    if (!productId) return;
+    const fresh = await api.products.team(productId);
+    setData(fresh);
+    return fresh;
+  }, [productId]);
 
   useEffect(() => {
     if (!productId) return;
     setLoading(true);
-    api.products
-      .team(productId)
-      .then(setData)
+    refresh()
+      .catch(() => undefined)
       .finally(() => setLoading(false));
-  }, [productId, tick]);
+  }, [productId, refresh]);
 
   useEffect(() => {
-    const interval = setInterval(() => setTick((n) => n + 1), 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!data?.activeRun || data.activeRun.status === "COMPLETED" || data.activeRun.status === "FAILED" || data.activeRun.status === "CANCELLED") {
+      return;
+    }
+    const close = api.runs.streamLogs(data.activeRun.id, (raw) => {
+      const evt = raw as { type?: string; data?: { agentId?: string | null; message?: string } };
+      if (evt.type === "log" && evt.data?.agentId) {
+        const agent = data.team.find((a) => a.id === evt.data?.agentId);
+        const preview = String(evt.data?.message ?? "").slice(0, 80);
+        if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
+        void refresh();
+      } else if (evt.type === "step_start" || evt.type === "step_complete") {
+        void refresh();
+      } else if (evt.type === "done") {
+        void refresh();
+      }
+    });
+    return () => close();
+  }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, refresh, flashNote]);
 
   if (loading || !data) return <PageLoading message={t("warRoom.loading")} />;
   if (!productId) return <div>Missing product id</div>;
 
   const thinking = data.team.filter((a) => a.status === "thinking");
-  const idle = data.team.filter((a) => a.status === "idle");
-  const queued = data.team.filter((a) => a.status === "queued");
+  const onDuty = data.team.filter((a) => a.status !== "idle");
+  const totalAgents = data.team.length;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <PageHeader
-        title={t("warRoom.title", { name: data.product.name })}
-        subtitle={t("warRoom.subtitle")}
-      />
-
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <Badge>{data.product.phase}</Badge>
-        {data.activeRun && (
-          <Link
-            to={`/runs/${data.activeRun.id}`}
-            className="rounded-full bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
-          >
-            {t("warRoom.activeRun", { workflow: data.activeRun.workflowName })}
-          </Link>
-        )}
-        {!data.activeRun && (
-          <span className="text-xs text-[var(--color-muted-foreground)]">
-            {t("warRoom.allIdle")}
+    <div className="war-room">
+      <header className="war-room-header">
+        <div>
+          <p className="war-room-eyebrow">{t("warRoom.eyebrow")}</p>
+          <h1 className="war-room-title">{t("warRoom.title", { name: data.product.name })}</h1>
+          <p className="war-room-subtitle">{t("warRoom.subtitle")}</p>
+        </div>
+        <div className="war-room-header-meta">
+          <Badge>{data.product.phase}</Badge>
+          {data.activeRun && (
+            <Link
+              to={`/runs/${data.activeRun.id}`}
+              className="war-room-pill war-room-pill-live"
+            >
+              <span className="war-room-pulse" aria-hidden />
+              {t("warRoom.liveRun", { workflow: data.activeRun.workflowName })}
+            </Link>
+          )}
+          <span className="war-room-pill war-room-pill-duty">
+            {t("warRoom.onDuty", { count: onDuty.length })}
           </span>
-        )}
-        <Link
-          to={`/products/${data.product.id}/code`}
-          className="text-[var(--color-primary)] hover:underline"
-        >
-          {t("warRoom.viewCode")}
-        </Link>
+          <Link
+            to={`/products/${data.product.id}/code`}
+            className="war-room-pill war-room-pill-link"
+          >
+            {t("warRoom.viewCode")}
+          </Link>
+        </div>
+      </header>
+
+      <div className="war-room-grid">
+        <aside className="war-room-radar">
+          <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>
+          {data.pipeline.length === 0 ? (
+            <p className="war-room-empty">{t("warRoom.radarEmpty")}</p>
+          ) : (
+            <ul className="war-room-radar-list">
+              {data.pipeline.map((idea, i) => (
+                <li key={idea.id} className="war-room-radar-item">
+                  <span className="war-room-radar-blip" data-rank={i % 4} aria-hidden />
+                  <div className="war-room-radar-body">
+                    <p className="war-room-radar-title">{idea.title}</p>
+                    <p className="war-room-radar-meta">
+                      {t("warRoom.radarScore", { score: idea.interestScore.toFixed(1) })}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
+
+        <section className="war-room-table" aria-label={t("warRoom.tableAria")}>
+          <div className="war-room-table-grid" />
+          <div className="war-room-table-ring" aria-hidden />
+          <div className="war-room-core">
+            <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
+            <p className="war-room-core-name">
+              {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
+            </p>
+            <p className="war-room-core-status">
+              {data.activeRun
+                ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
+                : t("warRoom.coreIdle", { count: totalAgents })}
+            </p>
+            {liveNote && (
+              <p className="war-room-core-note" role="status">
+                <span className="war-room-pulse" aria-hidden /> {liveNote}
+              </p>
+            )}
+          </div>
+          {data.team.map((agent, i) => (
+            <AgentSeat
+              key={agent.id}
+              agent={agent}
+              index={i}
+              total={totalAgents}
+            />
+          ))}
+        </section>
+
+        <aside className="war-room-details">
+          <h2 className="war-room-section-title">{t("warRoom.briefing")}</h2>
+          {data.activeRun ? (
+            <div className="war-room-briefing">
+              <Link
+                to={`/runs/${data.activeRun.id}`}
+                className="war-room-briefing-link"
+              >
+                <p className="war-room-briefing-label">{t("warRoom.workflow")}</p>
+                <p className="war-room-briefing-name">{data.activeRun.workflowName}</p>
+              </Link>
+              <p className="war-room-briefing-meta">
+                {t("warRoom.startedAt", { time: shortTime(data.activeRun.startedAt) })}
+              </p>
+              <p className="war-room-briefing-meta">
+                {t("warRoom.agentsOnRun", { count: data.activeRun.agentIds.length })}
+              </p>
+            </div>
+          ) : (
+            <p className="war-room-empty">{t("warRoom.noActiveRun")}</p>
+          )}
+
+          {thinking[0] && (
+            <div className="war-room-thinking">
+              <p className="war-room-section-subtitle">{t("warRoom.thinking")}</p>
+              <p className="war-room-thinking-name">{thinking[0].name}</p>
+              <p className="war-room-thinking-task">
+                {thinking[0].currentTask ?? t("warRoom.thinkingGeneric")}
+              </p>
+            </div>
+          )}
+
+          <div className="war-room-legend">
+            <p className="war-room-section-subtitle">{t("warRoom.legend")}</p>
+            <ul>
+              <li>
+                <span className="war-room-dot" data-status="thinking" />
+                {t("warRoom.status.thinking")}
+              </li>
+              <li>
+                <span className="war-room-dot" data-status="queued" />
+                {t("warRoom.status.queued")}
+              </li>
+              <li>
+                <span className="war-room-dot" data-status="idle" />
+                {t("warRoom.status.idle")}
+              </li>
+            </ul>
+          </div>
+        </aside>
       </div>
 
-      {data.activeRun && (
-        <Card className="border-blue-300 bg-blue-50/60">
-          <p className="text-xs uppercase tracking-wide text-blue-700">
-            {t("warRoom.runningNow")}
-          </p>
-          <p className="text-sm font-semibold">{data.activeRun.workflowName}</p>
-          <p className="text-xs text-[var(--color-muted-foreground)]">
-            {t("warRoom.startedAt", { date: shortTime(data.activeRun.startedAt) })}
-          </p>
-        </Card>
-      )}
-
-      <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-          {t("warRoom.workingNow", { count: thinking.length + queued.length })}
-        </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[...thinking, ...queued, ...idle].map((a) => (
-            <AgentDesk key={a.id} agent={a} />
-          ))}
-        </div>
-      </section>
-
-      {data.recentRuns.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-            {t("warRoom.recentRuns")}
-          </h2>
-          <Card className="space-y-2 p-3">
-            {data.recentRuns.map((r) => (
-              <Link
-                key={r.id}
-                to={`/runs/${r.id}`}
-                className="interactive flex flex-wrap items-center justify-between gap-2 rounded border border-[var(--color-border)] bg-[var(--color-background)] p-2 text-sm hover:border-[var(--color-primary)]"
-              >
-                <div>
-                  <p className="font-medium">{r.workflowName}</p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">
+      <section className="war-room-runs">
+        <h2 className="war-room-section-title">{t("warRoom.recentRuns")}</h2>
+        <ol className="war-room-runs-list">
+          {data.recentRuns.length === 0 ? (
+            <li className="war-room-empty">{t("warRoom.noRuns")}</li>
+          ) : (
+            data.recentRuns.map((r) => (
+              <li key={r.id}>
+                <Link
+                  to={`/runs/${r.id}`}
+                  className="war-room-run-row"
+                >
+                  <span className="war-room-run-name">{r.workflowName}</span>
+                  <span className="war-room-run-meta">
                     {shortTime(r.startedAt)} · {r.totalTokens.toLocaleString()} tokens
-                  </p>
-                </div>
-                <Badge>{r.status}</Badge>
-              </Link>
-            ))}
-          </Card>
-        </section>
+                  </span>
+                  <Badge>{r.status}</Badge>
+                </Link>
+              </li>
+            ))
+          )}
+        </ol>
+      </section>
+    </div>
+  );
+}
+
+function AgentSeat({ agent, index, total }: { agent: TeamAgent; index: number; total: number }) {
+  const { t } = useTranslation();
+  const radiusPct = total <= 4 ? 38 : total <= 8 ? 42 : total <= 12 ? 45 : 47;
+  const { x, y } = positionOnCircle(index, total, radiusPct);
+  const emoji = ROLE_EMOJI[agent.name] ?? "🧑‍💼";
+  const ringColor = statusRingColor(agent.status);
+
+  return (
+    <div
+      className={`war-room-seat war-room-seat-${agent.status}`}
+      data-testid={`seat-${agent.name}`}
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        ["--ring" as string]: ringColor,
+      }}
+      title={`${agent.name} — ${agent.role} (${t(`warRoom.status.${agent.status}`)})`}
+    >
+      <span className="war-room-seat-pill" aria-hidden>
+        {agent.status === "thinking" && <ThinkingDots />}
+        {agent.status === "queued" && <span className="war-room-seat-clock">⏳</span>}
+      </span>
+      <div className="war-room-seat-avatar" style={{ background: avatarGradient(agent.name) }}>
+        <span className="war-room-seat-emoji" aria-hidden>{emoji}</span>
+      </div>
+      <p className="war-room-seat-name">{agent.name.replace(/-/g, " ")}</p>
+      {agent.status === "thinking" && agent.currentTask && (
+        <p className="war-room-seat-task">{agent.currentTask}</p>
       )}
     </div>
   );
 }
 
-function AgentDesk({ agent }: { agent: TeamAgent }) {
-  const { t } = useTranslation();
-  const emoji = ROLE_EMOJI[agent.name] ?? "🧑‍💼";
-  const initial = agent.name.charAt(0).toUpperCase();
-
+function ThinkingDots() {
   return (
-    <div
-      className={`relative overflow-hidden rounded-xl border p-4 ${
-        agent.status === "thinking"
-          ? "border-blue-400 bg-blue-50/40 shadow-md"
-          : agent.status === "queued"
-            ? "border-amber-300 bg-amber-50/30"
-            : "border-[var(--color-border)] bg-[var(--color-surface)]"
-      }`}
-      data-testid={`desk-${agent.name}`}
-    >
-      {agent.status === "thinking" && (
-        <span
-          className="absolute right-2 top-2 inline-flex h-2 w-2 animate-pulse rounded-full bg-blue-500"
-          aria-label="thinking"
-        />
-      )}
-      <div className="flex items-center gap-3">
-        <div
-          className="flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold text-white shadow-sm"
-          style={{ background: avatarColor(agent.name) }}
-          aria-hidden="true"
-        >
-          {emoji}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{agent.name}</p>
-          <p className="truncate text-xs text-[var(--color-muted-foreground)]">{agent.role}</p>
-        </div>
-        <span
-          className="ml-auto rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-2 py-0.5 text-[10px] font-semibold uppercase"
-          title={t(statusLabelKey(agent.status))}
-        >
-          {statusEmoji(agent.status)} {t(statusLabelKey(agent.status))}
-        </span>
-      </div>
-
-      <div className="mt-3 min-h-[60px]">
-        {agent.status === "thinking" && agent.currentTask ? (
-          <p className="rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-900">
-            <span className="font-semibold">{t("warRoom.doing")}:</span> {agent.currentTask}
-          </p>
-        ) : agent.lastMessage ? (
-          <p className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-2 text-xs text-[var(--color-muted-foreground)]">
-            {agent.lastMessage}
-          </p>
-        ) : (
-          <p className="text-xs italic text-[var(--color-muted-foreground)]">
-            {t("warRoom.noRecentActivity")}
-          </p>
-        )}
-      </div>
-
-      <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--color-muted-foreground)]">
-        {t("warRoom.lastWorked")}: {shortTime(agent.lastWorkedAt)}
-      </p>
-      <span className="sr-only">{initial}</span>
-    </div>
+    <span className="war-room-typing" aria-hidden>
+      <span />
+      <span />
+      <span />
+    </span>
   );
 }

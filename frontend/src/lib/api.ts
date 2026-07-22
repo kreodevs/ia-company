@@ -336,6 +336,7 @@ export interface ProductTeam {
   activeRun: TeamActiveRun | null;
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
+  pipeline: Array<{ id: string; title: string; interestScore: number }>;
 }
 
 export interface OpsPortfolio {
