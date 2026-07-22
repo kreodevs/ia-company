@@ -15,6 +15,11 @@ import {
   updateCompanyPhase,
   upsertTenantProduct,
 } from "./product-registry.js";
+import {
+  formatInterestsPromptSection,
+  getTenantInterestCategories,
+  scoreIdeaAgainstInterests,
+} from "./tenant-interests.js";
 import { slugifyProductName } from "./product-workspace.js";
 import {
   asString,
@@ -30,7 +35,11 @@ function parseGoNoGo(value: unknown): GoNoGoDecision | null {
   return null;
 }
 
-export function convergencePromptSection(cycleNumber: number, phase: CompanyPhase): string {
+export function convergencePromptSection(
+  cycleNumber: number,
+  phase: CompanyPhase,
+  interests: string[] = [],
+): string {
   return `
 ## Autonomous Company Cycle Rules (mandatory)
 - Current cycle number: ${cycleNumber}
@@ -41,6 +50,7 @@ export function convergencePromptSection(cycleNumber: number, phase: CompanyPhas
 - If same nextAction repeats, pivot or shrink scope
 - Multi-product: do not block existing products in Growing phase (e.g. snapog). New ideas go to pipeline queue
 - Optional structured fields in shared memory: topIdeas[], goNoGo, productSlug, productName, productDescription, revenueUsd
+${formatInterestsPromptSection(interests)}
 
 ## Consensus Handoff (mandatory structured output)
 This is a per-PRODUCT memory. End your reply with a fenced JSON block that will be parsed and stored as one consensus revision per step. Omit fields you cannot fill:
@@ -115,10 +125,12 @@ export async function processConvergenceAfterRun(
 
   const topIdeas = asStringArray(enriched.topIdeas);
   if (topIdeas.length > 0) {
-    await addPipelineIdeas(
-      tenantId,
-      topIdeas.slice(0, 3).map((title) => ({ title })),
-    );
+    const interestCategories = await getTenantInterestCategories(tenantId);
+    const ideasWithScores = topIdeas.slice(0, 3).map((title) => ({
+      title,
+      interestScore: scoreIdeaAgainstInterests(title, null, interestCategories),
+    }));
+    await addPipelineIdeas(tenantId, ideasWithScores);
     await updateCompanyPhase(tenantId, "validating");
   }
 
@@ -222,9 +234,13 @@ export async function backfillPipelineFromLastDiscovery(tenantId: string): Promi
   const topIdeas = asStringArray(enriched.topIdeas);
   if (topIdeas.length === 0) return 0;
 
+  const interestCategories = await getTenantInterestCategories(tenantId);
   await addPipelineIdeas(
     tenantId,
-    topIdeas.slice(0, 3).map((title) => ({ title })),
+    topIdeas.slice(0, 3).map((title) => ({
+      title,
+      interestScore: scoreIdeaAgainstInterests(title, null, interestCategories),
+    })),
   );
   await updateCompanyPhase(tenantId, "validating");
   return topIdeas.length;

@@ -13,6 +13,7 @@ import {
   recordProductRun,
   setFocusProduct,
 } from "../lib/product-registry.js";
+import { getTenantInterestCategories } from "../lib/tenant-interests.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 
@@ -46,11 +47,12 @@ export async function resolveMetaOrchestratorDecision(
   const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
   await ensureDefaultProducts(tenantId, tenant.slug);
 
-  const [consensus, cycle, products, ideas] = await Promise.all([
+  const [consensus, cycle, products, ideas, interests] = await Promise.all([
     prisma.tenantConsensus.findUnique({ where: { tenantId } }),
     ensureTenantCycleState(tenantId),
     listTenantProducts(tenantId),
     listPipelineIdeas(tenantId),
+    getTenantInterestCategories(tenantId),
   ]);
 
   const buildingProducts = products.filter((p) => p.phase === "building" || p.phase === "launching");
@@ -130,6 +132,7 @@ export async function resolveMetaOrchestratorDecision(
   baseMemory.convergenceRules = convergencePromptSection(
     cycle.cycleNumber,
     consensus?.companyPhase ?? cycle.phase,
+    interests,
   );
 
   if (pendingIdea) {

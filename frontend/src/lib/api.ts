@@ -231,8 +231,22 @@ export interface PipelineIdea {
   title: string;
   description: string | null;
   rank: number;
+  interestScore: number;
   goNoGo: GoNoGoDecision;
   createdAt: string;
+}
+
+export interface InterestCategory {
+  id: string;
+  label: string;
+  emoji: string;
+  description: string;
+  keywords: string[];
+}
+
+export interface TenantInterests {
+  categories: InterestCategory[];
+  selected: string[];
 }
 
 export interface OpsPortfolio {
@@ -241,6 +255,7 @@ export interface OpsPortfolio {
   stuckCounter: number;
   nextAction: string | null;
   focusProduct: TenantProduct | null;
+  interests: string[];
   stats: {
     products: number;
     building: number;
@@ -646,6 +661,12 @@ export const api = {
     getLimits: () => request<TenantUsageLimits>("/tenant/settings/limits"),
     updateLimits: (body: Partial<TenantUsageLimits>) =>
       request<TenantUsageLimits>("/tenant/settings/limits", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    getInterests: () => request<TenantInterests>("/tenant/interests"),
+    updateInterests: (body: { categories: string[] }) =>
+      request<{ selected: string[] }>("/tenant/interests", {
         method: "PUT",
         body: JSON.stringify(body),
       }),

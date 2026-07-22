@@ -89,13 +89,17 @@ export async function bootstrapProduct(input: {
 export async function listPipelineIdeas(tenantId: string) {
   return prisma.pipelineIdea.findMany({
     where: { tenantId, goNoGo: { in: ["pending", "go"] } },
-    orderBy: [{ rank: "asc" }, { createdAt: "asc" }],
+    orderBy: [
+      { interestScore: "desc" },
+      { rank: "asc" },
+      { createdAt: "asc" },
+    ],
   });
 }
 
 export async function addPipelineIdeas(
   tenantId: string,
-  ideas: Array<{ title: string; description?: string }>,
+  ideas: Array<{ title: string; description?: string; interestScore?: number }>,
 ) {
   const existing = await prisma.pipelineIdea.count({ where: { tenantId } });
   const created = [];
@@ -108,6 +112,7 @@ export async function addPipelineIdeas(
           title: idea.title,
           description: idea.description,
           rank: existing + i,
+          interestScore: idea.interestScore ?? 0,
         },
       }),
     );

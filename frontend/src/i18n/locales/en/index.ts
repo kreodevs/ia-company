@@ -3,6 +3,7 @@ import { auth } from "./auth";
 import { common } from "./common";
 import { consensus } from "./consensus";
 import { help } from "./help";
+import { interests } from "./interests";
 import { language } from "./language";
 import { nav } from "./nav";
 import { ops } from "./ops";
@@ -26,6 +27,7 @@ export const en = {
   settings,
   team,
   help,
+  interests,
   admin,
   language,
   theme,

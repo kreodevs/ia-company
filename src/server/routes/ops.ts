@@ -9,6 +9,7 @@ import {
   listPipelineIdeas,
   listTenantProducts,
 } from "../../lib/product-registry.js";
+import { getTenantInterestCategories } from "../../lib/tenant-interests.js";
 import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
@@ -23,7 +24,7 @@ export async function opsRoutes(app: FastifyInstance) {
       await ensureDefaultProducts(tenantId, tenant.slug);
       await backfillPipelineFromLastDiscovery(tenantId);
 
-      const [products, ideas, cycle, consensus, schedules, recentRuns, lastDiscoveryRun] =
+      const [products, ideas, cycle, consensus, schedules, recentRuns, lastDiscoveryRun, interests] =
         await Promise.all([
         listTenantProducts(tenantId),
         listPipelineIdeas(tenantId),
@@ -48,6 +49,7 @@ export async function opsRoutes(app: FastifyInstance) {
           orderBy: { createdAt: "desc" },
           select: { id: true, createdAt: true },
         }),
+        getTenantInterestCategories(tenantId),
       ]);
 
       const focusProduct = products.find((p) => p.id === cycle.focusProductId) ?? null;
@@ -82,6 +84,7 @@ export async function opsRoutes(app: FastifyInstance) {
         lastDiscoveryRun: lastDiscoveryRun
           ? { id: lastDiscoveryRun.id, createdAt: lastDiscoveryRun.createdAt }
           : null,
+        interests,
       };
     } catch (err) {
       return handleRouteError(reply, err);

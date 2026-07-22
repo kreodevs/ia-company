@@ -7,6 +7,7 @@ import {
   listTenantProducts,
   markIdeaGoNoGo,
 } from "./product-registry.js";
+import { getTenantInterestCategories } from "./tenant-interests.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 
 export async function enqueueIdeaEvaluation(tenantId: string, ideaId: string): Promise<string> {
@@ -29,9 +30,10 @@ export async function enqueueIdeaEvaluation(tenantId: string, ideaId: string): P
   });
   if (!workflow) throw new Error("Evaluation workflow is not configured for this tenant");
 
-  const [consensus, cycle] = await Promise.all([
+  const [consensus, cycle, interests] = await Promise.all([
     prisma.tenantConsensus.findUnique({ where: { tenantId } }),
     ensureTenantCycleState(tenantId),
+    getTenantInterestCategories(tenantId),
   ]);
 
   const initialMemory = mergeConsensusIntoMemory(consensus, {
@@ -44,6 +46,7 @@ export async function enqueueIdeaEvaluation(tenantId: string, ideaId: string): P
   initialMemory.convergenceRules = convergencePromptSection(
     cycle.cycleNumber,
     consensus?.companyPhase ?? cycle.phase,
+    interests,
   );
 
   const { executeWorkflowInBackground } = await import("../core/engine.js");

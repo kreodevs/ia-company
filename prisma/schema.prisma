@@ -27,20 +27,21 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  agents             Agent[]
-  skills             Skill[]
-  workflows          Workflow[]
-  runs               ExecutionRun[]
-  users              TenantUser[]
-  consensus          TenantConsensus?
-  llmConfig          TenantLlmConfig?
-  schedules          AutonomousSchedule[]
-  auditLogs          AuditLog[]
+  agents    Agent[]
+  skills    Skill[]
+  workflows Workflow[]
+  runs      ExecutionRun[]
+  users     TenantUser[]
+  consensus TenantConsensus?
+  llmConfig TenantLlmConfig?
+  schedules AutonomousSchedule[]
+  auditLogs AuditLog[]
   notificationConfig TenantNotificationConfig?
-  usageLimits        TenantUsageLimits?
-  cycleState         TenantCycleState?
-  products           TenantProduct[]
-  pipelineIdeas      PipelineIdea[]
+  usageLimits TenantUsageLimits?
+  cycleState TenantCycleState?
+  products TenantProduct[]
+  pipelineIdeas PipelineIdea[]
+  interests TenantInterest[]
 }
 
 enum TenantUserRole {
@@ -360,19 +361,35 @@ model ProductConsensusRevision {
 }
 
 model PipelineIdea {
-  id                String         @id @default(cuid())
-  tenantId          String
-  title             String
-  description       String?        @db.Text
-  rank              Int            @default(0)
-  goNoGo            GoNoGoDecision @default(pending)
-  promotedProductId String?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+  id                  String         @id @default(cuid())
+  tenantId            String
+  title               String
+  description         String?        @db.Text
+  rank                Int            @default(0)
+  interestScore       Float          @default(0)
+  goNoGo              GoNoGoDecision @default(pending)
+  promotedProductId   String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, rank])
+  @@index([tenantId, interestScore])
+}
+
+model TenantInterest {
+  id        String   @id @default(cuid())
+  tenantId  String
+  category  String
+  weight    Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, category])
+  @@index([tenantId])
 }
 
 // ─── Tenant LLM overrides ───────────────────────────────────────────────────
