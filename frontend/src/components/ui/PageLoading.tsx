@@ -1,3 +1,5 @@
+import Skeleton from "@/components/atoms/Skeleton";
+
 interface PageLoadingProps {
   message: string;
 }
@@ -5,12 +7,12 @@ interface PageLoadingProps {
 export default function PageLoading({ message }: PageLoadingProps) {
   return (
     <div
-      className="flex min-h-[40vh] flex-col items-center justify-center gap-3 px-4 text-center"
+      className="flex min-h-[40vh] flex-col items-center justify-center gap-4 px-4 text-center"
       role="status"
       aria-live="polite"
     >
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-primary)] motion-reduce:animate-none" />
-      <p className="text-sm text-[var(--color-muted-foreground)]">{message}</p>
+      <Skeleton variant="circular" width={32} height={32} className="motion-reduce:animate-none" />
+      <p className="text-sm text-[var(--foreground-muted)]">{message}</p>
     </div>
   );
 }

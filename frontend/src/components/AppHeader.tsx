@@ -71,12 +71,12 @@ export default function AppHeader() {
         {t("nav.skipToContent", { defaultValue: "Skip to content" })}
       </a>
 
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-card)]/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
+      <header className="sticky top-0 z-50 border-b border-[var(--color-hairline)] bg-[var(--color-paper-white)]">
+        <div className="mx-auto flex max-w-[var(--page-max-width)] items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <Link
               to={homeLink}
-              className="interactive shrink-0 rounded-lg px-1 py-0.5 text-base font-semibold tracking-tight sm:text-lg"
+              className="interactive shrink-0 rounded-[var(--radius-sm)] px-1 py-0.5 font-[family-name:var(--font-albra-sans)] text-base font-semibold tracking-[0.02em] text-[var(--color-vault-ink)] sm:text-lg"
             >
               {t("common.appName")}
             </Link>
@@ -115,7 +115,7 @@ export default function AppHeader() {
               aria-controls="mobile-nav"
               aria-label={mobileOpen ? t("common.closeMenu") : t("common.openMenu")}
               onClick={() => setMobileOpen((open) => !open)}
-              className="interactive inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-[var(--color-border)] xl:hidden"
+              className="interactive inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-hairline)] text-[var(--color-vault-ink)] xl:hidden"
             >
               <svg
                 className="h-5 w-5"
@@ -149,7 +149,7 @@ export default function AppHeader() {
             />
             <nav
               id="mobile-nav"
-              className="fixed inset-x-0 top-[var(--header-height)] z-50 max-h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-[var(--color-border)] bg-[var(--color-card)] px-3 py-3 shadow-lg xl:hidden"
+              className="fixed inset-x-0 top-[var(--header-height)] z-50 max-h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-[var(--color-hairline)] bg-[var(--color-paper-white)] px-3 py-3 xl:hidden"
               aria-label={t("nav.mobile")}
             >
               <div className="mb-3 sm:hidden">
