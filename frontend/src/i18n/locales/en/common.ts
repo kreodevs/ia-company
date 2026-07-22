@@ -59,4 +59,8 @@ export const common = {
   signedInAs: "Signed in as {{name}} ({{email}})",
   noChanges: "No changes",
   selectAtLeastOneTenant: "Select at least one tenant",
+  markdown: "Markdown",
+  edit: "Edit",
+  preview: "Preview",
+  emptyPreview: "Nothing to preview yet.",
 } as const;

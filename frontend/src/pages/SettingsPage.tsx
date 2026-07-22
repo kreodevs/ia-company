@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   api,
@@ -13,6 +13,10 @@ import {
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
+import TabsBar from "../components/ui/TabsBar";
+
+type SettingsTab = "general" | "llm" | "notifications" | "limits" | "schedules";
+const VALID_TABS: SettingsTab[] = ["general", "llm", "notifications", "limits", "schedules"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -32,6 +36,15 @@ export default function SettingsPage() {
   const [savingMeta, setSavingMeta] = useState(false);
   const [runningScheduleId, setRunningScheduleId] = useState<string | null>(null);
   const [scheduleActionError, setScheduleActionError] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") as SettingsTab | null;
+  const [activeTab, setActiveTab] = useState<SettingsTab>(
+    tabFromUrl && VALID_TABS.includes(tabFromUrl) ? tabFromUrl : "general",
+  );
+  const setTab = (next: SettingsTab) => {
+    setActiveTab(next);
+    setSearchParams(next === "general" ? {} : { tab: next }, { replace: true });
+  };
 
   const load = async () => {
     setLoading(true);
@@ -166,11 +179,25 @@ export default function SettingsPage() {
   if (loading) return <PageLoading message={t("settings.loading")} />;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <PageHeader title={t("settings.title")} />
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">{t("settings.interests.heading")}</h2>
+      <TabsBar
+        tabs={[
+          { id: "general", label: t("settings.tabs.general") },
+          { id: "llm", label: t("settings.tabs.llm") },
+          { id: "notifications", label: t("settings.tabs.notifications") },
+          { id: "limits", label: t("settings.tabs.limits") },
+          { id: "schedules", label: t("settings.tabs.schedules") },
+        ]}
+        activeId={activeTab}
+        onChange={(id) => setTab(id as SettingsTab)}
+      />
+
+      {activeTab === "general" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.interests.heading")}</h2>
         <div className="flex flex-col items-start justify-between gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm sm:flex-row sm:items-center">
           <div className="space-y-1">
             <p className="font-medium">{t("settings.interests.cardTitle")}</p>
@@ -187,8 +214,26 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
+          {usage && (
+            <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
+              <h2 className="font-semibold">{t("settings.usage.title")}</h2>
+              <p className="mt-2 text-[var(--color-muted-foreground)]">
+                {t("settings.usage.summary", {
+                  runs: usage.runs,
+                  tokens: usage.totalTokens.toLocaleString(),
+                  cost: usage.totalCostUsd.toFixed(4),
+                  since: new Date(usage.periodStart).toLocaleDateString(),
+                })}
+              </p>
+            </section>
+          )}
+        </div>
+      )}
+
+      {activeTab === "llm" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
         <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
           {t("settings.llm.platformManaged")}
         </p>
@@ -248,23 +293,13 @@ export default function SettingsPage() {
           {savingLlm ? t("common.saving") : t("settings.llm.save")}
         </button>
       </section>
-
-      {usage && (
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
-          <h2 className="font-semibold">{t("settings.usage.title")}</h2>
-          <p className="mt-2 text-[var(--color-muted-foreground)]">
-            {t("settings.usage.summary", {
-              runs: usage.runs,
-              tokens: usage.totalTokens.toLocaleString(),
-              cost: usage.totalCostUsd.toFixed(4),
-              since: new Date(usage.periodStart).toLocaleDateString(),
-            })}
-          </p>
-        </section>
+        </div>
       )}
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">{t("settings.limits.title")}</h2>
+      {activeTab === "limits" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.limits.title")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1 text-sm">
             <span>{t("settings.limits.maxRuns")}</span>
@@ -319,8 +354,13 @@ export default function SettingsPage() {
         </button>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">{t("settings.notifications.title")}</h2>
+        </div>
+      )}
+
+      {activeTab === "notifications" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.notifications.title")}</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
           {t("settings.notifications.subtitle")}
         </p>
@@ -383,8 +423,13 @@ export default function SettingsPage() {
         </button>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">{t("settings.metaSchedule.title")}</h2>
+        </div>
+      )}
+
+      {activeTab === "schedules" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.metaSchedule.title")}</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
           {t("settings.metaSchedule.subtitle")}
         </p>
@@ -575,6 +620,8 @@ export default function SettingsPage() {
           )}
         </ul>
       </section>
+        </div>
+      )}
     </div>
   );
 }
