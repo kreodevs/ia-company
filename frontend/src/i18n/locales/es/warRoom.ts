@@ -26,6 +26,11 @@ export const warRoom = {
   recentRuns: "Runs recientes",
   noRuns: "Aún no hay runs para este producto.",
   viewReports: "Ver informes →",
+  selectProduct: "Producto",
+  focused: "en foco",
+  manageProducts: "Gestionar productos →",
+  noProductsTitle: "Aún no hay productos activos",
+  noProductsHint: "Aprueba y evalúa una oportunidad en Productos para abrir el war room táctico.",
   kpis: {
     totalAgents: "Agentes en este producto",
     onDuty: "De turno",

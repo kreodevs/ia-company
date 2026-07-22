@@ -13,6 +13,15 @@ Horizontal stepper showing the four company phases:
 
 Highlights the current phase from `companyPhase` in `/ops/portfolio`.
 
+## `OpsSchedulesPanel.tsx`
+
+Lists all `AutonomousSchedule` records for the tenant:
+
+- **Meta** — dynamic orchestrator (pause / change interval / run now)
+- **Workflow** — fixed workflow on interval (pause / change interval / run now / cancel)
+
+Uses `PUT /schedules/:id`, `DELETE /schedules/:id`, `POST /schedules/:id/run-now`.
+
 ## Related API actions (Ops page)
 
 | UI action | API | Effect |

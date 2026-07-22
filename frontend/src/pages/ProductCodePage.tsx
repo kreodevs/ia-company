@@ -195,7 +195,7 @@ export default function ProductCodePage() {
         )}
         {product && (
           <Link
-            to={`/products/${product.id}/team`}
+            to={`/war-room/${product.id}`}
             className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
           >
             {t("warRoom.title", { name: product.name })}

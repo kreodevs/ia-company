@@ -10,6 +10,7 @@ import { language } from "./language";
 import { nav } from "./nav";
 import { ops } from "./ops";
 import { phase } from "./phase";
+import { products } from "./products";
 import { runs } from "./runs";
 import { settings } from "./settings";
 import { status } from "./status";
@@ -28,6 +29,7 @@ export const en = {
   consensus,
   decisions,
   ops,
+  products,
   settings,
   team,
   warRoom,

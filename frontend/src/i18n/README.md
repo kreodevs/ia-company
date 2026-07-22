@@ -41,6 +41,7 @@ Under `locales/es/` and `locales/en/`:
 | `runs.ts` | `runs.*`, `runDetail.*` |
 | `consensus.ts` | `consensus.*` |
 | `ops.ts` | `ops.*` |
+| `products.ts` | `products.*` |
 | `settings.ts` | `settings.*` |
 | `team.ts` | `team.*` |
 | `help.ts` | `help.*` |

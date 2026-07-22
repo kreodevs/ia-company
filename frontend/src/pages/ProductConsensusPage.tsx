@@ -129,7 +129,7 @@ export default function ProductConsensusPage() {
               </span>
             )}
             <Link
-              to={`/products/${productId}/team`}
+              to={`/war-room/${productId}`}
               className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
             >
               {t("warRoom.title", { name: record?.productId ?? productId })}

@@ -352,6 +352,13 @@ export interface ProductTeam {
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
 }
 
+export interface ProductsOverview {
+  products: TenantProduct[];
+  pipeline: PipelineIdea[];
+  focusProduct: TenantProduct | null;
+  lastDiscoveryRun: { id: string; createdAt: string } | null;
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -718,6 +725,7 @@ export const api = {
       }),
   },
   products: {
+    overview: () => request<ProductsOverview>("/products/overview"),
     list: () => request<TenantProduct[]>("/products"),
     pipeline: () => request<PipelineIdea[]>("/products/pipeline"),
     focus: (id: string) =>

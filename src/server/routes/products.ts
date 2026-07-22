@@ -3,8 +3,11 @@ import type { CompanyPhase, GoNoGoDecision, ProductPhase } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import { enqueueIdeaEvaluation } from "../../lib/evaluate-idea.js";
+import { backfillPipelineFromLastDiscovery } from "../../lib/convergence.js";
+import { filterActionablePipelineIdeas } from "../../lib/pipeline-utils.js";
 import {
   bootstrapProduct,
+  ensureDefaultProducts,
   ensureTenantCycleState,
   listPipelineIdeas,
   listTenantProducts,
@@ -13,6 +16,7 @@ import {
   updateCompanyPhase,
   upsertTenantProduct,
 } from "../../lib/product-registry.js";
+import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
 export async function productRoutes(app: FastifyInstance) {
@@ -32,6 +36,43 @@ export async function productRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       return listPipelineIdeas(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get("/products/overview", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
+      await ensureDefaultProducts(tenantId, tenant.slug);
+      await backfillPipelineFromLastDiscovery(tenantId);
+
+      const [products, ideas, cycle, lastDiscoveryRun] = await Promise.all([
+        listTenantProducts(tenantId),
+        listPipelineIdeas(tenantId),
+        ensureTenantCycleState(tenantId),
+        prisma.executionRun.findFirst({
+          where: {
+            tenantId,
+            status: "COMPLETED",
+            workflow: { name: WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY },
+          },
+          orderBy: { createdAt: "desc" },
+          select: { id: true, createdAt: true },
+        }),
+      ]);
+
+      const focusProduct = products.find((product) => product.id === cycle.focusProductId) ?? null;
+
+      return {
+        products,
+        pipeline: filterActionablePipelineIdeas(ideas, products),
+        focusProduct,
+        lastDiscoveryRun: lastDiscoveryRun
+          ? { id: lastDiscoveryRun.id, createdAt: lastDiscoveryRun.createdAt }
+          : null,
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }

@@ -14,6 +14,8 @@ export const nav = {
   workflows: "Flujos",
   runs: "Ejecuciones",
   ops: "Operaciones",
+  products: "Productos",
+  warRoom: "War room",
   consensus: "Consenso",
   team: "Equipo",
   help: "Ayuda",

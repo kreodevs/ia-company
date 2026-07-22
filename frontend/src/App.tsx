@@ -10,12 +10,14 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { useDocumentLang } from "./hooks/useDocumentLang";
 import HelpPage from "./pages/HelpPage";
 import OpsPage from "./pages/OpsPage";
+import ProductsPage from "./pages/ProductsPage";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
 import ProductTeamPage from "./pages/ProductTeamPage";
+import WarRoomPage from "./pages/WarRoomPage";
 import TenantInterestsPage from "./pages/TenantInterestsPage";
 import SettingsPage from "./pages/SettingsPage";
 import PlatformSettingsPage from "./pages/PlatformSettingsPage";
@@ -69,6 +71,9 @@ function AppShell() {
               <Route path="runs" element={<RunsPage />} />
               <Route path="runs/:id" element={<RunDetailPage />} />
               <Route path="ops" element={<OpsPage />} />
+              <Route path="products" element={<ProductsPage />} />
+              <Route path="war-room" element={<WarRoomPage />} />
+              <Route path="war-room/:productId" element={<WarRoomPage />} />
               <Route path="decisions" element={<DecisionsPage />} />
               <Route path="consensus" element={<ConsensusPage />} />
               <Route path="products/:productId/consensus" element={<ProductConsensusPage />} />
