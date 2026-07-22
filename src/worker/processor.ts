@@ -1,5 +1,6 @@
 import { Worker } from "bullmq";
 import { WorkflowExecutor } from "../core/engine.js";
+import { warmPlatformSettingsCache } from "../lib/platform-settings.js";
 import { getRedisConnection } from "../lib/redis.js";
 import { clearRunCancellation, isRunCancelled } from "./run-control.js";
 import { WORKFLOW_QUEUE, type WorkflowJobData } from "./queue.js";
@@ -22,6 +23,8 @@ export function startWorkflowWorker(): Worker<WorkflowJobData> {
         clearRunCancellation(runId);
         return;
       }
+
+      await warmPlatformSettingsCache();
 
       await executor.runExisting(runId, workflowId, {
         tenantId,
