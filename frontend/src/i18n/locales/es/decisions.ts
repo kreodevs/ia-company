@@ -3,8 +3,12 @@ export const decisions = {
   title: "Decisiones Go / No-Go",
   subtitle:
     "El equipo autónomo pausa aquí antes de crear un producto nuevo. Revisa cada propuesta, pide más investigación, o decide tú.",
-  pendingHeading: "Esperando tu decisión ({{count}})",
   empty: "No hay decisiones pendientes. El próximo discovery poblará esta lista.",
+  emptyTitle: "Todo al día",
+  historySubtitle: "Decisiones que ya tomaste.",
+  pendingHeading: "Esperando tu decisión ({{count}})",
+  pendingSubtitle:
+    "{{count}} propuesta(s) esperando tu llamada. Aprueba, pide más investigación o rechaza.",
   historyHeading: "Historial ({{count}})",
   rationale: "Justificación",
   evidence: "Evidencia ({{count}})",
@@ -17,6 +21,17 @@ export const decisions = {
   go: "GO",
   noGo: "NO-GO",
   by: "por {{actor}}",
+  kpis: {
+    pending: "Esperando revisión",
+    pendingDelta: "{{drilling}} investigando",
+    pendingClear: "Todas las decisiones procesadas",
+    goRecommended: "GO recomendado",
+    goRecommendedDelta: "Propuestas que el equipo cree que deben lanzarse",
+    noGoRecommended: "NO-GO recomendado",
+    noGoRecommendedDelta: "Propuestas que el equipo cree que deben descartarse",
+    approved: "Aprobadas por ti",
+    approvedDelta: "De {{total}} propuestas totales",
+  },
   status: {
     pending_review: "pendiente de revisión",
     drilling: "investigando",

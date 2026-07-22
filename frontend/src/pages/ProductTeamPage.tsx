@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../lib/api";
 import PageLoading from "../components/ui/PageLoading";
 import Badge from "../components/ui/Badge";
+import KpiCard from "../components/ui/KpiCard";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 
 const ROLE_EMOJI: Record<string, string> = {
@@ -144,6 +145,37 @@ export default function ProductTeamPage() {
           </Link>
         </div>
       </header>
+
+      <section className="hero-strip">
+        <KpiCard
+          label={t("warRoom.kpis.totalAgents")}
+          value={data.team.length}
+        />
+        <KpiCard
+          label={t("warRoom.kpis.onDuty")}
+          value={onDuty.length}
+          delta={
+            onDuty.length > 0
+              ? t("warRoom.kpis.onDutyDelta", { count: onDuty.length })
+              : t("warRoom.kpis.allIdle")
+          }
+        />
+        <KpiCard
+          label={t("warRoom.kpis.thinking")}
+          value={thinking.length}
+          trend={thinking.length > 0 ? "up" : "flat"}
+        />
+        <KpiCard
+          label={t("warRoom.kpis.activeRun")}
+          value={data.activeRun ? 1 : 0}
+          delta={
+            data.activeRun
+              ? t("warRoom.kpis.activeRunDelta", { workflow: data.activeRun.workflowName })
+              : t("warRoom.kpis.standby")
+          }
+          trend={data.activeRun ? "up" : "down"}
+        />
+      </section>
 
       <div className="war-room-grid">
         <aside className="war-room-radar">

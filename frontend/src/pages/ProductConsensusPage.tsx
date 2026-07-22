@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { api, type ProductConsensus, type ProductConsensusRevision, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import Badge from "../components/ui/Badge";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import KpiCard from "../components/ui/KpiCard";
+import StatusPill from "../components/ui/StatusPill";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import EmptyState from "../components/ui/EmptyState";
@@ -102,7 +103,7 @@ export default function ProductConsensusPage() {
   if (!productId) return <div>Missing product id</div>;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
         eyebrow={
           <Breadcrumbs
@@ -116,7 +117,7 @@ export default function ProductConsensusPage() {
         subtitle={t("consensus.productSubtitle")}
         meta={
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <Badge>{t("consensus.cycleNumber", { n: record?.cycleNumber ?? 0 })}</Badge>
+            <StatusPill status="running">#{record?.cycleNumber ?? 0}</StatusPill>
             {product && <ProductActionsMenu product={product} onChange={() => {
               api.products.list().then((list) => {
                 setProduct(list.find((p) => p.id === productId) ?? null);
@@ -142,6 +143,52 @@ export default function ProductConsensusPage() {
           </div>
         }
       />
+
+      <section className="hero-strip">
+        <KpiCard
+          label={t("consensus.productKpis.cycle")}
+          value={record ? `#${record.cycleNumber}` : "—"}
+        />
+        <KpiCard
+          label={t("consensus.productKpis.revisions")}
+          value={revisions.length}
+          delta={
+            revisions.length > 0
+              ? t("consensus.productKpis.revisionsDelta", {
+                  agent: agentCount,
+                })
+              : t("consensus.productKpis.noRevisions")
+          }
+        />
+        <KpiCard
+          label={t("consensus.productKpis.phase")}
+          value={product ? product.phase : "—"}
+          delta={
+            product
+              ? t("consensus.productKpis.phaseDelta", { phase: product.phase })
+              : t("consensus.productKpis.phasePending")
+          }
+          trend={product?.phase === "growing" ? "up" : "flat"}
+        />
+        <KpiCard
+          label={t("consensus.productKpis.lastUpdate")}
+          value={
+            record?.updatedAt
+              ? new Date(record.updatedAt).toLocaleDateString()
+              : "—"
+          }
+          delta={
+            record?.updatedAt
+              ? t("consensus.kpis.lastUpdateDelta", {
+                  time: new Date(record.updatedAt ?? "").toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                })
+              : t("consensus.kpis.never")
+          }
+        />
+      </section>
 
       <div className="flex items-center gap-1 border-b border-[var(--color-border)]">
         <button
@@ -196,38 +243,49 @@ export default function ProductConsensusPage() {
       </div>
 
       {view === "document" && (
-        <Card className="space-y-4">
-          <p className="rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-xs text-[var(--color-muted-foreground)]">
-            {t("consensus.productHelp", { defaultValue: "This is the product-scoped memory. Edits replace the document; per-step agent handoffs are recorded in the Revisions tab." })}
-          </p>
-          <Input
-            label={t("consensus.nextAction")}
-            value={nextAction}
-            onChange={(e) => setNextAction(e.target.value)}
-            placeholder={t("consensus.nextActionPlaceholder")}
-          />
-          <MarkdownPreview
-            value={content}
-            onChange={setContent}
-            rows={18}
-            ariaLabel={t("consensus.document")}
-            placeholder={t("consensus.nextActionPlaceholder")}
-          />
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button disabled={saving || !dirty} onClick={() => void save()} fullWidthMobile>
+        <Panel
+          title={t("consensus.documentPanel", { defaultValue: "Document" })}
+          subtitle={t("consensus.productHelp", {
+            defaultValue:
+              "This is the product-scoped memory. Edits replace the document; per-step agent handoffs are recorded in the Revisions tab.",
+          })}
+          actions={
+            <Button
+              onClick={() => void save()}
+              disabled={saving || !dirty}
+              size="sm"
+            >
               {saving ? t("common.saving") : t("consensus.saveConsensus")}
             </Button>
+          }
+          stickyHeader
+          hover
+        >
+          <div className="space-y-4">
+            <Input
+              label={t("consensus.nextAction")}
+              value={nextAction}
+              onChange={(e) => setNextAction(e.target.value)}
+              placeholder={t("consensus.nextActionPlaceholder")}
+            />
+            <MarkdownPreview
+              value={content}
+              onChange={setContent}
+              rows={18}
+              ariaLabel={t("consensus.document")}
+              placeholder={t("consensus.nextActionPlaceholder")}
+            />
             {!dirty && record && (
-              <span className="text-xs text-[var(--color-muted-foreground)]">
+              <p className="text-xs text-[var(--color-muted-foreground)]">
                 {t("consensus.noChangesToSave", { defaultValue: "No changes to save." })}
-              </span>
+              </p>
             )}
           </div>
-        </Card>
+        </Panel>
       )}
 
       {view === "revisions" && (
-        <Card className="space-y-4">
+        <Panel title={t("consensus.revisionsTitle")} hover>
           {revisions.length === 0 ? (
             <EmptyState
               title={t("consensus.noRevisionsTitle", { defaultValue: "No revisions yet" })}
@@ -241,7 +299,7 @@ export default function ProductConsensusPage() {
                   className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3"
                 >
                   <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-                    <Badge>#{rev.stepOrder}</Badge>
+                    <StatusPill status="running">#{rev.stepOrder}</StatusPill>
                     <span className="font-medium">{rev.agentName}</span>
                     <span className="text-[var(--color-muted-foreground)]">
                       {formatTime(rev.createdAt)}
@@ -297,11 +355,11 @@ export default function ProductConsensusPage() {
               ))}
             </ol>
           )}
-        </Card>
+        </Panel>
       )}
 
       {view === "reports" && (
-        <Card className="space-y-4">
+        <Panel title={t("consensus.reportsTab", { defaultValue: "Agent reports" })} hover>
           {reportsByAgent.length === 0 ? (
             <EmptyState
               title={t("consensus.reportsEmptyTitle", { defaultValue: "No agent reports yet" })}
@@ -386,7 +444,7 @@ export default function ProductConsensusPage() {
                                 className="rounded border border-[var(--color-border)] bg-[var(--color-background)] p-2"
                               >
                                 <div className="mb-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--color-muted-foreground)]">
-                                  <Badge>#{rev.stepOrder}</Badge>
+                                  <StatusPill status="running">#{rev.stepOrder}</StatusPill>
                                   <span>{formatTime(rev.createdAt)}</span>
                                   {rev.runId && (
                                     <Link
@@ -416,7 +474,7 @@ export default function ProductConsensusPage() {
               })}
             </div>
           )}
-        </Card>
+        </Panel>
       )}
     </div>
   );

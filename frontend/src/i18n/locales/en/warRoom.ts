@@ -26,6 +26,16 @@ export const warRoom = {
   recentRuns: "Recent runs",
   noRuns: "No runs yet for this product.",
   viewReports: "View reports →",
+  kpis: {
+    totalAgents: "Agents on this product",
+    onDuty: "On duty",
+    onDutyDelta: "{{count}} working right now",
+    allIdle: "Everyone is on standby",
+    thinking: "Thinking now",
+    activeRun: "Active run",
+    activeRunDelta: "{{workflow}}",
+    standby: "Standby — no run",
+  },
   status: {
     idle: "idle",
     queued: "queued",

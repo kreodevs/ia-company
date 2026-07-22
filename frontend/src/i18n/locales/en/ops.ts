@@ -1,12 +1,36 @@
 export const ops = {
   loading: "Loading operations…",
   loadFailed: "Unable to load the dashboard.",
+  eyebrow: "Operations",
   title: "Operations",
   subtitle: "Idea pipeline → evaluation → products under construction.",
   runMetaCycleNow: "Run meta cycle",
   pendingDecisionsMessage:
     "{{count}} go/no-go decision(s) are waiting on you. The autonomous company is paused.",
   reviewDecisions: "Review decisions →",
+  nextActionLabel: "Next action",
+  kpis: {
+    cycle: "Cycle",
+    cycleNextDelta: "Next: {{workflow}}",
+    cycleIdle: "Standby — no scheduled run",
+    products: "Products",
+    productsDelta: "{{building}} active · {{pipeline}} in pipeline",
+    revenue: "Total revenue",
+    revenueGrowing: "Tracking lifetime revenue across products",
+    revenueZero: "No revenue yet — time to launch",
+    decisions: "Pending decisions",
+    decisionsWaiting: "Awaiting your review",
+    decisionsCaughtUp: "All decisions processed",
+  },
+  phaseChart: {
+    title: "Phase distribution",
+    subtitle: "Products by current phase",
+  },
+  cycleBanner: {
+    title: "Phase: {{phase}}",
+    subtitleWithRun: "Next cycle will run {{workflow}}.",
+    subtitleIdle: "Standby — no scheduled run.",
+  },
   flow: {
     title: "How the autonomous company flows",
     subtitle: "Each phase chains agent workflows. You approve ideas; agents evaluate and build.",
@@ -38,7 +62,10 @@ export const ops = {
     enableSchedule: "Enable automatic schedule",
   },
   portfolio: {
-    title: "Active products",
+    title: "Product portfolio",
+    subtitle: "Live products, their phase and the focused one",
+    count: "{{count}} total",
+    noGo: "no-go",
     emptyHint: "After you approve and evaluate an idea with GO, the product appears here and agents build in its workspace.",
     focus: "Focus",
     focused: "Focused",
@@ -67,6 +94,7 @@ export const ops = {
     count: "{{count}} pending",
     go: "GO",
     noGo: "NO-GO",
+    score: "interest {{score}}",
     evaluate: "Evaluate with agents",
     evaluateHint:
       "Approve the idea and start the evaluation workflow (research → CEO → Munger → product → CTO → CFO). On GO, a product is created and building starts.",

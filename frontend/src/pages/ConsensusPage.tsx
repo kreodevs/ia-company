@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FileText, History, Target, Building2, Layers } from "lucide-react";
 import { api, type PipelineIdea, type TenantConsensus, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import Badge from "../components/ui/Badge";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import KpiCard from "../components/ui/KpiCard";
+import StatusPill from "../components/ui/StatusPill";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import Select from "../components/ui/Select";
 
@@ -108,10 +110,12 @@ export default function ConsensusPage() {
     return content !== record.content || (nextAction || null) !== (record.nextAction ?? null);
   }, [content, nextAction, record]);
 
+  const contentBytes = useMemo(() => new Blob([content]).size, [content]);
+
   if (loading) return <PageLoading message={t("consensus.loading")} />;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
         eyebrow={
           <Breadcrumbs
@@ -123,27 +127,55 @@ export default function ConsensusPage() {
         }
         title={t("consensus.title")}
         subtitle={t("consensus.subtitle")}
-        meta={
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            {record?.companyPhase && (
-              <Badge>
-                {t("phase.label", {
-                  phase: t(`phase.${record.companyPhase}`, { defaultValue: record.companyPhase }),
-                })}
-              </Badge>
-            )}
-            <Link to="/ops" className="text-[var(--color-primary)] hover:underline">
-              {t("consensus.viewOpsDashboard")}
-            </Link>
-          </div>
-        }
       />
 
-      <Card className="space-y-3">
-        <label className="block space-y-1.5 text-sm" htmlFor="consensus-scope">
-          <span className="font-medium">{t("consensus.scope.label")}</span>
+      {/* KPI hero */}
+      <section className="hero-strip">
+        <KpiCard
+          label={t("consensus.kpis.phase")}
+          value={
+            record?.companyPhase
+              ? t(`phase.${record.companyPhase}`, { defaultValue: record.companyPhase })
+              : "—"
+          }
+        />
+        <KpiCard
+          label={t("consensus.kpis.products")}
+          value={products.length}
+          delta={t("consensus.kpis.productsDelta", {
+            pipeline: ideas.length,
+          })}
+        />
+        <KpiCard
+          label={t("consensus.kpis.docSize")}
+          value={`${contentBytes}`}
+          delta={t("consensus.kpis.docSizeDelta")}
+        />
+        <KpiCard
+          label={t("consensus.kpis.lastUpdate")}
+          value={
+            record?.updatedAt
+              ? new Date(record.updatedAt).toLocaleDateString()
+              : "—"
+          }
+          delta={
+            record?.updatedAt
+              ? t("consensus.kpis.lastUpdateDelta", {
+                  time: new Date(record.updatedAt ?? "").toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                })
+              : t("consensus.kpis.never")
+          }
+        />
+      </section>
+
+      <Panel
+        title={t("consensus.scope.label")}
+        subtitle={t("consensus.scope.helper")}
+        actions={
           <Select
-            id="consensus-scope"
             ariaLabel={t("consensus.scope.label")}
             value={scope}
             onChange={(value) => switchScope(value as Scope)}
@@ -151,61 +183,154 @@ export default function ConsensusPage() {
               value: opt.value,
               label: opt.label,
             }))}
+            className="!w-64"
+            size="sm"
           />
-        </label>
-        <p className="text-xs text-[var(--color-muted-foreground)]">
-          {t("consensus.scope.helper")}
-        </p>
-      </Card>
-
-      {products.length > 0 && (
-        <Card className="space-y-3">
-          <h2 className="text-sm font-semibold">{t("consensus.productMemoryHeading")}</h2>
-          <ul className="grid gap-1 text-sm sm:grid-cols-2">
+        }
+        bodySize="sm"
+      >
+        {products.length > 0 ? (
+          <ul className="grid gap-2 sm:grid-cols-2">
             {products.map((p) => (
               <li key={p.id}>
                 <Link
                   to={`/products/${p.id}/consensus`}
-                  className="interactive flex items-center justify-between rounded px-2 py-1 hover:bg-[var(--color-surface)]"
+                  className="lift flex items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 hover:border-[var(--color-primary)]/40"
                 >
-                  <span>
-                    {p.name} <span className="text-[var(--color-muted-foreground)]">({p.slug})</span>
+                  <span className="min-w-0 truncate">
+                    <span className="font-medium">{p.name}</span>{" "}
+                    <span className="text-xs text-[var(--color-muted-foreground)]">({p.slug})</span>
                   </span>
-                  <Badge>{p.phase}</Badge>
+                  <StatusPill status={p.phase} />
                 </Link>
               </li>
             ))}
           </ul>
-        </Card>
-      )}
+        ) : (
+          <p className="text-sm text-[var(--color-muted-foreground)]">
+            {t("consensus.kpis.noProducts")}
+          </p>
+        )}
+      </Panel>
 
-      <Card className="space-y-4">
-        <p className="rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-xs text-[var(--color-muted-foreground)]">
-          {t("consensus.companyHelp", { defaultValue: "Company-level memory: phase, pipeline and next action. Per-product detail lives in each product's memory page." })}
-        </p>
-        <Input
-          label={t("consensus.nextAction")}
-          value={nextAction}
-          onChange={(e) => setNextAction(e.target.value)}
-          placeholder={t("consensus.nextActionPlaceholder")}
-        />
-        <MarkdownPreview
-          value={content}
-          onChange={setContent}
-          rows={16}
-          ariaLabel={t("consensus.document")}
-        />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button disabled={saving || !dirty} onClick={() => void save()} fullWidthMobile>
-            {saving ? t("common.saving") : t("consensus.saveConsensus")}
-          </Button>
-          {record?.updatedAt && (
-            <span className="text-xs text-[var(--color-muted-foreground)]">
-              {t("consensus.lastUpdated", { date: new Date(record.updatedAt).toLocaleString() })}
+      <div className="two-col two-col--main-aside">
+        <Panel
+          title={
+            <span className="inline-flex items-center gap-2">
+              <FileText className="h-4 w-4" aria-hidden /> {t("consensus.documentPanel")}
             </span>
-          )}
-        </div>
-      </Card>
+          }
+          subtitle={t("consensus.companyHelp", { defaultValue: "Company-level memory: phase, pipeline and next action." })}
+          actions={
+            <Button
+              onClick={() => void save()}
+              disabled={saving || !dirty}
+              size="sm"
+            >
+              {saving ? t("common.saving") : t("consensus.saveConsensus")}
+            </Button>
+          }
+          stickyHeader
+          hover
+        >
+          <div className="space-y-4">
+            <Input
+              label={t("consensus.nextAction")}
+              value={nextAction}
+              onChange={(e) => setNextAction(e.target.value)}
+              placeholder={t("consensus.nextActionPlaceholder")}
+            />
+            <MarkdownPreview
+              value={content}
+              onChange={setContent}
+              rows={18}
+              ariaLabel={t("consensus.document")}
+            />
+            {!dirty && record && (
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
+                <History className="h-3 w-3" aria-hidden />
+                {t("consensus.lastUpdated", { date: new Date(record.updatedAt).toLocaleString() })}
+              </p>
+            )}
+          </div>
+        </Panel>
+
+        <aside className="space-y-6">
+          <Panel title={t("consensus.scope.company")} bodySize="sm" hover>
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              {t("consensus.scope.companyDescription")}
+            </p>
+          </Panel>
+
+          <Panel title={t("consensus.pipelinePanel.title")} bodySize="sm">
+            {ideas.length === 0 ? (
+              <p className="text-sm text-[var(--color-muted-foreground)]">
+                {t("consensus.pipelinePanel.empty")}
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {ideas.slice(0, 5).map((idea) => {
+                  const linked = ideaProduct(idea);
+                  return (
+                    <li key={idea.id}>
+                      <Link
+                        to={linked ? `/products/${linked.id}/consensus` : "/ops"}
+                        className="lift block rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3 hover:border-[var(--color-primary)]/40"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Target className="h-3.5 w-3.5 text-[var(--color-muted-foreground)]" aria-hidden />
+                          <span className="truncate font-medium text-sm">{idea.title}</span>
+                        </div>
+                        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-[var(--color-muted-foreground)]">
+                          <span>
+                            {t("consensus.pipelinePanel.scoreLabel", {
+                              score: idea.interestScore.toFixed(1),
+                            })}
+                          </span>
+                          {linked && <span>→ {linked.name}</span>}
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Panel>
+
+          <Panel title={t("consensus.tip.title")} bodySize="sm">
+            <p className="flex items-start gap-2 text-sm text-[var(--color-muted-foreground)]">
+              <Building2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              <span>{t("consensus.tip.body")}</span>
+            </p>
+          </Panel>
+
+          <Panel
+            title={
+              <span className="inline-flex items-center gap-2">
+                <Layers className="h-4 w-4" aria-hidden /> {t("consensus.scope.label")}
+              </span>
+            }
+            bodySize="sm"
+          >
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("consensus.scope.helper")}
+            </p>
+            <ul className="mt-2 space-y-1.5 text-xs">
+              {scopeOptions.slice(0, 6).map((opt) => (
+                <li key={opt.value} className="flex items-start gap-1.5">
+                  <span className="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" aria-hidden />
+                  <span className="text-[var(--color-muted-foreground)]">{opt.label}</span>
+                </li>
+              ))}
+              {scopeOptions.length > 6 && (
+                <li className="text-[var(--color-muted-foreground)]">
+                  + {scopeOptions.length - 6} {t("consensus.scope.more")}
+                </li>
+              )}
+            </ul>
+          </Panel>
+        </aside>
+      </div>
     </div>
   );
 }

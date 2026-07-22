@@ -163,7 +163,7 @@ export interface TenantConsensus {
   content: string;
   nextAction: string | null;
   companyPhase?: string;
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ProductConsensus {
