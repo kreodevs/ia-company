@@ -1,12 +1,36 @@
 export const ops = {
   loading: "Cargando operaciones…",
   loadFailed: "No se pudo cargar el panel.",
+  eyebrow: "Operaciones",
   title: "Operaciones",
   subtitle: "Pipeline de ideas → evaluación → productos en construcción.",
   runMetaCycleNow: "Ejecutar ciclo meta",
   pendingDecisionsMessage:
     "{{count}} decisión(es) go/no-go esperando por ti. La compañía autónoma está pausada.",
   reviewDecisions: "Revisar decisiones →",
+  nextActionLabel: "Siguiente acción",
+  kpis: {
+    cycle: "Ciclo",
+    cycleNextDelta: "Siguiente: {{workflow}}",
+    cycleIdle: "En espera — sin run programado",
+    products: "Productos",
+    productsDelta: "{{building}} activos · {{pipeline}} en pipeline",
+    revenue: "Revenue total",
+    revenueGrowing: "Revenue acumulado de los productos",
+    revenueZero: "Sin revenue — hora de lanzar",
+    decisions: "Decisiones pendientes",
+    decisionsWaiting: "Esperando tu revisión",
+    decisionsCaughtUp: "Todas las decisiones procesadas",
+  },
+  phaseChart: {
+    title: "Distribución por fase",
+    subtitle: "Productos según su fase actual",
+  },
+  cycleBanner: {
+    title: "Fase: {{phase}}",
+    subtitleWithRun: "El próximo ciclo ejecutará {{workflow}}.",
+    subtitleIdle: "En espera — sin run programado.",
+  },
   flow: {
     title: "Cómo fluye la empresa autónoma",
     subtitle: "Cada fase encadena workflows de agentes. Tú apruebas ideas; los agentes evalúan y construyen.",
@@ -38,7 +62,10 @@ export const ops = {
     enableSchedule: "Activar programación automática",
   },
   portfolio: {
-    title: "Productos activos",
+    title: "Portfolio de productos",
+    subtitle: "Productos activos, su fase y el enfocado",
+    count: "{{count}} total",
+    noGo: "no-go",
     emptyHint: "Tras aprobar y evaluar una idea con GO, el producto aparece aquí y los agentes construyen en su workspace.",
     focus: "Enfocar",
     focused: "En foco",
@@ -67,6 +94,7 @@ export const ops = {
     count: "{{count}} pendientes",
     go: "GO",
     noGo: "NO-GO",
+    score: "interés {{score}}",
     evaluate: "Evaluar con agentes",
     evaluateHint:
       "Aprueba la idea y lanza el workflow de evaluación (research → CEO → Munger → producto → CTO → CFO). Si hay GO, se crea el producto y empieza la construcción.",

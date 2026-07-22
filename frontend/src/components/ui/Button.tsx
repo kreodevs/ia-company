@@ -14,6 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   children: ReactNode;
   fullWidthMobile?: boolean;
+  size?: "sm" | "md";
 }
 
 export default function Button({
@@ -21,14 +22,16 @@ export default function Button({
   className = "",
   children,
   fullWidthMobile = false,
+  size = "md",
   type = "button",
   ...props
 }: ButtonProps) {
+  const sizeClass = size === "sm" ? "!min-h-8 !px-3 !py-1 !text-xs" : "";
   return (
     <KreoButton
       type={type}
       variant={variantMap[variant]}
-      className={`${fullWidthMobile ? "w-full sm:w-auto" : ""} ${className}`.trim()}
+      className={`${fullWidthMobile ? "w-full sm:w-auto" : ""} ${sizeClass} ${className}`.trim()}
       {...props}
     >
       {children}
