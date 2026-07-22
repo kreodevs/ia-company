@@ -1,0 +1,27 @@
+export const decisions = {
+  loading: "Loading decisions…",
+  title: "Go / No-Go decisions",
+  subtitle:
+    "The autonomous team pauses here before bootstrapping a new product. Review each proposal, request more research, or take the call yourself.",
+  pendingHeading: "Awaiting your decision ({{count}})",
+  empty: "No pending decisions. The next opportunity discovery will populate this list.",
+  historyHeading: "History ({{count}})",
+  rationale: "Rationale",
+  evidence: "Evidence ({{count}})",
+  approve: "Approve {{decision}}",
+  reject: "Reject",
+  pivotMore: "Drill down",
+  pivotPrompt: "What should the team investigate more?",
+  pivotPlaceholder: "Validate willingness to pay with 5 design partners…",
+  requestDrilldown: "Request drill-down",
+  go: "GO",
+  noGo: "NO-GO",
+  by: "by {{actor}}",
+  status: {
+    pending_review: "pending review",
+    drilling: "drilling down",
+    approved: "approved",
+    rejected: "rejected",
+    cancelled: "cancelled",
+  },
+} as const;

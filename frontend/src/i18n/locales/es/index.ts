@@ -3,6 +3,7 @@ import { auth } from "./auth";
 import { code } from "./code";
 import { common } from "./common";
 import { consensus } from "./consensus";
+import { decisions } from "./decisions";
 import { help } from "./help";
 import { interests } from "./interests";
 import { language } from "./language";
@@ -24,6 +25,7 @@ export const es = {
   workflows,
   runs,
   consensus,
+  decisions,
   ops,
   settings,
   team,

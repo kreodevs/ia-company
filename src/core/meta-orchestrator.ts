@@ -16,7 +16,6 @@ import {
 import { getTenantInterestCategories } from "../lib/tenant-interests.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
-
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;
@@ -47,17 +46,20 @@ export async function resolveMetaOrchestratorDecision(
   const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
   await ensureDefaultProducts(tenantId, tenant.slug);
 
-  const [consensus, cycle, products, ideas, interests] = await Promise.all([
+  const [consensus, cycle, products, ideas, interests, pendingProposals] = await Promise.all([
     prisma.tenantConsensus.findUnique({ where: { tenantId } }),
     ensureTenantCycleState(tenantId),
     listTenantProducts(tenantId),
     listPipelineIdeas(tenantId),
     getTenantInterestCategories(tenantId),
+    prisma.decisionProposal.count({
+      where: { tenantId, status: { in: ["pending_review", "drilling"] } },
+    }),
   ]);
 
   const buildingProducts = products.filter((p) => p.phase === "building" || p.phase === "launching");
   const growingProducts = products.filter((p) => p.phase === "growing");
-  const pendingIdea = findIdeaToEvaluate(ideas, products);
+  const pendingIdea = pendingProposals > 0 ? null : findIdeaToEvaluate(ideas, products);
 
   let focusProduct: TenantProduct | null =
     products.find((p) => p.id === cycle.focusProductId) ??
@@ -137,6 +139,8 @@ export async function resolveMetaOrchestratorDecision(
 
   if (pendingIdea) {
     baseMemory.task = `Evaluate idea "${pendingIdea.title}": ${pendingIdea.description ?? ""}`.trim();
+  } else if (pendingProposals > 0) {
+    baseMemory.task = `A human decision is pending on a proposed go/no-go. Pause: review at /ops/decisions.`;
   } else if (focusProduct) {
     baseMemory.task = `Advance product "${focusProduct.name}" (${focusProduct.slug}) in the product workspace root (already set to projects/${focusProduct.slug}/ at platform level).`;
   }

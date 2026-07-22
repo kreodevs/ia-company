@@ -4,6 +4,9 @@ export const ops = {
   title: "Operaciones",
   subtitle: "Pipeline de ideas → evaluación → productos en construcción.",
   runMetaCycleNow: "Ejecutar ciclo meta",
+  pendingDecisionsMessage:
+    "{{count}} decisión(es) go/no-go esperando por ti. La compañía autónoma está pausada.",
+  reviewDecisions: "Revisar decisiones →",
   flow: {
     title: "Cómo fluye la empresa autónoma",
     subtitle: "Cada fase encadena workflows de agentes. Tú apruebas ideas; los agentes evalúan y construyen.",

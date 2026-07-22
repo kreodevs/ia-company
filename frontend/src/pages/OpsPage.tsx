@@ -138,6 +138,20 @@ export default function OpsPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <PageHeader title={t("ops.title")} subtitle={t("ops.subtitle")} />
 
+      {portfolio.pendingDecisions > 0 && (
+        <Card className="flex flex-col items-start justify-between gap-3 border-amber-300 bg-amber-50 text-amber-900 sm:flex-row sm:items-center">
+          <div>
+            <p className="font-semibold">{t("decisions.title")}</p>
+            <p className="text-sm">
+              {t("ops.pendingDecisionsMessage", { count: portfolio.pendingDecisions })}
+            </p>
+          </div>
+          <Link to="/decisions">
+            <Button>{t("ops.reviewDecisions")}</Button>
+          </Link>
+        </Card>
+      )}
+
       <OpsFlowStepper companyPhase={portfolio.companyPhase} />
 
       <Card className="space-y-4">

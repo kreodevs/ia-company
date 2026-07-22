@@ -24,7 +24,7 @@ export async function opsRoutes(app: FastifyInstance) {
       await ensureDefaultProducts(tenantId, tenant.slug);
       await backfillPipelineFromLastDiscovery(tenantId);
 
-      const [products, ideas, cycle, consensus, schedules, recentRuns, lastDiscoveryRun, interests] =
+      const [products, ideas, cycle, consensus, schedules, recentRuns, lastDiscoveryRun, interests, pendingDecisions] =
         await Promise.all([
         listTenantProducts(tenantId),
         listPipelineIdeas(tenantId),
@@ -50,6 +50,9 @@ export async function opsRoutes(app: FastifyInstance) {
           select: { id: true, createdAt: true },
         }),
         getTenantInterestCategories(tenantId),
+        prisma.decisionProposal.count({
+          where: { tenantId, status: { in: ["pending_review", "drilling"] } },
+        }),
       ]);
 
       const focusProduct = products.find((p) => p.id === cycle.focusProductId) ?? null;
@@ -65,6 +68,8 @@ export async function opsRoutes(app: FastifyInstance) {
         stuckCounter: cycle.stuckCounter,
         nextAction: consensus?.nextAction ?? null,
         focusProduct,
+        interests,
+        pendingDecisions,
         stats: {
           products: products.length,
           building: buildingCount,
@@ -84,7 +89,6 @@ export async function opsRoutes(app: FastifyInstance) {
         lastDiscoveryRun: lastDiscoveryRun
           ? { id: lastDiscoveryRun.id, createdAt: lastDiscoveryRun.createdAt }
           : null,
-        interests,
       };
     } catch (err) {
       return handleRouteError(reply, err);

@@ -273,6 +273,33 @@ export interface CreateRepoResult {
   message: string;
 }
 
+export type DecisionStatus = "pending_review" | "drilling" | "approved" | "rejected" | "cancelled";
+
+export interface DecisionProposalEvidence {
+  agent: string;
+  summary: string;
+  field?: string;
+}
+
+export interface DecisionProposal {
+  id: string;
+  tenantId: string;
+  ideaId: string;
+  runId: string | null;
+  workflowName: string;
+  recommended: GoNoGoDecision;
+  rationale: string;
+  evidence: DecisionProposalEvidence[];
+  pivotPrompt: string | null;
+  status: DecisionStatus;
+  drilldownRunId: string | null;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  idea: PipelineIdea;
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -280,6 +307,7 @@ export interface OpsPortfolio {
   nextAction: string | null;
   focusProduct: TenantProduct | null;
   interests: string[];
+  pendingDecisions: number;
   stats: {
     products: number;
     building: number;
@@ -685,6 +713,27 @@ export const api = {
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),
     nextRun: () => request<OpsNextRun>("/ops/next-run"),
+  },
+  decisions: {
+    list: () => request<DecisionProposal[]>("/decisions"),
+    get: (id: string) => request<DecisionProposal>(`/decisions/${id}`),
+    approve: (id: string, body?: { actorEmail?: string }) =>
+      request<DecisionProposal>(`/decisions/${id}/approve`, {
+        method: "POST",
+        body: JSON.stringify(body ?? {}),
+      }),
+    reject: (id: string, body?: { actorEmail?: string }) =>
+      request<DecisionProposal>(`/decisions/${id}/reject`, {
+        method: "POST",
+        body: JSON.stringify(body ?? {}),
+      }),
+    pivot: (id: string, body: { pivot: string; actorEmail?: string }) =>
+      request<DecisionProposal>(`/decisions/${id}/pivot`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    cancel: (id: string) =>
+      request<DecisionProposal>(`/decisions/${id}/cancel`, { method: "POST" }),
   },
   tenantSettings: {
     getLlm: () => request<TenantLlmConfig>("/tenant/settings/llm"),

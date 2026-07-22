@@ -373,9 +373,41 @@ model PipelineIdea {
   updatedAt           DateTime       @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  proposals DecisionProposal[]
 
   @@index([tenantId, rank])
   @@index([tenantId, interestScore])
+}
+
+enum DecisionStatus {
+  pending_review
+  drilling
+  approved
+  rejected
+  cancelled
+}
+
+model DecisionProposal {
+  id            String         @id @default(cuid())
+  tenantId      String
+  ideaId        String
+  runId         String?
+  workflowName  String
+  recommended   GoNoGoDecision
+  rationale     String         @db.Text
+  evidence      Json           @default("[]")
+  pivotPrompt   String?        @db.Text
+  status        DecisionStatus @default(pending_review)
+  drilldownRunId String?
+  decidedBy     String?
+  decidedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  idea PipelineIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status])
+  @@index([ideaId])
 }
 
 model TenantInterest {

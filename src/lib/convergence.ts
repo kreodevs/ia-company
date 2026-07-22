@@ -2,6 +2,10 @@ import type { CompanyPhase, GoNoGoDecision } from "@prisma/client";
 import type { SharedMemory } from "../types/index.js";
 import { persistCompanyConsensusFromRun } from "./consensus.js";
 import { prisma } from "./prisma.js";
+import {
+  buildRationaleFromMemory,
+  createDecisionProposal,
+} from "./decision-proposals.js";
 import { appendProductHandoff, extractHandoffFromSharedMemory } from "./product-consensus.js";
 import {
   addPipelineIdeas,
@@ -33,6 +37,17 @@ function parseGoNoGo(value: unknown): GoNoGoDecision | null {
   if (raw === "GO") return "go";
   if (raw === "NO-GO" || raw === "NO_GO" || raw === "NOGO") return "no_go";
   return null;
+}
+
+function extractVetoFromText(
+  text: string,
+): Array<{ by: string; reason: string }> {
+  const out: Array<{ by: string; reason: string }> = [];
+  const re = /"veto"\s*:\s*\{[\s\S]*?"by"\s*:\s*"([^"]+)"[\s\S]*?"reason"\s*:\s*"([^"]+)"/g;
+  for (const match of text.matchAll(re)) {
+    out.push({ by: match[1], reason: match[2] });
+  }
+  return out;
 }
 
 export function convergencePromptSection(
@@ -140,30 +155,61 @@ export async function processConvergenceAfterRun(
   const productName = asString(enriched.productName);
 
   if (goNoGo === "go" && productSlugResolved && productName) {
-    const building = await countBuildingProducts(tenantId);
-    const existing = await getProductBySlug(tenantId, productSlugResolved);
-    if (!existing && building < 2) {
-      const product = await bootstrapProduct({
-        tenantId,
-        slug: productSlugResolved,
-        name: productName,
-        description: asString(enriched.productDescription),
-      });
-      await setFocusProduct(tenantId, product.id);
-      await updateCompanyPhase(tenantId, "building");
-    } else if (existing) {
-      await upsertTenantProduct({
-        tenantId,
-        slug: productSlugResolved,
-        name: productName,
-        phase: "building",
-        goNoGo: "go",
-      });
-      await setFocusProduct(tenantId, existing.id);
-    }
-
     const ideas = await listPipelineIdeas(tenantId);
-    if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "go");
+    const candidate = ideas.find(
+      (i) => i.goNoGo === "pending" && slugifyProductName(i.title) === productSlugResolved,
+    ) ?? ideas[0];
+
+    if (workflowName === WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION) {
+      const agentOutputs = Array.isArray(memory._history)
+        ? memory._history.map((h) => ({ agentName: h.agentName, output: h.output }))
+        : [];
+      const veto = agentOutputs
+        .flatMap((a) => extractVetoFromText(a.output))
+        .find((v) => v.by === "critic-munger");
+      const recommended = veto ? ("no_go" as const) : ("go" as const);
+      const fallback = asString(enriched.rationale) ?? productName;
+      const { rationale, evidence } = buildRationaleFromMemory(
+        agentOutputs,
+        recommended,
+        fallback,
+      );
+      if (candidate) {
+        await createDecisionProposal({
+          tenantId,
+          ideaId: candidate.id,
+          runId,
+          workflowName,
+          recommended,
+          rationale,
+          evidence,
+        });
+        if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "pending");
+      }
+    } else {
+      const building = await countBuildingProducts(tenantId);
+      const existing = await getProductBySlug(tenantId, productSlugResolved);
+      if (!existing && building < 2) {
+        const product = await bootstrapProduct({
+          tenantId,
+          slug: productSlugResolved,
+          name: productName,
+          description: asString(enriched.productDescription),
+        });
+        await setFocusProduct(tenantId, product.id);
+        await updateCompanyPhase(tenantId, "building");
+      } else if (existing) {
+        await upsertTenantProduct({
+          tenantId,
+          slug: productSlugResolved,
+          name: productName,
+          phase: "building",
+          goNoGo: "go",
+        });
+        await setFocusProduct(tenantId, existing.id);
+      }
+      if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "go");
+    }
   } else if (goNoGo === "no_go") {
     const ideas = await listPipelineIdeas(tenantId);
     if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "no_go");

@@ -6,6 +6,7 @@ import Fastify from "fastify";
 import { agentRoutes } from "./routes/agents.js";
 import { adminRoutes } from "./routes/admin.js";
 import { consensusRoutes } from "./routes/consensus.js";
+import { decisionRoutes } from "./routes/decisions.js";
 import { platformTemplateRoutes } from "./routes/platform-templates.js";
 import { platformSettingsRoutes } from "./routes/platform-settings.js";
 import {
@@ -66,6 +67,7 @@ async function buildServer() {
     await api.register(consensusRoutes);
     await api.register(productRoutes);
     await api.register(opsRoutes);
+    await api.register(decisionRoutes);
     await api.register(scheduleRoutes);
     await api.register(agentRoutes);
     await api.register(skillRoutes);
