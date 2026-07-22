@@ -15,6 +15,7 @@ import { settings } from "./settings";
 import { status } from "./status";
 import { team } from "./team";
 import { theme } from "./theme";
+import { warRoom } from "./warRoom";
 import { workflowDisplay } from "./workflowDisplay";
 import { workflows } from "./workflows";
 
@@ -29,6 +30,7 @@ export const es = {
   ops,
   settings,
   team,
+  warRoom,
   help,
   interests,
   code,

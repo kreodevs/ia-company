@@ -3,9 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
-import { isBinaryPath, listProductTree, readProductFile } from "../src/lib/product-code.js";
-
-let workspaceRoot: string;
+import { isBinaryPath, listProductTree, readProductFile } from "../src/lib/product-code.js";let workspaceRoot: string;
 let originalWorkspaceRoot: string | undefined;
 
 before(async () => {

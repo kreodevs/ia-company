@@ -15,6 +15,7 @@ import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
+import ProductTeamPage from "./pages/ProductTeamPage";
 import TenantInterestsPage from "./pages/TenantInterestsPage";
 import SettingsPage from "./pages/SettingsPage";
 import PlatformSettingsPage from "./pages/PlatformSettingsPage";
@@ -72,6 +73,7 @@ function AppShell() {
               <Route path="consensus" element={<ConsensusPage />} />
               <Route path="products/:productId/consensus" element={<ProductConsensusPage />} />
               <Route path="products/:productId/code" element={<ProductCodePage />} />
+              <Route path="products/:productId/team" element={<ProductTeamPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="settings/interests" element={<TenantInterestsPage />} />
               <Route path="team" element={<TenantUsersPage />} />

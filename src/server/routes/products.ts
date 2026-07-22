@@ -316,4 +316,114 @@ export async function productRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get<{ Params: { id: string } }>("/products/:id/team", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const [agents, runs] = await Promise.all([
+        prisma.agent.findMany({
+          where: { tenantId, isActive: true },
+          orderBy: { name: "asc" },
+        }),
+        prisma.executionRun.findMany({
+          where: { tenantId },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+          include: {
+            workflow: { select: { name: true } },
+            logs: {
+              where: { agentId: { not: null } },
+              orderBy: { createdAt: "desc" },
+              take: 30,
+              select: {
+                id: true,
+                level: true,
+                message: true,
+                agentId: true,
+                stepId: true,
+                createdAt: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+      const runsForProduct = runs.filter((r) => {
+        const mem = r.sharedMemory as { focusProductSlug?: unknown } | null;
+        return mem?.focusProductSlug === product.slug;
+      });
+
+      const activeRun = runsForProduct.find((r) => r.status === "RUNNING" || r.status === "PENDING") ?? null;
+      const recentRuns = runsForProduct.slice(0, 5).map((r) => ({
+        id: r.id,
+        status: r.status,
+        workflowName: r.workflow.name,
+        startedAt: r.startedAt,
+        completedAt: r.completedAt,
+        totalTokens: r.totalTokens,
+        totalCostUsd: r.totalCostUsd,
+        errorMessage: r.errorMessage,
+      }));
+
+      const lastWorkedAt = new Map<string, { at: Date; message: string }>();
+      for (const r of runsForProduct) {
+        for (const log of r.logs) {
+          if (!log.agentId) continue;
+          const existing = lastWorkedAt.get(log.agentId);
+          if (!existing || log.createdAt > existing.at) {
+            lastWorkedAt.set(log.agentId, { at: log.createdAt, message: log.message });
+          }
+        }
+      }
+
+      const activeAgentIds = new Set<string>();
+      if (activeRun) {
+        for (const log of activeRun.logs) {
+          if (log.agentId) activeAgentIds.add(log.agentId);
+        }
+      }
+
+      const team = agents.map((a) => {
+        const isActive = activeAgentIds.has(a.id);
+        const lastWork = lastWorkedAt.get(a.id);
+        let status: "idle" | "thinking" | "queued" = "idle";
+        if (activeRun && activeRun.status === "RUNNING" && isActive) status = "thinking";
+        else if (activeRun && activeRun.status === "PENDING") status = "queued";
+        return {
+          id: a.id,
+          name: a.name,
+          role: a.role,
+          status,
+          currentTask:
+            status === "thinking" && lastWork
+              ? lastWork.message.slice(0, 120)
+              : null,
+          lastWorkedAt: lastWork ? lastWork.at : null,
+          lastMessage: lastWork ? lastWork.message.slice(0, 200) : null,
+        };
+      });
+
+      return {
+        product: { id: product.id, name: product.name, slug: product.slug, phase: product.phase },
+        activeRun: activeRun
+          ? {
+              id: activeRun.id,
+              workflowName: activeRun.workflow.name,
+              status: activeRun.status,
+              startedAt: activeRun.startedAt,
+              agentIds: Array.from(activeAgentIds),
+            }
+          : null,
+        recentRuns,
+        team,
+      };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

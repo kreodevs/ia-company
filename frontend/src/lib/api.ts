@@ -300,6 +300,44 @@ export interface DecisionProposal {
   idea: PipelineIdea;
 }
 
+export type TeamAgentStatus = "idle" | "thinking" | "queued";
+
+export interface TeamAgent {
+  id: string;
+  name: string;
+  role: string;
+  status: TeamAgentStatus;
+  currentTask: string | null;
+  lastWorkedAt: string | null;
+  lastMessage: string | null;
+}
+
+export interface TeamActiveRun {
+  id: string;
+  workflowName: string;
+  status: string;
+  startedAt: string | null;
+  agentIds: string[];
+}
+
+export interface TeamRecentRun {
+  id: string;
+  status: string;
+  workflowName: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  totalTokens: number;
+  totalCostUsd: number;
+  errorMessage: string | null;
+}
+
+export interface ProductTeam {
+  product: { id: string; name: string; slug: string; phase: string };
+  activeRun: TeamActiveRun | null;
+  recentRuns: TeamRecentRun[];
+  team: TeamAgent[];
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -709,6 +747,7 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
+    team: (id: string) => request<ProductTeam>(`/products/${id}/team`),
   },
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),
