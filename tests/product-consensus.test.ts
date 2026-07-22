@@ -100,4 +100,30 @@ describe("product consensus helpers", () => {
     assert.equal(extracted.decisions?.length, 1);
     assert.equal(extracted.decisions?.[0].by, "ok");
   });
+
+  it("appendProductHandoff writes revision.productId from ProductConsensus.id, not TenantProduct.id", async () => {
+    const fs = await import("node:fs/promises");
+    const src = await fs.readFile(
+      new URL("../src/lib/product-consensus.ts", import.meta.url),
+      "utf8",
+    );
+    // Find the revision.create() block inside appendProductHandoff and
+    // assert it uses consensus.id (ProductConsensus.id) for productId.
+    // Regression guard for: "Foreign key constraint violated on
+    // ProductConsensusRevision_productId_fkey".
+    const revisionCreate = src.match(
+      /tx\.productConsensusRevision\.create\(\{[\s\S]*?\}\)/,
+    );
+    assert.ok(revisionCreate, "expected to find a productConsensusRevision.create call");
+    assert.match(
+      revisionCreate[0],
+      /productId:\s*consensus\.id\b/,
+      "revision create must set productId to consensus.id (ProductConsensus row id)",
+    );
+    assert.doesNotMatch(
+      revisionCreate[0],
+      /productId:\s*consensus\.productId\b/,
+      "revision create must NOT set productId to consensus.productId (that is TenantProduct.id)",
+    );
+  });
 });

@@ -180,7 +180,7 @@ export async function appendProductHandoff(
   const updated = await prisma.$transaction(async (tx) => {
     const revision = await tx.productConsensusRevision.create({
       data: {
-        productId: consensus.productId,
+        productId: consensus.id,
         runId: input.runId ?? null,
         stepId: input.stepId ?? null,
         agentName: input.agentName,
