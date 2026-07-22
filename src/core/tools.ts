@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readdir, readFile, writeFile, mkdir } from "node:fs/promises";
+import { access, readdir, readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join, normalize, resolve } from "node:path";
 import { promisify } from "node:util";
 import { tool } from "ai";
@@ -100,8 +100,20 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     execute: async ({ path, maxBytes }) => {
       const fullPath = resolveSafePath(ctx.workspaceRoot, path);
       log(`read: ${path}`);
-      const content = await readFile(fullPath, "utf-8");
-      return { path, content: content.slice(0, maxBytes) };
+      try {
+        const content = await readFile(fullPath, "utf-8");
+        return { path, content: content.slice(0, maxBytes) };
+      } catch (err: unknown) {
+        const error = err as NodeJS.ErrnoException;
+        if (error.code === "ENOENT") {
+          return {
+            path,
+            missing: true,
+            error: `File not found: ${path}. See README.md and portfolio.md in the workspace root.`,
+          };
+        }
+        throw err;
+      }
     },
   });
 
@@ -129,6 +141,24 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     execute: async ({ path, recursive }) => {
       const fullPath = resolveSafePath(ctx.workspaceRoot, path);
       log(`list: ${path}`);
+
+      try {
+        await access(fullPath);
+      } catch (err: unknown) {
+        const error = err as NodeJS.ErrnoException;
+        if (error.code === "ENOENT") {
+          return {
+            path,
+            entries: [],
+            missing: true,
+            hint:
+              path === "projects" || path.startsWith("projects/")
+                ? "There is no projects/ folder inside the tenant workspace. Product repos are sibling folders (../{slug}/) or the workspace root is already a product repo."
+                : `Directory not found: ${path}. List '.' or read README.md / portfolio.md.`,
+          };
+        }
+        throw err;
+      }
 
       if (!recursive) {
         const entries = await readdir(fullPath, { withFileTypes: true });

@@ -122,7 +122,7 @@ export async function resolveMetaOrchestratorDecision(
   if (pendingIdea) {
     baseMemory.task = `Evaluate idea "${pendingIdea.title}": ${pendingIdea.description ?? ""}`.trim();
   } else if (focusProduct) {
-    baseMemory.task = `Advance product "${focusProduct.name}" (${focusProduct.slug}) in workspace projects/${focusProduct.slug}/`;
+    baseMemory.task = `Advance product "${focusProduct.name}" (${focusProduct.slug}) in the product workspace root (already set to projects/${focusProduct.slug}/ at platform level).`;
   }
 
   const buildingCount = await countBuildingProducts(tenantId);

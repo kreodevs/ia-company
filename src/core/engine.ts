@@ -4,6 +4,11 @@ import { processConvergenceAfterRun } from "../lib/convergence.js";
 import { prisma } from "../lib/prisma.js";
 import { ensureProductWorkspace } from "../lib/product-workspace.js";
 import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
+import {
+  buildWorkspacePromptSection,
+  syncTenantPortfolioManifest,
+  agentDocsPath,
+} from "../lib/workspace-layout.js";
 import { resolveAgentProviderConfig, resolveEffectiveModel, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
   AgentWithSkills,
@@ -250,7 +255,13 @@ export class WorkflowExecutor {
     sharedMemory: SharedMemory,
     tenantCtx: TenantExecutionContext,
   ): Promise<StepResult> {
-    const systemPrompt = compileSystemPrompt(agent, sharedMemory, inputConfig);
+    const systemPrompt = compileSystemPrompt(agent, sharedMemory, inputConfig, {
+      productSlug: tenantCtx.productSlug,
+      productName:
+        typeof sharedMemory.focusProductName === "string"
+          ? sharedMemory.focusProductName
+          : tenantCtx.productSlug,
+    });
     const userPrompt = compileUserPrompt(sharedMemory, inputConfig);
 
     const providerConfig = resolveAgentProviderConfig(agent, tenantCtx.llm);
@@ -317,11 +328,12 @@ export class WorkflowExecutor {
       include: { llmConfig: true },
     });
 
-    const tenantWorkspace = await ensureTenantWorkspace(tenantId, tenant?.slug);
+    const tenantWorkspace = await ensureTenantWorkspace(tenantId, tenant?.slug, tenant?.name);
     const { syncConsensusFileToWorkspace, syncTenantConsensusToWorkspace } = await import(
       "../lib/consensus.js"
     );
     await syncTenantConsensusToWorkspace(tenantId, tenantWorkspace);
+    await syncTenantPortfolioManifest(tenantId, tenantWorkspace);
 
     const workspaceRoot = productSlug
       ? await ensureProductWorkspace(productSlug)
@@ -486,6 +498,7 @@ export function compileSystemPrompt(
   agent: AgentWithSkills,
   sharedMemory: SharedMemory,
   inputConfig: StepInputConfig,
+  workspace?: { productSlug?: string; productName?: string },
 ): string {
   const sections: string[] = [`# Role: ${agent.role}`, agent.systemPrompt];
 
@@ -506,9 +519,16 @@ export function compileSystemPrompt(
 
   if (typeof sharedMemory.focusProductSlug === "string") {
     sections.push(
-      `\n## Focus Product\nWorkspace: projects/${sharedMemory.focusProductSlug}/\nName: ${sharedMemory.focusProductName ?? sharedMemory.focusProductSlug}`,
+      `\n## Focus Product\n${sharedMemory.focusProductName ?? sharedMemory.focusProductSlug} (\`${sharedMemory.focusProductSlug}\`) — workspace root is this product repo.`,
     );
   }
+
+  sections.push(`\n${buildWorkspacePromptSection({
+    productSlug: workspace?.productSlug ?? (typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined),
+    productName: workspace?.productName ?? (typeof sharedMemory.focusProductName === "string" ? sharedMemory.focusProductName : undefined),
+  })}`);
+
+  sections.push(`\n## Your deliverables path\nSave role documents under \`${agentDocsPath(agent.name)}/\` (relative to workspace root).`);
 
   if (inputConfig.passSharedMemory !== false && Object.keys(sharedMemory).length > 0) {
     const { _history, ...rest } = sharedMemory;

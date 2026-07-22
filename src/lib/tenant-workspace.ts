@@ -1,5 +1,5 @@
-import { mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { bootstrapTenantWorkspaceLayout } from "./workspace-layout.js";
 
 export function resolveTenantWorkspaceRoot(tenantId: string, tenantSlug?: string | null): string {
   const base = resolve(process.env.WORKSPACE_ROOT ?? process.cwd());
@@ -7,8 +7,12 @@ export function resolveTenantWorkspaceRoot(tenantId: string, tenantSlug?: string
   return join(base, "projects", segment);
 }
 
-export async function ensureTenantWorkspace(tenantId: string, tenantSlug?: string | null): Promise<string> {
+export async function ensureTenantWorkspace(
+  tenantId: string,
+  tenantSlug?: string | null,
+  tenantName?: string | null,
+): Promise<string> {
   const root = resolveTenantWorkspaceRoot(tenantId, tenantSlug);
-  await mkdir(root, { recursive: true });
+  await bootstrapTenantWorkspaceLayout(root, tenantName ?? tenantSlug);
   return root;
 }

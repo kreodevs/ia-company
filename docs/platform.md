@@ -68,7 +68,7 @@ Superadmins impersonating a tenant can access **Settings** and other admin route
 ## Tenant isolation
 
 - **Database**: all tenant resources filtered by `tenantId`
-- **Workspace**: agent file tools use `WORKSPACE_ROOT/projects/{tenant-slug}/`
+- **Workspace**: agent file tools use `WORKSPACE_ROOT/projects/{tenant-slug}/` (tenant sandbox). Product code uses `WORKSPACE_ROOT/projects/{product-slug}/`. There is **no** `projects/` subfolder inside the tenant sandbox — agents write to `docs/{role}/` and read `consensus.md` at the workspace root.
 - **LLM keys**: stored encrypted (`enc:v1:`) using `ENCRYPTION_KEY` or `JWT_SECRET`
 
 ## Environment variables
