@@ -15,18 +15,12 @@ import {
   upsertTenantProduct,
 } from "./product-registry.js";
 import { slugifyProductName } from "./product-workspace.js";
+import {
+  asString,
+  asStringArray,
+  enrichSharedMemoryFromAgentOutputs,
+} from "./structured-memory.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
-
-function asString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value.trim() : undefined;
-}
-
-function asStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
-    .map((v) => v.trim());
-}
 
 function parseGoNoGo(value: unknown): GoNoGoDecision | null {
   const raw = asString(value)?.toUpperCase();
@@ -55,11 +49,12 @@ export async function processConvergenceAfterRun(
   memory: SharedMemory,
   _runId: string,
 ): Promise<void> {
-  await persistConsensusFromRun(tenantId, memory);
+  const enriched = enrichSharedMemoryFromAgentOutputs(memory);
+  await persistConsensusFromRun(tenantId, enriched);
 
   const consensus = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
   const cycle = await ensureTenantCycleState(tenantId);
-  const nextAction = asString(memory.nextAction) ?? consensus?.nextAction ?? null;
+  const nextAction = asString(enriched.nextAction) ?? consensus?.nextAction ?? null;
 
   let stuckCounter = cycle.stuckCounter;
   if (nextAction && cycle.lastNextAction === nextAction) {
@@ -68,7 +63,7 @@ export async function processConvergenceAfterRun(
     stuckCounter = 0;
   }
 
-  const topIdeas = asStringArray(memory.topIdeas);
+  const topIdeas = asStringArray(enriched.topIdeas);
   if (topIdeas.length > 0) {
     await addPipelineIdeas(
       tenantId,
@@ -77,9 +72,9 @@ export async function processConvergenceAfterRun(
     await updateCompanyPhase(tenantId, "validating");
   }
 
-  const goNoGo = parseGoNoGo(memory.goNoGo);
-  const productSlug = asString(memory.productSlug) ?? slugifyProductName(asString(memory.productName) ?? "");
-  const productName = asString(memory.productName);
+  const goNoGo = parseGoNoGo(enriched.goNoGo);
+  const productSlug = asString(enriched.productSlug) ?? slugifyProductName(asString(enriched.productName) ?? "");
+  const productName = asString(enriched.productName);
 
   if (goNoGo === "go" && productSlug && productName) {
     const building = await countBuildingProducts(tenantId);
@@ -89,7 +84,7 @@ export async function processConvergenceAfterRun(
         tenantId,
         slug: productSlug,
         name: productName,
-        description: asString(memory.productDescription),
+        description: asString(enriched.productDescription),
       });
       await setFocusProduct(tenantId, product.id);
       await updateCompanyPhase(tenantId, "building");
@@ -112,12 +107,12 @@ export async function processConvergenceAfterRun(
     await updateCompanyPhase(tenantId, "exploring");
   }
 
-  if (typeof memory.revenueUsd === "number" && productSlug) {
+  if (typeof enriched.revenueUsd === "number" && productSlug) {
     await upsertTenantProduct({
       tenantId,
       slug: productSlug,
       name: productName ?? productSlug,
-      revenueUsd: memory.revenueUsd,
+      revenueUsd: enriched.revenueUsd,
       phase: "growing",
       goNoGo: "go",
     });
@@ -138,8 +133,8 @@ export async function processConvergenceAfterRun(
   }
 
   if (stuckCounter >= 2 && nextAction) {
-    memory.nextAction = `STUCK on "${nextAction}" — pivot: ship smallest vertical slice today`;
-    await persistConsensusFromRun(tenantId, memory);
+    enriched.nextAction = `STUCK on "${nextAction}" — pivot: ship smallest vertical slice today`;
+    await persistConsensusFromRun(tenantId, enriched);
     stuckCounter = 0;
   }
 
@@ -151,4 +146,33 @@ export async function processConvergenceAfterRun(
       lastNextAction: nextAction,
     },
   });
+}
+
+/** Backfill pipeline from the latest completed discovery run when the queue is still empty. */
+export async function backfillPipelineFromLastDiscovery(tenantId: string): Promise<number> {
+  const existing = await listPipelineIdeas(tenantId);
+  if (existing.length > 0) return 0;
+
+  const lastRun = await prisma.executionRun.findFirst({
+    where: {
+      tenantId,
+      status: "COMPLETED",
+      workflow: { name: WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY },
+    },
+    orderBy: { createdAt: "desc" },
+    select: { sharedMemory: true },
+  });
+
+  if (!lastRun?.sharedMemory || typeof lastRun.sharedMemory !== "object") return 0;
+
+  const enriched = enrichSharedMemoryFromAgentOutputs(lastRun.sharedMemory as SharedMemory);
+  const topIdeas = asStringArray(enriched.topIdeas);
+  if (topIdeas.length === 0) return 0;
+
+  await addPipelineIdeas(
+    tenantId,
+    topIdeas.slice(0, 3).map((title) => ({ title })),
+  );
+  await updateCompanyPhase(tenantId, "validating");
+  return topIdeas.length;
 }

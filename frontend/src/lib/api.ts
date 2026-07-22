@@ -231,6 +231,7 @@ export interface OpsPortfolio {
     createdAt: string;
     workflow: { id: string; name: string } | null;
   }>;
+  lastDiscoveryRun: { id: string; createdAt: string } | null;
 }
 
 export interface OpsNextRun {

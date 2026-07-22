@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
+import { backfillPipelineFromLastDiscovery } from "../../lib/convergence.js";
 import { resolveMetaOrchestratorDecision } from "../../core/meta-orchestrator.js";
 import {
   ensureDefaultProducts,
@@ -7,6 +8,7 @@ import {
   listPipelineIdeas,
   listTenantProducts,
 } from "../../lib/product-registry.js";
+import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
 export async function opsRoutes(app: FastifyInstance) {
@@ -18,8 +20,10 @@ export async function opsRoutes(app: FastifyInstance) {
       const tenantId = requireImpersonatedTenant(request);
       const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
       await ensureDefaultProducts(tenantId, tenant.slug);
+      await backfillPipelineFromLastDiscovery(tenantId);
 
-      const [products, ideas, cycle, consensus, schedules, recentRuns] = await Promise.all([
+      const [products, ideas, cycle, consensus, schedules, recentRuns, lastDiscoveryRun] =
+        await Promise.all([
         listTenantProducts(tenantId),
         listPipelineIdeas(tenantId),
         ensureTenantCycleState(tenantId),
@@ -31,8 +35,17 @@ export async function opsRoutes(app: FastifyInstance) {
         prisma.executionRun.findMany({
           where: { tenantId },
           orderBy: { createdAt: "desc" },
-          take: 8,
+          take: 5,
           include: { workflow: { select: { id: true, name: true } } },
+        }),
+        prisma.executionRun.findFirst({
+          where: {
+            tenantId,
+            status: "COMPLETED",
+            workflow: { name: WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY },
+          },
+          orderBy: { createdAt: "desc" },
+          select: { id: true, createdAt: true },
         }),
       ]);
 
@@ -65,6 +78,9 @@ export async function opsRoutes(app: FastifyInstance) {
           createdAt: run.createdAt,
           workflow: run.workflow,
         })),
+        lastDiscoveryRun: lastDiscoveryRun
+          ? { id: lastDiscoveryRun.id, createdAt: lastDiscoveryRun.createdAt }
+          : null,
       };
     } catch (err) {
       return handleRouteError(reply, err);
