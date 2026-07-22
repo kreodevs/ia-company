@@ -28,4 +28,13 @@ export const consensus = {
   viewRawContent: "View raw revision content",
   cycleNumber: "Cycle {{n}}",
   viewCode: "View code →",
+  scope: {
+    label: "Show memory for",
+    helper:
+      "Pick a scope to inspect. Picking a product or opportunity jumps to that product's memory.",
+    company: "Company (cross-product)",
+    product: "{{name}} ({{slug}})",
+    ideaOnly: "Opportunity — {{title}}",
+    ideaWithProduct: "Opportunity — {{title}} → {{product}}",
+  },
 } as const;

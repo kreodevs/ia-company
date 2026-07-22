@@ -28,4 +28,13 @@ export const consensus = {
   viewRawContent: "Ver contenido crudo de la revisión",
   cycleNumber: "Ciclo {{n}}",
   viewCode: "Ver código →",
+  scope: {
+    label: "Mostrar memoria de",
+    helper:
+      "Elige un alcance para inspeccionar. Elegir un producto u oportunidad salta a la memoria de ese producto.",
+    company: "Compañía (transversal)",
+    product: "{{name}} ({{slug}})",
+    ideaOnly: "Oportunidad — {{title}}",
+    ideaWithProduct: "Oportunidad — {{title}} → {{product}}",
+  },
 } as const;
