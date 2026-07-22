@@ -54,7 +54,7 @@ Open **http://localhost:5173**.
 | 1 | `/setup` | Create the platform **superadmin** (first time only) |
 | 2 | `/admin` | Create a **tenant** (organization) and clone templates |
 | 3 | Impersonation | Select the tenant in the header |
-| 4 | `/settings` | Configure LLM and enable **meta schedule** |
+| 4 | `/settings` | Enable **meta schedule** and tenant limits |
 | 5 | `/ops` | View portfolio and launch the first autonomous cycle |
 
 > **Tip:** If a superadmin already exists, go directly to `/login`.
@@ -95,11 +95,11 @@ Open **http://localhost:5173**.
 | `/runs/:id` | Live logs (SSE), shared memory, cancel run |
 | `/consensus` | Shared memory document between cycles |
 | `/ops` | Multi-product dashboard: portfolio, pipeline, next cycle |
-| `/settings` | Tenant LLM, notifications, limits, schedules |
+| `/settings` | Tenant preferences (optional model override, limits, schedules) — shared LLM via superadmin |
 | `/team` | Tenant users (admin) |
 | `/admin` | Superadmin dashboard |
 | `/admin/templates` | Global agent/skill/workflow templates |
-| `/admin/settings` | LLM keys, email, GitHub, platform rate limits |
+| `/admin/settings` | Shared LLM provider (OpenRouter **or** TokenLab), keys, email, GitHub, rate limits |
 | `/help` | This help section |
 
 ---
@@ -270,9 +270,9 @@ In **`/settings`** (tenant admin):
 
 ### LLM
 
-- Provider override (TokenLab / OpenRouter / custom)
-- Encrypted API key
-- Default model and **max cost per run**
+- **Provider and API key:** superadmin only at `/admin/settings` (shared by all tenants)
+- Choose **OpenRouter or TokenLab** (one active provider, not both at once)
+- Tenant `/settings`: optional model override and **max cost per run**
 
 ### Notifications
 
@@ -309,7 +309,7 @@ In **`/settings`** (tenant admin):
 | Setting | Use |
 |---------|-----|
 | Public URL | Links in emails and CORS |
-| LLM keys | Fallback for tenants without override |
+| LLM provider + key | Shared by all tenants (OpenRouter or TokenLab) |
 | Resend | Transactional emails |
 | GitHub token | `git_commit` / repos tools |
 | Rate limits | Auth and execute per minute |
@@ -402,8 +402,8 @@ Post-deploy checklist:
 
 ### Runs fail due to LLM
 
-- Check keys in **Platform settings** or tenant override
-- Verify tenant `maxCostUsdPerRun`
+- Superadmin → `/admin/settings`: choose **OpenRouter or TokenLab** and set the active provider's API key
+- Verify tenant `maxCostUsdPerRun` in `/settings`
 
 ### Agents do not commit / deploy
 

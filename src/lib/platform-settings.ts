@@ -247,6 +247,14 @@ export async function updatePlatformSettings(
   });
 
   invalidatePlatformSettingsCache();
-  await warmPlatformSettingsCache();
+  const resolved = await warmPlatformSettingsCache();
+  const activeProvider = resolved.defaultProvider;
+  const activeKey = resolved.providers[activeProvider]?.apiKey;
+  if (!activeKey) {
+    throw new Error(
+      `Missing API key for platform provider "${activeProvider}". Configure it before saving.`,
+    );
+  }
+
   return toPublicPlatformSettings(updated);
 }

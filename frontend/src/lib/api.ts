@@ -232,9 +232,9 @@ export interface OpsNextRun {
 
 export interface TenantLlmConfig {
   tenantId: string;
-  provider: string | null;
-  apiKey?: string | null;
-  baseUrl?: string | null;
+  platformProvider: string;
+  platformModel: string;
+  platformConfigured: boolean;
   defaultModel: string | null;
   maxCostUsdPerRun: number | null;
 }
@@ -565,7 +565,7 @@ export const api = {
   },
   tenantSettings: {
     getLlm: () => request<TenantLlmConfig>("/tenant/settings/llm"),
-    updateLlm: (body: Partial<TenantLlmConfig & { apiKey?: string }>) =>
+    updateLlm: (body: Pick<TenantLlmConfig, "defaultModel" | "maxCostUsdPerRun">) =>
       request<TenantLlmConfig>("/tenant/settings/llm", {
         method: "PUT",
         body: JSON.stringify(body),

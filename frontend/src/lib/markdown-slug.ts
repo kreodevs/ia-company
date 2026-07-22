@@ -29,7 +29,7 @@ export function getNodeText(node: ReactNode): string {
   return "";
 }
 
-function cleanMarkdownHeading(raw: string): string {
+export function cleanMarkdownHeading(raw: string): string {
   return raw
     .replace(/`([^`]+)`/g, "$1")
     .replace(/\*\*([^*]+)\*\*/g, "$1")

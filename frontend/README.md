@@ -64,7 +64,8 @@ Touch targets use `min-h-11` (44px) on primary controls; forms stack vertically 
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
 - `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/workflows` and admin `/admin/templates`)
-| `MarkdownDoc` — renders help articles (GFM markdown via `react-markdown` + `remark-gfm`); auto-generates heading IDs for in-page anchors, smooth scroll, and a floating “back to index” button |
+| `MarkdownDoc` — renders help articles (GFM markdown via `react-markdown` + `remark-gfm`); used per-section in Help with in-doc link navigation |
+| Help sections | `lib/markdown-sections.ts` splits tutorials by `##` / `###`; sidebar switches visible section container |
 
 ## Help content
 

@@ -3,10 +3,16 @@ export const settings = {
   title: "Configuración del tenant",
   llm: {
     title: "Configuración LLM",
+    platformManaged: "El proveedor LLM y la API key los configura el superadmin en Configuración de plataforma. Todos los tenants comparten el mismo proveedor activo (OpenRouter o TokenLab, no ambos).",
+    activeProvider: "Proveedor activo de plataforma",
+    platformModel: "Modelo predeterminado de plataforma",
+    configured: "API key configurada",
+    notConfigured: "API key no configurada — contacta al superadmin",
+    tenantModelOverride: "Modelo override del tenant (opcional)",
+    tenantModelHint: "Si se deja vacío, cada agente usa su propio modelo.",
     defaultModel: "Modelo predeterminado",
-    apiKeyKeepCurrent: "Dejar vacío para mantener la actual",
     maxCostPerRun: "Coste máximo por ejecución (USD)",
-    save: "Guardar configuración LLM",
+    save: "Guardar preferencias LLM",
   },
   usage: {
     title: "Uso mensual",

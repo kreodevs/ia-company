@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
-import { encryptSecret, maskSecret } from "../../lib/crypto.js";
+import { getPlatformSettings } from "../../lib/platform-settings.js";
 import { logAudit } from "../../lib/audit.js";
 import { getTenantMonthlyUsage } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
@@ -13,18 +13,22 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
   app.get("/tenant/settings/llm", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const config = await prisma.tenantLlmConfig.findUnique({ where: { tenantId } });
-      if (!config) {
-        return {
-          tenantId,
-          provider: null,
-          baseUrl: null,
-          defaultModel: null,
-          maxCostUsdPerRun: null,
-          apiKey: null,
-        };
-      }
-      return { ...config, apiKey: maskSecret(config.apiKey) };
+      const [config, platform] = await Promise.all([
+        prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
+        getPlatformSettings(),
+      ]);
+
+      const activeProvider = platform.defaultProvider;
+      const platformConfigured = Boolean(platform.providers[activeProvider]?.apiKey);
+
+      return {
+        tenantId,
+        platformProvider: activeProvider,
+        platformModel: platform.defaultModel,
+        platformConfigured,
+        defaultModel: config?.defaultModel ?? null,
+        maxCostUsdPerRun: config?.maxCostUsdPerRun ?? null,
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -32,42 +36,41 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
 
   app.put<{
     Body: {
-      provider?: string;
-      apiKey?: string;
-      baseUrl?: string;
-      defaultModel?: string;
-      maxCostUsdPerRun?: number;
+      defaultModel?: string | null;
+      maxCostUsdPerRun?: number | null;
     };
   }>("/tenant/settings/llm", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { provider, apiKey, baseUrl, defaultModel, maxCostUsdPerRun } = request.body;
-
-      const existing = await prisma.tenantLlmConfig.findUnique({ where: { tenantId } });
-      const nextApiKey =
-        apiKey && apiKey !== "••••••••" ? encryptSecret(apiKey) : existing?.apiKey;
+      const { defaultModel, maxCostUsdPerRun } = request.body;
 
       const config = await prisma.tenantLlmConfig.upsert({
         where: { tenantId },
         update: {
-          provider: provider as never,
-          apiKey: nextApiKey,
-          baseUrl,
           defaultModel,
           maxCostUsdPerRun,
+          provider: null,
+          apiKey: null,
+          baseUrl: null,
         },
         create: {
           tenantId,
-          provider: provider as never,
-          apiKey: apiKey ? encryptSecret(apiKey) : undefined,
-          baseUrl,
           defaultModel,
           maxCostUsdPerRun,
         },
       });
 
-      await logAudit(request, "tenant.llm_config.update", { provider, defaultModel });
-      return { ...config, apiKey: maskSecret(config.apiKey) };
+      const platform = await getPlatformSettings();
+
+      await logAudit(request, "tenant.llm_config.update", { defaultModel, maxCostUsdPerRun });
+      return {
+        tenantId: config.tenantId,
+        platformProvider: platform.defaultProvider,
+        platformModel: platform.defaultModel,
+        platformConfigured: Boolean(platform.providers[platform.defaultProvider]?.apiKey),
+        defaultModel: config.defaultModel,
+        maxCostUsdPerRun: config.maxCostUsdPerRun,
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }

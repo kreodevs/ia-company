@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
+import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import type { CreateAgentInput, UpdateAgentInput } from "../../types/index.js";
 
@@ -37,11 +38,13 @@ export async function agentRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateAgentInput }>("/agents", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { skillIds, tenantId: _ignored, ...data } = request.body;
+      const { skillIds, tenantId: _ignored, provider: _provider, ...data } = request.body;
+      const platformProvider = getPlatformSettingsSync().defaultProvider;
 
       const agent = await prisma.agent.create({
         data: {
           ...data,
+          provider: platformProvider,
           tenantId,
           skills: skillIds?.length
             ? { create: skillIds.map((skillId) => ({ skillId })) }
@@ -61,7 +64,8 @@ export async function agentRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const { skillIds, tenantId: _ignored, ...data } = request.body;
+        const { skillIds, tenantId: _ignored, provider: _provider, ...data } = request.body;
+        const platformProvider = getPlatformSettingsSync().defaultProvider;
 
         const existing = await prisma.agent.findFirst({
           where: { id: request.params.id, tenantId },
@@ -82,7 +86,7 @@ export async function agentRoutes(app: FastifyInstance) {
 
         const agent = await prisma.agent.update({
           where: { id: request.params.id },
-          data,
+          data: { ...data, provider: platformProvider },
           include: { skills: { include: { skill: true } } },
         });
 

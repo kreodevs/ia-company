@@ -1,14 +1,19 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
 import {
-  extractDocumentHeadings,
-  getTocHeadingId,
-  scrollToHeading,
-} from "../lib/markdown-slug";
+  HELP_INTRO_SECTION_ID,
+  getDefaultSectionId,
+  getTocSection,
+  isValidSectionId,
+  normalizeSectionHash,
+  parseHelpDocument,
+  resolveSectionContent,
+  type HelpDocSection,
+} from "../lib/markdown-sections";
 
 function HelpSidebarLink({
   slug,
@@ -40,18 +45,25 @@ function HelpSectionLink({
   id,
   title,
   level,
+  active,
+  onSelect,
 }: {
   id: string;
   title: string;
   level: number;
+  active: boolean;
+  onSelect: (id: string) => void;
 }) {
   return (
     <button
       type="button"
-      onClick={() => scrollToHeading(id)}
-      className={`interactive w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-[var(--color-muted)]/50 ${
-        level === 3 ? "pl-5 text-[var(--color-muted-foreground)]" : "font-medium"
-      }`}
+      aria-current={active ? "page" : undefined}
+      onClick={() => onSelect(id)}
+      className={`interactive w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+        active
+          ? "bg-[var(--color-primary)]/15 font-medium text-[var(--color-primary)]"
+          : "hover:bg-[var(--color-muted)]/50"
+      } ${level === 3 ? "pl-5 text-[var(--color-muted-foreground)]" : ""}`}
     >
       {title}
     </button>
@@ -61,17 +73,57 @@ function HelpSectionLink({
 export default function HelpPage() {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
+  const contentRef = useRef<HTMLDivElement>(null);
   const articles = getHelpArticles(i18n.language);
   const article = getHelpArticle(slug, i18n.language);
-  const tocId = getTocHeadingId(i18n.language);
-  const sectionHeadings = useMemo(
-    () => (article ? extractDocumentHeadings(article.content) : []),
+  const parsed = useMemo(
+    () => (article ? parseHelpDocument(article.content) : null),
     [article],
   );
+  const [activeSectionId, setActiveSectionId] = useState<string>(() =>
+    parsed ? getDefaultSectionId(parsed) : HELP_INTRO_SECTION_ID,
+  );
 
-  if (!article) {
+  const tocSection = parsed ? getTocSection(parsed.sections) : undefined;
+
+  const selectSection = (sectionId: string) => {
+    setActiveSectionId(sectionId);
+    window.history.replaceState(null, "", `${window.location.pathname}#${sectionId}`);
+    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleSectionLink = (hashId: string) => {
+    if (!parsed) return;
+    const normalized = normalizeSectionHash(`#${hashId}`, parsed.sections) ?? hashId;
+    if (isValidSectionId(parsed, normalized)) {
+      selectSection(normalized);
+    }
+  };
+
+  useEffect(() => {
+    if (!parsed) return;
+    const hash = window.location.hash;
+    if (!hash) {
+      setActiveSectionId(getDefaultSectionId(parsed));
+      return;
+    }
+    const normalized = normalizeSectionHash(hash, parsed.sections);
+    if (normalized && isValidSectionId(parsed, normalized)) {
+      setActiveSectionId(normalized);
+    }
+  }, [parsed, article?.content]);
+
+  if (!article || !parsed) {
     return <Navigate to={`/help/${defaultHelpSlug}`} replace />;
   }
+
+  const activeContent = resolveSectionContent(parsed, activeSectionId);
+  const activeTitle =
+    activeSectionId === HELP_INTRO_SECTION_ID
+      ? t("help.introduction")
+      : parsed.sections.find((section) => section.id === activeSectionId)?.title ?? t("help.title");
+
+  const sidebarSections: HelpDocSection[] = parsed.sections;
 
   return (
     <div className="space-y-6">
@@ -92,28 +144,58 @@ export default function HelpPage() {
             />
           ))}
 
-          {sectionHeadings.length > 0 ? (
-            <div className="pt-4">
-              <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                {t("help.sections")}
-              </p>
-              <nav className="mt-2 space-y-0.5" aria-label={t("help.sections")}>
-                <HelpSectionLink id={tocId} title={t("help.tableOfContents")} level={2} />
-                {sectionHeadings.map((heading) => (
-                  <HelpSectionLink
-                    key={heading.id}
-                    id={heading.id}
-                    title={heading.title}
-                    level={heading.level}
-                  />
-                ))}
-              </nav>
-            </div>
-          ) : null}
+          <div className="pt-4">
+            <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+              {t("help.sections")}
+            </p>
+            <nav className="mt-2 space-y-0.5" aria-label={t("help.sections")}>
+              {parsed.intro ? (
+                <HelpSectionLink
+                  id={HELP_INTRO_SECTION_ID}
+                  title={t("help.introduction")}
+                  level={2}
+                  active={activeSectionId === HELP_INTRO_SECTION_ID}
+                  onSelect={selectSection}
+                />
+              ) : null}
+              {sidebarSections.map((section) => (
+                <HelpSectionLink
+                  key={section.id}
+                  id={section.id}
+                  title={
+                    tocSection?.id === section.id ? t("help.tableOfContents") : section.title
+                  }
+                  level={section.level}
+                  active={activeSectionId === section.id}
+                  onSelect={selectSection}
+                />
+              ))}
+            </nav>
+          </div>
         </aside>
 
-        <div className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8">
-          <MarkdownDoc content={article.content} tocId={tocId} />
+        <div
+          ref={contentRef}
+          className="min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8"
+        >
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
+            <h2 className="text-lg font-semibold">{activeTitle}</h2>
+            {activeSectionId !== getDefaultSectionId(parsed) && (
+              <button
+                type="button"
+                onClick={() => selectSection(getDefaultSectionId(parsed))}
+                className="interactive text-sm text-[var(--color-primary)] hover:underline"
+              >
+                ← {t("help.backToToc")}
+              </button>
+            )}
+          </div>
+
+          <MarkdownDoc
+            key={activeSectionId}
+            content={activeContent}
+            onSectionLink={handleSectionLink}
+          />
         </div>
       </div>
     </div>

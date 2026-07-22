@@ -75,7 +75,9 @@ export const admin = {
       schedulerTick: "Scheduler tick (ms)",
     },
     defaultLlm: {
-      title: "Default LLM (platform templates & fallback)",
+      title: "Shared LLM (all tenants)",
+      subtitle:
+        "Choose OpenRouter or TokenLab. Only the active provider is used at runtime; configure that provider's API key.",
       temperature: "Temperature",
       tokenlabSection: "TokenLab / LemonData",
       openrouterSection: "OpenRouter",

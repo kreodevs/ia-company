@@ -57,16 +57,19 @@ export default function SettingsPage() {
     setSavingLlm(true);
     try {
       const updated = await api.tenantSettings.updateLlm({
-        provider: llm.provider ?? undefined,
-        baseUrl: llm.baseUrl ?? undefined,
-        defaultModel: llm.defaultModel ?? undefined,
-        maxCostUsdPerRun: llm.maxCostUsdPerRun ?? undefined,
-        apiKey: llm.apiKey && llm.apiKey !== "••••••••" ? llm.apiKey : undefined,
+        defaultModel: llm.defaultModel ?? null,
+        maxCostUsdPerRun: llm.maxCostUsdPerRun ?? null,
       });
       setLlm(updated);
     } finally {
       setSavingLlm(false);
     }
+  };
+
+  const providerLabel = (provider: string) => {
+    if (provider === "openrouter") return t("common.openrouter");
+    if (provider === "custom") return t("common.custom");
+    return t("common.tokenlabLemonData");
   };
 
   const saveNotifications = async () => {
@@ -117,38 +120,40 @@ export default function SettingsPage() {
       <PageHeader title={t("settings.title")} />
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
+        <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+          {t("settings.llm.platformManaged")}
+        </p>
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <dt className="text-[var(--color-muted-foreground)]">{t("settings.llm.activeProvider")}</dt>
+              <dd className="mt-1 font-medium">
+                {llm.platformProvider ? providerLabel(llm.platformProvider) : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[var(--color-muted-foreground)]">{t("settings.llm.platformModel")}</dt>
+              <dd className="mt-1 font-medium">{llm.platformModel ?? "—"}</dd>
+            </div>
+          </dl>
+          <p
+            className={`mt-3 text-xs ${llm.platformConfigured ? "text-[var(--color-accent)]" : "text-[var(--color-destructive)]"}`}
+          >
+            {llm.platformConfigured ? t("settings.llm.configured") : t("settings.llm.notConfigured")}
+          </p>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm">
-            <span>{t("common.provider")}</span>
-            <select
-              value={llm.provider ?? ""}
-              onChange={(e) => setLlm({ ...llm, provider: e.target.value || null })}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
-            >
-              <option value="">{t("common.platformDefault")}</option>
-              <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
-              <option value="openrouter">{t("common.openrouter")}</option>
-              <option value="custom">{t("common.custom")}</option>
-            </select>
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span>{t("settings.llm.defaultModel")}</span>
+            <span>{t("settings.llm.tenantModelOverride")}</span>
             <input
               value={llm.defaultModel ?? ""}
               onChange={(e) => setLlm({ ...llm, defaultModel: e.target.value || null })}
+              placeholder={llm.platformModel ?? ""}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
             />
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span>{t("common.apiKey")}</span>
-            <input
-              type="password"
-              placeholder={
-                llm.apiKey === "••••••••" ? "••••••••" : t("common.apiKeyPlaceholder")
-              }
-              onChange={(e) => setLlm({ ...llm, apiKey: e.target.value || undefined })}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
-            />
+            <span className="text-xs text-[var(--color-muted-foreground)]">
+              {t("settings.llm.tenantModelHint")}
+            </span>
           </label>
           <label className="block space-y-1 text-sm">
             <span>{t("settings.llm.maxCostPerRun")}</span>

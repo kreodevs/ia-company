@@ -16,7 +16,6 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
     name: agent?.name ?? "",
     role: agent?.role ?? "",
     systemPrompt: agent?.systemPrompt ?? "",
-    provider: agent?.provider ?? "tokenlab",
     model: agent?.model ?? "claude-3-5-sonnet-20241022",
     temperature: agent?.temperature ?? 0.7,
     isActive: agent?.isActive ?? true,
@@ -32,9 +31,9 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
       setError(null);
       try {
         if (agent) {
-          await api.agents.update(agent.id, form);
+          await api.agents.update(agent.id, { ...form, provider: agent.provider });
         } else {
-          await api.agents.create(form);
+          await api.agents.create({ ...form, provider: "tokenlab" });
         }
         onSave();
       } catch (err) {
@@ -77,19 +76,8 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
             required
           />
         </label>
-        <label className="block text-sm">
-          {t("common.provider")}
-          <select
-            className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-            value={form.provider}
-            onChange={(e) =>
-              setForm({ ...form, provider: e.target.value as Agent["provider"] })
-            }
-          >
-            <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
-            <option value="openrouter">{t("common.openrouter")}</option>
-            <option value="custom">{t("common.custom")}</option>
-          </select>
+        <label className="block text-sm md:col-span-2">
+          <span className="text-[var(--color-muted-foreground)]">{t("workflows.agents.platformLlmHint")}</span>
         </label>
         <label className="block text-sm">
           {t("common.model")}

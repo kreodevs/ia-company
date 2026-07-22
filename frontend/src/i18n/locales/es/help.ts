@@ -5,6 +5,7 @@ export const help = {
   articles: "Artículos",
   articlesHeading: "Artículos",
   sections: "En este artículo",
+  introduction: "Introducción",
   tableOfContents: "Tabla de contenidos",
   backToToc: "Volver al índice",
   article: {

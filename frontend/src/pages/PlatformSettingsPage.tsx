@@ -118,6 +118,9 @@ export default function PlatformSettingsPage() {
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.defaultLlm.title")}</h2>
+        <p className="text-sm text-[var(--color-muted-foreground)]">
+          {t("admin.platformSettings.defaultLlm.subtitle")}
+        </p>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block text-sm">
             <span>{t("common.provider")}</span>
@@ -161,60 +164,66 @@ export default function PlatformSettingsPage() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
-            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.tokenlabSection")}</h3>
-            <input
-              type="password"
-              placeholder={t("common.apiKey")}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              value={settings.tokenlabApiKey ?? ""}
-              onChange={(e) => setSettings({ ...settings, tokenlabApiKey: e.target.value })}
-            />
-            <input
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              value={settings.tokenlabBaseUrl}
-              onChange={(e) => setSettings({ ...settings, tokenlabBaseUrl: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
-            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.openrouterSection")}</h3>
-            <input
-              type="password"
-              placeholder={t("common.apiKey")}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              value={settings.openrouterApiKey ?? ""}
-              onChange={(e) => setSettings({ ...settings, openrouterApiKey: e.target.value })}
-            />
-            <input
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              value={settings.openrouterBaseUrl}
-              onChange={(e) => setSettings({ ...settings, openrouterBaseUrl: e.target.value })}
-            />
-            <input
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder={t("admin.platformSettings.defaultLlm.httpReferer")}
-              value={settings.openrouterReferer}
-              onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4 lg:col-span-2">
-            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.customSection")}</h3>
-            <div className="grid gap-2 sm:grid-cols-2">
+          {settings.defaultProvider === "tokenlab" && (
+            <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.tokenlabSection")}</h3>
               <input
                 type="password"
                 placeholder={t("common.apiKey")}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-                value={settings.customApiKey ?? ""}
-                onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                value={settings.tokenlabApiKey ?? ""}
+                onChange={(e) => setSettings({ ...settings, tokenlabApiKey: e.target.value })}
               />
               <input
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-                placeholder={t("common.baseUrl")}
-                value={settings.customBaseUrl}
-                onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                value={settings.tokenlabBaseUrl}
+                onChange={(e) => setSettings({ ...settings, tokenlabBaseUrl: e.target.value })}
               />
             </div>
-          </div>
+          )}
+          {settings.defaultProvider === "openrouter" && (
+            <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.openrouterSection")}</h3>
+              <input
+                type="password"
+                placeholder={t("common.apiKey")}
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                value={settings.openrouterApiKey ?? ""}
+                onChange={(e) => setSettings({ ...settings, openrouterApiKey: e.target.value })}
+              />
+              <input
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                value={settings.openrouterBaseUrl}
+                onChange={(e) => setSettings({ ...settings, openrouterBaseUrl: e.target.value })}
+              />
+              <input
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                placeholder={t("admin.platformSettings.defaultLlm.httpReferer")}
+                value={settings.openrouterReferer}
+                onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
+              />
+            </div>
+          )}
+          {settings.defaultProvider === "custom" && (
+            <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4 lg:col-span-2">
+              <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.customSection")}</h3>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <input
+                  type="password"
+                  placeholder={t("common.apiKey")}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                  value={settings.customApiKey ?? ""}
+                  onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
+                />
+                <input
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                  placeholder={t("common.baseUrl")}
+                  value={settings.customBaseUrl}
+                  onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

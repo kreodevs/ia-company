@@ -28,9 +28,15 @@ interface MarkdownDocProps {
   content: string;
   className?: string;
   tocId?: string;
+  onSectionLink?: (sectionId: string) => void;
 }
 
-export default function MarkdownDoc({ content, className = "", tocId }: MarkdownDocProps) {
+export default function MarkdownDoc({
+  content,
+  className = "",
+  tocId,
+  onSectionLink,
+}: MarkdownDocProps) {
   const { t } = useTranslation();
   const [showBackToToc, setShowBackToToc] = useState(false);
 
@@ -39,7 +45,12 @@ export default function MarkdownDoc({ content, className = "", tocId }: Markdown
 
     const handleHashClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
       event.preventDefault();
-      scrollToHeading(href.slice(1));
+      const sectionId = href.slice(1);
+      if (onSectionLink) {
+        onSectionLink(sectionId);
+        return;
+      }
+      scrollToHeading(sectionId);
     };
 
     const base: Components = {
@@ -142,7 +153,7 @@ export default function MarkdownDoc({ content, className = "", tocId }: Markdown
     };
 
     return base;
-  }, [content]);
+  }, [content, onSectionLink]);
 
   useEffect(() => {
     const hash = window.location.hash;
