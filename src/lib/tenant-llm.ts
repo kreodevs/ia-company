@@ -14,7 +14,7 @@ export function resolveAgentProviderConfig(
 
   return {
     provider: platform.defaultProvider,
-    model: tenant?.defaultModel ?? agent.model,
+    model: tenant?.defaultModel ?? platform.defaultModel ?? agent.model,
     temperature: agent.temperature,
     apiKey: undefined,
     baseURL: undefined,

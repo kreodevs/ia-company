@@ -51,7 +51,9 @@ export default function AppHeader() {
   const location = useLocation();
   const { t } = useTranslation();
 
-  const homeLink = isSuperAdmin ? "/admin" : "/workflows";
+  const showAdminNav = isSuperAdmin && !activeTenant;
+  const showTenantNav = !!activeTenant;
+  const homeLink = showAdminNav ? "/admin" : "/workflows";
   const closeMobile = () => setMobileOpen(false);
 
   useEffect(() => {
@@ -82,10 +84,10 @@ export default function AppHeader() {
             </Link>
 
             <nav className="hidden min-w-0 flex-1 flex-wrap gap-0.5 xl:flex" aria-label={t("nav.main")}>
-              {isSuperAdmin && <NavLinkItem to="/admin" end>{t("nav.admin")}</NavLinkItem>}
-              {isSuperAdmin && <NavLinkItem to="/admin/templates">{t("nav.templates")}</NavLinkItem>}
-              {isSuperAdmin && <NavLinkItem to="/admin/settings">{t("nav.settings")}</NavLinkItem>}
-              {activeTenant && (
+              {showAdminNav && <NavLinkItem to="/admin" end>{t("nav.admin")}</NavLinkItem>}
+              {showAdminNav && <NavLinkItem to="/admin/templates">{t("nav.templates")}</NavLinkItem>}
+              {showAdminNav && <NavLinkItem to="/admin/settings">{t("nav.settings")}</NavLinkItem>}
+              {showTenantNav && (
                 <>
                   <NavLinkItem to="/workflows">{t("nav.workflows")}</NavLinkItem>
                   <NavLinkItem to="/agents">{t("nav.agents")}</NavLinkItem>
@@ -156,7 +158,7 @@ export default function AppHeader() {
                 <TenantImpersonationSelect />
               </div>
 
-              {isSuperAdmin && (
+              {showAdminNav && (
                 <MobileNavSection title={t("nav.sectionAdmin", { defaultValue: "Platform" })}>
                   <NavLinkItem to="/admin" end onNavigate={closeMobile}>
                     {t("nav.admin")}
@@ -170,7 +172,7 @@ export default function AppHeader() {
                 </MobileNavSection>
               )}
 
-              {activeTenant && (
+              {showTenantNav && (
                 <MobileNavSection title={t("nav.sectionWorkspace", { defaultValue: "Workspace" })}>
                   <NavLinkItem to="/workflows" onNavigate={closeMobile}>
                     {t("nav.workflows")}
