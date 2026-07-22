@@ -41,13 +41,29 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-md flex-col justify-center px-1 sm:px-4">
+      <div className="mb-6 text-center">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted-foreground)]">
+          {t("common.appName")}
+        </p>
+        <h1 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-foreground)] sm:text-3xl">
+          {mode === "tenant" ? t("auth.login.organizationTitle") : t("auth.login.superadminTitle")}
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+          {mode === "tenant" ? t("auth.login.organizationSubtitle") : t("auth.login.superadminSubtitle")}
+        </p>
+      </div>
+
       <Card className="shadow-lg shadow-black/20">
         <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-1">
           {(["tenant", "superadmin"] as LoginMode[]).map((m) => (
             <button
               key={m}
               type="button"
-              onClick={() => setMode(m)}
+              onClick={() => {
+                setMode(m);
+                setError(null);
+              }}
+              aria-pressed={mode === m}
               className={`interactive min-h-11 rounded-md px-3 py-2 text-sm font-medium transition sm:min-h-9 ${
                 mode === m
                   ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]"
@@ -59,23 +75,16 @@ export default function LoginPage() {
           ))}
         </div>
 
-        <h1 className="text-xl font-bold sm:text-2xl">
-          {mode === "tenant" ? t("auth.login.organizationTitle") : t("auth.login.superadminTitle")}
-        </h1>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
-          {mode === "tenant" ? t("auth.login.organizationSubtitle") : t("auth.login.superadminSubtitle")}
-        </p>
-
         {error && (
           <p
-            className="mt-4 rounded-lg bg-[var(--color-destructive)]/15 px-3 py-2.5 text-sm text-[var(--color-destructive)]"
+            className="mb-4 rounded-lg bg-[var(--color-destructive)]/15 px-3 py-2.5 text-sm text-[var(--color-destructive)]"
             role="alert"
           >
             {error}
           </p>
         )}
 
-        <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           {mode === "tenant" && (
             <Input
               label={t("auth.login.tenantSlug")}
