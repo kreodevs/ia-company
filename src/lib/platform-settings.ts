@@ -37,16 +37,18 @@ export interface ResolvedPlatformSettings {
     custom: { apiKey: string; baseURL: string };
   };
   resendApiKey: string;
+  githubApiKey: string;
 }
 
 export type PlatformSettingsPublic = Omit<
   PlatformSettings,
-  "tokenlabApiKey" | "openrouterApiKey" | "customApiKey" | "resendApiKey"
+  "tokenlabApiKey" | "openrouterApiKey" | "customApiKey" | "resendApiKey" | "githubApiKey"
 > & {
   tokenlabApiKey: string | null;
   openrouterApiKey: string | null;
   customApiKey: string | null;
   resendApiKey: string | null;
+  githubApiKey: string | null;
 };
 
 let cache: ResolvedPlatformSettings | null = null;
@@ -94,6 +96,9 @@ function envFallbackImport(): Partial<PlatformSettings> {
   if (process.env.RESEND_API_KEY) {
     data.resendApiKey = encryptSecret(process.env.RESEND_API_KEY);
   }
+  if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
+    data.githubApiKey = encryptSecret(process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN!);
+  }
 
   return data;
 }
@@ -116,6 +121,7 @@ function resolveSettings(row: PlatformSettings | null): ResolvedPlatformSettings
     emailFrom: row?.emailFrom ?? PLATFORM_SETTINGS_DEFAULTS.emailFrom,
     openrouterReferer: row?.openrouterReferer ?? PLATFORM_SETTINGS_DEFAULTS.openrouterReferer,
     resendApiKey: decryptSecret(row?.resendApiKey) ?? "",
+    githubApiKey: decryptSecret(row?.githubApiKey) ?? "",
     providers: {
       tokenlab: {
         apiKey: decryptSecret(row?.tokenlabApiKey) ?? "",
@@ -174,6 +180,7 @@ export function toPublicPlatformSettings(row: PlatformSettings): PlatformSetting
     openrouterApiKey: maskSecret(row.openrouterApiKey),
     customApiKey: maskSecret(row.customApiKey),
     resendApiKey: maskSecret(row.resendApiKey),
+    githubApiKey: maskSecret(row.githubApiKey),
   };
 }
 
@@ -190,6 +197,7 @@ export type PlatformSettingsUpdateInput = {
   customApiKey?: string;
   customBaseUrl?: string;
   resendApiKey?: string;
+  githubApiKey?: string;
   emailFrom?: string;
   executeRateLimitMax?: number;
   authRateLimitMax?: number;
@@ -234,6 +242,7 @@ export async function updatePlatformSettings(
       openrouterApiKey: mergeSecretField(input.openrouterApiKey, existing.openrouterApiKey),
       customApiKey: mergeSecretField(input.customApiKey, existing.customApiKey),
       resendApiKey: mergeSecretField(input.resendApiKey, existing.resendApiKey),
+      githubApiKey: mergeSecretField(input.githubApiKey, existing.githubApiKey),
     },
   });
 

@@ -10,6 +10,10 @@ export interface WorkflowJobData {
   initialMemory?: Record<string, unknown>;
   mergeConsensus?: boolean;
   syncConsensus?: boolean;
+  productId?: string;
+  productSlug?: string;
+  workflowName?: string;
+  metaReason?: string;
 }
 
 let queue: Queue<WorkflowJobData> | null = null;

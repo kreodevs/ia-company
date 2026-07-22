@@ -52,6 +52,7 @@ export default function AppHeader() {
                 <NavLink to="/skills">Skills</NavLink>
                 <NavLink to="/workflows">Workflows</NavLink>
                 <NavLink to="/runs">Runs</NavLink>
+                <NavLink to="/ops">Ops</NavLink>
                 <NavLink to="/consensus">Consensus</NavLink>
                 {isTenantAdmin && <NavLink to="/settings">Settings</NavLink>}
                 {isTenantAdmin && <NavLink to="/team">Team</NavLink>}
@@ -132,6 +133,9 @@ export default function AppHeader() {
                 </NavLink>
                 <NavLink to="/runs" onNavigate={closeMobile}>
                   Runs
+                </NavLink>
+                <NavLink to="/ops" onNavigate={closeMobile}>
+                  Ops
                 </NavLink>
                 <NavLink to="/consensus" onNavigate={closeMobile}>
                   Consensus

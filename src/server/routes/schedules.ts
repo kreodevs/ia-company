@@ -1,6 +1,8 @@
 import type { FastifyInstance } from "fastify";
+import type { ScheduleKind } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
+import { ensureMetaSchedule } from "../../core/meta-orchestrator.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
 export async function scheduleRoutes(app: FastifyInstance) {
@@ -10,9 +12,10 @@ export async function scheduleRoutes(app: FastifyInstance) {
   app.get("/schedules", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
+      await ensureMetaSchedule(tenantId);
       return prisma.autonomousSchedule.findMany({
         where: { tenantId },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ scheduleKind: "desc" }, { createdAt: "desc" }],
       });
     } catch (err) {
       return handleRouteError(reply, err);
@@ -20,11 +23,40 @@ export async function scheduleRoutes(app: FastifyInstance) {
   });
 
   app.post<{
-    Body: { name: string; workflowId: string; intervalSec?: number; enabled?: boolean };
+    Body: {
+      name: string;
+      workflowId?: string;
+      intervalSec?: number;
+      enabled?: boolean;
+      scheduleKind?: ScheduleKind;
+    };
   }>("/schedules", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { name, workflowId, intervalSec = 1800, enabled = true } = request.body;
+      const {
+        name,
+        workflowId,
+        intervalSec = 1800,
+        enabled = true,
+        scheduleKind = "workflow",
+      } = request.body;
+
+      if (scheduleKind === "meta") {
+        const schedule = await ensureMetaSchedule(tenantId);
+        if (name !== schedule.name || intervalSec !== schedule.intervalSec || enabled !== schedule.enabled) {
+          const updated = await prisma.autonomousSchedule.update({
+            where: { id: schedule.id },
+            data: { name, intervalSec, enabled, nextRunAt: enabled ? new Date() : null },
+          });
+          await logAudit(request, "schedule.create", { scheduleId: updated.id, name, scheduleKind: "meta" });
+          return reply.status(201).send(updated);
+        }
+        return reply.status(201).send(schedule);
+      }
+
+      if (!workflowId) {
+        return reply.status(400).send({ error: "workflowId is required for workflow schedules" });
+      }
 
       const workflow = await prisma.workflow.findFirst({
         where: { id: workflowId, tenantId },
@@ -37,6 +69,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         data: {
           tenantId,
           workflowId,
+          scheduleKind: "workflow",
           name,
           intervalSec,
           enabled,
@@ -51,7 +84,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
     }
   });
 
-  app.put<{ Params: { id: string }; Body: { enabled?: boolean; intervalSec?: number } }>(
+  app.put<{ Params: { id: string }; Body: { enabled?: boolean; intervalSec?: number; name?: string } }>(
     "/schedules/:id",
     async (request, reply) => {
       try {
@@ -95,15 +128,24 @@ export async function scheduleRoutes(app: FastifyInstance) {
       if (!schedule) return reply.status(404).send({ error: "Schedule not found" });
 
       const { assertTenantCanExecute } = await import("../../lib/usage-limits.js");
-      const { executeWorkflowInBackground } = await import("../../core/engine.js");
 
       await assertTenantCanExecute(tenantId);
 
-      const runId = await executeWorkflowInBackground(schedule.workflowId, {
-        tenantId,
-        mergeConsensus: true,
-        syncConsensus: true,
-      });
+      let runId: string;
+      if (schedule.scheduleKind === "meta") {
+        const { executeMetaScheduleRun } = await import("../../core/meta-orchestrator.js");
+        runId = await executeMetaScheduleRun(tenantId);
+      } else {
+        if (!schedule.workflowId) {
+          return reply.status(400).send({ error: "Schedule has no workflow configured" });
+        }
+        const { executeWorkflowInBackground } = await import("../../core/engine.js");
+        runId = await executeWorkflowInBackground(schedule.workflowId, {
+          tenantId,
+          mergeConsensus: true,
+          syncConsensus: true,
+        });
+      }
 
       await logAudit(request, "schedule.run_now", { scheduleId: schedule.id, runId });
       return reply.status(202).send({ runId, status: "PENDING" });

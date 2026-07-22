@@ -1,7 +1,8 @@
 import { generateText } from "ai";
 import type { ExecutionStatus, LogLevel } from "@prisma/client";
-import { persistConsensusFromRun } from "../lib/consensus.js";
+import { processConvergenceAfterRun } from "../lib/convergence.js";
 import { prisma } from "../lib/prisma.js";
+import { ensureProductWorkspace } from "../lib/product-workspace.js";
 import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
 import { resolveAgentProviderConfig, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
@@ -24,6 +25,8 @@ interface TenantExecutionContext {
   workspaceRoot: string;
   llm: TenantLlmOverrides | null;
   maxCostUsdPerRun: number | null;
+  productSlug?: string;
+  githubToken?: string;
 }
 
 export class WorkflowExecutor {
@@ -62,8 +65,9 @@ export class WorkflowExecutor {
     emit?: LogEmitter,
   ): Promise<void> {
     const workflow = await this.loadWorkflowGraph(workflowId);
-    const tenantCtx = await this.loadTenantContext(input.tenantId);
+    const tenantCtx = await this.loadTenantContext(input.tenantId, input.productSlug);
     const syncConsensus = input.syncConsensus !== false;
+    const workflowName = input.workflowName ?? workflow.name;
 
     const emitEvent = (type: ExecutionEvent["type"], data: Record<string, unknown>) => {
       const event: ExecutionEvent = {
@@ -175,7 +179,7 @@ export class WorkflowExecutor {
       });
 
       if (input.tenantId && syncConsensus) {
-        await persistConsensusFromRun(input.tenantId, sharedMemory);
+        await processConvergenceAfterRun(input.tenantId, workflowName, sharedMemory, runId);
       }
 
       await this.dispatchRunNotification(runId, input.tenantId, "COMPLETED", {
@@ -242,6 +246,8 @@ export class WorkflowExecutor {
       workspaceRoot: tenantCtx.workspaceRoot,
       shellTimeoutMs: this.shellTimeoutMs,
       runId,
+      productSlug: tenantCtx.productSlug,
+      githubToken: tenantCtx.githubToken,
       onLog: (message, payload) => {
         void this.appendLog(runId, "debug", message, { agentId: agent.id, payload });
       },
@@ -277,7 +283,7 @@ export class WorkflowExecutor {
     };
   }
 
-  private async loadTenantContext(tenantId?: string): Promise<TenantExecutionContext> {
+  private async loadTenantContext(tenantId?: string, productSlug?: string): Promise<TenantExecutionContext> {
     if (!tenantId) {
       return {
         workspaceRoot: this.workspaceRoot,
@@ -291,13 +297,26 @@ export class WorkflowExecutor {
       include: { llmConfig: true },
     });
 
-    const workspaceRoot = await ensureTenantWorkspace(tenantId, tenant?.slug);
+    const workspaceRoot = productSlug
+      ? await ensureProductWorkspace(productSlug)
+      : await ensureTenantWorkspace(tenantId, tenant?.slug);
     const llm = tenantLlmFromRecord(tenant?.llmConfig ?? null);
+
+    let githubToken: string | undefined;
+    try {
+      const { getPlatformSettingsSync } = await import("../lib/platform-settings.js");
+      const settings = getPlatformSettingsSync();
+      githubToken = settings.githubApiKey || undefined;
+    } catch {
+      githubToken = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN;
+    }
 
     return {
       workspaceRoot,
       llm,
       maxCostUsdPerRun: llm?.maxCostUsdPerRun ?? null,
+      productSlug,
+      githubToken,
     };
   }
 
@@ -443,6 +462,16 @@ export function compileSystemPrompt(
 
   if (inputConfig.customPrompt) {
     sections.push(`\n## Step Instructions\n${inputConfig.customPrompt}`);
+  }
+
+  if (typeof sharedMemory.convergenceRules === "string" && sharedMemory.convergenceRules.trim()) {
+    sections.push(`\n## Cycle Convergence\n${sharedMemory.convergenceRules.trim()}`);
+  }
+
+  if (typeof sharedMemory.focusProductSlug === "string") {
+    sections.push(
+      `\n## Focus Product\nWorkspace: projects/${sharedMemory.focusProductSlug}/\nName: ${sharedMemory.focusProductName ?? sharedMemory.focusProductSlug}`,
+    );
   }
 
   if (inputConfig.passSharedMemory !== false && Object.keys(sharedMemory).length > 0) {
@@ -600,6 +629,10 @@ export async function executeWorkflowInBackground(
     initialMemory: initialMemory as Record<string, unknown> | undefined,
     mergeConsensus: input.mergeConsensus,
     syncConsensus: input.syncConsensus,
+    productId: input.productId,
+    productSlug: input.productSlug,
+    workflowName: input.workflowName,
+    metaReason: input.metaReason,
   };
 
   if (process.env.USE_INLINE_EXECUTOR !== "true") {

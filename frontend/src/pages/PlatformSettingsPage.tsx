@@ -238,6 +238,24 @@ export default function PlatformSettingsPage() {
         </div>
       </section>
 
+      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <h2 className="font-semibold">GitHub (autonomous git/gh tools)</h2>
+        <label className="block text-sm">
+          GitHub personal access token
+          <input
+            type="password"
+            className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            value={settings.githubApiKey ?? ""}
+            onChange={(e) => setSettings({ ...settings, githubApiKey: e.target.value })}
+            placeholder="ghp_… or fine-grained token"
+          />
+        </label>
+        <p className="text-xs text-[var(--color-muted-foreground)]">
+          Used by workflow agents for <code>git_commit</code> and repo operations. Can also be set via{" "}
+          <code>GH_TOKEN</code> in server environment.
+        </p>
+      </section>
+
       <button
         disabled={saving}
         onClick={() => void save()}

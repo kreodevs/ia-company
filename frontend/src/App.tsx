@@ -6,6 +6,7 @@ import {
   SetupGate,
 } from "./components/SetupGate";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import OpsPage from "./pages/OpsPage";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -54,6 +55,7 @@ function AppShell() {
               <Route path="workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="runs" element={<RunsPage />} />
               <Route path="runs/:id" element={<RunDetailPage />} />
+              <Route path="ops" element={<OpsPage />} />
               <Route path="consensus" element={<ConsensusPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="team" element={<TenantUsersPage />} />

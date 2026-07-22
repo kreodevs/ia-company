@@ -196,6 +196,83 @@ app.get('/og', async c => {
   });
 });
 
+// ── Stripe checkout ───────────────────────────────────────────────────────────
+async function createStripeCheckoutSession(
+  env: Env,
+  tier: Tier,
+  successUrl: string,
+  cancelUrl: string,
+  customerEmail?: string,
+): Promise<string | null> {
+  const secret = env.STRIPE_SECRET_KEY;
+  const priceId =
+    tier === "business" ? env.STRIPE_PRICE_BUSINESS : env.STRIPE_PRICE_PRO;
+  if (!secret || !priceId) return null;
+
+  const body = new URLSearchParams({
+    mode: "subscription",
+    "line_items[0][price]": priceId,
+    "line_items[0][quantity]": "1",
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    "metadata[tier]": tier,
+  });
+  if (customerEmail) body.set("customer_email", customerEmail);
+
+  const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    console.error("Stripe checkout error:", await res.text());
+    return null;
+  }
+
+  const data = (await res.json()) as { url?: string };
+  return data.url ?? null;
+}
+
+app.get("/checkout", async c => {
+  const tierRaw = c.req.query("tier") ?? "pro";
+  const validTiers: Tier[] = ["pro", "business"];
+  const tier: Tier = validTiers.includes(tierRaw as Tier) ? (tierRaw as Tier) : "pro";
+  const email = (c.req.query("email") ?? "").trim().toLowerCase();
+  const origin = envPublicOrigin(c.req.url, c.env.PUBLIC_URL);
+
+  const checkoutUrl = await createStripeCheckoutSession(
+    c.env,
+    tier,
+    `${origin}/checkout/success?tier=${tier}`,
+    `${origin}/register?tier=${tier}`,
+    email || undefined,
+  );
+
+  if (checkoutUrl) return c.redirect(checkoutUrl, 302);
+  return c.redirect(`/register?tier=${tier}`, 302);
+});
+
+app.get("/checkout/success", c => {
+  const tier = c.req.query("tier") ?? "pro";
+  return htmlResponse(
+    `<!DOCTYPE html><html><body style="font-family:system-ui;background:#0A0A0A;color:#F5F5F5;padding:40px;text-align:center">
+      <h1>Payment received</h1>
+      <p>Complete registration to activate your ${tier} API key.</p>
+      <p><a href="/register?tier=${tier}" style="color:#F59E0B">Register now →</a></p>
+    </body></html>`,
+  );
+});
+
+function envPublicOrigin(requestUrl: string, configured?: string): string {
+  if (configured) return configured.replace(/\/$/, "");
+  const url = new URL(requestUrl);
+  return `${url.protocol}//${url.host}`;
+}
+
 // ── Registration ──────────────────────────────────────────────────────────────
 app.get('/register', c => {
   const tier = c.req.query('tier');

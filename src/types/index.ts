@@ -81,6 +81,8 @@ export interface ToolExecutionContext {
   workspaceRoot: string;
   shellTimeoutMs: number;
   runId: string;
+  productSlug?: string;
+  githubToken?: string;
   onLog?: (message: string, payload?: Record<string, unknown>) => void;
 }
 
@@ -149,4 +151,8 @@ export interface ExecuteWorkflowInput {
   mergeConsensus?: boolean;
   /** When true (default), write shared memory back to tenant consensus on success */
   syncConsensus?: boolean;
+  productId?: string;
+  productSlug?: string;
+  workflowName?: string;
+  metaReason?: string;
 }

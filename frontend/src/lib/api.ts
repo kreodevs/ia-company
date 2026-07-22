@@ -152,7 +152,82 @@ export interface TenantConsensus {
   tenantId: string;
   content: string;
   nextAction: string | null;
+  companyPhase?: string;
   updatedAt?: string;
+}
+
+export type CompanyPhase =
+  | "exploring"
+  | "validating"
+  | "building"
+  | "launching"
+  | "growing";
+
+export type ProductPhase =
+  | "queued"
+  | "evaluating"
+  | "building"
+  | "launching"
+  | "growing"
+  | "paused"
+  | "archived";
+
+export type GoNoGoDecision = "pending" | "go" | "no_go";
+
+export interface TenantProduct {
+  id: string;
+  tenantId: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  phase: ProductPhase;
+  pipelineRank: number;
+  goNoGo: GoNoGoDecision;
+  revenueUsd: number;
+  lastRunId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PipelineIdea {
+  id: string;
+  tenantId: string;
+  title: string;
+  description: string | null;
+  rank: number;
+  goNoGo: GoNoGoDecision;
+  createdAt: string;
+}
+
+export interface OpsPortfolio {
+  companyPhase: CompanyPhase;
+  cycleNumber: number;
+  stuckCounter: number;
+  nextAction: string | null;
+  focusProduct: TenantProduct | null;
+  stats: {
+    products: number;
+    building: number;
+    growing: number;
+    pipeline: number;
+    totalRevenueUsd: number;
+  };
+  products: TenantProduct[];
+  pipeline: PipelineIdea[];
+  schedules: AutonomousSchedule[];
+  recentRuns: Array<{
+    id: string;
+    status: string;
+    createdAt: string;
+    workflow: { id: string; name: string } | null;
+  }>;
+}
+
+export interface OpsNextRun {
+  workflowId: string;
+  workflowName: string;
+  productSlug: string | null;
+  reason: string;
 }
 
 export interface TenantLlmConfig {
@@ -167,7 +242,8 @@ export interface TenantLlmConfig {
 export interface AutonomousSchedule {
   id: string;
   tenantId: string;
-  workflowId: string;
+  workflowId: string | null;
+  scheduleKind: "workflow" | "meta";
   name: string;
   intervalSec: number;
   enabled: boolean;
@@ -223,6 +299,7 @@ export interface PlatformSettings {
   customApiKey: string | null;
   customBaseUrl: string;
   resendApiKey: string | null;
+  githubApiKey: string | null;
   emailFrom: string;
   executeRateLimitMax: number;
   authRateLimitMax: number;
@@ -446,13 +523,45 @@ export const api = {
   },
   schedules: {
     list: () => request<AutonomousSchedule[]>("/schedules"),
-    create: (body: { name: string; workflowId: string; intervalSec?: number; enabled?: boolean }) =>
-      request<AutonomousSchedule>("/schedules", { method: "POST", body: JSON.stringify(body) }),
-    update: (id: string, body: { enabled?: boolean; intervalSec?: number }) =>
+    create: (body: {
+      name: string;
+      workflowId?: string;
+      intervalSec?: number;
+      enabled?: boolean;
+      scheduleKind?: "workflow" | "meta";
+    }) => request<AutonomousSchedule>("/schedules", { method: "POST", body: JSON.stringify(body) }),
+    update: (id: string, body: { enabled?: boolean; intervalSec?: number; name?: string }) =>
       request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
     runNow: (id: string) =>
       request<{ runId: string; status: string }>(`/schedules/${id}/run-now`, { method: "POST" }),
+    ensureMeta: () =>
+      request<AutonomousSchedule>("/schedules", {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Autonomous company (meta)",
+          scheduleKind: "meta",
+          intervalSec: 1800,
+          enabled: true,
+        }),
+      }),
+  },
+  products: {
+    list: () => request<TenantProduct[]>("/products"),
+    pipeline: () => request<PipelineIdea[]>("/products/pipeline"),
+    focus: (id: string) =>
+      request<{ focusProductId: string | null }>(`/products/${id}/focus`, { method: "POST" }),
+    pipelineDecision: (id: string, decision: GoNoGoDecision) =>
+      request<PipelineIdea>(`/products/pipeline/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ decision }),
+      }),
+    bootstrap: (body: { name: string; slug?: string; description?: string }) =>
+      request<TenantProduct>("/products/bootstrap", { method: "POST", body: JSON.stringify(body) }),
+  },
+  ops: {
+    portfolio: () => request<OpsPortfolio>("/ops/portfolio"),
+    nextRun: () => request<OpsNextRun>("/ops/next-run"),
   },
   tenantSettings: {
     getLlm: () => request<TenantLlmConfig>("/tenant/settings/llm"),

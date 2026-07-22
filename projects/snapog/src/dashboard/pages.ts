@@ -543,7 +543,7 @@ export function landingPage(host: string): string {
             <li>Priority support</li>
           </ul>
           <div class="pricing-cta">
-            <a href="/register?tier=pro" class="btn btn-primary" style="width:100%;">Start Pro →</a>
+            <a href="/checkout?tier=pro" class="btn btn-primary" style="width:100%;">Start Pro →</a>
           </div>
         </div>
 

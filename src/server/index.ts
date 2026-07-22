@@ -13,6 +13,8 @@ import {
   getPlatformSettingsSync,
   warmPlatformSettingsCache,
 } from "../lib/platform-settings.js";
+import { opsRoutes } from "./routes/ops.js";
+import { productRoutes } from "./routes/products.js";
 import { runRoutes } from "./routes/runs.js";
 import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
@@ -60,6 +62,8 @@ async function buildServer() {
     await api.register(tenantUserRoutes);
     await api.register(tenantSettingsRoutes);
     await api.register(consensusRoutes);
+    await api.register(productRoutes);
+    await api.register(opsRoutes);
     await api.register(scheduleRoutes);
     await api.register(agentRoutes);
     await api.register(skillRoutes);

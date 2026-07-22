@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { hashPassword } from "../../lib/auth.js";
 import { clonePlatformTemplatesToTenant, syncPlatformTemplatesToTenant } from "../lib/clone-templates.js";
+import { ensureMetaSchedule } from "../../core/meta-orchestrator.js";
+import { ensureDefaultProducts, ensureTenantCycleState } from "../../lib/product-registry.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, HttpError } from "../lib/request-context.js";
 
@@ -124,10 +126,15 @@ export async function adminRoutes(app: FastifyInstance) {
       await prisma.tenantConsensus.create({
         data: {
           tenantId: tenant.id,
-          content: `# ${tenant.name} Consensus\n\nShared memory for autonomous cycles.`,
-          nextAction: "Define the first product or feature to evaluate",
+          content: `# ${tenant.name} Consensus\n\n## Current Phase\nExploring\n\n## Active Projects\n\n## Pipeline Queue\n\n## Next Action\nRun opportunity discovery for new product ideas while growing existing products.\n`,
+          nextAction: "Run opportunity discovery for new product ideas",
+          companyPhase: "exploring",
         },
       });
+
+      await ensureTenantCycleState(tenant.id);
+      await ensureDefaultProducts(tenant.id, tenant.slug);
+      await ensureMetaSchedule(tenant.id);
 
       const cloned = cloneTemplates
         ? await clonePlatformTemplatesToTenant(tenant.id)

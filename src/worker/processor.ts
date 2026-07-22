@@ -11,7 +11,8 @@ export function startWorkflowWorker(): Worker<WorkflowJobData> {
   const worker = new Worker<WorkflowJobData>(
     WORKFLOW_QUEUE,
     async (job) => {
-      const { runId, workflowId, tenantId, initialMemory, mergeConsensus, syncConsensus } = job.data;
+      const { runId, workflowId, tenantId, initialMemory, mergeConsensus, syncConsensus, productSlug, workflowName } =
+        job.data;
 
       if (isRunCancelled(runId)) {
         await prisma.executionRun.update({
@@ -27,6 +28,8 @@ export function startWorkflowWorker(): Worker<WorkflowJobData> {
         initialMemory,
         mergeConsensus,
         syncConsensus,
+        productSlug,
+        workflowName,
       });
       clearRunCancellation(runId);
     },

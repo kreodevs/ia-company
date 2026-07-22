@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api, type TenantConsensus } from "../lib/api";
 
 export default function ConsensusPage() {
@@ -39,6 +40,17 @@ export default function ConsensusPage() {
           Shared baton for autonomous cycles — equivalent to <code>memories/consensus.md</code> in the
           original CLI workflow.
         </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        {record?.companyPhase && (
+          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-1 text-xs capitalize">
+            Phase: {record.companyPhase}
+          </span>
+        )}
+        <Link to="/ops" className="text-sm text-[var(--color-primary)] hover:underline">
+          View ops dashboard →
+        </Link>
       </div>
 
       <label className="block space-y-1 text-sm">

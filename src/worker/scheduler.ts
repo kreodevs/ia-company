@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { executeMetaScheduleRun } from "../core/meta-orchestrator.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
 import { getPlatformSettingsSync, warmPlatformSettingsCache } from "../lib/platform-settings.js";
 
@@ -20,19 +21,35 @@ async function tickSchedules() {
   });
 
   for (const schedule of due) {
-    const runId = await executeWorkflowInBackground(schedule.workflowId, {
-      tenantId: schedule.tenantId,
-      mergeConsensus: true,
-      syncConsensus: true,
-    });
+    try {
+      const { assertTenantCanExecute } = await import("../lib/usage-limits.js");
+      await assertTenantCanExecute(schedule.tenantId);
 
-    const nextRunAt = new Date(Date.now() + schedule.intervalSec * 1000);
-    await prisma.autonomousSchedule.update({
-      where: { id: schedule.id },
-      data: { lastRunAt: now, nextRunAt },
-    });
+      let runId: string;
+      if (schedule.scheduleKind === "meta") {
+        runId = await executeMetaScheduleRun(schedule.tenantId);
+      } else {
+        if (!schedule.workflowId) {
+          console.warn(`Schedule ${schedule.id} missing workflowId`);
+          continue;
+        }
+        runId = await executeWorkflowInBackground(schedule.workflowId, {
+          tenantId: schedule.tenantId,
+          mergeConsensus: true,
+          syncConsensus: true,
+        });
+      }
 
-    console.log(`Scheduled run ${runId} for schedule ${schedule.name}`);
+      const nextRunAt = new Date(Date.now() + schedule.intervalSec * 1000);
+      await prisma.autonomousSchedule.update({
+        where: { id: schedule.id },
+        data: { lastRunAt: now, nextRunAt },
+      });
+
+      console.log(`Scheduled run ${runId} for schedule ${schedule.name} (${schedule.scheduleKind})`);
+    } catch (err) {
+      console.error(`Schedule ${schedule.id} failed:`, err);
+    }
   }
 }
 

@@ -51,6 +51,19 @@ Headers:
 
 Free tier images include "snapog.dev" watermark.
 
+## Stripe checkout (Pro / Business)
+
+When configured on the Worker:
+
+| Secret / var | Purpose |
+|--------------|---------|
+| `STRIPE_SECRET_KEY` | Stripe API secret |
+| `STRIPE_PRICE_PRO` | Price ID for Pro ($19/mo) |
+| `STRIPE_PRICE_BUSINESS` | Price ID for Business ($49/mo) |
+| `PUBLIC_URL` | Checkout success/cancel URLs |
+
+Landing **Start Pro** links to `GET /checkout?tier=pro`. Without Stripe vars, checkout redirects to `/register`.
+
 ## Local Development
 
 ### Prerequisites

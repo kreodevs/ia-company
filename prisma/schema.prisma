@@ -38,6 +38,9 @@ model Tenant {
   auditLogs AuditLog[]
   notificationConfig TenantNotificationConfig?
   usageLimits TenantUsageLimits?
+  cycleState TenantCycleState?
+  products TenantProduct[]
+  pipelineIdeas PipelineIdea[]
 }
 
 enum TenantUserRole {
@@ -247,10 +250,90 @@ model TenantConsensus {
   tenantId   String   @unique
   content    String   @db.Text
   nextAction String?  @db.Text
+  companyPhase CompanyPhase @default(exploring)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+enum CompanyPhase {
+  exploring
+  validating
+  building
+  launching
+  growing
+}
+
+enum ProductPhase {
+  queued
+  evaluating
+  building
+  launching
+  growing
+  paused
+  archived
+}
+
+enum GoNoGoDecision {
+  pending
+  go
+  no_go
+}
+
+enum ScheduleKind {
+  workflow
+  meta
+}
+
+model TenantCycleState {
+  tenantId       String        @id
+  cycleNumber    Int           @default(1)
+  phase          CompanyPhase  @default(exploring)
+  stuckCounter   Int           @default(0)
+  lastNextAction String?       @db.Text
+  focusProductId String?
+  updatedAt      DateTime      @updatedAt
+
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  focusProduct TenantProduct? @relation("FocusProduct", fields: [focusProductId], references: [id], onDelete: SetNull)
+}
+
+model TenantProduct {
+  id          String         @id @default(cuid())
+  tenantId    String
+  slug        String
+  name        String
+  description String?        @db.Text
+  phase       ProductPhase   @default(queued)
+  pipelineRank Int           @default(0)
+  goNoGo      GoNoGoDecision @default(pending)
+  revenueUsd  Float          @default(0)
+  lastRunId   String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  focusCycles TenantCycleState[] @relation("FocusProduct")
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, phase])
+}
+
+model PipelineIdea {
+  id                  String         @id @default(cuid())
+  tenantId            String
+  title               String
+  description         String?        @db.Text
+  rank                Int            @default(0)
+  goNoGo              GoNoGoDecision @default(pending)
+  promotedProductId   String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, rank])
 }
 
 // ─── Tenant LLM overrides ───────────────────────────────────────────────────
@@ -270,16 +353,17 @@ model TenantLlmConfig {
 // ─── Autonomous scheduler (replaces auto-loop.sh per tenant) ──────────────────
 
 model AutonomousSchedule {
-  id           String    @id @default(cuid())
+  id           String       @id @default(cuid())
   tenantId     String
-  workflowId   String
+  scheduleKind ScheduleKind @default(workflow)
+  workflowId   String?
   name         String
-  intervalSec  Int       @default(1800)
-  enabled      Boolean   @default(true)
+  intervalSec  Int          @default(1800)
+  enabled      Boolean      @default(true)
   lastRunAt    DateTime?
   nextRunAt    DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -363,6 +447,7 @@ model PlatformSettings {
   customApiKey        String?       @db.Text
   customBaseUrl       String        @default("")
   resendApiKey        String?       @db.Text
+  githubApiKey        String?       @db.Text
   emailFrom           String        @default("onboarding@resend.dev")
   executeRateLimitMax Int           @default(10)
   authRateLimitMax    Int           @default(30)

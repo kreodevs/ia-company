@@ -52,6 +52,7 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
           openrouter: Boolean(settings.providers.openrouter.apiKey),
           custom: Boolean(settings.providers.custom.apiKey),
           resend: Boolean(settings.resendApiKey),
+          github: Boolean(settings.githubApiKey),
         },
       };
     } catch (err) {

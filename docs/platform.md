@@ -33,6 +33,28 @@ Each tenant has a `TenantConsensus` record — the platform equivalent of `memor
 
 Manual execute from the workflow editor uses **Load & sync tenant consensus** by default.
 
+## Multi-product autonomous company
+
+Tenants can run a **portfolio** of products under `projects/{product-slug}/` (e.g. `projects/snapog/`).
+
+| Concept | Description |
+|---------|-------------|
+| **Meta schedule** | `scheduleKind: meta` — worker picks the next workflow dynamically (discovery → evaluation → build → launch/pricing) |
+| **TenantProduct** | Registered product with phase (`building`, `launching`, `growing`, …) |
+| **PipelineIdea** | Ranked ideas from discovery cycles; GO/NO-GO gates bootstrap |
+| **TenantCycleState** | Cycle counter, stuck detection, focus product |
+| **Convergence rules** | Injected into agent memory; cycles 1–3 enforce brainstorm → evaluate → ship |
+
+API routes:
+
+- `GET /api/ops/portfolio` — dashboard data (products, pipeline, schedules, recent runs)
+- `GET /api/ops/next-run` — meta-orchestrator preview (workflow + reason)
+- `GET/POST /api/products/*` — product registry and pipeline actions
+
+UI: `/ops` (tenant), meta schedule in `/settings`, GitHub token in `/admin/settings`.
+
+Max **2 products** in Building/Launching simultaneously; Growing products (e.g. SnapOG) do not block new discovery.
+
 ## Auth model
 
 | Role | Login | Scope |
@@ -65,7 +87,7 @@ See `.env.example` (development) and `.env.production.example` (Docker/Dokploy).
 | `PORT` / `HOST` | Server bind |
 | `CORS_ORIGIN` | Optional override; default uses **Platform settings → Public URL** |
 
-**Configure in UI** (`/admin/settings`, superadmin): public URL, default LLM provider/model, TokenLab/OpenRouter/Custom keys, Resend email, rate limits, shell timeout, scheduler interval.
+**Configure in UI** (`/admin/settings`, superadmin): public URL, default LLM provider/model, TokenLab/OpenRouter/Custom keys, Resend email, **GitHub token** (for autonomous git/gh tools), rate limits, shell timeout, scheduler interval.
 
 Legacy env vars (`TOKENLAB_API_KEY`, `PUBLIC_URL`, etc.) are imported into Platform settings on first boot if present.
 

@@ -300,9 +300,55 @@ export default function SettingsPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Autonomous schedules</h2>
+        <h2 className="text-lg font-semibold">Autonomous company (meta schedule)</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Run workflows on an interval using consensus memory as initial context.
+          The meta schedule dynamically picks discovery, evaluation, build, or growth workflows based on
+          company phase and product portfolio. Fixed workflow schedules below are optional.
+        </p>
+        {schedules.some((s) => s.scheduleKind === "meta") ? (
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+            {schedules
+              .filter((s) => s.scheduleKind === "meta")
+              .map((schedule) => (
+                <div key={schedule.id} className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="font-medium">{schedule.name}</div>
+                    <div className="text-xs text-[var(--color-muted-foreground)]">
+                      Meta orchestrator · every {schedule.intervalSec}s ·{" "}
+                      {schedule.enabled ? "enabled" : "paused"}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => void runScheduleNow(schedule.id)}
+                      className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
+                    >
+                      Run now
+                    </button>
+                    <button
+                      onClick={() => void toggleSchedule(schedule)}
+                      className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
+                    >
+                      {schedule.enabled ? "Pause" : "Enable"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <button
+            onClick={() => void api.schedules.ensureMeta().then(() => load())}
+            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
+          >
+            Enable meta schedule
+          </button>
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Fixed workflow schedules</h2>
+        <p className="text-sm text-[var(--color-muted-foreground)]">
+          Run a specific workflow on an interval using consensus memory as initial context.
         </p>
 
         <div className="flex flex-wrap gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
@@ -343,7 +389,7 @@ export default function SettingsPage() {
         </div>
 
         <ul className="space-y-2">
-          {schedules.map((schedule) => (
+          {schedules.filter((s) => s.scheduleKind !== "meta").map((schedule) => (
             <li
               key={schedule.id}
               className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3"
@@ -377,7 +423,7 @@ export default function SettingsPage() {
               </div>
             </li>
           ))}
-          {schedules.length === 0 && (
+          {schedules.filter((s) => s.scheduleKind !== "meta").length === 0 && (
             <p className="text-sm text-[var(--color-muted-foreground)]">No schedules yet.</p>
           )}
         </ul>

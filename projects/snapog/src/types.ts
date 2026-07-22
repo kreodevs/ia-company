@@ -36,4 +36,8 @@ export interface Env {
   OG_CACHE: R2Bucket;
   ENVIRONMENT: string;
   AUTH_SECRET?: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_PRICE_PRO?: string;
+  STRIPE_PRICE_BUSINESS?: string;
+  PUBLIC_URL?: string;
 }

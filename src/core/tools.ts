@@ -163,7 +163,114 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     },
   });
 
-  return { run_shell_command, read_file, write_file, list_dir };
+  const git_status = tool({
+    description: "Show git status in the workspace (short format)",
+    parameters: z.object({}),
+    execute: async () => {
+      const { stdout, stderr, exitCode } = await runShell(ctx, "git status --short --branch", ctx.workspaceRoot);
+      return { stdout, stderr, exitCode };
+    },
+  });
+
+  const git_commit = tool({
+    description: "Stage all changes and create a git commit in the workspace",
+    parameters: z.object({
+      message: z.string().describe("Commit message"),
+    }),
+    execute: async ({ message }) => {
+      if (!message.trim()) throw new Error("Commit message required");
+      await runShell(ctx, "git add -A", ctx.workspaceRoot);
+      const result = await runShell(
+        ctx,
+        `git commit -m ${JSON.stringify(message.trim())}`,
+        ctx.workspaceRoot,
+      );
+      return result;
+    },
+  });
+
+  const npm_run = tool({
+    description: "Run an npm script in the workspace (install, build, test, deploy only)",
+    parameters: z.object({
+      script: z.enum(["install", "build", "test", "run"]),
+      args: z.string().optional().describe("Extra args for npm run, e.g. deploy"),
+    }),
+    execute: async ({ script, args }) => {
+      const allowed = ["install", "build", "test", "run"];
+      if (!allowed.includes(script)) throw new Error("Script not allowed");
+      const cmd =
+        script === "install"
+          ? "npm install"
+          : script === "run" && args
+            ? `npm run ${args}`
+            : `npm ${script}`;
+      return runShell(ctx, cmd, ctx.workspaceRoot);
+    },
+  });
+
+  const wrangler_deploy = tool({
+    description: "Deploy a Cloudflare Worker project with wrangler from workspace root",
+    parameters: z.object({
+      cwd: z.string().default(".").describe("Project directory relative to workspace"),
+    }),
+    execute: async ({ cwd }) => {
+      const workDir = resolveSafePath(ctx.workspaceRoot, cwd);
+      return runShell(ctx, "npx wrangler deploy", workDir);
+    },
+  });
+
+  return {
+    run_shell_command,
+    read_file,
+    write_file,
+    list_dir,
+    git_status,
+    git_commit,
+    npm_run,
+    wrangler_deploy,
+  };
+}
+
+async function runShell(
+  ctx: ToolExecutionContext,
+  command: string,
+  cwd: string,
+): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  if (!isCommandSafe(command)) {
+    throw new Error("Command blocked by safety policy");
+  }
+  const lower = command.toLowerCase();
+  if (lower.includes("push --force") || lower.includes("push -f")) {
+    throw new Error("Force push blocked by safety policy");
+  }
+  if (lower.includes("gh repo delete") || lower.includes("wrangler delete")) {
+    throw new Error("Destructive command blocked");
+  }
+
+  ctx.onLog?.(`shell: ${command}`, { cwd });
+
+  const env = { ...process.env, CI: "true" } as Record<string, string>;
+  if (ctx.githubToken) env.GH_TOKEN = ctx.githubToken;
+
+  try {
+    const { stdout, stderr } = await execFileAsync("sh", ["-c", command], {
+      cwd,
+      timeout: ctx.shellTimeoutMs,
+      maxBuffer: 1024 * 512,
+      env,
+    });
+    return { stdout: stdout.slice(0, 50_000), stderr: stderr.slice(0, 10_000), exitCode: 0 };
+  } catch (err: unknown) {
+    const error = err as { stdout?: string; stderr?: string; code?: number; killed?: boolean };
+    if (error.killed) {
+      throw new Error(`Command timed out after ${ctx.shellTimeoutMs}ms`);
+    }
+    return {
+      stdout: (error.stdout ?? "").slice(0, 50_000),
+      stderr: (error.stderr ?? String(err)).slice(0, 10_000),
+      exitCode: error.code ?? 1,
+    };
+  }
 }
 
 export type AgentTools = ReturnType<typeof createAgentTools>;

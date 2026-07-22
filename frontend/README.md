@@ -37,7 +37,8 @@ Two login modes at `/login`:
 | `/runs` | `RunsPage` | Historical execution runs with token/cost metrics |
 | `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
-| `/settings` | `SettingsPage` | Tenant LLM keys + autonomous workflow schedules (admin only) |
+| `/ops` | `OpsPage` | Multi-product portfolio, pipeline queue, meta-orchestrator preview |
+| `/settings` | `SettingsPage` | Tenant LLM keys + meta/fixed autonomous schedules (admin only) |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Superadmin — React Flow editor for global workflow templates |
 
 Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
