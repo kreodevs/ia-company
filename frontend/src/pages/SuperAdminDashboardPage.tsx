@@ -182,6 +182,12 @@ export default function SuperAdminDashboardPage() {
             >
               {t("admin.dashboard.platformTemplates.manageTemplatesLink")}
             </Link>
+            <Link
+              to="/admin/templates/workflows"
+              className="interactive text-sm text-[var(--color-primary)] hover:underline"
+            >
+              {t("nav.workflows")}
+            </Link>
           </div>
         </Card>
 

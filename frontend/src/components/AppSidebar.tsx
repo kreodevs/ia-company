@@ -29,6 +29,7 @@ import { cn } from "../lib/utils";
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin": LayoutDashboard,
   "/admin/templates": Layers,
+  "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/workflows": GitBranch,
   "/agents": Bot,
@@ -142,8 +143,15 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionAdmin",
         items: [
           { to: "/admin", labelKey: "nav.admin", end: true },
-          { to: "/admin/templates", labelKey: "nav.templates" },
           { to: "/admin/settings", labelKey: "nav.settings" },
+        ],
+      });
+      result.push({
+        id: "templates",
+        titleKey: "nav.sectionTemplates",
+        items: [
+          { to: "/admin/templates", labelKey: "nav.templates", end: true },
+          { to: "/admin/templates/workflows", labelKey: "nav.workflows" },
         ],
       });
     }

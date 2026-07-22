@@ -7,9 +7,9 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Layer | Path | Purpose |
 |-------|------|---------|
 | Atoms | `atoms/` | Button, InputText, Badge, Skeleton, StatusPill |
-| Molecules | `molecules/` | Card, PageHeader, EmptyState, StatsCard |
+| Molecules | `molecules/` | Card, PageHeader, EmptyState, StatsCard, Sonner (toast) |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
-| Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab) |
+| Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
 | Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Collapsible navigation (desktop) / drawer (mobile) |
@@ -30,6 +30,11 @@ Letter (light) and Slash (dark) — see `frontend/DESIGN.md`.
 - **Card `tint`:** `none` | `peach` | `mint` | `lavender` | `mist`
 - **Button variants (Kreo):** `default` (teal), `violet`, `blue`, `secondary`, `outline`, `ghost`, `destructive`, `link`
 
+## Toast notifications
+
+- **`molecules/Sonner.tsx`** — Kreo `Sonner` wrapper (`toast.success` / `toast.error`). `<Toaster />` is mounted once in `App.tsx`.
+- Use for save feedback and other non-blocking messages instead of inline `<p>` at the top of long forms.
+
 ## Dependencies
 
-- `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`
+- `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`, `sonner`

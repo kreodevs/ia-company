@@ -1,22 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
-import { api, type Agent, type Skill, type TenantSummary, type Workflow } from "../lib/api";
-import { formatWorkflowTitle } from "../lib/workflow-display";
+import { api, type Agent, type Skill, type TenantSummary } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import Button from "../components/ui/Button";
 
-type Tab = "agents" | "skills" | "workflows";
+type Tab = "agents" | "skills";
 
 export default function PlatformTemplatesPage() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("agents");
   const [agents, setAgents] = useState<Agent[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [reseedLoading, setReseedLoading] = useState(false);
@@ -25,10 +21,6 @@ export default function PlatformTemplatesPage() {
   const [tenants, setTenants] = useState<TenantSummary[]>([]);
   const [selectedTenantIds, setSelectedTenantIds] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [newWorkflowName, setNewWorkflowName] = useState("");
-  const [creatingWorkflow, setCreatingWorkflow] = useState(false);
-  const [deletingWorkflowId, setDeletingWorkflowId] = useState<string | null>(null);
-  const [workflowSearch, setWorkflowSearch] = useState("");
 
   const formatSyncStats = (stats: {
     skills: { added: number; updated: number; linked?: number };
@@ -90,15 +82,13 @@ export default function PlatformTemplatesPage() {
   const syncToAllTenants = () => void syncTenants(tenants.map((t) => t.id));
 
   const load = async () => {
-    const [a, s, w, tenantList] = await Promise.all([
+    const [a, s, tenantList] = await Promise.all([
       api.admin.templates.listAgents(),
       api.admin.templates.listSkills(),
-      api.admin.templates.listWorkflows(),
       api.admin.tenants(),
     ]);
     setAgents(a);
     setSkills(s);
-    setWorkflows(w);
     setTenants(tenantList);
     setSelectedTenantIds((prev) => prev.filter((id) => tenantList.some((tenant) => tenant.id === id)));
   };
@@ -184,55 +174,6 @@ export default function PlatformTemplatesPage() {
     });
     await load();
     setMessage(t("admin.templates.skills.saved"));
-  };
-
-  const filteredWorkflows = useMemo(() => {
-    const query = workflowSearch.trim().toLowerCase();
-    if (!query) return workflows;
-    return workflows.filter((workflow) => {
-      const haystack = [
-        workflow.name,
-        formatWorkflowTitle(workflow.name),
-        workflow.description ?? "",
-        ...workflow.steps.map((step) => step.agent?.name ?? ""),
-        ...workflow.steps.map((step) => step.agent?.role ?? ""),
-      ]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(query);
-    });
-  }, [workflowSearch, workflows]);
-
-  const createWorkflowTemplate = async () => {
-    const name = newWorkflowName.trim();
-    if (!name) return;
-    setCreatingWorkflow(true);
-    setMessage(null);
-    try {
-      const workflow = await api.admin.templates.createWorkflow({ name });
-      setNewWorkflowName("");
-      await load();
-      navigate(`/admin/templates/workflows/${workflow.id}`);
-    } catch (err) {
-      setMessage(translateApiError(err, t, "common.createFailed"));
-    } finally {
-      setCreatingWorkflow(false);
-    }
-  };
-
-  const deleteWorkflowTemplate = async (workflow: Workflow) => {
-    if (!confirm(t("admin.templates.workflows.deleteConfirm", { name: workflow.name }))) return;
-    setDeletingWorkflowId(workflow.id);
-    setMessage(null);
-    try {
-      await api.admin.templates.deleteWorkflow(workflow.id);
-      await load();
-      setMessage(t("admin.templates.workflows.deleted", { name: workflow.name }));
-    } catch (err) {
-      setMessage(translateApiError(err, t, "common.deleteFailed"));
-    } finally {
-      setDeletingWorkflowId(null);
-    }
   };
 
   return (
@@ -322,7 +263,7 @@ export default function PlatformTemplatesPage() {
       )}
 
       <div className="flex shrink-0 flex-wrap gap-2">
-        {(["agents", "skills", "workflows"] as Tab[]).map((tabKey) => (
+        {(["agents", "skills"] as Tab[]).map((tabKey) => (
           <button
             key={tabKey}
             onClick={() => setTab(tabKey)}
@@ -422,79 +363,6 @@ export default function PlatformTemplatesPage() {
                 {t("admin.templates.skills.saveTemplate")}
               </button>
             </div>
-          )}
-        </div>
-      )}
-
-      {tab === "workflows" && (
-        <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <div className="shrink-0 space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 className="font-semibold">{t("admin.templates.workflows.title")}</h2>
-                <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-                  {t("admin.templates.workflows.subtitle")}
-                </p>
-              </div>
-              <p className="text-sm text-[var(--color-muted-foreground)]">
-                {filteredWorkflows.length} {t("common.of")} {workflows.length}
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 lg:flex-row">
-              <input
-                value={workflowSearch}
-                onChange={(e) => setWorkflowSearch(e.target.value)}
-                placeholder={t("workflows.list.searchPlaceholder")}
-                className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              />
-              <div className="flex min-w-0 flex-1 gap-2">
-                <input
-                  value={newWorkflowName}
-                  onChange={(e) => setNewWorkflowName(e.target.value)}
-                  placeholder={t("admin.templates.workflows.newNamePlaceholder")}
-                  className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void createWorkflowTemplate();
-                  }}
-                />
-                <button
-                  type="button"
-                  disabled={creatingWorkflow || !newWorkflowName.trim()}
-                  onClick={() => void createWorkflowTemplate()}
-                  className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-                >
-                  {creatingWorkflow ? t("common.creating") : t("workflows.list.createAndEdit")}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {filteredWorkflows.length === 0 ? (
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-card)]/40 px-6 py-12 text-center">
-              <p className="font-medium">
-                {workflows.length === 0
-                  ? t("admin.templates.workflows.emptyTitle")
-                  : t("workflows.list.emptySearchTitle")}
-              </p>
-              <p className="mt-2 max-w-md text-sm text-[var(--color-muted-foreground)]">
-                {workflows.length === 0
-                  ? t("admin.templates.workflows.emptyTitleHint")
-                  : t("workflows.list.emptySearchSubtitle")}
-              </p>
-            </div>
-          ) : (
-            <ul className="grid min-h-0 flex-1 gap-4 overflow-y-auto pr-1 md:grid-cols-2 xl:grid-cols-3">
-              {filteredWorkflows.map((workflow) => (
-                <li key={workflow.id}>
-                  <WorkflowTemplateCard
-                    workflow={workflow}
-                    editorPath={`/admin/templates/workflows/${workflow.id}`}
-                    deleting={deletingWorkflowId === workflow.id}
-                    onDelete={() => void deleteWorkflowTemplate(workflow)}
-                  />
-                </li>
-              ))}
-            </ul>
           )}
         </div>
       )}

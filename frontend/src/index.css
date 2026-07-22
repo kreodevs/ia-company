@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Libre+Caslon+Display:wght@400;600&family=Playfair+Display:wght@600&display=swap");
+@import "sonner/dist/styles.css";
 @import "tailwindcss";
 @import "./styles/letter-theme.css";
 @import "./styles/slash-theme.css";

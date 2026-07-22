@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import ModelAutocomplete from "../components/ModelAutocomplete";
+import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 
@@ -11,7 +12,6 @@ export default function PlatformSettingsPage() {
   const { t } = useTranslation();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   const load = async () => {
     setSettings(await api.admin.platformSettings.get());
@@ -24,13 +24,12 @@ export default function PlatformSettingsPage() {
   const save = async () => {
     if (!settings) return;
     setSaving(true);
-    setMessage(null);
     try {
       const updated = await api.admin.platformSettings.update(settings);
       setSettings(updated);
-      setMessage(t("admin.platformSettings.saved"));
+      toast.success(t("admin.platformSettings.saved"));
     } catch (err) {
-      setMessage(translateApiError(err, t, "common.saveFailed"));
+      toast.error(translateApiError(err, t, "common.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -51,12 +50,6 @@ export default function PlatformSettingsPage() {
         title={t("admin.platformSettings.title")}
         subtitle={t("admin.platformSettings.subtitle")}
       />
-
-      {message && (
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
-          {message}
-        </p>
-      )}
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.general.title")}</h2>

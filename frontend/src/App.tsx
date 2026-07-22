@@ -15,6 +15,7 @@ import ConsensusPage from "./pages/ConsensusPage";
 import SettingsPage from "./pages/SettingsPage";
 import PlatformSettingsPage from "./pages/PlatformSettingsPage";
 import PlatformTemplatesPage from "./pages/PlatformTemplatesPage";
+import PlatformWorkflowTemplatesPage from "./pages/PlatformWorkflowTemplatesPage";
 import PlatformWorkflowEditorPage from "./pages/PlatformWorkflowEditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -27,6 +28,7 @@ import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
 import TenantUsersPage from "./pages/TenantUsersPage";
 import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import WorkflowsPage from "./pages/WorkflowsPage";
+import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
 
 function AppShell() {
@@ -47,9 +49,10 @@ function AppShell() {
 
             <Route element={<RequireSuperAdmin />}>
               <Route path="admin" element={<SuperAdminDashboardPage />} />
-              <Route path="admin/templates" element={<PlatformTemplatesPage />} />
               <Route path="admin/settings" element={<PlatformSettingsPage />} />
               <Route path="admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
+              <Route path="admin/templates/workflows" element={<PlatformWorkflowTemplatesPage />} />
+              <Route path="admin/templates" element={<PlatformTemplatesPage />} />
             </Route>
 
             <Route element={<RequireTenantAccess />}>
@@ -77,6 +80,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <AppShell />
+        <Toaster />
       </AuthProvider>
     </ThemeProvider>
   );

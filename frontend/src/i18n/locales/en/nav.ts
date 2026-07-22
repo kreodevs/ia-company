@@ -3,6 +3,7 @@ export const nav = {
   mobile: "Navigation menu",
   skipToContent: "Skip to content",
   sectionAdmin: "Platform",
+  sectionTemplates: "Templates",
   sectionWorkspace: "Workspace",
   sectionGeneral: "General",
   admin: "Admin",

@@ -62,7 +62,7 @@ export default function PlatformWorkflowEditorPage() {
     setDeleting(true);
     try {
       await api.admin.templates.deleteWorkflow(workflow.id);
-      navigate("/admin/templates");
+      navigate("/admin/templates/workflows");
     } finally {
       setDeleting(false);
     }
@@ -77,10 +77,10 @@ export default function PlatformWorkflowEditorPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2">
           <Link
-            to="/admin/templates"
+            to="/admin/templates/workflows"
             className="text-sm text-[var(--color-muted-foreground)] hover:underline"
           >
-            ← {t("nav.backToPlatformTemplates")}
+            ← {t("nav.backToWorkflows")}
           </Link>
           <input
             className="mt-1 w-full max-w-xl rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-2xl font-bold"
