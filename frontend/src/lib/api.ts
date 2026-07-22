@@ -332,7 +332,20 @@ export interface TeamRecentRun {
 }
 
 export interface ProductTeam {
-  product: { id: string; name: string; slug: string; phase: string };
+  product: {
+    id: string;
+    tenantId: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    phase: string;
+    pipelineRank: number;
+    goNoGo: GoNoGoDecision;
+    revenueUsd: number;
+    lastRunId: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
   activeRun: TeamActiveRun | null;
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
@@ -709,6 +722,20 @@ export const api = {
     pipeline: () => request<PipelineIdea[]>("/products/pipeline"),
     focus: (id: string) =>
       request<{ focusProductId: string | null }>(`/products/${id}/focus`, { method: "POST" }),
+    update: (
+      id: string,
+      body: {
+        name?: string;
+        description?: string;
+        phase?: ProductPhase;
+        goNoGo?: GoNoGoDecision;
+        revenueUsd?: number;
+      },
+    ) =>
+      request<TenantProduct>(`/products/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
     pipelineDecision: (id: string, decision: GoNoGoDecision) =>
       request<PipelineIdea>(`/products/pipeline/${id}`, {
         method: "PUT",

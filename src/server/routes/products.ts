@@ -83,11 +83,46 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!existing) return reply.status(404).send({ error: "Product not found" });
 
+      const phaseChanged = request.body?.phase && request.body.phase !== existing.phase;
+      const goNoGoChanged = request.body?.goNoGo && request.body.goNoGo !== existing.goNoGo;
+
       const product = await prisma.tenantProduct.update({
         where: { id: request.params.id },
         data: request.body,
       });
-      await logAudit(request, "product.update", { productId: product.id });
+
+      if (request.body?.phase === "archived" || request.body?.phase === "paused") {
+        const cycle = await prisma.tenantCycleState.findUnique({
+          where: { tenantId },
+        });
+        if (cycle?.focusProductId === product.id) {
+          await prisma.tenantCycleState.update({
+            where: { tenantId },
+            data: { focusProductId: null },
+          });
+        }
+      }
+
+      if (phaseChanged || goNoGoChanged) {
+        const action =
+          request.body?.phase === "archived"
+            ? "product.archive"
+            : request.body?.phase === "paused"
+              ? "product.pause"
+              : goNoGoChanged && request.body?.goNoGo === "no_go"
+                ? "product.noGo"
+                : "product.update";
+        await logAudit(request, action, {
+          productId: product.id,
+          slug: product.slug,
+          fromPhase: existing.phase,
+          toPhase: product.phase,
+          fromGoNoGo: existing.goNoGo,
+          toGoNoGo: product.goNoGo,
+        });
+      } else {
+        await logAudit(request, "product.update", { productId: product.id });
+      }
       return product;
     } catch (err) {
       return handleRouteError(reply, err);
@@ -410,7 +445,20 @@ export async function productRoutes(app: FastifyInstance) {
       });
 
       return {
-        product: { id: product.id, name: product.name, slug: product.slug, phase: product.phase },
+        product: {
+          id: product.id,
+          tenantId: product.tenantId,
+          slug: product.slug,
+          name: product.name,
+          description: product.description,
+          phase: product.phase,
+          pipelineRank: product.pipelineRank,
+          goNoGo: product.goNoGo,
+          revenueUsd: product.revenueUsd,
+          lastRunId: product.lastRunId,
+          createdAt: product.createdAt.toISOString(),
+          updatedAt: product.updatedAt.toISOString(),
+        },
         activeRun: activeRun
           ? {
               id: activeRun.id,

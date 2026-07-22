@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { api, type ProductTeam, type TeamAgent, type TeamAgentStatus } from "../lib/api";
+import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../lib/api";
 import PageLoading from "../components/ui/PageLoading";
 import Badge from "../components/ui/Badge";
+import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 
 const ROLE_EMOJI: Record<string, string> = {
   "ceo-bezos": "👔",
@@ -116,6 +117,7 @@ export default function ProductTeamPage() {
         </div>
         <div className="war-room-header-meta">
           <Badge>{data.product.phase}</Badge>
+          <ProductActionsMenu product={data.product as TenantProduct} onChange={() => void refresh()} />
           {data.activeRun && (
             <Link
               to={`/runs/${data.activeRun.id}`}

@@ -14,6 +14,7 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
+import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -181,6 +182,17 @@ export default function ProductCodePage() {
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <Badge>{product?.phase}</Badge>
+        {product && (
+          <ProductActionsMenu
+            product={product}
+            onChange={() => {
+              api.products.list().then((list) => {
+                const updated = list.find((x) => x.id === product.id) ?? null;
+                setProduct(updated);
+              });
+            }}
+          />
+        )}
         {product && (
           <Link
             to={`/products/${product.id}/team`}

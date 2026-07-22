@@ -63,4 +63,25 @@ export const common = {
   edit: "Editar",
   preview: "Vista previa",
   emptyPreview: "Aún no hay nada que previsualizar.",
+  products: {
+    actions: {
+      menu: "Acciones del producto",
+      pause: "Pausar",
+      pauseTitle: '¿Pausar "{{name}}"?',
+      pauseDescription:
+        "El producto pasa a la fase 'paused'. Los ciclos meta lo saltan hasta que lo reanudes.",
+      resume: "Reanudar",
+      resumeTitle: '¿Reanudar "{{name}}"?',
+      resumeDescription: "El producto vuelve a la fase building.",
+      markNoGo: "Marcar como no-go",
+      noGoTitle: '¿Marcar "{{name}}" como no-go?',
+      noGoDescription:
+        "Marca el producto con goNoGo = no_go. La fase no cambia; aún puedes archivarlo o desmarcarlo.",
+      archive: "Archivar",
+      archiveTitle: '¿Archivar "{{name}}"?',
+      archiveDescription:
+        "El producto pasa a la fase 'archived'. Deja de aparecer en el portfolio y los ciclos meta lo saltan. La acción puede revertirse si un admin lo necesita.",
+      archivedBadge: "Archivado",
+    },
+  },
 } as const;

@@ -63,4 +63,25 @@ export const common = {
   edit: "Edit",
   preview: "Preview",
   emptyPreview: "Nothing to preview yet.",
+  products: {
+    actions: {
+      menu: "Product actions",
+      pause: "Pause",
+      pauseTitle: 'Pause "{{name}}"?',
+      pauseDescription:
+        "The product is moved to phase 'paused'. Meta cycles skip it until you resume.",
+      resume: "Resume",
+      resumeTitle: 'Resume "{{name}}"?',
+      resumeDescription: "The product goes back to the building phase.",
+      markNoGo: "Mark as no-go",
+      noGoTitle: 'Mark "{{name}}" as no-go?',
+      noGoDescription:
+        "Sets the product's goNoGo flag to no-go. The phase is unchanged; you can still archive or unmark it.",
+      archive: "Archive",
+      archiveTitle: 'Archive "{{name}}"?',
+      archiveDescription:
+        "The product moves to phase 'archived'. It is hidden from the portfolio and skipped by meta cycles. The action can be undone by an admin if needed.",
+      archivedBadge: "Archived",
+    },
+  },
 } as const;

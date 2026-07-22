@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type ProductConsensus, type ProductConsensusRevision } from "../lib/api";
+import { api, type ProductConsensus, type ProductConsensusRevision, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Card from "../components/ui/Card";
@@ -9,6 +9,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
+import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import EmptyState from "../components/ui/EmptyState";
 
@@ -25,6 +26,7 @@ export default function ProductConsensusPage() {
 
   const [record, setRecord] = useState<ProductConsensus | null>(null);
   const [revisions, setRevisions] = useState<ProductConsensusRevision[]>([]);
+  const [product, setProduct] = useState<TenantProduct | null>(null);
   const [content, setContent] = useState("");
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,12 +36,17 @@ export default function ProductConsensusPage() {
   useEffect(() => {
     if (!productId) return;
     setLoading(true);
-    Promise.all([api.products.consensus.get(productId), api.products.consensus.revisions(productId, 50)])
-      .then(([consensus, revs]) => {
+    Promise.all([
+      api.products.consensus.get(productId),
+      api.products.consensus.revisions(productId, 50),
+      api.products.list(),
+    ])
+      .then(([consensus, revs, list]) => {
         setRecord(consensus);
         setContent(consensus.content);
         setNextAction(consensus.nextAction ?? "");
         setRevisions(revs);
+        setProduct(list.find((p) => p.id === productId) ?? null);
       })
       .finally(() => setLoading(false));
   }, [productId]);
@@ -82,6 +89,11 @@ export default function ProductConsensusPage() {
         meta={
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <Badge>{t("consensus.cycleNumber", { n: record?.cycleNumber ?? 0 })}</Badge>
+            {product && <ProductActionsMenu product={product} onChange={() => {
+              api.products.list().then((list) => {
+                setProduct(list.find((p) => p.id === productId) ?? null);
+              });
+            }} />}
             {record?.updatedAt && (
               <span className="text-[var(--color-muted-foreground)]">
                 {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}
