@@ -4,6 +4,9 @@ export const help = {
   subtitle: "Tutorials and documentation for using Auto-Company Platform.",
   articles: "Articles",
   articlesHeading: "Articles",
+  sections: "In this article",
+  tableOfContents: "Table of contents",
+  backToToc: "Back to index",
   article: {
     slug: "guia-completa",
     title: "Complete guide",

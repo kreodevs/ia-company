@@ -4,6 +4,9 @@ export const help = {
   subtitle: "Tutoriales y documentación de uso de Auto-Company Platform.",
   articles: "Artículos",
   articlesHeading: "Artículos",
+  sections: "En este artículo",
+  tableOfContents: "Tabla de contenidos",
+  backToToc: "Volver al índice",
   article: {
     slug: "guia-completa",
     title: "Guía completa",
