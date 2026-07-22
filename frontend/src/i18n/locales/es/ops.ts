@@ -7,6 +7,21 @@ export const ops = {
   runMetaCycleNow: "Ejecutar ciclo meta ahora",
   consensusLink: "Consensus",
   schedulesLink: "Programaciones",
+  metaCycle: {
+    title: "¿Qué es el ciclo meta?",
+    description:
+      "Un ciclo autónomo: el orquestador revisa la fase de la empresa, el portfolio y el consenso, elige el workflow más adecuado y lo ejecuta con tus agentes. No tienes que elegir manualmente qué workflow correr.",
+    step1: "Analiza fase, productos e ideas del pipeline",
+    step2: "Elige el workflow (discovery, evaluación, build, launch…)",
+    step3: "Encola una ejecución — sigue el progreso en Ejecuciones",
+    willRun: "Si lo ejecutas ahora, arrancará el workflow «{{workflow}}».",
+    started: "Ejecución iniciada: {{workflow}}. Redirigiendo al detalle…",
+    viewRun: "Ver ejecución",
+    noSchedule: "Activa el meta schedule en Configuración para ciclos automáticos periódicos.",
+    enableSchedule: "Configurar programación",
+    failedRunsHint:
+      "Las ejecuciones recientes fallaron. Abre una para ver el error en los logs (suele ser LLM o worker).",
+  },
   stats: {
     companyPhase: "Fase de la empresa",
     cycleHint: "Ciclo #{{number}}",

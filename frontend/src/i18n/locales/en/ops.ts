@@ -6,6 +6,21 @@ export const ops = {
   runMetaCycleNow: "Run meta cycle now",
   consensusLink: "Consensus",
   schedulesLink: "Schedules",
+  metaCycle: {
+    title: "What is the meta cycle?",
+    description:
+      "An autonomous cycle: the orchestrator reviews company phase, portfolio, and consensus, picks the best workflow, and runs it with your agents. You do not pick the workflow manually.",
+    step1: "Analyze phase, products, and pipeline ideas",
+    step2: "Pick the workflow (discovery, evaluation, build, launch…)",
+    step3: "Enqueue a run — track progress under Runs",
+    willRun: "If you run it now, it will start workflow «{{workflow}}».",
+    started: "Run started: {{workflow}}. Opening run detail…",
+    viewRun: "View run",
+    noSchedule: "Enable the meta schedule in Settings for automatic periodic cycles.",
+    enableSchedule: "Configure schedule",
+    failedRunsHint:
+      "Recent runs failed. Open one to read the error in logs (often LLM config or worker).",
+  },
   stats: {
     companyPhase: "Company phase",
     cycleHint: "Cycle #{{number}}",

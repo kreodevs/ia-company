@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type OpsPortfolio, type OpsNextRun } from "../lib/api";
@@ -9,6 +9,7 @@ import StatCard from "../components/ui/StatCard";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import StatusBadge from "../components/ui/StatusBadge";
 
 function PhaseBadge({ phase }: { phase: string }) {
   const { t } = useTranslation();
@@ -18,11 +19,15 @@ function PhaseBadge({ phase }: { phase: string }) {
 export default function OpsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const feedbackRef = useRef<HTMLDivElement>(null);
   const [portfolio, setPortfolio] = useState<OpsPortfolio | null>(null);
   const [nextRun, setNextRun] = useState<OpsNextRun | null>(null);
   const [loading, setLoading] = useState(true);
   const [runningMeta, setRunningMeta] = useState(false);
   const [metaRunError, setMetaRunError] = useState<string | null>(null);
+  const [metaRunStarted, setMetaRunStarted] = useState<{ runId: string; workflowName: string } | null>(
+    null,
+  );
 
   const load = async () => {
     setLoading(true);
@@ -33,6 +38,12 @@ export default function OpsPage() {
       ]);
       setPortfolio(portfolioData);
       setNextRun(nextRunData);
+
+      if (!portfolioData.schedules.some((s) => s.scheduleKind === "meta")) {
+        await api.schedules.ensureMeta();
+        const refreshed = await api.ops.portfolio();
+        setPortfolio(refreshed);
+      }
     } finally {
       setLoading(false);
     }
@@ -42,13 +53,37 @@ export default function OpsPage() {
     void load();
   }, []);
 
+  useEffect(() => {
+    if (metaRunError || metaRunStarted) {
+      feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [metaRunError, metaRunStarted]);
+
   const runMetaNow = async () => {
-    const meta = portfolio?.schedules.find((s) => s.scheduleKind === "meta");
-    if (!meta) return;
+    let meta = portfolio?.schedules.find((s) => s.scheduleKind === "meta");
+    if (!meta) {
+      try {
+        meta = await api.schedules.ensureMeta();
+        await load();
+      } catch (err) {
+        setMetaRunError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
+        return;
+      }
+    }
+
+    const workflowName = nextRun?.workflowName ?? t("ops.recentRuns.defaultWorkflow");
     setRunningMeta(true);
     setMetaRunError(null);
+    setMetaRunStarted(null);
+
     try {
       const { runId } = await api.schedules.runNow(meta.id);
+      if (!runId) {
+        throw new Error(t("settings.metaSchedule.runFailed"));
+      }
+
+      setMetaRunStarted({ runId, workflowName });
+      await load();
       navigate(`/runs/${runId}`);
     } catch (err) {
       setMetaRunError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
@@ -66,6 +101,7 @@ export default function OpsPage() {
   }
 
   const metaSchedule = portfolio.schedules.find((s) => s.scheduleKind === "meta");
+  const hasFailedRuns = portfolio.recentRuns.some((run) => run.status === "FAILED");
 
   return (
     <div className="space-y-8">
@@ -74,11 +110,6 @@ export default function OpsPage() {
         subtitle={t("ops.subtitle")}
         actions={
           <>
-            {metaSchedule && (
-              <Button disabled={runningMeta} onClick={() => void runMetaNow()} fullWidthMobile>
-                {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
-              </Button>
-            )}
             <Link
               to="/consensus"
               className="interactive inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm font-medium sm:min-h-9 sm:w-auto"
@@ -95,11 +126,60 @@ export default function OpsPage() {
         }
       />
 
-      {metaRunError ? (
-        <p className="text-sm text-[var(--color-destructive)]" role="alert">
-          {metaRunError}
-        </p>
-      ) : null}
+      <Card className="space-y-4">
+        <div>
+          <h2 className="font-semibold">{t("ops.metaCycle.title")}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+            {t("ops.metaCycle.description")}
+          </p>
+        </div>
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-[var(--color-muted-foreground)]">
+          <li>{t("ops.metaCycle.step1")}</li>
+          <li>{t("ops.metaCycle.step2")}</li>
+          <li>{t("ops.metaCycle.step3")}</li>
+        </ol>
+        {nextRun ? (
+          <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm">
+            {t("ops.metaCycle.willRun", { workflow: nextRun.workflowName })}
+          </p>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">
+          {metaSchedule ? (
+            <Button disabled={runningMeta} onClick={() => void runMetaNow()} fullWidthMobile>
+              {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
+            </Button>
+          ) : (
+            <>
+              <p className="text-sm text-[var(--color-muted-foreground)]">{t("ops.metaCycle.noSchedule")}</p>
+              <Link
+                to="/settings"
+                className="interactive rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-medium"
+              >
+                {t("ops.metaCycle.enableSchedule")}
+              </Link>
+            </>
+          )}
+          <Link to="/runs" className="interactive text-sm text-[var(--color-accent)] hover:underline">
+            {t("nav.runs")} →
+          </Link>
+        </div>
+      </Card>
+
+      <div ref={feedbackRef} className="space-y-2">
+        {metaRunStarted ? (
+          <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-3 text-sm" role="status">
+            {t("ops.metaCycle.started", { workflow: metaRunStarted.workflowName })}{" "}
+            <Link to={`/runs/${metaRunStarted.runId}`} className="font-medium text-[var(--color-accent)] hover:underline">
+              {t("ops.metaCycle.viewRun")}
+            </Link>
+          </p>
+        ) : null}
+        {metaRunError ? (
+          <p className="rounded-lg border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/10 px-4 py-3 text-sm text-[var(--color-destructive)]" role="alert">
+            {metaRunError}
+          </p>
+        ) : null}
+      </div>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -169,6 +249,7 @@ export default function OpsPage() {
                 <div className="flex items-center gap-2">
                   <PhaseBadge phase={product.phase} />
                   <button
+                    type="button"
                     onClick={() => void api.products.focus(product.id).then(() => load())}
                     className="rounded-lg border border-[var(--color-border)] px-2 py-1 text-xs"
                   >
@@ -211,6 +292,7 @@ export default function OpsPage() {
                 {idea.goNoGo === "pending" && (
                   <div className="mt-2 flex gap-2">
                     <button
+                      type="button"
                       onClick={() =>
                         void api.products.pipelineDecision(idea.id, "go").then(() => load())
                       }
@@ -219,6 +301,7 @@ export default function OpsPage() {
                       {t("ops.pipeline.go")}
                     </button>
                     <button
+                      type="button"
                       onClick={() =>
                         void api.products.pipelineDecision(idea.id, "no_go").then(() => load())
                       }
@@ -239,16 +322,26 @@ export default function OpsPage() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">{t("ops.recentRuns.title")}</h2>
+        {hasFailedRuns ? (
+          <p className="text-sm text-[var(--color-destructive)]">{t("ops.metaCycle.failedRunsHint")}</p>
+        ) : null}
         <ul className="space-y-2">
           {portfolio.recentRuns.map((run) => (
             <li key={run.id}>
               <Link
                 to={`/runs/${run.id}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 text-sm hover:border-[var(--color-primary)]"
+                className={`flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-[var(--color-card)] px-4 py-3 text-sm hover:border-[var(--color-primary)] ${
+                  metaRunStarted?.runId === run.id
+                    ? "border-[var(--color-primary)]"
+                    : "border-[var(--color-border)]"
+                }`}
               >
-                <span>{run.workflow?.name ?? t("nav.workflows")}</span>
-                <span className="text-[var(--color-muted-foreground)]">
-                  {t(`status.${run.status}`, { defaultValue: run.status })} ·{" "}
+                <span>{run.workflow?.name ?? t("ops.recentRuns.defaultWorkflow")}</span>
+                <span className="flex items-center gap-2 text-[var(--color-muted-foreground)]">
+                  <StatusBadge
+                    status={run.status}
+                    label={t(`status.${run.status}`, { defaultValue: run.status })}
+                  />
                   {new Date(run.createdAt).toLocaleString()}
                 </span>
               </Link>
