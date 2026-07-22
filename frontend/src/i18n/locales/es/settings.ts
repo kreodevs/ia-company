@@ -1,6 +1,13 @@
 export const settings = {
   loading: "Cargando configuración…",
   title: "Configuración del tenant",
+  interests: {
+    heading: "Preferencias de investigación",
+    cardTitle: "Áreas de enfoque del discovery",
+    cardSubtitle:
+      "Dile a la compañía autónoma qué categorías te importan. El discovery y el ranking del pipeline se sesgarán hacia ellas.",
+    open: "Gestionar intereses →",
+  },
   llm: {
     title: "Configuración LLM",
     platformManaged: "El proveedor LLM y la API key los configura el superadmin en Configuración de plataforma. Todos los tenants comparten el mismo proveedor activo (OpenRouter o TokenLab, no ambos).",

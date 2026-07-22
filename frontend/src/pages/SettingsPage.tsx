@@ -168,6 +168,25 @@ export default function SettingsPage() {
   return (
     <div className="space-y-10">
       <PageHeader title={t("settings.title")} />
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">{t("settings.interests.heading")}</h2>
+        <div className="flex flex-col items-start justify-between gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm sm:flex-row sm:items-center">
+          <div className="space-y-1">
+            <p className="font-medium">{t("settings.interests.cardTitle")}</p>
+            <p className="text-[var(--color-muted-foreground)]">
+              {t("settings.interests.cardSubtitle")}
+            </p>
+          </div>
+          <Link
+            to="/settings/interests"
+            className="interactive inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+          >
+            {t("settings.interests.open")}
+          </Link>
+        </div>
+      </section>
+
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
         <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">

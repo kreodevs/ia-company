@@ -1,6 +1,13 @@
 export const settings = {
   loading: "Loading settings…",
   title: "Tenant Settings",
+  interests: {
+    heading: "Research preferences",
+    cardTitle: "Discovery focus areas",
+    cardSubtitle:
+      "Tell the autonomous company which categories matter to you. Discovery and pipeline ranking will bias toward them.",
+    open: "Manage interests →",
+  },
   llm: {
     title: "LLM configuration",
     platformManaged:
