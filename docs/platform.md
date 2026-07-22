@@ -22,7 +22,7 @@ Browser (React + React Flow)
 
 ## Autonomous cycle (consensus)
 
-Each tenant has a `TenantConsensus` record — the platform equivalent of `memories/consensus.md`.
+Each tenant has a `TenantConsensus` record — the platform equivalent of `memories/consensus.md`. The API mirrors it to `projects/{tenant-slug}/consensus.md` before agent runs so file tools work in Docker.
 
 | Step | Behavior |
 |------|----------|

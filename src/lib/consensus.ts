@@ -1,5 +1,51 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { prisma } from "./prisma.js";
+import { ensureTenantWorkspace } from "./tenant-workspace.js";
 import type { SharedMemory } from "../types/index.js";
+
+export const CONSENSUS_FILE_NAME = "consensus.md";
+
+const DEFAULT_CONSENSUS_CONTENT = "# Consensus\n\nShared memory for autonomous cycles.";
+
+export function formatConsensusFileBody(content: string, nextAction: string | null): string {
+  const trimmed = content.trim() || DEFAULT_CONSENSUS_CONTENT;
+  if (!nextAction?.trim() || /## Next Action/i.test(trimmed)) {
+    return `${trimmed}\n`;
+  }
+  return `${trimmed}\n\n## Next Action\n${nextAction.trim()}\n`;
+}
+
+export async function syncConsensusFileToWorkspace(
+  workspaceRoot: string,
+  content: string,
+  nextAction: string | null,
+): Promise<void> {
+  await mkdir(workspaceRoot, { recursive: true });
+  await writeFile(
+    join(workspaceRoot, CONSENSUS_FILE_NAME),
+    formatConsensusFileBody(content, nextAction),
+    "utf-8",
+  );
+}
+
+export async function syncTenantConsensusToWorkspace(
+  tenantId: string,
+  workspaceRoot?: string,
+): Promise<string> {
+  const [consensus, tenant] = await Promise.all([
+    prisma.tenantConsensus.findUnique({ where: { tenantId } }),
+    workspaceRoot ? Promise.resolve(null) : prisma.tenant.findUnique({ where: { id: tenantId } }),
+  ]);
+
+  const root = workspaceRoot ?? (await ensureTenantWorkspace(tenantId, tenant?.slug));
+  await syncConsensusFileToWorkspace(
+    root,
+    consensus?.content ?? DEFAULT_CONSENSUS_CONTENT,
+    consensus?.nextAction ?? null,
+  );
+  return root;
+}
 
 export function mergeConsensusIntoMemory(
   consensus: { content: string; nextAction: string | null } | null,
@@ -66,4 +112,6 @@ export async function persistConsensusFromRun(tenantId: string, memory: SharedMe
       nextAction: nextAction ?? "Define the next cycle focus",
     },
   });
+
+  await syncTenantConsensusToWorkspace(tenantId);
 }

@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { syncTenantConsensusToWorkspace } from "../../lib/consensus.js";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
@@ -35,6 +36,8 @@ export async function consensusRoutes(app: FastifyInstance) {
           update: { content, nextAction },
           create: { tenantId, content, nextAction },
         });
+
+        await syncTenantConsensusToWorkspace(tenantId);
 
         await logAudit(request, "consensus.update", { nextAction });
         return record;

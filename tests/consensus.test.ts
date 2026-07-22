@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildConsensusContentAfterRun,
+  formatConsensusFileBody,
   mergeConsensusIntoMemory,
 } from "../src/lib/consensus.js";
 
@@ -14,6 +15,18 @@ describe("consensus helpers", () => {
     assert.equal(memory.nextAction, "Ship feature X");
     assert.equal(memory.task, "Ship feature X");
     assert.equal(memory.consensus, "# Doc");
+  });
+
+  it("appends Next Action section when missing from consensus file body", () => {
+    const body = formatConsensusFileBody("# Alebrije Labs Consensus\n\nShared memory.", "Evaluate idea A");
+    assert.match(body, /# Alebrije Labs Consensus/);
+    assert.match(body, /## Next Action\nEvaluate idea A/);
+  });
+
+  it("does not duplicate Next Action section", () => {
+    const body = formatConsensusFileBody("# Doc\n\n## Next Action\nExisting", "Ignored");
+    assert.equal(body.match(/## Next Action/g)?.length, 1);
+    assert.doesNotMatch(body, /Ignored/);
   });
 
   it("prefers explicit consensusUpdate after run", () => {

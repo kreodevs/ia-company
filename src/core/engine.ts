@@ -317,9 +317,25 @@ export class WorkflowExecutor {
       include: { llmConfig: true },
     });
 
+    const tenantWorkspace = await ensureTenantWorkspace(tenantId, tenant?.slug);
+    const { syncConsensusFileToWorkspace, syncTenantConsensusToWorkspace } = await import(
+      "../lib/consensus.js"
+    );
+    await syncTenantConsensusToWorkspace(tenantId, tenantWorkspace);
+
     const workspaceRoot = productSlug
       ? await ensureProductWorkspace(productSlug)
-      : await ensureTenantWorkspace(tenantId, tenant?.slug);
+      : tenantWorkspace;
+
+    if (productSlug && workspaceRoot !== tenantWorkspace) {
+      const consensus = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
+      await syncConsensusFileToWorkspace(
+        workspaceRoot,
+        consensus?.content ?? "# Consensus\n\nShared memory for autonomous cycles.",
+        consensus?.nextAction ?? null,
+      );
+    }
+
     const llm = tenantLlmFromRecord(tenant?.llmConfig ?? null);
 
     let githubToken: string | undefined;
@@ -511,6 +527,10 @@ export function compileSystemPrompt(
 
   sections.push(
     "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
+  );
+
+  sections.push(
+    "\n## Consensus File\nTenant consensus lives at `consensus.md` in the workspace root (also in Shared Workflow Memory). Prefer the JSON memory when present; use read_file on `consensus.md` only if you need the full document.",
   );
 
   sections.push(

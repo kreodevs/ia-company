@@ -4,6 +4,7 @@ import { hashPassword } from "../../lib/auth.js";
 import { clonePlatformTemplatesToTenant, syncPlatformTemplatesToTenant } from "../lib/clone-templates.js";
 import { ensureMetaSchedule } from "../../core/meta-orchestrator.js";
 import { ensureDefaultProducts, ensureTenantCycleState } from "../../lib/product-registry.js";
+import { syncTenantConsensusToWorkspace } from "../../lib/consensus.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, HttpError } from "../lib/request-context.js";
 
@@ -131,6 +132,8 @@ export async function adminRoutes(app: FastifyInstance) {
           companyPhase: "exploring",
         },
       });
+
+      await syncTenantConsensusToWorkspace(tenant.id);
 
       await ensureTenantCycleState(tenant.id);
       await ensureDefaultProducts(tenant.id, tenant.slug);
