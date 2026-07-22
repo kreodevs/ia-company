@@ -94,9 +94,27 @@ export async function scheduleRoutes(app: FastifyInstance) {
         });
         if (!existing) return reply.status(404).send({ error: "Schedule not found" });
 
+        const { enabled, intervalSec, name } = request.body;
+        const data: {
+          enabled?: boolean;
+          intervalSec?: number;
+          name?: string;
+          nextRunAt?: Date | null;
+        } = {};
+
+        if (name !== undefined) data.name = name;
+        if (intervalSec !== undefined) data.intervalSec = intervalSec;
+
+        if (enabled !== undefined) {
+          data.enabled = enabled;
+          data.nextRunAt = enabled ? new Date() : null;
+        } else if (intervalSec !== undefined && existing.enabled) {
+          data.nextRunAt = new Date();
+        }
+
         const schedule = await prisma.autonomousSchedule.update({
           where: { id: request.params.id },
-          data: request.body,
+          data,
         });
         return schedule;
       } catch (err) {

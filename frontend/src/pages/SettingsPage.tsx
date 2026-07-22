@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   api,
@@ -9,11 +10,13 @@ import {
   type TenantUsageLimits,
   type Workflow,
 } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
   const [notifications, setNotifications] = useState<Partial<TenantNotificationConfig>>({});
   const [limits, setLimits] = useState<Partial<TenantUsageLimits>>({});
@@ -25,6 +28,10 @@ export default function SettingsPage() {
   const [savingNotifications, setSavingNotifications] = useState(false);
   const [savingLimits, setSavingLimits] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({ name: "", workflowId: "", intervalSec: 1800 });
+  const [metaForm, setMetaForm] = useState({ name: "", intervalSec: 1800 });
+  const [savingMeta, setSavingMeta] = useState(false);
+  const [runningScheduleId, setRunningScheduleId] = useState<string | null>(null);
+  const [scheduleActionError, setScheduleActionError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -43,6 +50,10 @@ export default function SettingsPage() {
     setUsage(usageData);
     setSchedules(scheduleList);
     setWorkflows(workflowList);
+    const meta = scheduleList.find((s) => s.scheduleKind === "meta");
+    if (meta) {
+      setMetaForm({ name: meta.name, intervalSec: meta.intervalSec });
+    }
     if (workflowList[0] && !scheduleForm.workflowId) {
       setScheduleForm((f) => ({ ...f, workflowId: workflowList[0].id }));
     }
@@ -97,21 +108,60 @@ export default function SettingsPage() {
     await load();
   };
 
+  const saveMetaSchedule = async () => {
+    const meta = schedules.find((s) => s.scheduleKind === "meta");
+    if (!meta) return;
+
+    setSavingMeta(true);
+    setScheduleActionError(null);
+    try {
+      await api.schedules.update(meta.id, {
+        name: metaForm.name.trim() || meta.name,
+        intervalSec: Math.max(60, metaForm.intervalSec || 1800),
+      });
+      await load();
+    } catch (err) {
+      setScheduleActionError(translateApiError(err, t, "common.saveFailed"));
+    } finally {
+      setSavingMeta(false);
+    }
+  };
+
   const toggleSchedule = async (schedule: AutonomousSchedule) => {
-    await api.schedules.update(schedule.id, { enabled: !schedule.enabled });
-    await load();
+    setScheduleActionError(null);
+    try {
+      await api.schedules.update(schedule.id, { enabled: !schedule.enabled });
+      await load();
+    } catch (err) {
+      setScheduleActionError(translateApiError(err, t, "common.requestFailed"));
+    }
   };
 
   const deleteSchedule = async (id: string) => {
     if (!confirm(t("settings.fixedSchedules.deleteConfirm"))) return;
-    await api.schedules.delete(id);
-    await load();
+    setScheduleActionError(null);
+    try {
+      await api.schedules.delete(id);
+      await load();
+    } catch (err) {
+      setScheduleActionError(translateApiError(err, t, "common.deleteFailed"));
+    }
   };
 
   const runScheduleNow = async (id: string) => {
-    const { runId } = await api.schedules.runNow(id);
-    window.location.href = `/runs/${runId}`;
+    setRunningScheduleId(id);
+    setScheduleActionError(null);
+    try {
+      const { runId } = await api.schedules.runNow(id);
+      navigate(`/runs/${runId}`);
+    } catch (err) {
+      setScheduleActionError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
+    } finally {
+      setRunningScheduleId(null);
+    }
   };
+
+  const metaSchedule = schedules.find((s) => s.scheduleKind === "meta");
 
   if (loading) return <PageLoading message={t("settings.loading")} />;
 
@@ -319,48 +369,95 @@ export default function SettingsPage() {
         <p className="text-sm text-[var(--color-muted-foreground)]">
           {t("settings.metaSchedule.subtitle")}
         </p>
-        {schedules.some((s) => s.scheduleKind === "meta") ? (
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
-            {schedules
-              .filter((s) => s.scheduleKind === "meta")
-              .map((schedule) => (
-                <div key={schedule.id} className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <div className="font-medium">{schedule.name}</div>
-                    <div className="text-xs text-[var(--color-muted-foreground)]">
-                      {t("settings.metaSchedule.orchestratorEvery", {
-                        seconds: schedule.intervalSec,
-                        status: schedule.enabled
-                          ? t("common.enabled")
-                          : t("common.paused"),
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => void runScheduleNow(schedule.id)}
-                      className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
-                    >
-                      {t("common.runNow")}
-                    </button>
-                    <button
-                      onClick={() => void toggleSchedule(schedule)}
-                      className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
-                    >
-                      {schedule.enabled ? t("common.pause") : t("common.enable")}
-                    </button>
-                  </div>
-                </div>
-              ))}
+        {metaSchedule ? (
+          <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              {t("settings.metaSchedule.editHint")}
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block space-y-1 text-sm">
+                <span>{t("settings.metaSchedule.nameLabel")}</span>
+                <input
+                  value={metaForm.name}
+                  onChange={(e) => setMetaForm({ ...metaForm, name: e.target.value })}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("settings.metaSchedule.intervalLabel")}</span>
+                <input
+                  type="number"
+                  min={60}
+                  value={metaForm.intervalSec}
+                  onChange={(e) =>
+                    setMetaForm({
+                      ...metaForm,
+                      intervalSec: Number(e.target.value) || 1800,
+                    })
+                  }
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  title={t("common.intervalSeconds")}
+                />
+              </label>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                disabled={savingMeta}
+                onClick={() => void saveMetaSchedule()}
+                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+              >
+                {savingMeta ? t("common.saving") : t("settings.metaSchedule.save")}
+              </button>
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t("settings.metaSchedule.orchestratorEvery", {
+                  seconds: metaSchedule.intervalSec,
+                  status: metaSchedule.enabled ? t("common.enabled") : t("common.paused"),
+                })}
+                {metaSchedule.nextRunAt &&
+                  ` · ${t("settings.metaSchedule.nextRun", {
+                    date: new Date(metaSchedule.nextRunAt).toLocaleString(),
+                  })}`}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 border-t border-[var(--color-border)] pt-4">
+              <button
+                type="button"
+                disabled={runningScheduleId === metaSchedule.id}
+                onClick={() => void runScheduleNow(metaSchedule.id)}
+                className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm disabled:opacity-50"
+              >
+                {runningScheduleId === metaSchedule.id ? t("common.starting") : t("common.runNow")}
+              </button>
+              <button
+                type="button"
+                onClick={() => void toggleSchedule(metaSchedule)}
+                className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
+              >
+                {metaSchedule.enabled ? t("common.pause") : t("common.enable")}
+              </button>
+              <Link
+                to="/ops"
+                className="interactive rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
+              >
+                {t("ops.title")}
+              </Link>
+            </div>
           </div>
         ) : (
           <button
+            type="button"
             onClick={() => void api.schedules.ensureMeta().then(() => load())}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
           >
             {t("common.enableMetaSchedule")}
           </button>
         )}
+        {scheduleActionError ? (
+          <p className="text-sm text-[var(--color-destructive)]" role="alert">
+            {scheduleActionError}
+          </p>
+        ) : null}
       </section>
 
       <section className="space-y-4">
@@ -398,6 +495,7 @@ export default function SettingsPage() {
             title={t("common.intervalSeconds")}
           />
           <button
+            type="button"
             disabled={!scheduleForm.name.trim() || !scheduleForm.workflowId}
             onClick={() => void createSchedule()}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
@@ -429,18 +527,22 @@ export default function SettingsPage() {
               </div>
               <div className="flex gap-2">
                 <button
+                  type="button"
+                  disabled={runningScheduleId === schedule.id}
                   onClick={() => void runScheduleNow(schedule.id)}
-                  className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
+                  className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm disabled:opacity-50"
                 >
-                  {t("common.runNow")}
+                  {runningScheduleId === schedule.id ? t("common.starting") : t("common.runNow")}
                 </button>
                 <button
+                  type="button"
                   onClick={() => void toggleSchedule(schedule)}
                   className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
                 >
                   {schedule.enabled ? t("common.pause") : t("common.enable")}
                 </button>
                 <button
+                  type="button"
                   onClick={() => void deleteSchedule(schedule.id)}
                   className="rounded-lg border border-[var(--color-destructive)] px-3 py-1 text-sm text-[var(--color-destructive)]"
                 >

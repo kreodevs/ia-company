@@ -39,7 +39,13 @@ export const settings = {
     title: "Empresa autónoma (meta schedule)",
     subtitle:
       "El meta schedule elige dinámicamente workflows de discovery, evaluación, construcción o growth según la fase y el portfolio. Las programaciones fijas abajo son opcionales.",
+    editHint: "Edita el nombre y el intervalo aquí. El workflow lo elige el meta-orchestrator en cada ciclo.",
+    nameLabel: "Nombre",
+    intervalLabel: "Intervalo (segundos)",
+    save: "Guardar meta schedule",
     orchestratorEvery: "Meta orchestrator · cada {{seconds}}s · {{status}}",
+    nextRun: "Próxima ejecución: {{date}}",
+    runFailed: "No se pudo iniciar la ejecución",
     enable: "Activar meta schedule",
   },
   fixedSchedules: {

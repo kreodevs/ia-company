@@ -40,7 +40,13 @@ export const settings = {
     title: "Autonomous company (meta schedule)",
     subtitle:
       "The meta schedule dynamically picks discovery, evaluation, build, or growth workflows based on company phase and product portfolio. Fixed workflow schedules below are optional.",
+    editHint: "Edit the name and interval here. The meta-orchestrator picks the workflow on each cycle.",
+    nameLabel: "Name",
+    intervalLabel: "Interval (seconds)",
+    save: "Save meta schedule",
     orchestratorEvery: "Meta orchestrator · every {{seconds}}s · {{status}}",
+    nextRun: "Next run: {{date}}",
+    runFailed: "Could not start the run",
     enable: "Enable meta schedule",
   },
   fixedSchedules: {

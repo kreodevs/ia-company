@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type OpsPortfolio, type OpsNextRun } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import StatCard from "../components/ui/StatCard";
@@ -16,10 +17,12 @@ function PhaseBadge({ phase }: { phase: string }) {
 
 export default function OpsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [portfolio, setPortfolio] = useState<OpsPortfolio | null>(null);
   const [nextRun, setNextRun] = useState<OpsNextRun | null>(null);
   const [loading, setLoading] = useState(true);
   const [runningMeta, setRunningMeta] = useState(false);
+  const [metaRunError, setMetaRunError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -43,9 +46,12 @@ export default function OpsPage() {
     const meta = portfolio?.schedules.find((s) => s.scheduleKind === "meta");
     if (!meta) return;
     setRunningMeta(true);
+    setMetaRunError(null);
     try {
       const { runId } = await api.schedules.runNow(meta.id);
-      window.location.href = `/runs/${runId}`;
+      navigate(`/runs/${runId}`);
+    } catch (err) {
+      setMetaRunError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
     } finally {
       setRunningMeta(false);
     }
@@ -88,6 +94,12 @@ export default function OpsPage() {
           </>
         }
       />
+
+      {metaRunError ? (
+        <p className="text-sm text-[var(--color-destructive)]" role="alert">
+          {metaRunError}
+        </p>
+      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
