@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ProductConsensus, type ProductConsensusRevision, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
@@ -23,6 +23,14 @@ export default function ProductConsensusPage() {
   const { t } = useTranslation();
   const params = useParams<{ productId: string }>();
   const productId = params.productId;
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const tabFromUrl = searchParams.get("tab") as View | null;
+  const [view, setView] = useState<View>(
+    tabFromUrl === "reports" || tabFromUrl === "revisions" || tabFromUrl === "document"
+      ? tabFromUrl
+      : "document",
+  );
 
   const [record, setRecord] = useState<ProductConsensus | null>(null);
   const [revisions, setRevisions] = useState<ProductConsensusRevision[]>([]);
@@ -31,7 +39,6 @@ export default function ProductConsensusPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [view, setView] = useState<View>("document");
 
   useEffect(() => {
     if (!productId) return;
@@ -50,6 +57,11 @@ export default function ProductConsensusPage() {
       })
       .finally(() => setLoading(false));
   }, [productId]);
+
+  const switchTab = (next: View) => {
+    setView(next);
+    setSearchParams(next === "document" ? {} : { tab: next }, { replace: true });
+  };
 
   const save = async () => {
     if (!productId) return;
@@ -136,7 +148,7 @@ export default function ProductConsensusPage() {
           type="button"
           role="tab"
           aria-selected={view === "document"}
-          onClick={() => setView("document")}
+          onClick={() => switchTab("document")}
           className={`interactive rounded-t-md px-3 py-2 text-sm font-medium transition ${
             view === "document"
               ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
@@ -149,7 +161,7 @@ export default function ProductConsensusPage() {
           type="button"
           role="tab"
           aria-selected={view === "revisions"}
-          onClick={() => setView("revisions")}
+          onClick={() => switchTab("revisions")}
           className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
             view === "revisions"
               ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
@@ -167,7 +179,7 @@ export default function ProductConsensusPage() {
           type="button"
           role="tab"
           aria-selected={view === "reports"}
-          onClick={() => setView("reports")}
+          onClick={() => switchTab("reports")}
           className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
             view === "reports"
               ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"

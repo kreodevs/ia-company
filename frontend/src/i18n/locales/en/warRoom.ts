@@ -25,6 +25,7 @@ export const warRoom = {
   legend: "Legend",
   recentRuns: "Recent runs",
   noRuns: "No runs yet for this product.",
+  viewReports: "View reports →",
   status: {
     idle: "idle",
     queued: "queued",

@@ -136,6 +136,12 @@ export default function ProductTeamPage() {
           >
             {t("warRoom.viewCode")}
           </Link>
+          <Link
+            to={`/products/${data.product.id}/consensus?tab=reports`}
+            className="war-room-pill war-room-pill-link"
+          >
+            {t("warRoom.viewReports")}
+          </Link>
         </div>
       </header>
 
