@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
 
 export default function WorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [consensus, setConsensus] = useState<TenantConsensus | null>(null);
@@ -84,7 +86,7 @@ export default function WorkflowEditorPage() {
   };
 
   if (!workflow) {
-    return <p className="text-[var(--color-muted-foreground)]">Loading workflow…</p>;
+    return <p className="text-[var(--color-muted-foreground)]">{t("workflows.list.loadingOne")}</p>;
   }
 
   return (
@@ -92,7 +94,7 @@ export default function WorkflowEditorPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link to="/workflows" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
-            ← Workflows
+            ← {t("nav.workflows")}
           </Link>
           <h1 className="mt-1 text-2xl font-bold">{workflow.name}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">{workflow.description}</p>
@@ -104,20 +106,20 @@ export default function WorkflowEditorPage() {
               checked={useConsensus}
               onChange={(e) => setUseConsensus(e.target.checked)}
             />
-            Load & sync tenant consensus
+            {t("workflows.editor.loadSyncConsensus")}
           </label>
           <label className="block text-sm">
-            {useConsensus ? "Next action override (optional)" : "Task / memory seed"}
+            {useConsensus ? t("workflows.editor.nextActionOverride") : t("workflows.editor.taskMemorySeed")}
             <input
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
               value={taskOverride}
               onChange={(e) => setTaskOverride(e.target.value)}
-              placeholder={consensus?.nextAction ?? "Evaluate next opportunity"}
+              placeholder={consensus?.nextAction ?? t("workflows.editor.nextActionPlaceholder")}
             />
           </label>
           {useConsensus && consensus?.content && (
             <p className="line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
-              Consensus: {consensus.content.slice(0, 120)}…
+              {t("workflows.editor.consensusPreview", { preview: consensus.content.slice(0, 120) })}
             </p>
           )}
           <button
@@ -125,7 +127,7 @@ export default function WorkflowEditorPage() {
             disabled={executing}
             className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
           >
-            {executing ? "Starting…" : "Execute workflow"}
+            {executing ? t("common.starting") : t("workflows.editor.execute")}
           </button>
         </div>
       </div>

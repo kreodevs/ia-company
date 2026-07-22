@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   formatWorkflowTitle,
   stepDisplayName,
@@ -19,6 +20,7 @@ export default function WorkflowTemplateCard({
   deleting = false,
   onDelete,
 }: WorkflowTemplateCardProps) {
+  const { t } = useTranslation();
   const pipeline = workflowPipelineSteps(workflow);
   const hiddenSteps = workflow.steps.length - pipeline.length;
   const title = formatWorkflowTitle(workflow.name);
@@ -33,7 +35,10 @@ export default function WorkflowTemplateCard({
           </p>
         </div>
         <span className="shrink-0 rounded-full border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-2.5 py-0.5 text-xs text-[var(--color-muted-foreground)]">
-          {workflow.steps.length} steps
+          {t("workflowCard.stepsCount", {
+            count: workflow.steps.length,
+            defaultValue: `${workflow.steps.length} steps`,
+          })}
         </span>
       </div>
 
@@ -44,7 +49,7 @@ export default function WorkflowTemplateCard({
       ) : null}
 
       {pipeline.length > 0 ? (
-        <div className="mt-3 flex flex-wrap items-center gap-1.5" aria-label="Agent pipeline">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5" aria-label={t("nav.agents")}>
           {pipeline.map((step, index) => (
             <span key={step.id} className="flex items-center gap-1.5">
               {index > 0 ? (
@@ -58,12 +63,17 @@ export default function WorkflowTemplateCard({
             </span>
           ))}
           {hiddenSteps > 0 ? (
-            <span className="text-xs text-[var(--color-muted-foreground)]">+{hiddenSteps} more</span>
+            <span className="text-xs text-[var(--color-muted-foreground)]">
+              {t("workflowCard.moreSteps", {
+                count: hiddenSteps,
+                defaultValue: `+${hiddenSteps} more`,
+              })}
+            </span>
           ) : null}
         </div>
       ) : (
         <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
-          No steps yet — open the editor to build this workflow.
+          {t("workflows.card.noSteps")}
         </p>
       )}
 
@@ -72,10 +82,13 @@ export default function WorkflowTemplateCard({
           to={editorPath}
           className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition hover:opacity-90"
         >
-          Open editor
+          {t("workflows.card.openEditor")}
         </Link>
         <span className="text-xs text-[var(--color-muted-foreground)]">
-          {workflow.edges.length} connection{workflow.edges.length === 1 ? "" : "s"}
+          {t("workflowCard.connectionsCount", {
+            count: workflow.edges.length,
+            defaultValue: `${workflow.edges.length} connection${workflow.edges.length === 1 ? "" : "s"}`,
+          })}
         </span>
         <button
           type="button"
@@ -83,7 +96,7 @@ export default function WorkflowTemplateCard({
           onClick={onDelete}
           className="ml-auto text-xs text-[var(--color-destructive)] hover:underline disabled:opacity-50"
         >
-          {deleting ? "Deleting…" : "Delete"}
+          {deleting ? t("common.deleting") : t("common.delete")}
         </button>
       </div>
     </article>

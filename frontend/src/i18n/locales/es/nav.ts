@@ -1,0 +1,17 @@
+export const nav = {
+  admin: "Admin",
+  templates: "Plantillas",
+  settings: "Configuración",
+  agents: "Agentes",
+  skills: "Skills",
+  workflows: "Workflows",
+  runs: "Ejecuciones",
+  ops: "Operaciones",
+  consensus: "Consensus",
+  team: "Equipo",
+  help: "Ayuda",
+  backToAdmin: "← Admin",
+  backToWorkflows: "← Workflows",
+  backToRuns: "← Ejecuciones",
+  backToPlatformTemplates: "← Plantillas de plataforma",
+} as const;

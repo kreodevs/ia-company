@@ -6,6 +6,7 @@ import {
   SetupGate,
 } from "./components/SetupGate";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useDocumentLang } from "./hooks/useDocumentLang";
 import HelpPage from "./pages/HelpPage";
 import OpsPage from "./pages/OpsPage";
 import SkillsPage from "./pages/SkillsPage";
@@ -29,6 +30,7 @@ import { defaultHelpSlug } from "./content/help";
 
 function AppShell() {
   const { authenticated } = useAuth();
+  useDocumentLang();
 
   return (
     <div className="min-h-screen">

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, type Workflow } from "../lib/api";
 import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import { formatWorkflowTitle } from "../lib/workflow-display";
 
 export default function WorkflowsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -49,7 +51,7 @@ export default function WorkflowsPage() {
   };
 
   const deleteWorkflow = async (workflow: Workflow) => {
-    if (!confirm(`Delete workflow "${workflow.name}"?`)) return;
+    if (!confirm(t("workflows.list.deleteConfirm", { name: workflow.name }))) return;
     setDeletingWorkflowId(workflow.id);
     try {
       await api.workflows.delete(workflow.id);
@@ -59,19 +61,19 @@ export default function WorkflowsPage() {
     }
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading workflows…</p>;
+  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.list.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Workflows</h1>
+          <h1 className="text-2xl font-bold">{t("nav.workflows")}</h1>
           <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            Agent pipelines for your organization. Open a workflow to edit steps and run it.
+            {t("workflows.list.subtitle")}
           </p>
         </div>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          {filteredWorkflows.length} of {workflows.length}
+          {filteredWorkflows.length} {t("common.of")} {workflows.length}
         </p>
       </div>
 
@@ -80,14 +82,14 @@ export default function WorkflowsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search workflows or agents…"
+            placeholder={t("workflows.list.searchPlaceholder")}
             className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
           />
           <div className="flex min-w-0 flex-1 gap-2">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="New workflow name"
+              placeholder={t("workflows.list.newNamePlaceholder")}
               className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               onKeyDown={(e) => {
                 if (e.key === "Enter") void createWorkflow();
@@ -99,7 +101,7 @@ export default function WorkflowsPage() {
               onClick={() => void createWorkflow()}
               className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
             >
-              {creating ? "Creating…" : "Create & edit"}
+              {creating ? t("common.creating") : t("workflows.list.createAndEdit")}
             </button>
           </div>
         </div>
@@ -108,12 +110,10 @@ export default function WorkflowsPage() {
       {filteredWorkflows.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-card)]/40 px-6 py-12 text-center">
           <p className="font-medium">
-            {workflows.length === 0 ? "No workflows yet" : "No workflows match your search"}
+            {workflows.length === 0 ? t("workflows.list.emptyTitle") : t("workflows.list.emptySearchTitle")}
           </p>
           <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
-            {workflows.length === 0
-              ? "Create your first workflow to chain agents into a repeatable process."
-              : "Try another search term or clear the filter."}
+            {workflows.length === 0 ? t("workflows.list.emptySubtitle") : t("workflows.list.emptySearchSubtitle")}
           </p>
         </div>
       ) : (

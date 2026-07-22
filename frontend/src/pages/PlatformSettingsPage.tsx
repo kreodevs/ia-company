@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 
 export default function PlatformSettingsPage() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -22,28 +25,27 @@ export default function PlatformSettingsPage() {
     try {
       const updated = await api.admin.platformSettings.update(settings);
       setSettings(updated);
-      setMessage("Platform settings saved");
+      setMessage(t("admin.platformSettings.saved"));
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : "Save failed");
+      setMessage(translateApiError(err, t, "common.saveFailed"));
     } finally {
       setSaving(false);
     }
   };
 
   if (!settings) {
-    return <p className="text-[var(--color-muted-foreground)]">Loading platform settings…</p>;
+    return <p className="text-[var(--color-muted-foreground)]">{t("admin.platformSettings.loading")}</p>;
   }
 
   return (
     <div className="space-y-8">
       <div>
         <Link to="/admin" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
-          ← Admin
+          ← {t("nav.admin")}
         </Link>
-        <h1 className="mt-1 text-2xl font-bold">Platform Settings</h1>
+        <h1 className="mt-1 text-2xl font-bold">{t("admin.platformSettings.title")}</h1>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Application configuration (LLM keys, email, limits). Infrastructure secrets stay in{" "}
-          <code>.env</code>.
+          {t("admin.platformSettings.subtitle")}
         </p>
       </div>
 
@@ -54,9 +56,9 @@ export default function PlatformSettingsPage() {
       )}
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="font-semibold">General</h2>
+        <h2 className="font-semibold">{t("admin.platformSettings.general.title")}</h2>
         <label className="block text-sm">
-          Public URL
+          {t("admin.platformSettings.general.publicUrl")}
           <input
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={settings.publicUrl}
@@ -66,7 +68,7 @@ export default function PlatformSettingsPage() {
         </label>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
-            Auth rate limit / min
+            <span>{t("admin.platformSettings.general.authRateLimit")}</span>
             <input
               type="number"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -77,7 +79,7 @@ export default function PlatformSettingsPage() {
             />
           </label>
           <label className="block text-sm">
-            Execute rate limit / min
+            <span>{t("admin.platformSettings.general.executeRateLimit")}</span>
             <input
               type="number"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -88,7 +90,7 @@ export default function PlatformSettingsPage() {
             />
           </label>
           <label className="block text-sm">
-            Shell timeout (ms)
+            <span>{t("admin.platformSettings.general.shellTimeout")}</span>
             <input
               type="number"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -99,7 +101,7 @@ export default function PlatformSettingsPage() {
             />
           </label>
           <label className="block text-sm">
-            Scheduler tick (ms)
+            <span>{t("admin.platformSettings.general.schedulerTick")}</span>
             <input
               type="number"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -113,10 +115,10 @@ export default function PlatformSettingsPage() {
       </section>
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="font-semibold">Default LLM (platform templates & fallback)</h2>
+        <h2 className="font-semibold">{t("admin.platformSettings.defaultLlm.title")}</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block text-sm">
-            Provider
+            <span>{t("common.provider")}</span>
             <select
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               value={settings.defaultProvider}
@@ -127,13 +129,13 @@ export default function PlatformSettingsPage() {
                 })
               }
             >
-              <option value="tokenlab">TokenLab</option>
-              <option value="openrouter">OpenRouter</option>
-              <option value="custom">Custom</option>
+              <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
+              <option value="openrouter">{t("common.openrouter")}</option>
+              <option value="custom">{t("common.custom")}</option>
             </select>
           </label>
           <label className="block text-sm sm:col-span-2">
-            Default model
+            <span>{t("settings.llm.defaultModel")}</span>
             <input
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               value={settings.defaultModel}
@@ -141,7 +143,7 @@ export default function PlatformSettingsPage() {
             />
           </label>
           <label className="block text-sm">
-            Temperature
+            <span>{t("admin.platformSettings.defaultLlm.temperature")}</span>
             <input
               type="number"
               step="0.1"
@@ -158,10 +160,10 @@ export default function PlatformSettingsPage() {
 
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
-            <h3 className="text-sm font-medium">TokenLab / LemonData</h3>
+            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.tokenlabSection")}</h3>
             <input
               type="password"
-              placeholder="API key"
+              placeholder={t("common.apiKey")}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               value={settings.tokenlabApiKey ?? ""}
               onChange={(e) => setSettings({ ...settings, tokenlabApiKey: e.target.value })}
@@ -173,10 +175,10 @@ export default function PlatformSettingsPage() {
             />
           </div>
           <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4">
-            <h3 className="text-sm font-medium">OpenRouter</h3>
+            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.openrouterSection")}</h3>
             <input
               type="password"
-              placeholder="API key"
+              placeholder={t("common.apiKey")}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               value={settings.openrouterApiKey ?? ""}
               onChange={(e) => setSettings({ ...settings, openrouterApiKey: e.target.value })}
@@ -188,24 +190,24 @@ export default function PlatformSettingsPage() {
             />
             <input
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder="HTTP-Referer"
+              placeholder={t("admin.platformSettings.defaultLlm.httpReferer")}
               value={settings.openrouterReferer}
               onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
             />
           </div>
           <div className="space-y-2 rounded-lg border border-[var(--color-border)] p-4 lg:col-span-2">
-            <h3 className="text-sm font-medium">Custom (OpenAI-compatible)</h3>
+            <h3 className="text-sm font-medium">{t("admin.platformSettings.defaultLlm.customSection")}</h3>
             <div className="grid gap-2 sm:grid-cols-2">
               <input
                 type="password"
-                placeholder="API key"
+                placeholder={t("common.apiKey")}
                 className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
                 value={settings.customApiKey ?? ""}
                 onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
               />
               <input
                 className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-                placeholder="Base URL"
+                placeholder={t("common.baseUrl")}
                 value={settings.customBaseUrl}
                 onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
               />
@@ -215,10 +217,10 @@ export default function PlatformSettingsPage() {
       </section>
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="font-semibold">Email (Resend)</h2>
+        <h2 className="font-semibold">{t("admin.platformSettings.email.title")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
-            Resend API key
+            {t("admin.platformSettings.email.resendApiKey")}
             <input
               type="password"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -227,32 +229,31 @@ export default function PlatformSettingsPage() {
             />
           </label>
           <label className="block text-sm">
-            From address
+            {t("admin.platformSettings.email.fromAddress")}
             <input
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               value={settings.emailFrom}
               onChange={(e) => setSettings({ ...settings, emailFrom: e.target.value })}
-              placeholder="Auto Company <noreply@yourdomain.com>"
+              placeholder={t("admin.platformSettings.email.fromAddressPlaceholder")}
             />
           </label>
         </div>
       </section>
 
       <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="font-semibold">GitHub (autonomous git/gh tools)</h2>
+        <h2 className="font-semibold">{t("admin.platformSettings.github.title")}</h2>
         <label className="block text-sm">
-          GitHub personal access token
+          {t("admin.platformSettings.github.token")}
           <input
             type="password"
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={settings.githubApiKey ?? ""}
             onChange={(e) => setSettings({ ...settings, githubApiKey: e.target.value })}
-            placeholder="ghp_… or fine-grained token"
+            placeholder={t("admin.platformSettings.github.tokenPlaceholder")}
           />
         </label>
         <p className="text-xs text-[var(--color-muted-foreground)]">
-          Used by workflow agents for <code>git_commit</code> and repo operations. Can also be set via{" "}
-          <code>GH_TOKEN</code> in server environment.
+          {t("admin.platformSettings.github.hint")}
         </p>
       </section>
 
@@ -261,7 +262,7 @@ export default function PlatformSettingsPage() {
         onClick={() => void save()}
         className="rounded-lg bg-[var(--color-primary)] px-6 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
       >
-        {saving ? "Saving…" : "Save platform settings"}
+        {saving ? t("common.saving") : t("admin.platformSettings.save")}
       </button>
     </div>
   );

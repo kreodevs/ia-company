@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun } from "../lib/api";
 
 const statusColors: Record<string, string> = {
@@ -11,6 +12,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function RunsPage() {
+  const { t } = useTranslation();
   const [runs, setRuns] = useState<ExecutionRun[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,20 +20,20 @@ export default function RunsPage() {
     api.runs.list().then(setRuns).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading runs…</p>;
+  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("runs.list.loading")}</p>;
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Execution Runs</h1>
+      <h1 className="mb-6 text-2xl font-bold">{t("runs.list.title")}</h1>
       <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-4 py-3">Workflow</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Tokens</th>
-              <th className="px-4 py-3">Cost</th>
-              <th className="px-4 py-3">Started</th>
+              <th className="px-4 py-3">{t("runs.list.columns.workflow")}</th>
+              <th className="px-4 py-3">{t("runs.list.columns.status")}</th>
+              <th className="px-4 py-3">{t("runs.list.columns.tokens")}</th>
+              <th className="px-4 py-3">{t("runs.list.columns.cost")}</th>
+              <th className="px-4 py-3">{t("runs.list.columns.started")}</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +44,9 @@ export default function RunsPage() {
                     {run.workflow?.name ?? run.workflowId.slice(0, 8)}
                   </Link>
                 </td>
-                <td className={`px-4 py-3 font-medium ${statusColors[run.status]}`}>{run.status}</td>
+                <td className={`px-4 py-3 font-medium ${statusColors[run.status]}`}>
+                  {t(`status.${run.status}`, { defaultValue: run.status })}
+                </td>
                 <td className="px-4 py-3">{run.totalTokens.toLocaleString()}</td>
                 <td className="px-4 py-3">${run.totalCostUsd.toFixed(4)}</td>
                 <td className="px-4 py-3 text-[var(--color-muted-foreground)]">

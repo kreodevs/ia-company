@@ -1,14 +1,16 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
 export function SetupGate() {
   const { loading, needsSetup, authenticated, kind } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-[var(--color-muted-foreground)]">
-        Loading…
+        {t("common.loading")}
       </div>
     );
   }

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AgentForm from "../components/AgentForm";
 import { api, type Agent, type Skill } from "../lib/api";
 
 export default function AgentsPage() {
+  const { t } = useTranslation();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [selected, setSelected] = useState<Agent | null>(null);
@@ -21,13 +23,13 @@ export default function AgentsPage() {
     void load();
   }, []);
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading agents…</p>;
+  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.agents.loading")}</p>;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Agents</h1>
+          <h1 className="text-2xl font-bold">{t("nav.agents")}</h1>
           <button
             onClick={() => {
               setCreating(true);
@@ -35,7 +37,7 @@ export default function AgentsPage() {
             }}
             className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)]"
           >
-            New agent
+            {t("workflows.agents.newAgent")}
           </button>
         </div>
         <ul className="space-y-2">
@@ -78,7 +80,7 @@ export default function AgentsPage() {
           />
         )}
         {!selected && !creating && (
-          <p className="text-[var(--color-muted-foreground)]">Select an agent to edit</p>
+          <p className="text-[var(--color-muted-foreground)]">{t("workflows.agents.selectToEdit")}</p>
         )}
       </section>
     </div>

@@ -1,0 +1,168 @@
+export const admin = {
+  dashboard: {
+    loading: "Cargando panel…",
+    title: "Panel de superadmin",
+    needTenantBanner:
+      "Selecciona un tenant en el desplegable para acceder a Agentes, Workflows y Ejecuciones — o crea uno abajo con una cuenta de propietario.",
+    stats: {
+      tenants: "Tenants",
+      tenantAgents: "Agentes de tenants",
+      tenantWorkflows: "Workflows de tenants",
+      totalRuns: "Ejecuciones totales",
+    },
+    platformTemplates: {
+      title: "Plantillas de plataforma",
+      subtitle:
+        "Generadas desde .claude/ — clonadas al crear tenant; sincroniza a tenants existentes desde Plantillas.",
+      agentTemplates: "{{count}} plantillas de agente",
+      skillTemplates: "{{count}} plantillas de skill",
+      workflowTemplates: "{{count}} plantillas de workflow",
+      platformSettingsLink: "Configuración de plataforma →",
+      manageTemplatesLink: "Gestionar plantillas →",
+    },
+    createTenant: {
+      title: "Crear tenant",
+      organizationName: "Nombre de la organización",
+      ownerEmail: "Email del propietario (opcional)",
+      ownerName: "Nombre del propietario (opcional)",
+      ownerPassword: "Contraseña del propietario (opcional, mín. 8)",
+      createTenant: "Crear tenant",
+      createFailed: "Error al crear tenant",
+    },
+    tenants: {
+      title: "Tenants",
+      columns: {
+        name: "Nombre",
+        slug: "Slug",
+        users: "Usuarios",
+        workflows: "Workflows",
+      },
+      impersonate: "Impersonar",
+      syncTemplates: "Sincronizar plantillas",
+      syncUpdateConfirm:
+        'El modo Update sobrescribe las plantillas coincidentes de "{{name}}" desde plataforma. ¿Continuar?',
+      syncMergeConfirm:
+        '¿Sincronizar plantillas de plataforma a "{{name}}"? Se añadirán agentes, skills y workflows faltantes.',
+      syncSuccess:
+        "Sincronizado {{name}} ({{mode}}): +{{agentsAdded}} agentes, +{{skillsAdded}} skills, +{{workflowsAdded}} workflows",
+      syncUpdated: " · actualizados {{count}}",
+    },
+    auditLog: {
+      title: "Registro de auditoría",
+      columns: {
+        time: "Hora",
+        action: "Acción",
+        actor: "Actor",
+        tenant: "Tenant",
+      },
+      empty: "Aún no hay eventos de auditoría.",
+      noTenant: "—",
+    },
+  },
+  platformSettings: {
+    loading: "Cargando configuración de plataforma…",
+    title: "Configuración de plataforma",
+    subtitle:
+      "Configuración de la aplicación (claves LLM, email, límites). Los secretos de infraestructura permanecen en .env.",
+    saved: "Configuración de plataforma guardada",
+    general: {
+      title: "General",
+      publicUrl: "URL pública",
+      publicUrlPlaceholder: "https://app.example.com",
+      authRateLimit: "Límite de auth / min",
+      executeRateLimit: "Límite de ejecución / min",
+      shellTimeout: "Timeout de shell (ms)",
+      schedulerTick: "Tick del scheduler (ms)",
+    },
+    defaultLlm: {
+      title: "LLM predeterminado (plantillas de plataforma y fallback)",
+      temperature: "Temperatura",
+      tokenlabSection: "TokenLab / LemonData",
+      openrouterSection: "OpenRouter",
+      httpReferer: "HTTP-Referer",
+      customSection: "Personalizado (compatible OpenAI)",
+    },
+    email: {
+      title: "Email (Resend)",
+      resendApiKey: "Clave API de Resend",
+      fromAddress: "Dirección remitente",
+      fromPlaceholder: "Auto Company <noreply@yourdomain.com>",
+    },
+    github: {
+      title: "GitHub (herramientas git/gh autónomas)",
+      token: "Token de acceso personal de GitHub",
+      tokenPlaceholder: "ghp_… o token fine-grained",
+      hint: "Usado por agentes de workflow para git_commit y operaciones de repos. También configurable vía GH_TOKEN en el servidor.",
+    },
+    save: "Guardar configuración de plataforma",
+  },
+  templates: {
+    title: "Plantillas de plataforma",
+    subtitle: "Plantillas globales clonadas a nuevos tenants · originadas en .claude/",
+    reseed: "Regenerar desde .claude/",
+    syncSection: {
+      title: "Sincronizar a tenants existentes",
+      subtitle:
+        "Publica plantillas de plataforma a tenants existentes. La coincidencia usa id de plataforma (seguro ante renombres), luego nombre.",
+      mergeLabel: "Fusionar — añadir solo faltantes",
+      updateLabel: "Actualizar — también sobrescribir plantillas coincidentes",
+      syncAll: "Sincronizar todos los tenants",
+      syncSelected: "Sincronizar seleccionados ({{count}})",
+      updateConfirm:
+        "El modo Update sobrescribe agentes/skills/workflows coincidentes de tenants desde plantillas de plataforma (coincidencia por id o nombre). ¿Continuar?",
+      syncSummary: "Sincronizados {{count}} tenant(s) ({{mode}}): {{summary}}",
+      stats: {
+        skillsAdded: "{{count}} skills añadidas",
+        skillsUpdated: "{{count}} skills actualizadas",
+        skillsLinked: "{{count}} skills vinculadas",
+        agentsAdded: "{{count}} agentes añadidos",
+        agentsUpdated: "{{count}} agentes actualizados",
+        agentsLinked: "{{count}} agentes vinculados",
+        workflowsAdded: "{{count}} workflows añadidos",
+        workflowsUpdated: "{{count}} workflows actualizados",
+        workflowsLinked: "{{count}} workflows vinculados",
+      },
+      reseedSuccess:
+        "Regenerados {{agents}} agentes, {{skills}} skills, {{workflows}} workflows",
+    },
+    tabs: {
+      agents: "agentes",
+      skills: "skills",
+      workflows: "workflows",
+    },
+    agents: {
+      createTemplate: "+ Crear plantilla de agente",
+      agentNamePrompt: "Nombre de la plantilla de agente",
+      rolePrompt: "Etiqueta del rol",
+      created: 'Creada plantilla de agente "{{name}}"',
+      saveTemplate: "Guardar plantilla de agente",
+      saved: "Plantilla de agente guardada",
+    },
+    skills: {
+      createTemplate: "+ Crear plantilla de skill",
+      skillNamePrompt: "Nombre de la plantilla de skill",
+      created: 'Creada plantilla de skill "{{name}}"',
+      saveTemplate: "Guardar plantilla de skill",
+      saved: "Plantilla de skill guardada",
+    },
+    workflows: {
+      title: "Plantillas de workflow",
+      subtitle:
+        "Pipelines globales clonados a nuevos tenants. Abre una plantilla para editar agentes y conexiones en el editor visual.",
+      searchPlaceholder: "Buscar workflows o agentes…",
+      newNamePlaceholder: "nombre-nuevo-workflow",
+      emptyTitle: "Aún no hay plantillas de workflow",
+      emptySearchTitle: "Ningún workflow coincide con tu búsqueda",
+      emptySubtitle:
+        "Crea una plantilla para definir un pipeline de agentes reutilizable para cada nuevo tenant.",
+      emptySearchSubtitle: "Prueba otro término de búsqueda o limpia el filtro.",
+      deleteConfirm: '¿Eliminar la plantilla de workflow de plataforma "{{name}}"?',
+      deleted: 'Eliminada plantilla de workflow "{{name}}"',
+    },
+  },
+  impersonation: {
+    label: "Impersonar tenant",
+    superadminView: "Vista superadmin",
+    viewingAs: "Viendo como {{name}}",
+  },
+} as const;

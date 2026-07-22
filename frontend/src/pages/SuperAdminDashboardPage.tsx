@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import TenantImpersonationSelect from "../components/TenantImpersonationSelect";
 import { useAuth } from "../context/AuthContext";
 import { api, type AdminDashboard } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 
 export default function SuperAdminDashboardPage() {
   const { superAdmin, logout, activeTenant, impersonate } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const [tenantName, setTenantName] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
@@ -55,7 +58,7 @@ export default function SuperAdminDashboardPage() {
       await impersonate(tenant.id);
       navigate("/workflows");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create tenant");
+      setError(translateApiError(err, t, "admin.dashboard.createTenant.createFailed"));
     } finally {
       setCreating(false);
     }
@@ -64,18 +67,14 @@ export default function SuperAdminDashboardPage() {
   async function handleSyncTenant(tenantId: string, name: string) {
     if (
       syncMode === "update" &&
-      !confirm(
-        `Update mode overwrites matching templates for "${name}" from platform. Continue?`,
-      )
+      !confirm(t("admin.dashboard.tenants.syncUpdateConfirm", { name }))
     ) {
       return;
     }
 
     if (
       syncMode === "merge" &&
-      !confirm(
-        `Sync platform templates to "${name}"? Missing agents, skills, and workflows will be added.`,
-      )
+      !confirm(t("admin.dashboard.tenants.syncMergeConfirm", { name }))
     ) {
       return;
     }
@@ -85,30 +84,41 @@ export default function SuperAdminDashboardPage() {
     try {
       const { stats } = await api.admin.syncTenantTemplates(tenantId, { mode: syncMode });
       await load();
+      const updatedCount =
+        stats.agents.updated + stats.skills.updated + stats.workflows.updated;
       setError(
-        `Synced ${name} (${syncMode}): +${stats.agents.added} agents, +${stats.skills.added} skills, +${stats.workflows.added} workflows` +
-          (stats.agents.updated + stats.skills.updated + stats.workflows.updated > 0
-            ? ` · updated ${stats.agents.updated + stats.skills.updated + stats.workflows.updated}`
+        t("admin.dashboard.tenants.syncSuccess", {
+          name,
+          mode: syncMode,
+          agentsAdded: stats.agents.added,
+          skillsAdded: stats.skills.added,
+          workflowsAdded: stats.workflows.added,
+        }) +
+          (updatedCount > 0
+            ? t("admin.dashboard.tenants.syncUpdated", { count: updatedCount })
             : ""),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sync failed");
+      setError(translateApiError(err, t, "common.syncFailed"));
     } finally {
       setSyncingTenantId(null);
     }
   }
 
   if (!dashboard) {
-    return <p className="text-[var(--color-muted-foreground)]">Loading dashboard…</p>;
+    return <p className="text-[var(--color-muted-foreground)]">{t("admin.dashboard.loading")}</p>;
   }
 
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Superadmin Dashboard</h1>
+          <h1 className="text-2xl font-bold">{t("admin.dashboard.title")}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            Signed in as {superAdmin?.name} ({superAdmin?.email})
+            {t("common.signedInAs", {
+              name: superAdmin?.name,
+              email: superAdmin?.email,
+            })}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -117,24 +127,23 @@ export default function SuperAdminDashboardPage() {
             onClick={() => void logout()}
             className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
           >
-            Logout
+            {t("common.logout")}
           </button>
         </div>
       </div>
 
       {needTenant && !activeTenant && (
         <div className="rounded-lg border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-4 py-3 text-sm">
-          Select a tenant from the dropdown to access Agents, Workflows, and Runs — or create
-          one below with an owner account.
+          {t("admin.dashboard.needTenantBanner")}
         </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ["Tenants", dashboard.stats.tenants],
-          ["Tenant agents", dashboard.stats.tenantAgents],
-          ["Tenant workflows", dashboard.stats.tenantWorkflows],
-          ["Total runs", dashboard.stats.runs],
+          [t("admin.dashboard.stats.tenants"), dashboard.stats.tenants],
+          [t("admin.dashboard.stats.tenantAgents"), dashboard.stats.tenantAgents],
+          [t("admin.dashboard.stats.tenantWorkflows"), dashboard.stats.tenantWorkflows],
+          [t("admin.dashboard.stats.totalRuns"), dashboard.stats.runs],
         ].map(([label, value]) => (
           <div
             key={label as string}
@@ -148,36 +157,47 @@ export default function SuperAdminDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-          <h2 className="font-semibold">Platform templates</h2>
+          <h2 className="font-semibold">{t("admin.dashboard.platformTemplates.title")}</h2>
           <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            Seeded from <code>.claude/</code> — cloned on tenant create; sync to existing tenants from
-            Templates.
+            {t("admin.dashboard.platformTemplates.subtitle")}
           </p>
           <ul className="mt-4 space-y-1 text-sm">
-            <li>{dashboard.stats.platformTemplates.agents} agent templates</li>
-            <li>{dashboard.stats.platformTemplates.skills} skill templates</li>
-            <li>{dashboard.stats.platformTemplates.workflows} workflow templates</li>
+            <li>
+              {t("admin.dashboard.platformTemplates.agentTemplates", {
+                count: dashboard.stats.platformTemplates.agents,
+              })}
+            </li>
+            <li>
+              {t("admin.dashboard.platformTemplates.skillTemplates", {
+                count: dashboard.stats.platformTemplates.skills,
+              })}
+            </li>
+            <li>
+              {t("admin.dashboard.platformTemplates.workflowTemplates", {
+                count: dashboard.stats.platformTemplates.workflows,
+              })}
+            </li>
           </ul>
           <Link
             to="/admin/settings"
             className="mt-4 mr-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
           >
-            Platform settings →
+            {t("admin.dashboard.platformTemplates.platformSettingsLink")}
           </Link>
           <Link
             to="/admin/templates"
             className="mt-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
           >
-            Manage templates →
+            {t("admin.dashboard.platformTemplates.manageTemplatesLink")}
           </Link>
         </section>
 
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-          <h2 className="font-semibold">Create tenant</h2>
+          <h2 className="font-semibold">{t("admin.dashboard.createTenant.title")}</h2>
           <form onSubmit={(e) => void handleCreateTenant(e)} className="mt-4 space-y-3">
             <input
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder="Organization name"
+              placeholder={t("admin.dashboard.createTenant.organizationName")}
               value={tenantName}
               onChange={(e) => setTenantName(e.target.value)}
               required
@@ -185,20 +205,20 @@ export default function SuperAdminDashboardPage() {
             <input
               type="email"
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder="Owner email (optional)"
+              placeholder={t("admin.dashboard.createTenant.ownerEmail")}
               value={ownerEmail}
               onChange={(e) => setOwnerEmail(e.target.value)}
             />
             <input
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder="Owner name (optional)"
+              placeholder={t("admin.dashboard.createTenant.ownerName")}
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
             />
             <input
               type="password"
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              placeholder="Owner password (optional, min 8)"
+              placeholder={t("admin.dashboard.createTenant.ownerPassword")}
               value={ownerPassword}
               onChange={(e) => setOwnerPassword(e.target.value)}
             />
@@ -207,7 +227,7 @@ export default function SuperAdminDashboardPage() {
               disabled={creating}
               className="w-full rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
             >
-              {creating ? "Creating…" : "Create tenant"}
+              {creating ? t("common.creating") : t("admin.dashboard.createTenant.createTenant")}
             </button>
           </form>
           {error && <p className="mt-2 text-sm text-[var(--color-destructive)]">{error}</p>}
@@ -216,7 +236,7 @@ export default function SuperAdminDashboardPage() {
 
       <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-semibold">Tenants</h2>
+          <h2 className="font-semibold">{t("admin.dashboard.tenants.title")}</h2>
           <div className="flex items-center gap-3 text-sm">
             <label className="flex items-center gap-1">
               <input
@@ -224,7 +244,7 @@ export default function SuperAdminDashboardPage() {
                 checked={syncMode === "merge"}
                 onChange={() => setSyncMode("merge")}
               />
-              Merge
+              {t("common.merge")}
             </label>
             <label className="flex items-center gap-1">
               <input
@@ -232,7 +252,7 @@ export default function SuperAdminDashboardPage() {
                 checked={syncMode === "update"}
                 onChange={() => setSyncMode("update")}
               />
-              Update
+              {t("common.update")}
             </label>
           </div>
         </div>
@@ -240,34 +260,36 @@ export default function SuperAdminDashboardPage() {
           <table className="w-full text-left text-sm">
             <thead className="text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="pb-2">Name</th>
-                <th className="pb-2">Slug</th>
-                <th className="pb-2">Users</th>
-                <th className="pb-2">Workflows</th>
+                <th className="pb-2">{t("common.name")}</th>
+                <th className="pb-2">{t("admin.dashboard.tenants.columns.slug")}</th>
+                <th className="pb-2">{t("admin.dashboard.tenants.columns.users")}</th>
+                <th className="pb-2">{t("nav.workflows")}</th>
                 <th className="pb-2"></th>
               </tr>
             </thead>
             <tbody>
-              {dashboard.tenants.map((t) => (
-                <tr key={t.id} className="border-t border-[var(--color-border)]">
-                  <td className="py-2 font-medium">{t.name}</td>
-                  <td className="py-2 text-[var(--color-muted-foreground)]">{t.slug}</td>
-                  <td className="py-2">{t._count?.users ?? 0}</td>
-                  <td className="py-2">{t._count?.workflows ?? 0}</td>
+              {dashboard.tenants.map((tenant) => (
+                <tr key={tenant.id} className="border-t border-[var(--color-border)]">
+                  <td className="py-2 font-medium">{tenant.name}</td>
+                  <td className="py-2 text-[var(--color-muted-foreground)]">{tenant.slug}</td>
+                  <td className="py-2">{tenant._count?.users ?? 0}</td>
+                  <td className="py-2">{tenant._count?.workflows ?? 0}</td>
                   <td className="py-2">
                     <div className="flex flex-wrap gap-3">
                       <button
-                        onClick={() => void impersonate(t.id).then(() => navigate("/workflows"))}
+                        onClick={() => void impersonate(tenant.id).then(() => navigate("/workflows"))}
                         className="text-[var(--color-primary)] hover:underline"
                       >
-                        Impersonate
+                        {t("admin.dashboard.tenants.impersonate")}
                       </button>
                       <button
-                        disabled={syncingTenantId === t.id}
-                        onClick={() => void handleSyncTenant(t.id, t.name)}
+                        disabled={syncingTenantId === tenant.id}
+                        onClick={() => void handleSyncTenant(tenant.id, tenant.name)}
                         className="text-[var(--color-muted-foreground)] hover:underline disabled:opacity-50"
                       >
-                        {syncingTenantId === t.id ? "Syncing…" : "Sync templates"}
+                        {syncingTenantId === tenant.id
+                          ? t("common.syncing")
+                          : t("admin.dashboard.tenants.syncTemplates")}
                       </button>
                     </div>
                   </td>
@@ -279,15 +301,15 @@ export default function SuperAdminDashboardPage() {
       </section>
 
       <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="mb-4 font-semibold">Audit log</h2>
+        <h2 className="mb-4 font-semibold">{t("admin.dashboard.auditLog.title")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="pb-2">Time</th>
-                <th className="pb-2">Action</th>
-                <th className="pb-2">Actor</th>
-                <th className="pb-2">Tenant</th>
+                <th className="pb-2">{t("admin.dashboard.auditLog.columns.time")}</th>
+                <th className="pb-2">{t("admin.dashboard.auditLog.columns.action")}</th>
+                <th className="pb-2">{t("admin.dashboard.auditLog.columns.actor")}</th>
+                <th className="pb-2">{t("admin.dashboard.auditLog.columns.tenant")}</th>
               </tr>
             </thead>
             <tbody>
@@ -306,7 +328,7 @@ export default function SuperAdminDashboardPage() {
               {auditLogs.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-4 text-[var(--color-muted-foreground)]">
-                    No audit events yet.
+                    {t("admin.dashboard.auditLog.empty")}
                   </td>
                 </tr>
               )}

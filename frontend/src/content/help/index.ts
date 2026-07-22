@@ -1,4 +1,6 @@
-import tutorialMd from "./tutorial.md?raw";
+import type { AppLanguage } from "../../i18n";
+import tutorialMdEs from "./tutorial.md?raw";
+import tutorialMdEn from "./tutorial.en.md?raw";
 
 export interface HelpArticle {
   slug: string;
@@ -7,18 +9,48 @@ export interface HelpArticle {
   content: string;
 }
 
-export const helpArticles: HelpArticle[] = [
-  {
-    slug: "guia-completa",
-    title: "Guía completa",
-    description: "Tutorial de uso: roles, workflows, autonomía multi-producto y operación.",
-    content: tutorialMd,
-  },
-];
-
 export const defaultHelpSlug = "guia-completa";
 
-export function getHelpArticle(slug: string | undefined): HelpArticle | undefined {
-  if (!slug) return helpArticles.find((a) => a.slug === defaultHelpSlug);
-  return helpArticles.find((a) => a.slug === slug);
+const ARTICLE_META: Record<
+  AppLanguage,
+  { title: string; description: string; content: string }
+> = {
+  es: {
+    title: "Guía completa",
+    description: "Tutorial de uso: roles, workflows, autonomía multi-producto y operación.",
+    content: tutorialMdEs,
+  },
+  en: {
+    title: "Complete guide",
+    description: "Usage tutorial: roles, workflows, multi-product autonomy, and operations.",
+    content: tutorialMdEn,
+  },
+};
+
+function normalizeLang(lang: string): AppLanguage {
+  return lang === "en" ? "en" : "es";
+}
+
+export function getHelpArticles(lang: string): HelpArticle[] {
+  const meta = ARTICLE_META[normalizeLang(lang)] ?? ARTICLE_META.es;
+  return [
+    {
+      slug: defaultHelpSlug,
+      title: meta.title,
+      description: meta.description,
+      content: meta.content,
+    },
+  ];
+}
+
+/** Spanish articles — kept for existing imports until pages use getHelpArticles(lang). */
+export const helpArticles: HelpArticle[] = getHelpArticles("es");
+
+export function getHelpArticle(
+  slug: string | undefined,
+  lang: string = "es",
+): HelpArticle | undefined {
+  const articles = getHelpArticles(lang);
+  if (!slug) return articles.find((a) => a.slug === defaultHelpSlug);
+  return articles.find((a) => a.slug === slug);
 }

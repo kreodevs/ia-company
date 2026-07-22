@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import { api, type Agent, type Workflow } from "../lib/api";
 
 export default function PlatformWorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [saving, setSaving] = useState(false);
@@ -54,7 +56,9 @@ export default function PlatformWorkflowEditorPage() {
   };
 
   const handleDelete = async () => {
-    if (!workflow || !confirm(`Delete platform template "${workflow.name}"?`)) return;
+    if (!workflow || !confirm(t("admin.templates.workflows.deleteConfirm", { name: workflow.name }))) {
+      return;
+    }
     setDeleting(true);
     try {
       await api.admin.templates.deleteWorkflow(workflow.id);
@@ -65,7 +69,7 @@ export default function PlatformWorkflowEditorPage() {
   };
 
   if (!workflow) {
-    return <p className="text-[var(--color-muted-foreground)]">Loading workflow template…</p>;
+    return <p className="text-[var(--color-muted-foreground)]">{t("workflows.platformEditor.loading")}</p>;
   }
 
   return (
@@ -76,7 +80,7 @@ export default function PlatformWorkflowEditorPage() {
             to="/admin/templates"
             className="text-sm text-[var(--color-muted-foreground)] hover:underline"
           >
-            ← Platform templates
+            ← {t("nav.backToPlatformTemplates")}
           </Link>
           <input
             className="mt-1 w-full max-w-xl rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-2xl font-bold"
@@ -94,7 +98,7 @@ export default function PlatformWorkflowEditorPage() {
           <textarea
             className="w-full max-w-xl rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
             rows={2}
-            placeholder="Description"
+            placeholder={t("workflows.platformEditor.descriptionPlaceholder")}
             value={workflow.description ?? ""}
             onChange={(e) => setWorkflow({ ...workflow, description: e.target.value })}
             onBlur={() => {
@@ -107,7 +111,7 @@ export default function PlatformWorkflowEditorPage() {
             }}
           />
           <p className="text-xs text-[var(--color-muted-foreground)]">
-            Global template — cloned to new tenants. Use platform agents only.
+            {t("workflows.platformEditor.globalTemplateHint")}
           </p>
         </div>
         <button
@@ -115,7 +119,7 @@ export default function PlatformWorkflowEditorPage() {
           disabled={deleting}
           className="rounded-lg border border-red-500/50 px-4 py-2 text-sm text-red-400 disabled:opacity-50"
         >
-          {deleting ? "Deleting…" : "Delete template"}
+          {deleting ? t("common.deleting") : t("workflows.platformEditor.deleteTemplate")}
         </button>
       </div>
 

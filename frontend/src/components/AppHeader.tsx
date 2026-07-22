@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 import TenantImpersonationSelect from "./TenantImpersonationSelect";
 import { useAuth } from "../context/AuthContext";
 
@@ -27,6 +29,7 @@ export default function AppHeader() {
   const { activeTenant, authenticated, isSuperAdmin, isTenantAdmin, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const homeLink = isSuperAdmin ? "/admin" : "/workflows";
   const closeMobile = () => setMobileOpen(false);
@@ -40,41 +43,42 @@ export default function AppHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <Link to={homeLink} className="shrink-0 text-lg font-semibold tracking-tight">
-            Auto-Company
+            {t("common.appName")}
           </Link>
           <nav className="hidden flex-wrap gap-1 md:flex">
-            {isSuperAdmin && <NavLink to="/admin">Admin</NavLink>}
-            {isSuperAdmin && <NavLink to="/admin/templates">Templates</NavLink>}
-            {isSuperAdmin && <NavLink to="/admin/settings">Settings</NavLink>}
+            {isSuperAdmin && <NavLink to="/admin">{t("nav.admin")}</NavLink>}
+            {isSuperAdmin && <NavLink to="/admin/templates">{t("nav.templates")}</NavLink>}
+            {isSuperAdmin && <NavLink to="/admin/settings">{t("nav.settings")}</NavLink>}
             {activeTenant && (
               <>
-                <NavLink to="/agents">Agents</NavLink>
-                <NavLink to="/skills">Skills</NavLink>
-                <NavLink to="/workflows">Workflows</NavLink>
-                <NavLink to="/runs">Runs</NavLink>
-                <NavLink to="/ops">Ops</NavLink>
-                <NavLink to="/consensus">Consensus</NavLink>
-                {isTenantAdmin && <NavLink to="/settings">Settings</NavLink>}
-                {isTenantAdmin && <NavLink to="/team">Team</NavLink>}
+                <NavLink to="/agents">{t("nav.agents")}</NavLink>
+                <NavLink to="/skills">{t("nav.skills")}</NavLink>
+                <NavLink to="/workflows">{t("nav.workflows")}</NavLink>
+                <NavLink to="/runs">{t("nav.runs")}</NavLink>
+                <NavLink to="/ops">{t("nav.ops")}</NavLink>
+                <NavLink to="/consensus">{t("nav.consensus")}</NavLink>
+                {isTenantAdmin && <NavLink to="/settings">{t("nav.settings")}</NavLink>}
+                {isTenantAdmin && <NavLink to="/team">{t("nav.team")}</NavLink>}
               </>
             )}
-            {authenticated && <NavLink to="/help">Ayuda</NavLink>}
+            {authenticated && <NavLink to="/help">{t("nav.help")}</NavLink>}
           </nav>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
           <TenantImpersonationSelect />
+          <LanguageSwitcher />
           <button
             onClick={() => void logout()}
             className="hidden rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm sm:inline-flex"
           >
-            Logout
+            {t("common.logout")}
           </button>
           <button
             type="button"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("common.closeMenu") : t("common.openMenu")}
             onClick={() => setMobileOpen((open) => !open)}
             className="inline-flex rounded-lg border border-[var(--color-border)] p-2 md:hidden"
           >
@@ -108,61 +112,61 @@ export default function AppHeader() {
           <div className="flex flex-col gap-1">
             {isSuperAdmin && (
               <NavLink to="/admin" onNavigate={closeMobile}>
-                Admin
+                {t("nav.admin")}
               </NavLink>
             )}
             {isSuperAdmin && (
               <NavLink to="/admin/templates" onNavigate={closeMobile}>
-                Templates
+                {t("nav.templates")}
               </NavLink>
             )}
             {isSuperAdmin && (
               <NavLink to="/admin/settings" onNavigate={closeMobile}>
-                Settings
+                {t("nav.settings")}
               </NavLink>
             )}
             {activeTenant && (
               <>
                 <NavLink to="/agents" onNavigate={closeMobile}>
-                  Agents
+                  {t("nav.agents")}
                 </NavLink>
                 <NavLink to="/skills" onNavigate={closeMobile}>
-                  Skills
+                  {t("nav.skills")}
                 </NavLink>
                 <NavLink to="/workflows" onNavigate={closeMobile}>
-                  Workflows
+                  {t("nav.workflows")}
                 </NavLink>
                 <NavLink to="/runs" onNavigate={closeMobile}>
-                  Runs
+                  {t("nav.runs")}
                 </NavLink>
                 <NavLink to="/ops" onNavigate={closeMobile}>
-                  Ops
+                  {t("nav.ops")}
                 </NavLink>
                 <NavLink to="/consensus" onNavigate={closeMobile}>
-                  Consensus
+                  {t("nav.consensus")}
                 </NavLink>
                 {isTenantAdmin && (
                   <NavLink to="/settings" onNavigate={closeMobile}>
-                    Settings
+                    {t("nav.settings")}
                   </NavLink>
                 )}
                 {isTenantAdmin && (
                   <NavLink to="/team" onNavigate={closeMobile}>
-                    Team
+                    {t("nav.team")}
                   </NavLink>
                 )}
               </>
             )}
             {authenticated && (
               <NavLink to="/help" onNavigate={closeMobile}>
-                Ayuda
+                {t("nav.help")}
               </NavLink>
             )}
             <button
               onClick={() => void logout()}
               className="mt-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left text-sm sm:hidden"
             >
-              Logout
+              {t("common.logout")}
             </button>
           </div>
         </nav>

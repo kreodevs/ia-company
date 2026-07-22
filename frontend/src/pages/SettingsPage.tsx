@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   api,
   type AutonomousSchedule,
@@ -10,6 +11,7 @@ import {
 } from "../lib/api";
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
   const [notifications, setNotifications] = useState<Partial<TenantNotificationConfig>>({});
   const [limits, setLimits] = useState<Partial<TenantUsageLimits>>({});
@@ -96,7 +98,7 @@ export default function SettingsPage() {
   };
 
   const deleteSchedule = async (id: string) => {
-    if (!confirm("Delete this schedule?")) return;
+    if (!confirm(t("settings.fixedSchedules.deleteConfirm"))) return;
     await api.schedules.delete(id);
     await load();
   };
@@ -106,29 +108,29 @@ export default function SettingsPage() {
     window.location.href = `/runs/${runId}`;
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading settings…</p>;
+  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("settings.loading")}</p>;
 
   return (
     <div className="space-y-10">
       <section className="space-y-4">
-        <h1 className="text-2xl font-bold">Tenant Settings</h1>
-        <h2 className="text-lg font-semibold">LLM configuration</h2>
+        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
+        <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm">
-            <span>Provider</span>
+            <span>{t("common.provider")}</span>
             <select
               value={llm.provider ?? ""}
               onChange={(e) => setLlm({ ...llm, provider: e.target.value || null })}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
             >
-              <option value="">Platform default</option>
-              <option value="tokenlab">TokenLab</option>
-              <option value="openrouter">OpenRouter</option>
-              <option value="custom">Custom</option>
+              <option value="">{t("common.platformDefault")}</option>
+              <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
+              <option value="openrouter">{t("common.openrouter")}</option>
+              <option value="custom">{t("common.custom")}</option>
             </select>
           </label>
           <label className="block space-y-1 text-sm">
-            <span>Default model</span>
+            <span>{t("settings.llm.defaultModel")}</span>
             <input
               value={llm.defaultModel ?? ""}
               onChange={(e) => setLlm({ ...llm, defaultModel: e.target.value || null })}
@@ -136,16 +138,18 @@ export default function SettingsPage() {
             />
           </label>
           <label className="block space-y-1 text-sm">
-            <span>API key</span>
+            <span>{t("common.apiKey")}</span>
             <input
               type="password"
-              placeholder={llm.apiKey === "••••••••" ? "••••••••" : "Leave empty to keep current"}
+              placeholder={
+                llm.apiKey === "••••••••" ? "••••••••" : t("common.apiKeyPlaceholder")
+              }
               onChange={(e) => setLlm({ ...llm, apiKey: e.target.value || undefined })}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
             />
           </label>
           <label className="block space-y-1 text-sm">
-            <span>Max cost per run (USD)</span>
+            <span>{t("settings.llm.maxCostPerRun")}</span>
             <input
               type="number"
               step="0.01"
@@ -165,25 +169,29 @@ export default function SettingsPage() {
           onClick={() => void saveLlm()}
           className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
         >
-          {savingLlm ? "Saving…" : "Save LLM settings"}
+          {savingLlm ? t("common.saving") : t("settings.llm.save")}
         </button>
       </section>
 
       {usage && (
         <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
-          <h2 className="font-semibold">Monthly usage</h2>
+          <h2 className="font-semibold">{t("settings.usage.title")}</h2>
           <p className="mt-2 text-[var(--color-muted-foreground)]">
-            {usage.runs} runs · {usage.totalTokens.toLocaleString()} tokens · $
-            {usage.totalCostUsd.toFixed(4)} since {new Date(usage.periodStart).toLocaleDateString()}
+            {t("settings.usage.summary", {
+              runs: usage.runs,
+              tokens: usage.totalTokens.toLocaleString(),
+              cost: usage.totalCostUsd.toFixed(4),
+              since: new Date(usage.periodStart).toLocaleDateString(),
+            })}
           </p>
         </section>
       )}
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Monthly limits</h2>
+        <h2 className="text-lg font-semibold">{t("settings.limits.title")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1 text-sm">
-            <span>Max runs / month</span>
+            <span>{t("settings.limits.maxRuns")}</span>
             <input
               type="number"
               value={limits.maxRunsPerMonth ?? ""}
@@ -197,7 +205,7 @@ export default function SettingsPage() {
             />
           </label>
           <label className="block space-y-1 text-sm">
-            <span>Max cost / month (USD)</span>
+            <span>{t("settings.limits.maxCost")}</span>
             <input
               type="number"
               step="0.01"
@@ -212,7 +220,7 @@ export default function SettingsPage() {
             />
           </label>
           <label className="block space-y-1 text-sm">
-            <span>Max tokens / month</span>
+            <span>{t("settings.limits.maxTokens")}</span>
             <input
               type="number"
               value={limits.maxTokensPerMonth ?? ""}
@@ -231,18 +239,18 @@ export default function SettingsPage() {
           onClick={() => void saveLimits()}
           className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
         >
-          {savingLimits ? "Saving…" : "Save usage limits"}
+          {savingLimits ? t("common.saving") : t("settings.limits.save")}
         </button>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Notifications</h2>
+        <h2 className="text-lg font-semibold">{t("settings.notifications.title")}</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Webhook, Slack, or email (via Resend) when workflows complete or fail.
+          {t("settings.notifications.subtitle")}
         </p>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm">
-            <span>Webhook URL</span>
+            <span>{t("settings.webhookUrl")}</span>
             <input
               value={notifications.webhookUrl ?? ""}
               onChange={(e) => setNotifications({ ...notifications, webhookUrl: e.target.value || null })}
@@ -250,7 +258,7 @@ export default function SettingsPage() {
             />
           </label>
           <label className="block space-y-1 text-sm">
-            <span>Slack webhook URL</span>
+            <span>{t("settings.slackWebhookUrl")}</span>
             <input
               value={notifications.slackWebhookUrl ?? ""}
               onChange={(e) =>
@@ -260,7 +268,7 @@ export default function SettingsPage() {
             />
           </label>
           <label className="col-span-full block space-y-1 text-sm">
-            <span>Email recipients (comma-separated)</span>
+            <span>{t("settings.emailRecipients")}</span>
             <input
               value={notifications.emailRecipients ?? ""}
               onChange={(e) =>
@@ -279,7 +287,7 @@ export default function SettingsPage() {
                 setNotifications({ ...notifications, notifyOnComplete: e.target.checked })
               }
             />
-            On complete
+            {t("settings.notifications.onComplete")}
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -287,7 +295,7 @@ export default function SettingsPage() {
               checked={notifications.notifyOnFail ?? true}
               onChange={(e) => setNotifications({ ...notifications, notifyOnFail: e.target.checked })}
             />
-            On fail
+            {t("settings.notifications.onFail")}
           </label>
         </div>
         <button
@@ -295,15 +303,14 @@ export default function SettingsPage() {
           onClick={() => void saveNotifications()}
           className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
         >
-          {savingNotifications ? "Saving…" : "Save notifications"}
+          {savingNotifications ? t("common.saving") : t("settings.notifications.save")}
         </button>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Autonomous company (meta schedule)</h2>
+        <h2 className="text-lg font-semibold">{t("settings.metaSchedule.title")}</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          The meta schedule dynamically picks discovery, evaluation, build, or growth workflows based on
-          company phase and product portfolio. Fixed workflow schedules below are optional.
+          {t("settings.metaSchedule.subtitle")}
         </p>
         {schedules.some((s) => s.scheduleKind === "meta") ? (
           <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
@@ -314,8 +321,12 @@ export default function SettingsPage() {
                   <div>
                     <div className="font-medium">{schedule.name}</div>
                     <div className="text-xs text-[var(--color-muted-foreground)]">
-                      Meta orchestrator · every {schedule.intervalSec}s ·{" "}
-                      {schedule.enabled ? "enabled" : "paused"}
+                      {t("settings.metaSchedule.orchestratorEvery", {
+                        seconds: schedule.intervalSec,
+                        status: schedule.enabled
+                          ? t("common.enabled")
+                          : t("common.paused"),
+                      })}
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -323,13 +334,13 @@ export default function SettingsPage() {
                       onClick={() => void runScheduleNow(schedule.id)}
                       className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
                     >
-                      Run now
+                      {t("common.runNow")}
                     </button>
                     <button
                       onClick={() => void toggleSchedule(schedule)}
                       className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
                     >
-                      {schedule.enabled ? "Pause" : "Enable"}
+                      {schedule.enabled ? t("common.pause") : t("common.enable")}
                     </button>
                   </div>
                 </div>
@@ -340,20 +351,20 @@ export default function SettingsPage() {
             onClick={() => void api.schedules.ensureMeta().then(() => load())}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
           >
-            Enable meta schedule
+            {t("common.enableMetaSchedule")}
           </button>
         )}
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Fixed workflow schedules</h2>
+        <h2 className="text-lg font-semibold">{t("settings.fixedSchedules.title")}</h2>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Run a specific workflow on an interval using consensus memory as initial context.
+          {t("settings.fixedSchedules.subtitle")}
         </p>
 
         <div className="flex flex-wrap gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
           <input
-            placeholder="Schedule name"
+            placeholder={t("settings.fixedSchedules.namePlaceholder")}
             value={scheduleForm.name}
             onChange={(e) => setScheduleForm({ ...scheduleForm, name: e.target.value })}
             className="min-w-[160px] flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
@@ -377,14 +388,14 @@ export default function SettingsPage() {
               setScheduleForm({ ...scheduleForm, intervalSec: Number(e.target.value) || 1800 })
             }
             className="w-28 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-            title="Interval in seconds"
+            title={t("common.intervalSeconds")}
           />
           <button
             disabled={!scheduleForm.name.trim() || !scheduleForm.workflowId}
             onClick={() => void createSchedule()}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
           >
-            Add schedule
+            {t("common.addSchedule")}
           </button>
         </div>
 
@@ -397,8 +408,16 @@ export default function SettingsPage() {
               <div>
                 <div className="font-medium">{schedule.name}</div>
                 <div className="text-xs text-[var(--color-muted-foreground)]">
-                  Every {schedule.intervalSec}s · {schedule.enabled ? "enabled" : "paused"}
-                  {schedule.nextRunAt && ` · next ${new Date(schedule.nextRunAt).toLocaleString()}`}
+                  {t("settings.fixedSchedules.every", {
+                    seconds: schedule.intervalSec,
+                    status: schedule.enabled
+                      ? t("common.enabled")
+                      : t("common.paused"),
+                  })}
+                  {schedule.nextRunAt &&
+                    t("settings.fixedSchedules.nextRun", {
+                      date: new Date(schedule.nextRunAt).toLocaleString(),
+                    })}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -406,25 +425,25 @@ export default function SettingsPage() {
                   onClick={() => void runScheduleNow(schedule.id)}
                   className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
                 >
-                  Run now
+                  {t("common.runNow")}
                 </button>
                 <button
                   onClick={() => void toggleSchedule(schedule)}
                   className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-sm"
                 >
-                  {schedule.enabled ? "Pause" : "Enable"}
+                  {schedule.enabled ? t("common.pause") : t("common.enable")}
                 </button>
                 <button
                   onClick={() => void deleteSchedule(schedule.id)}
                   className="rounded-lg border border-[var(--color-destructive)] px-3 py-1 text-sm text-[var(--color-destructive)]"
                 >
-                  Delete
+                  {t("common.delete")}
                 </button>
               </div>
             </li>
           ))}
           {schedules.filter((s) => s.scheduleKind !== "meta").length === 0 && (
-            <p className="text-sm text-[var(--color-muted-foreground)]">No schedules yet.</p>
+            <p className="text-sm text-[var(--color-muted-foreground)]">{t("settings.fixedSchedules.empty")}</p>
           )}
         </ul>
       </section>

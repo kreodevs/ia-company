@@ -1,11 +1,17 @@
 import type { Workflow, WorkflowStep } from "./api";
+import i18n from "../i18n/index.js";
 
 export function sortWorkflowSteps(steps: WorkflowStep[]): WorkflowStep[] {
   return [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
 }
 
 export function stepDisplayName(step: WorkflowStep): string {
-  return step.label?.trim() || step.agent?.role?.trim() || step.agent?.name || "Step";
+  return (
+    step.label?.trim() ||
+    step.agent?.role?.trim() ||
+    step.agent?.name ||
+    i18n.t("workflowDisplay.step")
+  );
 }
 
 export function workflowPipelineSteps(workflow: Workflow, limit = 8): WorkflowStep[] {

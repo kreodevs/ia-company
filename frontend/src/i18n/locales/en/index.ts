@@ -1,0 +1,35 @@
+import { admin } from "./admin";
+import { auth } from "./auth";
+import { common } from "./common";
+import { consensus } from "./consensus";
+import { help } from "./help";
+import { language } from "./language";
+import { nav } from "./nav";
+import { ops } from "./ops";
+import { phase } from "./phase";
+import { runs } from "./runs";
+import { settings } from "./settings";
+import { status } from "./status";
+import { team } from "./team";
+import { workflowDisplay } from "./workflowDisplay";
+import { workflows } from "./workflows";
+
+export const en = {
+  common,
+  nav,
+  auth,
+  workflows,
+  runs,
+  consensus,
+  ops,
+  settings,
+  team,
+  help,
+  admin,
+  language,
+  status,
+  phase,
+  workflowDisplay,
+} as const;
+
+export type EnTranslations = typeof en;

@@ -15,6 +15,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Agent, Workflow, WorkflowStep } from "../lib/api";
 
 type AgentNodeData = {
@@ -25,10 +26,14 @@ type AgentNodeData = {
 };
 
 function AgentNode({ data, selected }: NodeProps<Node<AgentNodeData>>) {
+  const { t } = useTranslation();
+
   return (
     <div className={`react-flow__node-agent ${selected ? "selected" : ""}`}>
       <Handle type="target" position={Position.Top} className="!bg-[var(--color-primary)]" />
-      <div className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">Agent</div>
+      <div className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">
+        {t("nav.agents")}
+      </div>
       <div className="font-semibold">{data.agentName}</div>
       {data.label && data.label !== data.agentName && (
         <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">{data.label}</div>
@@ -48,6 +53,8 @@ interface WorkflowCanvasProps {
 }
 
 export default function WorkflowCanvas({ workflow, agents, onSave, saving }: WorkflowCanvasProps) {
+  const { t } = useTranslation();
+
   const initialNodes: Node<AgentNodeData>[] = useMemo(
     () =>
       workflow.steps.map((step) => ({
@@ -150,7 +157,7 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
             }
           }}
         >
-          <option value="">+ Add agent node…</option>
+          <option value="">{t("workflows.canvas.addAgentNode")}</option>
           {agents.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
@@ -162,7 +169,7 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
           disabled={saving}
           className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save workflow"}
+          {saving ? t("common.saving") : t("workflows.canvas.saveWorkflow")}
         </button>
       </div>
 

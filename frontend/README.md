@@ -64,6 +64,33 @@ Articles live under `src/content/help/`:
 
 Register new articles in `src/content/help/index.ts`.
 
+## Internationalization (i18n)
+
+The UI uses **i18next** + **react-i18next** with Spanish (`es`) as the default locale.
+
+| Item | Location |
+|------|----------|
+| i18n bootstrap | `src/i18n/index.ts` — imports locale bundles, reads `localStorage` key `auto-company-lang` |
+| Locale files | `src/i18n/locales/{es,en}/` — modular namespaces merged in `index.ts` |
+| Language switcher | `LanguageSwitcher` in `AppHeader` (next to tenant impersonation) |
+| Document `lang` | `useDocumentLang()` in `AppShell`; initial `<html lang="es">` in `index.html` |
+| Help articles | `getHelpArticles(i18n.language)` in `src/content/help/index.ts` |
+
+Usage in components:
+
+```tsx
+import { useTranslation } from "react-i18next";
+
+function MyPage() {
+  const { t, i18n } = useTranslation();
+  return <h1>{t("nav.workflows")}</h1>;
+}
+```
+
+Translation keys follow nested paths, e.g. `common.loading`, `nav.agents`, `auth.login.title.organization`, `phase.exploring`, `status.COMPLETED`. Non-module utilities (e.g. `workflow-display.ts`) import the default i18n instance: `import i18n from "../i18n/index.js"`.
+
+API errors that return generic English messages fall back to keys like `common.error.loginFailed` via `translateApiError()` in `src/lib/translate-error.ts`.
+
 ## Development
 
 ```bash

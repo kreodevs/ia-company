@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { translateApiError } from "../lib/translate-error";
 
 type LoginMode = "superadmin" | "tenant";
 
 export default function LoginPage() {
   const { loginSuperAdmin, loginTenant } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<LoginMode>("tenant");
   const [tenantSlug, setTenantSlug] = useState("");
   const [email, setEmail] = useState("");
@@ -27,7 +30,7 @@ export default function LoginPage() {
         navigate("/workflows", { replace: true });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(translateApiError(err, t, "common.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -48,18 +51,20 @@ export default function LoginPage() {
                   : "text-[var(--color-muted-foreground)]"
               }`}
             >
-              {m === "tenant" ? "Organization" : "Superadmin"}
+              {m === "tenant" ? t("auth.login.organizationTab") : t("auth.login.superadminTab")}
             </button>
           ))}
         </div>
 
         <h1 className="text-2xl font-bold">
-          {mode === "tenant" ? "Organization Login" : "Superadmin Login"}
+          {mode === "tenant"
+            ? t("auth.login.organizationTitle")
+            : t("auth.login.superadminTitle")}
         </h1>
         <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
           {mode === "tenant"
-            ? "Sign in with your organization slug and credentials."
-            : "Platform administration and tenant impersonation."}
+            ? t("auth.login.organizationSubtitle")
+            : t("auth.login.superadminSubtitle")}
         </p>
 
         {error && (
@@ -71,18 +76,18 @@ export default function LoginPage() {
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
           {mode === "tenant" && (
             <label className="block text-sm">
-              Organization slug
+              {t("auth.login.tenantSlug")}
               <input
                 className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
                 value={tenantSlug}
                 onChange={(e) => setTenantSlug(e.target.value)}
-                placeholder="acme-corp"
+                placeholder={t("auth.login.tenantSlugPlaceholder")}
                 required
               />
             </label>
           )}
           <label className="block text-sm">
-            Email
+            {t("common.email")}
             <input
               type="email"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -92,7 +97,7 @@ export default function LoginPage() {
             />
           </label>
           <label className="block text-sm">
-            Password
+            {t("common.password")}
             <input
               type="password"
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -106,12 +111,12 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-lg bg-[var(--color-primary)] py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? t("auth.login.signingIn") : t("auth.login.signIn")}
           </button>
           {mode === "tenant" && (
             <p className="text-center text-sm">
               <Link to="/forgot-password" className="text-[var(--color-primary)] hover:underline">
-                Forgot password?
+                {t("auth.login.forgotPassword")}
               </Link>
             </p>
           )}

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, type Skill } from "../lib/api";
 
 export default function SkillsPage() {
+  const { t } = useTranslation();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [selected, setSelected] = useState<Skill | null>(null);
   const [creating, setCreating] = useState(false);
@@ -52,24 +54,24 @@ export default function SkillsPage() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this skill?")) return;
+    if (!confirm(t("workflows.skills.deleteConfirm"))) return;
     await api.skills.delete(id);
     setSelected(null);
     await load();
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">Loading skills…</p>;
+  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.skills.loading")}</p>;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Skills</h1>
+          <h1 className="text-2xl font-bold">{t("nav.skills")}</h1>
           <button
             onClick={openCreate}
             className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)]"
           >
-            New skill
+            {t("workflows.skills.newSkill")}
           </button>
         </div>
         <ul className="space-y-2">
@@ -96,9 +98,11 @@ export default function SkillsPage() {
       <section>
         {(selected || creating) ? (
           <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-            <h2 className="font-semibold">{creating ? "Create skill" : "Edit skill"}</h2>
+            <h2 className="font-semibold">
+              {creating ? t("workflows.skills.createSkill") : t("workflows.skills.editSkill")}
+            </h2>
             <label className="block space-y-1 text-sm">
-              <span>Name</span>
+              <span>{t("common.name")}</span>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -106,7 +110,7 @@ export default function SkillsPage() {
               />
             </label>
             <label className="block space-y-1 text-sm">
-              <span>Description</span>
+              <span>{t("common.description")}</span>
               <input
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -114,7 +118,7 @@ export default function SkillsPage() {
               />
             </label>
             <label className="block space-y-1 text-sm">
-              <span>Prompt content</span>
+              <span>{t("common.promptContent")}</span>
               <textarea
                 value={form.promptContent}
                 onChange={(e) => setForm({ ...form, promptContent: e.target.value })}
@@ -128,14 +132,14 @@ export default function SkillsPage() {
                 onClick={() => void save()}
                 className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
               >
-                {saving ? "Saving…" : "Save"}
+                {saving ? t("common.saving") : t("common.save")}
               </button>
               {!creating && selected && (
                 <button
                   onClick={() => void remove(selected.id)}
                   className="rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)]"
                 >
-                  Delete
+                  {t("common.delete")}
                 </button>
               )}
               <button
@@ -145,12 +149,12 @@ export default function SkillsPage() {
                 }}
                 className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
           </div>
         ) : (
-          <p className="text-[var(--color-muted-foreground)]">Select a skill to edit</p>
+          <p className="text-[var(--color-muted-foreground)]">{t("workflows.skills.selectToEdit")}</p>
         )}
       </section>
     </div>

@@ -1,0 +1,40 @@
+export const ops = {
+  loading: "Loading operations dashboard…",
+  loadFailed: "Unable to load portfolio.",
+  title: "Operations",
+  subtitle: "Multi-product portfolio — autonomous meta-orchestrator picks the next workflow each cycle.",
+  runMetaCycleNow: "Run meta cycle now",
+  consensusLink: "Consensus",
+  schedulesLink: "Schedules",
+  stats: {
+    companyPhase: "Company phase",
+    cycleHint: "Cycle #{{number}}",
+    productsBuilding: "Products building",
+    growingHint: "{{count}} growing",
+    pipelineIdeas: "Pipeline ideas",
+    revenueTracked: "Revenue tracked",
+  },
+  nextAction: {
+    title: "Next autonomous action",
+    workflow: "Workflow:",
+    product: "Product:",
+    focusProduct: "Focus product: {{name}} ({{slug}})",
+  },
+  portfolio: {
+    title: "Product portfolio",
+    revenue: " · ${{amount}} revenue",
+    focus: "Focus",
+    empty: "No products yet — run opportunity discovery to populate the pipeline.",
+  },
+  pipeline: {
+    title: "Pipeline queue",
+    go: "GO",
+    noGo: "NO-GO",
+    empty: "Pipeline empty — discovery cycles add ideas here.",
+  },
+  recentRuns: {
+    title: "Recent runs",
+    defaultWorkflow: "Workflow",
+    empty: "No runs yet.",
+  },
+} as const;

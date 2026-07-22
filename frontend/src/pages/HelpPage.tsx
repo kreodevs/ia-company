@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import MarkdownDoc from "../components/MarkdownDoc";
-import { getHelpArticle, helpArticles, defaultHelpSlug } from "../content/help";
+import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
 
 function HelpSidebarLink({
   slug,
@@ -30,7 +31,9 @@ function HelpSidebarLink({
 
 export default function HelpPage() {
   const { slug } = useParams<{ slug?: string }>();
-  const article = getHelpArticle(slug);
+  const { t, i18n } = useTranslation();
+  const articles = getHelpArticles(i18n.language);
+  const article = getHelpArticle(slug, i18n.language);
 
   if (!article) {
     return <Navigate to={`/help/${defaultHelpSlug}`} replace />;
@@ -39,19 +42,19 @@ export default function HelpPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-[var(--color-muted-foreground)]">Ayuda</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">Centro de ayuda</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t("help.breadcrumb")}</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">{t("help.title")}</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-muted-foreground)]">
-          Tutoriales y documentación de uso de Auto-Company Platform.
+          {t("help.subtitle")}
         </p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="space-y-2 lg:sticky lg:top-24 lg:self-start">
           <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-            Artículos
+            {t("help.articles")}
           </p>
-          {helpArticles.map((item) => (
+          {articles.map((item) => (
             <HelpSidebarLink
               key={item.slug}
               slug={item.slug}

@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, type Agent, type Skill } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 
 interface AgentFormProps {
   agent: Agent | null;
@@ -9,6 +11,7 @@ interface AgentFormProps {
 }
 
 export default function AgentForm({ agent, skills, onSave, onCancel }: AgentFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: agent?.name ?? "",
     role: agent?.role ?? "",
@@ -35,17 +38,19 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
         }
         onSave();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
+        setError(translateApiError(err, t, "common.saveFailed"));
       } finally {
         setSaving(false);
       }
     },
-    [agent, form, onSave],
+    [agent, form, onSave, t],
   );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6">
-      <h2 className="text-lg font-semibold">{agent ? "Edit Agent" : "New Agent"}</h2>
+      <h2 className="text-lg font-semibold">
+        {agent ? t("workflows.agents.editAgent") : t("workflows.agents.newAgentForm")}
+      </h2>
 
       {error && (
         <p className="rounded-lg bg-[var(--color-destructive)]/15 px-3 py-2 text-sm text-[var(--color-destructive)]">
@@ -55,7 +60,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block text-sm">
-          Name
+          {t("common.name")}
           <input
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={form.name}
@@ -64,7 +69,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
           />
         </label>
         <label className="block text-sm">
-          Role
+          {t("common.role")}
           <input
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={form.role}
@@ -73,7 +78,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
           />
         </label>
         <label className="block text-sm">
-          Provider
+          {t("common.provider")}
           <select
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={form.provider}
@@ -81,13 +86,13 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
               setForm({ ...form, provider: e.target.value as Agent["provider"] })
             }
           >
-            <option value="tokenlab">TokenLab / LemonData</option>
-            <option value="openrouter">OpenRouter</option>
-            <option value="custom">Custom</option>
+            <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
+            <option value="openrouter">{t("common.openrouter")}</option>
+            <option value="custom">{t("common.custom")}</option>
           </select>
         </label>
         <label className="block text-sm">
-          Model
+          {t("common.model")}
           <input
             className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             value={form.model}
@@ -95,7 +100,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
           />
         </label>
         <label className="block text-sm md:col-span-2">
-          Temperature ({form.temperature})
+          {t("common.temperature", { value: form.temperature })}
           <input
             type="range"
             min={0}
@@ -113,12 +118,12 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
             onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             className="h-4 w-4"
           />
-          Active
+          {t("common.active")}
         </label>
       </div>
 
       <label className="block text-sm">
-        System Prompt
+        {t("common.systemPrompt")}
         <textarea
           className="mt-1 h-48 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
           value={form.systemPrompt}
@@ -128,7 +133,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
       </label>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-medium">Skills</legend>
+        <legend className="mb-2 text-sm font-medium">{t("nav.skills")}</legend>
         <div className="grid max-h-40 gap-2 overflow-y-auto md:grid-cols-2">
           {skills.map((skill) => (
             <label key={skill.id} className="flex items-start gap-2 text-sm">
@@ -161,26 +166,26 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
           disabled={saving}
           className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? t("common.saving") : t("common.save")}
         </button>
         {agent && (
           <button
             type="button"
             disabled={saving}
             onClick={async () => {
-              if (!confirm(`Delete agent "${agent.name}"?`)) return;
+              if (!confirm(t("workflows.agents.deleteConfirm", { name: agent.name }))) return;
               setSaving(true);
               try {
                 await api.agents.delete(agent.id);
                 onSave();
               } catch (err) {
-                setError(err instanceof Error ? err.message : "Delete failed");
+                setError(translateApiError(err, t, "common.deleteFailed"));
                 setSaving(false);
               }
             }}
             className="rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10 disabled:opacity-50"
           >
-            Delete
+            {t("common.delete")}
           </button>
         )}
         <button
@@ -188,7 +193,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
           onClick={onCancel}
           className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
     </form>
