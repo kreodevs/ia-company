@@ -48,6 +48,9 @@ export const ops = {
     workspaceLabel: "Workspace",
     nextStepLabel: "Próximo paso si está en foco",
     viewLastRun: "Ver última ejecución",
+    warRoom: "War room",
+    code: "Código",
+    memory: "Memoria",
     noDescription: "Sin descripción aún — se completa tras la evaluación de agentes.",
     phase: {
       queued: "En cola",

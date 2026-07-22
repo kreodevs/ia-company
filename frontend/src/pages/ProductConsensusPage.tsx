@@ -66,6 +66,22 @@ export default function ProductConsensusPage() {
         <Badge>
           {t("consensus.cycleNumber", { n: record?.cycleNumber ?? 0 })}
         </Badge>
+        {productId && (
+          <Link
+            to={`/products/${productId}/team`}
+            className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+          >
+            {t("warRoom.title", { name: record?.productId ?? productId })}
+          </Link>
+        )}
+        {productId && (
+          <Link
+            to={`/products/${productId}/code`}
+            className="text-[var(--color-primary)] hover:underline"
+          >
+            {t("consensus.viewCode")}
+          </Link>
+        )}
         {record?.updatedAt && (
           <span className="text-[var(--color-muted-foreground)]">
             {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}

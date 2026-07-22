@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Focus, Info } from "lucide-react";
+import { Focus } from "lucide-react";
 import { api, type OpsPortfolio, type OpsNextRun, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { formatWorkflowTitle } from "../lib/workflow-display";
@@ -365,8 +365,26 @@ export default function OpsPage() {
                       ) : null}
                     </div>
 
-                    {!isFocused ? (
-                      <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        to={`/products/${product.id}/team`}
+                        className="interactive inline-flex min-h-9 items-center rounded-lg border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+                      >
+                        {t("ops.portfolio.warRoom")}
+                      </Link>
+                      <Link
+                        to={`/products/${product.id}/code`}
+                        className="interactive inline-flex min-h-9 items-center rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-foreground)] hover:border-[var(--color-primary)]/40"
+                      >
+                        {t("ops.portfolio.code")}
+                      </Link>
+                      <Link
+                        to={`/products/${product.id}/consensus`}
+                        className="interactive inline-flex min-h-9 items-center rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-foreground)] hover:border-[var(--color-primary)]/40"
+                      >
+                        {t("ops.portfolio.memory")}
+                      </Link>
+                      {!isFocused ? (
                         <Button
                           variant="secondary"
                           className="text-xs"
@@ -374,12 +392,8 @@ export default function OpsPage() {
                         >
                           {t("ops.portfolio.focus")}
                         </Button>
-                        <p className="max-w-[14rem] text-right text-[10px] leading-snug text-[var(--color-muted-foreground)]">
-                          <Info className="mr-0.5 inline h-3 w-3 align-text-bottom" aria-hidden />
-                          {t("ops.portfolio.focusHint")}
-                        </p>
-                      </div>
-                    ) : null}
+                      ) : null}
+                    </div>
                   </div>
                 </li>
               );

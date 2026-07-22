@@ -10,6 +10,7 @@ export const consensus = {
   saveConsensus: "Guardar consensus",
   lastUpdated: "Última actualización {{date}}",
   backToCompany: "← Memoria de la compañía",
+  viewCode: "Ver código →",
   productMemoryHeading: "Memoria por producto",
   productTitle: "Memoria del producto: {{name}}",
   productSubtitle:
