@@ -6,7 +6,7 @@ export interface TenantLlmOverrides {
   maxCostUsdPerRun?: number | null;
 }
 
-export type EffectiveModelSource = "tenant" | "platform" | "agent";
+export type EffectiveModelSource = "tenant" | "platform";
 
 function normalizeModel(value: string | null | undefined): string | null {
   if (value == null) return null;
@@ -15,7 +15,7 @@ function normalizeModel(value: string | null | undefined): string | null {
 }
 
 export function resolveEffectiveModel(
-  agentModel: string,
+  _agentModel: string,
   tenant?: TenantLlmOverrides | null,
   platform?: Pick<ResolvedPlatformSettings, "defaultModel">,
 ): { model: string; source: EffectiveModelSource } {
@@ -29,7 +29,9 @@ export function resolveEffectiveModel(
     return { model: platformModel, source: "platform" };
   }
 
-  return { model: agentModel, source: "agent" };
+  throw new Error(
+    "Platform default model is not configured. Set it in Admin → Platform settings.",
+  );
 }
 
 export function resolveAgentProviderConfig(

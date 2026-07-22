@@ -12,6 +12,7 @@ import {
   ensurePlatformSettings,
   getPlatformSettingsSync,
   warmPlatformSettingsCache,
+  syncAgentsToPlatformLlmSettings,
 } from "../lib/platform-settings.js";
 import { opsRoutes } from "./routes/ops.js";
 import { productRoutes } from "./routes/products.js";
@@ -30,6 +31,7 @@ async function buildServer() {
   try {
     await ensurePlatformSettings();
     await warmPlatformSettingsCache();
+    await syncAgentsToPlatformLlmSettings();
   } catch (err) {
     console.warn("Platform settings DB unavailable, using defaults:", err);
   }

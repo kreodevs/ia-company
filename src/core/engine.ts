@@ -254,6 +254,12 @@ export class WorkflowExecutor {
     const userPrompt = compileUserPrompt(sharedMemory, inputConfig);
 
     const providerConfig = resolveAgentProviderConfig(agent, tenantCtx.llm);
+
+    await this.appendLog(runId, "info", `Using LLM ${providerConfig.provider} / ${providerConfig.model}`, {
+      agentId: agent.id,
+      payload: { agentName: agent.name },
+    });
+
     const model = createLanguageModel(providerConfig);
 
     const tools = createAgentTools({

@@ -1,11 +1,15 @@
 import "dotenv/config";
 import { startWorkflowWorker } from "./processor.js";
 import { bootstrapScheduler } from "./scheduler.js";
-import { ensurePlatformSettings, warmPlatformSettingsCache } from "../lib/platform-settings.js";
+import { ensurePlatformSettings, warmPlatformSettingsCache, syncAgentsToPlatformLlmSettings } from "../lib/platform-settings.js";
 
 async function main() {
   await ensurePlatformSettings();
   await warmPlatformSettingsCache();
+  const syncedAgents = await syncAgentsToPlatformLlmSettings();
+  if (syncedAgents > 0) {
+    console.log(`Synced ${syncedAgents} agent(s) to platform LLM settings`);
+  }
 
   const worker = startWorkflowWorker();
   const scheduler = await bootstrapScheduler();

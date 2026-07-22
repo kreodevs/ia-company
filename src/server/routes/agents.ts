@@ -38,13 +38,20 @@ export async function agentRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateAgentInput }>("/agents", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { skillIds, tenantId: _ignored, provider: _provider, ...data } = request.body;
-      const platformProvider = getPlatformSettingsSync().defaultProvider;
+      const {
+        skillIds,
+        tenantId: _ignored,
+        provider: _provider,
+        model: _model,
+        ...data
+      } = request.body;
+      const platform = getPlatformSettingsSync();
 
       const agent = await prisma.agent.create({
         data: {
           ...data,
-          provider: platformProvider,
+          model: platform.defaultModel,
+          provider: platform.defaultProvider,
           tenantId,
           skills: skillIds?.length
             ? { create: skillIds.map((skillId) => ({ skillId })) }
@@ -64,8 +71,14 @@ export async function agentRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const { skillIds, tenantId: _ignored, provider: _provider, ...data } = request.body;
-        const platformProvider = getPlatformSettingsSync().defaultProvider;
+        const {
+          skillIds,
+          tenantId: _ignored,
+          provider: _provider,
+          model: _model,
+          ...data
+        } = request.body;
+        const platform = getPlatformSettingsSync();
 
         const existing = await prisma.agent.findFirst({
           where: { id: request.params.id, tenantId },
@@ -86,7 +99,11 @@ export async function agentRoutes(app: FastifyInstance) {
 
         const agent = await prisma.agent.update({
           where: { id: request.params.id },
-          data: { ...data, provider: platformProvider },
+          data: {
+            ...data,
+            model: platform.defaultModel,
+            provider: platform.defaultProvider,
+          },
           include: { skills: { include: { skill: true } } },
         });
 

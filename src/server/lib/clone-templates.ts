@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { findTenantTemplateMatch } from "./template-match.js";
 
 export type TemplateSyncMode = "merge" | "update";
@@ -174,12 +175,13 @@ async function syncAgentsForTenant(
 
   for (const agent of platformAgents) {
     const existing = findTenantTemplateMatch(tenantAgents, agent.id, agent.name);
+    const platformLlm = getPlatformSettingsSync();
     const agentData = {
       name: agent.name,
       role: agent.role,
       systemPrompt: agent.systemPrompt,
-      provider: agent.provider,
-      model: agent.model,
+      provider: platformLlm.defaultProvider,
+      model: platformLlm.defaultModel,
       temperature: agent.temperature,
       isActive: agent.isActive,
       platformSourceId: agent.id,

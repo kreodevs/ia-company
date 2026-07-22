@@ -256,5 +256,20 @@ export async function updatePlatformSettings(
     );
   }
 
+  await syncAgentsToPlatformLlmSettings(resolved);
+
   return toPublicPlatformSettings(updated);
+}
+
+export async function syncAgentsToPlatformLlmSettings(
+  settings?: Pick<ResolvedPlatformSettings, "defaultProvider" | "defaultModel">,
+): Promise<number> {
+  const resolved = settings ?? (await warmPlatformSettingsCache());
+  const result = await prisma.agent.updateMany({
+    data: {
+      provider: resolved.defaultProvider,
+      model: resolved.defaultModel,
+    },
+  });
+  return result.count;
 }
