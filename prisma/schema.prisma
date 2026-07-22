@@ -27,20 +27,20 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  agents    Agent[]
-  skills    Skill[]
-  workflows Workflow[]
-  runs      ExecutionRun[]
-  users     TenantUser[]
-  consensus TenantConsensus?
-  llmConfig TenantLlmConfig?
-  schedules AutonomousSchedule[]
-  auditLogs AuditLog[]
+  agents             Agent[]
+  skills             Skill[]
+  workflows          Workflow[]
+  runs               ExecutionRun[]
+  users              TenantUser[]
+  consensus          TenantConsensus?
+  llmConfig          TenantLlmConfig?
+  schedules          AutonomousSchedule[]
+  auditLogs          AuditLog[]
   notificationConfig TenantNotificationConfig?
-  usageLimits TenantUsageLimits?
-  cycleState TenantCycleState?
-  products TenantProduct[]
-  pipelineIdeas PipelineIdea[]
+  usageLimits        TenantUsageLimits?
+  cycleState         TenantCycleState?
+  products           TenantProduct[]
+  pipelineIdeas      PipelineIdea[]
 }
 
 enum TenantUserRole {
@@ -81,17 +81,17 @@ model Agent {
   tenantId         String?
   platformSourceId String?
   name             String
-  role         String
-  systemPrompt String        @db.Text
-  provider     AgentProvider @default(tokenlab)
-  model        String        @default("claude-3-5-sonnet-20241022")
-  temperature  Float         @default(0.7)
-  isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  role             String
+  systemPrompt     String        @db.Text
+  provider         AgentProvider @default(tokenlab)
+  model            String        @default("claude-3-5-sonnet-20241022")
+  temperature      Float         @default(0.7)
+  isActive         Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
-  tenant       Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  skills       AgentSkill[]
+  tenant        Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  skills        AgentSkill[]
   workflowSteps WorkflowStep[]
   executionLogs ExecutionLog[]
 
@@ -105,11 +105,11 @@ model Skill {
   tenantId         String?
   platformSourceId String?
   name             String
-  description   String   @db.Text
-  promptContent String   @db.Text
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  description      String   @db.Text
+  promptContent    String   @db.Text
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   tenant Tenant?      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   agents AgentSkill[]
@@ -122,8 +122,8 @@ model Skill {
 model AgentSkill {
   agentId String
   skillId String
-  agent   Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@id([agentId, skillId])
 }
@@ -135,12 +135,12 @@ model Workflow {
   tenantId         String?
   platformSourceId String?
   name             String
-  description String?  @db.Text
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description      String?  @db.Text
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  tenant Tenant?         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   steps  WorkflowStep[]
   edges  WorkflowEdge[]
   runs   ExecutionRun[]
@@ -151,20 +151,20 @@ model Workflow {
 }
 
 model WorkflowStep {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   workflowId   String
   agentId      String
-  stepOrder    Int    @default(0)
+  stepOrder    Int     @default(0)
   label        String?
-  positionX    Float  @default(0)
-  positionY    Float  @default(0)
-  inputConfig  Json   @default("{}")
-  outputConfig Json   @default("{}")
+  positionX    Float   @default(0)
+  positionY    Float   @default(0)
+  inputConfig  Json    @default("{}")
+  outputConfig Json    @default("{}")
 
-  workflow    Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  agent       Agent          @relation(fields: [agentId], references: [id], onDelete: Restrict)
-  edgesFrom   WorkflowEdge[] @relation("EdgeSource")
-  edgesTo     WorkflowEdge[] @relation("EdgeTarget")
+  workflow      Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent         Agent          @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  edgesFrom     WorkflowEdge[] @relation("EdgeSource")
+  edgesTo       WorkflowEdge[] @relation("EdgeTarget")
   executionLogs ExecutionLog[]
 
   @@index([workflowId, stepOrder])
@@ -243,16 +243,16 @@ model ExecutionLog {
   @@index([runId, createdAt])
 }
 
-// ─── Consensus memory (replaces memories/consensus.md per tenant) ───────────
+// ─── Consensus memory (tenant-level = company-wide; per-product is below) ────
 
 model TenantConsensus {
-  id         String   @id @default(cuid())
-  tenantId   String   @unique
-  content    String   @db.Text
-  nextAction String?  @db.Text
+  id           String       @id @default(cuid())
+  tenantId     String       @unique
+  content      String       @db.Text
+  nextAction   String?      @db.Text
   companyPhase CompanyPhase @default(exploring)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
@@ -287,49 +287,88 @@ enum ScheduleKind {
 }
 
 model TenantCycleState {
-  tenantId       String        @id
-  cycleNumber    Int           @default(1)
-  phase          CompanyPhase  @default(exploring)
-  stuckCounter   Int           @default(0)
-  lastNextAction String?       @db.Text
+  tenantId       String       @id
+  cycleNumber    Int          @default(1)
+  phase          CompanyPhase @default(exploring)
+  stuckCounter   Int          @default(0)
+  lastNextAction String?      @db.Text
   focusProductId String?
-  updatedAt      DateTime      @updatedAt
+  updatedAt      DateTime     @updatedAt
 
   tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   focusProduct TenantProduct? @relation("FocusProduct", fields: [focusProductId], references: [id], onDelete: SetNull)
 }
 
 model TenantProduct {
-  id          String         @id @default(cuid())
-  tenantId    String
-  slug        String
-  name        String
-  description String?        @db.Text
-  phase       ProductPhase   @default(queued)
-  pipelineRank Int           @default(0)
-  goNoGo      GoNoGoDecision @default(pending)
-  revenueUsd  Float          @default(0)
-  lastRunId   String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  tenantId     String
+  slug         String
+  name         String
+  description  String?        @db.Text
+  phase        ProductPhase   @default(queued)
+  pipelineRank Int            @default(0)
+  goNoGo       GoNoGoDecision @default(pending)
+  revenueUsd   Float          @default(0)
+  lastRunId    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
-  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   focusCycles TenantCycleState[] @relation("FocusProduct")
+  consensus   ProductConsensus?
 
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
 }
 
+// ─── Per-product consensus (primary memory per product) ─────────────────────
+
+model ProductConsensus {
+  id          String   @id @default(cuid())
+  productId   String   @unique
+  tenantId    String
+  content     String   @db.Text
+  nextAction  String?  @db.Text
+  cycleNumber Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product   TenantProduct              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  revisions ProductConsensusRevision[]
+
+  @@index([tenantId])
+}
+
+model ProductConsensusRevision {
+  id            String   @id @default(cuid())
+  productId     String
+  runId         String?
+  stepId        String?
+  agentName     String
+  stepOrder     Int      @default(0)
+  content       String   @db.Text
+  nextAction    String?  @db.Text
+  decisions     Json     @default("[]")
+  openQuestions Json     @default("[]")
+  veto          Json?
+  createdAt     DateTime @default(now())
+
+  product ProductConsensus @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([runId])
+}
+
 model PipelineIdea {
-  id                  String         @id @default(cuid())
-  tenantId            String
-  title               String
-  description         String?        @db.Text
-  rank                Int            @default(0)
-  goNoGo              GoNoGoDecision @default(pending)
-  promotedProductId   String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  id                String         @id @default(cuid())
+  tenantId          String
+  title             String
+  description       String?        @db.Text
+  rank              Int            @default(0)
+  goNoGo            GoNoGoDecision @default(pending)
+  promotedProductId String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -374,15 +413,15 @@ model AutonomousSchedule {
 // ─── Audit trail ────────────────────────────────────────────────────────────
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  actorKind String
-  actorId   String
+  id         String   @id @default(cuid())
+  actorKind  String
+  actorId    String
   actorEmail String?
-  action    String
-  tenantId  String?
-  metadata  Json?
-  ipAddress String?
-  createdAt DateTime @default(now())
+  action     String
+  tenantId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
 
   tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
 

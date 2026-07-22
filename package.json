@@ -21,8 +21,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:prod": "node dist/prisma/seed.js",
     "db:studio": "prisma studio",
-    "test": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/convergence.test.ts tests/crypto.test.ts tests/structured-memory.test.ts tests/template-match.test.ts tests/tenant-llm.test.ts tests/workspace-layout.test.ts tests/integration/health.test.ts tests/integration/auth-setup.test.ts tests/integration/workflow-graph.test.ts tests/integration/templates-sync.test.ts",
-    "test:unit": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/crypto.test.ts tests/structured-memory.test.ts tests/template-match.test.ts tests/tenant-llm.test.ts tests/workspace-layout.test.ts tests/pipeline-utils.test.ts tests/integration/health.test.ts",
+    "test": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/product-consensus.test.ts tests/convergence.test.ts tests/crypto.test.ts tests/structured-memory.test.ts tests/template-match.test.ts tests/tenant-llm.test.ts tests/workspace-layout.test.ts tests/integration/health.test.ts tests/integration/auth-setup.test.ts tests/integration/workflow-graph.test.ts tests/integration/templates-sync.test.ts",
+    "test:unit": "tsx --test tests/auth.test.ts tests/engine.test.ts tests/consensus.test.ts tests/product-consensus.test.ts tests/crypto.test.ts tests/structured-memory.test.ts tests/template-match.test.ts tests/tenant-llm.test.ts tests/workspace-layout.test.ts tests/pipeline-utils.test.ts tests/integration/health.test.ts",
     "worker": "tsx src/worker/index.ts",
     "postinstall": "prisma generate"
   },

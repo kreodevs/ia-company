@@ -28,6 +28,7 @@ export interface SharedMemory {
     agentName: string;
     output: string;
     timestamp: string;
+    stepOrder?: number;
   }>;
 }
 

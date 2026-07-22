@@ -166,6 +166,32 @@ export interface TenantConsensus {
   updatedAt?: string;
 }
 
+export interface ProductConsensus {
+  id: string;
+  productId: string;
+  tenantId: string;
+  content: string;
+  nextAction: string | null;
+  cycleNumber: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductConsensusRevision {
+  id: string;
+  productId: string;
+  runId: string | null;
+  stepId: string | null;
+  agentName: string;
+  stepOrder: number;
+  content: string;
+  nextAction: string | null;
+  decisions: Array<{ by: string; what: string; why?: string }>;
+  openQuestions: string[];
+  veto: { by: string; reason: string } | null;
+  createdAt: string;
+}
+
 export type CompanyPhase =
   | "exploring"
   | "validating"
@@ -586,6 +612,18 @@ export const api = {
       request<{ runId: string }>(`/products/pipeline/${id}/evaluate`, { method: "POST" }),
     bootstrap: (body: { name: string; slug?: string; description?: string }) =>
       request<TenantProduct>("/products/bootstrap", { method: "POST", body: JSON.stringify(body) }),
+    consensus: {
+      get: (id: string) => request<ProductConsensus>(`/products/${id}/consensus`),
+      update: (id: string, body: { content: string; nextAction?: string }) =>
+        request<ProductConsensus>(`/products/${id}/consensus`, {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
+      revisions: (id: string, limit = 50) =>
+        request<ProductConsensusRevision[]>(
+          `/products/${id}/consensus/revisions?limit=${limit}`,
+        ),
+    },
   },
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),

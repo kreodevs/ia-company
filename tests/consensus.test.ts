@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  buildConsensusContentAfterRun,
+  buildCompanyConsensusContentAfterRun,
   formatConsensusFileBody,
   mergeConsensusIntoMemory,
 } from "../src/lib/consensus.js";
 
-describe("consensus helpers", () => {
+describe("tenant consensus helpers", () => {
   it("merges tenant consensus into initial memory", () => {
     const memory = mergeConsensusIntoMemory(
       { content: "# Doc", nextAction: "Ship feature X" },
@@ -30,7 +30,7 @@ describe("consensus helpers", () => {
   });
 
   it("prefers explicit consensusUpdate after run", () => {
-    const content = buildConsensusContentAfterRun("# Old", {
+    const content = buildCompanyConsensusContentAfterRun("# Old", {
       consensusUpdate: "# New consensus",
       lastOutput: "ignored",
     });
@@ -38,7 +38,7 @@ describe("consensus helpers", () => {
   });
 
   it("appends cycle summary when no explicit update", () => {
-    const content = buildConsensusContentAfterRun("# Old", {
+    const content = buildCompanyConsensusContentAfterRun("# Old", {
       lastAgent: "CEO",
       lastOutput: "Launch pricing page",
     });

@@ -1,6 +1,7 @@
 import type { CompanyPhase, TenantProduct } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import { mergeConsensusIntoMemory } from "../lib/consensus.js";
+import { loadProductConsensusInitialMemory } from "../lib/product-consensus.js";
 import { convergencePromptSection } from "../lib/convergence.js";
 import { findIdeaToEvaluate } from "../lib/pipeline-utils.js";
 import {
@@ -114,6 +115,17 @@ export async function resolveMetaOrchestratorDecision(
     pipelineIdea: pendingIdea?.title,
     metaReason: reason,
   });
+
+  if (focusProduct) {
+    const productMemory = await loadProductConsensusInitialMemory(
+      tenantId,
+      focusProduct.id,
+      baseMemory,
+    );
+    baseMemory.consensus = productMemory.consensus;
+    baseMemory.nextAction = productMemory.nextAction;
+    baseMemory.task = productMemory.task;
+  }
 
   baseMemory.convergenceRules = convergencePromptSection(
     cycle.cycleNumber,

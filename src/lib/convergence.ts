@@ -1,7 +1,8 @@
 import type { CompanyPhase, GoNoGoDecision } from "@prisma/client";
 import type { SharedMemory } from "../types/index.js";
-import { persistConsensusFromRun } from "./consensus.js";
+import { persistCompanyConsensusFromRun } from "./consensus.js";
 import { prisma } from "./prisma.js";
+import { appendProductHandoff, extractHandoffFromSharedMemory } from "./product-consensus.js";
 import {
   addPipelineIdeas,
   bootstrapProduct,
@@ -40,6 +41,20 @@ export function convergencePromptSection(cycleNumber: number, phase: CompanyPhas
 - If same nextAction repeats, pivot or shrink scope
 - Multi-product: do not block existing products in Growing phase (e.g. snapog). New ideas go to pipeline queue
 - Optional structured fields in shared memory: topIdeas[], goNoGo, productSlug, productName, productDescription, revenueUsd
+
+## Consensus Handoff (mandatory structured output)
+This is a per-PRODUCT memory. End your reply with a fenced JSON block that will be parsed and stored as one consensus revision per step. Omit fields you cannot fill:
+\`\`\`json
+{
+  "consensusUpdate": "<optional full markdown to replace this step's entry>",
+  "nextAction": "<single concrete sentence>",
+  "decisions": [{"by": "ceo-bezos", "what": "...", "why": "..."}],
+  "openQuestions": ["..."],
+  "veto": null
+}
+\`\`\`
+- If you are Charlie Munger and want to block a decision, set "veto": {"by": "critic-munger", "reason": "..."}.
+- If you do not fill the block, the system still records your prose output as the revision — but you lose the structured trace. Always include the block.
 `.trim();
 }
 
@@ -47,14 +62,49 @@ export async function processConvergenceAfterRun(
   tenantId: string,
   workflowName: string,
   memory: SharedMemory,
-  _runId: string,
+  runId: string,
+  productSlug?: string,
 ): Promise<void> {
   const enriched = enrichSharedMemoryFromAgentOutputs(memory);
-  await persistConsensusFromRun(tenantId, enriched);
+
+  // 1. Per-product handoffs (one revision per step) — only when a product is in scope.
+  if (productSlug) {
+    const product = await getProductBySlug(tenantId, productSlug);
+    if (product) {
+      const history = Array.isArray(memory._history) ? memory._history : [];
+      for (let i = 0; i < history.length; i++) {
+        const h = history[i];
+        if (!h?.agentName) continue;
+        const handoff = extractHandoffFromSharedMemory(
+          { ...enriched, lastOutput: h.output, lastAgent: h.agentName, stepOrder: h.stepOrder ?? i + 1 },
+          h.agentName,
+        );
+        handoff.stepId = h.stepId;
+        handoff.runId = runId;
+        handoff.stepOrder = h.stepOrder ?? i + 1;
+        await appendProductHandoff({
+          productId: product.id,
+          productSlug: product.slug,
+          tenantId: product.tenantId,
+          ...handoff,
+        });
+      }
+    }
+  }
+
+  // 2. Company-level (tenant) memory: cycle strategy, pipeline, next action, phase.
+  //    Only the LAST agent's view is reflected in the tenant consensus; per-step detail
+  //    lives in ProductConsensusRevision. Tenant consensus is the company-level baton.
+  const companyMemory: SharedMemory = { ...enriched };
+  if (productSlug) {
+    // Don't let per-product nextAction leak into the company memory.
+    companyMemory.nextAction = undefined;
+  }
+  await persistCompanyConsensusFromRun(tenantId, companyMemory);
 
   const consensus = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
   const cycle = await ensureTenantCycleState(tenantId);
-  const nextAction = asString(enriched.nextAction) ?? consensus?.nextAction ?? null;
+  const nextAction = asString(companyMemory.nextAction) ?? consensus?.nextAction ?? null;
 
   let stuckCounter = cycle.stuckCounter;
   if (nextAction && cycle.lastNextAction === nextAction) {
@@ -73,16 +123,17 @@ export async function processConvergenceAfterRun(
   }
 
   const goNoGo = parseGoNoGo(enriched.goNoGo);
-  const productSlug = asString(enriched.productSlug) ?? slugifyProductName(asString(enriched.productName) ?? "");
+  const productSlugResolved =
+    asString(enriched.productSlug) ?? slugifyProductName(asString(enriched.productName) ?? "");
   const productName = asString(enriched.productName);
 
-  if (goNoGo === "go" && productSlug && productName) {
+  if (goNoGo === "go" && productSlugResolved && productName) {
     const building = await countBuildingProducts(tenantId);
-    const existing = await getProductBySlug(tenantId, productSlug);
+    const existing = await getProductBySlug(tenantId, productSlugResolved);
     if (!existing && building < 2) {
       const product = await bootstrapProduct({
         tenantId,
-        slug: productSlug,
+        slug: productSlugResolved,
         name: productName,
         description: asString(enriched.productDescription),
       });
@@ -91,7 +142,7 @@ export async function processConvergenceAfterRun(
     } else if (existing) {
       await upsertTenantProduct({
         tenantId,
-        slug: productSlug,
+        slug: productSlugResolved,
         name: productName,
         phase: "building",
         goNoGo: "go",
@@ -107,11 +158,11 @@ export async function processConvergenceAfterRun(
     await updateCompanyPhase(tenantId, "exploring");
   }
 
-  if (typeof enriched.revenueUsd === "number" && productSlug) {
+  if (typeof enriched.revenueUsd === "number" && productSlugResolved) {
     await upsertTenantProduct({
       tenantId,
-      slug: productSlug,
-      name: productName ?? productSlug,
+      slug: productSlugResolved,
+      name: productName ?? productSlugResolved,
       revenueUsd: enriched.revenueUsd,
       phase: "growing",
       goNoGo: "go",
@@ -133,8 +184,11 @@ export async function processConvergenceAfterRun(
   }
 
   if (stuckCounter >= 2 && nextAction) {
-    enriched.nextAction = `STUCK on "${nextAction}" — pivot: ship smallest vertical slice today`;
-    await persistConsensusFromRun(tenantId, enriched);
+    const stuckMemory: SharedMemory = {
+      ...enriched,
+      nextAction: `STUCK on "${nextAction}" — pivot: ship smallest vertical slice today`,
+    };
+    await persistCompanyConsensusFromRun(tenantId, stuckMemory);
     stuckCounter = 0;
   }
 
@@ -148,7 +202,6 @@ export async function processConvergenceAfterRun(
   });
 }
 
-/** Backfill pipeline from the latest completed discovery run when the queue is still empty. */
 export async function backfillPipelineFromLastDiscovery(tenantId: string): Promise<number> {
   const existing = await listPipelineIdeas(tenantId);
   if (existing.length > 0) return 0;

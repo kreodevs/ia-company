@@ -198,7 +198,13 @@ export class WorkflowExecutor {
       });
 
       if (input.tenantId && syncConsensus) {
-        await processConvergenceAfterRun(input.tenantId, workflowName, sharedMemory, runId);
+        await processConvergenceAfterRun(
+          input.tenantId,
+          workflowName,
+          sharedMemory,
+          runId,
+          input.productSlug,
+        );
       }
 
       await this.dispatchRunNotification(runId, input.tenantId, "COMPLETED", {
@@ -329,23 +335,20 @@ export class WorkflowExecutor {
     });
 
     const tenantWorkspace = await ensureTenantWorkspace(tenantId, tenant?.slug, tenant?.name);
-    const { syncConsensusFileToWorkspace, syncTenantConsensusToWorkspace } = await import(
-      "../lib/consensus.js"
-    );
+    const { syncTenantConsensusToWorkspace } = await import("../lib/consensus.js");
     await syncTenantConsensusToWorkspace(tenantId, tenantWorkspace);
     await syncTenantPortfolioManifest(tenantId, tenantWorkspace);
 
-    const workspaceRoot = productSlug
-      ? await ensureProductWorkspace(productSlug)
-      : tenantWorkspace;
-
-    if (productSlug && workspaceRoot !== tenantWorkspace) {
-      const consensus = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
-      await syncConsensusFileToWorkspace(
-        workspaceRoot,
-        consensus?.content ?? "# Consensus\n\nShared memory for autonomous cycles.",
-        consensus?.nextAction ?? null,
-      );
+    let workspaceRoot = tenantWorkspace;
+    if (productSlug) {
+      workspaceRoot = await ensureProductWorkspace(productSlug);
+      const { syncProductConsensusToWorkspace } = await import("../lib/product-consensus.js");
+      const product = await prisma.tenantProduct.findUnique({
+        where: { tenantId_slug: { tenantId, slug: productSlug } },
+      });
+      if (product) {
+        await syncProductConsensusToWorkspace(product.id, product.slug);
+      }
     }
 
     const llm = tenantLlmFromRecord(tenant?.llmConfig ?? null);
@@ -549,12 +552,18 @@ export function compileSystemPrompt(
     "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
   );
 
-  sections.push(
-    "\n## Consensus File\nTenant consensus lives at `consensus.md` in the workspace root (also in Shared Workflow Memory). Prefer the JSON memory when present; use read_file on `consensus.md` only if you need the full document.",
-  );
+  if (workspace?.productSlug) {
+    sections.push(
+      `\n## Product Consensus (${workspace.productSlug})\nYour handoff is appended to **${workspace.productSlug}'s** product consensus (one revision per step). Read \`consensus.md\` at the workspace root for full prior context; use the JSON memory above for the most recent state. Tenant-level (company) consensus is separate and only tracks cycle strategy / pipeline.`,
+    );
+  } else {
+    sections.push(
+      "\n## Consensus File\nTenant (company) consensus lives at `consensus.md` in the workspace root (also in Shared Workflow Memory). Prefer the JSON memory when present; use read_file on `consensus.md` only if you need the full document.",
+    );
+  }
 
   sections.push(
-    "\n## Consensus Handoff\nIf you finalize a cycle decision, set `nextAction` in your reasoning and include a markdown block labeled `consensusUpdate` in shared output when the workflow expects a full consensus rewrite.",
+    "\n## Consensus Handoff\nIf you finalize a cycle decision, set `nextAction` in your reasoning and include a fenced JSON block labeled `consensusUpdate`/`decisions`/`openQuestions`/`veto` in shared output. The block is parsed and stored as one revision. See the `## Consensus Handoff (mandatory structured output)` section in your cycle rules for the exact schema.",
   );
 
   return sections.join("\n");
@@ -667,8 +676,26 @@ export async function executeWorkflowInBackground(
 
   let initialMemory = input.initialMemory;
   if (input.tenantId && input.mergeConsensus !== false) {
-    const { loadConsensusInitialMemory } = await import("../lib/consensus.js");
-    initialMemory = await loadConsensusInitialMemory(input.tenantId, input.initialMemory ?? {});
+    if (input.productSlug) {
+      const { loadProductConsensusInitialMemory } = await import("../lib/product-consensus.js");
+      const product = await prisma.tenantProduct.findUnique({
+        where: { tenantId_slug: { tenantId: input.tenantId, slug: input.productSlug } },
+        select: { id: true },
+      });
+      if (product) {
+        initialMemory = await loadProductConsensusInitialMemory(
+          input.tenantId,
+          product.id,
+          input.initialMemory ?? {},
+        );
+      } else {
+        const { loadConsensusInitialMemory } = await import("../lib/consensus.js");
+        initialMemory = await loadConsensusInitialMemory(input.tenantId, input.initialMemory ?? {});
+      }
+    } else {
+      const { loadConsensusInitialMemory } = await import("../lib/consensus.js");
+      initialMemory = await loadConsensusInitialMemory(input.tenantId, input.initialMemory ?? {});
+    }
   }
 
   const run = await prisma.executionRun.create({

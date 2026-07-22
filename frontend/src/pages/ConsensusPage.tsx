@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type TenantConsensus } from "../lib/api";
+import { api, type TenantConsensus, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Card from "../components/ui/Card";
@@ -12,18 +12,19 @@ import Badge from "../components/ui/Badge";
 export default function ConsensusPage() {
   const { t } = useTranslation();
   const [record, setRecord] = useState<TenantConsensus | null>(null);
+  const [products, setProducts] = useState<TenantProduct[]>([]);
   const [content, setContent] = useState("");
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    api.consensus
-      .get()
-      .then((data) => {
-        setRecord(data);
-        setContent(data.content);
-        setNextAction(data.nextAction ?? "");
+    Promise.all([api.consensus.get(), api.products.list()])
+      .then(([consensus, list]) => {
+        setRecord(consensus);
+        setContent(consensus.content);
+        setNextAction(consensus.nextAction ?? "");
+        setProducts(list);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -59,6 +60,24 @@ export default function ConsensusPage() {
           {t("consensus.viewOpsDashboard")}
         </Link>
       </div>
+
+      {products.length > 0 && (
+        <Card className="space-y-2">
+          <h2 className="text-sm font-semibold">{t("consensus.productMemoryHeading")}</h2>
+          <ul className="space-y-1 text-sm">
+            {products.map((p) => (
+              <li key={p.id}>
+                <Link
+                  to={`/products/${p.id}/consensus`}
+                  className="interactive text-[var(--color-primary)] hover:underline"
+                >
+                  {p.name} <span className="text-[var(--color-muted-foreground)]">({p.slug})</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <Card className="space-y-4">
         <Input

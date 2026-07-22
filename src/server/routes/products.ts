@@ -163,4 +163,69 @@ export async function productRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get<{ Params: { id: string } }>("/products/:id/consensus", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+      const { getProductConsensus, ensureProductConsensus } = await import(
+        "../../lib/product-consensus.js"
+      );
+      const existing = await getProductConsensus(product.id);
+      if (existing) return existing;
+      return ensureProductConsensus(product.id);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{ Params: { id: string }; Body: { content: string; nextAction?: string } }>(
+    "/products/:id/consensus",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const product = await prisma.tenantProduct.findFirst({
+          where: { id: request.params.id, tenantId },
+        });
+        if (!product) return reply.status(404).send({ error: "Product not found" });
+        const { updateProductConsensusContent } = await import(
+          "../../lib/product-consensus.js"
+        );
+        await updateProductConsensusContent(
+          product.id,
+          product.slug,
+          request.body.content,
+          request.body.nextAction ?? null,
+        );
+        await logAudit(request, "product.consensus.update", { productId: product.id });
+        const { getProductConsensus } = await import("../../lib/product-consensus.js");
+        return getProductConsensus(product.id);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string }; Querystring: { limit?: string } }>(
+    "/products/:id/consensus/revisions",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const product = await prisma.tenantProduct.findFirst({
+          where: { id: request.params.id, tenantId },
+        });
+        if (!product) return reply.status(404).send({ error: "Product not found" });
+        const limit = Math.min(200, Math.max(1, Number(request.query.limit ?? 50)));
+        const { listProductConsensusRevisions } = await import(
+          "../../lib/product-consensus.js"
+        );
+        return listProductConsensusRevisions(product.id, limit);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 }

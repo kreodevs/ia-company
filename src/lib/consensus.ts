@@ -6,10 +6,12 @@ import type { SharedMemory } from "../types/index.js";
 
 export const CONSENSUS_FILE_NAME = "consensus.md";
 
-const DEFAULT_CONSENSUS_CONTENT = "# Consensus\n\nShared memory for autonomous cycles.";
+export const DEFAULT_TENANT_CONSENSUS_CONTENT = (tenantName: string): string =>
+  `# ${tenantName} — Company Memory\n\nShared memory for autonomous cycles. Product-level memory lives in each product's own consensus.md.\n`;
 
 export function formatConsensusFileBody(content: string, nextAction: string | null): string {
-  const trimmed = content.trim() || DEFAULT_CONSENSUS_CONTENT;
+  const trimmed = content.trim();
+  if (!trimmed) return DEFAULT_TENANT_CONSENSUS_CONTENT("Tenant");
   if (!nextAction?.trim() || /## Next Action/i.test(trimmed)) {
     return `${trimmed}\n`;
   }
@@ -41,10 +43,15 @@ export async function syncTenantConsensusToWorkspace(
   const root = workspaceRoot ?? (await ensureTenantWorkspace(tenantId, tenant?.slug));
   await syncConsensusFileToWorkspace(
     root,
-    consensus?.content ?? DEFAULT_CONSENSUS_CONTENT,
+    consensus?.content ?? DEFAULT_TENANT_CONSENSUS_CONTENT(tenant?.name ?? "Tenant"),
     consensus?.nextAction ?? null,
   );
   return root;
+}
+
+export interface MergeConsensusInput {
+  consensus: { content: string; nextAction: string | null } | null;
+  override?: SharedMemory;
 }
 
 export function mergeConsensusIntoMemory(
@@ -60,12 +67,11 @@ export function mergeConsensusIntoMemory(
     ...override,
     consensus: override.consensus ?? consensus?.content,
     nextAction,
-    task:
-      (typeof override.task === "string" ? override.task : undefined) ?? nextAction,
+    task: (typeof override.task === "string" ? override.task : undefined) ?? nextAction,
   };
 }
 
-export function buildConsensusContentAfterRun(
+export function buildCompanyConsensusContentAfterRun(
   existingContent: string,
   memory: SharedMemory,
 ): string {
@@ -73,7 +79,11 @@ export function buildConsensusContentAfterRun(
     return memory.consensusUpdate.trim();
   }
 
-  if (typeof memory.consensus === "string" && memory.consensus.trim() && memory.consensus !== existingContent) {
+  if (
+    typeof memory.consensus === "string" &&
+    memory.consensus.trim() &&
+    memory.consensus !== existingContent
+  ) {
     return memory.consensus.trim();
   }
 
@@ -93,11 +103,19 @@ export async function loadConsensusInitialMemory(
   return mergeConsensusIntoMemory(consensus, override);
 }
 
-export async function persistConsensusFromRun(tenantId: string, memory: SharedMemory): Promise<void> {
+export async function persistCompanyConsensusFromRun(
+  tenantId: string,
+  memory: SharedMemory,
+): Promise<void> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { name: true },
+  });
   const existing = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
-  const baseContent = existing?.content ?? "# Consensus\n\nShared memory for autonomous cycles.";
+  const baseContent =
+    existing?.content ?? DEFAULT_TENANT_CONSENSUS_CONTENT(tenant?.name ?? "Tenant");
 
-  const content = buildConsensusContentAfterRun(baseContent, memory);
+  const content = buildCompanyConsensusContentAfterRun(baseContent, memory);
   const nextAction =
     typeof memory.nextAction === "string" && memory.nextAction.trim()
       ? memory.nextAction.trim()
