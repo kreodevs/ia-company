@@ -1,5 +1,6 @@
 import { admin } from "./admin";
 import { auth } from "./auth";
+import { code } from "./code";
 import { common } from "./common";
 import { consensus } from "./consensus";
 import { help } from "./help";
@@ -28,6 +29,7 @@ export const es = {
   team,
   help,
   interests,
+  code,
   admin,
   language,
   theme,

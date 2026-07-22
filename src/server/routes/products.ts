@@ -228,4 +228,92 @@ export async function productRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.get<{ Params: { id: string }; Querystring: { path?: string } }>(
+    "/products/:id/tree",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const product = await prisma.tenantProduct.findFirst({
+          where: { id: request.params.id, tenantId },
+        });
+        if (!product) return reply.status(404).send({ error: "Product not found" });
+        const { listProductTree } = await import("../../lib/product-code.js");
+        const entries = await listProductTree(product.slug, request.query.path ?? "");
+        return { path: request.query.path ?? "", entries };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string }; Querystring: { path: string } }>(
+    "/products/:id/file",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const product = await prisma.tenantProduct.findFirst({
+          where: { id: request.params.id, tenantId },
+        });
+        if (!product) return reply.status(404).send({ error: "Product not found" });
+        const filePath = request.query.path;
+        if (!filePath) return reply.status(400).send({ error: "path is required" });
+        const { readProductFile } = await import("../../lib/product-code.js");
+        return await readProductFile(product.slug, filePath);
+      } catch (err) {
+        if (err instanceof Error && /not found|escapes|not a file/i.test(err.message)) {
+          return reply.status(404).send({ error: err.message });
+        }
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{
+    Params: { id: string };
+    Body: { repoName: string; visibility: "private" | "public"; description?: string };
+  }>("/products/:id/repo/create", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+      if (!["building", "launching", "growing"].includes(product.phase)) {
+        return reply.status(409).send({
+          error: `Cannot create repo for product in phase ${product.phase}`,
+        });
+      }
+      const { getPlatformSettings } = await import("../../lib/platform-settings.js");
+      const settings = await getPlatformSettings();
+      const token = settings.githubApiKey;
+      if (!token) {
+        return reply.status(412).send({
+          error: "GitHub token is not configured. Set it in Platform settings.",
+        });
+      }
+      const repoName = String(request.body?.repoName ?? "").trim();
+      if (!/^[A-Za-z0-9._-]+$/.test(repoName)) {
+        return reply.status(400).send({ error: "Invalid repo name" });
+      }
+      const visibility = request.body?.visibility === "public" ? "public" : "private";
+      const { createProductGitHubRepo } = await import("../../lib/product-code.js");
+      const result = await createProductGitHubRepo({
+        tenantId,
+        productId: product.id,
+        repoName,
+        visibility,
+        description: request.body?.description,
+        githubToken: token,
+      });
+      await prisma.tenantProduct.update({
+        where: { id: product.id },
+        data: { phase: "launching" },
+      });
+      await logAudit(request, "product.repo.create", { productId: product.id, repoName, result });
+      return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

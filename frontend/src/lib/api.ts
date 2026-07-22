@@ -249,6 +249,30 @@ export interface TenantInterests {
   selected: string[];
 }
 
+export interface ProductFile {
+  path: string;
+  content: string;
+  size: number;
+  truncated: boolean;
+  binary: boolean;
+}
+
+export interface ProductTreeEntry {
+  path: string;
+  name: string;
+  type: "file" | "dir";
+  size: number;
+  children?: ProductTreeEntry[];
+}
+
+export interface CreateRepoResult {
+  repoUrl: string;
+  fullName: string;
+  commitSha: string;
+  pushed: boolean;
+  message: string;
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -638,6 +662,24 @@ export const api = {
         request<ProductConsensusRevision[]>(
           `/products/${id}/consensus/revisions?limit=${limit}`,
         ),
+    },
+    code: {
+      tree: (id: string, path = "") =>
+        request<{ path: string; entries: ProductTreeEntry[] }>(
+          `/products/${id}/tree?path=${encodeURIComponent(path)}`,
+        ),
+      file: (id: string, path: string) =>
+        request<ProductFile>(
+          `/products/${id}/file?path=${encodeURIComponent(path)}`,
+        ),
+      createRepo: (
+        id: string,
+        body: { repoName: string; visibility: "private" | "public"; description?: string },
+      ) =>
+        request<CreateRepoResult>(`/products/${id}/repo/create`, {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
     },
   },
   ops: {

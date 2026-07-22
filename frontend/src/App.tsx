@@ -12,6 +12,7 @@ import HelpPage from "./pages/HelpPage";
 import OpsPage from "./pages/OpsPage";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
+import ProductCodePage from "./pages/ProductCodePage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
 import TenantInterestsPage from "./pages/TenantInterestsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -68,6 +69,7 @@ function AppShell() {
               <Route path="ops" element={<OpsPage />} />
               <Route path="consensus" element={<ConsensusPage />} />
               <Route path="products/:productId/consensus" element={<ProductConsensusPage />} />
+              <Route path="products/:productId/code" element={<ProductCodePage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="settings/interests" element={<TenantInterestsPage />} />
               <Route path="team" element={<TenantUsersPage />} />
