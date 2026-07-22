@@ -17,7 +17,7 @@ function formatTime(iso: string): string {
   return new Date(iso).toLocaleString();
 }
 
-type View = "document" | "revisions";
+type View = "document" | "revisions" | "reports";
 
 export default function ProductConsensusPage() {
   const { t } = useTranslation();
@@ -69,6 +69,22 @@ export default function ProductConsensusPage() {
     if (!record) return false;
     return content !== record.content || (nextAction || null) !== (record.nextAction ?? null);
   }, [content, nextAction, record]);
+
+  const reportsByAgent = useMemo(() => {
+    const map = new Map<string, ProductConsensusRevision[]>();
+    for (const rev of revisions) {
+      const list = map.get(rev.agentName) ?? [];
+      list.push(rev);
+      map.set(rev.agentName, list);
+    }
+    return Array.from(map.entries())
+      .map(([agentName, items]) => ({
+        agentName,
+        items: [...items].sort((a, b) => a.stepOrder - b.stepOrder),
+      }))
+      .sort((a, b) => b.items.length - a.items.length || a.agentName.localeCompare(b.agentName));
+  }, [revisions]);
+  const agentCount = reportsByAgent.length;
 
   if (loading) return <PageLoading message={t("consensus.loading")} />;
   if (!productId) return <div>Missing product id</div>;
@@ -144,6 +160,24 @@ export default function ProductConsensusPage() {
           {revisions.length > 0 && (
             <span className="rounded-full bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-semibold">
               {revisions.length}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "reports"}
+          onClick={() => setView("reports")}
+          className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
+            view === "reports"
+              ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
+              : "border-b-2 border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+          }`}
+        >
+          {t("consensus.reportsTab", { defaultValue: "Agent reports" })}
+          {agentCount > 0 && (
+            <span className="rounded-full bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-semibold">
+              {agentCount}
             </span>
           )}
         </button>
@@ -250,6 +284,125 @@ export default function ProductConsensusPage() {
                 </li>
               ))}
             </ol>
+          )}
+        </Card>
+      )}
+
+      {view === "reports" && (
+        <Card className="space-y-4">
+          {reportsByAgent.length === 0 ? (
+            <EmptyState
+              title={t("consensus.reportsEmptyTitle", { defaultValue: "No agent reports yet" })}
+              description={t("consensus.reportsEmptyDesc", {
+                defaultValue:
+                  "Once an agent hands off a revision it appears here, grouped by agent with markdown preview.",
+              })}
+            />
+          ) : (
+            <div className="space-y-4">
+              {reportsByAgent.map((group) => {
+                const latest = group.items[group.items.length - 1];
+                const older = group.items.slice(0, -1);
+                return (
+                  <article
+                    key={group.agentName}
+                    className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-4"
+                    data-testid={`agent-report-${group.agentName}`}
+                  >
+                    <header className="mb-3 flex flex-wrap items-baseline gap-2">
+                      <h3 className="text-base font-semibold">{group.agentName}</h3>
+                      <span className="text-xs text-[var(--color-muted-foreground)]">
+                        {t("consensus.reportsCount", { count: group.items.length })}
+                      </span>
+                      {latest.runId && (
+                        <Link
+                          to={`/runs/${latest.runId}`}
+                          className="text-xs text-[var(--color-primary)] hover:underline"
+                        >
+                          {t("consensus.reportsLatestRun", {
+                            stamp: formatTime(latest.createdAt),
+                            run: latest.runId.slice(0, 8),
+                          })}
+                        </Link>
+                      )}
+                    </header>
+
+                    <MarkdownPreview
+                      value={latest.content}
+                      onChange={() => undefined}
+                      rows={10}
+                      ariaLabel={t("consensus.reportsLatestAria", { agent: group.agentName })}
+                    />
+
+                    {latest.veto && (
+                      <div className="mt-3 rounded border border-red-300 bg-red-50 p-2 text-xs text-red-700">
+                        <strong>{t("consensus.veto", { defaultValue: "VETO" })}</strong> by{" "}
+                        {latest.veto.by}: {latest.veto.reason}
+                      </div>
+                    )}
+                    {latest.decisions.length > 0 && (
+                      <ul className="mt-3 list-disc space-y-1 pl-5 text-xs">
+                        {latest.decisions.map((d, i) => (
+                          <li key={i}>
+                            <strong>{d.by}</strong>: {d.what}
+                            {d.why ? (
+                              <em className="text-[var(--color-muted-foreground)]"> — {d.why}</em>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {latest.nextAction && (
+                      <p className="mt-3 text-xs">
+                        <span className="font-medium">{t("consensus.nextAction")}:</span>{" "}
+                        {latest.nextAction}
+                      </p>
+                    )}
+
+                    {older.length > 0 && (
+                      <details className="mt-4 rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                        <summary className="cursor-pointer text-xs text-[var(--color-muted-foreground)]">
+                          {t("consensus.reportsOlderCount", { count: older.length })}
+                        </summary>
+                        <ol className="mt-2 space-y-3">
+                          {older
+                            .slice()
+                            .reverse()
+                            .map((rev) => (
+                              <li
+                                key={rev.id}
+                                className="rounded border border-[var(--color-border)] bg-[var(--color-background)] p-2"
+                              >
+                                <div className="mb-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--color-muted-foreground)]">
+                                  <Badge>#{rev.stepOrder}</Badge>
+                                  <span>{formatTime(rev.createdAt)}</span>
+                                  {rev.runId && (
+                                    <Link
+                                      to={`/runs/${rev.runId}`}
+                                      className="hover:underline"
+                                    >
+                                      run:{rev.runId.slice(0, 8)}
+                                    </Link>
+                                  )}
+                                </div>
+                                <MarkdownPreview
+                                  value={rev.content}
+                                  onChange={() => undefined}
+                                  rows={6}
+                                  ariaLabel={t("consensus.reportsOlderAria", {
+                                    agent: group.agentName,
+                                    step: rev.stepOrder,
+                                  })}
+                                />
+                              </li>
+                            ))}
+                        </ol>
+                      </details>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
           )}
         </Card>
       )}

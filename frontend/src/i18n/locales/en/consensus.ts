@@ -37,4 +37,13 @@ export const consensus = {
     ideaOnly: "Opportunity — {{title}}",
     ideaWithProduct: "Opportunity — {{title}} → {{product}}",
   },
+  reportsTab: "Agent reports",
+  reportsEmptyTitle: "No agent reports yet",
+  reportsEmptyDesc:
+    "Once an agent hands off a revision it appears here, grouped by agent with markdown preview.",
+  reportsCount: "{{count}} revisions",
+  reportsLatestRun: "Latest · {{stamp}} · run {{run}}",
+  reportsLatestAria: "{{agent}} — latest report (markdown preview)",
+  reportsOlderCount: "{{count}} older revisions",
+  reportsOlderAria: "{{agent}} step #{{step}} (markdown preview)",
 } as const;
