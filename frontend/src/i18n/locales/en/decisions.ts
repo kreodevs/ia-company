@@ -3,8 +3,12 @@ export const decisions = {
   title: "Go / No-Go decisions",
   subtitle:
     "The autonomous team pauses here before bootstrapping a new product. Review each proposal, request more research, or take the call yourself.",
-  pendingHeading: "Awaiting your decision ({{count}})",
   empty: "No pending decisions. The next opportunity discovery will populate this list.",
+  emptyTitle: "All caught up",
+  historySubtitle: "Decisions you've already made.",
+  pendingHeading: "Awaiting your decision ({{count}})",
+  pendingSubtitle:
+    "{{count}} proposal(s) waiting for your call. Approve, request more research, or reject.",
   historyHeading: "History ({{count}})",
   rationale: "Rationale",
   evidence: "Evidence ({{count}})",
@@ -17,6 +21,17 @@ export const decisions = {
   go: "GO",
   noGo: "NO-GO",
   by: "by {{actor}}",
+  kpis: {
+    pending: "Awaiting review",
+    pendingDelta: "{{drilling}} drilling down",
+    pendingClear: "All decisions processed",
+    goRecommended: "GO recommended",
+    goRecommendedDelta: "Proposals the team thinks should ship",
+    noGoRecommended: "NO-GO recommended",
+    noGoRecommendedDelta: "Proposals the team thinks should be dropped",
+    approved: "Approved by you",
+    approvedDelta: "Out of {{total}} total proposals",
+  },
   status: {
     pending_review: "pending review",
     drilling: "drilling down",

@@ -1,18 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Check, ChevronRight, GitBranch, History, ScrollText, Sparkles, X } from "lucide-react";
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import Badge from "../components/ui/Badge";
+import Panel from "../components/ui/Panel";
+import KpiCard from "../components/ui/KpiCard";
+import StatusPill from "../components/ui/StatusPill";
+import EmptyState from "../components/ui/EmptyState";
 
 function statusLabel(t: (k: string) => string, s: DecisionStatus): string {
   const key = `decisions.status.${s}`;
   const out = t(key);
   return out === key ? s : out;
+}
+
+function statusToPill(status: DecisionStatus): string {
+  switch (status) {
+    case "approved":
+      return "completed";
+    case "rejected":
+    case "cancelled":
+      return "cancelled";
+    case "drilling":
+      return "running";
+    case "pending_review":
+      return "pending";
+    default:
+      return "queued";
+  }
 }
 
 export default function DecisionsPage() {
@@ -50,157 +69,250 @@ export default function DecisionsPage() {
     setPivotText("");
   };
 
+  const { pending, history, goCount, noGoCount, approvedCount, drillingCount } = useMemo(() => {
+    const pending = proposals.filter(
+      (p) => p.status === "pending_review" || p.status === "drilling",
+    );
+    const history = proposals.filter(
+      (p) =>
+        p.status === "approved" || p.status === "rejected" || p.status === "cancelled",
+    );
+    const goCount = proposals.filter((p) => p.recommended === "go").length;
+    const noGoCount = proposals.filter((p) => p.recommended === "no_go").length;
+    const approvedCount = proposals.filter((p) => p.status === "approved").length;
+    const drillingCount = proposals.filter((p) => p.status === "drilling").length;
+    return { pending, history, goCount, noGoCount, approvedCount, drillingCount };
+  }, [proposals]);
+
   if (loading) return <PageLoading message={t("decisions.loading")} />;
 
-  const pending = proposals.filter((p) => p.status === "pending_review" || p.status === "drilling");
-  const history = proposals.filter((p) => p.status === "approved" || p.status === "rejected" || p.status === "cancelled");
-
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
         title={t("decisions.title")}
         subtitle={t("decisions.subtitle")}
       />
 
-      <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-          {t("decisions.pendingHeading", { count: pending.length })}
-        </h2>
-        {pending.length === 0 ? (
-          <Card>
-            <p className="text-sm text-[var(--color-muted-foreground)]">{t("decisions.empty")}</p>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {pending.map((p) => (
-              <Card key={p.id} className="space-y-3" data-testid={`decision-${p.id}`}>
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <Badge>{statusLabel(t, p.status)}</Badge>
-                  <span className="font-semibold">{p.idea.title}</span>
-                  <span className="text-[var(--color-muted-foreground)]">
-                    {new Date(p.createdAt).toLocaleString()}
-                  </span>
-                  {p.runId && (
-                    <Link
-                      to={`/runs/${p.runId}`}
-                      className="text-[var(--color-primary)] hover:underline"
-                    >
-                      run:{p.runId.slice(0, 8)}
-                    </Link>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase text-[var(--color-muted-foreground)]">
-                    {t("decisions.rationale")}
-                  </p>
-                  <p className="mt-1 whitespace-pre-wrap text-sm">{p.rationale}</p>
-                </div>
-
-                {p.evidence.length > 0 && (
-                  <details className="rounded border border-[var(--color-border)] p-2 text-sm">
-                    <summary className="cursor-pointer text-xs font-semibold">
-                      {t("decisions.evidence", { count: p.evidence.length })}
-                    </summary>
-                    <ul className="mt-2 space-y-2">
-                      {p.evidence.map((e, i) => (
-                        <li key={i}>
-                          <p className="text-xs font-semibold">{e.agent}</p>
-                          <p className="whitespace-pre-wrap text-xs text-[var(--color-muted-foreground)]">
-                            {e.summary}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-
-                {pivotFor === p.id ? (
-                  <div className="space-y-2 rounded border border-[var(--color-border)] p-2">
-                    <Input
-                      label={t("decisions.pivotPrompt")}
-                      value={pivotText}
-                      onChange={(e) => setPivotText(e.target.value)}
-                      placeholder={t("decisions.pivotPlaceholder")}
-                    />
-                    <div className="flex gap-2">
-                      <Button
-                        disabled={busy === p.id || !pivotText.trim()}
-                        onClick={() => void submitPivot(p.id)}
-                      >
-                        {t("decisions.requestDrilldown")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => {
-                          setPivotFor(null);
-                          setPivotText("");
-                        }}
-                      >
-                        {t("common.cancel")}
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      disabled={busy === p.id}
-                      onClick={() => void act(p.id, () => api.decisions.approve(p.id))}
-                    >
-                      {t("decisions.approve", {
-                        decision: p.recommended === "go" ? t("decisions.go") : t("decisions.noGo"),
-                      })}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      disabled={busy === p.id}
-                      onClick={() => {
-                        setPivotFor(p.id);
-                        setPivotText(p.pivotPrompt ?? "");
-                      }}
-                    >
-                      {t("decisions.pivotMore")}
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      disabled={busy === p.id}
-                      onClick={() => void act(p.id, () => api.decisions.reject(p.id))}
-                    >
-                      {t("decisions.reject")}
-                    </Button>
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
+      <section className="hero-strip">
+        <KpiCard
+          label={t("decisions.kpis.pending")}
+          value={pending.length}
+          delta={
+            pending.length > 0
+              ? t("decisions.kpis.pendingDelta", { drilling: drillingCount })
+              : t("decisions.kpis.pendingClear")
+          }
+          trend={pending.length > 0 ? "down" : "up"}
+        />
+        <KpiCard
+          label={t("decisions.kpis.goRecommended")}
+          value={goCount}
+          delta={t("decisions.kpis.goRecommendedDelta")}
+        />
+        <KpiCard
+          label={t("decisions.kpis.noGoRecommended")}
+          value={noGoCount}
+          delta={t("decisions.kpis.noGoRecommendedDelta")}
+        />
+        <KpiCard
+          label={t("decisions.kpis.approved")}
+          value={approvedCount}
+          trend={approvedCount > 0 ? "up" : "flat"}
+          delta={t("decisions.kpis.approvedDelta", { total: proposals.length })}
+        />
       </section>
 
+      <Panel
+        title={
+          <span className="inline-flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-amber-500" aria-hidden />
+            {t("decisions.pendingHeading", { count: pending.length })}
+          </span>
+        }
+        subtitle={
+          pending.length === 0
+            ? t("decisions.empty")
+            : t("decisions.pendingSubtitle", { count: pending.length })
+        }
+      >
+        {pending.length === 0 ? (
+          <EmptyState
+            title={t("decisions.emptyTitle", { defaultValue: "All caught up" })}
+            description={t("decisions.empty")}
+          />
+        ) : (
+          <ol className="space-y-6">
+            {pending.map((p, i) => (
+              <li
+                key={p.id}
+                className="relative pl-8"
+                data-testid={`decision-${p.id}`}
+              >
+                <span
+                  className={`absolute left-0 top-2 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
+                    i === 0
+                      ? "border-amber-400 bg-amber-50 text-amber-700"
+                      : "border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-muted-foreground)]"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                {i < pending.length - 1 && (
+                  <span
+                    className="absolute left-[9px] top-7 bottom-0 w-px bg-[var(--color-border)]"
+                    aria-hidden
+                  />
+                )}
+                <div className="lift rounded-xl border border-[var(--color-border)] bg-[var(--card)] p-5 shadow-xs hover:shadow-md">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <StatusPill status={statusToPill(p.status)}>
+                      {statusLabel(t, p.status)}
+                    </StatusPill>
+                    <span className="font-semibold text-sm">{p.idea.title}</span>
+                    <span className="text-[var(--color-muted-foreground)]">
+                      {new Date(p.createdAt).toLocaleString()}
+                    </span>
+                    {p.runId && (
+                      <Link
+                        to={`/runs/${p.runId}`}
+                        className="interactive inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
+                      >
+                        <GitBranch className="h-3 w-3" aria-hidden /> run:{p.runId.slice(0, 8)}
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="mt-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+                    <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+                      <ScrollText className="h-3 w-3" aria-hidden />
+                      {t("decisions.rationale")}
+                    </p>
+                    <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">{p.rationale}</p>
+                  </div>
+
+                  {p.evidence.length > 0 && (
+                    <details className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-background)]">
+                      <summary className="cursor-pointer px-3 py-2 text-xs font-semibold text-[var(--color-muted-foreground)]">
+                        {t("decisions.evidence", { count: p.evidence.length })}
+                      </summary>
+                      <ul className="space-y-3 px-3 pb-3">
+                        {p.evidence.map((e, i) => (
+                          <li key={i} className="rounded bg-[var(--color-surface)] p-3">
+                            <p className="text-xs font-semibold">{e.agent}</p>
+                            <p className="mt-1 whitespace-pre-wrap text-xs text-[var(--color-muted-foreground)]">
+                              {e.summary}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+
+                  {pivotFor === p.id ? (
+                    <div className="mt-4 space-y-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+                      <Input
+                        label={t("decisions.pivotPrompt")}
+                        value={pivotText}
+                        onChange={(e) => setPivotText(e.target.value)}
+                        placeholder={t("decisions.pivotPlaceholder")}
+                      />
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          disabled={busy === p.id || !pivotText.trim()}
+                          onClick={() => void submitPivot(p.id)}
+                        >
+                          {t("decisions.requestDrilldown")}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setPivotFor(null);
+                            setPivotText("");
+                          }}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <Button
+                        disabled={busy === p.id}
+                        onClick={() => void act(p.id, () => api.decisions.approve(p.id))}
+                        size="sm"
+                      >
+                        <Check className="mr-1 h-3.5 w-3.5" aria-hidden />
+                        {t("decisions.approve", {
+                          decision: p.recommended === "go" ? t("decisions.go") : t("decisions.noGo"),
+                        })}
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={busy === p.id}
+                        onClick={() => {
+                          setPivotFor(p.id);
+                          setPivotText(p.pivotPrompt ?? "");
+                        }}
+                      >
+                        {t("decisions.pivotMore")}
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={busy === p.id}
+                        onClick={() => void act(p.id, () => api.decisions.reject(p.id))}
+                      >
+                        <X className="mr-1 h-3.5 w-3.5" aria-hidden />
+                        {t("decisions.reject")}
+                      </Button>
+                      <ChevronRight className="ml-auto h-4 w-4 text-[var(--color-muted-foreground)]" aria-hidden />
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Panel>
+
       {history.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-            {t("decisions.historyHeading", { count: history.length })}
-          </h2>
-          <ul className="space-y-2 text-sm">
+        <Panel
+          title={
+            <span className="inline-flex items-center gap-2">
+              <History className="h-4 w-4" aria-hidden />
+              {t("decisions.historyHeading", { count: history.length })}
+            </span>
+          }
+          subtitle={t("decisions.historySubtitle", { defaultValue: "Decisions you've already made." })}
+          bodySize="sm"
+          hover
+        >
+          <ol className="divide-y divide-[var(--color-border)]">
             {history.map((p) => (
               <li
                 key={p.id}
-                className="flex flex-wrap items-center gap-2 rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-2"
+                className="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[1fr_auto] sm:items-center"
               >
-                <Badge>{statusLabel(t, p.status)}</Badge>
-                <span className="font-medium">{p.idea.title}</span>
-                <span className="text-xs text-[var(--color-muted-foreground)]">
-                  {p.decidedAt ? new Date(p.decidedAt).toLocaleString() : ""}
-                </span>
-                {p.decidedBy && (
-                  <span className="text-xs text-[var(--color-muted-foreground)]">
-                    {t("decisions.by", { actor: p.decidedBy })}
-                  </span>
-                )}
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusPill status={statusToPill(p.status)}>
+                      {statusLabel(t, p.status)}
+                    </StatusPill>
+                    <span className="font-medium">{p.idea.title}</span>
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[var(--color-muted-foreground)]">
+                    {p.decidedAt && <span>{new Date(p.decidedAt).toLocaleString()}</span>}
+                    {p.decidedBy && <span>· {t("decisions.by", { actor: p.decidedBy })}</span>}
+                  </div>
+                </div>
+                <ChevronRight className="hidden h-4 w-4 text-[var(--color-muted-foreground)] sm:block" aria-hidden />
               </li>
             ))}
-          </ul>
-        </section>
+          </ol>
+        </Panel>
       )}
     </div>
   );
