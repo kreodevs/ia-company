@@ -10,6 +10,14 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Molecules | `molecules/` | Card, PageHeader, EmptyState, StatsCard |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab) |
+| Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |
+| Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
+| Layout | `AppSidebar.tsx` | Collapsible navigation (desktop) / drawer (mobile) |
+| Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
+
+## Themes
+
+Letter (light) and Slash (dark) — see `frontend/DESIGN.md`.
 
 ## Import convention
 

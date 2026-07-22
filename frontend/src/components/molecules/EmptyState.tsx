@@ -35,7 +35,7 @@ export function EmptyState({
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-paper-white)] text-[var(--color-fog-gray)]">
         <Icon className="h-7 w-7 opacity-60" aria-hidden />
       </div>
-      <h3 className="font-[family-name:var(--font-albra-sans)] text-[length:var(--text-subheading)] font-semibold text-[var(--foreground)]">
+      <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-subheading)] font-semibold text-[var(--foreground)]">
         {title}
       </h3>
       {description ? (

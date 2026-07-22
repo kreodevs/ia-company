@@ -16,6 +16,8 @@ export const nav = {
   consensus: "Consensus",
   team: "Team",
   help: "Help",
+  collapseSidebar: "Collapse sidebar",
+  expandSidebar: "Expand sidebar",
   backToAdmin: "← Admin",
   backToWorkflows: "← Workflows",
   backToRuns: "← Runs",

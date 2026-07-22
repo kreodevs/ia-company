@@ -8,25 +8,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-[var(--color-deep-teal)] text-[var(--color-paper-white)] hover:opacity-90",
+        default: "bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90",
         secondary:
-          "border border-[var(--color-hairline)] bg-[var(--color-paper-white)] text-[var(--color-vault-ink)] hover:bg-[var(--color-mist-white)]",
+          "border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--muted)]",
         outline:
-          "border border-[var(--color-vault-ink)] bg-transparent text-[var(--color-vault-ink)] hover:bg-[var(--color-mist-white)]",
-        ghost:
-          "bg-transparent text-[var(--color-vault-ink)] hover:bg-[var(--color-mist-white)]",
+          "border border-[var(--foreground)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)]",
+        ghost: "bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)]",
         destructive:
           "border border-[var(--destructive)]/30 text-[var(--destructive)] hover:bg-[var(--destructive)]/10",
-        link:
-          "bg-transparent p-0 h-auto text-[var(--color-deep-teal)] hover:underline underline-offset-4",
+        link: "bg-transparent p-0 h-auto text-[var(--accent)] hover:underline underline-offset-4",
         violet:
           "bg-[var(--color-electric-violet)] text-[var(--color-paper-white)] hover:opacity-90",
-        blue:
-          "bg-[var(--color-sapphire-blue)] text-[var(--color-paper-white)] hover:opacity-90",
+        blue: "bg-[var(--color-sapphire-blue)] text-[var(--color-paper-white)] hover:opacity-90",
       },
       size: {
-        default: "min-h-11 px-[27px] py-3 text-base font-medium sm:min-h-9",
+        default:
+          "min-h-11 px-[var(--button-padding-x)] py-[var(--button-padding-y)] text-[length:var(--button-font-size)] font-medium sm:min-h-9",
         sm: "min-h-9 px-4 py-2 text-sm",
         lg: "min-h-12 px-8 py-3 text-base",
         icon: "h-10 w-10 p-0",

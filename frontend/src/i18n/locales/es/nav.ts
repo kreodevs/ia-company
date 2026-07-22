@@ -16,6 +16,8 @@ export const nav = {
   consensus: "Consenso",
   team: "Equipo",
   help: "Ayuda",
+  collapseSidebar: "Contraer menú",
+  expandSidebar: "Expandir menú",
   backToAdmin: "← Admin",
   backToWorkflows: "← Workflows",
   backToRuns: "← Ejecuciones",

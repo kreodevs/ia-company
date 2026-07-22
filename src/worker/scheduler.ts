@@ -11,6 +11,8 @@ export function startAutonomousScheduler(): NodeJS.Timeout {
 }
 
 async function tickSchedules() {
+  await warmPlatformSettingsCache();
+
   const now = new Date();
   const due = await prisma.autonomousSchedule.findMany({
     where: {

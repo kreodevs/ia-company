@@ -1,11 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import AppHeader from "./components/AppHeader";
+import AppLayout from "./components/AppLayout";
 import {
   RequireSuperAdmin,
   RequireTenantAccess,
   SetupGate,
 } from "./components/SetupGate";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { useDocumentLang } from "./hooks/useDocumentLang";
 import HelpPage from "./pages/HelpPage";
 import OpsPage from "./pages/OpsPage";
@@ -29,12 +30,10 @@ import WorkflowsPage from "./pages/WorkflowsPage";
 import { defaultHelpSlug } from "./content/help";
 
 function AppShell() {
-  const { authenticated } = useAuth();
   useDocumentLang();
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
-      {authenticated && <AppHeader />}
+    <AppLayout>
       <main id="main-content" className="page-shell">
         <Routes>
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -69,14 +68,16 @@ function AppShell() {
           </Route>
         </Routes>
       </main>
-    </div>
+    </AppLayout>
   );
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppShell />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppShell />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

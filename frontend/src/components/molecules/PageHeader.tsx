@@ -19,7 +19,7 @@ export function PageHeader({ title, description, breadcrumbs, actions, className
     >
       <div className="min-w-0 flex-1 space-y-2">
         {breadcrumbs ? <div className="text-sm text-[var(--foreground-muted)]">{breadcrumbs}</div> : null}
-        <h1 className="font-[family-name:var(--font-albra-sans)] text-3xl font-semibold leading-[var(--leading-heading)] tracking-[var(--tracking-heading)] text-[var(--foreground)] sm:text-4xl">
+        <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold leading-[var(--leading-heading)] tracking-[var(--tracking-heading)] text-[var(--foreground)] sm:text-4xl">
           {title}
         </h1>
         {description ? (

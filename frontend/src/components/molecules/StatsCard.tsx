@@ -34,7 +34,7 @@ export const StatsCard = forwardRef<HTMLDivElement, StatsCardProps>(
             <p className="text-xs font-medium uppercase tracking-[0.08em] text-[var(--foreground-muted)]">
               {title}
             </p>
-            <p className="font-[family-name:var(--font-albra-sans)] text-3xl font-semibold tabular-nums text-[var(--foreground)]">
+            <p className="font-[family-name:var(--font-display)] text-3xl font-semibold tabular-nums text-[var(--foreground)]">
               {value}
             </p>
             {description ? (

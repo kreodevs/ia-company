@@ -1,4 +1,5 @@
-:root {
+:root,
+[data-theme="letter"] {
   /* Letter — brand palette */
   --color-vault-ink: #191b1f;
   --color-paper-white: #ffffff;
@@ -49,6 +50,8 @@
   --card-padding: 32px;
   --element-gap: 16px;
   --header-height: 3.75rem;
+  --sidebar-width: 15rem;
+  --sidebar-width-collapsed: 4.25rem;
 
   /* Radii — Letter is near-square */
   --radius-sm: 2px;
@@ -117,4 +120,21 @@
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
   --color-ring: var(--ring);
+
+  /* Shell / navigation */
+  --surface-header: var(--color-paper-white);
+  --surface-header-border: var(--color-hairline);
+  --nav-link-color: var(--color-fog-gray);
+  --nav-link-hover-bg: var(--color-mist-white);
+  --nav-link-hover-color: var(--color-vault-ink);
+  --nav-link-active-bg: var(--color-mist-white);
+  --nav-link-active-color: var(--color-vault-ink);
+  --surface-sidebar: var(--color-paper-white);
+  --surface-sidebar-border: var(--color-hairline);
+  --skip-link-bg: var(--color-deep-teal);
+  --skip-link-fg: var(--color-paper-white);
+  --flow-node-selected-border: var(--color-deep-teal);
+  --button-padding-x: 27px;
+  --button-padding-y: 12px;
+  --button-font-size: 16px;
 }

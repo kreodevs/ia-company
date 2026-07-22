@@ -43,7 +43,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         {hasHeader ? (
           <div className={cn("border-b border-[var(--color-hairline)]", paddingClasses[padding])}>
             {title ? (
-              <h3 className="font-[family-name:var(--font-albra-sans)] text-[length:var(--text-subheading)] font-semibold leading-[var(--leading-subheading)] tracking-[var(--tracking-subheading)] text-[var(--foreground)]">
+              <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-subheading)] font-semibold leading-[var(--leading-subheading)] tracking-[var(--tracking-subheading)] text-[var(--foreground)]">
                 {title}
               </h3>
             ) : null}
@@ -84,7 +84,7 @@ export const CardFooter = ({ children, className }: { children: ReactNode; class
 export const CardTitle = ({ children, className }: { children: ReactNode; className?: string }) => (
   <h3
     className={cn(
-      "font-[family-name:var(--font-albra-sans)] text-[length:var(--text-subheading)] font-semibold leading-[var(--leading-subheading)] tracking-[var(--tracking-subheading)] text-[var(--foreground)]",
+      "font-[family-name:var(--font-display)] text-[length:var(--text-subheading)] font-semibold leading-[var(--leading-subheading)] tracking-[var(--tracking-subheading)] text-[var(--foreground)]",
       className,
     )}
   >

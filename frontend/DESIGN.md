@@ -1,24 +1,27 @@
-# Letter — Style Reference
+# Design systems
 
-> Private gallery with iridescent vault artifacts. A black-walled showroom where serif headlines float above chrome sculptures on tinted gallery walls.
+The frontend ships two visual themes, switched from the header (**Tema / Theme**).
 
-**Theme:** mixed
+| Theme | Mode | CSS | Reference |
+|-------|------|-----|-----------|
+| **Letter** | Light (default) | `src/styles/letter-theme.css` | `DESIGN-LETTER.md` |
+| **Slash** | Dark | `src/styles/slash-theme.css` | `DESIGN-SLASH.md` |
 
-Letter is the visual system for the Auto-Company frontend. It combines a deep ink-black hero stage with a bright editorial body, serif display typography (Albra Sans substitute: Playfair Display), and extended grotesque UI text (Neufile substitute: IBM Plex Sans).
+## Activation
 
-## Implementation in this repo
+- `data-theme="letter"` on `<html>` — editorial light gallery (IBM Plex Sans + Playfair Display)
+- `data-theme="slash"` — midnight vault (Inter + Libre Caslon Display, copper accent, pill controls)
 
-- **Tokens:** `src/styles/letter-theme.css`
-- **Kreo atoms:** `src/components/atoms/` — Button, InputText, Badge, Skeleton, StatusPill
-- **Kreo molecules:** `src/components/molecules/` — Card, PageHeader, EmptyState, StatsCard
-- **App wrappers:** `src/components/ui/` — backward-compatible exports used by pages
+Preference is stored in `localStorage` (`auto-company-ui-theme`) and applied before React mounts to avoid flash.
 
-## Key rules
+## Shared semantic tokens
 
-- Headlines use `--font-albra-sans`; UI copy uses `--font-neufile-grotesk-extended`
-- Button/card radius: **2px** (cards: **0px**)
-- No box-shadows on UI surfaces
-- Brand action colors: teal `#186f64`, violet `#536eff`, blue `#154ea5`
-- Tinted panels: peach `#fcede1`, mint `#eefcef`, lavender `#e6def0`
+Components should prefer these bridge variables (defined in both themes):
 
-See the full token tables, component specs, and agent prompts in the project design brief used to generate this file.
+- Surfaces: `--background`, `--card`, `--muted`, `--surface-header`
+- Text: `--foreground`, `--foreground-muted`, `--accent`
+- Actions: `--primary`, `--primary-foreground`, `--border`, `--ring`
+- Shape: `--radius-buttons`, `--radius-inputs`, `--radius-cards`
+- Typography: `--font-sans`, `--font-display`
+
+Legacy aliases (`--color-background`, `--color-primary`, …) remain for existing pages.

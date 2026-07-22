@@ -4,7 +4,7 @@ import { processConvergenceAfterRun } from "../lib/convergence.js";
 import { prisma } from "../lib/prisma.js";
 import { ensureProductWorkspace } from "../lib/product-workspace.js";
 import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
-import { resolveAgentProviderConfig, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
+import { resolveAgentProviderConfig, resolveEffectiveModel, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
   AgentWithSkills,
   ExecuteWorkflowInput,
@@ -83,6 +83,20 @@ export class WorkflowExecutor {
     try {
       await this.updateRunStatus(runId, "RUNNING", { startedAt: new Date() });
       emitEvent("status", { status: "RUNNING", workflowId, workflowName: workflow.name });
+
+      const platform = getPlatformSettingsSync();
+      const effectiveModel = resolveEffectiveModel(
+        workflow.steps[0]?.agent.model ?? "",
+        tenantCtx.llm,
+        platform,
+      );
+      await this.appendLog(runId, "info", "Resolved LLM configuration for run", {
+        payload: {
+          provider: platform.defaultProvider,
+          model: effectiveModel.model,
+          modelSource: effectiveModel.source,
+        },
+      });
 
       const orderedSteps = topologicalSort(workflow);
       let sharedMemory: SharedMemory = {
@@ -602,6 +616,9 @@ export async function executeWorkflowInBackground(
   workflowId: string,
   input: ExecuteWorkflowInput = {},
 ): Promise<string> {
+  const { warmPlatformSettingsCache } = await import("../lib/platform-settings.js");
+  await warmPlatformSettingsCache();
+
   let initialMemory = input.initialMemory;
   if (input.tenantId && input.mergeConsensus !== false) {
     const { loadConsensusInitialMemory } = await import("../lib/consensus.js");

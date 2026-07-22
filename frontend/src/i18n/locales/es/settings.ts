@@ -9,7 +9,7 @@ export const settings = {
     configured: "API key configurada",
     notConfigured: "API key no configurada — contacta al superadmin",
     tenantModelOverride: "Modelo override del tenant (opcional)",
-    tenantModelHint: "Si se deja vacío, cada agente usa su propio modelo.",
+    tenantModelHint: "Si se deja vacío, se usa el modelo predeterminado de plataforma.",
     defaultModel: "Modelo predeterminado",
     maxCostPerRun: "Coste máximo por ejecución (USD)",
     save: "Guardar preferencias LLM",
