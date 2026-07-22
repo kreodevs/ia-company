@@ -2,6 +2,7 @@ import type { CompanyPhase, TenantProduct } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import { mergeConsensusIntoMemory } from "../lib/consensus.js";
 import { convergencePromptSection } from "../lib/convergence.js";
+import { findIdeaToEvaluate } from "../lib/pipeline-utils.js";
 import {
   countBuildingProducts,
   ensureDefaultProducts,
@@ -53,7 +54,7 @@ export async function resolveMetaOrchestratorDecision(
 
   const buildingProducts = products.filter((p) => p.phase === "building" || p.phase === "launching");
   const growingProducts = products.filter((p) => p.phase === "growing");
-  const pendingIdea = ideas.find((i) => i.goNoGo === "pending");
+  const pendingIdea = findIdeaToEvaluate(ideas, products);
 
   let focusProduct: TenantProduct | null =
     products.find((p) => p.id === cycle.focusProductId) ??

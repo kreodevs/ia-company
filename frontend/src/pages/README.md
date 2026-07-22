@@ -22,7 +22,7 @@ Route-level screens for the Auto-Company frontend.
 | `/skills` | `SkillsPage` |
 | `/runs` | `RunsPage` |
 | `/runs/:id` | `RunDetailPage` |
-| `/ops` | `OpsPage` | Autonomous status, pipeline ideas, meta cycle (simplified layout) |
+| `/ops` | `OpsPage` | Flow stepper (discover → evaluate → build → grow), idea pipeline with **Evaluar con agentes**, active products with **Enfocar**, meta cycle |
 | `/consensus` | `ConsensusPage` |
 | `/settings` | `SettingsPage` |
 | `/team` | `TenantUsersPage` |

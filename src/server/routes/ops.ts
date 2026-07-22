@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { backfillPipelineFromLastDiscovery } from "../../lib/convergence.js";
 import { resolveMetaOrchestratorDecision } from "../../core/meta-orchestrator.js";
+import { filterActionablePipelineIdeas } from "../../lib/pipeline-utils.js";
 import {
   ensureDefaultProducts,
   ensureTenantCycleState,
@@ -70,7 +71,7 @@ export async function opsRoutes(app: FastifyInstance) {
           totalRevenueUsd: totalRevenue,
         },
         products,
-        pipeline: ideas,
+        pipeline: filterActionablePipelineIdeas(ideas, products),
         schedules,
         recentRuns: recentRuns.map((run) => ({
           id: run.id,

@@ -582,6 +582,8 @@ export const api = {
         method: "PUT",
         body: JSON.stringify({ decision }),
       }),
+    evaluateIdea: (id: string) =>
+      request<{ runId: string }>(`/products/pipeline/${id}/evaluate`, { method: "POST" }),
     bootstrap: (body: { name: string; slug?: string; description?: string }) =>
       request<TenantProduct>("/products/bootstrap", { method: "POST", body: JSON.stringify(body) }),
   },

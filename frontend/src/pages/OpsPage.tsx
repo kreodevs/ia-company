@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type OpsPortfolio, type OpsNextRun } from "../lib/api";
+import { Focus, Info } from "lucide-react";
+import { api, type OpsPortfolio, type OpsNextRun, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { formatWorkflowTitle } from "../lib/workflow-display";
+import { toast } from "../components/molecules/Sonner";
+import OpsFlowStepper from "../components/ops/OpsFlowStepper";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
+
+function workflowLabel(name: string, t: (key: string, options?: Record<string, unknown>) => string): string {
+  const translated = t(`workflowDisplay.titles.${name}`, { defaultValue: "" });
+  return translated || formatWorkflowTitle(name);
+}
+
+function productPhaseLabel(
+  phase: TenantProduct["phase"],
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
+  return t(`ops.portfolio.phase.${phase}`, { defaultValue: phase });
+}
 
 export default function OpsPage() {
   const { t } = useTranslation();
@@ -18,6 +33,7 @@ export default function OpsPage() {
   const [nextRun, setNextRun] = useState<OpsNextRun | null>(null);
   const [loading, setLoading] = useState(true);
   const [runningMeta, setRunningMeta] = useState(false);
+  const [evaluatingIdeaId, setEvaluatingIdeaId] = useState<string | null>(null);
   const [metaRunError, setMetaRunError] = useState<string | null>(null);
 
   const load = async () => {
@@ -72,6 +88,40 @@ export default function OpsPage() {
     }
   };
 
+  const evaluateIdea = async (ideaId: string) => {
+    setEvaluatingIdeaId(ideaId);
+    try {
+      const { runId } = await api.products.evaluateIdea(ideaId);
+      toast.success(t("ops.toast.evaluateStarted"));
+      await load();
+      navigate(`/runs/${runId}`);
+    } catch (err) {
+      toast.error(translateApiError(err, t, "ops.toast.evaluateFailed"));
+    } finally {
+      setEvaluatingIdeaId(null);
+    }
+  };
+
+  const rejectIdea = async (ideaId: string) => {
+    try {
+      await api.products.pipelineDecision(ideaId, "no_go");
+      toast.success(t("ops.toast.noGoDone"));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.saveFailed"));
+    }
+  };
+
+  const focusProduct = async (product: TenantProduct) => {
+    try {
+      await api.products.focus(product.id);
+      toast.success(t("ops.toast.focusSet", { name: product.name }));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.saveFailed"));
+    }
+  };
+
   if (loading) {
     return <PageLoading message={t("ops.loading")} />;
   }
@@ -82,33 +132,55 @@ export default function OpsPage() {
 
   const metaSchedule = portfolio.schedules.find((s) => s.scheduleKind === "meta");
   const pendingIdeas = portfolio.pipeline.filter((idea) => idea.goNoGo === "pending");
-  const workflowLabel = nextRun ? formatWorkflowTitle(nextRun.workflowName) : null;
+  const nextWorkflowLabel = nextRun ? workflowLabel(nextRun.workflowName, t) : null;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <PageHeader title={t("ops.title")} subtitle={t("ops.subtitle")} />
 
+      <OpsFlowStepper companyPhase={portfolio.companyPhase} />
+
       <Card className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 space-y-2">
+          <div className="min-w-0 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge>
+              <Badge variant="primary">
                 {t(`phase.${portfolio.companyPhase}`, { defaultValue: portfolio.companyPhase })}
               </Badge>
               <span className="text-sm text-[var(--color-muted-foreground)]">
                 {t("ops.status.cycle", { number: portfolio.cycleNumber })}
               </span>
             </div>
-            {workflowLabel ? (
-              <p className="text-sm">
-                {t("ops.status.nextWorkflow")}{" "}
-                <span className="font-medium">{workflowLabel}</span>
+
+            {nextWorkflowLabel ? (
+              <div className="space-y-1 text-sm">
+                <p>
+                  {t("ops.status.nextWorkflow")}{" "}
+                  <span className="font-medium">{nextWorkflowLabel}</span>
+                </p>
+                {nextRun?.reason ? (
+                  <p className="text-[var(--color-muted-foreground)]">
+                    {t("ops.status.nextReason")} {nextRun.reason}
+                  </p>
+                ) : null}
+                {nextRun?.productSlug ? (
+                  <p className="text-[var(--color-muted-foreground)]">
+                    {t("ops.status.focusedProduct")}{" "}
+                    <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 text-xs">
+                      {nextRun.productSlug}
+                    </code>
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {portfolio.nextAction ? (
+              <p className="rounded-lg bg-[var(--color-muted)]/40 px-3 py-2 text-sm text-[var(--color-muted-foreground)]">
+                {portfolio.nextAction}
               </p>
             ) : null}
-            {portfolio.nextAction ? (
-              <p className="text-sm text-[var(--color-muted-foreground)]">{portfolio.nextAction}</p>
-            ) : null}
           </div>
+
           {metaSchedule ? (
             <Button disabled={runningMeta} onClick={() => void runMetaNow()} fullWidthMobile>
               {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
@@ -147,8 +219,11 @@ export default function OpsPage() {
 
       <section className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-lg font-semibold">{t("ops.pipeline.title")}</h2>
-          <span className="text-sm text-[var(--color-muted-foreground)]">
+          <div>
+            <h2 className="text-lg font-semibold">{t("ops.pipeline.title")}</h2>
+            <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t("ops.pipeline.evaluateHint")}</p>
+          </div>
+          <span className="shrink-0 text-sm text-[var(--color-muted-foreground)]">
             {t("ops.pipeline.count", { count: pendingIdeas.length })}
           </span>
         </div>
@@ -167,79 +242,137 @@ export default function OpsPage() {
             ) : null}
           </Card>
         ) : (
-          <ul className="space-y-2">
-            {portfolio.pipeline.map((idea) => (
-              <li
-                key={idea.id}
-                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
+          <ul className="space-y-3">
+            {portfolio.pipeline.map((idea) => {
+              const isEvaluating = evaluatingIdeaId === idea.id;
+              return (
+                <li
+                  key={idea.id}
+                  className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-4"
+                >
+                  <div className="space-y-2">
                     <div className="font-medium">{idea.title}</div>
-                    {idea.description ? (
-                      <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-                        {idea.description}
-                      </p>
+                    <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+                      {idea.description || t("ops.portfolio.noDescription")}
+                    </p>
+                    {idea.goNoGo === "go" ? (
+                      <Badge variant="primary">{t("ops.pipeline.approved")}</Badge>
                     ) : null}
                   </div>
-                  {idea.goNoGo !== "pending" ? (
-                    <Badge>{idea.goNoGo === "go" ? t("ops.pipeline.go") : t("ops.pipeline.noGo")}</Badge>
-                  ) : null}
-                </div>
-                {idea.goNoGo === "pending" ? (
-                  <div className="mt-3 flex gap-2">
+
+                  <div className="mt-4 flex flex-wrap gap-2">
                     <Button
-                      variant="secondary"
-                      className="text-xs"
-                      onClick={() => void api.products.pipelineDecision(idea.id, "go").then(() => load())}
+                      disabled={isEvaluating}
+                      onClick={() => void evaluateIdea(idea.id)}
+                      className="text-sm"
                     >
-                      {t("ops.pipeline.go")}
+                      {isEvaluating ? t("ops.pipeline.evaluating") : t("ops.pipeline.evaluate")}
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="text-xs text-[var(--color-destructive)]"
-                      onClick={() => void api.products.pipelineDecision(idea.id, "no_go").then(() => load())}
-                    >
-                      {t("ops.pipeline.noGo")}
-                    </Button>
+                    {idea.goNoGo === "pending" ? (
+                      <Button
+                        variant="ghost"
+                        className="text-sm text-[var(--color-destructive)]"
+                        onClick={() => void rejectIdea(idea.id)}
+                      >
+                        {t("ops.pipeline.noGo")}
+                      </Button>
+                    ) : null}
                   </div>
-                ) : null}
-              </li>
-            ))}
+                  {idea.goNoGo === "pending" ? (
+                    <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">{t("ops.pipeline.noGoHint")}</p>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
 
-      {portfolio.products.length > 0 ? (
-        <section className="space-y-3">
+      <section className="space-y-3">
+        <div>
           <h2 className="text-lg font-semibold">{t("ops.portfolio.title")}</h2>
-          <ul className="space-y-2">
-            {portfolio.products.map((product) => (
-              <li
-                key={product.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3"
-              >
-                <div>
-                  <div className="font-medium">{product.name}</div>
-                  <div className="text-xs text-[var(--color-muted-foreground)]">
-                    <code>projects/{product.slug}/</code>
+          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t("ops.portfolio.emptyHint")}</p>
+        </div>
+
+        {portfolio.products.length === 0 ? (
+          <Card className="text-sm text-[var(--color-muted-foreground)]">{t("ops.portfolio.emptyHint")}</Card>
+        ) : (
+          <ul className="space-y-3">
+            {portfolio.products.map((product) => {
+              const isFocused = portfolio.focusProduct?.id === product.id;
+              return (
+                <li
+                  key={product.id}
+                  className={`rounded-xl border px-4 py-4 ${
+                    isFocused
+                      ? "border-[var(--color-primary)]/50 bg-[var(--color-primary)]/5"
+                      : "border-[var(--color-border)] bg-[var(--color-card)]"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">{product.name}</span>
+                        {isFocused ? (
+                          <Badge variant="primary">
+                            <Focus className="mr-1 inline h-3 w-3" aria-hidden />
+                            {t("ops.portfolio.focused")}
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+                        {product.description || t("ops.portfolio.noDescription")}
+                      </p>
+                      <dl className="grid gap-1 text-xs text-[var(--color-muted-foreground)] sm:grid-cols-2">
+                        <div>
+                          <dt className="inline font-medium">{t("ops.portfolio.statusLabel")}: </dt>
+                          <dd className="inline">{productPhaseLabel(product.phase, t)}</dd>
+                        </div>
+                        <div>
+                          <dt className="inline font-medium">{t("ops.portfolio.workspaceLabel")}: </dt>
+                          <dd className="inline">
+                            <code>projects/{product.slug}/</code>
+                          </dd>
+                        </div>
+                      </dl>
+                      {isFocused && nextRun?.productSlug === product.slug && nextWorkflowLabel ? (
+                        <p className="text-xs text-[var(--color-muted-foreground)]">
+                          {t("ops.portfolio.nextStepLabel")}:{" "}
+                          <span className="font-medium text-[var(--color-foreground)]">{nextWorkflowLabel}</span>
+                        </p>
+                      ) : null}
+                      {product.lastRunId ? (
+                        <Link
+                          to={`/runs/${product.lastRunId}`}
+                          className="interactive inline-flex text-xs text-[var(--color-primary)] hover:underline"
+                        >
+                          {t("ops.portfolio.viewLastRun")}
+                        </Link>
+                      ) : null}
+                    </div>
+
+                    {!isFocused ? (
+                      <div className="flex flex-col items-end gap-1">
+                        <Button
+                          variant="secondary"
+                          className="text-xs"
+                          onClick={() => void focusProduct(product)}
+                        >
+                          {t("ops.portfolio.focus")}
+                        </Button>
+                        <p className="max-w-[14rem] text-right text-[10px] leading-snug text-[var(--color-muted-foreground)]">
+                          <Info className="mr-0.5 inline h-3 w-3 align-text-bottom" aria-hidden />
+                          {t("ops.portfolio.focusHint")}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge>{t(`phase.${product.phase}`, { defaultValue: product.phase })}</Badge>
-                  <button
-                    type="button"
-                    onClick={() => void api.products.focus(product.id).then(() => load())}
-                    className="rounded-lg border border-[var(--color-border)] px-2 py-1 text-xs"
-                  >
-                    {t("ops.portfolio.focus")}
-                  </button>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
-        </section>
-      ) : null}
+        )}
+      </section>
 
       {portfolio.recentRuns.length > 0 ? (
         <section className="space-y-3">
@@ -256,7 +389,7 @@ export default function OpsPage() {
                   to={`/runs/${run.id}`}
                   className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 text-sm hover:border-[var(--color-primary)]"
                 >
-                  <span>{formatWorkflowTitle(run.workflow?.name ?? t("ops.recentRuns.defaultWorkflow"))}</span>
+                  <span>{workflowLabel(run.workflow?.name ?? t("ops.recentRuns.defaultWorkflow"), t)}</span>
                   <span className="flex items-center gap-2 text-[var(--color-muted-foreground)]">
                     <StatusBadge
                       status={run.status}

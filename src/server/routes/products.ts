@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { CompanyPhase, GoNoGoDecision, ProductPhase } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
+import { enqueueIdeaEvaluation } from "../../lib/evaluate-idea.js";
 import {
   bootstrapProduct,
   ensureTenantCycleState,
@@ -115,6 +116,17 @@ export async function productRoutes(app: FastifyInstance) {
       const cycle = await updateCompanyPhase(tenantId, request.body.phase);
       await logAudit(request, "company.phase", { phase: request.body.phase });
       return cycle;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string } }>("/products/pipeline/:id/evaluate", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const runId = await enqueueIdeaEvaluation(tenantId, request.params.id);
+      await logAudit(request, "pipeline.evaluate", { ideaId: request.params.id, runId });
+      return reply.status(202).send({ runId });
     } catch (err) {
       return handleRouteError(reply, err);
     }
