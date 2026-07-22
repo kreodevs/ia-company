@@ -63,14 +63,24 @@ export interface AdminDashboard {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  const hasJsonBody = init?.body != null && init.body !== "";
+  if (hasJsonBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...init?.headers },
     ...init,
+    headers,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error ?? res.statusText);
+    const err = await res.json().catch(() => null);
+    const message =
+      (err && typeof err === "object" && ("error" in err || "message" in err)
+        ? String((err as { error?: string; message?: string }).error ?? (err as { message?: string }).message)
+        : null) ?? res.statusText;
+    throw new Error(message || res.statusText);
   }
   if (res.status === 204) return undefined as T;
   return res.json();
