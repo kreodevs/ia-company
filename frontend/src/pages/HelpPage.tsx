@@ -8,6 +8,7 @@ import {
   HELP_INTRO_SECTION_ID,
   getDefaultSectionId,
   getTocSection,
+  getTutorialSection,
   isValidSectionId,
   normalizeSectionHash,
   parseHelpDocument,
@@ -85,6 +86,7 @@ export default function HelpPage() {
   );
 
   const tocSection = parsed ? getTocSection(parsed.sections) : undefined;
+  const tutorialSection = parsed ? getTutorialSection(parsed.sections) : undefined;
 
   const selectSection = (sectionId: string) => {
     setActiveSectionId(sectionId);
@@ -149,7 +151,7 @@ export default function HelpPage() {
               {t("help.sections")}
             </p>
             <nav className="mt-2 space-y-0.5" aria-label={t("help.sections")}>
-              {parsed.intro ? (
+              {parsed.intro && !tutorialSection ? (
                 <HelpSectionLink
                   id={HELP_INTRO_SECTION_ID}
                   title={t("help.introduction")}
@@ -163,7 +165,11 @@ export default function HelpPage() {
                   key={section.id}
                   id={section.id}
                   title={
-                    tocSection?.id === section.id ? t("help.tableOfContents") : section.title
+                    tocSection?.id === section.id
+                      ? t("help.tableOfContents")
+                      : tutorialSection?.id === section.id
+                        ? t("help.tutorialStart")
+                        : section.title
                   }
                   level={section.level}
                   active={activeSectionId === section.id}
@@ -186,7 +192,7 @@ export default function HelpPage() {
                 onClick={() => selectSection(getDefaultSectionId(parsed))}
                 className="interactive text-sm text-[var(--color-primary)] hover:underline"
               >
-                ← {t("help.backToToc")}
+                ← {t("help.backToTutorial")}
               </button>
             )}
           </div>

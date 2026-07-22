@@ -4,23 +4,84 @@
 
 ---
 
+## Qué puedes hacer con la aplicación
+
+Esta sección es tu **tutorial de inicio**. Resume para qué sirve Auto-Company y qué flujos puedes ejecutar desde la interfaz.
+
+### En una frase
+
+Orquestar un **equipo de agentes IA** (investigación, producto, código, QA, growth…) que trabajan en cadena, comparten memoria y pueden ejecutarse **a demanda** o en **modo autónomo** para crear y evolucionar productos en `projects/`.
+
+### Si eres superadmin (plataforma)
+
+| Paso | Dónde | Qué consigues |
+|------|-------|---------------|
+| 1 | `/admin/settings` | Configurar el **LLM compartido** (OpenRouter o TokenLab) y email/GitHub |
+| 2 | `/admin` | Crear **tenants** y clonar plantillas globales |
+| 3 | `/admin/templates` | Editar **agentes, skills y workflows** maestros |
+| 4 | Impersonar tenant | Probar la experiencia como organización |
+
+### Si eres usuario de organización (tenant)
+
+| Paso | Dónde | Qué consigues |
+|------|-------|---------------|
+| 1 | `/workflows` | Ver pipelines y abrir el **editor visual** |
+| 2 | `/workflows/:id` | Conectar agentes, guardar y **ejecutar** un workflow |
+| 3 | `/runs` | Seguir ejecuciones, tokens, coste y logs en vivo |
+| 4 | `/consensus` | Leer y editar la **memoria compartida** entre ciclos |
+| 5 | `/ops` | Ver **portfolio multi-producto** y lanzar ciclos meta |
+| 6 | `/settings` | Activar **meta schedule**, límites y notificaciones |
+
+### Tutorial express (15 minutos)
+
+1. **Entra** con el slug de tu organización en `/login`.
+2. Abre **Workflows** → elige una plantilla → **Abrir editor**.
+3. Pulsa **Ejecutar workflow** (usa el consensus como contexto si está activo).
+4. Ve a **Runs** → abre el run → observa logs SSE y memoria compartida.
+5. Abre **Consensus** → revisa qué decidió el equipo y edita la *Next Action* humana si quieres orientar el siguiente ciclo.
+6. En **Ops**, revisa productos en cartera y el próximo ciclo programado.
+7. (Admin) En **Settings**, activa el **meta schedule** para autonomía continua.
+
+### Qué hace cada área principal
+
+- **Agentes** — Personas IA: prompt, modelo, temperatura y skills asignados.
+- **Skills** — Bloques de conocimiento reutilizables (SEO, devops, pricing…).
+- **Workflows** — Grafo visual: quién actúa después de quién y con qué memoria.
+- **Runs** — Una ejecución concreta con coste, herramientas (shell, git, npm…) y trazabilidad.
+- **Consensus** — Documento vivo (`memories/consensus.md` equivalente) con fase, decisiones y siguiente paso.
+- **Ops** — Vista de **varios productos** a la vez: pipeline, schedules y convergencia.
+- **Ayuda** — Esta guía; usa el menú izquierdo para saltar entre secciones.
+
+### Modos de uso
+
+| Modo | Cuándo usarlo | Cómo |
+|------|---------------|------|
+| **Manual** | Probar un flujo, depurar un agente | Ejecutar workflow desde el editor |
+| **Programado** | Repetir un workflow fijo | Schedule en `/settings` |
+| **Autónomo** | Empresa IA 24/7 multi-producto | Meta schedule + worker en servidor |
+
+> **Consejo:** Empieza siempre en modo manual hasta que un run complete con éxito; luego activa schedules.
+
+---
+
 ## Tabla de contenidos
 
-1. [Primeros pasos](#primeros-pasos)
-2. [Roles y acceso](#roles-y-acceso)
-3. [Mapa de la aplicación](#mapa-de-la-aplicación)
-4. [Agentes y skills](#agentes-y-skills)
-5. [Workflows visuales](#workflows-visuales)
-6. [Ejecuciones (Runs)](#ejecuciones-runs)
-7. [Consensus — memoria compartida](#consensus--memoria-compartida)
-8. [Operaciones multi-producto (Ops)](#operaciones-multi-producto-ops)
-9. [Modo autónomo](#modo-autónomo)
-10. [Configuración del tenant](#configuración-del-tenant)
-11. [Administración de plataforma](#administración-de-plataforma)
-12. [Productos en `projects/`](#productos-en-projects)
-13. [CLI y automatización externa](#cli-y-automatización-externa)
-14. [Despliegue en producción](#despliegue-en-producción)
-15. [Solución de problemas](#solución-de-problemas)
+1. [Qué puedes hacer con la aplicación](#qué-puedes-hacer-con-la-aplicación)
+2. [Primeros pasos](#primeros-pasos)
+3. [Roles y acceso](#roles-y-acceso)
+4. [Mapa de la aplicación](#mapa-de-la-aplicación)
+5. [Agentes y skills](#agentes-y-skills)
+6. [Workflows visuales](#workflows-visuales)
+7. [Ejecuciones (Runs)](#ejecuciones-runs)
+8. [Consensus — memoria compartida](#consensus--memoria-compartida)
+9. [Operaciones multi-producto (Ops)](#operaciones-multi-producto-ops)
+10. [Modo autónomo](#modo-autónomo)
+11. [Configuración del tenant](#configuración-del-tenant)
+12. [Administración de plataforma](#administración-de-plataforma)
+13. [Productos en `projects/`](#productos-en-projects)
+14. [CLI y automatización externa](#cli-y-automatización-externa)
+15. [Despliegue en producción](#despliegue-en-producción)
+16. [Solución de problemas](#solución-de-problemas)
 
 ---
 

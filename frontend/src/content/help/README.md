@@ -19,4 +19,6 @@ Article title and description come from `index.ts` per locale. Body markdown swi
 
 Default route: `/help` redirects to `/help/guia-completa`.
 
+The guide opens on **“Qué puedes hacer con la aplicación”** / **“What you can do with the app”** — a hands-on tutorial section before the table of contents. Sidebar navigation renders each `##` / `###` block as its own panel (`HelpPage` + `lib/markdown-sections.ts`).
+
 UI strings for the help shell (title, breadcrumb) live in `src/i18n/locales/{es,en}/help.ts`.

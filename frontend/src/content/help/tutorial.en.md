@@ -4,23 +4,84 @@
 
 ---
 
+## What you can do with the app
+
+This section is your **getting-started tutorial**. It summarizes what Auto-Company is for and which flows you can run from the UI.
+
+### In one sentence
+
+Orchestrate an **AI agent team** (research, product, code, QA, growth…) that works in sequence, shares memory, and can run **on demand** or in **autonomous mode** to build and evolve products under `projects/`.
+
+### If you are a superadmin (platform)
+
+| Step | Where | What you get |
+|------|-------|--------------|
+| 1 | `/admin/settings` | Configure the **shared LLM** (OpenRouter or TokenLab) plus email/GitHub |
+| 2 | `/admin` | Create **tenants** and clone global templates |
+| 3 | `/admin/templates` | Edit master **agents, skills, and workflows** |
+| 4 | Impersonate tenant | Test the organization experience |
+
+### If you are an organization user (tenant)
+
+| Step | Where | What you get |
+|------|-------|--------------|
+| 1 | `/workflows` | Browse pipelines and open the **visual editor** |
+| 2 | `/workflows/:id` | Connect agents, save, and **execute** a workflow |
+| 3 | `/runs` | Track executions, tokens, cost, and live logs |
+| 4 | `/consensus` | Read and edit **shared memory** between cycles |
+| 5 | `/ops` | View the **multi-product portfolio** and launch meta cycles |
+| 6 | `/settings` | Enable **meta schedule**, limits, and notifications |
+
+### Express tutorial (15 minutes)
+
+1. **Sign in** with your organization slug at `/login`.
+2. Open **Workflows** → pick a template → **Open editor**.
+3. Click **Execute workflow** (uses consensus as context when enabled).
+4. Go to **Runs** → open the run → watch SSE logs and shared memory.
+5. Open **Consensus** → review team decisions and edit the human *Next Action* to steer the next cycle.
+6. In **Ops**, review portfolio products and the next scheduled cycle.
+7. (Admin) In **Settings**, enable the **meta schedule** for continuous autonomy.
+
+### What each main area does
+
+- **Agents** — AI personas: prompt, model, temperature, and assigned skills.
+- **Skills** — Reusable knowledge blocks (SEO, devops, pricing…).
+- **Workflows** — Visual graph: who acts after whom and with which memory.
+- **Runs** — A single execution with cost, tools (shell, git, npm…), and traceability.
+- **Consensus** — Living document (equivalent to `memories/consensus.md`) with phase, decisions, and next step.
+- **Ops** — **Multi-product** view: pipeline, schedules, and convergence.
+- **Help** — This guide; use the left menu to jump between sections.
+
+### Usage modes
+
+| Mode | When to use | How |
+|------|-------------|-----|
+| **Manual** | Test a flow, debug an agent | Execute workflow from the editor |
+| **Scheduled** | Repeat a fixed workflow | Schedule in `/settings` |
+| **Autonomous** | 24/7 multi-product AI company | Meta schedule + server worker |
+
+> **Tip:** Always start in manual mode until a run completes successfully; then enable schedules.
+
+---
+
 ## Table of contents
 
-1. [Getting started](#getting-started)
-2. [Roles and access](#roles-and-access)
-3. [Application map](#application-map)
-4. [Agents and skills](#agents-and-skills)
-5. [Visual workflows](#visual-workflows)
-6. [Execution runs](#execution-runs)
-7. [Consensus — shared memory](#consensus--shared-memory)
-8. [Multi-product operations (Ops)](#multi-product-operations-ops)
-9. [Autonomous mode](#autonomous-mode)
-10. [Tenant configuration](#tenant-configuration)
-11. [Platform administration](#platform-administration)
-12. [Products in `projects/`](#products-in-projects)
-13. [CLI and external automation](#cli-and-external-automation)
-14. [Production deployment](#production-deployment)
-15. [Troubleshooting](#troubleshooting)
+1. [What you can do with the app](#what-you-can-do-with-the-app)
+2. [Getting started](#getting-started)
+3. [Roles and access](#roles-and-access)
+4. [Application map](#application-map)
+5. [Agents and skills](#agents-and-skills)
+6. [Visual workflows](#visual-workflows)
+7. [Execution runs](#execution-runs)
+8. [Consensus — shared memory](#consensus--shared-memory)
+9. [Multi-product operations (Ops)](#multi-product-operations-ops)
+10. [Autonomous mode](#autonomous-mode)
+11. [Tenant configuration](#tenant-configuration)
+12. [Platform administration](#platform-administration)
+13. [Products in `projects/`](#products-in-projects)
+14. [CLI and external automation](#cli-and-external-automation)
+15. [Production deployment](#production-deployment)
+16. [Troubleshooting](#troubleshooting)
 
 ---
 

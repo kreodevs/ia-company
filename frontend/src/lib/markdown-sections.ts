@@ -109,7 +109,14 @@ export function resolveSectionContent(
   return section?.content ?? parsed.intro;
 }
 
+export function getTutorialSection(sections: HelpDocSection[]): HelpDocSection | undefined {
+  return sections.find((section) => section.level === 2 && !isTocHeading(section.title));
+}
+
 export function getDefaultSectionId(parsed: ParsedHelpDocument): string {
+  const tutorial = getTutorialSection(parsed.sections);
+  if (tutorial) return tutorial.id;
+
   const toc = getTocSection(parsed.sections);
   if (toc) return toc.id;
 

@@ -17,12 +17,12 @@ const ARTICLE_META: Record<
 > = {
   es: {
     title: "Guía completa",
-    description: "Tutorial de uso: roles, workflows, autonomía multi-producto y operación.",
+    description: "Tutorial de inicio: qué puedes hacer, roles, workflows, autonomía y operación.",
     content: tutorialMdEs,
   },
   en: {
     title: "Complete guide",
-    description: "Usage tutorial: roles, workflows, multi-product autonomy, and operations.",
+    description: "Getting-started tutorial: what you can do, roles, workflows, autonomy, and operations.",
     content: tutorialMdEn,
   },
 };

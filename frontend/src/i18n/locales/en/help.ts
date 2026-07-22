@@ -6,8 +6,10 @@ export const help = {
   articlesHeading: "Articles",
   sections: "In this article",
   introduction: "Introduction",
+  tutorialStart: "What you can do (tutorial)",
   tableOfContents: "Table of contents",
   backToToc: "Back to index",
+  backToTutorial: "Back to tutorial",
   article: {
     slug: "guia-completa",
     title: "Complete guide",
