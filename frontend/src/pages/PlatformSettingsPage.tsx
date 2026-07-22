@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
 
 export default function PlatformSettingsPage() {
   const { t } = useTranslation();
@@ -34,20 +36,20 @@ export default function PlatformSettingsPage() {
   };
 
   if (!settings) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("admin.platformSettings.loading")}</p>;
+    return <PageLoading message={t("admin.platformSettings.loading")} />;
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <Link to="/admin" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
-          ← {t("nav.admin")}
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold">{t("admin.platformSettings.title")}</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {t("admin.platformSettings.subtitle")}
-        </p>
-      </div>
+      <PageHeader
+        eyebrow={
+          <Link to="/admin" className="interactive text-[var(--color-primary)] hover:underline">
+            ← {t("nav.admin")}
+          </Link>
+        }
+        title={t("admin.platformSettings.title")}
+        subtitle={t("admin.platformSettings.subtitle")}
+      />
 
       {message && (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
@@ -55,7 +57,7 @@ export default function PlatformSettingsPage() {
         </p>
       )}
 
-      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.general.title")}</h2>
         <label className="block text-sm">
           {t("admin.platformSettings.general.publicUrl")}
@@ -114,7 +116,7 @@ export default function PlatformSettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.defaultLlm.title")}</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block text-sm">
@@ -216,7 +218,7 @@ export default function PlatformSettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.email.title")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
@@ -240,7 +242,7 @@ export default function PlatformSettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
         <h2 className="font-semibold">{t("admin.platformSettings.github.title")}</h2>
         <label className="block text-sm">
           {t("admin.platformSettings.github.token")}

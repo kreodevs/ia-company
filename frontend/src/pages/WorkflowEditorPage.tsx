@@ -3,6 +3,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Card from "../components/ui/Card";
 
 export default function WorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -86,53 +91,57 @@ export default function WorkflowEditorPage() {
   };
 
   if (!workflow) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("workflows.list.loadingOne")}</p>;
+    return <PageLoading message={t("workflows.list.loadingOne")} />;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <Link to="/workflows" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
+    <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
+      <PageHeader
+        eyebrow={
+          <Link to="/workflows" className="interactive text-[var(--color-primary)] hover:underline">
             ← {t("nav.workflows")}
           </Link>
-          <h1 className="mt-1 text-2xl font-bold">{workflow.name}</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">{workflow.description}</p>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:max-w-md">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={useConsensus}
-              onChange={(e) => setUseConsensus(e.target.checked)}
-            />
-            {t("workflows.editor.loadSyncConsensus")}
-          </label>
-          <label className="block text-sm">
-            {useConsensus ? t("workflows.editor.nextActionOverride") : t("workflows.editor.taskMemorySeed")}
-            <input
-              className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
-              value={taskOverride}
-              onChange={(e) => setTaskOverride(e.target.value)}
-              placeholder={consensus?.nextAction ?? t("workflows.editor.nextActionPlaceholder")}
-            />
-          </label>
-          {useConsensus && consensus?.content && (
-            <p className="line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
-              {t("workflows.editor.consensusPreview", { preview: consensus.content.slice(0, 120) })}
-            </p>
-          )}
-          <button
-            onClick={() => void handleExecute()}
-            disabled={executing}
-            className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
-          >
-            {executing ? t("common.starting") : t("workflows.editor.execute")}
-          </button>
-        </div>
-      </div>
+        }
+        title={workflow.name}
+        subtitle={workflow.description ?? undefined}
+      />
 
-      <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+      <Card className="space-y-3">
+        <label className="flex min-h-11 items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={useConsensus}
+            onChange={(e) => setUseConsensus(e.target.checked)}
+            className="size-4 shrink-0"
+          />
+          {t("workflows.editor.loadSyncConsensus")}
+        </label>
+        <Input
+          label={
+            useConsensus ? t("workflows.editor.nextActionOverride") : t("workflows.editor.taskMemorySeed")
+          }
+          value={taskOverride}
+          onChange={(e) => setTaskOverride(e.target.value)}
+          placeholder={consensus?.nextAction ?? t("workflows.editor.nextActionPlaceholder")}
+        />
+        {useConsensus && consensus?.content && (
+          <p className="line-clamp-2 text-xs leading-relaxed text-[var(--color-muted-foreground)]">
+            {t("workflows.editor.consensusPreview", { preview: consensus.content.slice(0, 120) })}
+          </p>
+        )}
+        <Button
+          onClick={() => void handleExecute()}
+          disabled={executing}
+          fullWidthMobile
+          className="w-full bg-[var(--color-accent)] text-black hover:opacity-90 sm:w-auto"
+        >
+          {executing ? t("common.starting") : t("workflows.editor.execute")}
+        </Button>
+      </Card>
+
+      <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
+        <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+      </div>
     </div>
   );
 }

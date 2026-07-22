@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TenantConsensus } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
 
 export default function ConsensusPage() {
   const { t } = useTranslation();
@@ -32,62 +38,57 @@ export default function ConsensusPage() {
     }
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("consensus.loading")}</p>;
+  if (loading) return <PageLoading message={t("consensus.loading")} />;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("consensus.title")}</h1>
-        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t("consensus.subtitle")}</p>
-      </div>
+      <PageHeader title={t("consensus.title")} subtitle={t("consensus.subtitle")} />
 
       <div className="flex flex-wrap items-center gap-3">
         {record?.companyPhase && (
-          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-muted)] px-3 py-1 text-xs capitalize">
+          <Badge>
             {t("phase.label", {
               phase: t(`phase.${record.companyPhase}`, { defaultValue: record.companyPhase }),
             })}
-          </span>
+          </Badge>
         )}
-        <Link to="/ops" className="text-sm text-[var(--color-primary)] hover:underline">
+        <Link
+          to="/ops"
+          className="interactive text-sm text-[var(--color-primary)] hover:underline"
+        >
           {t("consensus.viewOpsDashboard")}
         </Link>
       </div>
 
-      <label className="block space-y-1 text-sm">
-        <span className="font-medium">{t("consensus.nextAction")}</span>
-        <input
+      <Card className="space-y-4">
+        <Input
+          label={t("consensus.nextAction")}
           value={nextAction}
           onChange={(e) => setNextAction(e.target.value)}
           placeholder={t("consensus.nextActionPlaceholder")}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
         />
-      </label>
 
-      <label className="block space-y-1 text-sm">
-        <span className="font-medium">{t("consensus.document")}</span>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={20}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 font-mono text-xs"
-        />
-      </label>
+        <label className="block space-y-1.5 text-sm">
+          <span className="font-medium">{t("consensus.document")}</span>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={20}
+            className="interactive w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 font-mono text-xs sm:py-2"
+          />
+        </label>
 
-      <div className="flex items-center gap-3">
-        <button
-          disabled={saving}
-          onClick={() => void save()}
-          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-        >
-          {saving ? t("common.saving") : t("consensus.saveConsensus")}
-        </button>
-        {record?.updatedAt && (
-          <span className="text-xs text-[var(--color-muted-foreground)]">
-            {t("consensus.lastUpdated", { date: new Date(record.updatedAt).toLocaleString() })}
-          </span>
-        )}
-      </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button disabled={saving} onClick={() => void save()} fullWidthMobile>
+            {saving ? t("common.saving") : t("consensus.saveConsensus")}
+          </Button>
+          {record?.updatedAt && (
+            <span className="text-xs text-[var(--color-muted-foreground)]">
+              {t("consensus.lastUpdated", { date: new Date(record.updatedAt).toLocaleString() })}
+            </span>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }

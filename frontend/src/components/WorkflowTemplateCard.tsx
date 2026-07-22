@@ -6,6 +6,7 @@ import {
   workflowPipelineSteps,
 } from "../lib/workflow-display";
 import type { Workflow } from "../lib/api";
+import Button from "./ui/Button";
 
 interface WorkflowTemplateCardProps {
   workflow: Workflow;
@@ -26,7 +27,7 @@ export default function WorkflowTemplateCard({
   const title = formatWorkflowTitle(workflow.name);
 
   return (
-    <article className="flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 transition hover:border-[var(--color-primary)]/40 hover:shadow-sm">
+    <article className="interactive flex h-full flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 transition hover:border-[var(--color-primary)]/40 hover:shadow-md hover:shadow-black/10">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate font-semibold">{title}</h3>
@@ -77,10 +78,10 @@ export default function WorkflowTemplateCard({
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-4">
+      <div className="mt-4 flex flex-col gap-3 border-t border-[var(--color-border)] pt-4 sm:flex-row sm:flex-wrap sm:items-center">
         <Link
           to={editorPath}
-          className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition hover:opacity-90"
+          className="interactive inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:min-h-9 sm:w-auto"
         >
           {t("workflows.card.openEditor")}
         </Link>
@@ -90,14 +91,14 @@ export default function WorkflowTemplateCard({
             defaultValue: `${workflow.edges.length} connection${workflow.edges.length === 1 ? "" : "s"}`,
           })}
         </span>
-        <button
-          type="button"
+        <Button
+          variant="destructive"
           disabled={deleting}
           onClick={onDelete}
-          className="ml-auto text-xs text-[var(--color-destructive)] hover:underline disabled:opacity-50"
+          className="w-full sm:ml-auto sm:w-auto"
         >
           {deleting ? t("common.deleting") : t("common.delete")}
-        </button>
+        </Button>
       </div>
     </article>
   );

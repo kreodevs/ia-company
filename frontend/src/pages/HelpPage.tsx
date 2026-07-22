@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import MarkdownDoc from "../components/MarkdownDoc";
+import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
 
 function HelpSidebarLink({
@@ -17,7 +18,7 @@ function HelpSidebarLink({
   return (
     <Link
       to={`/help/${slug}`}
-      className={`block rounded-xl border px-4 py-3 transition ${
+      className={`interactive block rounded-xl border px-4 py-3 transition ${
         active
           ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
           : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-muted-foreground)]/40"
@@ -41,15 +42,9 @@ export default function HelpPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-[var(--color-muted-foreground)]">{t("help.breadcrumb")}</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">{t("help.title")}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--color-muted-foreground)]">
-          {t("help.subtitle")}
-        </p>
-      </div>
+      <PageHeader eyebrow={t("help.breadcrumb")} title={t("help.title")} subtitle={t("help.subtitle")} />
 
-      <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
         <aside className="space-y-2 lg:sticky lg:top-24 lg:self-start">
           <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
             {t("help.articles")}
@@ -65,7 +60,7 @@ export default function HelpPage() {
           ))}
         </aside>
 
-        <div className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-6 py-8 sm:px-10">
+        <div className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8">
           <MarkdownDoc content={article.content} />
         </div>
       </div>

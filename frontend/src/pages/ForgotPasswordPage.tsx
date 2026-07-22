@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -26,41 +29,44 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center px-4">
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 sm:p-8">
-        <h1 className="text-xl font-bold">{t("auth.forgotPassword.title")}</h1>
-        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t("auth.forgotPassword.subtitle")}</p>
+    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-md flex-col justify-center px-1 sm:px-4">
+      <Card className="shadow-lg shadow-black/20">
+        <h1 className="text-xl font-bold sm:text-2xl">{t("auth.forgotPassword.title")}</h1>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+          {t("auth.forgotPassword.subtitle")}
+        </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
-          <input
-            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-            placeholder={t("auth.login.organizationSlug")}
+          <Input
+            label={t("auth.login.tenantSlug")}
             value={tenantSlug}
             onChange={(e) => setTenantSlug(e.target.value)}
+            placeholder={t("auth.forgotPassword.tenantSlugPlaceholder")}
             required
           />
-          <input
+          <Input
+            label={t("common.email")}
             type="email"
-            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-            placeholder={t("common.email")}
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder={t("auth.forgotPassword.emailPlaceholder")}
             required
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-[var(--color-primary)] py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading} fullWidthMobile className="w-full">
             {loading ? t("common.sending") : t("auth.forgotPassword.sendResetLink")}
-          </button>
+          </Button>
         </form>
-        {message && <p className="mt-4 text-sm text-[var(--color-muted-foreground)]">{message}</p>}
+        {message && (
+          <p className="mt-4 rounded-lg bg-[var(--color-muted)]/40 px-3 py-2.5 text-sm text-[var(--color-muted-foreground)]">
+            {message}
+          </p>
+        )}
         <p className="mt-6 text-center text-sm">
-          <Link to="/login" className="text-[var(--color-primary)] hover:underline">
+          <Link to="/login" className="interactive text-[var(--color-primary)] hover:underline">
             {t("auth.forgotPassword.backToLogin")}
           </Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 }

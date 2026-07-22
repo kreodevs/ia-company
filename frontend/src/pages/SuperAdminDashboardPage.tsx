@@ -5,6 +5,12 @@ import TenantImpersonationSelect from "../components/TenantImpersonationSelect";
 import { useAuth } from "../context/AuthContext";
 import { api, type AdminDashboard } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import StatCard from "../components/ui/StatCard";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function SuperAdminDashboardPage() {
   const { superAdmin, logout, activeTenant, impersonate } = useAuth();
@@ -106,31 +112,26 @@ export default function SuperAdminDashboardPage() {
   }
 
   if (!dashboard) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("admin.dashboard.loading")}</p>;
+    return <PageLoading message={t("admin.dashboard.loading")} />;
   }
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t("admin.dashboard.title")}</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {t("common.signedInAs", {
-              name: superAdmin?.name,
-              email: superAdmin?.email,
-            })}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <TenantImpersonationSelect />
-          <button
-            onClick={() => void logout()}
-            className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm"
-          >
-            {t("common.logout")}
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title={t("admin.dashboard.title")}
+        subtitle={t("common.signedInAs", {
+          name: superAdmin?.name,
+          email: superAdmin?.email,
+        })}
+        actions={
+          <>
+            <TenantImpersonationSelect />
+            <Button variant="secondary" onClick={() => void logout()} fullWidthMobile>
+              {t("common.logout")}
+            </Button>
+          </>
+        }
+      />
 
       {needTenant && !activeTenant && (
         <div className="rounded-lg border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-4 py-3 text-sm">
@@ -139,24 +140,14 @@ export default function SuperAdminDashboardPage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          [t("admin.dashboard.stats.tenants"), dashboard.stats.tenants],
-          [t("admin.dashboard.stats.tenantAgents"), dashboard.stats.tenantAgents],
-          [t("admin.dashboard.stats.tenantWorkflows"), dashboard.stats.tenantWorkflows],
-          [t("admin.dashboard.stats.totalRuns"), dashboard.stats.runs],
-        ].map(([label, value]) => (
-          <div
-            key={label as string}
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4"
-          >
-            <div className="text-xs uppercase text-[var(--color-muted-foreground)]">{label}</div>
-            <div className="mt-1 text-2xl font-bold">{value as number}</div>
-          </div>
-        ))}
+        <StatCard label={t("admin.dashboard.stats.tenants")} value={dashboard.stats.tenants} />
+        <StatCard label={t("admin.dashboard.stats.tenantAgents")} value={dashboard.stats.tenantAgents} />
+        <StatCard label={t("admin.dashboard.stats.tenantWorkflows")} value={dashboard.stats.tenantWorkflows} />
+        <StatCard label={t("admin.dashboard.stats.totalRuns")} value={dashboard.stats.runs} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <Card>
           <h2 className="font-semibold">{t("admin.dashboard.platformTemplates.title")}</h2>
           <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
             {t("admin.dashboard.platformTemplates.subtitle")}
@@ -178,63 +169,61 @@ export default function SuperAdminDashboardPage() {
               })}
             </li>
           </ul>
-          <Link
-            to="/admin/settings"
-            className="mt-4 mr-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
-          >
-            {t("admin.dashboard.platformTemplates.platformSettingsLink")}
-          </Link>
-          <Link
-            to="/admin/templates"
-            className="mt-4 inline-block text-sm text-[var(--color-primary)] hover:underline"
-          >
-            {t("admin.dashboard.platformTemplates.manageTemplatesLink")}
-          </Link>
-        </section>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <Link
+              to="/admin/settings"
+              className="interactive text-sm text-[var(--color-primary)] hover:underline"
+            >
+              {t("admin.dashboard.platformTemplates.platformSettingsLink")}
+            </Link>
+            <Link
+              to="/admin/templates"
+              className="interactive text-sm text-[var(--color-primary)] hover:underline"
+            >
+              {t("admin.dashboard.platformTemplates.manageTemplatesLink")}
+            </Link>
+          </div>
+        </Card>
 
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <Card>
           <h2 className="font-semibold">{t("admin.dashboard.createTenant.title")}</h2>
           <form onSubmit={(e) => void handleCreateTenant(e)} className="mt-4 space-y-3">
-            <input
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+            <Input
               placeholder={t("admin.dashboard.createTenant.organizationName")}
               value={tenantName}
               onChange={(e) => setTenantName(e.target.value)}
               required
             />
-            <input
+            <Input
               type="email"
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               placeholder={t("admin.dashboard.createTenant.ownerEmail")}
               value={ownerEmail}
               onChange={(e) => setOwnerEmail(e.target.value)}
             />
-            <input
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+            <Input
               placeholder={t("admin.dashboard.createTenant.ownerName")}
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
             />
-            <input
+            <Input
               type="password"
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               placeholder={t("admin.dashboard.createTenant.ownerPassword")}
               value={ownerPassword}
               onChange={(e) => setOwnerPassword(e.target.value)}
             />
-            <button
-              type="submit"
-              disabled={creating}
-              className="w-full rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-            >
+            <Button type="submit" disabled={creating} fullWidthMobile className="w-full">
               {creating ? t("common.creating") : t("admin.dashboard.createTenant.createTenant")}
-            </button>
+            </Button>
           </form>
-          {error && <p className="mt-2 text-sm text-[var(--color-destructive)]">{error}</p>}
-        </section>
+          {error && (
+            <p className="mt-2 text-sm text-[var(--color-destructive)]" role="alert">
+              {error}
+            </p>
+          )}
+        </Card>
       </div>
 
-      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <Card>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-semibold">{t("admin.dashboard.tenants.title")}</h2>
           <div className="flex items-center gap-3 text-sm">
@@ -256,36 +245,80 @@ export default function SuperAdminDashboardPage() {
             </label>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-[var(--color-muted-foreground)]">
+        <ul className="grid gap-3 md:hidden">
+          {dashboard.tenants.map((tenant) => (
+            <li
+              key={tenant.id}
+              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4"
+            >
+              <div className="font-medium">{tenant.name}</div>
+              <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">{tenant.slug}</div>
+              <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <dt className="text-[var(--color-muted-foreground)]">{t("admin.dashboard.tenants.columns.users")}</dt>
+                  <dd className="mt-0.5 font-medium">{tenant._count?.users ?? 0}</dd>
+                </div>
+                <div>
+                  <dt className="text-[var(--color-muted-foreground)]">{t("nav.workflows")}</dt>
+                  <dd className="mt-0.5 font-medium">{tenant._count?.workflows ?? 0}</dd>
+                </div>
+              </dl>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <Button
+                  variant="secondary"
+                  fullWidthMobile
+                  className="w-full sm:w-auto"
+                  onClick={() => void impersonate(tenant.id).then(() => navigate("/workflows"))}
+                >
+                  {t("admin.dashboard.tenants.impersonate")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={syncingTenantId === tenant.id}
+                  fullWidthMobile
+                  className="w-full sm:w-auto"
+                  onClick={() => void handleSyncTenant(tenant.id, tenant.name)}
+                >
+                  {syncingTenantId === tenant.id
+                    ? t("common.syncing")
+                    : t("admin.dashboard.tenants.syncTemplates")}
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="table-scroll hidden md:block">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="pb-2">{t("common.name")}</th>
-                <th className="pb-2">{t("admin.dashboard.tenants.columns.slug")}</th>
-                <th className="pb-2">{t("admin.dashboard.tenants.columns.users")}</th>
-                <th className="pb-2">{t("nav.workflows")}</th>
-                <th className="pb-2"></th>
+                <th className="px-4 py-3">{t("common.name")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.tenants.columns.slug")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.tenants.columns.users")}</th>
+                <th className="px-4 py-3">{t("nav.workflows")}</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {dashboard.tenants.map((tenant) => (
-                <tr key={tenant.id} className="border-t border-[var(--color-border)]">
-                  <td className="py-2 font-medium">{tenant.name}</td>
-                  <td className="py-2 text-[var(--color-muted-foreground)]">{tenant.slug}</td>
-                  <td className="py-2">{tenant._count?.users ?? 0}</td>
-                  <td className="py-2">{tenant._count?.workflows ?? 0}</td>
-                  <td className="py-2">
+                <tr key={tenant.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-muted)]/30">
+                  <td className="px-4 py-3 font-medium">{tenant.name}</td>
+                  <td className="px-4 py-3 text-[var(--color-muted-foreground)]">{tenant.slug}</td>
+                  <td className="px-4 py-3">{tenant._count?.users ?? 0}</td>
+                  <td className="px-4 py-3">{tenant._count?.workflows ?? 0}</td>
+                  <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-3">
                       <button
+                        type="button"
                         onClick={() => void impersonate(tenant.id).then(() => navigate("/workflows"))}
-                        className="text-[var(--color-primary)] hover:underline"
+                        className="interactive text-[var(--color-primary)] hover:underline"
                       >
                         {t("admin.dashboard.tenants.impersonate")}
                       </button>
                       <button
+                        type="button"
                         disabled={syncingTenantId === tenant.id}
                         onClick={() => void handleSyncTenant(tenant.id, tenant.name)}
-                        className="text-[var(--color-muted-foreground)] hover:underline disabled:opacity-50"
+                        className="interactive text-[var(--color-muted-foreground)] hover:underline disabled:opacity-50"
                       >
                         {syncingTenantId === tenant.id
                           ? t("common.syncing")
@@ -298,36 +331,36 @@ export default function SuperAdminDashboardPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+      <Card>
         <h2 className="mb-4 font-semibold">{t("admin.dashboard.auditLog.title")}</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-[var(--color-muted-foreground)]">
+        <div className="table-scroll">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="pb-2">{t("admin.dashboard.auditLog.columns.time")}</th>
-                <th className="pb-2">{t("admin.dashboard.auditLog.columns.action")}</th>
-                <th className="pb-2">{t("admin.dashboard.auditLog.columns.actor")}</th>
-                <th className="pb-2">{t("admin.dashboard.auditLog.columns.tenant")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.auditLog.columns.time")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.auditLog.columns.action")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.auditLog.columns.actor")}</th>
+                <th className="px-4 py-3">{t("admin.dashboard.auditLog.columns.tenant")}</th>
               </tr>
             </thead>
             <tbody>
               {auditLogs.map((log) => (
-                <tr key={log.id} className="border-t border-[var(--color-border)]">
-                  <td className="py-2 text-xs text-[var(--color-muted-foreground)]">
+                <tr key={log.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-muted)]/30">
+                  <td className="px-4 py-3 text-xs text-[var(--color-muted-foreground)]">
                     {new Date(log.createdAt).toLocaleString()}
                   </td>
-                  <td className="py-2 font-mono text-xs">{log.action}</td>
-                  <td className="py-2">{log.actorEmail}</td>
-                  <td className="py-2 text-[var(--color-muted-foreground)]">
+                  <td className="px-4 py-3 font-mono text-xs">{log.action}</td>
+                  <td className="px-4 py-3">{log.actorEmail}</td>
+                  <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
                     {log.tenantId ?? "—"}
                   </td>
                 </tr>
               ))}
               {auditLogs.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="py-4 text-[var(--color-muted-foreground)]">
+                  <td colSpan={4} className="px-4 py-6 text-[var(--color-muted-foreground)]">
                     {t("admin.dashboard.auditLog.empty")}
                   </td>
                 </tr>
@@ -335,7 +368,7 @@ export default function SuperAdminDashboardPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

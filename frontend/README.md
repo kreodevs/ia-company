@@ -46,9 +46,21 @@ Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`
 
 Workflow execute loads tenant **consensus** by default and syncs results back on completion.
 
+## Responsive UX
+
+Shared UI primitives live in `src/components/ui/` (`Button`, `Input`, `Card`, `PageHeader`, `PageLoading`, `EmptyState`, `StatCard`, `StatusBadge`, `Badge`). Global layout tokens and accessibility helpers are in `src/index.css` (`.page-shell`, `.table-scroll`, skip link, focus-visible, `prefers-reduced-motion`).
+
+| Breakpoint | Navigation | Data tables |
+|------------|------------|-------------|
+| **Mobile** (`< md`) | Hamburger drawer with section labels | Card lists (runs, tenants, users) |
+| **Tablet** (`md`–`xl`) | Same drawer; wider content gutters | Horizontal scroll tables where needed |
+| **Desktop** (`xl+`) | Full horizontal nav in `AppHeader` | Full tables with sticky header styling |
+
+Touch targets use `min-h-11` (44px) on primary controls; forms stack vertically on small screens and align horizontally from `sm`/`md` up.
+
 ## Components
 
-- `AppHeader` — responsive top navigation (horizontal on `md+`, hamburger drawer on mobile/tablet)
+- `AppHeader` — sticky header; full nav on `xl+`, hamburger drawer with overlay on mobile/tablet
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
 - `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/workflows` and admin `/admin/templates`)

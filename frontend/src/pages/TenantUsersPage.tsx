@@ -3,6 +3,30 @@ import { useTranslation } from "react-i18next";
 import { api, type TenantUser, type TenantUserRole } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { translateApiError } from "../lib/translate-error";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
+
+function UserCard({ user }: { user: TenantUser }) {
+  const { t } = useTranslation();
+  return (
+    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-medium">{user.name}</p>
+          <p className="mt-1 truncate text-xs text-[var(--color-muted-foreground)]">{user.email}</p>
+        </div>
+        <Badge>{t(`team.${user.role}`, { defaultValue: user.role })}</Badge>
+      </div>
+      <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
+        {t("team.columns.active")}: {user.isActive ? t("common.yes") : t("common.no")}
+      </p>
+    </div>
+  );
+}
 
 export default function TenantUsersPage() {
   const { isTenantAdmin, activeTenant } = useAuth();
@@ -45,87 +69,96 @@ export default function TenantUsersPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">
-          {t("team.title", { tenantName: activeTenant?.name ?? "" })}
-        </h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {t("team.subtitle", { slug: activeTenant?.slug ?? "" })}
-        </p>
-      </div>
+      <PageHeader
+        title={t("team.title", { tenantName: activeTenant?.name ?? "" })}
+        subtitle={t("team.subtitle", { slug: activeTenant?.slug ?? "" })}
+      />
 
-      <form
-        onSubmit={(e) => void handleCreate(e)}
-        className="grid gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5 md:grid-cols-2"
-      >
-        <h2 className="md:col-span-2 font-semibold">{t("team.inviteUser")}</h2>
-        <input
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-          placeholder={t("common.email")}
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-          placeholder={t("common.name")}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-          placeholder={t("team.temporaryPassword")}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <select
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-          value={role}
-          onChange={(e) => setRole(e.target.value as TenantUserRole)}
+      <Card>
+        <form
+          onSubmit={(e) => void handleCreate(e)}
+          className="grid gap-4 md:grid-cols-2"
         >
-          <option value="member">{t("team.member")}</option>
-          <option value="admin">{t("team.admin")}</option>
-        </select>
-        <button
-          type="submit"
-          className="md:col-span-2 rounded-lg bg-[var(--color-primary)] py-2 text-sm font-medium text-[var(--color-primary-foreground)]"
-        >
-          {t("team.addUser")}
-        </button>
-        {error && (
-          <p className="md:col-span-2 text-sm text-[var(--color-destructive)]">{error}</p>
-        )}
-      </form>
+          <h2 className="md:col-span-2 font-semibold">{t("team.inviteUser")}</h2>
+          <Input
+            placeholder={t("common.email")}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            placeholder={t("common.name")}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <Input
+            placeholder={t("team.temporaryPassword")}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <label className="block space-y-1.5 text-sm">
+            <span className="font-medium">{t("team.columns.role")}</span>
+            <select
+              className="interactive w-full min-h-11 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 text-sm sm:min-h-9 sm:py-2"
+              value={role}
+              onChange={(e) => setRole(e.target.value as TenantUserRole)}
+            >
+              <option value="member">{t("team.member")}</option>
+              <option value="admin">{t("team.admin")}</option>
+            </select>
+          </label>
+          <div className="md:col-span-2">
+            <Button type="submit" fullWidthMobile className="w-full md:w-auto">
+              {t("team.addUser")}
+            </Button>
+          </div>
+          {error && (
+            <p className="md:col-span-2 text-sm text-[var(--color-destructive)]" role="alert">
+              {error}
+            </p>
+          )}
+        </form>
+      </Card>
 
       {loading ? (
-        <p className="text-[var(--color-muted-foreground)]">{t("common.loading")}</p>
+        <PageLoading message={t("common.loading")} />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
-          <table className="w-full min-w-[480px] text-left text-sm">
-            <thead>
-              <tr className="text-[var(--color-muted-foreground)]">
-                <th className="pb-2">{t("common.name")}</th>
-                <th className="pb-2">{t("common.email")}</th>
-                <th className="pb-2">{t("team.columns.role")}</th>
-                <th className="pb-2">{t("team.columns.active")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.id} className="border-t border-[var(--color-border)]">
-                  <td className="py-2">{u.name}</td>
-                  <td className="py-2">{u.email}</td>
-                  <td className="py-2 capitalize">{t(`team.${u.role}`, { defaultValue: u.role })}</td>
-                  <td className="py-2">{u.isActive ? t("common.yes") : t("common.no")}</td>
+        <>
+          <ul className="grid gap-3 md:hidden">
+            {users.map((u) => (
+              <li key={u.id}>
+                <UserCard user={u} />
+              </li>
+            ))}
+          </ul>
+
+          <div className="table-scroll hidden md:block">
+            <table className="w-full min-w-[480px] text-left text-sm">
+              <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                <tr>
+                  <th className="px-4 py-3">{t("common.name")}</th>
+                  <th className="px-4 py-3">{t("common.email")}</th>
+                  <th className="px-4 py-3">{t("team.columns.role")}</th>
+                  <th className="px-4 py-3">{t("team.columns.active")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-muted)]/30">
+                    <td className="px-4 py-3">{u.name}</td>
+                    <td className="px-4 py-3">{u.email}</td>
+                    <td className="px-4 py-3">{t(`team.${u.role}`, { defaultValue: u.role })}</td>
+                    <td className="px-4 py-3">{u.isActive ? t("common.yes") : t("common.no")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

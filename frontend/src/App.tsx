@@ -33,9 +33,9 @@ function AppShell() {
   useDocumentLang();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {authenticated && <AppHeader />}
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+      <main id="main-content" className="page-shell">
         <Routes>
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />

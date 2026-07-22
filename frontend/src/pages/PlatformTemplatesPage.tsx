@@ -5,6 +5,8 @@ import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import { api, type Agent, type Skill, type TenantSummary, type Workflow } from "../lib/api";
 import { formatWorkflowTitle } from "../lib/workflow-display";
 import { translateApiError } from "../lib/translate-error";
+import PageHeader from "../components/ui/PageHeader";
+import Button from "../components/ui/Button";
 
 type Tab = "agents" | "skills" | "workflows";
 
@@ -235,24 +237,20 @@ export default function PlatformTemplatesPage() {
 
   return (
     <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link to="/admin" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
+      <PageHeader
+        eyebrow={
+          <Link to="/admin" className="interactive text-[var(--color-primary)] hover:underline">
             ← {t("nav.admin")}
           </Link>
-          <h1 className="mt-1 text-2xl font-bold">{t("admin.templates.title")}</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {t("admin.templates.subtitle")}
-          </p>
-        </div>
-        <button
-          disabled={reseedLoading}
-          onClick={() => void reseed()}
-          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-        >
-          {reseedLoading ? t("common.reseeding") : t("admin.templates.reseed")}
-        </button>
-      </div>
+        }
+        title={t("admin.templates.title")}
+        subtitle={t("admin.templates.subtitle")}
+        actions={
+          <Button disabled={reseedLoading} onClick={() => void reseed()} fullWidthMobile>
+            {reseedLoading ? t("common.reseeding") : t("admin.templates.reseed")}
+          </Button>
+        }
+      />
 
       <div className="shrink-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
         <h2 className="font-semibold">{t("admin.templates.syncSection.title")}</h2>

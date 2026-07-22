@@ -2,24 +2,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type OpsPortfolio, type OpsNextRun } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import StatCard from "../components/ui/StatCard";
+import Badge from "../components/ui/Badge";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 function PhaseBadge({ phase }: { phase: string }) {
   const { t } = useTranslation();
-  return (
-    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-0.5 text-xs capitalize">
-      {t(`phase.${phase}`, { defaultValue: phase })}
-    </span>
-  );
-}
-
-function StatCard({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
-  return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-      <div className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">{label}</div>
-      <div className="mt-1 text-2xl font-semibold">{value}</div>
-      {hint && <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">{hint}</div>}
-    </div>
-  );
+  return <Badge>{t(`phase.${phase}`, { defaultValue: phase })}</Badge>;
 }
 
 export default function OpsPage() {
@@ -60,7 +52,7 @@ export default function OpsPage() {
   };
 
   if (loading) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("ops.loading")}</p>;
+    return <PageLoading message={t("ops.loading")} />;
   }
 
   if (!portfolio) {
@@ -71,35 +63,31 @@ export default function OpsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t("ops.title")}</h1>
-          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{t("ops.subtitle")}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {metaSchedule && (
-            <button
-              disabled={runningMeta}
-              onClick={() => void runMetaNow()}
-              className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+      <PageHeader
+        title={t("ops.title")}
+        subtitle={t("ops.subtitle")}
+        actions={
+          <>
+            {metaSchedule && (
+              <Button disabled={runningMeta} onClick={() => void runMetaNow()} fullWidthMobile>
+                {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
+              </Button>
+            )}
+            <Link
+              to="/consensus"
+              className="interactive inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm font-medium sm:min-h-9 sm:w-auto"
             >
-              {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
-            </button>
-          )}
-          <Link
-            to="/consensus"
-            className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
-          >
-            {t("nav.consensus")}
-          </Link>
-          <Link
-            to="/settings"
-            className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
-          >
-            {t("ops.schedulesLink")}
-          </Link>
-        </div>
-      </div>
+              {t("nav.consensus")}
+            </Link>
+            <Link
+              to="/settings"
+              className="interactive inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm font-medium sm:min-h-9 sm:w-auto"
+            >
+              {t("ops.schedulesLink")}
+            </Link>
+          </>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -120,7 +108,7 @@ export default function OpsPage() {
       </section>
 
       {(portfolio.nextAction || nextRun) && (
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+        <Card>
           <h2 className="font-semibold">{t("ops.nextAction.title")}</h2>
           {portfolio.nextAction && <p className="mt-2 text-sm">{portfolio.nextAction}</p>}
           {nextRun && (
@@ -146,7 +134,7 @@ export default function OpsPage() {
               })}
             </p>
           )}
-        </section>
+        </Card>
       )}
 
       <section className="grid gap-6 lg:grid-cols-2">

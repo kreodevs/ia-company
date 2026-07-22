@@ -9,6 +9,8 @@ import {
   type TenantUsageLimits,
   type Workflow,
 } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -108,12 +110,12 @@ export default function SettingsPage() {
     window.location.href = `/runs/${runId}`;
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("settings.loading")}</p>;
+  if (loading) return <PageLoading message={t("settings.loading")} />;
 
   return (
     <div className="space-y-10">
+      <PageHeader title={t("settings.title")} />
       <section className="space-y-4">
-        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
         <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm">

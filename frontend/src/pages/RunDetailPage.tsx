@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import StatusBadge from "../components/ui/StatusBadge";
 
 interface StreamEvent {
   type: string;
@@ -38,7 +43,7 @@ export default function RunDetailPage() {
   }, [events]);
 
   if (!run) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("runs.list.loadingOne")}</p>;
+    return <PageLoading message={t("runs.list.loadingOne")} />;
   }
 
   const canCancel = run.status === "PENDING" || run.status === "RUNNING";
@@ -54,40 +59,42 @@ export default function RunDetailPage() {
     }
   };
 
+  const statusLabel = t(`status.${run.status}`, { defaultValue: run.status });
+
   return (
     <div className="space-y-6">
-      <div>
-        <Link to="/runs" className="text-sm text-[var(--color-muted-foreground)] hover:underline">
-          ← {t("nav.runs")}
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold">{run.workflow?.name ?? t("runs.detail.defaultTitle")}</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {t("runs.detail.statusLine", {
-            status: t(`status.${run.status}`, { defaultValue: run.status }),
-            tokens: run.totalTokens.toLocaleString(),
-            cost: run.totalCostUsd.toFixed(4),
-          })}
-        </p>
-        {canCancel && (
-          <button
-            disabled={cancelling}
-            onClick={() => void cancelRun()}
-            className="mt-3 rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)] disabled:opacity-50"
-          >
-            {cancelling ? t("common.cancelling") : t("runs.detail.cancelRun")}
-          </button>
-        )}
-      </div>
+      <PageHeader
+        eyebrow={
+          <Link to="/runs" className="interactive text-[var(--color-primary)] hover:underline">
+            ← {t("nav.runs")}
+          </Link>
+        }
+        title={run.workflow?.name ?? t("runs.detail.defaultTitle")}
+        subtitle={t("runs.detail.statusLine", {
+          status: statusLabel,
+          tokens: run.totalTokens.toLocaleString(),
+          cost: run.totalCostUsd.toFixed(4),
+        })}
+        actions={
+          canCancel ? (
+            <Button variant="destructive" disabled={cancelling} onClick={() => void cancelRun()} fullWidthMobile>
+              {cancelling ? t("common.cancelling") : t("runs.detail.cancelRun")}
+            </Button>
+          ) : (
+            <StatusBadge status={run.status} label={statusLabel} />
+          )
+        }
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+        <Card>
           <h2 className="mb-3 font-semibold">{t("runs.detail.sharedMemory")}</h2>
           <pre className="max-h-96 overflow-auto rounded-lg bg-[var(--color-background)] p-3 text-xs">
             {JSON.stringify(run.sharedMemory, null, 2)}
           </pre>
-        </section>
+        </Card>
 
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+        <Card>
           <h2 className="mb-3 font-semibold">{t("runs.detail.liveLog")}</h2>
           <div ref={logRef} className="max-h-96 space-y-2 overflow-y-auto font-mono text-xs">
             {events.map((ev, i) => (
@@ -128,7 +135,7 @@ export default function RunDetailPage() {
               </div>
             ))}
           </div>
-        </section>
+        </Card>
       </div>
     </div>
   );

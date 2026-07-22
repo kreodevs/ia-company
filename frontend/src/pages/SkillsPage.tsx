@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type Skill } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import EmptyState from "../components/ui/EmptyState";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
 
 export default function SkillsPage() {
   const { t } = useTranslation();
@@ -60,103 +66,94 @@ export default function SkillsPage() {
     await load();
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.skills.loading")}</p>;
+  if (loading) return <PageLoading message={t("workflows.skills.loading")} />;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{t("nav.skills")}</h1>
-          <button
-            onClick={openCreate}
-            className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)]"
-          >
+    <div className="space-y-6">
+      <PageHeader
+        title={t("nav.skills")}
+        actions={
+          <Button onClick={openCreate} fullWidthMobile>
             {t("workflows.skills.newSkill")}
-          </button>
-        </div>
-        <ul className="space-y-2">
-          {skills.map((skill) => (
-            <li key={skill.id}>
-              <button
-                onClick={() => openEdit(skill)}
-                className={`w-full rounded-xl border px-4 py-3 text-left transition ${
-                  selected?.id === skill.id
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                    : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/50"
-                }`}
-              >
-                <div className="font-medium">{skill.name}</div>
-                <div className="line-clamp-1 text-xs text-[var(--color-muted-foreground)]">
-                  {skill.description}
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+          </Button>
+        }
+      />
 
-      <section>
-        {(selected || creating) ? (
-          <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-            <h2 className="font-semibold">
-              {creating ? t("workflows.skills.createSkill") : t("workflows.skills.editSkill")}
-            </h2>
-            <label className="block space-y-1 text-sm">
-              <span>{t("common.name")}</span>
-              <input
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section className="min-w-0">
+          <ul className="space-y-2">
+            {skills.map((skill) => (
+              <li key={skill.id}>
+                <button
+                  type="button"
+                  onClick={() => openEdit(skill)}
+                  className={`interactive w-full rounded-xl border px-4 py-3.5 text-left sm:py-3 ${
+                    selected?.id === skill.id
+                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                      : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/50"
+                  }`}
+                >
+                  <div className="font-medium">{skill.name}</div>
+                  <div className="line-clamp-1 text-xs text-[var(--color-muted-foreground)]">
+                    {skill.description}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="min-w-0">
+          {selected || creating ? (
+            <Card className="space-y-4">
+              <h2 className="font-semibold">
+                {creating ? t("workflows.skills.createSkill") : t("workflows.skills.editSkill")}
+              </h2>
+              <Input
+                label={t("common.name")}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               />
-            </label>
-            <label className="block space-y-1 text-sm">
-              <span>{t("common.description")}</span>
-              <input
+              <Input
+                label={t("common.description")}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               />
-            </label>
-            <label className="block space-y-1 text-sm">
-              <span>{t("common.promptContent")}</span>
-              <textarea
-                value={form.promptContent}
-                onChange={(e) => setForm({ ...form, promptContent: e.target.value })}
-                rows={12}
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
-              />
-            </label>
-            <div className="flex gap-2">
-              <button
-                disabled={saving || !form.name.trim()}
-                onClick={() => void save()}
-                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-              >
-                {saving ? t("common.saving") : t("common.save")}
-              </button>
-              {!creating && selected && (
-                <button
-                  onClick={() => void remove(selected.id)}
-                  className="rounded-lg border border-[var(--color-destructive)] px-4 py-2 text-sm text-[var(--color-destructive)]"
+              <label className="block space-y-1.5 text-sm">
+                <span className="font-medium">{t("common.promptContent")}</span>
+                <textarea
+                  value={form.promptContent}
+                  onChange={(e) => setForm({ ...form, promptContent: e.target.value })}
+                  rows={12}
+                  className="interactive w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 font-mono text-xs sm:py-2"
+                />
+              </label>
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                <Button disabled={saving || !form.name.trim()} onClick={() => void save()} fullWidthMobile>
+                  {saving ? t("common.saving") : t("common.save")}
+                </Button>
+                {!creating && selected && (
+                  <Button variant="destructive" onClick={() => void remove(selected.id)} fullWidthMobile>
+                    {t("common.delete")}
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setCreating(false);
+                    setSelected(null);
+                  }}
+                  fullWidthMobile
                 >
-                  {t("common.delete")}
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  setCreating(false);
-                  setSelected(null);
-                }}
-                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm"
-              >
-                {t("common.cancel")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-[var(--color-muted-foreground)]">{t("workflows.skills.selectToEdit")}</p>
-        )}
-      </section>
+                  {t("common.cancel")}
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <EmptyState title={t("workflows.skills.selectToEdit")} />
+          )}
+        </section>
+      </div>
     </div>
   );
 }

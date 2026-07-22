@@ -1,4 +1,10 @@
 export const nav = {
+  main: "Main navigation",
+  mobile: "Navigation menu",
+  skipToContent: "Skip to content",
+  sectionAdmin: "Platform",
+  sectionWorkspace: "Workspace",
+  sectionGeneral: "General",
   admin: "Admin",
   templates: "Templates",
   settings: "Settings",

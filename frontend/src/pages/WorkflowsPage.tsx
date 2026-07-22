@@ -4,6 +4,12 @@ import { useTranslation } from "react-i18next";
 import { api, type Workflow } from "../lib/api";
 import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import { formatWorkflowTitle } from "../lib/workflow-display";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import EmptyState from "../components/ui/EmptyState";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 export default function WorkflowsPage() {
   const navigate = useNavigate();
@@ -61,63 +67,67 @@ export default function WorkflowsPage() {
     }
   };
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.list.loading")}</p>;
+  if (loading) return <PageLoading message={t("workflows.list.loading")} />;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t("nav.workflows")}</h1>
-          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            {t("workflows.list.subtitle")}
+      <PageHeader
+        title={t("nav.workflows")}
+        subtitle={t("workflows.list.subtitle")}
+        meta={
+          <p className="text-sm text-[var(--color-muted-foreground)]">
+            {filteredWorkflows.length} {t("common.of")} {workflows.length}
           </p>
-        </div>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {filteredWorkflows.length} {t("common.of")} {workflows.length}
-        </p>
-      </div>
+        }
+      />
 
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-        <div className="flex flex-col gap-2 lg:flex-row">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("workflows.list.searchPlaceholder")}
-            className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-          />
-          <div className="flex min-w-0 flex-1 gap-2">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("workflows.list.newNamePlaceholder")}
-              className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void createWorkflow();
-              }}
+      <Card padding="sm">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+          <div className="min-w-0 flex-1">
+            <Input
+              label={t("workflows.list.searchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("workflows.list.searchPlaceholder")}
             />
-            <button
-              type="button"
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-end">
+            <div className="min-w-0 flex-1">
+              <Input
+                label={t("workflows.list.newNamePlaceholder")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("workflows.list.newNamePlaceholder")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") void createWorkflow();
+                }}
+              />
+            </div>
+            <Button
               disabled={creating || !name.trim()}
               onClick={() => void createWorkflow()}
-              className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+              fullWidthMobile
+              className="sm:mb-0.5"
             >
               {creating ? t("common.creating") : t("workflows.list.createAndEdit")}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {filteredWorkflows.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-card)]/40 px-6 py-12 text-center">
-          <p className="font-medium">
-            {workflows.length === 0 ? t("workflows.list.emptyTitle") : t("workflows.list.emptySearchTitle")}
-          </p>
-          <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
-            {workflows.length === 0 ? t("workflows.list.emptySubtitle") : t("workflows.list.emptySearchSubtitle")}
-          </p>
-        </div>
+        <EmptyState
+          title={
+            workflows.length === 0 ? t("workflows.list.emptyTitle") : t("workflows.list.emptySearchTitle")
+          }
+          description={
+            workflows.length === 0
+              ? t("workflows.list.emptySubtitle")
+              : t("workflows.list.emptySearchSubtitle")
+          }
+        />
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filteredWorkflows.map((workflow) => (
             <li key={workflow.id}>
               <WorkflowTemplateCard

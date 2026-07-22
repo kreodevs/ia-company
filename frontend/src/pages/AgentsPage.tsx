@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgentForm from "../components/AgentForm";
 import { api, type Agent, type Skill } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import EmptyState from "../components/ui/EmptyState";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 export default function AgentsPage() {
   const { t } = useTranslation();
@@ -23,66 +28,74 @@ export default function AgentsPage() {
     void load();
   }, []);
 
-  if (loading) return <p className="text-[var(--color-muted-foreground)]">{t("workflows.agents.loading")}</p>;
+  if (loading) return <PageLoading message={t("workflows.agents.loading")} />;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{t("nav.agents")}</h1>
-          <button
+    <div className="space-y-6">
+      <PageHeader
+        title={t("nav.agents")}
+        actions={
+          <Button
             onClick={() => {
               setCreating(true);
               setSelected(null);
             }}
-            className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)]"
+            fullWidthMobile
           >
             {t("workflows.agents.newAgent")}
-          </button>
-        </div>
-        <ul className="space-y-2">
-          {agents.map((agent) => (
-            <li key={agent.id}>
-              <button
-                onClick={() => {
-                  setSelected(agent);
-                  setCreating(false);
-                }}
-                className={`w-full rounded-xl border px-4 py-3 text-left transition ${
-                  selected?.id === agent.id
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                    : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/50"
-                }`}
-              >
-                <div className="font-medium">{agent.name}</div>
-                <div className="text-xs text-[var(--color-muted-foreground)]">
-                  {agent.role} · {agent.model} · {agent.provider}
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+          </Button>
+        }
+      />
 
-      <section>
-        {(selected || creating) && (
-          <AgentForm
-            agent={creating ? null : selected}
-            skills={skills}
-            onSave={() => {
-              setCreating(false);
-              void load();
-            }}
-            onCancel={() => {
-              setCreating(false);
-              setSelected(null);
-            }}
-          />
-        )}
-        {!selected && !creating && (
-          <p className="text-[var(--color-muted-foreground)]">{t("workflows.agents.selectToEdit")}</p>
-        )}
-      </section>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section className="min-w-0">
+          <ul className="space-y-2">
+            {agents.map((agent) => (
+              <li key={agent.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelected(agent);
+                    setCreating(false);
+                  }}
+                  className={`interactive w-full rounded-xl border px-4 py-3.5 text-left sm:py-3 ${
+                    selected?.id === agent.id
+                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
+                      : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/50"
+                  }`}
+                >
+                  <div className="font-medium">{agent.name}</div>
+                  <div className="mt-0.5 text-xs text-[var(--color-muted-foreground)]">
+                    {agent.role} · {agent.model} · {agent.provider}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="min-w-0">
+          {(selected || creating) && (
+            <Card>
+              <AgentForm
+                agent={creating ? null : selected}
+                skills={skills}
+                onSave={() => {
+                  setCreating(false);
+                  void load();
+                }}
+                onCancel={() => {
+                  setCreating(false);
+                  setSelected(null);
+                }}
+              />
+            </Card>
+          )}
+          {!selected && !creating && (
+            <EmptyState title={t("workflows.agents.selectToEdit")} />
+          )}
+        </section>
+      </div>
     </div>
   );
 }
