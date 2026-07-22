@@ -9,13 +9,23 @@ export const consensus = {
   document: "Documento",
   saveConsensus: "Guardar consensus",
   lastUpdated: "Última actualización {{date}}",
+  noChangesToSave: "Sin cambios para guardar.",
+  companyHelp:
+    "Memoria a nivel compañía: fase, pipeline y next action. El detalle por producto vive en la página de cada producto.",
   backToCompany: "← Memoria de la compañía",
-  viewCode: "Ver código →",
   productMemoryHeading: "Memoria por producto",
+  productTab: "Documento",
   productTitle: "Memoria del producto: {{name}}",
   productSubtitle:
     "Consensus por producto: una revisión por entrega de agente. Usa el bloque JSON en tu salida para registrar decisiones, preguntas abiertas y vetos.",
-  revisionsTitle: "Historial de revisiones",
+  productHelp:
+    "Esta es la memoria del producto. Las ediciones manuales reemplazan el documento; las entregas de agentes se registran en la pestaña Revisions.",
+  revisionsTitle: "Revisiones",
   noRevisions: "Aún no hay revisiones. El primer ciclo creará una.",
+  noRevisionsTitle: "Sin revisiones",
+  veto: "VETO",
+  openQuestions: "Preguntas abiertas:",
+  viewRawContent: "Ver contenido crudo de la revisión",
   cycleNumber: "Ciclo {{n}}",
+  viewCode: "Ver código →",
 } as const;

@@ -1,6 +1,13 @@
 export const settings = {
   loading: "Loading settings…",
   title: "Tenant Settings",
+  tabs: {
+    general: "General",
+    llm: "LLM",
+    notifications: "Notifications",
+    limits: "Limits",
+    schedules: "Schedules",
+  },
   interests: {
     heading: "Research preferences",
     cardTitle: "Discovery focus areas",

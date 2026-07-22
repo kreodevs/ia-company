@@ -1,6 +1,13 @@
 export const settings = {
   loading: "Cargando configuración…",
   title: "Configuración del tenant",
+  tabs: {
+    general: "General",
+    llm: "LLM",
+    notifications: "Notificaciones",
+    limits: "Límites",
+    schedules: "Programaciones",
+  },
   interests: {
     heading: "Preferencias de investigación",
     cardTitle: "Áreas de enfoque del discovery",

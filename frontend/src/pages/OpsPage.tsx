@@ -12,6 +12,7 @@ import PageLoading from "../components/ui/PageLoading";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import EmptyState from "../components/ui/EmptyState";
 import StatusBadge from "../components/ui/StatusBadge";
 
 function workflowLabel(name: string, t: (key: string, options?: Record<string, unknown>) => string): string {
@@ -156,7 +157,7 @@ export default function OpsPage() {
 
       <Card className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 space-y-3">
+          <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="primary">
                 {t(`phase.${portfolio.companyPhase}`, { defaultValue: portfolio.companyPhase })}
@@ -167,25 +168,21 @@ export default function OpsPage() {
             </div>
 
             {nextWorkflowLabel ? (
-              <div className="space-y-1 text-sm">
-                <p>
-                  {t("ops.status.nextWorkflow")}{" "}
-                  <span className="font-medium">{nextWorkflowLabel}</span>
-                </p>
-                {nextRun?.reason ? (
-                  <p className="text-[var(--color-muted-foreground)]">
-                    {t("ops.status.nextReason")} {nextRun.reason}
-                  </p>
-                ) : null}
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+                <span className="text-[var(--color-muted-foreground)]">
+                  {t("ops.status.nextWorkflow")}
+                </span>
+                <span className="font-medium">{nextWorkflowLabel}</span>
                 {nextRun?.productSlug ? (
-                  <p className="text-[var(--color-muted-foreground)]">
-                    {t("ops.status.focusedProduct")}{" "}
-                    <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 text-xs">
-                      {nextRun.productSlug}
-                    </code>
-                  </p>
+                  <code className="rounded bg-[var(--color-muted)] px-1.5 py-0.5 text-xs">
+                    {nextRun.productSlug}
+                  </code>
                 ) : null}
               </div>
+            ) : null}
+
+            {nextRun?.reason ? (
+              <p className="text-xs text-[var(--color-muted-foreground)]">{nextRun.reason}</p>
             ) : null}
 
             {portfolio.nextAction ? (
@@ -218,14 +215,17 @@ export default function OpsPage() {
           </p>
         ) : null}
 
-        <div className="flex flex-wrap gap-3 border-t border-[var(--color-border)] pt-3 text-sm">
-          <Link to="/consensus" className="interactive text-[var(--color-primary)] hover:underline">
+        <div className="flex flex-wrap gap-3 border-t border-[var(--color-border)] pt-3 text-xs">
+          <Link to="/consensus" className="interactive text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)]">
             {t("nav.consensus")}
           </Link>
-          <Link to="/runs" className="interactive text-[var(--color-primary)] hover:underline">
+          <Link to="/runs" className="interactive text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)]">
             {t("nav.runs")}
           </Link>
-          <Link to="/settings" className="interactive text-[var(--color-primary)] hover:underline">
+          <Link to="/decisions" className="interactive text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)]">
+            {t("decisions.title")}
+          </Link>
+          <Link to="/settings" className="interactive text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)]">
             {t("nav.settings")}
           </Link>
         </div>
@@ -243,18 +243,17 @@ export default function OpsPage() {
         </div>
 
         {portfolio.pipeline.length === 0 ? (
-          <Card className="space-y-3 text-sm">
-            <p className="font-medium">{t("ops.pipeline.emptyTitle")}</p>
-            <p className="text-[var(--color-muted-foreground)]">{t("ops.pipeline.emptyHint")}</p>
-            {portfolio.lastDiscoveryRun ? (
-              <Link
-                to={`/runs/${portfolio.lastDiscoveryRun.id}`}
-                className="interactive inline-flex text-[var(--color-primary)] hover:underline"
-              >
-                {t("ops.pipeline.viewLastDiscovery")}
-              </Link>
-            ) : null}
-          </Card>
+          <EmptyState
+            title={t("ops.pipeline.emptyTitle")}
+            description={t("ops.pipeline.emptyHint")}
+            action={
+              portfolio.lastDiscoveryRun ? (
+                <Link to={`/runs/${portfolio.lastDiscoveryRun.id}`}>
+                  <Button variant="ghost">{t("ops.pipeline.viewLastDiscovery")}</Button>
+                </Link>
+              ) : null
+            }
+          />
         ) : (
           <ul className="space-y-3">
             {portfolio.pipeline.map((idea) => {
@@ -309,7 +308,10 @@ export default function OpsPage() {
         </div>
 
         {portfolio.products.length === 0 ? (
-          <Card className="text-sm text-[var(--color-muted-foreground)]">{t("ops.portfolio.emptyHint")}</Card>
+          <EmptyState
+            title={t("ops.portfolio.emptyTitle", { defaultValue: "No products yet" })}
+            description={t("ops.portfolio.emptyHint")}
+          />
         ) : (
           <ul className="space-y-3">
             {portfolio.products.map((product) => {

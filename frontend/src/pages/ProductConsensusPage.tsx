@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ProductConsensus, type ProductConsensusRevision } from "../lib/api";
@@ -8,10 +8,15 @@ import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import MarkdownPreview from "../components/ui/MarkdownPreview";
+import EmptyState from "../components/ui/EmptyState";
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleString();
 }
+
+type View = "document" | "revisions";
 
 export default function ProductConsensusPage() {
   const { t } = useTranslation();
@@ -24,6 +29,7 @@ export default function ProductConsensusPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [view, setView] = useState<View>("document");
 
   useEffect(() => {
     if (!productId) return;
@@ -52,132 +58,189 @@ export default function ProductConsensusPage() {
     }
   };
 
+  const dirty = useMemo(() => {
+    if (!record) return false;
+    return content !== record.content || (nextAction || null) !== (record.nextAction ?? null);
+  }, [content, nextAction, record]);
+
   if (loading) return <PageLoading message={t("consensus.loading")} />;
   if (!productId) return <div>Missing product id</div>;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.consensus"), to: "/consensus" },
+              { label: t("consensus.productTab", { defaultValue: "Product memory" }) },
+            ]}
+          />
+        }
         title={t("consensus.productTitle", { name: record?.productId ?? productId })}
         subtitle={t("consensus.productSubtitle")}
+        meta={
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <Badge>{t("consensus.cycleNumber", { n: record?.cycleNumber ?? 0 })}</Badge>
+            {record?.updatedAt && (
+              <span className="text-[var(--color-muted-foreground)]">
+                {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}
+              </span>
+            )}
+            <Link
+              to={`/products/${productId}/team`}
+              className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+            >
+              {t("warRoom.title", { name: record?.productId ?? productId })}
+            </Link>
+            <Link
+              to={`/products/${productId}/code`}
+              className="text-[var(--color-primary)] hover:underline"
+            >
+              {t("consensus.viewCode")}
+            </Link>
+          </div>
+        }
       />
 
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <Badge>
-          {t("consensus.cycleNumber", { n: record?.cycleNumber ?? 0 })}
-        </Badge>
-        {productId && (
-          <Link
-            to={`/products/${productId}/team`}
-            className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
-          >
-            {t("warRoom.title", { name: record?.productId ?? productId })}
-          </Link>
-        )}
-        {productId && (
-          <Link
-            to={`/products/${productId}/code`}
-            className="text-[var(--color-primary)] hover:underline"
-          >
-            {t("consensus.viewCode")}
-          </Link>
-        )}
-        {record?.updatedAt && (
-          <span className="text-[var(--color-muted-foreground)]">
-            {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}
-          </span>
-        )}
-        <Link to="/consensus" className="interactive text-[var(--color-primary)] hover:underline">
-          {t("consensus.backToCompany")}
-        </Link>
+      <div className="flex items-center gap-1 border-b border-[var(--color-border)]">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "document"}
+          onClick={() => setView("document")}
+          className={`interactive rounded-t-md px-3 py-2 text-sm font-medium transition ${
+            view === "document"
+              ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
+              : "border-b-2 border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+          }`}
+        >
+          {t("consensus.productTab", { defaultValue: "Document" })}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "revisions"}
+          onClick={() => setView("revisions")}
+          className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
+            view === "revisions"
+              ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
+              : "border-b-2 border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+          }`}
+        >
+          {t("consensus.revisionsTitle")}
+          {revisions.length > 0 && (
+            <span className="rounded-full bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-semibold">
+              {revisions.length}
+            </span>
+          )}
+        </button>
       </div>
 
-      <Card className="space-y-4">
-        <Input
-          label={t("consensus.nextAction")}
-          value={nextAction}
-          onChange={(e) => setNextAction(e.target.value)}
-          placeholder={t("consensus.nextActionPlaceholder")}
-        />
-        <label className="block space-y-1.5 text-sm">
-          <span className="font-medium">{t("consensus.document")}</span>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={18}
-            className="interactive w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 font-mono text-xs sm:py-2"
-          />
-        </label>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button disabled={saving} onClick={() => void save()} fullWidthMobile>
-            {saving ? t("common.saving") : t("consensus.saveConsensus")}
-          </Button>
-        </div>
-      </Card>
-
-      <Card className="space-y-4">
-        <h2 className="text-base font-semibold">{t("consensus.revisionsTitle")}</h2>
-        {revisions.length === 0 ? (
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {t("consensus.noRevisions")}
+      {view === "document" && (
+        <Card className="space-y-4">
+          <p className="rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-xs text-[var(--color-muted-foreground)]">
+            {t("consensus.productHelp", { defaultValue: "This is the product-scoped memory. Edits replace the document; per-step agent handoffs are recorded in the Revisions tab." })}
           </p>
-        ) : (
-          <ol className="space-y-3">
-            {revisions.map((rev) => (
-              <li
-                key={rev.id}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3"
-              >
-                <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-                  <Badge>#{rev.stepOrder}</Badge>
-                  <span className="font-medium">{rev.agentName}</span>
-                  <span className="text-[var(--color-muted-foreground)]">
-                    {formatTime(rev.createdAt)}
-                  </span>
-                  {rev.runId && (
+          <Input
+            label={t("consensus.nextAction")}
+            value={nextAction}
+            onChange={(e) => setNextAction(e.target.value)}
+            placeholder={t("consensus.nextActionPlaceholder")}
+          />
+          <MarkdownPreview
+            value={content}
+            onChange={setContent}
+            rows={18}
+            ariaLabel={t("consensus.document")}
+            placeholder={t("consensus.nextActionPlaceholder")}
+          />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button disabled={saving || !dirty} onClick={() => void save()} fullWidthMobile>
+              {saving ? t("common.saving") : t("consensus.saveConsensus")}
+            </Button>
+            {!dirty && record && (
+              <span className="text-xs text-[var(--color-muted-foreground)]">
+                {t("consensus.noChangesToSave", { defaultValue: "No changes to save." })}
+              </span>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {view === "revisions" && (
+        <Card className="space-y-4">
+          {revisions.length === 0 ? (
+            <EmptyState
+              title={t("consensus.noRevisionsTitle", { defaultValue: "No revisions yet" })}
+              description={t("consensus.noRevisions")}
+            />
+          ) : (
+            <ol className="space-y-3">
+              {revisions.map((rev) => (
+                <li
+                  key={rev.id}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3"
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+                    <Badge>#{rev.stepOrder}</Badge>
+                    <span className="font-medium">{rev.agentName}</span>
                     <span className="text-[var(--color-muted-foreground)]">
-                      run:{rev.runId.slice(0, 8)}
+                      {formatTime(rev.createdAt)}
                     </span>
-                  )}
-                </div>
-                {rev.veto && (
-                  <div className="mb-2 rounded border border-red-300 bg-red-50 p-2 text-xs text-red-700">
-                    <strong>VETO</strong> by {rev.veto.by}: {rev.veto.reason}
+                    {rev.runId && (
+                      <Link
+                        to={`/runs/${rev.runId}`}
+                        className="text-[var(--color-muted-foreground)] hover:underline"
+                      >
+                        run:{rev.runId.slice(0, 8)}
+                      </Link>
+                    )}
                   </div>
-                )}
-                {rev.decisions.length > 0 && (
-                  <ul className="mb-2 list-disc space-y-1 pl-5 text-xs">
-                    {rev.decisions.map((d, i) => (
-                      <li key={i}>
-                        <strong>{d.by}</strong>: {d.what}
-                        {d.why ? <em className="text-[var(--color-muted-foreground)]"> — {d.why}</em> : null}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {rev.openQuestions.length > 0 && (
-                  <div className="mb-2 text-xs">
-                    <span className="font-medium">Open questions:</span>
-                    <ul className="ml-4 list-disc">
-                      {rev.openQuestions.map((q, i) => (
-                        <li key={i}>{q}</li>
+                  {rev.veto && (
+                    <div className="mb-2 rounded border border-red-300 bg-red-50 p-2 text-xs text-red-700">
+                      <strong>{t("consensus.veto", { defaultValue: "VETO" })}</strong> by {rev.veto.by}: {rev.veto.reason}
+                    </div>
+                  )}
+                  {rev.decisions.length > 0 && (
+                    <ul className="mb-2 list-disc space-y-1 pl-5 text-xs">
+                      {rev.decisions.map((d, i) => (
+                        <li key={i}>
+                          <strong>{d.by}</strong>: {d.what}
+                          {d.why ? <em className="text-[var(--color-muted-foreground)]"> — {d.why}</em> : null}
+                        </li>
                       ))}
                     </ul>
-                  </div>
-                )}
-                {rev.nextAction && (
-                  <div className="mb-2 text-xs">
-                    <span className="font-medium">Next action:</span> {rev.nextAction}
-                  </div>
-                )}
-                <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded bg-[var(--color-surface)] p-2 font-mono text-[11px] leading-snug text-[var(--color-muted-foreground)]">
-                  {rev.content}
-                </pre>
-              </li>
-            ))}
-          </ol>
-        )}
-      </Card>
+                  )}
+                  {rev.openQuestions.length > 0 && (
+                    <div className="mb-2 text-xs">
+                      <span className="font-medium">{t("consensus.openQuestions", { defaultValue: "Open questions:" })}</span>
+                      <ul className="ml-4 list-disc">
+                        {rev.openQuestions.map((q, i) => (
+                          <li key={i}>{q}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {rev.nextAction && (
+                    <div className="mb-2 text-xs">
+                      <span className="font-medium">{t("consensus.nextAction")}:</span> {rev.nextAction}
+                    </div>
+                  )}
+                  <details className="rounded bg-[var(--color-surface)] p-2 text-xs">
+                    <summary className="cursor-pointer text-[var(--color-muted-foreground)]">
+                      {t("consensus.viewRawContent", { defaultValue: "View raw revision content" })}
+                    </summary>
+                    <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap font-mono text-[11px] leading-snug text-[var(--color-muted-foreground)]">
+                      {rev.content}
+                    </pre>
+                  </details>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Card>
+      )}
     </div>
   );
 }
