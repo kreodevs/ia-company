@@ -45,11 +45,6 @@ export default function TenantImpersonationSelect() {
           </option>
         ))}
       </select>
-      {activeTenant && (
-        <span className="hidden text-xs text-[var(--color-accent)] sm:inline">
-          {t("admin.impersonation.viewingAs", { name: activeTenant.name })}
-        </span>
-      )}
     </div>
   );
 }

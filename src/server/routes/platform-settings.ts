@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import type { AgentProvider } from "@prisma/client";
 import { logAudit } from "../../lib/audit.js";
 import {
   ensurePlatformSettings,
@@ -7,6 +8,7 @@ import {
   updatePlatformSettings,
   type PlatformSettingsUpdateInput,
 } from "../../lib/platform-settings.js";
+import { invalidateProviderModelsCache, listProviderModels } from "../../lib/provider-models.js";
 import { handleRouteError } from "../lib/request-context.js";
 
 export async function platformSettingsRoutes(app: FastifyInstance) {
@@ -26,8 +28,27 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const updated = await updatePlatformSettings(request.body);
+        invalidateProviderModelsCache();
         await logAudit(request, "platform.settings.update", { fields: Object.keys(request.body) });
         return updated;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Querystring: { provider?: AgentProvider; q?: string } }>(
+    "/admin/settings/platform/models",
+    async (request, reply) => {
+      try {
+        const provider = request.query.provider;
+        if (provider !== "openrouter" && provider !== "tokenlab") {
+          return reply.status(400).send({
+            error: 'Query parameter "provider" must be "openrouter" or "tokenlab".',
+          });
+        }
+        const models = await listProviderModels(provider, request.query.q);
+        return { provider, models };
       } catch (err) {
         return handleRouteError(reply, err);
       }

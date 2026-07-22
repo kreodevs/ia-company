@@ -82,6 +82,11 @@ export const admin = {
       openrouterSection: "OpenRouter",
       httpReferer: "HTTP-Referer",
       customSection: "Personalizado (compatible OpenAI)",
+      modelPlaceholder: "Buscar modelo…",
+      modelsLoading: "Cargando modelos…",
+      modelsLoadFailed: "No se pudieron cargar los modelos del proveedor.",
+      modelsEmpty: "Ningún modelo coincide con la búsqueda.",
+      modelPricing: "Entrada {{input}} / 1M · Salida {{output}} / 1M",
     },
     email: {
       title: "Email (Resend)",

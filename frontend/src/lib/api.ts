@@ -285,6 +285,14 @@ export interface AuditLogEntry {
   metadata: Record<string, unknown> | null;
 }
 
+export interface LlmModelOption {
+  id: string;
+  name: string;
+  inputPer1MTokens: number | null;
+  outputPer1MTokens: number | null;
+  currency: "USD";
+}
+
 export interface PlatformSettings {
   id: string;
   publicUrl: string;
@@ -378,6 +386,13 @@ export const api = {
           method: "PUT",
           body: JSON.stringify(body),
         }),
+      listModels: (provider: "openrouter" | "tokenlab", q?: string) => {
+        const qs = new URLSearchParams({ provider });
+        if (q?.trim()) qs.set("q", q.trim());
+        return request<{ provider: typeof provider; models: LlmModelOption[] }>(
+          `/admin/settings/platform/models?${qs.toString()}`,
+        );
+      },
     },
     templates: {
       summary: () =>

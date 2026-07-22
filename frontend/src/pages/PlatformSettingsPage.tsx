@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import ModelAutocomplete from "../components/ModelAutocomplete";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 
@@ -141,11 +142,19 @@ export default function PlatformSettingsPage() {
           </label>
           <label className="block text-sm sm:col-span-2">
             <span>{t("settings.llm.defaultModel")}</span>
-            <input
-              className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-              value={settings.defaultModel}
-              onChange={(e) => setSettings({ ...settings, defaultModel: e.target.value })}
-            />
+            {settings.defaultProvider === "openrouter" || settings.defaultProvider === "tokenlab" ? (
+              <ModelAutocomplete
+                provider={settings.defaultProvider}
+                value={settings.defaultModel}
+                onChange={(defaultModel) => setSettings({ ...settings, defaultModel })}
+              />
+            ) : (
+              <input
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                value={settings.defaultModel}
+                onChange={(e) => setSettings({ ...settings, defaultModel: e.target.value })}
+              />
+            )}
           </label>
           <label className="block text-sm">
             <span>{t("admin.platformSettings.defaultLlm.temperature")}</span>

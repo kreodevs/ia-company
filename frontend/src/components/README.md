@@ -9,6 +9,7 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Atoms | `atoms/` | Button, InputText, Badge, Skeleton, StatusPill |
 | Molecules | `molecules/` | Card, PageHeader, EmptyState, StatsCard |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
+| Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab) |
 
 ## Import convention
 
