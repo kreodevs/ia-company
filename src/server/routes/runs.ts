@@ -105,6 +105,24 @@ export async function runRoutes(app: FastifyInstance) {
         return reply;
       }
 
+      if (run.status === "AWAITING_USER") {
+        send({
+          type: "status",
+          runId,
+          timestamp: new Date().toISOString(),
+          data: { status: run.status, awaitingUser: true },
+        });
+      }
+
+      if (run.status === "DELEGATED") {
+        send({
+          type: "status",
+          runId,
+          timestamp: new Date().toISOString(),
+          data: { status: run.status, delegated: true },
+        });
+      }
+
       const unsubscribe = subscribeToRun(runId, (event) => {
         send(event);
         if (event.type === "done") {
@@ -132,6 +150,11 @@ export async function runRoutes(app: FastifyInstance) {
       if (!run) return reply.status(404).send({ error: "Run not found" });
       if (run.status === "COMPLETED" || run.status === "FAILED" || run.status === "CANCELLED") {
         return reply.status(400).send({ error: "Run already finished" });
+      }
+
+      if (run.status === "DELEGATED") {
+        const { cancelOpencodeDelegation } = await import("../../lib/opencode-bridge.js");
+        await cancelOpencodeDelegation(run.id, tenantId);
       }
 
       const { requestRunCancellation } = await import("../../worker/run-control.js");

@@ -23,6 +23,7 @@ import type {
 import { createLanguageModel, estimateCostUsd } from "./providers.js";
 import { createAgentTools } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
+import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -30,8 +31,12 @@ interface TenantExecutionContext {
   workspaceRoot: string;
   llm: TenantLlmOverrides | null;
   maxCostUsdPerRun: number | null;
+  tenantId?: string;
   productSlug?: string;
+  productId?: string;
   githubToken?: string;
+  implementationMode?: "local" | "opencode";
+  afterOpencodeDelegation?: boolean;
 }
 
 export class WorkflowExecutor {
@@ -109,6 +114,55 @@ export class WorkflowExecutor {
         _history: input.initialMemory?._history ?? [],
       };
 
+      const resumeFromStepOrder = input.resumeFromStepOrder ?? 0;
+      let implementationMode: "local" | "opencode" = input.forceLocalImplementation
+        ? "local"
+        : sharedMemory._implementationMode === "local"
+          ? "local"
+          : "opencode";
+
+      if (
+        input.tenantId &&
+        workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT &&
+        !input.afterOpencodeDelegation &&
+        resumeFromStepOrder === 0
+      ) {
+        const { prepareFeatureDevelopmentGate } = await import("../lib/opencode-bridge.js");
+        const gateResult = await prepareFeatureDevelopmentGate({
+          tenantId: input.tenantId,
+          runId,
+          forceLocalImplementation: input.forceLocalImplementation,
+        });
+
+        if (gateResult === "awaiting_user") {
+          emitEvent("done", { status: "AWAITING_USER", reason: "opencode_not_configured" });
+          return;
+        }
+        if (gateResult === "cancelled") {
+          emitEvent("done", { status: "CANCELLED" });
+          return;
+        }
+
+        implementationMode = gateResult === "opencode" ? "opencode" : "local";
+        sharedMemory = {
+          ...sharedMemory,
+          _implementationMode: implementationMode,
+        };
+        await prisma.executionRun.update({
+          where: { id: runId },
+          data: { sharedMemory: sharedMemory as object },
+        });
+      } else if (input.afterOpencodeDelegation) {
+        implementationMode = "local";
+      } else if (sharedMemory._implementationMode === "local") {
+        implementationMode = "local";
+      }
+
+      tenantCtx.tenantId = input.tenantId;
+      tenantCtx.productId = input.productId;
+      tenantCtx.implementationMode = implementationMode;
+      tenantCtx.afterOpencodeDelegation = input.afterOpencodeDelegation;
+
       let totalTokens = 0;
       let totalCostUsd = 0;
 
@@ -131,6 +185,10 @@ export class WorkflowExecutor {
           return;
         }
 
+        if (step.stepOrder < resumeFromStepOrder) {
+          continue;
+        }
+
         assertCostLimit();
 
         emitEvent("step_start", {
@@ -150,6 +208,7 @@ export class WorkflowExecutor {
           step.inputConfig,
           sharedMemory,
           tenantCtx,
+          step.stepOrder,
         );
 
         totalTokens += result.usage.totalTokens;
@@ -163,6 +222,46 @@ export class WorkflowExecutor {
           step.agent.name,
           result.output,
         );
+
+        if (
+          tenantCtx.implementationMode === "opencode" &&
+          step.agent.name === "fullstack-dhh" &&
+          !input.afterOpencodeDelegation
+        ) {
+          const runAfterStep = await prisma.executionRun.findUnique({
+            where: { id: runId },
+            select: { status: true },
+          });
+          if (runAfterStep?.status === "DELEGATED") {
+            await prisma.executionRun.update({
+              where: { id: runId },
+              data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+            });
+            emitEvent("done", { status: "DELEGATED" });
+            return;
+          }
+
+          if (!result.delegated) {
+            const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+            if (input.tenantId) {
+              await startOpencodeDelegation({
+                tenantId: input.tenantId,
+                runId,
+                brief: result.output,
+                sharedMemory,
+                productSlug: input.productSlug,
+                productId: input.productId,
+                resumeFromStepOrder: step.stepOrder + 1,
+              });
+              await prisma.executionRun.update({
+                where: { id: runId },
+                data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+              });
+              emitEvent("done", { status: "DELEGATED" });
+              return;
+            }
+          }
+        }
 
         await prisma.executionRun.update({
           where: { id: runId },
@@ -260,13 +359,19 @@ export class WorkflowExecutor {
     inputConfig: StepInputConfig,
     sharedMemory: SharedMemory,
     tenantCtx: TenantExecutionContext,
+    stepOrder?: number,
   ): Promise<StepResult> {
+    let delegated = false;
+    const toolMode = this.resolveToolMode(agent.name, tenantCtx, stepOrder);
+
     const systemPrompt = compileSystemPrompt(agent, sharedMemory, inputConfig, {
       productSlug: tenantCtx.productSlug,
       productName:
         typeof sharedMemory.focusProductName === "string"
           ? sharedMemory.focusProductName
           : tenantCtx.productSlug,
+      toolMode,
+      afterOpencodeDelegation: tenantCtx.afterOpencodeDelegation,
     });
     const userPrompt = compileUserPrompt(sharedMemory, inputConfig);
 
@@ -274,19 +379,35 @@ export class WorkflowExecutor {
 
     await this.appendLog(runId, "info", `Using LLM ${providerConfig.provider} / ${providerConfig.model}`, {
       agentId: agent.id,
-      payload: { agentName: agent.name },
+      payload: { agentName: agent.name, toolMode },
     });
 
     const model = createLanguageModel(providerConfig);
+
+    let productId = tenantCtx.productId;
+    if (!productId && tenantCtx.tenantId && tenantCtx.productSlug) {
+      const product = await prisma.tenantProduct.findUnique({
+        where: { tenantId_slug: { tenantId: tenantCtx.tenantId, slug: tenantCtx.productSlug } },
+        select: { id: true },
+      });
+      productId = product?.id;
+    }
 
     const tools = createAgentTools({
       workspaceRoot: tenantCtx.workspaceRoot,
       shellTimeoutMs: this.shellTimeoutMs,
       runId,
+      tenantId: tenantCtx.tenantId,
       productSlug: tenantCtx.productSlug,
+      productId,
       githubToken: tenantCtx.githubToken,
+      toolMode,
+      sharedMemory,
       onLog: (message, payload) => {
         void this.appendLog(runId, "debug", message, { agentId: agent.id, payload });
+      },
+      onDelegationStarted: () => {
+        delegated = true;
       },
     });
 
@@ -295,7 +416,7 @@ export class WorkflowExecutor {
       temperature: agent.temperature,
       system: systemPrompt,
       prompt: userPrompt,
-      tools,
+      tools: tools as unknown as NonNullable<Parameters<typeof generateText>[0]["tools"]>,
       maxSteps: 10,
     });
 
@@ -317,7 +438,24 @@ export class WorkflowExecutor {
         ),
       },
       toolCalls: response.steps?.length ?? 0,
+      delegated,
     };
+  }
+
+  private resolveToolMode(
+    agentName: string,
+    tenantCtx: TenantExecutionContext,
+    stepOrder?: number,
+  ): "full" | "readonly" | "opencode_delegate" {
+    if (tenantCtx.implementationMode === "opencode") {
+      if (agentName === "fullstack-dhh" && !tenantCtx.afterOpencodeDelegation) {
+        return "opencode_delegate";
+      }
+      if (tenantCtx.afterOpencodeDelegation && stepOrder != null && stepOrder >= 3) {
+        return "readonly";
+      }
+    }
+    return "full";
   }
 
   private async loadTenantContext(tenantId?: string, productSlug?: string): Promise<TenantExecutionContext> {
@@ -501,7 +639,12 @@ export function compileSystemPrompt(
   agent: AgentWithSkills,
   sharedMemory: SharedMemory,
   inputConfig: StepInputConfig,
-  workspace?: { productSlug?: string; productName?: string },
+  workspace?: {
+    productSlug?: string;
+    productName?: string;
+    toolMode?: "full" | "readonly" | "opencode_delegate";
+    afterOpencodeDelegation?: boolean;
+  },
 ): string {
   const sections: string[] = [`# Role: ${agent.role}`, agent.systemPrompt];
 
@@ -548,9 +691,28 @@ export function compileSystemPrompt(
     }
   }
 
-  sections.push(
-    "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
-  );
+  if (workspace?.afterOpencodeDelegation && typeof sharedMemory.opencodeResultSummary === "string") {
+    sections.push(
+      `\n## OpenCode Implementation Result\n${sharedMemory.opencodeResultSummary}`,
+    );
+    if (typeof sharedMemory.opencodeDiffCount === "number") {
+      sections.push(`\nFiles changed (reported by OpenCode): ${sharedMemory.opencodeDiffCount}`);
+    }
+  }
+
+  if (workspace?.toolMode === "opencode_delegate") {
+    sections.push(
+      "\n## Tool Usage\nYou MUST call `delegate_implementation` with a complete implementation brief. Do NOT write code locally — OpenCode on the tenant server will implement it.",
+    );
+  } else if (workspace?.toolMode === "readonly") {
+    sections.push(
+      "\n## Tool Usage\nRead-only mode: review the OpenCode result using read_file and list_dir. Do not modify code in this workspace.",
+    );
+  } else {
+    sections.push(
+      "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
+    );
+  }
 
   if (workspace?.productSlug) {
     sections.push(
@@ -723,6 +885,9 @@ export async function executeWorkflowInBackground(
     productSlug: input.productSlug,
     workflowName: input.workflowName,
     metaReason: input.metaReason,
+    resumeFromStepOrder: input.resumeFromStepOrder,
+    forceLocalImplementation: input.forceLocalImplementation,
+    afterOpencodeDelegation: input.afterOpencodeDelegation,
   };
 
   if (process.env.USE_INLINE_EXECUTOR !== "true") {

@@ -4,6 +4,7 @@ export const settings = {
   tabs: {
     general: "General",
     llm: "LLM",
+    opencode: "OpenCode",
     notifications: "Notificaciones",
     limits: "Límites",
     schedules: "Programaciones",

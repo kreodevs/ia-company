@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FileText, Focus, PlayCircle, ScrollText, Target } from "lucide-react";
-import { api, type PipelineIdea, type ProductsOverview, type TenantProduct } from "../lib/api";
+import { api, type OpencodeActiveInfo, type PipelineIdea, type ProductsOverview, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
@@ -198,6 +198,7 @@ export default function ProductsPage() {
                   key={product.id}
                   product={product}
                   isFocused={overview.focusProduct?.id === product.id}
+                  opencodeActive={overview.opencodeActiveByProductId?.[product.id] ?? null}
                   onFocus={() => void focusProduct(product)}
                   onChange={() => void load()}
                   t={t}
@@ -265,12 +266,14 @@ function OpportunityRow({
 function ActiveProductCard({
   product,
   isFocused,
+  opencodeActive,
   onFocus,
   onChange,
   t,
 }: {
   product: TenantProduct;
   isFocused: boolean;
+  opencodeActive: OpencodeActiveInfo | null;
   onFocus: () => void;
   onChange: () => void;
   t: (key: string, options?: Record<string, unknown>) => string;
@@ -295,6 +298,14 @@ function ActiveProductCard({
                 </span>
               )}
               <StatusPill status={product.phase} />
+              {opencodeActive && (
+                <Link
+                  to={`/runs/${opencodeActive.runId}`}
+                  className="inline-flex items-center rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+                >
+                  {t("opencode.activeBadge")}
+                </Link>
+              )}
               {product.goNoGo === "no_go" && (
                 <span className="text-[10px] font-semibold uppercase text-[var(--color-destructive)]">
                   {t("products.active.noGo")}

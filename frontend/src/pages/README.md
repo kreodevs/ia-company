@@ -31,5 +31,5 @@ Route-level screens for the Auto-Company frontend.
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
 | `/decisions` | `DecisionsPage` | Propuestas go/no-go de agentes |
 | `/consensus` | `ConsensusPage` | Consenso del tenant |
-| `/settings` | `SettingsPage` |
+| `/settings` | `SettingsPage` | LLM, **OpenCode**, notificaciones, límites, programaciones |
 | `/team` | `TenantUsersPage` |

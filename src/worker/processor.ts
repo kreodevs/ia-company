@@ -33,6 +33,9 @@ export function startWorkflowWorker(): Worker<WorkflowJobData> {
         syncConsensus,
         productSlug,
         workflowName,
+        resumeFromStepOrder: job.data.resumeFromStepOrder,
+        forceLocalImplementation: job.data.forceLocalImplementation,
+        afterOpencodeDelegation: job.data.afterOpencodeDelegation,
       });
       clearRunCancellation(runId);
     },

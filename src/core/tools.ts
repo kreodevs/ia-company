@@ -249,7 +249,44 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     },
   });
 
-  return {
+  const delegate_implementation = tool({
+    description:
+      "Delegate code implementation to the tenant's OpenCode server. Provide a complete implementation brief with acceptance criteria.",
+    parameters: z.object({
+      brief: z.string().describe("Markdown implementation brief for OpenCode"),
+    }),
+    execute: async ({ brief }) => {
+      if (!ctx.tenantId) {
+        throw new Error("Tenant context required to delegate to OpenCode");
+      }
+      if (!brief.trim()) {
+        throw new Error("Implementation brief is required");
+      }
+
+      const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+      const delegationId = await startOpencodeDelegation({
+        tenantId: ctx.tenantId,
+        runId: ctx.runId,
+        brief,
+        sharedMemory: ctx.sharedMemory ?? {},
+        productSlug: ctx.productSlug,
+        productId: ctx.productId,
+        resumeFromStepOrder: 3,
+      });
+
+      ctx.onDelegationStarted?.();
+      log("opencode: delegation started", { delegationId });
+
+      return {
+        delegated: true,
+        delegationId,
+        message: "Implementation delegated to OpenCode. The run will resume after OpenCode finishes.",
+      };
+    },
+  });
+
+  const mode = ctx.toolMode ?? "full";
+  const allTools = {
     run_shell_command,
     read_file,
     write_file,
@@ -258,6 +295,34 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     git_commit,
     npm_run,
     wrangler_deploy,
+    delegate_implementation,
+  };
+
+  if (mode === "readonly") {
+    return {
+      read_file: allTools.read_file,
+      list_dir: allTools.list_dir,
+      git_status: allTools.git_status,
+    };
+  }
+
+  if (mode === "opencode_delegate") {
+    return {
+      read_file: allTools.read_file,
+      list_dir: allTools.list_dir,
+      delegate_implementation: allTools.delegate_implementation,
+    };
+  }
+
+  return {
+    run_shell_command: allTools.run_shell_command,
+    read_file: allTools.read_file,
+    write_file: allTools.write_file,
+    list_dir: allTools.list_dir,
+    git_status: allTools.git_status,
+    git_commit: allTools.git_commit,
+    npm_run: allTools.npm_run,
+    wrangler_deploy: allTools.wrangler_deploy,
   };
 }
 

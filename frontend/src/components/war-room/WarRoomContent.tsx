@@ -6,6 +6,7 @@ import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
 import ProductActionsMenu from "../ui/ProductActionsMenu";
+import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 
 const ROLE_EMOJI: Record<string, string> = {
   "ceo-bezos": "👔",
@@ -84,9 +85,10 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
   useEffect(() => {
     if (
       !data?.activeRun ||
-      data.activeRun.status === "COMPLETED" ||
-      data.activeRun.status === "FAILED" ||
-      data.activeRun.status === "CANCELLED"
+      (data.activeRun.status !== "RUNNING" &&
+        data.activeRun.status !== "PENDING" &&
+        data.activeRun.status !== "DELEGATED" &&
+        data.activeRun.status !== "AWAITING_USER")
     ) {
       return;
     }
@@ -126,8 +128,13 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
           {data.activeRun && (
             <Link to={`/runs/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
               <span className="war-room-pulse" aria-hidden />
-              {t("warRoom.liveRun", { workflow: data.activeRun.workflowName })}
+              {data.activeRun.status === "DELEGATED"
+                ? t("opencode.externalImplementation")
+                : t("warRoom.liveRun", { workflow: data.activeRun.workflowName })}
             </Link>
+          )}
+          {data.activeRun?.opencode && (
+            <span className="war-room-pill war-room-pill-link">{t("opencode.activeBadge")}</span>
           )}
           <span className="war-room-pill war-room-pill-duty">
             {t("warRoom.onDuty", { count: onDuty.length })}
@@ -266,6 +273,8 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
           </div>
         </aside>
       </div>
+
+      <OpencodeHistoryPanel productId={productId} />
 
       <section className="war-room-runs">
         <h2 className="war-room-section-title">{t("warRoom.recentRuns")}</h2>

@@ -3,6 +3,8 @@ import StatusPill from "@/components/atoms/StatusPill";
 const statusMap: Record<string, "success" | "warning" | "error" | "info" | "neutral" | "running"> = {
   PENDING: "warning",
   RUNNING: "running",
+  DELEGATED: "info",
+  AWAITING_USER: "warning",
   COMPLETED: "success",
   FAILED: "error",
   CANCELLED: "neutral",

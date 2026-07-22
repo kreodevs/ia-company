@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { startWorkflowWorker } from "./processor.js";
+import { startOpencodeWorker } from "./opencode-processor.js";
 import { bootstrapScheduler } from "./scheduler.js";
 import { ensurePlatformSettings, warmPlatformSettingsCache, syncAgentsToPlatformLlmSettings } from "../lib/platform-settings.js";
 
@@ -12,13 +13,15 @@ async function main() {
   }
 
   const worker = startWorkflowWorker();
+  const opencodeWorker = startOpencodeWorker();
   const scheduler = await bootstrapScheduler();
 
-  console.log("Workflow worker + autonomous scheduler started");
+  console.log("Workflow worker + OpenCode worker + autonomous scheduler started");
 
   async function shutdown() {
     clearInterval(scheduler);
     await worker.close();
+    await opencodeWorker.close();
     process.exit(0);
   }
 

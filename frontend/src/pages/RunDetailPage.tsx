@@ -7,6 +7,8 @@ import PageLoading from "../components/ui/PageLoading";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import StatusBadge from "../components/ui/StatusBadge";
+import OpencodeRunPanel from "../components/opencode/OpencodeRunPanel";
+import OpencodeDiffPanel from "../components/opencode/OpencodeDiffPanel";
 
 interface StreamEvent {
   type: string;
@@ -18,6 +20,9 @@ export default function RunDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const [run, setRun] = useState<ExecutionRun | null>(null);
+  const [opencodeInfo, setOpencodeInfo] = useState<Awaited<ReturnType<typeof api.opencode.getRun>> | null>(
+    null,
+  );
   const [events, setEvents] = useState<StreamEvent[]>([]);
   const [cancelling, setCancelling] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
@@ -26,12 +31,14 @@ export default function RunDetailPage() {
     if (!id) return;
 
     void api.runs.get(id).then(setRun);
+    void api.opencode.getRun(id).then(setOpencodeInfo).catch(() => setOpencodeInfo(null));
 
     const unsubscribe = api.runs.streamLogs(id, (raw) => {
       const event = raw as StreamEvent & { runId?: string };
       setEvents((prev) => [...prev, event]);
-      if (event.type === "step_complete" || event.type === "done") {
+      if (event.type === "step_complete" || event.type === "done" || event.type === "status") {
         void api.runs.get(id).then(setRun);
+        void api.opencode.getRun(id).then(setOpencodeInfo).catch(() => setOpencodeInfo(null));
       }
     });
 
@@ -46,7 +53,7 @@ export default function RunDetailPage() {
     return <PageLoading message={t("runs.list.loadingOne")} />;
   }
 
-  const canCancel = run.status === "PENDING" || run.status === "RUNNING";
+  const canCancel = run.status === "PENDING" || run.status === "RUNNING" || run.status === "DELEGATED";
 
   const cancelRun = async () => {
     if (!id || !canCancel) return;
@@ -85,6 +92,22 @@ export default function RunDetailPage() {
           )
         }
       />
+
+      {(run.status === "AWAITING_USER" || run.status === "DELEGATED") && id && (
+        <OpencodeRunPanel
+          runId={id}
+          status={run.status}
+          onUpdated={() => void api.runs.get(id).then(setRun)}
+        />
+      )}
+
+      {opencodeInfo?.delegation && (
+        <OpencodeDiffPanel
+          diff={opencodeInfo.diff ?? []}
+          resultSummary={opencodeInfo.delegation.resultSummary}
+          sessionId={opencodeInfo.delegation.opencodeSessionId}
+        />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

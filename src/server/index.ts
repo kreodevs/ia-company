@@ -18,6 +18,7 @@ import {
 import { opsRoutes } from "./routes/ops.js";
 import { productRoutes } from "./routes/products.js";
 import { runRoutes } from "./routes/runs.js";
+import { opencodeRoutes } from "./routes/opencode.js";
 import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
 import { tenantSettingsRoutes } from "./routes/tenant-settings.js";
@@ -73,6 +74,7 @@ async function buildServer() {
     await api.register(skillRoutes);
     await api.register(workflowRoutes);
     await api.register(runRoutes);
+    await api.register(opencodeRoutes);
   }, { prefix: "/api" });
 
   return app;

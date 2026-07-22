@@ -17,6 +17,8 @@ import {
   upsertTenantProduct,
 } from "../../lib/product-registry.js";
 import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
+import { getActiveOpencodeByProduct, getLatestCompletedDelegationForProduct, listProductOpencodeHistory } from "../../lib/opencode-history.js";
+import { normalizeOpencodeDiff } from "../../lib/opencode-diff.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
 export async function productRoutes(app: FastifyInstance) {
@@ -64,11 +66,13 @@ export async function productRoutes(app: FastifyInstance) {
       ]);
 
       const focusProduct = products.find((product) => product.id === cycle.focusProductId) ?? null;
+      const opencodeActiveByProductId = await getActiveOpencodeByProduct(tenantId);
 
       return {
         products,
         pipeline: filterActionablePipelineIdeas(ideas, products),
         focusProduct,
+        opencodeActiveByProductId,
         lastDiscoveryRun: lastDiscoveryRun
           ? { id: lastDiscoveryRun.id, createdAt: lastDiscoveryRun.createdAt }
           : null,
@@ -435,7 +439,22 @@ export async function productRoutes(app: FastifyInstance) {
         return mem?.focusProductSlug === product.slug;
       });
 
-      const activeRun = runsForProduct.find((r) => r.status === "RUNNING" || r.status === "PENDING") ?? null;
+      const activeRun =
+        runsForProduct.find((r) =>
+          ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"].includes(r.status),
+        ) ?? null;
+
+      const activeDelegation = activeRun
+        ? await prisma.opencodeDelegation.findUnique({
+            where: { runId: activeRun.id },
+            select: {
+              id: true,
+              opencodeSessionId: true,
+              status: true,
+              startedAt: true,
+            },
+          })
+        : null;
       const recentRuns = runsForProduct.slice(0, 5).map((r) => ({
         id: r.id,
         status: r.status,
@@ -507,6 +526,13 @@ export async function productRoutes(app: FastifyInstance) {
               status: activeRun.status,
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),
+              opencode: activeDelegation
+                ? {
+                    delegationId: activeDelegation.id,
+                    sessionId: activeDelegation.opencodeSessionId,
+                    status: activeDelegation.status,
+                  }
+                : null,
             }
           : null,
         recentRuns,
@@ -516,6 +542,54 @@ export async function productRoutes(app: FastifyInstance) {
           title: i.title,
           interestScore: i.interestScore,
         })),
+      };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/products/:id/opencode/history", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const history = await listProductOpencodeHistory(tenantId, request.params.id);
+      if (!history) return reply.status(404).send({ error: "Product not found" });
+      return history;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/products/:id/opencode/latest", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+        select: { id: true, name: true, slug: true },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const active = await prisma.opencodeDelegation.findFirst({
+        where: { tenantId, productId: product.id, status: { in: ["PENDING", "RUNNING"] } },
+        orderBy: { createdAt: "desc" },
+      });
+      const latest = active ?? (await getLatestCompletedDelegationForProduct(tenantId, product.id));
+
+      if (!latest) {
+        return { product, delegation: null, diff: [], resultSummary: null };
+      }
+
+      return {
+        product,
+        delegation: {
+          id: latest.id,
+          runId: latest.runId,
+          opencodeSessionId: latest.opencodeSessionId,
+          status: latest.status,
+          resultSummary: latest.resultSummary,
+          completedAt: latest.completedAt,
+        },
+        diff: normalizeOpencodeDiff(latest.diffJson),
+        resultSummary: latest.resultSummary,
       };
     } catch (err) {
       return handleRouteError(reply, err);

@@ -1,6 +1,22 @@
 import type { FastifyRequest } from "fastify";
 import { prisma } from "./prisma.js";
 
+export async function logSystemAudit(input: {
+  action: string;
+  tenantId?: string | null;
+  metadata?: Record<string, unknown>;
+}) {
+  await prisma.auditLog.create({
+    data: {
+      actorKind: "system",
+      actorId: "opencode-bridge",
+      action: input.action,
+      tenantId: input.tenantId ?? null,
+      metadata: input.metadata as object | undefined,
+    },
+  });
+}
+
 export async function logAudit(
   request: FastifyRequest,
   action: string,

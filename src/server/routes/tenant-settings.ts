@@ -193,4 +193,49 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.get("/tenant/settings/opencode", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getTenantOpencodeConfigPublic } = await import("../../lib/tenant-opencode.js");
+      return getTenantOpencodeConfigPublic(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{
+    Body: {
+      enabled?: boolean;
+      baseUrl?: string | null;
+      username?: string | null;
+      password?: string | null;
+      defaultAgent?: string | null;
+      defaultModel?: string | null;
+      projectPath?: string | null;
+      pollIntervalMs?: number;
+      maxWaitMs?: number;
+      autoApprovePermissions?: boolean;
+    };
+  }>("/tenant/settings/opencode", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { upsertTenantOpencodeConfig } = await import("../../lib/tenant-opencode.js");
+      const config = await upsertTenantOpencodeConfig(tenantId, request.body);
+      await logAudit(request, "tenant.opencode_config.update", { enabled: request.body.enabled });
+      return config;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post("/tenant/settings/opencode/test", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { testTenantOpencodeConnection } = await import("../../lib/tenant-opencode.js");
+      return testTenantOpencodeConnection(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

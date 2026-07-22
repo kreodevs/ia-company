@@ -5,6 +5,7 @@ import {
   api,
   type CreateRepoResult,
   type ProductFile,
+  type ProductOpencodeLatest,
   type ProductTreeEntry,
   type TenantProduct,
 } from "../lib/api";
@@ -15,6 +16,8 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
+import OpencodeDiffPanel from "../components/opencode/OpencodeDiffPanel";
+import OpencodeHistoryPanel from "../components/opencode/OpencodeHistoryPanel";
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -115,15 +118,21 @@ export default function ProductCodePage() {
   const [repoVisibility, setRepoVisibility] = useState<"private" | "public">("private");
   const [repoResult, setRepoResult] = useState<CreateRepoResult | null>(null);
   const [creating, setCreating] = useState(false);
+  const [opencodeLatest, setOpencodeLatest] = useState<ProductOpencodeLatest | null>(null);
 
   useEffect(() => {
     if (!productId) return;
     setLoading(true);
-    Promise.all([api.products.list(), api.products.code.tree(productId)])
-      .then(([products, treeResp]) => {
+    Promise.all([
+      api.products.list(),
+      api.products.code.tree(productId),
+      api.products.opencodeLatest(productId).catch(() => null),
+    ])
+      .then(([products, treeResp, latest]) => {
         const p = products.find((x) => x.id === productId) ?? null;
         setProduct(p);
         setTree(treeResp.entries);
+        setOpencodeLatest(latest);
         if (!repoName && p) setRepoName(p.slug);
       })
       .catch((err) => setError(String(err)))
@@ -179,6 +188,16 @@ export default function ProductCodePage() {
         title={t("code.title", { name: product?.name ?? "Product" })}
         subtitle={t("code.subtitle")}
       />
+
+      {productId && <OpencodeHistoryPanel productId={productId} />}
+
+      {opencodeLatest?.delegation && (
+        <OpencodeDiffPanel
+          diff={opencodeLatest.diff}
+          resultSummary={opencodeLatest.resultSummary}
+          sessionId={opencodeLatest.delegation.opencodeSessionId}
+        />
+      )}
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <Badge>{product?.phase}</Badge>

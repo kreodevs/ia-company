@@ -7,6 +7,7 @@ import {
   type TenantLlmConfig,
   type TenantMonthlyUsage,
   type TenantNotificationConfig,
+  type TenantOpencodeConfig,
   type TenantUsageLimits,
   type Workflow,
 } from "../lib/api";
@@ -15,13 +16,14 @@ import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import TabsBar from "../components/ui/TabsBar";
 
-type SettingsTab = "general" | "llm" | "notifications" | "limits" | "schedules";
-const VALID_TABS: SettingsTab[] = ["general", "llm", "notifications", "limits", "schedules"];
+type SettingsTab = "general" | "llm" | "opencode" | "notifications" | "limits" | "schedules";
+const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "notifications", "limits", "schedules"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
+  const [opencode, setOpencode] = useState<Partial<TenantOpencodeConfig>>({});
   const [notifications, setNotifications] = useState<Partial<TenantNotificationConfig>>({});
   const [limits, setLimits] = useState<Partial<TenantUsageLimits>>({});
   const [usage, setUsage] = useState<TenantMonthlyUsage | null>(null);
@@ -29,6 +31,10 @@ export default function SettingsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingLlm, setSavingLlm] = useState(false);
+  const [savingOpencode, setSavingOpencode] = useState(false);
+  const [testingOpencode, setTestingOpencode] = useState(false);
+  const [opencodeTestResult, setOpencodeTestResult] = useState<string | null>(null);
+  const [opencodePassword, setOpencodePassword] = useState("");
   const [savingNotifications, setSavingNotifications] = useState(false);
   const [savingLimits, setSavingLimits] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({ name: "", workflowId: "", intervalSec: 1800 });
@@ -48,9 +54,10 @@ export default function SettingsPage() {
 
   const load = async () => {
     setLoading(true);
-    const [llmConfig, notif, limitConfig, usageData, scheduleList, workflowList] =
+    const [llmConfig, opencodeConfig, notif, limitConfig, usageData, scheduleList, workflowList] =
       await Promise.all([
         api.tenantSettings.getLlm(),
+        api.tenantSettings.getOpencode(),
         api.tenantSettings.getNotifications(),
         api.tenantSettings.getLimits(),
         api.tenantSettings.getUsage(),
@@ -58,6 +65,8 @@ export default function SettingsPage() {
         api.workflows.list(),
       ]);
     setLlm(llmConfig);
+    setOpencode(opencodeConfig);
+    setOpencodePassword("");
     setNotifications(notif);
     setLimits(limitConfig);
     setUsage(usageData);
@@ -94,6 +103,52 @@ export default function SettingsPage() {
     if (provider === "openrouter") return t("common.openrouter");
     if (provider === "custom") return t("common.custom");
     return t("common.tokenlabLemonData");
+  };
+
+  const saveOpencode = async () => {
+    setSavingOpencode(true);
+    setOpencodeTestResult(null);
+    try {
+      const updated = await api.tenantSettings.updateOpencode({
+        enabled: opencode.enabled,
+        baseUrl: opencode.baseUrl ?? null,
+        username: opencode.username ?? null,
+        password: opencodePassword || undefined,
+        defaultAgent: opencode.defaultAgent ?? null,
+        defaultModel: opencode.defaultModel ?? null,
+        projectPath: opencode.projectPath ?? null,
+        pollIntervalMs: opencode.pollIntervalMs,
+        maxWaitMs: opencode.maxWaitMs,
+        autoApprovePermissions: opencode.autoApprovePermissions,
+      });
+      setOpencode(updated);
+      setOpencodePassword("");
+    } finally {
+      setSavingOpencode(false);
+    }
+  };
+
+  const testOpencode = async () => {
+    setTestingOpencode(true);
+    setOpencodeTestResult(null);
+    try {
+      if (opencodePassword) {
+        await api.tenantSettings.updateOpencode({
+          enabled: opencode.enabled,
+          baseUrl: opencode.baseUrl ?? null,
+          username: opencode.username ?? null,
+          password: opencodePassword,
+        });
+      }
+      const result = await api.tenantSettings.testOpencode();
+      setOpencodeTestResult(
+        result.ok
+          ? `${t("opencode.settings.testOk")}${result.version ? ` (${result.version})` : ""}`
+          : `${t("opencode.settings.testFail")}: ${result.error ?? ""}`,
+      );
+    } finally {
+      setTestingOpencode(false);
+    }
   };
 
   const saveNotifications = async () => {
@@ -186,6 +241,7 @@ export default function SettingsPage() {
         tabs={[
           { id: "general", label: t("settings.tabs.general") },
           { id: "llm", label: t("settings.tabs.llm") },
+          { id: "opencode", label: t("settings.tabs.opencode") },
           { id: "notifications", label: t("settings.tabs.notifications") },
           { id: "limits", label: t("settings.tabs.limits") },
           { id: "schedules", label: t("settings.tabs.schedules") },
@@ -293,6 +349,111 @@ export default function SettingsPage() {
           {savingLlm ? t("common.saving") : t("settings.llm.save")}
         </button>
       </section>
+        </div>
+      )}
+
+      {activeTab === "opencode" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("opencode.settings.title")}</h2>
+            <p className="text-sm text-[var(--color-muted-foreground)]">{t("opencode.settings.subtitle")}</p>
+            <p
+              className={`text-xs ${opencode.configured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+            >
+              {opencode.configured ? t("opencode.settings.configured") : t("opencode.settings.notConfigured")}
+            </p>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={opencode.enabled ?? false}
+                onChange={(e) => setOpencode({ ...opencode, enabled: e.target.checked })}
+              />
+              {t("opencode.settings.enabled")}
+            </label>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block space-y-1 text-sm md:col-span-2">
+                <span>{t("opencode.settings.baseUrl")}</span>
+                <input
+                  value={opencode.baseUrl ?? ""}
+                  onChange={(e) => setOpencode({ ...opencode, baseUrl: e.target.value || null })}
+                  placeholder="https://opencode.example.com"
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("opencode.settings.username")}</span>
+                <input
+                  value={opencode.username ?? "opencode"}
+                  onChange={(e) => setOpencode({ ...opencode, username: e.target.value || null })}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("opencode.settings.password")}</span>
+                <input
+                  type="password"
+                  value={opencodePassword}
+                  onChange={(e) => setOpencodePassword(e.target.value)}
+                  placeholder={opencode.password ?? ""}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+                <span className="text-xs text-[var(--color-muted-foreground)]">
+                  {t("opencode.settings.passwordHint")}
+                </span>
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("opencode.settings.defaultAgent")}</span>
+                <input
+                  value={opencode.defaultAgent ?? ""}
+                  onChange={(e) => setOpencode({ ...opencode, defaultAgent: e.target.value || null })}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("opencode.settings.defaultModel")}</span>
+                <input
+                  value={opencode.defaultModel ?? ""}
+                  onChange={(e) => setOpencode({ ...opencode, defaultModel: e.target.value || null })}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+              </label>
+              <label className="block space-y-1 text-sm md:col-span-2">
+                <span>{t("opencode.settings.projectPath")}</span>
+                <input
+                  value={opencode.projectPath ?? ""}
+                  onChange={(e) => setOpencode({ ...opencode, projectPath: e.target.value || null })}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+              </label>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={opencode.autoApprovePermissions ?? true}
+                onChange={(e) => setOpencode({ ...opencode, autoApprovePermissions: e.target.checked })}
+              />
+              {t("opencode.settings.autoApprovePermissions")}
+            </label>
+            {opencodeTestResult && (
+              <p className="text-sm text-[var(--color-muted-foreground)]">{opencodeTestResult}</p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <button
+                disabled={savingOpencode}
+                onClick={() => void saveOpencode()}
+                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+              >
+                {savingOpencode ? t("common.saving") : t("opencode.settings.save")}
+              </button>
+              <button
+                disabled={testingOpencode}
+                onClick={() => void testOpencode()}
+                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
+              >
+                {testingOpencode ? t("common.loading") : t("opencode.settings.test")}
+              </button>
+            </div>
+          </section>
         </div>
       )}
 

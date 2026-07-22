@@ -136,7 +136,7 @@ export interface Workflow {
 export interface ExecutionRun {
   id: string;
   workflowId: string;
-  status: "PENDING" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED";
+  status: "PENDING" | "RUNNING" | "DELEGATED" | "AWAITING_USER" | "COMPLETED" | "FAILED" | "CANCELLED";
   sharedMemory: Record<string, unknown>;
   totalTokens: number;
   totalCostUsd: number;
@@ -318,6 +318,11 @@ export interface TeamActiveRun {
   status: string;
   startedAt: string | null;
   agentIds: string[];
+  opencode?: {
+    delegationId: string;
+    sessionId: string;
+    status: string;
+  } | null;
 }
 
 export interface TeamRecentRun {
@@ -352,10 +357,19 @@ export interface ProductTeam {
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
 }
 
+export interface OpencodeActiveInfo {
+  delegationId: string;
+  runId: string;
+  sessionId: string;
+  status: string;
+  runStatus: string;
+}
+
 export interface ProductsOverview {
   products: TenantProduct[];
   pipeline: PipelineIdea[];
   focusProduct: TenantProduct | null;
+  opencodeActiveByProductId: Record<string, OpencodeActiveInfo>;
   lastDiscoveryRun: { id: string; createdAt: string } | null;
 }
 
@@ -429,6 +443,81 @@ export interface TenantNotificationConfig {
   emailRecipients: string | null;
   notifyOnComplete: boolean;
   notifyOnFail: boolean;
+}
+
+export interface TenantOpencodeConfig {
+  tenantId: string;
+  enabled: boolean;
+  baseUrl: string | null;
+  username: string | null;
+  password: string | null;
+  defaultAgent: string | null;
+  defaultModel: string | null;
+  projectPath: string | null;
+  pollIntervalMs: number;
+  maxWaitMs: number;
+  autoApprovePermissions: boolean;
+  configured: boolean;
+}
+
+export interface OpencodeDelegation {
+  id: string;
+  opencodeSessionId: string;
+  status: string;
+  promptSummary: string | null;
+  resultSummary: string | null;
+  errorMessage: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  diff?: OpencodeDiffEntry[];
+}
+
+export interface OpencodeDiffEntry {
+  path: string;
+  additions: number | null;
+  deletions: number | null;
+}
+
+export interface OpencodeRunInfo {
+  run: { id: string; status: string };
+  delegation: OpencodeDelegation | null;
+  gate: { reason: string; decision: string | null } | null;
+  diff: OpencodeDiffEntry[];
+}
+
+export interface ProductOpencodeHistoryItem {
+  id: string;
+  runId: string;
+  runStatus: string;
+  workflowName: string;
+  opencodeSessionId: string;
+  status: string;
+  promptSummary: string | null;
+  resultSummary: string | null;
+  errorMessage: string | null;
+  diffCount: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+export interface ProductOpencodeHistory {
+  product: { id: string; slug: string; name: string };
+  delegations: ProductOpencodeHistoryItem[];
+}
+
+export interface ProductOpencodeLatest {
+  product: { id: string; name: string; slug: string };
+  delegation: {
+    id: string;
+    runId: string;
+    opencodeSessionId: string;
+    status: string;
+    resultSummary: string | null;
+    completedAt: string | null;
+  } | null;
+  diff: OpencodeDiffEntry[];
+  resultSummary: string | null;
 }
 
 export interface TenantMonthlyUsage {
@@ -784,6 +873,10 @@ export const api = {
         }),
     },
     team: (id: string) => request<ProductTeam>(`/products/${id}/team`),
+    opencodeHistory: (id: string) =>
+      request<ProductOpencodeHistory>(`/products/${id}/opencode/history`),
+    opencodeLatest: (id: string) =>
+      request<ProductOpencodeLatest>(`/products/${id}/opencode/latest`),
   },
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),
@@ -836,5 +929,25 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(body),
       }),
+    getOpencode: () => request<TenantOpencodeConfig>("/tenant/settings/opencode"),
+    updateOpencode: (body: Partial<TenantOpencodeConfig> & { password?: string | null }) =>
+      request<TenantOpencodeConfig>("/tenant/settings/opencode", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    testOpencode: () =>
+      request<{ ok: boolean; version?: string; error?: string }>("/tenant/settings/opencode/test", {
+        method: "POST",
+      }),
+  },
+  opencode: {
+    getRun: (runId: string) => request<OpencodeRunInfo>(`/runs/${runId}/opencode`),
+    resolveGate: (runId: string, decision: "proceed_local" | "cancel") =>
+      request<{ ok: boolean; decision: string }>(`/runs/${runId}/opencode-gate`, {
+        method: "POST",
+        body: JSON.stringify({ decision }),
+      }),
+    cancelDelegation: (runId: string) =>
+      request<{ ok: boolean; status: string }>(`/runs/${runId}/opencode/cancel`, { method: "POST" }),
   },
 };

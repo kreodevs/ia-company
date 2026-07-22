@@ -82,9 +82,14 @@ export interface ToolExecutionContext {
   workspaceRoot: string;
   shellTimeoutMs: number;
   runId: string;
+  tenantId?: string;
   productSlug?: string;
+  productId?: string;
   githubToken?: string;
+  toolMode?: "full" | "readonly" | "opencode_delegate";
+  sharedMemory?: SharedMemory;
   onLog?: (message: string, payload?: Record<string, unknown>) => void;
+  onDelegationStarted?: () => void;
 }
 
 export interface LLMUsage {
@@ -98,6 +103,7 @@ export interface StepResult {
   output: string;
   usage: LLMUsage;
   toolCalls: number;
+  delegated?: boolean;
 }
 
 export interface CreateAgentInput {
@@ -156,4 +162,7 @@ export interface ExecuteWorkflowInput {
   productSlug?: string;
   workflowName?: string;
   metaReason?: string;
+  resumeFromStepOrder?: number;
+  forceLocalImplementation?: boolean;
+  afterOpencodeDelegation?: boolean;
 }

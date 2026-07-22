@@ -8,6 +8,7 @@ import { help } from "./help";
 import { interests } from "./interests";
 import { language } from "./language";
 import { nav } from "./nav";
+import { opencode } from "./opencode";
 import { ops } from "./ops";
 import { phase } from "./phase";
 import { products } from "./products";
@@ -29,6 +30,7 @@ export const en = {
   consensus,
   decisions,
   ops,
+  opencode,
   products,
   settings,
   team,

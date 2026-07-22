@@ -14,6 +14,9 @@ export interface WorkflowJobData {
   productSlug?: string;
   workflowName?: string;
   metaReason?: string;
+  resumeFromStepOrder?: number;
+  forceLocalImplementation?: boolean;
+  afterOpencodeDelegation?: boolean;
 }
 
 let queue: Queue<WorkflowJobData> | null = null;

@@ -42,6 +42,9 @@ model Tenant {
   products TenantProduct[]
   pipelineIdeas PipelineIdea[]
   interests TenantInterest[]
+  opencodeConfig TenantOpencodeConfig?
+  opencodeDelegations OpencodeDelegation[]
+  opencodeRunGates OpencodeRunGate[]
 }
 
 enum TenantUserRole {
@@ -191,6 +194,8 @@ model WorkflowEdge {
 enum ExecutionStatus {
   PENDING
   RUNNING
+  DELEGATED
+  AWAITING_USER
   COMPLETED
   FAILED
   CANCELLED
@@ -213,6 +218,8 @@ model ExecutionRun {
   workflow Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   tenant   Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   logs     ExecutionLog[]
+  opencodeDelegation OpencodeDelegation?
+  opencodeRunGate    OpencodeRunGate?
 
   @@index([workflowId])
   @@index([status])
@@ -317,6 +324,7 @@ model TenantProduct {
   tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   focusCycles TenantCycleState[] @relation("FocusProduct")
   consensus   ProductConsensus?
+  opencodeDelegations OpencodeDelegation[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
@@ -490,6 +498,79 @@ model TenantNotificationConfig {
   updatedAt        DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ─── OpenCode integration (one instance per tenant) ─────────────────────────
+
+model TenantOpencodeConfig {
+  tenantId               String   @id
+  enabled                Boolean  @default(false)
+  baseUrl                String?
+  username               String?  @default("opencode")
+  password               String?  @db.Text
+  defaultAgent           String?
+  defaultModel           String?
+  projectPath            String?
+  pollIntervalMs         Int      @default(5000)
+  maxWaitMs              Int      @default(3600000)
+  autoApprovePermissions Boolean  @default(true)
+  updatedAt              DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+enum OpencodeDelegationStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  TIMEOUT
+  CANCELLED
+}
+
+model OpencodeDelegation {
+  id                String                   @id @default(cuid())
+  tenantId          String
+  runId             String                   @unique
+  productId         String?
+  opencodeSessionId String
+  status            OpencodeDelegationStatus @default(PENDING)
+  promptSummary     String?                  @db.Text
+  resultSummary     String?                  @db.Text
+  diffJson          Json?
+  resumeFromStepOrder Int                    @default(3)
+  errorMessage      String?                  @db.Text
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run     ExecutionRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
+  product TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([opencodeSessionId])
+}
+
+enum OpencodeGateDecision {
+  proceed_local
+  cancel
+}
+
+model OpencodeRunGate {
+  id         String                @id @default(cuid())
+  tenantId   String
+  runId      String                @unique
+  reason     String
+  decision   OpencodeGateDecision?
+  createdAt  DateTime              @default(now())
+  resolvedAt DateTime?
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run    ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
 }
 
 // ─── Usage limits (monthly caps) ─────────────────────────────────────────────

@@ -93,7 +93,7 @@ export async function notifyRunFinished(params: {
     (params.status === "FAILED" && config.notifyOnFail);
   if (!notify) return;
 
-  const payload = {
+  await dispatchTenantNotification(config, {
     event: "workflow.run.finished",
     runId: params.runId,
     status: params.status,
@@ -102,8 +102,60 @@ export async function notifyRunFinished(params: {
     totalTokens: params.totalTokens,
     errorMessage: params.errorMessage ?? null,
     timestamp: new Date().toISOString(),
-  };
+  });
+}
 
+export async function notifyOpencodeGateRequired(params: {
+  tenantId: string;
+  runId: string;
+  workflowName: string;
+}): Promise<void> {
+  const config = await prisma.tenantNotificationConfig.findUnique({
+    where: { tenantId: params.tenantId },
+  });
+  if (!config) return;
+
+  await dispatchTenantNotification(config, {
+    event: "opencode.gate.required",
+    runId: params.runId,
+    workflowName: params.workflowName,
+    message:
+      "OpenCode is not configured. Choose whether to continue with local Auto-Company coding or cancel the run.",
+    timestamp: new Date().toISOString(),
+  });
+}
+
+export async function notifyOpencodeDelegationCompleted(params: {
+  tenantId: string;
+  runId: string;
+  workflowName: string;
+  diffCount: number;
+  resultSummary: string;
+}): Promise<void> {
+  const config = await prisma.tenantNotificationConfig.findUnique({
+    where: { tenantId: params.tenantId },
+  });
+  if (!config?.notifyOnComplete) return;
+
+  await dispatchTenantNotification(config, {
+    event: "opencode.delegation.completed",
+    runId: params.runId,
+    workflowName: params.workflowName,
+    diffCount: params.diffCount,
+    summary: params.resultSummary.slice(0, 2000),
+    message: `OpenCode finished with ${params.diffCount} file change(s). Workflow will resume locally.`,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function dispatchTenantNotification(
+  config: {
+    webhookUrl: string | null;
+    slackWebhookUrl: string | null;
+    emailRecipients: string | null;
+  },
+  payload: Record<string, unknown>,
+): Promise<void> {
   const tasks: Promise<unknown>[] = [];
 
   if (config.webhookUrl) {
@@ -117,13 +169,17 @@ export async function notifyRunFinished(params: {
   }
 
   if (config.slackWebhookUrl) {
-    const emoji = params.status === "COMPLETED" ? "✅" : "❌";
+    const event = String(payload.event ?? "notification");
+    const workflowName = String(payload.workflowName ?? "workflow");
+    const runId = String(payload.runId ?? "");
+    const status = String(payload.status ?? event);
+    const emoji = status.includes("fail") || status.includes("cancel") ? "❌" : "⚠️";
     tasks.push(
       fetch(config.slackWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: `${emoji} *${params.workflowName}* — ${params.status}\nRun \`${params.runId}\` · $${params.totalCostUsd.toFixed(4)} · ${params.totalTokens} tokens`,
+          text: `${emoji} *${workflowName}* — ${status}\nRun \`${runId}\`\n${payload.message ?? ""}`,
         }),
       }).catch((err) => console.warn("[notify] slack failed:", err)),
     );
@@ -134,13 +190,13 @@ export async function notifyRunFinished(params: {
       .split(",")
       .map((e) => e.trim())
       .filter(Boolean);
+    const subject = `[Auto-Company] ${payload.workflowName ?? "Workflow"} — ${payload.event ?? "notification"}`;
     tasks.push(
       sendRunNotificationEmail({
         to: recipients,
-        subject: `[Auto-Company] ${params.workflowName} — ${params.status}`,
-        html: `<p>Workflow <strong>${params.workflowName}</strong> finished with status <strong>${params.status}</strong>.</p>
-               <ul><li>Run ID: ${params.runId}</li><li>Cost: $${params.totalCostUsd.toFixed(4)}</li><li>Tokens: ${params.totalTokens}</li></ul>
-               ${params.errorMessage ? `<p>Error: ${params.errorMessage}</p>` : ""}`,
+        subject,
+        html: `<p>${payload.message ?? "Notification from Auto-Company"}</p>
+               <ul><li>Run ID: ${payload.runId ?? ""}</li><li>Workflow: ${payload.workflowName ?? ""}</li></ul>`,
       }),
     );
   }
