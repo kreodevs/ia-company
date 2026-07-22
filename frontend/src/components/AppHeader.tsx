@@ -24,7 +24,7 @@ function NavLink({
 }
 
 export default function AppHeader() {
-  const { activeTenant, isSuperAdmin, isTenantAdmin, logout } = useAuth();
+  const { activeTenant, authenticated, isSuperAdmin, isTenantAdmin, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
@@ -58,6 +58,7 @@ export default function AppHeader() {
                 {isTenantAdmin && <NavLink to="/team">Team</NavLink>}
               </>
             )}
+            {authenticated && <NavLink to="/help">Ayuda</NavLink>}
           </nav>
         </div>
 
@@ -151,6 +152,11 @@ export default function AppHeader() {
                   </NavLink>
                 )}
               </>
+            )}
+            {authenticated && (
+              <NavLink to="/help" onNavigate={closeMobile}>
+                Ayuda
+              </NavLink>
             )}
             <button
               onClick={() => void logout()}

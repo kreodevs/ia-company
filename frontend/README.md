@@ -39,6 +39,7 @@ Two login modes at `/login`:
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
 | `/ops` | `OpsPage` | Multi-product portfolio, pipeline queue, meta-orchestrator preview |
 | `/settings` | `SettingsPage` | Tenant LLM keys + meta/fixed autonomous schedules (admin only) |
+| `/help` | `HelpPage` | Centro de ayuda — tutoriales en markdown |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Superadmin — React Flow editor for global workflow templates |
 
 Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
@@ -51,6 +52,17 @@ Workflow execute loads tenant **consensus** by default and syncs results back on
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
 - `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/workflows` and admin `/admin/templates`)
+- `MarkdownDoc` — renders help articles (GFM markdown via `react-markdown` + `remark-gfm`)
+
+## Help content
+
+Articles live under `src/content/help/`:
+
+| File | Route | Description |
+|------|-------|-------------|
+| `tutorial.md` | `/help/guia-completa` | Guía completa de la plataforma |
+
+Register new articles in `src/content/help/index.ts`.
 
 ## Development
 

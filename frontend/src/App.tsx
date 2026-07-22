@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import AppHeader from "./components/AppHeader";
 import {
   RequireSuperAdmin,
@@ -6,6 +6,7 @@ import {
   SetupGate,
 } from "./components/SetupGate";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import HelpPage from "./pages/HelpPage";
 import OpsPage from "./pages/OpsPage";
 import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
@@ -24,6 +25,7 @@ import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
 import TenantUsersPage from "./pages/TenantUsersPage";
 import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import WorkflowsPage from "./pages/WorkflowsPage";
+import { defaultHelpSlug } from "./content/help";
 
 function AppShell() {
   const { authenticated } = useAuth();
@@ -39,6 +41,8 @@ function AppShell() {
           <Route element={<SetupGate />}>
             <Route path="setup" element={<SetupSuperAdminPage />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="help" element={<Navigate to={`/help/${defaultHelpSlug}`} replace />} />
+            <Route path="help/:slug" element={<HelpPage />} />
 
             <Route element={<RequireSuperAdmin />}>
               <Route path="admin" element={<SuperAdminDashboardPage />} />
