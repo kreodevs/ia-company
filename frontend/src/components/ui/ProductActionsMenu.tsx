@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MoreHorizontal, Pause, Play, Archive, XCircle } from "lucide-react";
+import { MoreHorizontal, Pause, Play, Archive, XCircle, Ban, Trash2 } from "lucide-react";
 import { api, type ProductPhase, type TenantProduct } from "../../lib/api";
 import Button from "./Button";
 import ConfirmDialog from "./ConfirmDialog";
 
-type Action = "pause" | "resume" | "archive" | "noGo";
+type Action = "pause" | "resume" | "archive" | "noGo" | "cancel" | "delete";
 
 export interface ProductActionsMenuProps {
   product: TenantProduct;
@@ -40,25 +40,30 @@ export default function ProductActionsMenu({ product, onChange }: ProductActions
     if (!isPaused) actions.push("pause");
     if (isPaused) actions.push("resume");
     if (product.goNoGo !== "no_go") actions.push("noGo");
-    actions.push("archive");
+    actions.push("cancel", "delete", "archive");
     return actions;
   }, [isArchived, isPaused, product.goNoGo]);
 
   const runAction = async (action: Action) => {
-    const phase: ProductPhase | undefined =
-      action === "pause" ? "paused"
-      : action === "resume" ? "building"
-      : action === "archive" ? "archived"
-      : undefined;
-    const goNoGo = action === "noGo" ? "no_go" : undefined;
-
     setBusy(true);
     setError(null);
     try {
-      await api.products.update(product.id, {
-        ...(phase ? { phase } : {}),
-        ...(goNoGo ? { goNoGo } : {}),
-      });
+      if (action === "cancel") {
+        await api.products.cancel(product.id);
+      } else if (action === "delete") {
+        await api.products.delete(product.id);
+      } else {
+        const phase: ProductPhase | undefined =
+          action === "pause" ? "paused"
+          : action === "resume" ? "building"
+          : action === "archive" ? "archived"
+          : undefined;
+        const goNoGo = action === "noGo" ? "no_go" : undefined;
+        await api.products.update(product.id, {
+          ...(phase ? { phase } : {}),
+          ...(goNoGo ? { goNoGo } : {}),
+        });
+      }
       setPendingAction(null);
       setOpen(false);
       onChange?.();
@@ -103,6 +108,18 @@ export default function ProductActionsMenu({ product, onChange }: ProductActions
       titleKey: "products.actions.noGoTitle",
       descKey: "products.actions.noGoDescription",
       confirmKey: "products.actions.noGo",
+      destructive: true,
+    },
+    cancel: {
+      titleKey: "products.active.cancelTitle",
+      descKey: "products.active.cancelDescription",
+      confirmKey: "products.actions.cancelAndArchive",
+      destructive: true,
+    },
+    delete: {
+      titleKey: "products.actions.deleteProductTitle",
+      descKey: "products.actions.deleteProductDescription",
+      confirmKey: "products.actions.deleteProduct",
       destructive: true,
     },
   };
@@ -166,6 +183,34 @@ export default function ProductActionsMenu({ product, onChange }: ProductActions
             >
               <XCircle className="h-3.5 w-3.5" aria-hidden />
               {t("products.actions.markNoGo")}
+            </button>
+          )}
+          {availableActions.includes("cancel") && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setPendingAction("cancel");
+                setOpen(false);
+              }}
+              className="interactive flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10"
+            >
+              <Ban className="h-3.5 w-3.5" aria-hidden />
+              {t("products.actions.cancelAndArchive")}
+            </button>
+          )}
+          {availableActions.includes("delete") && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setPendingAction("delete");
+                setOpen(false);
+              }}
+              className="interactive flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10"
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden />
+              {t("products.actions.deleteProduct")}
             </button>
           )}
           {availableActions.includes("archive") && (

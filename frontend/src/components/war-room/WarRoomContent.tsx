@@ -7,6 +7,7 @@ import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
 import ProductActionsMenu from "../ui/ProductActionsMenu";
 import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
+import ProductWorkLauncher from "../products/ProductWorkLauncher";
 
 const ROLE_EMOJI: Record<string, string> = {
   "ceo-bezos": "👔",
@@ -178,6 +179,12 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
           trend={data.activeRun ? "up" : "down"}
         />
       </section>
+
+      <ProductWorkLauncher
+        productId={data.product.id}
+        productName={data.product.name}
+        onLaunched={() => void refresh()}
+      />
 
       <div className="war-room-grid">
         <aside className="war-room-radar">

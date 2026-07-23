@@ -373,6 +373,36 @@ export interface ProductsOverview {
   lastDiscoveryRun: { id: string; createdAt: string } | null;
 }
 
+export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
+
+export interface ProductLaunchOptionPreset {
+  id: string;
+  workflowName: string;
+  category: ProductWorkPresetCategory;
+  agentCount: number;
+  workflowId: string | null;
+  available: boolean;
+}
+
+export interface ProductLaunchOptionAgent {
+  id: string;
+  name: string;
+  role: string;
+}
+
+export interface ProductLaunchOptionWorkflow {
+  id: string;
+  name: string;
+  description: string | null;
+  stepCount: number;
+}
+
+export interface ProductLaunchOptions {
+  presets: ProductLaunchOptionPreset[];
+  workflows: ProductLaunchOptionWorkflow[];
+  agents: ProductLaunchOptionAgent[];
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -794,6 +824,8 @@ export const api = {
         initialMemory?: Record<string, unknown>;
         mergeConsensus?: boolean;
         syncConsensus?: boolean;
+        productId?: string;
+        productSlug?: string;
       },
     ) =>
       request<{ runId: string }>(`/workflows/${id}/execute`, {
@@ -891,8 +923,44 @@ export const api = {
         method: "PUT",
         body: JSON.stringify({ decision }),
       }),
+    deletePipelineIdea: (id: string) =>
+      request<void>(`/products/pipeline/${id}`, { method: "DELETE" }),
     evaluateIdea: (id: string) =>
       request<{ runId: string }>(`/products/pipeline/${id}/evaluate`, { method: "POST" }),
+    cancel: (id: string) =>
+      request<TenantProduct>(`/products/${id}/cancel`, { method: "POST" }),
+    delete: (id: string) => request<void>(`/products/${id}`, { method: "DELETE" }),
+    importable: () =>
+      request<{ workspaces: Array<{ slug: string; path: string; hasCode: boolean }> }>(
+        "/products/importable",
+      ),
+    register: (body: {
+      slug: string;
+      name: string;
+      description?: string;
+      phase?: ProductPhase;
+    }) =>
+      request<{
+        product: TenantProduct;
+        hasExistingCode: boolean;
+        workspacePath: string;
+      }>("/products/register", { method: "POST", body: JSON.stringify(body) }),
+    launchOptions: (id: string) => request<ProductLaunchOptions>(`/products/${id}/launch-options`),
+    launch: (
+      id: string,
+      body: {
+        presetId?: string;
+        workflowId?: string;
+        agentId?: string;
+        task?: string;
+        mergeConsensus?: boolean;
+        setFocus?: boolean;
+      },
+    ) =>
+      request<{ runId: string; workflowId: string; workflowName: string; status: string }>(
+        `/products/${id}/launch`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
     bootstrap: (body: { name: string; slug?: string; description?: string }) =>
       request<TenantProduct>("/products/bootstrap", { method: "POST", body: JSON.stringify(body) }),
     consensus: {

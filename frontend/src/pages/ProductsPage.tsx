@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FileText, Focus, PlayCircle, ScrollText, Target } from "lucide-react";
+import { FileText, Focus, PlayCircle, Plus, ScrollText, Target } from "lucide-react";
 import { api, type OpencodeActiveInfo, type PipelineIdea, type ProductsOverview, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
@@ -13,6 +14,8 @@ import Panel from "../components/ui/Panel";
 import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import TabsBar from "../components/ui/TabsBar";
+import ProductWorkLauncher from "../components/products/ProductWorkLauncher";
+import AddProductDialog from "../components/products/AddProductDialog";
 
 type ProductsTab = "opportunities" | "active";
 
@@ -30,6 +33,7 @@ export default function ProductsPage() {
   const [overview, setOverview] = useState<ProductsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [evaluatingIdeaId, setEvaluatingIdeaId] = useState<string | null>(null);
+  const [addProductOpen, setAddProductOpen] = useState(false);
 
   const activeTab: ProductsTab =
     searchParams.get("tab") === "active" ? "active" : "opportunities";
@@ -75,6 +79,36 @@ export default function ProductsPage() {
     }
   };
 
+  const deleteIdea = async (ideaId: string) => {
+    try {
+      await api.products.deletePipelineIdea(ideaId);
+      toast.success(t("products.toast.ideaDeleted"));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.deleteFailed"));
+    }
+  };
+
+  const cancelProduct = async (productId: string) => {
+    try {
+      await api.products.cancel(productId);
+      toast.success(t("products.toast.productCancelled"));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.saveFailed"));
+    }
+  };
+
+  const deleteProduct = async (productId: string) => {
+    try {
+      await api.products.delete(productId);
+      toast.success(t("products.toast.productDeleted"));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.deleteFailed"));
+    }
+  };
+
   const focusProduct = async (product: TenantProduct) => {
     try {
       await api.products.focus(product.id);
@@ -97,7 +131,30 @@ export default function ProductsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <PageHeader title={t("products.title")} subtitle={t("products.subtitle")} />
+      <PageHeader
+        title={t("products.title")}
+        subtitle={t("products.subtitle")}
+        actions={
+          <Button onClick={() => setAddProductOpen(true)}>
+            <Plus className="mr-1.5 h-4 w-4" aria-hidden />
+            {t("products.active.addProduct")}
+          </Button>
+        }
+      />
+
+      <AddProductDialog
+        open={addProductOpen}
+        onClose={() => setAddProductOpen(false)}
+        onCreated={(product, mode) => {
+          toast.success(
+            t(mode === "bootstrap" ? "products.toast.productBootstrapped" : "products.toast.productRegistered"),
+          );
+          void load().then(() => {
+            setTab("active");
+            navigate(`/war-room/${product.id}`);
+          });
+        }}
+      />
 
       <TabsBar
         activeId={activeTab}
@@ -162,6 +219,7 @@ export default function ProductsPage() {
                   isEvaluating={evaluatingIdeaId === idea.id}
                   onEvaluate={() => void evaluateIdea(idea.id)}
                   onReject={() => void rejectIdea(idea.id)}
+                  onDelete={() => void deleteIdea(idea.id)}
                   t={t}
                 />
               ))}
@@ -173,9 +231,15 @@ export default function ProductsPage() {
           title={t("products.active.title")}
           subtitle={t("products.active.subtitle")}
           actions={
-            <span className="text-xs text-[var(--color-muted-foreground)]">
-              {t("products.active.count", { count: overview.products.length })}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--color-muted-foreground)]">
+                {t("products.active.count", { count: overview.products.length })}
+              </span>
+              <Button variant="secondary" size="sm" onClick={() => setAddProductOpen(true)}>
+                <Plus className="mr-1 h-3.5 w-3.5" aria-hidden />
+                {t("products.active.addProduct")}
+              </Button>
+            </div>
           }
           bodySize="sm"
         >
@@ -184,11 +248,10 @@ export default function ProductsPage() {
               title={t("products.active.emptyTitle")}
               description={t("products.active.emptyHint")}
               action={
-                overview.pipeline.length > 0 ? (
-                  <Button variant="secondary" onClick={() => setTab("opportunities")}>
-                    {t("products.tabs.opportunities")}
-                  </Button>
-                ) : null
+                <Button onClick={() => setAddProductOpen(true)}>
+                  <Plus className="mr-1.5 h-4 w-4" aria-hidden />
+                  {t("products.active.addProduct")}
+                </Button>
               }
             />
           ) : (
@@ -200,6 +263,8 @@ export default function ProductsPage() {
                   isFocused={overview.focusProduct?.id === product.id}
                   opencodeActive={overview.opencodeActiveByProductId?.[product.id] ?? null}
                   onFocus={() => void focusProduct(product)}
+                  onCancel={() => cancelProduct(product.id)}
+                  onDelete={() => deleteProduct(product.id)}
                   onChange={() => void load()}
                   t={t}
                 />
@@ -217,14 +282,40 @@ function OpportunityRow({
   isEvaluating,
   onEvaluate,
   onReject,
+  onDelete,
   t,
 }: {
   idea: PipelineIdea;
   isEvaluating: boolean;
   onEvaluate: () => void;
-  onReject: () => void;
+  onReject: () => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
+  const [confirmReject, setConfirmReject] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const handleReject = async () => {
+    setBusy(true);
+    try {
+      await onReject();
+      setConfirmReject(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setBusy(true);
+    try {
+      await onDelete();
+      setConfirmDelete(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <li className="py-4 first:pt-0 last:pb-0">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -250,15 +341,51 @@ function OpportunityRow({
             {isEvaluating ? t("products.opportunities.evaluating") : t("products.opportunities.evaluate")}
           </Button>
           {idea.goNoGo !== "no_go" && (
-            <Button variant="ghost" size="sm" className="text-[var(--color-destructive)]" onClick={onReject}>
-              {t("products.opportunities.noGo")}
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[var(--color-destructive)]"
+                onClick={() => setConfirmReject(true)}
+              >
+                {t("products.opportunities.discard")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[var(--color-destructive)]"
+                onClick={() => setConfirmDelete(true)}
+              >
+                {t("products.opportunities.delete")}
+              </Button>
+            </>
           )}
         </div>
       </div>
       {idea.goNoGo === "pending" && (
         <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">{t("products.opportunities.noGoHint")}</p>
       )}
+
+      <ConfirmDialog
+        open={confirmReject}
+        title={t("products.opportunities.discardTitle", { name: idea.title })}
+        description={t("products.opportunities.discardDescription")}
+        confirmLabel={t("products.opportunities.discard")}
+        destructive
+        busy={busy}
+        onCancel={() => (busy ? undefined : setConfirmReject(false))}
+        onConfirm={() => void handleReject()}
+      />
+      <ConfirmDialog
+        open={confirmDelete}
+        title={t("products.opportunities.deleteTitle", { name: idea.title })}
+        description={t("products.opportunities.deleteDescription")}
+        confirmLabel={t("products.opportunities.delete")}
+        destructive
+        busy={busy}
+        onCancel={() => (busy ? undefined : setConfirmDelete(false))}
+        onConfirm={() => void handleDelete()}
+      />
     </li>
   );
 }
@@ -268,6 +395,8 @@ function ActiveProductCard({
   isFocused,
   opencodeActive,
   onFocus,
+  onCancel,
+  onDelete,
   onChange,
   t,
 }: {
@@ -275,9 +404,38 @@ function ActiveProductCard({
   isFocused: boolean;
   opencodeActive: OpencodeActiveInfo | null;
   onFocus: () => void;
+  onCancel: () => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
   onChange: () => void;
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const isArchived = product.phase === "archived";
+
+  const runCancel = async () => {
+    setBusy(true);
+    try {
+      await onCancel();
+      setConfirmCancel(false);
+      onChange();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const runDelete = async () => {
+    setBusy(true);
+    try {
+      await onDelete();
+      setConfirmDelete(false);
+      onChange();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <li>
       <div
@@ -372,8 +530,60 @@ function ActiveProductCard({
               {t("products.active.focus")}
             </button>
           )}
+          {!isArchived && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[var(--color-destructive)]"
+                onClick={() => setConfirmCancel(true)}
+              >
+                {t("products.active.cancel")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[var(--color-destructive)]"
+                onClick={() => setConfirmDelete(true)}
+              >
+                {t("products.active.delete")}
+              </Button>
+            </>
+          )}
         </div>
+
+        {!isArchived && (
+          <div className="mt-3">
+            <ProductWorkLauncher
+              productId={product.id}
+              productName={product.name}
+              compact
+              onLaunched={onChange}
+            />
+          </div>
+        )}
       </div>
+
+      <ConfirmDialog
+        open={confirmCancel}
+        title={t("products.active.cancelTitle", { name: product.name })}
+        description={t("products.active.cancelDescription")}
+        confirmLabel={t("products.active.cancel")}
+        destructive
+        busy={busy}
+        onCancel={() => (busy ? undefined : setConfirmCancel(false))}
+        onConfirm={() => void runCancel()}
+      />
+      <ConfirmDialog
+        open={confirmDelete}
+        title={t("products.active.deleteTitle", { name: product.name })}
+        description={t("products.active.deleteDescription")}
+        confirmLabel={t("products.active.delete")}
+        destructive
+        busy={busy}
+        onCancel={() => (busy ? undefined : setConfirmDelete(false))}
+        onConfirm={() => void runDelete()}
+      />
     </li>
   );
 }

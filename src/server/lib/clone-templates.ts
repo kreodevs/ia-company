@@ -332,3 +332,76 @@ export async function syncPlatformTemplatesToTenants(
 
   return results;
 }
+
+/** Ensures a platform workflow exists on the tenant (copies from platform template if missing). */
+export async function ensurePlatformWorkflowOnTenant(tenantId: string, workflowName: string) {
+  const existing = await prisma.workflow.findFirst({
+    where: { tenantId, name: workflowName },
+    select: { id: true, name: true, description: true },
+  });
+  if (existing) return existing;
+
+  const platformWorkflow = await prisma.workflow.findFirst({
+    where: { tenantId: null, name: workflowName },
+    include: { steps: true, edges: true },
+  });
+  if (!platformWorkflow) return null;
+
+  const [platformAgents, tenantAgents] = await Promise.all([
+    prisma.agent.findMany({ where: { tenantId: null } }),
+    prisma.agent.findMany({ where: { tenantId } }),
+  ]);
+  const platformAgentById = new Map(platformAgents.map((a) => [a.id, a]));
+  const tenantAgentByName = new Map(tenantAgents.map((a) => [a.name, a.id]));
+
+  const agentIdMap = new Map<string, string>();
+  for (const step of platformWorkflow.steps) {
+    const platformAgent = platformAgentById.get(step.agentId);
+    if (!platformAgent) continue;
+    const tenantAgentId = tenantAgentByName.get(platformAgent.name);
+    if (tenantAgentId) agentIdMap.set(step.agentId, tenantAgentId);
+  }
+
+  const workflowId = await copyWorkflowGraphToTenant(tenantId, platformWorkflow, agentIdMap);
+  return prisma.workflow.findUnique({
+    where: { id: workflowId },
+    select: { id: true, name: true, description: true },
+  });
+}
+
+/** Creates or returns a single-step workflow for one agent task on a product. */
+export async function ensureAgentTaskWorkflow(tenantId: string, agentId: string) {
+  const agent = await prisma.agent.findFirst({
+    where: { id: agentId, tenantId },
+    select: { id: true, name: true, role: true },
+  });
+  if (!agent) return null;
+
+  const wfName = `_agent-${agent.name}`;
+  const existing = await prisma.workflow.findFirst({
+    where: { tenantId, name: wfName },
+    select: { id: true, name: true, description: true },
+  });
+  if (existing) return existing;
+
+  const workflow = await prisma.workflow.create({
+    data: {
+      tenantId,
+      name: wfName,
+      description: `Single-agent task: ${agent.role}`,
+      isActive: true,
+    },
+    select: { id: true, name: true, description: true },
+  });
+
+  await prisma.workflowStep.create({
+    data: {
+      workflowId: workflow.id,
+      agentId: agent.id,
+      stepOrder: 0,
+      label: agent.role,
+    },
+  });
+
+  return workflow;
+}

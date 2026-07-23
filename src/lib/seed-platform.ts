@@ -87,7 +87,7 @@ function inferSkillsForAgent(slug: string): string[] {
     "fullstack-dhh": ["tailwind-v4-shadcn", "code-review-security"],
     "qa-bach": ["senior-qa", "security-audit"],
     "devops-hightower": ["devops"],
-    "marketing-godin": ["content-strategy", "seo-content-strategist"],
+    "marketing-godin": ["content-strategy", "seo-content-strategist", "seo-audit"],
     "operations-pg": ["community-led-growth", "ph-community-outreach"],
     "sales-ross": ["pricing-strategy", "cold-email-sequence-generator"],
     "cfo-campbell": ["financial-unit-economics", "startup-financial-modeling"],
@@ -186,6 +186,16 @@ const DEFAULT_WORKFLOWS = [
       "critic-munger",
       "cfo-campbell",
     ],
+  },
+  {
+    name: "seo-review",
+    description: "SEO audit, keywords, meta tags, and content plan",
+    steps: ["marketing-godin"],
+  },
+  {
+    name: "marketing-sprint",
+    description: "Marketing → Sales → Growth — campaign, funnel, outreach",
+    steps: ["marketing-godin", "sales-ross", "operations-pg"],
   },
 ];
 
