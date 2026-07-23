@@ -88,7 +88,18 @@ export const settings = {
     modeDynamic: "Dynamic orchestrator",
     workflowLabel: "Workflow",
     dynamicWorkflow: "Dynamic workflow",
-    dynamicDescription: "The meta-orchestrator picks discovery, evaluation, build, or growth.",
+    dynamicDescription:
+      "No fixed workflow: each cycle the meta-orchestrator picks one based on portfolio and phase.",
+    dynamicModeTitle: "No fixed workflow — automatic selection",
+    dynamicModeHint:
+      "This mode has no workflow selector because it does not always run the same one. On each tick the platform's native meta-orchestrator picks which workflow to launch based on pending ideas, building products, and company phase.",
+    dynamicPick: {
+      discovery: "Empty pipeline or exploring phase → opportunity-discovery",
+      evaluation: "Pending idea → new-product-evaluation",
+      build: "Building product → feature-development or product-launch",
+      growth: "Growing product → pricing-and-monetization / launch",
+    },
+    dynamicPreviewHint: "See the exact next workflow under Operations before it runs.",
     fixedDescription: "Runs {{workflow}} on schedule when conditions match.",
     timingModeLabel: "Timing mode",
     timingInterval: "Interval",
