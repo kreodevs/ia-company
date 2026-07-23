@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { backfillPipelineFromLastDiscovery } from "../../lib/convergence.js";
-import { resolveMetaOrchestratorDecision } from "../../core/meta-orchestrator.js";
+import { previewOrchestrationPlan, ensureDefaultOrchestrationPlan } from "../../lib/orchestration-plan.js";
 import { filterActionablePipelineIdeas } from "../../lib/pipeline-utils.js";
 import {
   ensureDefaultProducts,
@@ -32,7 +32,7 @@ export async function opsRoutes(app: FastifyInstance) {
         prisma.tenantConsensus.findUnique({ where: { tenantId } }),
         prisma.autonomousSchedule.findMany({
           where: { tenantId },
-          orderBy: { createdAt: "desc" },
+          orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
         }),
         prisma.executionRun.findMany({
           where: { tenantId },
@@ -95,9 +95,22 @@ export async function opsRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Querystring: { days?: string } }>("/ops/orchestration-preview", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      await ensureDefaultOrchestrationPlan(tenantId);
+      const days = Math.min(30, Math.max(1, Number(request.query.days ?? 7) || 7));
+      const preview = await previewOrchestrationPlan(tenantId, days);
+      return { days, preview };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get("/ops/next-run", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
+      const { resolveMetaOrchestratorDecision } = await import("../../core/meta-orchestrator.js");
       const decision = await resolveMetaOrchestratorDecision(tenantId);
       return {
         workflowId: decision.workflowId,

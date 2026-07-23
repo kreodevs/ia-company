@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { hashPassword } from "../../lib/auth.js";
 import { clonePlatformTemplatesToTenant, syncPlatformTemplatesToTenant } from "../lib/clone-templates.js";
-import { ensureMetaSchedule } from "../../core/meta-orchestrator.js";
+import { ensureDefaultOrchestrationPlan } from "../../lib/orchestration-plan.js";
 import { ensureDefaultProducts, ensureTenantCycleState } from "../../lib/product-registry.js";
 import { syncTenantConsensusToWorkspace } from "../../lib/consensus.js";
 import { logAudit } from "../../lib/audit.js";
@@ -137,7 +137,7 @@ export async function adminRoutes(app: FastifyInstance) {
 
       await ensureTenantCycleState(tenant.id);
       await ensureDefaultProducts(tenant.id, tenant.slug);
-      await ensureMetaSchedule(tenant.id);
+      await ensureDefaultOrchestrationPlan(tenant.id);
 
       const cloned = cloneTemplates
         ? await clonePlatformTemplatesToTenant(tenant.id)

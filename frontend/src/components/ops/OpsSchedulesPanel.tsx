@@ -62,11 +62,7 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
 
   const sortedSchedules = useMemo(
     () =>
-      [...schedules].sort((a, b) => {
-        if (a.scheduleKind === "meta" && b.scheduleKind !== "meta") return -1;
-        if (b.scheduleKind === "meta" && a.scheduleKind !== "meta") return 1;
-        return a.name.localeCompare(b.name);
-      }),
+      [...schedules].sort((a, b) => b.priority - a.priority || a.name.localeCompare(b.name)),
     [schedules],
   );
 
@@ -187,7 +183,7 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
         ) : (
           <ul className="divide-y divide-[var(--color-border)]">
             {sortedSchedules.map((schedule) => {
-              const isMeta = schedule.scheduleKind === "meta";
+              const isDynamic = schedule.orchestrationMode === "meta_dynamic";
               const workflowName = schedule.workflowId
                 ? workflowNameById.get(schedule.workflowId)
                 : undefined;
@@ -203,14 +199,14 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
                         <CalendarClock className="h-4 w-4 text-[var(--color-primary)]" aria-hidden />
                         <span className="font-medium">{schedule.name}</span>
                         <StatusPill status={schedule.enabled ? "running" : "paused"} />
-                        {isMeta ? (
+                        {isDynamic ? (
                           <span className="rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)]">
                             {t("ops.schedules.metaBadge")}
                           </span>
                         ) : null}
                       </div>
                       <p className="text-sm text-[var(--color-muted-foreground)]">
-                        {isMeta
+                        {isDynamic
                           ? t("ops.schedules.metaDescription")
                           : t("ops.schedules.workflowDescription", {
                               workflow: workflowLabel(workflowName, t),
@@ -219,7 +215,13 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
                       <dl className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--color-muted-foreground)]">
                         <div>
                           <dt className="inline font-medium">{t("ops.schedules.every")}: </dt>
-                          <dd className="inline">{formatInterval(schedule.intervalSec, t)}</dd>
+                          <dd className="inline">
+                            {schedule.cronExpr ?? formatInterval(schedule.intervalSec, t)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="inline font-medium">{t("settings.orchestration.priorityLabel", { value: schedule.priority }).replace(/:?\s*$/, "")}: </dt>
+                          <dd className="inline">{schedule.priority}</dd>
                         </div>
                         {schedule.nextRunAt && schedule.enabled ? (
                           <div>
@@ -285,22 +287,16 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
                     >
                       {schedule.enabled ? t("common.pause") : t("common.enable")}
                     </Button>
-                    {!isMeta ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-[var(--color-destructive)]"
-                        disabled={isBusy}
-                        onClick={() => setDeleteId(schedule.id)}
-                      >
-                        <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden />
-                        {t("ops.schedules.cancel")}
-                      </Button>
-                    ) : (
-                      <span className="self-center text-xs text-[var(--color-muted-foreground)]">
-                        {t("ops.schedules.metaNoDelete")}
-                      </span>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-[var(--color-destructive)]"
+                      disabled={isBusy}
+                      onClick={() => setDeleteId(schedule.id)}
+                    >
+                      <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden />
+                      {t("ops.schedules.cancel")}
+                    </Button>
                   </div>
                 </li>
               );

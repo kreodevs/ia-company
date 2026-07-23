@@ -1,0 +1,62 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { computeNextRunAt, normalizeIntervalSec } from "../src/lib/schedule-timing.js";
+import {
+  conditionsAreEmpty,
+  evaluateScheduleConditions,
+} from "../src/lib/orchestration-conditions.js";
+import { isOrchestrationPresetId } from "../src/lib/orchestration-presets.js";
+
+test("normalizeIntervalSec enforces minimum 60 seconds", () => {
+  assert.equal(normalizeIntervalSec(30), 60);
+  assert.equal(normalizeIntervalSec(1800), 1800);
+});
+
+test("computeNextRunAt uses interval when cron is absent", () => {
+  const from = new Date("2026-07-22T12:00:00.000Z");
+  const next = computeNextRunAt({ from, intervalSec: 3600 });
+  assert.equal(next.toISOString(), "2026-07-22T13:00:00.000Z");
+});
+
+test("computeNextRunAt finds next Saturday 9:00 for weekly discovery cron", () => {
+  const from = new Date("2026-07-22T12:00:00.000Z"); // Wednesday
+  const next = computeNextRunAt({ from, cronExpr: "0 9 * * 6" });
+  assert.equal(next.getDay(), 6);
+  assert.equal(next.getHours(), 9);
+  assert.equal(next.getMinutes(), 0);
+});
+
+test("evaluateScheduleConditions respects pipeline and phase gates", () => {
+  const base = {
+    phase: "exploring" as const,
+    pipelineCount: 0,
+    buildingCount: 0,
+    growingCount: 0,
+    hasPendingIdea: false,
+    pendingDecisions: 0,
+  };
+
+  assert.equal(
+    evaluateScheduleConditions({ pipelineEmpty: true }, { ...base, pipelineCount: 2 }).met,
+    false,
+  );
+  assert.equal(
+    evaluateScheduleConditions({ phases: ["exploring"] }, base).met,
+    true,
+  );
+  assert.equal(
+    evaluateScheduleConditions({ noPendingDecisions: true }, { ...base, pendingDecisions: 1 }).met,
+    false,
+  );
+});
+
+test("conditionsAreEmpty detects empty condition objects", () => {
+  assert.equal(conditionsAreEmpty(null), true);
+  assert.equal(conditionsAreEmpty({}), true);
+  assert.equal(conditionsAreEmpty({ pipelineEmpty: true }), false);
+});
+
+test("orchestration preset ids are validated", () => {
+  assert.equal(isOrchestrationPresetId("discovery_only"), true);
+  assert.equal(isOrchestrationPresetId("unknown"), false);
+});

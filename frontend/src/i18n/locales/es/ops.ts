@@ -152,4 +152,11 @@ export const ops = {
     cancelled: "Programación eliminada.",
     metaNoDelete: "El meta cycle solo se pausa, no se elimina.",
   },
+  orchestrationPreview: {
+    title: "Próximos 7 días",
+    subtitle: "Disparos proyectados según programación y condiciones actuales.",
+    empty: "No hay reglas activas programadas en los próximos 7 días.",
+    willRun: "Se ejecutará",
+    skipped: "Omitido: {{reason}}",
+  },
 } as const;

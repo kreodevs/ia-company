@@ -4,6 +4,7 @@ export const WORKFLOW_NAMES = {
   FEATURE_DEVELOPMENT: "feature-development",
   PRODUCT_LAUNCH: "product-launch",
   PRICING_MONETIZATION: "pricing-and-monetization",
+  WEEKLY_REVIEW: "weekly-review",
   RESEARCH_DRILLDOWN: "research-drilldown",
 } as const;
 

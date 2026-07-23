@@ -181,19 +181,11 @@ export async function executeMetaScheduleRun(tenantId: string): Promise<string> 
 }
 
 export async function ensureMetaSchedule(tenantId: string) {
-  const existing = await prisma.autonomousSchedule.findFirst({
-    where: { tenantId, scheduleKind: "meta" },
-  });
-  if (existing) return existing;
-
-  return prisma.autonomousSchedule.create({
-    data: {
-      tenantId,
-      scheduleKind: "meta",
-      name: "Autonomous company (meta)",
-      intervalSec: 1800,
-      enabled: true,
-      nextRunAt: new Date(),
-    },
-  });
+  const { ensureDefaultOrchestrationPlan } = await import("../lib/orchestration-plan.js");
+  const schedules = await ensureDefaultOrchestrationPlan(tenantId);
+  return (
+    schedules.find((schedule) => schedule.orchestrationMode === "meta_dynamic") ??
+    schedules[0] ??
+    null
+  );
 }

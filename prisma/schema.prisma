@@ -294,6 +294,11 @@ enum ScheduleKind {
   meta
 }
 
+enum OrchestrationMode {
+  fixed
+  meta_dynamic
+}
+
 model TenantCycleState {
   tenantId       String       @id
   cycleNumber    Int          @default(1)
@@ -449,17 +454,21 @@ model TenantLlmConfig {
 // ─── Autonomous scheduler (replaces auto-loop.sh per tenant) ──────────────────
 
 model AutonomousSchedule {
-  id           String       @id @default(cuid())
-  tenantId     String
-  scheduleKind ScheduleKind @default(workflow)
-  workflowId   String?
-  name         String
-  intervalSec  Int          @default(1800)
-  enabled      Boolean      @default(true)
-  lastRunAt    DateTime?
-  nextRunAt    DateTime?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id                String            @id @default(cuid())
+  tenantId          String
+  scheduleKind      ScheduleKind      @default(workflow)
+  orchestrationMode OrchestrationMode @default(fixed)
+  workflowId        String?
+  name              String
+  intervalSec       Int               @default(1800)
+  cronExpr          String?
+  priority          Int               @default(0)
+  conditions        Json?
+  enabled           Boolean           @default(true)
+  lastRunAt         DateTime?
+  nextRunAt         DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
