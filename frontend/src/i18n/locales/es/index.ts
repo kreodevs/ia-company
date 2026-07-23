@@ -8,6 +8,7 @@ import { help } from "./help";
 import { interests } from "./interests";
 import { language } from "./language";
 import { nav } from "./nav";
+import { office } from "./office";
 import { opencode } from "./opencode";
 import { ops } from "./ops";
 import { phase } from "./phase";
@@ -37,6 +38,7 @@ export const es = {
   settings,
   team,
   warRoom,
+  office,
   help,
   interests,
   code,

@@ -21,6 +21,12 @@ export interface OrchestrationPreset {
 }
 
 export const ORCHESTRATION_PRESETS: Record<OrchestrationPresetId, OrchestrationPreset> = {
+  on_demand: {
+    id: "on_demand",
+    labelKey: "settings.orchestration.presets.onDemand.label",
+    descriptionKey: "settings.orchestration.presets.onDemand.description",
+    rules: [],
+  },
   discovery_only: {
     id: "discovery_only",
     labelKey: "settings.orchestration.presets.discoveryOnly.label",

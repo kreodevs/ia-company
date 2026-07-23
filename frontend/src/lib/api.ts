@@ -478,6 +478,94 @@ export interface OpsNextRun {
   reason: string;
 }
 
+export type OfficeMode = "on_demand" | "scheduled" | "autonomous";
+
+export interface OfficeTaskAgent {
+  id: string;
+  name: string;
+  role: string;
+  reasonKey: string;
+}
+
+export interface OfficeTaskPlan {
+  planId: string;
+  request: string;
+  summary: string;
+  coordinatorNoteKey: string;
+  agents: OfficeTaskAgent[];
+  workflowId: string | null;
+  workflowName: string | null;
+  presetId: string | null;
+  productId: string | null;
+  productName: string | null;
+  deliverableKey: string;
+  estimatedCostUsd: { min: number; max: number };
+  estimatedMinutes: { min: number; max: number };
+  mode: "workflow" | "team" | "single";
+  serviceId: string | null;
+}
+
+export interface OfficeActivityItem {
+  id: string;
+  type: "run_active" | "run_completed" | "run_failed" | "decision_pending" | "schedule_upcoming";
+  title: string;
+  subtitle: string;
+  timestamp: string;
+  href: string | null;
+  status?: string;
+  costUsd?: number;
+}
+
+export interface OfficeRoiProduct {
+  id: string;
+  name: string;
+  slug: string;
+  phase: string;
+  revenueUsd: number;
+  investedUsd: number;
+  roiPct: number | null;
+  runsCount: number;
+}
+
+export interface OfficeServiceTemplate {
+  id: string;
+  category: string;
+  emoji: string;
+  labelKey: string;
+  descKey: string;
+  examplePromptKey: string;
+  agentNames: string[];
+  deliverableKey: string;
+}
+
+export interface OfficeDashboard {
+  mode: OfficeMode;
+  autonomyEnabled: boolean;
+  usage: {
+    periodStart: string;
+    runs: number;
+    totalTokens: number;
+    totalCostUsd: number;
+    limits: {
+      maxRunsPerMonth: number | null;
+      maxCostUsdPerMonth: number | null;
+      maxTokensPerMonth: number | null;
+    };
+  };
+  stats: {
+    activeRuns: number;
+    pendingDecisions: number;
+    agentsTotal: number;
+    productsActive: number;
+    totalInvestedUsd: number;
+    totalRevenueUsd: number;
+  };
+  activity: OfficeActivityItem[];
+  roi: OfficeRoiProduct[];
+  agents: Array<{ id: string; name: string; role: string; status: "idle" | "busy" }>;
+  services: OfficeServiceTemplate[];
+}
+
 export interface TenantLlmConfig {
   tenantId: string;
   platformProvider: string;
@@ -1041,6 +1129,23 @@ export const api = {
       request<ProductOpencodeHistory>(`/products/${id}/opencode/history`),
     opencodeLatest: (id: string) =>
       request<ProductOpencodeLatest>(`/products/${id}/opencode/latest`),
+  },
+  office: {
+    dashboard: () => request<OfficeDashboard>("/office/dashboard"),
+    planTask: (body: { request: string; productId?: string; serviceId?: string }) =>
+      request<OfficeTaskPlan>("/office/tasks/plan", { method: "POST", body: JSON.stringify(body) }),
+    executeTask: (body: {
+      request: string;
+      productId?: string;
+      serviceId?: string;
+      agentIds?: string[];
+      workflowId?: string;
+      presetId?: string;
+    }) =>
+      request<{ runId: string; workflowId: string; workflowName: string }>(
+        "/office/tasks/execute",
+        { method: "POST", body: JSON.stringify(body) },
+      ),
   },
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),

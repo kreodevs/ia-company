@@ -24,7 +24,7 @@ export function SetupGate() {
   }
 
   if (authenticated && ["/login", "/setup"].includes(location.pathname)) {
-    return <Navigate to={kind === "tenant" ? "/ops" : "/admin"} replace />;
+    return <Navigate to={kind === "tenant" ? "/office" : "/admin"} replace />;
   }
 
   return <Outlet />;

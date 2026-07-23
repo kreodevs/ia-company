@@ -10,6 +10,7 @@ import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 import ProductWorkLauncher from "../products/ProductWorkLauncher";
 
 const ROLE_EMOJI: Record<string, string> = {
+  "coordinator-chief": "🎩",
   "ceo-bezos": "👔",
   "cto-vogels": "🛠️",
   "cfo-campbell": "💰",

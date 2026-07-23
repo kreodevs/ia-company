@@ -92,6 +92,7 @@ function inferSkillsForAgent(slug: string): string[] {
     "sales-ross": ["pricing-strategy", "cold-email-sequence-generator"],
     "cfo-campbell": ["financial-unit-economics", "startup-financial-modeling"],
     "research-thompson": ["deep-research", "competitive-intelligence-analyst"],
+    "coordinator-chief": ["team", "product-strategist"],
   };
   return map[slug] ?? [];
 }

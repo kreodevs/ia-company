@@ -14,10 +14,11 @@ Route-level screens for the Auto-Company frontend.
 
 ## Tenant workspace
 
-Sidebar groups (see `AppSidebar.tsx`): **Empresa autónoma** (ops → products → war room → decisions → runs), **Memoria** (consensus), **Catálogo IA** (workflows, agents, skills), **Administración** (settings, team). Default landing after login: `/ops`.
+Sidebar groups (see `AppSidebar.tsx`): **Office** (home), **Portfolio & ops** (ops → products → war room → decisions → runs), **Memoria** (consensus), **Catálogo IA** (workflows, agents, skills), **Administración** (settings, team). Default landing after login: `/office`.
 
 | Route | Page |
 |-------|------|
+| `/` · `/office` | `OfficePage` | **Oficina bajo demanda** — coordinador, plan de equipo, presupuesto, actividad, ROI, servicios rápidos |
 | `/workflows` | `WorkflowsPage` |
 | `/workflows/:id` | `WorkflowEditorPage` |
 | `/agents` | `AgentsPage` |

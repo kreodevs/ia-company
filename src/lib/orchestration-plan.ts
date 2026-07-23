@@ -42,7 +42,7 @@ export async function ensureDefaultOrchestrationPlan(tenantId: string) {
     });
   }
 
-  await applyOrchestrationPreset(tenantId, "discovery_only");
+  await applyOrchestrationPreset(tenantId, "on_demand");
   return prisma.autonomousSchedule.findMany({
     where: { tenantId },
     orderBy: [{ priority: "desc" }, { createdAt: "asc" }],

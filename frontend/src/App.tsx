@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { useDocumentLang } from "./hooks/useDocumentLang";
 import HelpPage from "./pages/HelpPage";
+import OfficePage from "./pages/OfficePage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
 import SkillsPage from "./pages/SkillsPage";
@@ -63,7 +64,8 @@ function AppShell() {
             </Route>
 
             <Route element={<RequireTenantAccess />}>
-              <Route index element={<WorkflowsPage />} />
+              <Route index element={<OfficePage />} />
+              <Route path="office" element={<OfficePage />} />
               <Route path="agents" element={<AgentsPage />} />
               <Route path="skills" element={<SkillsPage />} />
               <Route path="workflows" element={<WorkflowsPage />} />
