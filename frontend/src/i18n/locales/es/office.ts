@@ -155,4 +155,29 @@ export const office = {
     of: "de",
     unlimited: "Sin tope",
   },
+  chat: {
+    welcome:
+      "Hola — soy tu Chief of Staff. Dime qué necesitas en lenguaje natural: investigar una idea, shippear un feature, revisar pricing… Propongo el equipo mínimo y presupuesto antes de ejecutar nada.",
+    coordinatorName: "Coordinador",
+    online: "Disponible",
+    thinking: "Pensando…",
+    placeholder: "Describe qué necesitas…",
+    send: "Enviar",
+    requestPlan: "Proponer equipo",
+  },
+  notifications: {
+    title: "Notificaciones",
+    empty: "Sin notificaciones aún.",
+    markAllRead: "Marcar todo leído",
+    view: "Ver",
+    browserHint: "Activa notificaciones del navegador para avisos cuando terminen tareas — incluso en otra pestaña.",
+    enableBrowser: "Activar notificaciones",
+    dismiss: "Ahora no",
+    types: {
+      run_completed: "Completada",
+      run_failed: "Fallida",
+      decision_pending: "Decisión",
+      task_started: "Iniciada",
+    },
+  },
 } as const;

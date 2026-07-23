@@ -155,4 +155,29 @@ export const office = {
     of: "of",
     unlimited: "No cap",
   },
+  chat: {
+    welcome:
+      "Hi — I'm your Chief of Staff. Tell me what you need in plain language: research an idea, ship a feature, review pricing… I'll propose the smallest team and budget before anything runs.",
+    coordinatorName: "Coordinator",
+    online: "Available",
+    thinking: "Thinking…",
+    placeholder: "Describe what you need…",
+    send: "Send",
+    requestPlan: "Propose team",
+  },
+  notifications: {
+    title: "Notifications",
+    empty: "No notifications yet.",
+    markAllRead: "Mark all read",
+    view: "View",
+    browserHint: "Enable browser notifications to get alerts when tasks finish — even in another tab.",
+    enableBrowser: "Enable notifications",
+    dismiss: "Not now",
+    types: {
+      run_completed: "Completed",
+      run_failed: "Failed",
+      decision_pending: "Decision",
+      task_started: "Started",
+    },
+  },
 } as const;

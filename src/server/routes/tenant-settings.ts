@@ -103,6 +103,7 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       emailRecipients?: string | null;
       notifyOnComplete?: boolean;
       notifyOnFail?: boolean;
+      notifyInApp?: boolean;
     };
   }>("/tenant/settings/notifications", async (request, reply) => {
     try {

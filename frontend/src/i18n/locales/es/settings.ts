@@ -48,6 +48,7 @@ export const settings = {
     emailRecipients: "Destinatarios de email (separados por comas)",
     onComplete: "Al completar",
     onFail: "Al fallar",
+    notifyInApp: "Notificaciones in-app (campana + toast)",
     save: "Guardar notificaciones",
   },
   metaSchedule: {

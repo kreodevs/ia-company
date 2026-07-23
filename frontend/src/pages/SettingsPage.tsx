@@ -500,6 +500,16 @@ export default function SettingsPage() {
             />
             {t("settings.notifications.onFail")}
           </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={notifications.notifyInApp ?? true}
+              onChange={(e) =>
+                setNotifications({ ...notifications, notifyInApp: e.target.checked })
+              }
+            />
+            {t("settings.notifications.notifyInApp")}
+          </label>
         </div>
         <button
           disabled={savingNotifications}
