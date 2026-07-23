@@ -1,10 +1,7 @@
 import {
-  Activity,
   BookOpen,
-  Bot,
   ChevronLeft,
   ChevronRight,
-  ClipboardCheck,
   Crosshair,
   FileText,
   GitBranch,
@@ -13,8 +10,6 @@ import {
   Package,
   Play,
   Settings,
-  Sparkles,
-  Users,
   Building2,
   type LucideIcon,
 } from "lucide-react";
@@ -40,17 +35,10 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
-  "/ops": Activity,
   "/products": Package,
   "/war-room": Crosshair,
-  "/decisions": ClipboardCheck,
   "/runs": Play,
-  "/consensus": FileText,
-  "/workflows": GitBranch,
-  "/agents": Bot,
-  "/skills": Sparkles,
   "/settings": Settings,
-  "/team": Users,
   "/help": BookOpen,
 };
 
@@ -255,38 +243,13 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     if (showTenantNav) {
       const items: NavItem[] = [
         { to: "/office", labelKey: "nav.office", end: true },
-        {
-          labelKey: "nav.groupAutonomous",
-          children: [
-            { to: "/ops", labelKey: "nav.ops" },
-            { to: "/products", labelKey: "nav.products" },
-            { to: "/war-room", labelKey: "nav.warRoom" },
-            { to: "/decisions", labelKey: "nav.decisions" },
-            { to: "/runs", labelKey: "nav.runs" },
-          ],
-        },
-        {
-          labelKey: "nav.groupMemory",
-          children: [{ to: "/consensus", labelKey: "nav.consensus" }],
-        },
-        {
-          labelKey: "nav.groupCatalog",
-          children: [
-            { to: "/workflows", labelKey: "nav.workflows" },
-            { to: "/agents", labelKey: "nav.agents" },
-            { to: "/skills", labelKey: "nav.skills" },
-          ],
-        },
+        { to: "/war-room", labelKey: "nav.warRoom" },
+        { to: "/products", labelKey: "nav.products" },
+        { to: "/runs", labelKey: "nav.runs" },
       ];
 
       if (isTenantAdmin) {
-        items.push({
-          labelKey: "nav.groupAdministration",
-          children: [
-            { to: "/settings", labelKey: "nav.settings" },
-            { to: "/team", labelKey: "nav.team" },
-          ],
-        });
+        items.push({ to: "/settings", labelKey: "nav.settings" });
       }
 
       result.push({
