@@ -24,7 +24,7 @@ export function SetupGate() {
   }
 
   if (authenticated && ["/login", "/setup"].includes(location.pathname)) {
-    return <Navigate to={kind === "tenant" ? "/workflows" : "/admin"} replace />;
+    return <Navigate to={kind === "tenant" ? "/ops" : "/admin"} replace />;
   }
 
   return <Outlet />;
@@ -33,7 +33,7 @@ export function SetupGate() {
 export function RequireSuperAdmin() {
   const { isSuperAdmin } = useAuth();
   if (!isSuperAdmin) {
-    return <Navigate to="/workflows" replace />;
+    return <Navigate to="/ops" replace />;
   }
   return <Outlet />;
 }

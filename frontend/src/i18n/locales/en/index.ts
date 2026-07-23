@@ -12,6 +12,7 @@ import { opencode } from "./opencode";
 import { ops } from "./ops";
 import { phase } from "./phase";
 import { products } from "./products";
+import { productWork } from "./productWork";
 import { runs } from "./runs";
 import { settings } from "./settings";
 import { status } from "./status";
@@ -32,6 +33,7 @@ export const en = {
   ops,
   opencode,
   products,
+  productWork,
   settings,
   team,
   warRoom,

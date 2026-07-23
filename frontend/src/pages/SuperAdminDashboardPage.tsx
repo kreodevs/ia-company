@@ -62,7 +62,7 @@ export default function SuperAdminDashboardPage() {
       setOwnerPassword("");
       await load();
       await impersonate(tenant.id);
-      navigate("/workflows");
+      navigate("/ops");
     } catch (err) {
       setError(translateApiError(err, t, "admin.dashboard.createTenant.createFailed"));
     } finally {
@@ -274,7 +274,7 @@ export default function SuperAdminDashboardPage() {
                   variant="secondary"
                   fullWidthMobile
                   className="w-full sm:w-auto"
-                  onClick={() => void impersonate(tenant.id).then(() => navigate("/workflows"))}
+                  onClick={() => void impersonate(tenant.id).then(() => navigate("/ops"))}
                 >
                   {t("admin.dashboard.tenants.impersonate")}
                 </Button>
@@ -315,7 +315,7 @@ export default function SuperAdminDashboardPage() {
                     <div className="flex flex-wrap gap-3">
                       <button
                         type="button"
-                        onClick={() => void impersonate(tenant.id).then(() => navigate("/workflows"))}
+                        onClick={() => void impersonate(tenant.id).then(() => navigate("/ops"))}
                         className="interactive text-[var(--color-primary)] hover:underline"
                       >
                         {t("admin.dashboard.tenants.impersonate")}

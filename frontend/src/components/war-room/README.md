@@ -6,7 +6,7 @@ Tactical live view of agents assigned to a product.
 
 | File | Role |
 |------|------|
-| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode history) for one `productId` |
+| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode history, **ProductWorkLauncher**) for one `productId` |
 | `WarRoomPage.tsx` (pages) | Sidebar route with product `<Select>` |
 
 ## Routes
@@ -20,3 +20,7 @@ Tactical live view of agents assigned to a product.
 `GET /products/:id/team` — agent statuses, active run (incl. `DELEGATED`), OpenCode metadata, recent runs, pipeline radar.
 
 `GET /products/:id/opencode/history` — delegation history for the product.
+
+`GET /products/:id/launch-options` — presets, workflows, and agents available for this product.
+
+`POST /products/:id/launch` — execute workflow or single-agent task with `productId`/`productSlug` context.

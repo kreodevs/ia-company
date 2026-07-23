@@ -130,7 +130,8 @@ export const ops = {
     emptyTitle: "No schedules yet",
     emptyHint: "Enable the meta cycle so agents run autonomously.",
     metaBadge: "Meta",
-    metaDescription: "The orchestrator picks discovery, evaluation, build, or launch from phase and portfolio.",
+    metaDescription:
+      "No fixed workflow: the native meta-orchestrator picks discovery, evaluation, build, or launch from portfolio and phase.",
     workflowDescription: "Fixed workflow: {{workflow}}",
     dynamicWorkflow: "Dynamic workflow",
     intervalLabel: "Frequency",

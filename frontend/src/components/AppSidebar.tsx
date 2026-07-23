@@ -4,6 +4,7 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
   Crosshair,
   FileText,
   GitBranch,
@@ -22,8 +23,11 @@ import { useTranslation } from "react-i18next";
 import Button from "./ui/Button";
 import { useAuth } from "../context/AuthContext";
 import {
+  flattenNavItems,
   getStoredSidebarCollapsed,
+  navItemIsActive,
   setStoredSidebarCollapsed,
+  type NavItem,
   type NavSection,
 } from "../lib/sidebar";
 import { cn } from "../lib/utils";
@@ -33,13 +37,14 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates": Layers,
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
-  "/workflows": GitBranch,
-  "/agents": Bot,
-  "/runs": Play,
   "/ops": Activity,
   "/products": Package,
   "/war-room": Crosshair,
+  "/decisions": ClipboardCheck,
+  "/runs": Play,
   "/consensus": FileText,
+  "/workflows": GitBranch,
+  "/agents": Bot,
   "/skills": Sparkles,
   "/settings": Settings,
   "/team": Users,
@@ -51,12 +56,14 @@ function SidebarNavLink({
   label,
   end = false,
   collapsed,
+  nested = false,
   onNavigate,
 }: {
   to: string;
   label: string;
   end?: boolean;
   collapsed: boolean;
+  nested?: boolean;
   onNavigate?: () => void;
 }) {
   const location = useLocation();
@@ -75,11 +82,90 @@ function SidebarNavLink({
         "sidebar-link interactive",
         active && "sidebar-link-active",
         collapsed && "sidebar-link-collapsed",
+        nested && !collapsed && "sidebar-link-nested",
       )}
     >
       <Icon className="sidebar-link-icon" aria-hidden />
       <span className={cn("sidebar-link-label", collapsed && "sr-only")}>{label}</span>
     </Link>
+  );
+}
+
+function SidebarNavGroup({
+  item,
+  collapsed,
+  onNavigate,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const groupActive = navItemIsActive(location.pathname, item);
+
+  if (collapsed) {
+    return (
+      <>
+        {flattenNavItems(item.children ?? []).map((child) => (
+          <SidebarNavLink
+            key={child.to}
+            to={child.to}
+            end={child.end}
+            label={t(child.labelKey)}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return (
+    <div className={cn("sidebar-nav-group", groupActive && "sidebar-nav-group-active")}>
+      <p className="sidebar-group-label">{t(item.labelKey)}</p>
+      <div className="sidebar-nav-group-items">
+        {item.children?.map((child) =>
+          child.to ? (
+            <SidebarNavLink
+              key={child.to}
+              to={child.to}
+              end={child.end}
+              label={t(child.labelKey)}
+              collapsed={false}
+              nested
+              onNavigate={onNavigate}
+            />
+          ) : null,
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SidebarNavEntry({
+  item,
+  collapsed,
+  onNavigate,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const { t } = useTranslation();
+
+  if (item.children?.length) {
+    return <SidebarNavGroup item={item} collapsed={collapsed} onNavigate={onNavigate} />;
+  }
+  if (!item.to) return null;
+  return (
+    <SidebarNavLink
+      to={item.to}
+      end={item.end}
+      label={t(item.labelKey)}
+      collapsed={collapsed}
+      onNavigate={onNavigate}
+    />
   );
 }
 
@@ -102,11 +188,9 @@ function SidebarSection({
         <div className="sidebar-section-divider" aria-hidden />
       )}
       {section.items.map((item) => (
-        <SidebarNavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          label={t(item.labelKey)}
+        <SidebarNavEntry
+          key={item.labelKey + (item.to ?? "")}
+          item={item}
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
@@ -128,7 +212,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
   const showAdminNav = isSuperAdmin && !activeTenant;
   const showTenantNav = !!activeTenant;
-  const homeLink = showAdminNav ? "/admin" : "/workflows";
+  const homeLink = showAdminNav ? "/admin" : "/ops";
 
   useEffect(() => {
     onMobileClose();
@@ -154,27 +238,53 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         id: "templates",
         titleKey: "nav.sectionTemplates",
         items: [
-          { to: "/admin/templates", labelKey: "nav.templates", end: true },
-          { to: "/admin/templates/workflows", labelKey: "nav.workflows" },
+          {
+            labelKey: "nav.groupTemplates",
+            children: [
+              { to: "/admin/templates", labelKey: "nav.templates", end: true },
+              { to: "/admin/templates/workflows", labelKey: "nav.workflows" },
+            ],
+          },
         ],
       });
     }
 
     if (showTenantNav) {
-      const items: NavSection["items"] = [
-        { to: "/workflows", labelKey: "nav.workflows" },
-        { to: "/agents", labelKey: "nav.agents" },
-        { to: "/runs", labelKey: "nav.runs" },
-        { to: "/products", labelKey: "nav.products" },
-        { to: "/war-room", labelKey: "nav.warRoom" },
-        { to: "/ops", labelKey: "nav.ops" },
-        { to: "/consensus", labelKey: "nav.consensus" },
-        { to: "/skills", labelKey: "nav.skills" },
+      const items: NavItem[] = [
+        {
+          labelKey: "nav.groupAutonomous",
+          children: [
+            { to: "/ops", labelKey: "nav.ops" },
+            { to: "/products", labelKey: "nav.products" },
+            { to: "/war-room", labelKey: "nav.warRoom" },
+            { to: "/decisions", labelKey: "nav.decisions" },
+            { to: "/runs", labelKey: "nav.runs" },
+          ],
+        },
+        {
+          labelKey: "nav.groupMemory",
+          children: [{ to: "/consensus", labelKey: "nav.consensus" }],
+        },
+        {
+          labelKey: "nav.groupCatalog",
+          children: [
+            { to: "/workflows", labelKey: "nav.workflows" },
+            { to: "/agents", labelKey: "nav.agents" },
+            { to: "/skills", labelKey: "nav.skills" },
+          ],
+        },
       ];
+
       if (isTenantAdmin) {
-        items.push({ to: "/settings", labelKey: "nav.settings" });
-        items.push({ to: "/team", labelKey: "nav.team" });
+        items.push({
+          labelKey: "nav.groupAdministration",
+          children: [
+            { to: "/settings", labelKey: "nav.settings" },
+            { to: "/team", labelKey: "nav.team" },
+          ],
+        });
       }
+
       result.push({
         id: "workspace",
         titleKey: "nav.sectionWorkspace",

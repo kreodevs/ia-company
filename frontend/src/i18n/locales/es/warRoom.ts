@@ -19,7 +19,7 @@ export const warRoom = {
   workflow: "Workflow",
   startedAt: "Iniciado {{time}}",
   agentsOnRun: "{{count}} agentes en este run",
-  noActiveRun: "Sin run activo. Lanza un ciclo desde Ops para despertar al equipo.",
+  noActiveRun: "Sin run activo. Usa el launcher de abajo para asignar agentes o workflows.",
   thinking: "Pensando ahora",
   thinkingGeneric: "Trabajando en el siguiente paso…",
   legend: "Leyenda",

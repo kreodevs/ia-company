@@ -6,6 +6,8 @@ export const WORKFLOW_NAMES = {
   PRICING_MONETIZATION: "pricing-and-monetization",
   WEEKLY_REVIEW: "weekly-review",
   RESEARCH_DRILLDOWN: "research-drilldown",
+  SEO_REVIEW: "seo-review",
+  MARKETING_SPRINT: "marketing-sprint",
 } as const;
 
 export type WorkflowName = (typeof WORKFLOW_NAMES)[keyof typeof WORKFLOW_NAMES];

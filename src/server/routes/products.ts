@@ -11,12 +11,21 @@ import {
   ensureTenantCycleState,
   listPipelineIdeas,
   listTenantProducts,
+  listImportableWorkspaces,
   markIdeaGoNoGo,
+  deletePipelineIdea,
+  cancelTenantProduct,
+  deleteTenantProduct,
+  registerExistingProduct,
   setFocusProduct,
   updateCompanyPhase,
-  upsertTenantProduct,
 } from "../../lib/product-registry.js";
 import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
+import {
+  getProductLaunchOptions,
+  launchProductWork,
+  type LaunchProductWorkInput,
+} from "../../lib/product-work-launcher.js";
 import { getActiveOpencodeByProduct, getLatestCompletedDelegationForProduct, listProductOpencodeHistory } from "../../lib/opencode-history.js";
 import { normalizeOpencodeDiff } from "../../lib/opencode-diff.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
@@ -174,6 +183,46 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.post<{ Params: { id: string } }>("/products/:id/cancel", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const existing = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!existing) return reply.status(404).send({ error: "Product not found" });
+
+      const product = await cancelTenantProduct(tenantId, existing.id);
+      await logAudit(request, "product.cancel", {
+        productId: product.id,
+        slug: product.slug,
+        fromPhase: existing.phase,
+      });
+      return product;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.delete<{ Params: { id: string } }>("/products/:id", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const existing = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!existing) return reply.status(404).send({ error: "Product not found" });
+
+      await deleteTenantProduct(tenantId, existing.id);
+      await logAudit(request, "product.delete", {
+        productId: existing.id,
+        slug: existing.slug,
+        phase: existing.phase,
+      });
+      return reply.status(204).send();
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.post<{ Params: { id: string } }>("/products/:id/focus", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
@@ -231,14 +280,54 @@ export async function productRoutes(app: FastifyInstance) {
     },
   );
 
+  app.delete<{ Params: { id: string } }>("/products/pipeline/:id", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const idea = await prisma.pipelineIdea.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!idea) return reply.status(404).send({ error: "Pipeline idea not found" });
+
+      await deletePipelineIdea(tenantId, idea.id);
+      await logAudit(request, "pipeline.delete", { ideaId: idea.id, title: idea.title });
+      return reply.status(204).send();
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get("/products/importable", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const workspaces = await listImportableWorkspaces(tenantId);
+      return { workspaces };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.post<{
     Body: { slug: string; name: string; description?: string; phase?: ProductPhase };
   }>("/products/register", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const product = await upsertTenantProduct({ tenantId, ...request.body });
-      await logAudit(request, "product.register", { productId: product.id, slug: product.slug });
-      return reply.status(201).send(product);
+      const { name, slug, description, phase } = request.body ?? {};
+      if (!name?.trim() || !slug?.trim()) {
+        return reply.status(400).send({ error: "name and slug are required" });
+      }
+      const result = await registerExistingProduct({
+        tenantId,
+        name,
+        slug,
+        description,
+        phase,
+      });
+      await logAudit(request, "product.register", {
+        productId: result.product.id,
+        slug: result.product.slug,
+        hasExistingCode: result.hasExistingCode,
+      });
+      return reply.status(201).send(result);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -547,6 +636,43 @@ export async function productRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get<{ Params: { id: string } }>("/products/:id/launch-options", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const options = await getProductLaunchOptions(tenantId, request.params.id);
+      if (!options) return reply.status(404).send({ error: "Product not found" });
+      return options;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string }; Body: LaunchProductWorkInput }>(
+    "/products/:id/launch",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const body = request.body ?? {};
+        if (!body.presetId && !body.workflowId && !body.agentId) {
+          return reply.status(400).send({
+            error: "Provide presetId, workflowId, or agentId",
+          });
+        }
+
+        const result = await launchProductWork(tenantId, request.params.id, body);
+        await logAudit(request, "product.launch", {
+          productId: request.params.id,
+          ...result,
+          presetId: body.presetId,
+          agentId: body.agentId,
+        });
+        return reply.status(202).send({ ...result, status: "PENDING" });
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 
   app.get<{ Params: { id: string } }>("/products/:id/opencode/history", async (request, reply) => {
     try {

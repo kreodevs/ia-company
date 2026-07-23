@@ -1,6 +1,14 @@
 import type { CompanyPhase, GoNoGoDecision, ProductPhase, TenantProduct } from "@prisma/client";
+import { readdir } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { prisma } from "./prisma.js";
-import { bootstrapProductWorkspace, slugifyProductName } from "./product-workspace.js";
+import { ensureProductConsensus } from "./product-consensus.js";
+import {
+  bootstrapProductWorkspace,
+  ensureProductWorkspace,
+  resolveProductWorkspaceRoot,
+  slugifyProductName,
+} from "./product-workspace.js";
 import { MAX_BUILDING_PRODUCTS } from "./workflow-names.js";
 
 export async function ensureTenantCycleState(tenantId: string) {
@@ -76,7 +84,7 @@ export async function bootstrapProduct(input: {
 
   await bootstrapProductWorkspace(slug, input.name, input.description);
 
-  return upsertTenantProduct({
+  const product = await upsertTenantProduct({
     tenantId: input.tenantId,
     slug,
     name: input.name,
@@ -84,6 +92,84 @@ export async function bootstrapProduct(input: {
     phase: "building",
     goNoGo: "go",
   });
+  await ensureProductConsensus(product.id);
+  return product;
+}
+
+export async function registerExistingProduct(input: {
+  tenantId: string;
+  name: string;
+  slug: string;
+  description?: string;
+  phase?: ProductPhase;
+}): Promise<{
+  product: TenantProduct;
+  hasExistingCode: boolean;
+  workspacePath: string;
+}> {
+  const slug = input.slug.trim().toLowerCase();
+  if (!slug || !/^[a-z0-9][a-z0-9_-]*$/.test(slug)) {
+    throw new Error("Invalid product slug");
+  }
+
+  await ensureProductWorkspace(slug);
+
+  const product = await upsertTenantProduct({
+    tenantId: input.tenantId,
+    slug,
+    name: input.name.trim(),
+    description: input.description?.trim(),
+    phase: input.phase ?? "building",
+    goNoGo: "go",
+  });
+
+  await ensureProductConsensus(product.id);
+
+  const root = resolveProductWorkspaceRoot(slug);
+  let hasExistingCode = false;
+  try {
+    const entries = await readdir(root);
+    hasExistingCode = entries.some((entry) => entry !== ".git");
+  } catch {
+    hasExistingCode = false;
+  }
+
+  return {
+    product,
+    hasExistingCode,
+    workspacePath: `projects/${slug}/`,
+  };
+}
+
+export async function listImportableWorkspaces(tenantId: string): Promise<
+  Array<{ slug: string; path: string; hasCode: boolean }>
+> {
+  const base = join(resolve(process.env.WORKSPACE_ROOT ?? process.cwd()), "projects");
+  const registered = await listTenantProducts(tenantId);
+  const registeredSlugs = new Set(registered.map((p) => p.slug));
+
+  let dirs: string[] = [];
+  try {
+    const entries = await readdir(base, { withFileTypes: true });
+    dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+  } catch {
+    return [];
+  }
+
+  const results: Array<{ slug: string; path: string; hasCode: boolean }> = [];
+  for (const slug of dirs.sort()) {
+    if (registeredSlugs.has(slug)) continue;
+    const root = join(base, slug);
+    let hasCode = false;
+    try {
+      const entries = await readdir(root);
+      hasCode = entries.some((e) => e !== ".git");
+    } catch {
+      hasCode = false;
+    }
+    results.push({ slug, path: `projects/${slug}/`, hasCode });
+  }
+  return results;
 }
 
 export async function listPipelineIdeas(tenantId: string) {
@@ -125,6 +211,53 @@ export async function markIdeaGoNoGo(ideaId: string, decision: GoNoGoDecision) {
     where: { id: ideaId },
     data: { goNoGo: decision },
   });
+}
+
+export async function deletePipelineIdea(tenantId: string, ideaId: string) {
+  const idea = await prisma.pipelineIdea.findFirst({
+    where: { id: ideaId, tenantId },
+  });
+  if (!idea) throw new Error("Pipeline idea not found");
+  await prisma.pipelineIdea.delete({ where: { id: ideaId } });
+}
+
+export async function cancelTenantProduct(tenantId: string, productId: string) {
+  const product = await prisma.tenantProduct.findFirst({
+    where: { id: productId, tenantId },
+  });
+  if (!product) throw new Error("Product not found");
+
+  const updated = await prisma.tenantProduct.update({
+    where: { id: productId },
+    data: { phase: "archived", goNoGo: "no_go" },
+  });
+
+  const cycle = await prisma.tenantCycleState.findUnique({ where: { tenantId } });
+  if (cycle?.focusProductId === productId) {
+    await prisma.tenantCycleState.update({
+      where: { tenantId },
+      data: { focusProductId: null },
+    });
+  }
+
+  return updated;
+}
+
+export async function deleteTenantProduct(tenantId: string, productId: string) {
+  const product = await prisma.tenantProduct.findFirst({
+    where: { id: productId, tenantId },
+  });
+  if (!product) throw new Error("Product not found");
+
+  const cycle = await prisma.tenantCycleState.findUnique({ where: { tenantId } });
+  if (cycle?.focusProductId === productId) {
+    await prisma.tenantCycleState.update({
+      where: { tenantId },
+      data: { focusProductId: null },
+    });
+  }
+
+  await prisma.tenantProduct.delete({ where: { id: productId } });
 }
 
 export async function ensureDefaultProducts(tenantId: string, tenantSlug: string) {

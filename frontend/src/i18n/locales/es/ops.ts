@@ -130,7 +130,8 @@ export const ops = {
     emptyTitle: "Sin programaciones activas",
     emptyHint: "Activa el ciclo meta para que los agentes trabajen de forma autónoma.",
     metaBadge: "Meta",
-    metaDescription: "El orquestador elige discovery, evaluación, build o launch según fase y portfolio.",
+    metaDescription:
+      "Sin workflow fijo: el meta-orchestrator nativo elige discovery, evaluación, build o launch según portfolio y fase.",
     workflowDescription: "Workflow fijo: {{workflow}}",
     dynamicWorkflow: "Workflow dinámico",
     intervalLabel: "Periodicidad",

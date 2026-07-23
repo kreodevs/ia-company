@@ -71,6 +71,27 @@ function conditionsSummary(
   return parts.length > 0 ? parts.join(" · ") : t("settings.orchestration.conditions.none");
 }
 
+function DynamicModeInfo({ t }: { t: (key: string, options?: Record<string, unknown>) => string }) {
+  return (
+    <div className="md:col-span-2 space-y-2 rounded-lg border border-dashed border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 p-3 text-sm">
+      <p className="font-medium text-[var(--color-foreground)]">{t("settings.orchestration.dynamicModeTitle")}</p>
+      <p className="text-[var(--color-muted-foreground)]">{t("settings.orchestration.dynamicModeHint")}</p>
+      <ul className="list-disc space-y-1 pl-5 text-xs text-[var(--color-muted-foreground)]">
+        <li>{t("settings.orchestration.dynamicPick.discovery")}</li>
+        <li>{t("settings.orchestration.dynamicPick.evaluation")}</li>
+        <li>{t("settings.orchestration.dynamicPick.build")}</li>
+        <li>{t("settings.orchestration.dynamicPick.growth")}</li>
+      </ul>
+      <p className="text-xs text-[var(--color-muted-foreground)]">
+        {t("settings.orchestration.dynamicPreviewHint")}{" "}
+        <Link to="/ops" className="text-[var(--color-primary)] hover:underline">
+          {t("ops.title")}
+        </Link>
+      </p>
+    </div>
+  );
+}
+
 export interface OrchestrationPlanPanelProps {
   schedules: AutonomousSchedule[];
   workflows: Workflow[];
@@ -399,7 +420,9 @@ export default function OrchestrationPlanPanel({
                           ))}
                         </select>
                       </label>
-                    ) : null}
+                    ) : (
+                      <DynamicModeInfo t={t} />
+                    )}
                     <label className="block space-y-1 text-sm">
                       <span>{t("settings.orchestration.priorityLabel", { value: "" }).replace(/\s*$/, "")}</span>
                       <input
@@ -530,7 +553,11 @@ export default function OrchestrationPlanPanel({
                 </option>
               ))}
             </select>
-          ) : null}
+          ) : (
+            <div className="md:col-span-2">
+              <DynamicModeInfo t={t} />
+            </div>
+          )}
           <select
             value={newRule.timingMode}
             onChange={(e) => setNewRule({ ...newRule, timingMode: e.target.value as TimingMode })}
