@@ -627,8 +627,8 @@ model PlatformSettings {
   resendApiKey        String?       @db.Text
   githubApiKey        String?       @db.Text
   emailFrom           String        @default("onboarding@resend.dev")
-  executeRateLimitMax Int           @default(10)
-  authRateLimitMax    Int           @default(30)
+  executeRateLimitMax Int           @default(30)
+  authRateLimitMax    Int           @default(150)
   shellTimeoutMs      Int           @default(30000)
   schedulerTickMs     Int           @default(60000)
   updatedAt           DateTime      @updatedAt

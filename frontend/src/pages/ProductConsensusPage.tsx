@@ -11,6 +11,7 @@ import Panel from "../components/ui/Panel";
 import KpiCard from "../components/ui/KpiCard";
 import StatusPill from "../components/ui/StatusPill";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
+import ProductAgentDocsPanel from "../components/products/ProductAgentDocsPanel";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import EmptyState from "../components/ui/EmptyState";
 
@@ -18,7 +19,7 @@ function formatTime(iso: string): string {
   return new Date(iso).toLocaleString();
 }
 
-type View = "document" | "revisions" | "reports";
+type View = "document" | "revisions" | "reports" | "docs";
 
 export default function ProductConsensusPage() {
   const { t } = useTranslation();
@@ -28,10 +29,14 @@ export default function ProductConsensusPage() {
 
   const tabFromUrl = searchParams.get("tab") as View | null;
   const [view, setView] = useState<View>(
-    tabFromUrl === "reports" || tabFromUrl === "revisions" || tabFromUrl === "document"
+    tabFromUrl === "reports" ||
+      tabFromUrl === "revisions" ||
+      tabFromUrl === "docs" ||
+      tabFromUrl === "document"
       ? tabFromUrl
       : "document",
   );
+  const [docCount, setDocCount] = useState(0);
 
   const [record, setRecord] = useState<ProductConsensus | null>(null);
   const [revisions, setRevisions] = useState<ProductConsensusRevision[]>([]);
@@ -48,13 +53,15 @@ export default function ProductConsensusPage() {
       api.products.consensus.get(productId),
       api.products.consensus.revisions(productId, 50),
       api.products.list(),
+      api.products.agentDocs(productId).catch(() => ({ roles: [], total: 0 })),
     ])
-      .then(([consensus, revs, list]) => {
+      .then(([consensus, revs, list, docs]) => {
         setRecord(consensus);
         setContent(consensus.content);
         setNextAction(consensus.nextAction ?? "");
         setRevisions(revs);
         setProduct(list.find((p) => p.id === productId) ?? null);
+        setDocCount(docs.total);
       })
       .finally(() => setLoading(false));
   }, [productId]);
@@ -237,6 +244,24 @@ export default function ProductConsensusPage() {
           {agentCount > 0 && (
             <span className="rounded-full bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-semibold">
               {agentCount}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "docs"}
+          onClick={() => switchTab("docs")}
+          className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
+            view === "docs"
+              ? "border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
+              : "border-b-2 border-transparent text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+          }`}
+        >
+          {t("consensus.docsTab")}
+          {docCount > 0 && (
+            <span className="rounded-full bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-semibold">
+              {docCount}
             </span>
           )}
         </button>
@@ -475,6 +500,10 @@ export default function ProductConsensusPage() {
             </div>
           )}
         </Panel>
+      )}
+
+      {view === "docs" && productId && (
+        <ProductAgentDocsPanel productId={productId} />
       )}
     </div>
   );

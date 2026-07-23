@@ -27,7 +27,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Empresa autónoma** (ops → products �
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |
 | `/products` | `ProductsPage` | Oportunidades; **Añadir producto** (registrar existente o crear nuevo); productos activos con launcher de workflows/agentes |
 | `/war-room/:productId` | `WarRoomPage` | War room táctico + **launcher** de workflows/agentes por producto |
-| `/products/:id/consensus` | `ProductConsensusPage` | Memoria del producto |
+| `/products/:id/consensus` | `ProductConsensusPage` | Memoria del producto (documento, revisiones, informes BD, **documentos docs/**) |
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
 | `/decisions` | `DecisionsPage` | Propuestas go/no-go de agentes |

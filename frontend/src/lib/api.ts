@@ -257,6 +257,19 @@ export interface ProductFile {
   binary: boolean;
 }
 
+export interface ProductAgentDocFile {
+  path: string;
+  name: string;
+  role: string;
+  size: number;
+  modifiedAt: string;
+}
+
+export interface ProductAgentDocsIndex {
+  roles: Array<{ role: string; docs: ProductAgentDocFile[] }>;
+  total: number;
+}
+
 export interface ProductTreeEntry {
   path: string;
   name: string;
@@ -975,6 +988,7 @@ export const api = {
           `/products/${id}/consensus/revisions?limit=${limit}`,
         ),
     },
+    agentDocs: (id: string) => request<ProductAgentDocsIndex>(`/products/${id}/agent-docs`),
     code: {
       tree: (id: string, path = "") =>
         request<{ path: string; entries: ProductTreeEntry[] }>(

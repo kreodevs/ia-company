@@ -37,6 +37,21 @@ export interface ProductFile {
   binary: boolean;
 }
 
+export interface ProductAgentDocFile {
+  path: string;
+  name: string;
+  role: string;
+  size: number;
+  modifiedAt: string;
+}
+
+export interface ProductAgentDocsIndex {
+  roles: Array<{ role: string; docs: ProductAgentDocFile[] }>;
+  total: number;
+}
+
+const DOC_FILE_EXTENSIONS = new Set([".md", ".markdown", ".mdx"]);
+
 export interface CreateRepoInput {
   tenantId: string;
   productId: string;
@@ -169,6 +184,79 @@ export async function readProductFile(productSlug: string, relativePath: string)
     truncated,
     binary,
   };
+}
+
+function isDocFile(name: string): boolean {
+  const dot = name.lastIndexOf(".");
+  if (dot < 0) return false;
+  return DOC_FILE_EXTENSIONS.has(name.slice(dot).toLowerCase());
+}
+
+async function collectDocsUnderDir(
+  root: string,
+  role: string,
+  dir: string,
+  depth: number,
+  out: ProductAgentDocFile[],
+): Promise<void> {
+  if (depth > 4) return;
+  let entries: Dirent[];
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return;
+  }
+
+  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    if (entry.name.startsWith(".")) continue;
+    const abs = join(dir, entry.name);
+    const rel = relative(root, abs).split(sep).join("/");
+    if (entry.isDirectory()) {
+      if (IGNORED_DIRS.has(entry.name)) continue;
+      await collectDocsUnderDir(root, role, abs, depth + 1, out);
+      continue;
+    }
+    if (!entry.isFile() || !isDocFile(entry.name)) continue;
+    try {
+      const stat = await fs.stat(abs);
+      out.push({
+        path: rel,
+        name: entry.name,
+        role,
+        size: stat.size,
+        modifiedAt: stat.mtime.toISOString(),
+      });
+    } catch {
+      // skip unreadable
+    }
+  }
+}
+
+/** Lists markdown deliverables under projects/{slug}/docs/{role}/ */
+export async function listProductAgentDocs(productSlug: string): Promise<ProductAgentDocsIndex> {
+  const root = resolveProductWorkspaceRoot(productSlug);
+  const docsRoot = join(root, "docs");
+  const roles: ProductAgentDocsIndex["roles"] = [];
+  let total = 0;
+
+  let roleEntries: Dirent[];
+  try {
+    roleEntries = await fs.readdir(docsRoot, { withFileTypes: true });
+  } catch {
+    return { roles: [], total: 0 };
+  }
+
+  for (const entry of roleEntries.sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!entry.isDirectory() || entry.name.startsWith(".")) continue;
+    const docs: ProductAgentDocFile[] = [];
+    await collectDocsUnderDir(root, entry.name, join(docsRoot, entry.name), 0, docs);
+    if (docs.length === 0) continue;
+    docs.sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt));
+    roles.push({ role: entry.name, docs });
+    total += docs.length;
+  }
+
+  return { roles, total };
 }
 
 export async function ensureProductRepoNotInitialized(productSlug: string): Promise<boolean> {
