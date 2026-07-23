@@ -398,6 +398,18 @@ export async function productRoutes(app: FastifyInstance) {
     },
   );
 
+  app.get<{ Params: { id: string } }>("/products/:id/last-run", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getProductLastRunTrace } = await import("../../lib/product-last-run.js");
+      const trace = await getProductLastRunTrace(tenantId, request.params.id);
+      if (!trace) return reply.status(404).send({ error: "Product not found" });
+      return trace;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/agent-docs", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);

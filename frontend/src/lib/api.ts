@@ -349,6 +349,34 @@ export interface TeamRecentRun {
   errorMessage: string | null;
 }
 
+export interface ProductLastRunStepTrace {
+  agentName: string;
+  stepOrder: number;
+  outputChars: number;
+  memoryKeyChars: number;
+  hasStructuredHandoff: boolean;
+  outputPreview: string;
+  tokensUsed: number | null;
+}
+
+export interface ProductLastRunTrace {
+  run: {
+    id: string;
+    status: string;
+    workflowName: string;
+    totalTokens: number;
+    totalCostUsd: number;
+    startedAt: string | null;
+    completedAt: string | null;
+    errorMessage: string | null;
+    createdAt: string;
+  } | null;
+  steps: ProductLastRunStepTrace[];
+  revisionsRecorded: number;
+  docsInWorkspace: number;
+  diagnosis: string;
+}
+
 export interface ProductTeam {
   product: {
     id: string;
@@ -989,6 +1017,7 @@ export const api = {
         ),
     },
     agentDocs: (id: string) => request<ProductAgentDocsIndex>(`/products/${id}/agent-docs`),
+    lastRun: (id: string) => request<ProductLastRunTrace>(`/products/${id}/last-run`),
     code: {
       tree: (id: string, path = "") =>
         request<{ path: string; entries: ProductTreeEntry[] }>(
