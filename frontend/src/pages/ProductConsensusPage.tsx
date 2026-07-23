@@ -120,7 +120,7 @@ export default function ProductConsensusPage() {
             ]}
           />
         }
-        title={t("consensus.productTitle", { name: record?.productId ?? productId })}
+        title={t("consensus.productTitle", { name: product?.name ?? productId })}
         subtitle={t("consensus.productSubtitle")}
         meta={
           <div className="flex flex-wrap items-center gap-2 text-xs">

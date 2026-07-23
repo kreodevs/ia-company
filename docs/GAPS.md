@@ -57,19 +57,16 @@ flowchart TB
 
 ## 🔴 Críticos — rompen flujos core
 
-### GAP-001 — Revisiones de consenso por producto: ID incorrecto
+### GAP-001 — Revisiones de consenso por producto: ID incorrecto ✅ Fixed (2026-07-23)
 
 **Severidad:** Crítica  
-**Síntoma:** Pestañas *Revisiones* e *Informes por agente* vacías aunque el run haya guardado datos.
+**Síntoma:** Pestañas *Revisiones* e *Informes por agente* vacías aunque `cycleNumber` > 0 (p. ej. ciclo #20 con “0 revisiones”).
 
-**Causa:** `GET /products/:id/consensus/revisions` pasa `TenantProduct.id` a `listProductConsensusRevisions`, pero `ProductConsensusRevision.productId` en Prisma referencia **`ProductConsensus.id`**, no `TenantProduct.id`.
+**Causa:** `listProductConsensusRevisions` consultaba con `TenantProduct.id` pero `ProductConsensusRevision.productId` referencia `ProductConsensus.id`.
 
-- Escritura correcta: `appendProductHandoff` usa `consensus.id` (`src/lib/product-consensus.ts`)
-- Lectura incorrecta: `src/server/routes/products.ts` (~L394)
+**Fix aplicado:** `src/lib/product-consensus.ts` — lookup `ProductConsensus` por `tenantProductId` antes del `findMany`. Revisiones nuevas guardan solo la sección del ciclo en `revision.content` (no el documento completo).
 
-**Fix propuesto:** Resolver `ProductConsensus` por `productId` (tenant product) y pasar `consensus.id` al listado.
-
-**Archivos:** `src/server/routes/products.ts`, `src/lib/product-consensus.ts`, `prisma/schema.prisma`
+**Acción post-deploy:** Recargar `/products/:id/consensus` — deberían aparecer las ~20 revisiones ya en BD.
 
 ---
 
@@ -354,7 +351,7 @@ flowchart TB
 
 ### Día 1 — Desbloquear síntomas actuales
 
-- [ ] **GAP-001** Fix listado revisiones (ID `ProductConsensus.id`)
+- [x] **GAP-001** Fix listado revisiones (ID `ProductConsensus.id`) — 2026-07-23
 - [ ] **GAP-002** Seed `research-drilldown`
 - [ ] **GAP-003** Unificar policy shell
 - [ ] **GAP-008** `tenantHasActiveRun` en launch + run-now + execute

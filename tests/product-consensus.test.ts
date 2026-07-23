@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  buildHandoffRevisionContent,
   buildProductContentFromRevision,
   DEFAULT_PRODUCT_CONSENSUS_CONTENT,
   extractHandoffFromAgentOutput,
@@ -132,6 +133,38 @@ Three tiers recommended.
     const extracted = extractHandoffFromSharedMemory(mem, "ceo-bezos");
     assert.equal(extracted.decisions?.length, 1);
     assert.equal(extracted.decisions?.[0].by, "ok");
+  });
+
+  it("buildHandoffRevisionContent stores only the cycle section", () => {
+    const section = buildHandoffRevisionContent({
+      ...handoff,
+      content: "## Pricing\n\nThree tiers.",
+    });
+    assert.doesNotMatch(section, /# SnapOG/);
+    assert.match(section, /## Cycle 1 — ceo-bezos/);
+    assert.match(section, /## Pricing/);
+  });
+
+  it("listProductConsensusRevisions resolves ProductConsensus.id before querying", async () => {
+    const fs = await import("node:fs/promises");
+    const src = await fs.readFile(
+      new URL("../src/lib/product-consensus.ts", import.meta.url),
+      "utf8",
+    );
+    const listFn = src.match(
+      /export async function listProductConsensusRevisions[\s\S]*?^}/m,
+    );
+    assert.ok(listFn, "expected listProductConsensusRevisions function");
+    assert.match(
+      listFn[0],
+      /findUnique\(\{\s*where:\s*\{\s*productId:\s*tenantProductId/,
+      "must look up ProductConsensus by TenantProduct.id first",
+    );
+    assert.match(
+      listFn[0],
+      /where:\s*\{\s*productId:\s*consensus\.id\s*\}/,
+      "must query revisions by ProductConsensus.id",
+    );
   });
 
   it("appendProductHandoff writes revision.productId from ProductConsensus.id, not TenantProduct.id", async () => {

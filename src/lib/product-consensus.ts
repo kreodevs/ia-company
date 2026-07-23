@@ -121,8 +121,9 @@ export async function getProductConsensus(productId: string) {
   return prisma.productConsensus.findUnique({ where: { productId } });
 }
 
+/** @param tenantProductId — TenantProduct.id (NOT ProductConsensus.id) */
 export async function listProductConsensusRevisions(
-  productId: string,
+  tenantProductId: string,
   limit = 50,
 ): Promise<
   Array<{
@@ -140,8 +141,14 @@ export async function listProductConsensusRevisions(
     createdAt: Date;
   }>
 > {
+  const consensus = await prisma.productConsensus.findUnique({
+    where: { productId: tenantProductId },
+    select: { id: true },
+  });
+  if (!consensus) return [];
+
   return prisma.productConsensusRevision.findMany({
-    where: { productId },
+    where: { productId: consensus.id },
     orderBy: { createdAt: "desc" },
     take: limit,
   });
@@ -176,11 +183,17 @@ export interface AppendHandoffInput extends AgentHandoff {
   tenantId: string;
 }
 
+/** Cycle section only — used in revision rows (not the full consensus document). */
+export function buildHandoffRevisionContent(handoff: AgentHandoff): string {
+  return buildProductContentFromRevision("", handoff);
+}
+
 export async function appendProductHandoff(
   input: AppendHandoffInput,
 ): Promise<{ revisionId: string; cycleNumber: number }> {
   const consensus = await ensureProductConsensus(input.productId);
   const newContent = buildProductContentFromRevision(consensus.content, input);
+  const revisionContent = buildHandoffRevisionContent(input);
 
   const updated = await prisma.$transaction(async (tx) => {
     const revision = await tx.productConsensusRevision.create({
@@ -190,7 +203,7 @@ export async function appendProductHandoff(
         stepId: input.stepId ?? null,
         agentName: input.agentName,
         stepOrder: input.stepOrder,
-        content: newContent,
+        content: revisionContent,
         nextAction: input.nextAction ?? null,
         decisions: (input.decisions ?? []) as unknown as Prisma.InputJsonValue,
         openQuestions: (input.openQuestions ?? []) as unknown as Prisma.InputJsonValue,
