@@ -131,7 +131,7 @@ export async function chatWithCoordinator(
       role: m.role,
       content: m.content,
     })),
-    maxOutputTokens: 900,
+    maxTokens: 900,
     temperature: 0.65,
   });
 
