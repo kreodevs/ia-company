@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import NotificationBell from "./office/NotificationBell";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeSwitcher from "./ThemeSwitcher";
 import TenantImpersonationSelect from "./TenantImpersonationSelect";
 import Button from "./ui/Button";
-import { useAuth } from "../context/AuthContext";
 
 interface AppHeaderProps {
   mobileSidebarOpen: boolean;
@@ -14,7 +15,7 @@ export default function AppHeader({
   mobileSidebarOpen,
   onMobileSidebarToggle,
 }: AppHeaderProps) {
-  const { logout } = useAuth();
+  const { logout, activeTenant } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -54,6 +55,7 @@ export default function AppHeader({
           </button>
 
           <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
+            {activeTenant ? <NotificationBell enabled /> : null}
             <div className="min-w-0 max-w-[min(100%,14rem)] sm:max-w-xs">
               <TenantImpersonationSelect />
             </div>

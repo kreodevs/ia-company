@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   api,
   type OfficeDashboard,
-  type OfficeTaskPlan,
   type OfficeServiceTemplate,
   type TenantProduct,
 } from "../lib/api";
+import CoordinatorChat from "../components/office/CoordinatorChat";
+import { NotificationPermissionPrompt } from "../components/office/NotificationBell";
 import PageLoading from "../components/ui/PageLoading";
 import KpiCard from "../components/ui/KpiCard";
-import Button from "../components/ui/Button";
 
 const AGENT_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -39,17 +39,12 @@ function avatarGradient(name: string): string {
 
 export default function OfficePage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState<OfficeDashboard | null>(null);
   const [products, setProducts] = useState<TenantProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [request, setRequest] = useState("");
   const [productId, setProductId] = useState<string>("");
   const [serviceId, setServiceId] = useState<string | null>(null);
-  const [plan, setPlan] = useState<OfficeTaskPlan | null>(null);
-  const [planning, setPlanning] = useState(false);
-  const [executing, setExecuting] = useState(false);
-  const [flash, setFlash] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [chatSeed, setChatSeed] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const [dash, overview] = await Promise.all([
@@ -87,61 +82,9 @@ export default function OfficePage() {
     return Math.round(((totalRevenueUsd - totalInvestedUsd) / totalInvestedUsd) * 100);
   }, [dashboard]);
 
-  const handlePlan = async () => {
-    if (!request.trim()) return;
-    setPlanning(true);
-    setFlash(null);
-    setPlan(null);
-    try {
-      const result = await api.office.planTask({
-        request: request.trim(),
-        productId: productId || undefined,
-        serviceId: serviceId ?? undefined,
-      });
-      setPlan(result);
-    } catch (err) {
-      setFlash({
-        type: "error",
-        message: err instanceof Error ? err.message : t("office.task.error"),
-      });
-    } finally {
-      setPlanning(false);
-    }
-  };
-
-  const handleExecute = async () => {
-    if (!request.trim()) return;
-    setExecuting(true);
-    setFlash(null);
-    try {
-      const result = await api.office.executeTask({
-        request: request.trim(),
-        productId: productId || plan?.productId || undefined,
-        serviceId: serviceId ?? plan?.serviceId ?? undefined,
-        workflowId: plan?.workflowId ?? undefined,
-        presetId: plan?.presetId ?? undefined,
-        agentIds: plan?.agents.map((a) => a.id),
-      });
-      setFlash({ type: "success", message: t("office.task.success") });
-      setPlan(null);
-      setRequest("");
-      setServiceId(null);
-      await refresh();
-      navigate(`/runs/${result.runId}`);
-    } catch (err) {
-      setFlash({
-        type: "error",
-        message: err instanceof Error ? err.message : t("office.task.error"),
-      });
-    } finally {
-      setExecuting(false);
-    }
-  };
-
   const pickService = (service: OfficeServiceTemplate) => {
     setServiceId(service.id);
-    setRequest(t(service.examplePromptKey as "office.serviceTemplates.marketScan.example"));
-    setPlan(null);
+    setChatSeed(t(service.examplePromptKey as "office.serviceTemplates.marketScan.example"));
   };
 
   if (loading || !dashboard) {
@@ -166,11 +109,7 @@ export default function OfficePage() {
         </div>
       </header>
 
-      {flash && (
-        <div className="office-flash" data-variant={flash.type === "error" ? "error" : undefined} role="status">
-          {flash.message}
-        </div>
-      )}
+      <NotificationPermissionPrompt />
 
       <section className="office-hero-strip hero-strip">
         <KpiCard
@@ -282,29 +221,15 @@ export default function OfficePage() {
           </Link>
         </aside>
 
-        <section className="office-task-panel">
-          <h2 className="office-panel-title">{t("office.task.title")}</h2>
-          <textarea
-            className="office-task-textarea"
-            value={request}
-            onChange={(e) => {
-              setRequest(e.target.value);
-              setPlan(null);
-            }}
-            placeholder={t("office.task.placeholder")}
-            rows={4}
-          />
-          <div className="office-task-meta">
+        <section className="office-task-panel office-chat-panel">
+          <div className="office-task-meta" style={{ marginBottom: "0.75rem" }}>
             <div>
               <label htmlFor="office-product">{t("office.task.productLabel")}</label>
               <select
                 id="office-product"
                 className="office-task-select"
                 value={productId}
-                onChange={(e) => {
-                  setProductId(e.target.value);
-                  setPlan(null);
-                }}
+                onChange={(e) => setProductId(e.target.value)}
               >
                 <option value="">{t("office.task.productAny")}</option>
                 {products.map((p) => (
@@ -315,82 +240,13 @@ export default function OfficePage() {
               </select>
             </div>
           </div>
-          <div className="office-task-actions">
-            {!plan ? (
-              <Button onClick={() => void handlePlan()} disabled={planning || !request.trim()}>
-                {planning ? t("office.task.planning") : t("office.task.plan")}
-              </Button>
-            ) : (
-              <>
-                <Button onClick={() => void handleExecute()} disabled={executing}>
-                  {executing ? t("office.task.executing") : t("office.task.execute")}
-                </Button>
-                <Button variant="secondary" onClick={() => void handlePlan()} disabled={planning}>
-                  {t("office.task.replan")}
-                </Button>
-              </>
-            )}
-          </div>
-
-          {plan && (
-            <div className="office-proposal">
-              <p className="office-coordinator-note">
-                <strong>{t("office.task.coordinatorSays")}: </strong>
-                {t(plan.coordinatorNoteKey as "office.notes.default")}
-              </p>
-              <div className="office-agent-chips">
-                {plan.agents.map((agent) => (
-                  <div key={agent.id} className="office-agent-chip">
-                    <span
-                      className="office-agent-chip-avatar"
-                      style={{ background: avatarGradient(agent.name) }}
-                    >
-                      {AGENT_EMOJI[agent.name] ?? "🧑‍💼"}
-                    </span>
-                    <span>
-                      <strong>{agent.name.replace(/-/g, " ")}</strong>
-                      <br />
-                      <span style={{ color: "#64748b", fontSize: "0.72rem" }}>
-                        {t(agent.reasonKey as "office.reasons.contributes")}
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="office-estimates">
-                <div className="office-estimate">
-                  <p className="office-estimate-label">{t("office.task.estimatedCost")}</p>
-                  <p className="office-estimate-value">
-                    {t("office.task.costRange", {
-                      min: plan.estimatedCostUsd.min.toFixed(2),
-                      max: plan.estimatedCostUsd.max.toFixed(2),
-                    })}
-                  </p>
-                </div>
-                <div className="office-estimate">
-                  <p className="office-estimate-label">{t("office.task.estimatedTime")}</p>
-                  <p className="office-estimate-value">
-                    {t("office.task.minutes", {
-                      min: plan.estimatedMinutes.min,
-                      max: plan.estimatedMinutes.max,
-                    })}
-                  </p>
-                </div>
-                <div className="office-estimate">
-                  <p className="office-estimate-label">{t("office.task.deliverable")}</p>
-                  <p className="office-estimate-value" style={{ fontSize: "0.78rem", fontWeight: 500 }}>
-                    {t(plan.deliverableKey as "office.deliverables.marketReport")}
-                  </p>
-                </div>
-              </div>
-              {plan.productName && (
-                <p className="office-empty" style={{ marginTop: "0.75rem" }}>
-                  Product: {plan.productName}
-                  {plan.workflowName ? ` · ${plan.workflowName}` : ""}
-                </p>
-              )}
-            </div>
-          )}
+          <CoordinatorChat
+            key={chatSeed ?? "default"}
+            productId={productId || undefined}
+            serviceId={serviceId}
+            initialUserMessage={chatSeed}
+            onExecuted={() => void refresh()}
+          />
         </section>
 
         <aside className="office-panel">

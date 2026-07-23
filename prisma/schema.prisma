@@ -45,6 +45,7 @@ model Tenant {
   opencodeConfig TenantOpencodeConfig?
   opencodeDelegations OpencodeDelegation[]
   opencodeRunGates OpencodeRunGate[]
+  notifications TenantNotification[]
 }
 
 enum TenantUserRole {
@@ -504,9 +505,27 @@ model TenantNotificationConfig {
   emailRecipients  String?  @db.Text
   notifyOnComplete Boolean  @default(true)
   notifyOnFail     Boolean  @default(true)
+  notifyInApp      Boolean  @default(true)
   updatedAt        DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantNotification {
+  id        String    @id @default(cuid())
+  tenantId  String
+  type      String
+  title     String
+  body      String    @db.Text
+  href      String?
+  runId     String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, readAt])
 }
 
 // ─── OpenCode integration (one instance per tenant) ─────────────────────────

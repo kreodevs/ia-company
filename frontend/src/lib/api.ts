@@ -633,6 +633,36 @@ export interface TenantNotificationConfig {
   emailRecipients: string | null;
   notifyOnComplete: boolean;
   notifyOnFail: boolean;
+  notifyInApp?: boolean;
+}
+
+export type TenantNotificationType =
+  | "run_completed"
+  | "run_failed"
+  | "decision_pending"
+  | "task_started";
+
+export interface TenantNotificationItem {
+  id: string;
+  type: TenantNotificationType;
+  title: string;
+  body: string;
+  href: string | null;
+  runId: string | null;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface CoordinatorChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface CoordinatorChatResponse {
+  reply: string;
+  plan: OfficeTaskPlan | null;
+  tokensUsed: number;
+  costUsd: number;
 }
 
 export interface TenantOpencodeConfig {
@@ -1132,6 +1162,30 @@ export const api = {
   },
   office: {
     dashboard: () => request<OfficeDashboard>("/office/dashboard"),
+    chat: (body: {
+      messages: CoordinatorChatMessage[];
+      productId?: string;
+      serviceId?: string;
+      requestPlan?: boolean;
+    }) =>
+      request<CoordinatorChatResponse>("/office/chat", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    notifications: (params?: { unreadOnly?: boolean; limit?: number; since?: string }) => {
+      const q = new URLSearchParams();
+      if (params?.unreadOnly) q.set("unreadOnly", "true");
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.since) q.set("since", params.since);
+      const qs = q.toString();
+      return request<{ items: TenantNotificationItem[]; unreadCount: number }>(
+        `/office/notifications${qs ? `?${qs}` : ""}`,
+      );
+    },
+    markNotificationRead: (id: string) =>
+      request<TenantNotificationItem>(`/office/notifications/${id}/read`, { method: "POST" }),
+    markAllNotificationsRead: () =>
+      request<{ count: number }>("/office/notifications/read-all", { method: "POST" }),
     planTask: (body: { request: string; productId?: string; serviceId?: string }) =>
       request<OfficeTaskPlan>("/office/tasks/plan", { method: "POST", body: JSON.stringify(body) }),
     executeTask: (body: {

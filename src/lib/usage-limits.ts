@@ -1,6 +1,7 @@
 import type { ExecutionStatus } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { sendRunNotificationEmail } from "./email.js";
+import { notifyRunFinishedInApp } from "./tenant-notifications.js";
 
 export class UsageLimitError extends Error {
   constructor(message: string) {
@@ -86,12 +87,26 @@ export async function notifyRunFinished(params: {
   const config = await prisma.tenantNotificationConfig.findUnique({
     where: { tenantId: params.tenantId },
   });
-  if (!config) return;
 
-  const notify =
-    (params.status === "COMPLETED" && config.notifyOnComplete) ||
-    (params.status === "FAILED" && config.notifyOnFail);
-  if (!notify) return;
+  const notifyComplete = config?.notifyOnComplete !== false;
+  const notifyFail = config?.notifyOnFail !== false;
+  const shouldNotify =
+    (params.status === "COMPLETED" && notifyComplete) ||
+    (params.status === "FAILED" && notifyFail);
+
+  if (shouldNotify) {
+    await notifyRunFinishedInApp({
+      tenantId: params.tenantId,
+      runId: params.runId,
+      status: params.status,
+      workflowName: params.workflowName,
+      totalCostUsd: params.totalCostUsd,
+      totalTokens: params.totalTokens,
+      errorMessage: params.errorMessage,
+    });
+  }
+
+  if (!config || !shouldNotify) return;
 
   await dispatchTenantNotification(config, {
     event: "workflow.run.finished",

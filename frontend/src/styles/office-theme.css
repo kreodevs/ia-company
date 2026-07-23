@@ -570,3 +570,323 @@ html[data-theme="letter"] .office-spend-widget {
   background: rgba(248, 113, 113, 0.08);
   color: #fca5a5;
 }
+
+/* Coordinator chat */
+.office-chat-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  padding-bottom: 1rem;
+}
+
+.office-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.office-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.office-chat-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 25%, #fde68a, #b45309);
+  font-size: 1.1rem;
+}
+
+.office-chat-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.office-chat-status {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.office-chat-messages {
+  flex: 1;
+  min-height: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.25rem 0.15rem 0.75rem;
+}
+
+.office-chat-bubble {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  max-width: 92%;
+}
+
+.office-chat-bubble-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.office-chat-bubble p {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.office-chat-bubble-assistant p {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+html[data-theme="letter"] .office-chat-bubble-assistant p {
+  background: #f1f5f9;
+}
+
+.office-chat-bubble-user p {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.office-chat-bubble-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 30% 25%, #fde68a, #b45309);
+}
+
+.office-chat-composer {
+  margin-top: auto;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.office-chat-input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.75rem;
+  background: rgba(2, 6, 23, 0.45);
+  color: inherit;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 2.75rem;
+}
+
+html[data-theme="letter"] .office-chat-input {
+  background: #f8fafc;
+}
+
+.office-chat-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  justify-content: flex-end;
+}
+
+.office-chat-error {
+  color: #f87171;
+  font-size: 0.8rem;
+  margin: 0.35rem 0 0;
+}
+
+.office-proposal-compact {
+  margin-top: 0.5rem;
+  padding-top: 0.65rem;
+}
+
+.office-chat-plan-actions {
+  margin-top: 0.65rem;
+}
+
+/* Notification bell */
+.office-notif-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.office-notif-btn-active {
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.office-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.office-notif-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: transparent;
+  border: none;
+}
+
+.office-notif-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 50;
+  width: min(22rem, calc(100vw - 2rem));
+  border-radius: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+html[data-theme="letter"] .office-notif-panel {
+  background: #fff;
+}
+
+.office-notif-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.office-notif-mark-all {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #38bdf8;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.office-notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.office-notif-item {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.office-notif-item:hover {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.office-notif-item-unread {
+  background: rgba(56, 189, 248, 0.04);
+}
+
+.office-notif-item-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.office-notif-item-body {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.office-notif-item-meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.68rem;
+  color: #475569;
+}
+
+.office-notif-empty {
+  padding: 1rem 0.85rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.office-notif-permission {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(56, 189, 248, 0.06);
+  font-size: 0.82rem;
+  margin-bottom: 0.75rem;
+}
+
+.office-notif-permission p {
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.office-notif-permission-btn,
+.office-notif-permission-dismiss {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.office-notif-permission-btn {
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.office-notif-permission-dismiss {
+  background: transparent;
+  color: #64748b;
+}
