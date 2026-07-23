@@ -38,6 +38,72 @@ function extractMessageText(content: unknown): string {
     .join("\n");
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+}
+
+export function collectToolStepArtifacts<TOOLS extends ToolSet>(
+  response: GenerateTextResult<TOOLS, unknown>,
+): string {
+  const chunks: string[] = [];
+  const seen = new Set<string>();
+
+  const push = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || seen.has(trimmed)) return;
+    seen.add(trimmed);
+    chunks.push(trimmed);
+  };
+
+  for (const step of response.steps ?? []) {
+    for (const toolResult of step.toolResults ?? []) {
+      const name = toolResult.toolName;
+      const result = asRecord(toolResult.result);
+      const matchedCall = step.toolCalls?.find((tc) => tc.toolCallId === toolResult.toolCallId);
+      const args = asRecord(matchedCall?.args);
+
+      if (name === "write_file") {
+        const path = String(result?.path ?? args?.path ?? "");
+        const content = typeof args?.content === "string" ? args.content : "";
+        if (content && path) push(`## Written: ${path}\n\n${content}`);
+        else if (path) push(`- Wrote file: \`${path}\``);
+      }
+
+      if (name === "read_file") {
+        const path = String(result?.path ?? args?.path ?? "");
+        const content = typeof result?.content === "string" ? result.content : "";
+        if (content && path) push(`## Read: ${path}\n\n${content.slice(0, 8000)}`);
+        else if (path) push(`- Read file: \`${path}\``);
+      }
+
+      if (name === "list_dir" && result) {
+        const path = String(result.path ?? ".");
+        const entries = Array.isArray(result.entries) ? result.entries : [];
+        const names = entries
+          .slice(0, 40)
+          .map((entry) => asRecord(entry)?.name)
+          .filter((n): n is string => typeof n === "string");
+        push(`- Listed \`${path}\`: ${names.length ? names.join(", ") : "(empty)"}`);
+      }
+
+      if (name === "run_shell_command" && result) {
+        const stdout = typeof result.stdout === "string" ? result.stdout.slice(0, 4000) : "";
+        if (stdout) push(`## Shell output\n\n\`\`\`\n${stdout}\n\`\`\``);
+      }
+    }
+
+    for (const toolCall of step.toolCalls ?? []) {
+      if (toolCall.toolName !== "write_file") continue;
+      const args = asRecord(toolCall.args);
+      const content = typeof args?.content === "string" ? args.content : "";
+      const path = typeof args?.path === "string" ? args.path : "";
+      if (content && path) push(`## Written: ${path}\n\n${content}`);
+    }
+  }
+
+  return chunks.join("\n\n");
+}
+
 export function collectAgentStepOutput<TOOLS extends ToolSet>(
   response: GenerateTextResult<TOOLS, unknown>,
 ): string {
@@ -64,7 +130,10 @@ export function collectAgentStepOutput<TOOLS extends ToolSet>(
     push(extractMessageText(message.content));
   }
 
-  return chunks.join("\n\n");
+  const textOutput = chunks.join("\n\n");
+  if (textOutput.trim()) return textOutput;
+
+  return collectToolStepArtifacts(response);
 }
 
 export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(input: {
