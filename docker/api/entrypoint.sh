@@ -35,5 +35,10 @@ if [ "$RUN_SEED" = "true" ]; then
   node dist/prisma/seed.js || echo "Seed completed or skipped"
 fi
 
+if [ -n "$LAUNCH_ONE_SHOT" ]; then
+  echo "One-shot product launch: $LAUNCH_ONE_SHOT"
+  npx tsx scripts/launch-product-test.ts || echo "Launch script failed (continuing API start)"
+fi
+
 echo "Starting API on ${PORT:-3001}…"
 exec node dist/src/server/index.js
