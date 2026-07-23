@@ -893,25 +893,33 @@ export async function executeWorkflowInBackground(
     }
   }
 
+  const executionInput: ExecuteWorkflowInput = {
+    ...input,
+    initialMemory: {
+      ...(initialMemory ?? {}),
+      ...(input.productSlug
+        ? {
+            focusProductSlug: input.productSlug,
+            ...(input.productId ? { productId: input.productId } : {}),
+          }
+        : {}),
+    },
+  };
+
   const run = await prisma.executionRun.create({
     data: {
       workflowId,
       tenantId: input.tenantId,
       status: "PENDING",
-      sharedMemory: (initialMemory ?? {}) as object,
+      sharedMemory: (executionInput.initialMemory ?? {}) as object,
     },
   });
-
-  const executionInput: ExecuteWorkflowInput = {
-    ...input,
-    initialMemory,
-  };
 
   const jobData = {
     runId: run.id,
     workflowId,
     tenantId: input.tenantId,
-    initialMemory: initialMemory as Record<string, unknown> | undefined,
+    initialMemory: executionInput.initialMemory as Record<string, unknown> | undefined,
     mergeConsensus: input.mergeConsensus,
     syncConsensus: input.syncConsensus,
     productId: input.productId,

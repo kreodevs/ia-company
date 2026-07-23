@@ -226,6 +226,7 @@ export async function launchProductWork(
     convergenceRules: productConvergencePromptSection(),
     focusProductSlug: product.slug,
     focusProductName: product.name,
+    productId: product.id,
   };
 
   const runId = await executeWorkflowInBackground(workflow.id, {

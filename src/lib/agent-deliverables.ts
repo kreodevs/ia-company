@@ -25,6 +25,19 @@ export function agentWroteDocsInStep<TOOLS extends ToolSet>(
   return false;
 }
 
+function extractMessageText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  return content
+    .map((part) => {
+      if (!part || typeof part !== "object") return "";
+      const p = part as { type?: string; text?: string };
+      return p.type === "text" && typeof p.text === "string" ? p.text : "";
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function collectAgentStepOutput<TOOLS extends ToolSet>(
   response: GenerateTextResult<TOOLS, unknown>,
 ): string {
@@ -41,6 +54,14 @@ export function collectAgentStepOutput<TOOLS extends ToolSet>(
   push(response.text);
   for (const step of response.steps ?? []) {
     push(step.text);
+    for (const message of step.response?.messages ?? []) {
+      if (message.role !== "assistant") continue;
+      push(extractMessageText(message.content));
+    }
+  }
+  for (const message of response.response?.messages ?? []) {
+    if (message.role !== "assistant") continue;
+    push(extractMessageText(message.content));
   }
 
   return chunks.join("\n\n");
@@ -54,9 +75,24 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
   output: string;
   response: GenerateTextResult<TOOLS, unknown>;
 }): Promise<string | null> {
-  const output = input.output.trim();
-  if (!output) return null;
-  if (agentWroteDocsInStep(input.response)) return null;
+  return persistHandoffAsAgentDoc({
+    workspaceRoot: input.workspaceRoot,
+    agentName: input.agentName,
+    workflowName: input.workflowName,
+    runId: input.runId,
+    content: input.output,
+  });
+}
+
+export async function persistHandoffAsAgentDoc(input: {
+  workspaceRoot: string;
+  agentName: string;
+  workflowName: string;
+  runId: string;
+  content: string;
+}): Promise<string | null> {
+  const content = input.content.trim();
+  if (!content) return null;
 
   const docsDir = agentDocsPath(input.agentName);
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -66,6 +102,6 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
 
   const header = `# ${input.agentName} — ${input.workflowName}\n\n- Run: \`${input.runId}\`\n- Generated: ${new Date().toISOString()}\n\n---\n\n`;
   await mkdir(dirname(fullPath), { recursive: true });
-  await writeFile(fullPath, `${header}${output}\n`, "utf-8");
+  await writeFile(fullPath, `${header}${content}\n`, "utf-8");
   return relativePath.replace(/\\/g, "/");
 }

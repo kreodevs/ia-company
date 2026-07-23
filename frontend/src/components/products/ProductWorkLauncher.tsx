@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Play, Rocket, Users, Workflow } from "lucide-react";
 import {
   api,
@@ -34,6 +35,8 @@ export interface ProductWorkLauncherProps {
   productId: string;
   productName: string;
   compact?: boolean;
+  /** After launch: stay on page (default), open war room, or open run detail */
+  afterLaunch?: "stay" | "war-room" | "run";
   onLaunched?: (runId: string) => void;
 }
 
@@ -56,9 +59,11 @@ export default function ProductWorkLauncher({
   productId,
   productName,
   compact = false,
+  afterLaunch = "stay",
   onLaunched,
 }: ProductWorkLauncherProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [options, setOptions] = useState<ProductLaunchOptions | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<LaunchTab>("presets");
@@ -98,6 +103,11 @@ export default function ProductWorkLauncher({
         setFocus: true,
       });
       onLaunched?.(result.runId);
+      if (afterLaunch === "war-room") {
+        navigate(`/war-room/${productId}`);
+      } else if (afterLaunch === "run") {
+        navigate(`/runs/${result.runId}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

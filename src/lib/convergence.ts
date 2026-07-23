@@ -7,6 +7,8 @@ import {
   createDecisionProposal,
 } from "./decision-proposals.js";
 import { appendProductHandoff, extractHandoffFromAgentOutput } from "./product-consensus.js";
+import { persistHandoffAsAgentDoc } from "./agent-deliverables.js";
+import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import {
   addPipelineIdeas,
   bootstrapProduct,
@@ -123,9 +125,14 @@ export async function processConvergenceAfterRun(
       for (let i = 0; i < history.length; i++) {
         const h = history[i];
         if (!h?.agentName) continue;
-        const output = typeof h.output === "string" ? h.output : "";
+        const stepOutput =
+          typeof h.output === "string" && h.output.trim()
+            ? h.output
+            : typeof memory[h.agentName] === "string"
+              ? String(memory[h.agentName])
+              : "";
         const handoff = extractHandoffFromAgentOutput(
-          output,
+          stepOutput,
           h.agentName,
           h.stepOrder ?? i + 1,
         );
@@ -138,6 +145,16 @@ export async function processConvergenceAfterRun(
           tenantId: product.tenantId,
           ...handoff,
         });
+        const docBody = handoff.content.trim() || stepOutput.trim();
+        if (docBody) {
+          await persistHandoffAsAgentDoc({
+            workspaceRoot: resolveProductWorkspaceRoot(product.slug),
+            agentName: h.agentName,
+            workflowName,
+            runId,
+            content: docBody,
+          });
+        }
       }
     }
   }
