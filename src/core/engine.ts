@@ -1,6 +1,10 @@
 import { generateText } from "ai";
 import type { ExecutionStatus, LogLevel } from "@prisma/client";
 import { processConvergenceAfterRun } from "../lib/convergence.js";
+import {
+  collectAgentStepOutput,
+  persistAgentDeliverableIfMissing,
+} from "../lib/agent-deliverables.js";
 import { prisma } from "../lib/prisma.js";
 import { ensureProductWorkspace } from "../lib/product-workspace.js";
 import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
@@ -209,6 +213,7 @@ export class WorkflowExecutor {
           sharedMemory,
           tenantCtx,
           step.stepOrder,
+          workflowName,
         );
 
         totalTokens += result.usage.totalTokens;
@@ -221,6 +226,7 @@ export class WorkflowExecutor {
           step.id,
           step.agent.name,
           result.output,
+          step.stepOrder,
         );
 
         if (
@@ -360,6 +366,7 @@ export class WorkflowExecutor {
     sharedMemory: SharedMemory,
     tenantCtx: TenantExecutionContext,
     stepOrder?: number,
+    workflowName?: string,
   ): Promise<StepResult> {
     let delegated = false;
     const toolMode = this.resolveToolMode(agent.name, tenantCtx, stepOrder);
@@ -420,12 +427,31 @@ export class WorkflowExecutor {
       maxSteps: 10,
     });
 
+    const output = collectAgentStepOutput(response);
+
+    if (tenantCtx.productSlug && output.trim()) {
+      const savedPath = await persistAgentDeliverableIfMissing({
+        workspaceRoot: tenantCtx.workspaceRoot,
+        agentName: agent.name,
+        workflowName: workflowName ?? "workflow",
+        runId,
+        output,
+        response,
+      });
+      if (savedPath) {
+        await this.appendLog(runId, "info", `Saved agent deliverable: ${savedPath}`, {
+          agentId: agent.id,
+          payload: { path: savedPath },
+        });
+      }
+    }
+
     const promptTokens = response.usage?.promptTokens ?? 0;
     const completionTokens = response.usage?.completionTokens ?? 0;
     const totalTokens = response.usage?.totalTokens ?? promptTokens + completionTokens;
 
     return {
-      output: response.text,
+      output,
       usage: {
         promptTokens,
         completionTokens,
@@ -754,13 +780,20 @@ function mergeStepOutput(
   stepId: string,
   agentName: string,
   output: string,
+  stepOrder?: number,
 ): SharedMemory {
   const history = memory._history ?? [];
   const next: SharedMemory = {
     ...memory,
     _history: [
       ...history,
-      { stepId, agentName, output, timestamp: new Date().toISOString() },
+      {
+        stepId,
+        agentName,
+        output,
+        timestamp: new Date().toISOString(),
+        ...(stepOrder != null ? { stepOrder } : {}),
+      },
     ],
     lastOutput: output,
     lastAgent: agentName,
@@ -860,25 +893,33 @@ export async function executeWorkflowInBackground(
     }
   }
 
+  const executionInput: ExecuteWorkflowInput = {
+    ...input,
+    initialMemory: {
+      ...(initialMemory ?? {}),
+      ...(input.productSlug
+        ? {
+            focusProductSlug: input.productSlug,
+            ...(input.productId ? { productId: input.productId } : {}),
+          }
+        : {}),
+    },
+  };
+
   const run = await prisma.executionRun.create({
     data: {
       workflowId,
       tenantId: input.tenantId,
       status: "PENDING",
-      sharedMemory: (initialMemory ?? {}) as object,
+      sharedMemory: (executionInput.initialMemory ?? {}) as object,
     },
   });
-
-  const executionInput: ExecuteWorkflowInput = {
-    ...input,
-    initialMemory,
-  };
 
   const jobData = {
     runId: run.id,
     workflowId,
     tenantId: input.tenantId,
-    initialMemory: initialMemory as Record<string, unknown> | undefined,
+    initialMemory: executionInput.initialMemory as Record<string, unknown> | undefined,
     mergeConsensus: input.mergeConsensus,
     syncConsensus: input.syncConsensus,
     productId: input.productId,

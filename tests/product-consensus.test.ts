@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  buildHandoffRevisionContent,
   buildProductContentFromRevision,
   DEFAULT_PRODUCT_CONSENSUS_CONTENT,
+  extractHandoffFromAgentOutput,
   extractHandoffFromSharedMemory,
   formatProductConsensusFileBody,
   type AgentHandoff,
@@ -39,13 +41,17 @@ describe("product consensus helpers", () => {
     assert.match(content, /\*\*VETO\*\* by critic-munger: Unit economics negative/);
   });
 
-  it("uses the explicit content when the agent rewrote it fully", () => {
+  it("appends explicit content inside the cycle section", () => {
     const handoffWithOverride: AgentHandoff = {
       ...handoff,
-      content: "# Fresh rewrite\n\nWe are pivoting.",
+      content: "## Pricing tiers\n\n- Starter $9\n- Pro $29",
     };
-    const content = buildProductContentFromRevision("# Old", handoffWithOverride);
-    assert.equal(content, "# Fresh rewrite\n\nWe are pivoting.");
+    const content = buildProductContentFromRevision("# Old\n", handoffWithOverride);
+    assert.match(content, /# Old/);
+    assert.match(content, /## Cycle 1 — ceo-bezos/);
+    assert.match(content, /## Pricing tiers/);
+    assert.match(content, /Starter \$9/);
+    assert.doesNotMatch(content, /^# Fresh rewrite/m);
   });
 
   it("appends Next Action only when missing", () => {
@@ -60,6 +66,34 @@ describe("product consensus helpers", () => {
     const text = DEFAULT_PRODUCT_CONSENSUS_CONTENT("SnapOG");
     assert.match(text, /# SnapOG/);
     assert.match(text, /Product-scoped consensus memory/);
+  });
+
+  it("extracts handoff from agent output JSON block", () => {
+    const output = `## Analysis
+Three tiers recommended.
+
+\`\`\`json
+{
+  "consensusUpdate": "## Pricing model\\n- Starter: $9/mo",
+  "nextAction": "Validate with 5 users",
+  "decisions": [{"by": "cfo-campbell", "what": "3 tiers", "why": "Clear segmentation"}]
+}
+\`\`\``;
+    const extracted = extractHandoffFromAgentOutput(output, "cfo-campbell", 2);
+    assert.equal(extracted.content, "## Pricing model\n- Starter: $9/mo");
+    assert.equal(extracted.nextAction, "Validate with 5 users");
+    assert.equal(extracted.decisions?.[0].what, "3 tiers");
+  });
+
+  it("falls back to prose outside JSON when consensusUpdate is missing", () => {
+    const output = `Key finding: target SMB at $29/mo.
+
+\`\`\`json
+{ "nextAction": "Sales playbook next" }
+\`\`\``;
+    const extracted = extractHandoffFromAgentOutput(output, "sales-ross", 3);
+    assert.match(extracted.content, /Key finding: target SMB/);
+    assert.equal(extracted.nextAction, "Sales playbook next");
   });
 
   it("extracts structured handoff from shared memory", () => {
@@ -99,6 +133,38 @@ describe("product consensus helpers", () => {
     const extracted = extractHandoffFromSharedMemory(mem, "ceo-bezos");
     assert.equal(extracted.decisions?.length, 1);
     assert.equal(extracted.decisions?.[0].by, "ok");
+  });
+
+  it("buildHandoffRevisionContent stores only the cycle section", () => {
+    const section = buildHandoffRevisionContent({
+      ...handoff,
+      content: "## Pricing\n\nThree tiers.",
+    });
+    assert.doesNotMatch(section, /# SnapOG/);
+    assert.match(section, /## Cycle 1 — ceo-bezos/);
+    assert.match(section, /## Pricing/);
+  });
+
+  it("listProductConsensusRevisions resolves ProductConsensus.id before querying", async () => {
+    const fs = await import("node:fs/promises");
+    const src = await fs.readFile(
+      new URL("../src/lib/product-consensus.ts", import.meta.url),
+      "utf8",
+    );
+    const listFn = src.match(
+      /export async function listProductConsensusRevisions[\s\S]*?^}/m,
+    );
+    assert.ok(listFn, "expected listProductConsensusRevisions function");
+    assert.match(
+      listFn[0],
+      /findUnique\(\{\s*where:\s*\{\s*productId:\s*tenantProductId/,
+      "must look up ProductConsensus by TenantProduct.id first",
+    );
+    assert.match(
+      listFn[0],
+      /where:\s*\{\s*productId:\s*consensus\.id\s*\}/,
+      "must query revisions by ProductConsensus.id",
+    );
   });
 
   it("appendProductHandoff writes revision.productId from ProductConsensus.id, not TenantProduct.id", async () => {

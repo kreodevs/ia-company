@@ -6,7 +6,9 @@ import {
   buildRationaleFromMemory,
   createDecisionProposal,
 } from "./decision-proposals.js";
-import { appendProductHandoff, extractHandoffFromSharedMemory } from "./product-consensus.js";
+import { appendProductHandoff, extractHandoffFromAgentOutput } from "./product-consensus.js";
+import { persistHandoffAsAgentDoc } from "./agent-deliverables.js";
+import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import {
   addPipelineIdeas,
   bootstrapProduct,
@@ -48,6 +50,29 @@ function extractVetoFromText(
     out.push({ by: match[1], reason: match[2] });
   }
   return out;
+}
+
+export function productConvergencePromptSection(): string {
+  return `
+## Product Workflow Rules (mandatory)
+- Produce tangible deliverables: pricing models, briefs, copy, specs — not discussion-only output.
+- Save your primary deliverable with \`write_file\` under your role folder in \`docs/{role}/\`.
+- End every reply with the fenced JSON handoff block below (parsed per step into product consensus).
+
+## Consensus Handoff (mandatory structured output)
+End your reply with a fenced JSON block. Omit fields you cannot fill:
+\`\`\`json
+{
+  "consensusUpdate": "<markdown summary of YOUR step only — key findings, numbers, recommendations>",
+  "nextAction": "<single concrete sentence for the NEXT agent>",
+  "decisions": [{"by": "your-agent-name", "what": "...", "why": "..."}],
+  "openQuestions": ["..."],
+  "veto": null
+}
+\`\`\`
+- \`consensusUpdate\` should be a self-contained markdown section (headings, bullets, tables) — not empty.
+- If you are Charlie Munger and want to block, set \`"veto": {"by": "critic-munger", "reason": "..."}\`.
+`.trim();
 }
 
 export function convergencePromptSection(
@@ -100,9 +125,16 @@ export async function processConvergenceAfterRun(
       for (let i = 0; i < history.length; i++) {
         const h = history[i];
         if (!h?.agentName) continue;
-        const handoff = extractHandoffFromSharedMemory(
-          { ...enriched, lastOutput: h.output, lastAgent: h.agentName, stepOrder: h.stepOrder ?? i + 1 },
+        const stepOutput =
+          typeof h.output === "string" && h.output.trim()
+            ? h.output
+            : typeof memory[h.agentName] === "string"
+              ? String(memory[h.agentName])
+              : "";
+        const handoff = extractHandoffFromAgentOutput(
+          stepOutput,
           h.agentName,
+          h.stepOrder ?? i + 1,
         );
         handoff.stepId = h.stepId;
         handoff.runId = runId;
@@ -113,6 +145,16 @@ export async function processConvergenceAfterRun(
           tenantId: product.tenantId,
           ...handoff,
         });
+        const docBody = handoff.content.trim() || stepOutput.trim();
+        if (docBody) {
+          await persistHandoffAsAgentDoc({
+            workspaceRoot: resolveProductWorkspaceRoot(product.slug),
+            agentName: h.agentName,
+            workflowName,
+            runId,
+            content: docBody,
+          });
+        }
       }
     }
   }

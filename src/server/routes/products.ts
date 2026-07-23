@@ -398,6 +398,18 @@ export async function productRoutes(app: FastifyInstance) {
     },
   );
 
+  app.get<{ Params: { id: string } }>("/products/:id/last-run", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getProductLastRunTrace } = await import("../../lib/product-last-run.js");
+      const trace = await getProductLastRunTrace(tenantId, request.params.id);
+      if (!trace) return reply.status(404).send({ error: "Product not found" });
+      return trace;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/agent-docs", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
@@ -508,38 +520,72 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, runs, ideas] = await Promise.all([
+      const [agents, ideas, lastLinkedRun] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
         }),
-        prisma.executionRun.findMany({
-          where: { tenantId },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-          include: {
-            workflow: { select: { name: true } },
-            logs: {
-              where: { agentId: { not: null } },
-              orderBy: { createdAt: "desc" },
-              take: 30,
-              select: {
-                id: true,
-                level: true,
-                message: true,
-                agentId: true,
-                stepId: true,
-                createdAt: true,
-              },
-            },
-          },
-        }),
         listPipelineIdeas(tenantId),
+        product.lastRunId
+          ? prisma.executionRun.findUnique({
+              where: { id: product.lastRunId },
+              include: {
+                workflow: { select: { name: true } },
+                logs: {
+                  where: { agentId: { not: null } },
+                  orderBy: { createdAt: "desc" },
+                  take: 30,
+                  select: {
+                    id: true,
+                    level: true,
+                    message: true,
+                    agentId: true,
+                    stepId: true,
+                    createdAt: true,
+                  },
+                },
+              },
+            })
+          : Promise.resolve(null),
       ]);
 
+      const recentRunsQuery = await prisma.executionRun.findMany({
+        where: { tenantId },
+        orderBy: { createdAt: "desc" },
+        take: 15,
+        include: {
+          workflow: { select: { name: true } },
+          logs: {
+            where: { agentId: { not: null } },
+            orderBy: { createdAt: "desc" },
+            take: 30,
+            select: {
+              id: true,
+              level: true,
+              message: true,
+              agentId: true,
+              stepId: true,
+              createdAt: true,
+            },
+          },
+        },
+      });
+
+      const runsById = new Map(recentRunsQuery.map((run) => [run.id, run]));
+      if (lastLinkedRun && !runsById.has(lastLinkedRun.id)) {
+        runsById.set(lastLinkedRun.id, lastLinkedRun);
+      }
+      const runs = Array.from(runsById.values()).sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      );
+
       const runsForProduct = runs.filter((r) => {
-        const mem = r.sharedMemory as { focusProductSlug?: unknown } | null;
-        return mem?.focusProductSlug === product.slug;
+        if (r.id === product.lastRunId) return true;
+        const mem = r.sharedMemory as {
+          focusProductSlug?: unknown;
+          productId?: unknown;
+        } | null;
+        return mem?.focusProductSlug === product.slug || mem?.productId === product.id;
       });
 
       const activeRun =

@@ -20,6 +20,7 @@ export const warRoom = {
   startedAt: "Started {{time}}",
   agentsOnRun: "{{count}} agents on this run",
   noActiveRun: "No active run. Use the launcher below to assign agents or workflows.",
+  runStarted: "Run launched — follow progress here in the war room.",
   thinking: "Thinking now",
   thinkingGeneric: "Working on the next step…",
   legend: "Legend",

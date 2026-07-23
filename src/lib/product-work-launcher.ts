@@ -7,6 +7,7 @@ import {
   ensurePlatformWorkflowOnTenant,
 } from "../server/lib/clone-templates.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
+import { productConvergencePromptSection } from "./convergence.js";
 
 export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
 
@@ -212,13 +213,21 @@ export async function launchProductWork(
   }
 
   const taskText = input.task?.trim();
-  const initialMemory = taskText
-    ? {
-        task: taskText,
-        nextAction: taskText,
-        launchContext: `Product: ${product.name} (${product.slug})`,
-      }
-    : undefined;
+  const initialMemory = {
+    ...(taskText
+      ? {
+          task: taskText,
+          nextAction: taskText,
+          launchContext: `Product: ${product.name} (${product.slug})`,
+        }
+      : {
+          launchContext: `Product: ${product.name} (${product.slug})`,
+        }),
+    convergenceRules: productConvergencePromptSection(),
+    focusProductSlug: product.slug,
+    focusProductName: product.name,
+    productId: product.id,
+  };
 
   const runId = await executeWorkflowInBackground(workflow.id, {
     tenantId,

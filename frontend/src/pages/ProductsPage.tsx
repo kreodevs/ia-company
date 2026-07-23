@@ -558,6 +558,7 @@ function ActiveProductCard({
               productId={product.id}
               productName={product.name}
               compact
+              afterLaunch="war-room"
               onLaunched={onChange}
             />
           </div>

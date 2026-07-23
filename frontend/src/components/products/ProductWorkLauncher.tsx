@@ -35,7 +35,9 @@ export interface ProductWorkLauncherProps {
   productId: string;
   productName: string;
   compact?: boolean;
-  onLaunched?: () => void;
+  /** After launch: stay on page (default), open war room, or open run detail */
+  afterLaunch?: "stay" | "war-room" | "run";
+  onLaunched?: (runId: string) => void;
 }
 
 function presetLabelKey(id: string): string {
@@ -57,6 +59,7 @@ export default function ProductWorkLauncher({
   productId,
   productName,
   compact = false,
+  afterLaunch = "stay",
   onLaunched,
 }: ProductWorkLauncherProps) {
   const { t } = useTranslation();
@@ -99,8 +102,12 @@ export default function ProductWorkLauncher({
         mergeConsensus: true,
         setFocus: true,
       });
-      onLaunched?.();
-      navigate(`/runs/${result.runId}`);
+      onLaunched?.(result.runId);
+      if (afterLaunch === "war-room") {
+        navigate(`/war-room/${productId}`);
+      } else if (afterLaunch === "run") {
+        navigate(`/runs/${result.runId}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

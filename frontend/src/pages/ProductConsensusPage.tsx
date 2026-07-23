@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type ProductConsensus, type ProductConsensusRevision, type TenantProduct } from "../lib/api";
+import { api, type ProductConsensus, type ProductConsensusRevision, type ProductLastRunTrace, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Input from "../components/ui/Input";
@@ -12,6 +12,7 @@ import KpiCard from "../components/ui/KpiCard";
 import StatusPill from "../components/ui/StatusPill";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductAgentDocsPanel from "../components/products/ProductAgentDocsPanel";
+import ProductLastRunPanel from "../components/products/ProductLastRunPanel";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import EmptyState from "../components/ui/EmptyState";
 
@@ -45,25 +46,33 @@ export default function ProductConsensusPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [lastRunTrace, setLastRunTrace] = useState<ProductLastRunTrace | null>(null);
+  const [lastRunLoading, setLastRunLoading] = useState(true);
 
   useEffect(() => {
     if (!productId) return;
     setLoading(true);
+    setLastRunLoading(true);
     Promise.all([
       api.products.consensus.get(productId),
       api.products.consensus.revisions(productId, 50),
       api.products.list(),
       api.products.agentDocs(productId).catch(() => ({ roles: [], total: 0 })),
+      api.products.lastRun(productId).catch(() => null),
     ])
-      .then(([consensus, revs, list, docs]) => {
+      .then(([consensus, revs, list, docs, lastRun]) => {
         setRecord(consensus);
         setContent(consensus.content);
         setNextAction(consensus.nextAction ?? "");
         setRevisions(revs);
         setProduct(list.find((p) => p.id === productId) ?? null);
         setDocCount(docs.total);
+        setLastRunTrace(lastRun);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setLastRunLoading(false);
+      });
   }, [productId]);
 
   const switchTab = (next: View) => {
@@ -120,7 +129,7 @@ export default function ProductConsensusPage() {
             ]}
           />
         }
-        title={t("consensus.productTitle", { name: record?.productId ?? productId })}
+        title={t("consensus.productTitle", { name: product?.name ?? productId })}
         subtitle={t("consensus.productSubtitle")}
         meta={
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -139,7 +148,7 @@ export default function ProductConsensusPage() {
               to={`/war-room/${productId}`}
               className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
             >
-              {t("warRoom.title", { name: record?.productId ?? productId })}
+              {t("warRoom.title", { name: product?.name ?? productId })}
             </Link>
             <Link
               to={`/products/${productId}/code`}
@@ -196,6 +205,12 @@ export default function ProductConsensusPage() {
           }
         />
       </section>
+
+      <ProductLastRunPanel
+        trace={lastRunTrace}
+        loading={lastRunLoading}
+        productId={productId}
+      />
 
       <div className="flex items-center gap-1 border-b border-[var(--color-border)]">
         <button
