@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { ensureProductWorkspace } from "./product-workspace.js";
+import { collectJsonObjects, asString, asStringArray } from "./structured-memory.js";
 import type { SharedMemory } from "../types/index.js";
 
 export const PRODUCT_CONSENSUS_FILE_NAME = "consensus.md";
@@ -37,8 +38,6 @@ export function buildProductContentFromRevision(
   existingContent: string,
   handoff: AgentHandoff,
 ): string {
-  if (handoff.content.trim()) return handoff.content.trim();
-
   const trimmed = existingContent.trim();
   const stamp = new Date().toISOString();
   const lines: string[] = [];
@@ -46,6 +45,12 @@ export function buildProductContentFromRevision(
 
   lines.push(`## Cycle ${handoff.stepOrder} — ${handoff.agentName} (${stamp})`);
   lines.push("");
+
+  const body = handoff.content.trim();
+  if (body) {
+    lines.push(body);
+    lines.push("");
+  }
 
   if (handoff.decisions && handoff.decisions.length > 0) {
     lines.push("**Decisions:**");
@@ -224,6 +229,78 @@ export async function updateProductConsensusContent(
     data: { content, nextAction },
   });
   await syncProductConsensusFileToWorkspace(productSlug, content, nextAction);
+}
+
+function stripConsensusJsonBlocks(text: string): string {
+  return text.replace(/```(?:json)?\s*[\s\S]*?```/gi, "").trim();
+}
+
+export function parseConsensusHandoffFromOutput(
+  output: string,
+  agentName: string,
+): Partial<AgentHandoff> {
+  const parsed: Partial<AgentHandoff> = { agentName };
+  if (!output.trim()) return parsed;
+
+  for (const obj of collectJsonObjects(output)) {
+    const consensusUpdate = asString(obj.consensusUpdate);
+    if (consensusUpdate) parsed.content = consensusUpdate;
+
+    const nextAction = asString(obj.nextAction);
+    if (nextAction) parsed.nextAction = nextAction;
+
+    if (Array.isArray(obj.decisions)) {
+      parsed.decisions = (obj.decisions as Array<Record<string, unknown>>)
+        .filter((d) => d && typeof d === "object")
+        .map((d) => ({
+          by: typeof d.by === "string" ? d.by : agentName,
+          what: typeof d.what === "string" ? d.what : "",
+          why: typeof d.why === "string" ? d.why : undefined,
+        }))
+        .filter((d) => d.what.length > 0);
+    }
+
+    const openQuestions = asStringArray(obj.openQuestions);
+    if (openQuestions.length > 0) parsed.openQuestions = openQuestions;
+
+    if (obj.veto && typeof obj.veto === "object") {
+      const v = obj.veto as Record<string, unknown>;
+      if (typeof v.by === "string" && typeof v.reason === "string") {
+        parsed.veto = { by: v.by, reason: v.reason };
+      }
+    }
+
+    if (
+      parsed.content ||
+      parsed.nextAction ||
+      (parsed.decisions && parsed.decisions.length > 0) ||
+      (parsed.openQuestions && parsed.openQuestions.length > 0) ||
+      parsed.veto
+    ) {
+      break;
+    }
+  }
+
+  return parsed;
+}
+
+export function extractHandoffFromAgentOutput(
+  output: string,
+  agentName: string,
+  stepOrder: number,
+): AgentHandoff {
+  const parsed = parseConsensusHandoffFromOutput(output, agentName);
+  const content = parsed.content?.trim() || stripConsensusJsonBlocks(output);
+
+  return {
+    agentName,
+    stepOrder,
+    content,
+    nextAction: parsed.nextAction,
+    decisions: parsed.decisions,
+    openQuestions: parsed.openQuestions,
+    veto: parsed.veto,
+  };
 }
 
 export function extractHandoffFromSharedMemory(

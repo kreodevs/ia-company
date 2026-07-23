@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Play, Rocket, Users, Workflow } from "lucide-react";
 import {
   api,
@@ -35,7 +34,7 @@ export interface ProductWorkLauncherProps {
   productId: string;
   productName: string;
   compact?: boolean;
-  onLaunched?: () => void;
+  onLaunched?: (runId: string) => void;
 }
 
 function presetLabelKey(id: string): string {
@@ -60,7 +59,6 @@ export default function ProductWorkLauncher({
   onLaunched,
 }: ProductWorkLauncherProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [options, setOptions] = useState<ProductLaunchOptions | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<LaunchTab>("presets");
@@ -99,8 +97,7 @@ export default function ProductWorkLauncher({
         mergeConsensus: true,
         setFocus: true,
       });
-      onLaunched?.();
-      navigate(`/runs/${result.runId}`);
+      onLaunched?.(result.runId);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

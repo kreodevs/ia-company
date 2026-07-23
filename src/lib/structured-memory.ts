@@ -36,7 +36,7 @@ function tryParseJsonValue(raw: string): unknown {
   }
 }
 
-function collectJsonObjects(text: string): Record<string, unknown>[] {
+export function collectJsonObjects(text: string): Record<string, unknown>[] {
   const objects: Record<string, unknown>[] = [];
 
   for (const match of text.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)) {

@@ -183,7 +183,10 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
       <ProductWorkLauncher
         productId={data.product.id}
         productName={data.product.name}
-        onLaunched={() => void refresh()}
+        onLaunched={() => {
+          flashNote(t("warRoom.runStarted"));
+          void refresh();
+        }}
       />
 
       <div className="war-room-grid">
