@@ -38,6 +38,13 @@ fi
 if [ -n "$LAUNCH_ONE_SHOT" ]; then
   echo "One-shot product launch: $LAUNCH_ONE_SHOT"
   npx tsx scripts/launch-product-test.ts || echo "Launch script failed (continuing API start)"
+elif [ -n "$LAUNCH_ONE_SHOT_B64" ]; then
+  LAUNCH_ONE_SHOT="$(printf '%s' "$LAUNCH_ONE_SHOT_B64" | base64 -d 2>/dev/null || true)"
+  if [ -n "$LAUNCH_ONE_SHOT" ]; then
+    echo "One-shot product launch (b64): $LAUNCH_ONE_SHOT"
+    export LAUNCH_ONE_SHOT
+    npx tsx scripts/launch-product-test.ts || echo "Launch script failed (continuing API start)"
+  fi
 fi
 
 echo "Starting API on ${PORT:-3001}…"

@@ -53,6 +53,7 @@ services:
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
       RUN_SEED: ${RUN_SEED:-false}
       LAUNCH_ONE_SHOT: ${LAUNCH_ONE_SHOT:-}
+      LAUNCH_ONE_SHOT_B64: ${LAUNCH_ONE_SHOT_B64:-}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
     depends_on:
