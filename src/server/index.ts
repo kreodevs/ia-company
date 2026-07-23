@@ -15,6 +15,7 @@ import {
   warmPlatformSettingsCache,
   syncAgentsToPlatformLlmSettings,
 } from "../lib/platform-settings.js";
+import { officeRoutes } from "./routes/office.js";
 import { opsRoutes } from "./routes/ops.js";
 import { productRoutes } from "./routes/products.js";
 import { runRoutes } from "./routes/runs.js";
@@ -68,6 +69,7 @@ async function buildServer() {
     await api.register(consensusRoutes);
     await api.register(productRoutes);
     await api.register(opsRoutes);
+    await api.register(officeRoutes);
     await api.register(decisionRoutes);
     await api.register(scheduleRoutes);
     await api.register(agentRoutes);

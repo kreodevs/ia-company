@@ -10,6 +10,7 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Molecules | `molecules/` | Card, PageHeader, EmptyState, StatsCard, Sonner (toast) |
 | Ops | `ops/` | `OpsFlowStepper` — company phase pipeline on `/ops` |
 | War room | `war-room/` | `WarRoomContent` — tactical agent table on `/war-room/:productId` |
+| Office | `office/` | `OfficeSpendWidget` — sidebar spend bar; main UI in `OfficePage` |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
 | Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |

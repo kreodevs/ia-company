@@ -15,12 +15,14 @@ import {
   Settings,
   Sparkles,
   Users,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Button from "./ui/Button";
+import OfficeSpendWidget from "./office/OfficeSpendWidget";
 import { useAuth } from "../context/AuthContext";
 import {
   flattenNavItems,
@@ -37,6 +39,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates": Layers,
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
+  "/office": Building2,
   "/ops": Activity,
   "/products": Package,
   "/war-room": Crosshair,
@@ -212,7 +215,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
   const showAdminNav = isSuperAdmin && !activeTenant;
   const showTenantNav = !!activeTenant;
-  const homeLink = showAdminNav ? "/admin" : "/ops";
+  const homeLink = showAdminNav ? "/admin" : "/office";
 
   useEffect(() => {
     onMobileClose();
@@ -251,6 +254,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
     if (showTenantNav) {
       const items: NavItem[] = [
+        { to: "/office", labelKey: "nav.office", end: true },
         {
           labelKey: "nav.groupAutonomous",
           children: [
@@ -363,6 +367,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           </nav>
 
           <div className="app-sidebar-footer space-y-2">
+            {showTenantNav ? <OfficeSpendWidget collapsed={collapsed} /> : null}
             <button
               type="button"
               onClick={toggleCollapsed}

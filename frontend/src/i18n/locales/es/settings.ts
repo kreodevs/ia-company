@@ -132,6 +132,10 @@ export const settings = {
       daily9: "Diario a las 9:00",
     },
     presets: {
+      onDemand: {
+        label: "Bajo demanda (default)",
+        description: "Sin ejecuciones automáticas. Tú controlas cada tarea desde la Oficina.",
+      },
       discoveryOnly: {
         label: "Solo discovery",
         description: "Discovery semanal los sábados cuando el pipeline está vacío.",

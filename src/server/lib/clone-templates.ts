@@ -405,3 +405,78 @@ export async function ensureAgentTaskWorkflow(tenantId: string, agentId: string)
 
   return workflow;
 }
+
+/** Creates or returns a multi-step workflow for a temporary agent team. */
+export async function ensureTeamTaskWorkflow(
+  tenantId: string,
+  agentIds: string[],
+  taskLabel: string,
+) {
+  const agents = await prisma.agent.findMany({
+    where: { id: { in: agentIds }, tenantId },
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  });
+  if (agents.length === 0) return null;
+
+  const slug = agents.map((a) => a.name).join("-");
+  const wfName = `_team-${slug}`.slice(0, 120);
+  const existing = await prisma.workflow.findFirst({
+    where: { tenantId, name: wfName },
+    include: { steps: { orderBy: { stepOrder: "asc" } } },
+  });
+
+  if (existing && existing.steps.length === agents.length) {
+    const existingIds = existing.steps.map((s) => s.agentId).sort().join(",");
+    const requestedIds = agents.map((a) => a.id).sort().join(",");
+    if (existingIds === requestedIds) {
+      return {
+        id: existing.id,
+        name: existing.name,
+        description: existing.description,
+      };
+    }
+  }
+
+  if (existing) {
+    await prisma.workflowStep.deleteMany({ where: { workflowId: existing.id } });
+    for (let i = 0; i < agents.length; i++) {
+      await prisma.workflowStep.create({
+        data: {
+          workflowId: existing.id,
+          agentId: agents[i]!.id,
+          stepOrder: i,
+          label: agents[i]!.role,
+        },
+      });
+    }
+    await prisma.workflow.update({
+      where: { id: existing.id },
+      data: { description: `Team task: ${taskLabel}` },
+    });
+    return { id: existing.id, name: existing.name, description: existing.description };
+  }
+
+  const workflow = await prisma.workflow.create({
+    data: {
+      tenantId,
+      name: wfName,
+      description: `Team task: ${taskLabel}`,
+      isActive: true,
+    },
+    select: { id: true, name: true, description: true },
+  });
+
+  for (let i = 0; i < agents.length; i++) {
+    await prisma.workflowStep.create({
+      data: {
+        workflowId: workflow.id,
+        agentId: agents[i]!.id,
+        stepOrder: i,
+        label: agents[i]!.role,
+      },
+    });
+  }
+
+  return workflow;
+}

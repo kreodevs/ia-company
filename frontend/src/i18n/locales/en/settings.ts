@@ -132,6 +132,10 @@ export const settings = {
       daily9: "Daily at 9:00",
     },
     presets: {
+      onDemand: {
+        label: "On demand (default)",
+        description: "No automatic runs. You control every task from the Office.",
+      },
       discoveryOnly: {
         label: "Discovery only",
         description: "Weekly opportunity discovery on Saturdays when the pipeline is empty.",
