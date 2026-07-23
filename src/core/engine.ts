@@ -3,6 +3,7 @@ import type { ExecutionStatus, LogLevel } from "@prisma/client";
 import { processConvergenceAfterRun } from "../lib/convergence.js";
 import {
   collectAgentStepOutput,
+  collectToolStepArtifacts,
   persistAgentDeliverableIfMissing,
 } from "../lib/agent-deliverables.js";
 import { prisma } from "../lib/prisma.js";
@@ -427,7 +428,41 @@ export class WorkflowExecutor {
       maxSteps: 10,
     });
 
-    const output = collectAgentStepOutput(response);
+    let output = collectAgentStepOutput(response);
+    let promptTokens = response.usage?.promptTokens ?? 0;
+    let completionTokens = response.usage?.completionTokens ?? 0;
+
+    if (!output.trim() && (response.steps?.length ?? 0) > 0) {
+      const toolArtifacts = collectToolStepArtifacts(response);
+      const taskHint =
+        typeof sharedMemory.task === "string" && sharedMemory.task.trim()
+          ? sharedMemory.task.trim()
+          : userPrompt;
+
+      await this.appendLog(runId, "info", "Synthesizing text deliverable after tool-only agent steps", {
+        agentId: agent.id,
+        payload: { agentName: agent.name, toolSteps: response.steps?.length ?? 0 },
+      });
+
+      const synthesis = await generateText({
+        model,
+        temperature: Math.min(agent.temperature, 0.5),
+        system: systemPrompt,
+        prompt: `You completed tool calls for this workflow step but returned no final written deliverable.
+
+Task:
+${taskHint}
+
+${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the deliverable now in markdown (actionable, not meta-commentary), then end with the mandatory JSON handoff fenced block from the system instructions. Do not use tools.`,
+        maxSteps: 1,
+      });
+
+      output = collectAgentStepOutput(synthesis) || toolArtifacts;
+      promptTokens += synthesis.usage?.promptTokens ?? 0;
+      completionTokens += synthesis.usage?.completionTokens ?? 0;
+    }
+
+    const totalTokens = promptTokens + completionTokens;
 
     if (tenantCtx.productSlug && output.trim()) {
       const savedPath = await persistAgentDeliverableIfMissing({
@@ -445,10 +480,6 @@ export class WorkflowExecutor {
         });
       }
     }
-
-    const promptTokens = response.usage?.promptTokens ?? 0;
-    const completionTokens = response.usage?.completionTokens ?? 0;
-    const totalTokens = response.usage?.totalTokens ?? promptTokens + completionTokens;
 
     return {
       output,
