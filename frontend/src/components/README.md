@@ -14,7 +14,7 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
 | Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
-| Layout | `AppSidebar.tsx` | Collapsible navigation (desktop) / drawer (mobile) |
+| Layout | `AppSidebar.tsx` | Collapsible navigation (desktop) / drawer (mobile). Tenant menu groups: autonomous company, memory, AI catalog, administration |
 | Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
 
 ## Themes

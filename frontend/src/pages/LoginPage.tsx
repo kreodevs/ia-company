@@ -30,7 +30,7 @@ export default function LoginPage() {
         navigate("/admin", { replace: true });
       } else {
         await loginTenant(tenantSlug, email, password);
-        navigate("/workflows", { replace: true });
+        navigate("/ops", { replace: true });
       }
     } catch (err) {
       setError(translateApiError(err, t, "common.loginFailed"));
