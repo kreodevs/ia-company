@@ -15,5 +15,6 @@ Shared layout and interaction components for consistent responsive UX across Aut
 | `Badge` | Generic phase / label chips |
 | `ProductActionsMenu` | Product lifecycle menu: pause, resume, NO-GO, cancel/archive, delete from registry, archive |
 | `ConfirmDialog` | Destructive action confirmation modal |
+| `MarkdownView` | Read-only rendered markdown (agent docs preview) |
 
 Global styles live in `src/index.css` (focus rings, reduced motion, safe overflow).

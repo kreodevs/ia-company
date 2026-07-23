@@ -398,6 +398,20 @@ export async function productRoutes(app: FastifyInstance) {
     },
   );
 
+  app.get<{ Params: { id: string } }>("/products/:id/agent-docs", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+      const { listProductAgentDocs } = await import("../../lib/product-code.js");
+      return await listProductAgentDocs(product.slug);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string }; Querystring: { path?: string } }>(
     "/products/:id/tree",
     async (request, reply) => {

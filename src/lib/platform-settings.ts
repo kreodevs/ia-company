@@ -14,8 +14,8 @@ export const PLATFORM_SETTINGS_DEFAULTS = {
   openrouterReferer: "https://auto-company.local",
   customBaseUrl: "",
   emailFrom: "onboarding@resend.dev",
-  executeRateLimitMax: 10,
-  authRateLimitMax: 30,
+  executeRateLimitMax: 30,
+  authRateLimitMax: 150,
   shellTimeoutMs: 30_000,
   schedulerTickMs: 60_000,
 };
