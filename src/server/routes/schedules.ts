@@ -1,9 +1,22 @@
 import type { FastifyInstance } from "fastify";
-import type { ScheduleKind } from "@prisma/client";
+import { Prisma, type OrchestrationMode, type ScheduleKind } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
-import { ensureMetaSchedule } from "../../core/meta-orchestrator.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import {
+  applyOrchestrationPreset,
+  ensureDefaultOrchestrationPlan,
+  executeScheduleRule,
+  resolveNextRunAt,
+  scheduleKindFromMode,
+} from "../../lib/orchestration-plan.js";
+import { computeNextRunAt, normalizeIntervalSec } from "../../lib/schedule-timing.js";
+import { ORCHESTRATION_PRESETS, isOrchestrationPresetId } from "../../lib/orchestration-presets.js";
+import type { ScheduleConditions } from "../../types/orchestration.js";
+
+function serializeSchedule<T extends Record<string, unknown>>(schedule: T) {
+  return schedule;
+}
 
 export async function scheduleRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -12,11 +25,36 @@ export async function scheduleRoutes(app: FastifyInstance) {
   app.get("/schedules", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      await ensureMetaSchedule(tenantId);
-      return prisma.autonomousSchedule.findMany({
-        where: { tenantId },
-        orderBy: [{ scheduleKind: "desc" }, { createdAt: "desc" }],
-      });
+      const schedules = await ensureDefaultOrchestrationPlan(tenantId);
+      return schedules;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get("/schedules/presets", async (_request, reply) => {
+    try {
+      return Object.values(ORCHESTRATION_PRESETS).map((preset) => ({
+        id: preset.id,
+        labelKey: preset.labelKey,
+        descriptionKey: preset.descriptionKey,
+        ruleCount: preset.rules.length,
+      }));
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Body: { presetId: string } }>("/schedules/apply-preset", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { presetId } = request.body;
+      if (!isOrchestrationPresetId(presetId)) {
+        return reply.status(400).send({ error: "Unknown preset" });
+      }
+      const schedules = await applyOrchestrationPreset(tenantId, presetId);
+      await logAudit(request, "schedule.apply_preset", { presetId, count: schedules.length });
+      return reply.status(201).send(schedules);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -27,8 +65,12 @@ export async function scheduleRoutes(app: FastifyInstance) {
       name: string;
       workflowId?: string;
       intervalSec?: number;
+      cronExpr?: string | null;
       enabled?: boolean;
       scheduleKind?: ScheduleKind;
+      orchestrationMode?: OrchestrationMode;
+      priority?: number;
+      conditions?: ScheduleConditions | null;
     };
   }>("/schedules", async (request, reply) => {
     try {
@@ -37,91 +79,156 @@ export async function scheduleRoutes(app: FastifyInstance) {
         name,
         workflowId,
         intervalSec = 1800,
+        cronExpr = null,
         enabled = true,
-        scheduleKind = "workflow",
+        scheduleKind,
+        orchestrationMode: orchestrationModeInput,
+        priority = 0,
+        conditions = null,
       } = request.body;
 
-      if (scheduleKind === "meta") {
-        const schedule = await ensureMetaSchedule(tenantId);
-        if (name !== schedule.name || intervalSec !== schedule.intervalSec || enabled !== schedule.enabled) {
+      const orchestrationMode =
+        orchestrationModeInput ??
+        (scheduleKind === "meta" ? "meta_dynamic" : "fixed");
+
+      if (orchestrationMode === "meta_dynamic" && scheduleKind === "meta") {
+        const existing = await prisma.autonomousSchedule.findFirst({
+          where: { tenantId, orchestrationMode: "meta_dynamic" },
+        });
+        if (existing) {
           const updated = await prisma.autonomousSchedule.update({
-            where: { id: schedule.id },
-            data: { name, intervalSec, enabled, nextRunAt: enabled ? new Date() : null },
+            where: { id: existing.id },
+            data: {
+              name,
+              intervalSec: normalizeIntervalSec(intervalSec),
+              cronExpr,
+              enabled,
+              priority,
+              conditions: (conditions ?? undefined) as Prisma.InputJsonValue | undefined,
+              nextRunAt: enabled ? computeNextRunAt({ intervalSec, cronExpr }) : null,
+            },
           });
-          await logAudit(request, "schedule.create", { scheduleId: updated.id, name, scheduleKind: "meta" });
+          await logAudit(request, "schedule.create", { scheduleId: updated.id, name, orchestrationMode });
           return reply.status(201).send(updated);
         }
-        return reply.status(201).send(schedule);
       }
 
-      if (!workflowId) {
-        return reply.status(400).send({ error: "workflowId is required for workflow schedules" });
+      if (orchestrationMode === "fixed" && !workflowId) {
+        return reply.status(400).send({ error: "workflowId is required for fixed schedules" });
       }
 
-      const workflow = await prisma.workflow.findFirst({
-        where: { id: workflowId, tenantId },
-      });
-      if (!workflow) {
-        return reply.status(404).send({ error: "Workflow not found" });
+      if (workflowId) {
+        const workflow = await prisma.workflow.findFirst({
+          where: { id: workflowId, tenantId },
+        });
+        if (!workflow) {
+          return reply.status(404).send({ error: "Workflow not found" });
+        }
       }
 
       const schedule = await prisma.autonomousSchedule.create({
         data: {
           tenantId,
-          workflowId,
-          scheduleKind: "workflow",
+          workflowId: orchestrationMode === "fixed" ? workflowId : null,
+          scheduleKind: scheduleKindFromMode(orchestrationMode),
+          orchestrationMode,
           name,
-          intervalSec,
+          intervalSec: normalizeIntervalSec(intervalSec),
+          cronExpr,
+          priority,
+          conditions: (conditions ?? undefined) as Prisma.InputJsonValue | undefined,
           enabled,
-          nextRunAt: enabled ? new Date() : null,
+          nextRunAt: enabled ? computeNextRunAt({ intervalSec, cronExpr }) : null,
         },
       });
 
-      await logAudit(request, "schedule.create", { scheduleId: schedule.id, name });
+      await logAudit(request, "schedule.create", { scheduleId: schedule.id, name, orchestrationMode });
       return reply.status(201).send(schedule);
     } catch (err) {
       return handleRouteError(reply, err);
     }
   });
 
-  app.put<{ Params: { id: string }; Body: { enabled?: boolean; intervalSec?: number; name?: string } }>(
-    "/schedules/:id",
-    async (request, reply) => {
-      try {
-        const tenantId = requireImpersonatedTenant(request);
-        const existing = await prisma.autonomousSchedule.findFirst({
-          where: { id: request.params.id, tenantId },
-        });
-        if (!existing) return reply.status(404).send({ error: "Schedule not found" });
+  app.put<{
+    Params: { id: string };
+    Body: {
+      enabled?: boolean;
+      intervalSec?: number;
+      cronExpr?: string | null;
+      name?: string;
+      priority?: number;
+      conditions?: ScheduleConditions | null;
+      workflowId?: string | null;
+      orchestrationMode?: OrchestrationMode;
+    };
+  }>("/schedules/:id", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const existing = await prisma.autonomousSchedule.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!existing) return reply.status(404).send({ error: "Schedule not found" });
 
-        const { enabled, intervalSec, name } = request.body;
-        const data: {
-          enabled?: boolean;
-          intervalSec?: number;
-          name?: string;
-          nextRunAt?: Date | null;
-        } = {};
+      const {
+        enabled,
+        intervalSec,
+        cronExpr,
+        name,
+        priority,
+        conditions,
+        workflowId,
+        orchestrationMode,
+      } = request.body;
 
-        if (name !== undefined) data.name = name;
-        if (intervalSec !== undefined) data.intervalSec = intervalSec;
+      const data: Prisma.AutonomousScheduleUpdateInput = {};
 
-        if (enabled !== undefined) {
-          data.enabled = enabled;
-          data.nextRunAt = enabled ? new Date() : null;
-        } else if (intervalSec !== undefined && existing.enabled) {
-          data.nextRunAt = new Date();
-        }
-
-        const schedule = await prisma.autonomousSchedule.update({
-          where: { id: request.params.id },
-          data,
-        });
-        return schedule;
-      } catch (err) {
-        return handleRouteError(reply, err);
+      if (name !== undefined) data.name = name;
+      if (intervalSec !== undefined) data.intervalSec = normalizeIntervalSec(intervalSec);
+      if (cronExpr !== undefined) data.cronExpr = cronExpr;
+      if (priority !== undefined) data.priority = priority;
+      if (conditions !== undefined) {
+        data.conditions =
+          conditions === null ? Prisma.DbNull : (conditions as Prisma.InputJsonValue);
       }
-    },
-  );
+      if (workflowId !== undefined) data.workflowId = workflowId;
+      if (orchestrationMode !== undefined) {
+        data.orchestrationMode = orchestrationMode;
+        data.scheduleKind = scheduleKindFromMode(orchestrationMode);
+        if (orchestrationMode === "meta_dynamic") {
+          data.workflowId = null;
+        }
+      }
+
+      const nextIntervalSec =
+        intervalSec !== undefined ? normalizeIntervalSec(intervalSec) : existing.intervalSec;
+      const nextCronExpr = cronExpr === undefined ? existing.cronExpr : cronExpr;
+
+      if (enabled !== undefined) {
+        data.enabled = enabled;
+        data.nextRunAt = enabled
+          ? computeNextRunAt({
+              intervalSec: nextIntervalSec,
+              cronExpr: nextCronExpr,
+            })
+          : null;
+      } else if (intervalSec !== undefined || cronExpr !== undefined) {
+        data.nextRunAt = existing.enabled
+          ? computeNextRunAt({
+              intervalSec: nextIntervalSec,
+              cronExpr: nextCronExpr,
+            })
+          : null;
+      }
+
+      const schedule = await prisma.autonomousSchedule.update({
+        where: { id: request.params.id },
+        data,
+      });
+      return serializeSchedule(schedule);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 
   app.delete<{ Params: { id: string } }>("/schedules/:id", async (request, reply) => {
     try {
@@ -146,24 +253,17 @@ export async function scheduleRoutes(app: FastifyInstance) {
       if (!schedule) return reply.status(404).send({ error: "Schedule not found" });
 
       const { assertTenantCanExecute } = await import("../../lib/usage-limits.js");
-
       await assertTenantCanExecute(tenantId);
 
-      let runId: string;
-      if (schedule.scheduleKind === "meta") {
-        const { executeMetaScheduleRun } = await import("../../core/meta-orchestrator.js");
-        runId = await executeMetaScheduleRun(tenantId);
-      } else {
-        if (!schedule.workflowId) {
-          return reply.status(400).send({ error: "Schedule has no workflow configured" });
-        }
-        const { executeWorkflowInBackground } = await import("../../core/engine.js");
-        runId = await executeWorkflowInBackground(schedule.workflowId, {
-          tenantId,
-          mergeConsensus: true,
-          syncConsensus: true,
-        });
-      }
+      const runId = await executeScheduleRule(schedule);
+
+      await prisma.autonomousSchedule.update({
+        where: { id: schedule.id },
+        data: {
+          lastRunAt: new Date(),
+          nextRunAt: schedule.enabled ? resolveNextRunAt(schedule) : null,
+        },
+      });
 
       await logAudit(request, "schedule.run_now", { scheduleId: schedule.id, runId });
       return reply.status(202).send({ runId, status: "PENDING" });

@@ -152,4 +152,11 @@ export const ops = {
     cancelled: "Schedule removed.",
     metaNoDelete: "The meta cycle can only be paused, not deleted.",
   },
+  orchestrationPreview: {
+    title: "Next 7 days",
+    subtitle: "Projected rule firings based on current timing and conditions.",
+    empty: "No enabled rules scheduled in the next 7 days.",
+    willRun: "Will run",
+    skipped: "Skipped: {{reason}}",
+  },
 } as const;

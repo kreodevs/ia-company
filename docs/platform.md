@@ -39,7 +39,7 @@ Tenants can run a **portfolio** of products under `projects/{product-slug}/` (e.
 
 | Concept | Description |
 |---------|-------------|
-| **Meta schedule** | `scheduleKind: meta` — worker picks the next workflow dynamically (discovery → evaluation → build → launch/pricing) |
+| **Operations plan** | Unified orchestration rules: fixed workflows or dynamic meta-orchestrator, each with interval/cron, priority, and conditions |
 | **TenantProduct** | Registered product with phase (`building`, `launching`, `growing`, …) |
 | **PipelineIdea** | Ranked ideas from discovery cycles; GO/NO-GO gates bootstrap |
 | **TenantCycleState** | Cycle counter, stuck detection, focus product |
@@ -48,10 +48,12 @@ Tenants can run a **portfolio** of products under `projects/{product-slug}/` (e.
 API routes:
 
 - `GET /api/ops/portfolio` — dashboard data (products, pipeline, schedules, recent runs)
+- `GET /api/ops/orchestration-preview` — next 7 days rule firings
 - `GET /api/ops/next-run` — meta-orchestrator preview (workflow + reason)
+- `GET/POST /api/schedules/*` — orchestration rules and presets
 - `GET/POST /api/products/*` — product registry and pipeline actions
 
-UI: `/ops` (tenant), meta schedule in `/settings`, GitHub token in `/admin/settings`.
+UI: `/ops` (tenant), operations plan in `/settings?tab=schedules`, GitHub token in `/admin/settings`.
 
 Max **2 products** in Building/Launching simultaneously; Growing products (e.g. SnapOG) do not block new discovery.
 

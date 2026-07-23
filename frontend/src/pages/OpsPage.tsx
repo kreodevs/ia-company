@@ -7,6 +7,7 @@ import { translateApiError } from "../lib/translate-error";
 import { formatWorkflowTitle } from "../lib/workflow-display";
 import OpsFlowStepper from "../components/ops/OpsFlowStepper";
 import OpsSchedulesPanel from "../components/ops/OpsSchedulesPanel";
+import OrchestrationPreviewPanel from "../components/ops/OrchestrationPreviewPanel";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
@@ -37,11 +38,6 @@ export default function OpsPage() {
       ]);
       setPortfolio(portfolioData);
       setNextRun(nextRunData);
-
-      if (!portfolioData.schedules.some((s) => s.scheduleKind === "meta")) {
-        await api.schedules.ensureMeta();
-        setPortfolio(await api.ops.portfolio());
-      }
     } finally {
       setLoading(false);
     }
@@ -52,22 +48,21 @@ export default function OpsPage() {
   }, []);
 
   const runMetaNow = async () => {
-    let meta = portfolio?.schedules.find((s) => s.scheduleKind === "meta");
-    if (!meta) {
-      try {
-        meta = await api.schedules.ensureMeta();
-        await load();
-      } catch (err) {
-        setMetaRunError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
-        return;
-      }
+    const target =
+      portfolio?.schedules
+        .filter((schedule) => schedule.enabled)
+        .sort((a, b) => b.priority - a.priority)[0] ?? null;
+
+    if (!target) {
+      setMetaRunError(t("ops.orchestrationPreview.empty"));
+      return;
     }
 
     setRunningMeta(true);
     setMetaRunError(null);
 
     try {
-      const { runId } = await api.schedules.runNow(meta.id);
+      const { runId } = await api.schedules.runNow(target.id);
       if (!runId) {
         throw new Error(t("settings.metaSchedule.runFailed"));
       }
@@ -88,7 +83,10 @@ export default function OpsPage() {
     return <p className="text-[var(--color-muted-foreground)]">{t("ops.loadFailed")}</p>;
   }
 
-  const metaSchedule = portfolio.schedules.find((s) => s.scheduleKind === "meta");
+  const primarySchedule =
+    portfolio.schedules
+      .filter((schedule) => schedule.enabled)
+      .sort((a, b) => b.priority - a.priority)[0] ?? null;
   const nextWorkflowLabel = nextRun ? workflowLabel(nextRun.workflowName, t) : null;
   const totalRevenue = portfolio.stats.totalRevenueUsd;
   const buildingCount = portfolio.stats.building + portfolio.stats.growing;
@@ -105,12 +103,12 @@ export default function OpsPage() {
         title={t("ops.title")}
         subtitle={t("ops.subtitle")}
         actions={
-          metaSchedule ? (
+          primarySchedule ? (
             <Button onClick={() => void runMetaNow()} disabled={runningMeta}>
               {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
             </Button>
           ) : (
-            <Link to="/settings">
+            <Link to="/settings?tab=schedules">
               <Button variant="secondary">{t("ops.metaCycle.enableSchedule")}</Button>
             </Link>
           )
@@ -242,6 +240,8 @@ export default function OpsPage() {
       </Panel>
 
       <OpsSchedulesPanel schedules={portfolio.schedules} onRefresh={load} />
+
+      <OrchestrationPreviewPanel />
 
       {portfolio.recentRuns.length > 0 && (
         <Panel

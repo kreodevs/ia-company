@@ -15,12 +15,13 @@ Highlights the current phase from `companyPhase` in `/ops/portfolio`.
 
 ## `OpsSchedulesPanel.tsx`
 
-Lists all `AutonomousSchedule` records for the tenant:
-
-- **Meta** — dynamic orchestrator (pause / change interval / run now)
-- **Workflow** — fixed workflow on interval (pause / change interval / run now / cancel)
+Lists orchestration rules (`AutonomousSchedule`) for the tenant — fixed workflows and dynamic orchestrator rules with priority, cron/interval, and conditions.
 
 Uses `PUT /schedules/:id`, `DELETE /schedules/:id`, `POST /schedules/:id/run-now`.
+
+## `OrchestrationPreviewPanel.tsx`
+
+Shows projected rule firings for the next 7 days via `GET /ops/orchestration-preview`.
 
 ## Related API actions (Ops page)
 

@@ -416,17 +416,48 @@ export interface TenantLlmConfig {
   maxCostUsdPerRun: number | null;
 }
 
+export interface ScheduleConditions {
+  pipelineEmpty?: boolean;
+  pipelineHasIdeas?: boolean;
+  phases?: string[];
+  hasBuildingProduct?: boolean;
+  hasGrowingProduct?: boolean;
+  hasPendingIdea?: boolean;
+  noPendingDecisions?: boolean;
+}
+
 export interface AutonomousSchedule {
   id: string;
   tenantId: string;
   workflowId: string | null;
   scheduleKind: "workflow" | "meta";
+  orchestrationMode: "fixed" | "meta_dynamic";
   name: string;
   intervalSec: number;
+  cronExpr: string | null;
+  priority: number;
+  conditions: ScheduleConditions | null;
   enabled: boolean;
   nextRunAt: string | null;
   lastRunAt: string | null;
   createdAt: string;
+}
+
+export interface OrchestrationPresetSummary {
+  id: string;
+  labelKey: string;
+  descriptionKey: string;
+  ruleCount: number;
+}
+
+export interface OrchestrationPreviewEntry {
+  scheduleId: string;
+  scheduleName: string;
+  orchestrationMode: "fixed" | "meta_dynamic";
+  workflowName: string | null;
+  runAt: string;
+  conditionsMet: boolean;
+  skippedReason?: string;
 }
 
 export interface TenantUsageLimits {
@@ -790,15 +821,36 @@ export const api = {
   },
   schedules: {
     list: () => request<AutonomousSchedule[]>("/schedules"),
+    presets: () => request<OrchestrationPresetSummary[]>("/schedules/presets"),
+    applyPreset: (presetId: string) =>
+      request<AutonomousSchedule[]>("/schedules/apply-preset", {
+        method: "POST",
+        body: JSON.stringify({ presetId }),
+      }),
     create: (body: {
       name: string;
       workflowId?: string;
       intervalSec?: number;
+      cronExpr?: string | null;
       enabled?: boolean;
       scheduleKind?: "workflow" | "meta";
+      orchestrationMode?: "fixed" | "meta_dynamic";
+      priority?: number;
+      conditions?: ScheduleConditions | null;
     }) => request<AutonomousSchedule>("/schedules", { method: "POST", body: JSON.stringify(body) }),
-    update: (id: string, body: { enabled?: boolean; intervalSec?: number; name?: string }) =>
-      request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+    update: (
+      id: string,
+      body: {
+        enabled?: boolean;
+        intervalSec?: number;
+        cronExpr?: string | null;
+        name?: string;
+        priority?: number;
+        conditions?: ScheduleConditions | null;
+        workflowId?: string | null;
+        orchestrationMode?: "fixed" | "meta_dynamic";
+      },
+    ) => request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
     runNow: (id: string) =>
       request<{ runId: string; status: string }>(`/schedules/${id}/run-now`, { method: "POST" }),
@@ -808,6 +860,7 @@ export const api = {
         body: JSON.stringify({
           name: "Autonomous company (meta)",
           scheduleKind: "meta",
+          orchestrationMode: "meta_dynamic",
           intervalSec: 1800,
           enabled: true,
         }),
@@ -881,6 +934,10 @@ export const api = {
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),
     nextRun: () => request<OpsNextRun>("/ops/next-run"),
+    orchestrationPreview: (days = 7) =>
+      request<{ days: number; preview: OrchestrationPreviewEntry[] }>(
+        `/ops/orchestration-preview?days=${days}`,
+      ),
   },
   decisions: {
     list: () => request<DecisionProposal[]>("/decisions"),
