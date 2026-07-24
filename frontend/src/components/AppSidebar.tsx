@@ -1,6 +1,7 @@
 import {
   Activity,
   BookOpen,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
@@ -30,8 +31,13 @@ import { useAuth } from "../context/AuthContext";
 import {
   flattenNavItems,
   getStoredSidebarCollapsed,
+  getStoredNavGroupOpen,
+  getStoredNavSectionOpen,
   navItemIsActive,
+  sectionIsActive,
   setStoredSidebarCollapsed,
+  setStoredNavGroupOpen,
+  setStoredNavSectionOpen,
   type NavItem,
   type NavSection,
 } from "../lib/sidebar";
@@ -110,6 +116,20 @@ function SidebarNavGroup({
   const { t } = useTranslation();
   const location = useLocation();
   const groupActive = navItemIsActive(location.pathname, item);
+  const groupId = item.labelKey;
+  const [open, setOpen] = useState(() => getStoredNavGroupOpen(groupId, groupActive));
+
+  useEffect(() => {
+    if (groupActive) setOpen(true);
+  }, [groupActive]);
+
+  const toggleOpen = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      setStoredNavGroupOpen(groupId, next);
+      return next;
+    });
+  };
 
   if (collapsed) {
     return (
@@ -130,22 +150,35 @@ function SidebarNavGroup({
 
   return (
     <div className={cn("sidebar-nav-group", groupActive && "sidebar-nav-group-active")}>
-      <p className="sidebar-group-label">{t(item.labelKey)}</p>
-      <div className="sidebar-nav-group-items">
-        {item.children?.map((child) =>
-          child.to ? (
-            <SidebarNavLink
-              key={child.to}
-              to={child.to}
-              end={child.end}
-              label={t(child.labelKey)}
-              collapsed={false}
-              nested
-              onNavigate={onNavigate}
-            />
-          ) : null,
-        )}
-      </div>
+      <button
+        type="button"
+        className="sidebar-group-toggle interactive"
+        onClick={toggleOpen}
+        aria-expanded={open}
+      >
+        <ChevronDown
+          className={cn("sidebar-group-chevron", !open && "-rotate-90")}
+          aria-hidden
+        />
+        <span className="sidebar-group-label">{t(item.labelKey)}</span>
+      </button>
+      {open ? (
+        <div className="sidebar-nav-group-items">
+          {item.children?.map((child) =>
+            child.to ? (
+              <SidebarNavLink
+                key={child.to}
+                to={child.to}
+                end={child.end}
+                label={t(child.labelKey)}
+                collapsed={false}
+                nested
+                onNavigate={onNavigate}
+              />
+            ) : null,
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -186,22 +219,59 @@ function SidebarSection({
   onNavigate?: () => void;
 }) {
   const { t } = useTranslation();
+  const location = useLocation();
+  const active = sectionIsActive(location.pathname, section);
+  const [open, setOpen] = useState(() =>
+    getStoredNavSectionOpen(section.id, section.collapsible ? active : true),
+  );
+
+  useEffect(() => {
+    if (active) setOpen(true);
+  }, [active]);
+
+  const toggleOpen = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      setStoredNavSectionOpen(section.id, next);
+      return next;
+    });
+  };
+
+  const showItems = !section.collapsible || collapsed || open;
 
   return (
     <div className="space-y-1">
-      {!collapsed ? (
+      {!collapsed && section.collapsible ? (
+        <button
+          type="button"
+          className={cn(
+            "sidebar-section-toggle interactive",
+            active && "sidebar-section-toggle-active",
+          )}
+          onClick={toggleOpen}
+          aria-expanded={open}
+        >
+          <ChevronDown
+            className={cn("sidebar-section-chevron", !open && "-rotate-90")}
+            aria-hidden
+          />
+          <span className="sidebar-section-title">{t(section.titleKey)}</span>
+        </button>
+      ) : !collapsed ? (
         <p className="sidebar-section-title">{t(section.titleKey)}</p>
       ) : (
         <div className="sidebar-section-divider" aria-hidden />
       )}
-      {section.items.map((item) => (
-        <SidebarNavEntry
-          key={item.labelKey + (item.to ?? "")}
-          item={item}
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
-      ))}
+      {showItems
+        ? section.items.map((item) => (
+            <SidebarNavEntry
+              key={item.labelKey + (item.to ?? "")}
+              item={item}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          ))
+        : null}
     </div>
   );
 }
@@ -291,6 +361,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
       result.push({
         id: "debug",
         titleKey: "nav.sectionDebugOffice",
+        collapsible: true,
         items: debugItems,
       });
     }

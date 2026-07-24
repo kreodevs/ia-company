@@ -20,7 +20,38 @@ export type NavSection = {
   id: string;
   titleKey: string;
   items: NavItem[];
+  /** When true, section title toggles visibility of its items (expanded sidebar only). */
+  collapsible?: boolean;
 };
+
+const GROUP_STORAGE_PREFIX = "auto-company-sidebar-group-";
+const SECTION_STORAGE_PREFIX = "auto-company-sidebar-section-";
+
+export function getStoredNavGroupOpen(id: string, defaultOpen: boolean): boolean {
+  if (typeof window === "undefined") return defaultOpen;
+  const stored = localStorage.getItem(GROUP_STORAGE_PREFIX + id);
+  if (stored === null) return defaultOpen;
+  return stored === "1";
+}
+
+export function setStoredNavGroupOpen(id: string, open: boolean): void {
+  localStorage.setItem(GROUP_STORAGE_PREFIX + id, open ? "1" : "0");
+}
+
+export function getStoredNavSectionOpen(id: string, defaultOpen: boolean): boolean {
+  if (typeof window === "undefined") return defaultOpen;
+  const stored = localStorage.getItem(SECTION_STORAGE_PREFIX + id);
+  if (stored === null) return defaultOpen;
+  return stored === "1";
+}
+
+export function setStoredNavSectionOpen(id: string, open: boolean): void {
+  localStorage.setItem(SECTION_STORAGE_PREFIX + id, open ? "1" : "0");
+}
+
+export function sectionIsActive(pathname: string, section: NavSection): boolean {
+  return section.items.some((item) => navItemIsActive(pathname, item));
+}
 
 export function flattenNavItems(items: NavItem[]): Array<Required<Pick<NavItem, "to">> & NavItem> {
   const result: Array<Required<Pick<NavItem, "to">> & NavItem> = [];

@@ -100,7 +100,13 @@ export default function CoordinatorChat({
         agentIds: plan.agents.map((a) => a.id),
       });
       onExecuted?.(result.runId);
-      navigate(`/office/encargos/${result.runId}`);
+      const warProductId = productId || result.productId || undefined;
+      const runQuery = `run=${encodeURIComponent(result.runId)}`;
+      if (warProductId) {
+        navigate(`/war-room/${warProductId}?${runQuery}`);
+      } else {
+        navigate(`/war-room?${runQuery}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("office.task.error"));
     } finally {

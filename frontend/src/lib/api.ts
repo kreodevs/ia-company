@@ -1192,7 +1192,10 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
-    team: (id: string) => request<ProductTeam>(`/products/${id}/team`),
+    team: (id: string, watchRunId?: string) => {
+      const qs = watchRunId ? `?watchRunId=${encodeURIComponent(watchRunId)}` : "";
+      return request<ProductTeam>(`/products/${id}/team${qs}`);
+    },
     opencodeHistory: (id: string) =>
       request<ProductOpencodeHistory>(`/products/${id}/opencode/history`),
     opencodeLatest: (id: string) =>
@@ -1242,7 +1245,7 @@ export const api = {
       workflowId?: string;
       presetId?: string;
     }) =>
-      request<{ runId: string; workflowId: string; workflowName: string }>(
+      request<{ runId: string; workflowId: string; workflowName: string; productId: string | null }>(
         "/office/tasks/execute",
         { method: "POST", body: JSON.stringify(body) },
       ),

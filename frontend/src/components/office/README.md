@@ -33,7 +33,7 @@ Technical routes for logs, consensus, ops, and AI catalog — linked from encarg
 
 1. User chats with the **coordinator** or picks a **Quick service**.
 2. Coordinator proposes team inline → **Approve & run**.
-3. User lands on **`/office/encargos/:runId`** (not technical run logs).
+3. User lands on **`/war-room/:productId?run=:runId`** to watch agents live (encargo at **`/office/encargos/:runId`** when finished).
 4. When finished: **Informe final** + per-agent documents in preview (GFM via `@tailwindcss/typography` + `RichMarkdownView`).
 5. **Scope** selector above chat: general exploration vs. a specific product — plan card shows scope before execute.
 6. **Notifications** link to the human encargo view.
