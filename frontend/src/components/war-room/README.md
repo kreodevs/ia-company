@@ -21,4 +21,4 @@ Theme-aware via CSS variables in `src/styles/war-room.css`:
 
 ## Coordinator
 
-`CoordinatorChat` is embedded with `productId` so all presets, workflows, and agent selection happen conversationally — no manual launcher UI.
+`CoordinatorChat` is embedded with `productId` so all presets, workflows, and agent selection happen conversationally — no manual launcher UI. Live run updates use SSE; `/products/:id/team` refreshes are throttled (~2.5s) to stay under API rate limits.

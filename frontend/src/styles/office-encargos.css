@@ -16,6 +16,7 @@
   --office-link: #7dd3fc;
   --office-filter-bg: rgba(15, 23, 42, 0.55);
   --office-filter-active-bg: rgba(56, 189, 248, 0.12);
+  --office-filter-active-text: #7dd3fc;
   --office-btn-muted-bg: rgba(15, 23, 42, 0.5);
   --office-btn-muted-text: #94a3b8;
   --office-prose-body: var(--foreground-muted, #cbd5e1);
@@ -42,6 +43,7 @@ html[data-theme="paperclip"] .office-page {
   --office-link: var(--manila);
   --office-filter-bg: var(--dark-surface);
   --office-filter-active-bg: rgba(243, 230, 196, 0.1);
+  --office-filter-active-text: var(--manila);
   --office-btn-muted-bg: var(--dark-raised-surface);
   --office-btn-muted-text: var(--stone-muted);
   --office-prose-body: var(--manila);
@@ -68,10 +70,11 @@ html[data-theme="letter"] .office-page {
   --office-muted: #50617a;
   --office-muted-dim: #64748d;
   --office-text-emphasis: #061b31;
-  --office-text-on-accent: #ffffff;
+  --office-text-on-accent: #4228e0;
   --office-link: #533afd;
   --office-filter-bg: #ffffff;
-  --office-filter-active-bg: rgba(83, 58, 253, 0.08);
+  --office-filter-active-bg: rgba(83, 58, 253, 0.1);
+  --office-filter-active-text: #4228e0;
   --office-btn-muted-bg: #f8fafd;
   --office-btn-muted-text: #50617a;
   --office-prose-body: #50617a;
@@ -159,7 +162,8 @@ html[data-theme="letter"] .office-encargo-card {
 .office-encargos-filter-active {
   border-color: var(--office-accent-border-strong);
   background: var(--office-filter-active-bg);
-  color: var(--office-text-on-accent);
+  color: var(--office-filter-active-text);
+  font-weight: 600;
 }
 
 .office-encargos-list {
@@ -371,7 +375,8 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 
 .office-encargo-doc-item-active {
   border-color: var(--office-accent-border-strong);
-  background: var(--office-accent-bg);
+  background: var(--office-filter-active-bg);
+  color: var(--office-filter-active-text, var(--office-text-emphasis));
 }
 
 .office-encargo-doc-agent {

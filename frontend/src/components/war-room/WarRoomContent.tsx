@@ -53,6 +53,53 @@ function shortTime(iso: string | null): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+const TEAM_REFRESH_MIN_MS = 2500;
+
+function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
+  let inFlight = false;
+  let lastAt = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const run = async () => {
+    if (inFlight) return;
+    inFlight = true;
+    try {
+      await refresh();
+      lastAt = Date.now();
+    } catch {
+      // Keep last good snapshot — rate limits should not blank the war room.
+    } finally {
+      inFlight = false;
+    }
+  };
+
+  return {
+    schedule(minIntervalMs = TEAM_REFRESH_MIN_MS) {
+      const elapsed = Date.now() - lastAt;
+      if (timer) clearTimeout(timer);
+
+      if (elapsed >= minIntervalMs && !inFlight) {
+        void run();
+        return;
+      }
+
+      timer = setTimeout(() => {
+        timer = null;
+        void run();
+      }, Math.max(minIntervalMs - elapsed, 400));
+    },
+    flush() {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      void run();
+    },
+    dispose() {
+      if (timer) clearTimeout(timer);
+      timer = null;
+    },
+  };
+}
+
 export interface WarRoomContentProps {
   productId: string;
   watchRunId?: string | null;
@@ -76,6 +123,11 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
     setData(fresh);
     return fresh;
   }, [productId, watchRunId]);
+
+  const refreshScheduler = useRef(createTeamRefreshScheduler(() => refresh()));
+  useEffect(() => {
+    refreshScheduler.current = createTeamRefreshScheduler(() => refresh());
+  }, [refresh]);
 
   useEffect(() => {
     setLoading(true);
@@ -101,15 +153,17 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         const agent = data.team.find((a) => a.id === evt.data?.agentId);
         const preview = String(evt.data?.message ?? "").slice(0, 80);
         if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
-        void refresh();
       } else if (evt.type === "step_start" || evt.type === "step_complete") {
-        void refresh();
+        refreshScheduler.current.schedule(1200);
       } else if (evt.type === "done") {
-        void refresh();
+        refreshScheduler.current.flush();
       }
     });
-    return () => close();
-  }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, refresh, flashNote]);
+    return () => {
+      close();
+      refreshScheduler.current.dispose();
+    };
+  }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote]);
 
   if (loading || !data) return <PageLoading message={t("warRoom.loading")} />;
 
@@ -195,10 +249,9 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
             welcomeMessageKey="warRoom.coordinator.welcome"
             onExecuted={(runId) => {
               flashNote(t("warRoom.runStarted"));
-              void refresh();
-              void api.runs.get(runId).then(() => refresh()).catch(() => refresh());
-              window.setTimeout(() => void refresh(), 800);
-              window.setTimeout(() => void refresh(), 2500);
+              refreshScheduler.current.schedule(800);
+              window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
+              void api.runs.get(runId).catch(() => undefined);
             }}
           />
         </div>

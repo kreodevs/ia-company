@@ -26,7 +26,7 @@ Technical routes for logs, consensus, ops, and AI catalog — linked from encarg
 ## Design
 
 - `frontend/src/styles/office-theme.css` — War Room aesthetic
-- `frontend/src/styles/office-encargos.css` — job inbox + markdown preview
+- `frontend/src/styles/office-encargos.css` — job inbox + markdown preview; Stripe HDS active pills use indigo text (`--office-filter-active-text`), not white on tint
 - `RichMarkdownView` — GFM + Mermaid + `chart` JSON blocks (Recharts)
 
 ## Flow

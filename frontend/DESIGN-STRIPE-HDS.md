@@ -24,6 +24,8 @@ Light palette anchored on **pale background** `#f8fafd` with **Stripe indigo** `
 | `--quiet-surface` | #e5edf5 | Borders, dividers |
 | `--dark-slate` | #273951 | Form labels |
 
+**Contrast:** On tinted surfaces (`primary/10`, filter pills, mode pills), use **indigo text** (`#4228e0` / `#533afd`) — never white on pale lavender fills.
+
 ## Typography
 
 | Role | Size | Weight |
