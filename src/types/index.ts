@@ -86,6 +86,7 @@ export interface ToolExecutionContext {
   productSlug?: string;
   productId?: string;
   githubToken?: string;
+  agentId?: string;
   toolMode?: "full" | "readonly" | "opencode_delegate";
   sharedMemory?: SharedMemory;
   onLog?: (message: string, payload?: Record<string, unknown>) => void;

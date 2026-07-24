@@ -285,6 +285,30 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     },
   });
 
+  const send_email = tool({
+    description:
+      "Send an email to allowed tenant recipients via configured SMTP. Use when the human asked to receive deliverables by email.",
+    parameters: z.object({
+      to: z.array(z.string().email()).min(1).max(5).describe("Recipient emails (must be on tenant allowlist)"),
+      subject: z.string().min(1).max(200),
+      body: z.string().min(1).max(100_000).describe("Plain text or markdown body"),
+    }),
+    execute: async ({ to, subject, body }) => {
+      if (!ctx.tenantId) throw new Error("Tenant context required to send email");
+      const { sendTenantAgentEmail } = await import("../lib/tenant-smtp.js");
+      const result = await sendTenantAgentEmail({
+        tenantId: ctx.tenantId,
+        runId: ctx.runId,
+        agentId: ctx.agentId,
+        to,
+        subject,
+        body,
+      });
+      log("email: sent", { to: result.recipients, subject });
+      return result;
+    },
+  });
+
   const mode = ctx.toolMode ?? "full";
   const allTools = {
     run_shell_command,
@@ -296,6 +320,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     npm_run,
     wrangler_deploy,
     delegate_implementation,
+    send_email,
   };
 
   if (mode === "readonly") {
@@ -314,7 +339,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     };
   }
 
-  return {
+  const base = {
     run_shell_command: allTools.run_shell_command,
     read_file: allTools.read_file,
     write_file: allTools.write_file,
@@ -323,7 +348,23 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     git_commit: allTools.git_commit,
     npm_run: allTools.npm_run,
     wrangler_deploy: allTools.wrangler_deploy,
+    send_email: allTools.send_email,
   };
+
+  return base;
+}
+
+export async function createAgentToolsWithIntegrations(
+  ctx: ToolExecutionContext & { agentId?: string },
+) {
+  const base = createAgentTools(ctx);
+  if (ctx.toolMode === "readonly" || ctx.toolMode === "opencode_delegate") {
+    return base;
+  }
+
+  const { buildMcpToolsForAgent } = await import("../lib/mcp-tools-bridge.js");
+  const mcpTools = await buildMcpToolsForAgent(ctx);
+  return { ...base, ...mcpTools };
 }
 
 async function runShell(

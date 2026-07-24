@@ -170,7 +170,9 @@ After pulling a new version:
 ```bash
 docker compose --env-file .env.production pull   # or git pull on server
 docker compose --env-file .env.production up -d --build api worker web
-# Migrations run automatically when RUN_MIGRATIONS=true (api entrypoint)
+# Migrations run automatically on api boot (RUN_MIGRATIONS defaults to true):
+#   prisma migrate deploy → idempotent ensure-tenant-smtp-mcp.sql
+# Set RUN_MIGRATIONS=false only if an external process applies migrations.
 ```
 
 Required env vars:

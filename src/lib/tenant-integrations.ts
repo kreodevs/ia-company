@@ -1,25 +1,20 @@
 import { prisma } from "./prisma.js";
 import { decryptSecret, encryptSecret, maskSecret } from "./crypto.js";
-import { getPlatformSettingsSync } from "./platform-settings.js";
+import { mergeSmtpIntoIntegrationsPublic, smtpFieldsFromInput } from "./tenant-smtp.js";
+import type { TenantIntegrationsPublic } from "./tenant-smtp.js";
 
-export interface TenantIntegrationsPublic {
-  tenantId: string;
-  githubToken: string | null;
-  githubUsername: string | null;
-  githubConfigured: boolean;
-}
+export type { TenantIntegrationsPublic };
 
 export async function getTenantIntegrationsPublic(
   tenantId: string,
 ): Promise<TenantIntegrationsPublic> {
   const row = await prisma.tenantIntegrationConfig.findUnique({ where: { tenantId } });
   const token = row?.githubToken ?? null;
-  return {
-    tenantId,
+  return mergeSmtpIntoIntegrationsPublic(tenantId, row, {
     githubToken: maskSecret(token),
     githubUsername: row?.githubUsername ?? null,
     githubConfigured: Boolean(token && decryptSecret(token)),
-  };
+  });
 }
 
 export async function resolveTenantGithubToken(tenantId: string): Promise<string | undefined> {
@@ -28,6 +23,7 @@ export async function resolveTenantGithubToken(tenantId: string): Promise<string
   if (tenantToken) return tenantToken;
 
   try {
+    const { getPlatformSettingsSync } = await import("./platform-settings.js");
     const platform = getPlatformSettingsSync();
     if (platform.githubApiKey) return platform.githubApiKey;
   } catch {
@@ -42,6 +38,16 @@ export async function upsertTenantIntegrations(
   input: {
     githubToken?: string | null;
     githubUsername?: string | null;
+    smtpHost?: string | null;
+    smtpPort?: number | null;
+    smtpSecure?: boolean;
+    smtpUser?: string | null;
+    smtpPassword?: string | null;
+    smtpFromEmail?: string | null;
+    smtpFromName?: string | null;
+    smtpEnabled?: boolean;
+    smtpAllowedRecipients?: string | null;
+    smtpMaxPerDay?: number;
   },
 ): Promise<TenantIntegrationsPublic> {
   let githubTokenUpdate: string | null | undefined = undefined;
@@ -54,16 +60,20 @@ export async function upsertTenantIntegrations(
     }
   }
 
+  const smtpData = smtpFieldsFromInput(input);
+
   await prisma.tenantIntegrationConfig.upsert({
     where: { tenantId },
     update: {
       ...(githubTokenUpdate !== undefined ? { githubToken: githubTokenUpdate } : {}),
       ...(input.githubUsername !== undefined ? { githubUsername: input.githubUsername } : {}),
+      ...smtpData,
     },
     create: {
       tenantId,
       githubToken: githubTokenUpdate ?? null,
       githubUsername: input.githubUsername ?? null,
+      ...smtpData,
     },
   });
 

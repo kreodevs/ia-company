@@ -44,6 +44,8 @@ model Tenant {
   interests TenantInterest[]
   opencodeConfig TenantOpencodeConfig?
   integrationConfig TenantIntegrationConfig?
+  mcpServers TenantMcpServer[]
+  emailSendLogs TenantEmailSendLog[]
   opencodeDelegations OpencodeDelegation[]
   opencodeRunGates OpencodeRunGate[]
   notifications TenantNotification[]
@@ -98,6 +100,7 @@ model Agent {
 
   tenant        Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   skills        AgentSkill[]
+  mcpGrants     AgentMcpGrant[]
   workflowSteps WorkflowStep[]
   executionLogs ExecutionLog[]
 
@@ -565,9 +568,88 @@ model TenantIntegrationConfig {
   tenantId        String   @id
   githubToken     String?  @db.Text
   githubUsername  String?
+  smtpHost        String?
+  smtpPort        Int?
+  smtpSecure      Boolean  @default(true)
+  smtpUser        String?
+  smtpPassword    String?  @db.Text
+  smtpFromEmail   String?
+  smtpFromName    String?
+  smtpEnabled     Boolean  @default(false)
+  smtpAllowedRecipients String? @db.Text
+  smtpMaxPerDay   Int      @default(20)
   updatedAt       DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+enum McpTransport {
+  stdio
+  sse
+}
+
+model TenantMcpServer {
+  id             String       @id @default(cuid())
+  tenantId       String
+  name           String
+  slug           String
+  description    String?      @db.Text
+  transport      McpTransport @default(stdio)
+  command        String?
+  argsJson       String?      @db.Text
+  url            String?
+  envJson        String?      @db.Text
+  enabled        Boolean      @default(true)
+  readOnly       Boolean      @default(true)
+  maxCallsPerRun Int          @default(30)
+  lastSyncedAt   DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tools  TenantMcpTool[]
+  grants AgentMcpGrant[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, enabled])
+}
+
+model TenantMcpTool {
+  id              String  @id @default(cuid())
+  serverId        String
+  name            String
+  description     String? @db.Text
+  inputSchemaJson String  @db.Text
+  enabled         Boolean @default(true)
+
+  server TenantMcpServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@unique([serverId, name])
+}
+
+model AgentMcpGrant {
+  agentId          String
+  serverId         String
+  allowedToolNames String? @db.Text
+
+  agent  Agent           @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  server TenantMcpServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@id([agentId, serverId])
+}
+
+model TenantEmailSendLog {
+  id           String   @id @default(cuid())
+  tenantId     String
+  runId        String?
+  agentId      String?
+  toRecipients String   @db.Text
+  subject      String
+  sentAt       DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sentAt])
 }
 
 enum OpencodeDelegationStatus {

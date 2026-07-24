@@ -16,9 +16,11 @@ import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import TabsBar from "../components/ui/TabsBar";
 import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPanel";
+import TenantSmtpSection from "../components/settings/TenantSmtpSection";
+import TenantMcpSettingsPanel from "../components/settings/TenantMcpSettingsPanel";
 
-type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "notifications" | "limits" | "schedules";
-const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "notifications", "limits", "schedules"];
+type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules";
+const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -204,6 +206,7 @@ export default function SettingsPage() {
           { id: "llm", label: t("settings.tabs.llm") },
           { id: "opencode", label: t("settings.tabs.opencode") },
           { id: "integrations", label: t("settings.tabs.integrations") },
+          { id: "mcp", label: t("settings.tabs.mcp") },
           { id: "notifications", label: t("settings.tabs.notifications") },
           { id: "limits", label: t("settings.tabs.limits") },
           { id: "schedules", label: t("settings.tabs.schedules") },
@@ -447,6 +450,18 @@ export default function SettingsPage() {
               </button>
             </div>
           </section>
+
+          <TenantSmtpSection
+            integrations={integrations}
+            onChange={setIntegrations}
+            onSaved={setIntegrations}
+          />
+        </div>
+      )}
+
+      {activeTab === "mcp" && (
+        <div className="space-y-4">
+          <TenantMcpSettingsPanel />
         </div>
       )}
 

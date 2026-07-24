@@ -25,9 +25,11 @@ if [ "$#" -gt 0 ]; then
   exec "$@"
 fi
 
-if [ "$RUN_MIGRATIONS" = "true" ]; then
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
   echo "Applying database migrations…"
   npx prisma migrate deploy
+  echo "Running idempotent schema guards…"
+  sh prisma/scripts/ensure-tenant-smtp-mcp.sh
 fi
 
 if [ "$RUN_SEED" = "true" ]; then

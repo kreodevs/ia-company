@@ -236,6 +236,43 @@ export interface TenantIntegrationsConfig {
   githubToken: string | null;
   githubUsername: string | null;
   githubConfigured: boolean;
+  smtpHost: string | null;
+  smtpPort: number | null;
+  smtpSecure: boolean;
+  smtpUser: string | null;
+  smtpPassword: string | null;
+  smtpFromEmail: string | null;
+  smtpFromName: string | null;
+  smtpEnabled: boolean;
+  smtpAllowedRecipients: string | null;
+  smtpMaxPerDay: number;
+  smtpConfigured: boolean;
+}
+
+export interface TenantMcpTool {
+  id: string;
+  name: string;
+  description: string | null;
+  enabled: boolean;
+}
+
+export interface TenantMcpServer {
+  id: string;
+  tenantId: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  transport: "stdio" | "sse";
+  command: string | null;
+  argsJson: string | null;
+  url: string | null;
+  envConfigured: boolean;
+  enabled: boolean;
+  readOnly: boolean;
+  maxCallsPerRun: number;
+  lastSyncedAt: string | null;
+  tools: TenantMcpTool[];
+  agentIds: string[];
 }
 
 export interface PipelineIdea {
@@ -1349,7 +1386,10 @@ export const api = {
         method: "POST",
       }),
     getIntegrations: () => request<TenantIntegrationsConfig>("/tenant/settings/integrations"),
-    updateIntegrations: (body: { githubToken?: string | null; githubUsername?: string | null }) =>
+    updateIntegrations: (body: Partial<TenantIntegrationsConfig> & {
+      githubToken?: string | null;
+      smtpPassword?: string | null;
+    }) =>
       request<TenantIntegrationsConfig>("/tenant/settings/integrations", {
         method: "PUT",
         body: JSON.stringify(body),
@@ -1359,6 +1399,52 @@ export const api = {
         "/tenant/settings/integrations/github/test",
         { method: "POST" },
       ),
+    testSmtp: () =>
+      request<{ ok: boolean; message: string }>("/tenant/settings/integrations/smtp/test", {
+        method: "POST",
+      }),
+  },
+  tenantMcp: {
+    listServers: () => request<TenantMcpServer[]>("/tenant/mcp/servers"),
+    getServer: (id: string) => request<TenantMcpServer>(`/tenant/mcp/servers/${id}`),
+    createServer: (body: {
+      name: string;
+      slug?: string;
+      description?: string | null;
+      command: string;
+      argsJson?: string[];
+      env?: Record<string, string>;
+      readOnly?: boolean;
+      maxCallsPerRun?: number;
+      enabled?: boolean;
+      agentIds?: string[];
+    }) =>
+      request<TenantMcpServer>("/tenant/mcp/servers", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    updateServer: (
+      id: string,
+      body: {
+        name?: string;
+        description?: string | null;
+        command?: string;
+        argsJson?: string[];
+        env?: Record<string, string>;
+        readOnly?: boolean;
+        maxCallsPerRun?: number;
+        enabled?: boolean;
+        agentIds?: string[];
+      },
+    ) =>
+      request<TenantMcpServer>(`/tenant/mcp/servers/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    deleteServer: (id: string) =>
+      request<{ ok: boolean }>(`/tenant/mcp/servers/${id}`, { method: "DELETE" }),
+    syncServer: (id: string) =>
+      request<TenantMcpServer>(`/tenant/mcp/servers/${id}/sync`, { method: "POST" }),
   },
   opencode: {
     getRun: (runId: string) => request<OpencodeRunInfo>(`/runs/${runId}/opencode`),

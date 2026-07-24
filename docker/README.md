@@ -45,7 +45,8 @@ Without Resend configured, password reset and email notifications are skipped (w
 - Waits for PostgreSQL
 - If a custom command is passed (worker service), runs it and skips migrations/API boot
 - Otherwise (`api` service):
-  - `RUN_MIGRATIONS=true` → `prisma migrate deploy`
+  - `RUN_MIGRATIONS` defaults to **true** → `prisma migrate deploy` then idempotent `prisma/scripts/ensure-tenant-smtp-mcp.sql` (safe if partially applied)
+  - Set `RUN_MIGRATIONS=false` only to skip (e.g. external DBA runs migrations)
   - `RUN_SEED=true` → platform templates from `claude/` (no tenant)
   - Starts `node dist/src/server/index.js`
 

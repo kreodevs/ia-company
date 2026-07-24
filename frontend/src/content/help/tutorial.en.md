@@ -367,7 +367,8 @@ Tabs at **`/settings`**:
 | **General** | Discovery interests |
 | **LLM** | Model override, cost cap/run (provider via superadmin) |
 | **OpenCode** | URL, credentials, *enabled* **globally** |
-| **Integrations** | GitHub token per tenant |
+| **Integrations** | GitHub token, tenant SMTP for agent email |
+| **MCP servers** | Register stdio MCP servers, agent grants, tool sync |
 | **Notifications** | Webhook, Slack, email, in-app |
 | **Limits** | Monthly runs/tokens/cost |
 | **Schedules** | Operations plan and rules |
@@ -379,6 +380,10 @@ Tabs at **`/settings`**:
 ### GitHub (tenant)
 
 **Settings → Integrations** — PAT with `repo` scope for clone, README, languages, and `product-intake`.
+
+**SMTP (same tab)** — Host, credentials, allowlist, and daily cap so agents can use the `send_email` tool. Only allowlisted addresses receive mail; every send is audited.
+
+**Settings → MCP servers** — Register stdio MCP commands, sync tools, and grant specific agents. Read-only mode blocks mutating tool names by default; each server has a per-run call budget.
 
 ### OpenCode
 
@@ -421,7 +426,7 @@ Docker Compose stack (Dokploy-ready): `postgres`, `redis`, `api`, `worker`, `web
 
 Checklist:
 
-- [ ] `npx prisma migrate deploy` in production
+- [x] Migrations on deploy — automatic via api entrypoint (`RUN_MIGRATIONS` default true)
 - [ ] `worker` healthy (schedules + queue)
 - [ ] LLM configured at `/admin/settings`
 - [ ] Tenant GitHub token if using private intake

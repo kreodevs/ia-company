@@ -251,6 +251,16 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
     Body: {
       githubToken?: string | null;
       githubUsername?: string | null;
+      smtpHost?: string | null;
+      smtpPort?: number | null;
+      smtpSecure?: boolean;
+      smtpUser?: string | null;
+      smtpPassword?: string | null;
+      smtpFromEmail?: string | null;
+      smtpFromName?: string | null;
+      smtpEnabled?: boolean;
+      smtpAllowedRecipients?: string | null;
+      smtpMaxPerDay?: number;
     };
   }>("/tenant/settings/integrations", async (request, reply) => {
     try {
@@ -269,6 +279,16 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       const tenantId = requireImpersonatedTenant(request);
       const { testTenantGithubConnection } = await import("../../lib/tenant-integrations.js");
       return testTenantGithubConnection(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post("/tenant/settings/integrations/smtp/test", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { testTenantSmtpConnection } = await import("../../lib/tenant-smtp.js");
+      return testTenantSmtpConnection(tenantId);
     } catch (err) {
       return handleRouteError(reply, err);
     }

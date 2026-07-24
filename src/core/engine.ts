@@ -26,7 +26,7 @@ import type {
   WorkflowGraph,
 } from "../types/index.js";
 import { createLanguageModel, estimateCostUsd } from "./providers.js";
-import { createAgentTools } from "./tools.js";
+import { createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import {
@@ -421,7 +421,7 @@ export class WorkflowExecutor {
       productId = product?.id;
     }
 
-    const tools = createAgentTools({
+    const tools = await createAgentToolsWithIntegrations({
       workspaceRoot: tenantCtx.workspaceRoot,
       shellTimeoutMs: this.shellTimeoutMs,
       runId,
@@ -429,6 +429,7 @@ export class WorkflowExecutor {
       productSlug: tenantCtx.productSlug,
       productId,
       githubToken: tenantCtx.githubToken,
+      agentId: agent.id,
       toolMode,
       sharedMemory,
       onLog: (message, payload) => {

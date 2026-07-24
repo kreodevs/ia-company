@@ -87,12 +87,12 @@ function inferSkillsForAgent(slug: string): string[] {
     "fullstack-dhh": ["tailwind-v4-shadcn", "code-review-security"],
     "qa-bach": ["senior-qa", "security-audit"],
     "devops-hightower": ["devops"],
-    "marketing-godin": ["content-strategy", "seo-content-strategist", "seo-audit"],
-    "operations-pg": ["community-led-growth", "ph-community-outreach"],
-    "sales-ross": ["pricing-strategy", "cold-email-sequence-generator"],
+    "marketing-godin": ["content-strategy", "seo-content-strategist", "seo-audit", "tenant-email-outbound"],
+    "operations-pg": ["community-led-growth", "ph-community-outreach", "tenant-email-outbound"],
+    "sales-ross": ["pricing-strategy", "cold-email-sequence-generator", "tenant-email-outbound"],
     "cfo-campbell": ["financial-unit-economics", "startup-financial-modeling"],
     "research-thompson": ["deep-research", "competitive-intelligence-analyst"],
-    "coordinator-chief": ["team", "product-strategist"],
+    "coordinator-chief": ["team", "product-strategist", "tenant-email-outbound", "tenant-mcp-tools"],
   };
   return map[slug] ?? [];
 }

@@ -23,6 +23,7 @@ import { opencodeRoutes } from "./routes/opencode.js";
 import { scheduleRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
 import { tenantSettingsRoutes } from "./routes/tenant-settings.js";
+import { tenantMcpRoutes } from "./routes/tenant-mcp.js";
 import { tenantUserRoutes } from "./routes/tenant-users.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
@@ -66,6 +67,7 @@ async function buildServer() {
     await api.register(platformTemplateRoutes);
     await api.register(tenantUserRoutes);
     await api.register(tenantSettingsRoutes);
+    await api.register(tenantMcpRoutes);
     await api.register(consensusRoutes);
     await api.register(productRoutes);
     await api.register(opsRoutes);

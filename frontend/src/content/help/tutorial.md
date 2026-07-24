@@ -367,7 +367,8 @@ Pestañas en **`/settings`**:
 | **General** | Intereses de discovery |
 | **LLM** | Override de modelo, tope coste/run (proveedor vía superadmin) |
 | **OpenCode** | URL, credenciales y *enabled* **globales** |
-| **Integraciones** | Token GitHub por tenant |
+| **Integraciones** | Token GitHub, SMTP del tenant para email de agentes |
+| **Servidores MCP** | Registrar MCP stdio, grants por agente, sync de tools |
 | **Notificaciones** | Webhook, Slack, email, in-app |
 | **Límites** | Runs/tokens/coste mensual |
 | **Programaciones** | Plan de operaciones y reglas |
@@ -379,6 +380,10 @@ Pestañas en **`/settings`**:
 ### GitHub (tenant)
 
 **Settings → Integraciones** — PAT con scope `repo` para clone, README, languages y `product-intake`.
+
+**SMTP (misma pestaña)** — Host, credenciales, allowlist y tope diario para que los agentes usen `send_email`. Solo direcciones permitidas; cada envío queda auditado.
+
+**Settings → Servidores MCP** — Comandos stdio, sync de herramientas y grants por agente. Modo solo lectura bloquea tools mutables por defecto; cada servidor tiene presupuesto de llamadas por run.
 
 ### OpenCode
 
@@ -421,7 +426,7 @@ Stack Docker Compose (Dokploy-ready): `postgres`, `redis`, `api`, `worker`, `web
 
 Checklist:
 
-- [ ] `npx prisma migrate deploy` en producción
+- [x] Migraciones en deploy — automáticas vía entrypoint del api (`RUN_MIGRATIONS` true por defecto)
 - [ ] `worker` healthy (schedules + cola)
 - [ ] LLM configurado en `/admin/settings`
 - [ ] Token GitHub en tenant si usas intake privado
