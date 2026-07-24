@@ -1,4 +1,5 @@
 import type { ExecutionStatus } from "@prisma/client";
+import { encargoHumanHref } from "./office-encargos.js";
 import { prisma } from "./prisma.js";
 
 export type TenantNotificationType =
@@ -154,7 +155,7 @@ export async function notifyRunFinishedInApp(params: {
     type: params.status === "COMPLETED" ? "run_completed" : "run_failed",
     title: copy.title,
     body: copy.body,
-    href: `/runs/${params.runId}`,
+    href: encargoHumanHref(params.runId),
     runId: params.runId,
   });
 }

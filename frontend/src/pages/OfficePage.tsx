@@ -107,6 +107,9 @@ export default function OfficePage() {
           <span aria-hidden>●</span>
           {t(`office.mode.${dashboard.mode}`)}
         </div>
+        <Link to="/office/encargos" className="office-link-btn">
+          {t("nav.encargos")}
+        </Link>
       </header>
 
       <NotificationPermissionPrompt />

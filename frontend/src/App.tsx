@@ -10,6 +10,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { useDocumentLang } from "./hooks/useDocumentLang";
 import HelpPage from "./pages/HelpPage";
 import OfficePage from "./pages/OfficePage";
+import OfficeEncargosPage from "./pages/OfficeEncargosPage";
+import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
 import SkillsPage from "./pages/SkillsPage";
@@ -66,12 +68,24 @@ function AppShell() {
             <Route element={<RequireTenantAccess />}>
               <Route index element={<OfficePage />} />
               <Route path="office" element={<OfficePage />} />
+              <Route path="office/encargos" element={<OfficeEncargosPage />} />
+              <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="agents" element={<AgentsPage />} />
               <Route path="skills" element={<SkillsPage />} />
               <Route path="workflows" element={<WorkflowsPage />} />
               <Route path="workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="runs" element={<RunsPage />} />
               <Route path="runs/:id" element={<RunDetailPage />} />
+              <Route path="debug/runs" element={<RunsPage />} />
+              <Route path="debug/runs/:id" element={<RunDetailPage />} />
+              <Route path="debug/workflows" element={<WorkflowsPage />} />
+              <Route path="debug/workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="debug/agents" element={<AgentsPage />} />
+              <Route path="debug/skills" element={<SkillsPage />} />
+              <Route path="debug/team" element={<TenantUsersPage />} />
+              <Route path="debug/consensus" element={<ConsensusPage />} />
+              <Route path="debug/ops" element={<OpsPage />} />
+              <Route path="debug/decisions" element={<DecisionsPage />} />
               <Route path="ops" element={<OpsPage />} />
               <Route path="products" element={<ProductsPage />} />
               <Route path="war-room" element={<WarRoomPage />} />

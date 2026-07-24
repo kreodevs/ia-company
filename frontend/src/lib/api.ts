@@ -538,6 +538,44 @@ export interface OfficeServiceTemplate {
   deliverableKey: string;
 }
 
+export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
+
+export interface OfficeEncargoSummary {
+  id: string;
+  title: string;
+  request: string;
+  workflowName: string;
+  status: string;
+  phase: OfficeEncargoPhase;
+  productId: string | null;
+  productName: string | null;
+  productSlug: string | null;
+  teamAgents: string[];
+  totalCostUsd: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  documentCount: number;
+  hasFinalReport: boolean;
+}
+
+export interface OfficeEncargoDocument {
+  id: string;
+  kind: "revision" | "step" | "file";
+  agentName: string;
+  title: string;
+  markdown: string;
+  path?: string;
+  stepOrder: number;
+}
+
+export interface OfficeEncargoDetail extends OfficeEncargoSummary {
+  finalReport: string;
+  documents: OfficeEncargoDocument[];
+  debugHref: string;
+  warRoomHref: string | null;
+}
+
 export interface OfficeDashboard {
   mode: OfficeMode;
   autonomyEnabled: boolean;
@@ -1162,6 +1200,14 @@ export const api = {
   },
   office: {
     dashboard: () => request<OfficeDashboard>("/office/dashboard"),
+    encargos: (params?: { limit?: number; phase?: OfficeEncargoPhase }) => {
+      const q = new URLSearchParams();
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.phase) q.set("phase", params.phase);
+      const qs = q.toString();
+      return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
+    },
+    encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
     chat: (body: {
       messages: CoordinatorChatMessage[];
       productId?: string;
