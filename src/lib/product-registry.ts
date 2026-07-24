@@ -102,6 +102,8 @@ export async function registerExistingProduct(input: {
   slug: string;
   description?: string;
   phase?: ProductPhase;
+  githubRepoUrl?: string;
+  intakeStatus?: import("@prisma/client").ProductIntakeStatus;
 }): Promise<{
   product: TenantProduct;
   hasExistingCode: boolean;
@@ -123,7 +125,29 @@ export async function registerExistingProduct(input: {
     goNoGo: "go",
   });
 
+  if (input.githubRepoUrl || input.intakeStatus) {
+    await prisma.tenantProduct.update({
+      where: { id: product.id },
+      data: {
+        ...(input.githubRepoUrl ? { githubRepoUrl: input.githubRepoUrl.trim() } : {}),
+        ...(input.intakeStatus ? { intakeStatus: input.intakeStatus } : {}),
+      },
+    });
+  }
+
   await ensureProductConsensus(product.id);
+  if (input.description?.trim()) {
+    const { buildInitialConsensusWithDescription } = await import("./product-intake.js");
+    await prisma.productConsensus.update({
+      where: { productId: product.id },
+      data: { content: buildInitialConsensusWithDescription(input.name.trim(), input.description) },
+    });
+  }
+
+  const { syncProductConsensusToWorkspace } = await import("./product-consensus.js");
+  await syncProductConsensusToWorkspace(product.id, slug);
+
+  const refreshed = await prisma.tenantProduct.findUniqueOrThrow({ where: { id: product.id } });
 
   const root = resolveProductWorkspaceRoot(slug);
   let hasExistingCode = false;
@@ -135,7 +159,7 @@ export async function registerExistingProduct(input: {
   }
 
   return {
-    product,
+    product: refreshed,
     hasExistingCode,
     workspacePath: `projects/${slug}/`,
   };

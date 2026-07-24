@@ -8,6 +8,7 @@ export const settings = {
     notifications: "Notifications",
     limits: "Limits",
     schedules: "Schedules",
+    integrations: "Integrations",
   },
   interests: {
     heading: "Research preferences",
@@ -29,6 +30,18 @@ export const settings = {
     defaultModel: "Default model",
     maxCostPerRun: "Max cost per run (USD)",
     save: "Save LLM preferences",
+  },
+  integrations: {
+    title: "Integrations",
+    subtitle:
+      "Connect tenant external services. The GitHub token enables cloning private repos and enriching product intake.",
+    configured: "GitHub connected as @{{username}}",
+    notConfigured: "GitHub not configured — required for private repositories",
+    githubToken: "Personal Access Token (GitHub)",
+    githubTokenHint:
+      "Recommended scope: repo (private) and read:org if applicable. Stored encrypted per tenant.",
+    save: "Save integrations",
+    testGithub: "Test GitHub connection",
   },
   usage: {
     title: "Monthly usage",

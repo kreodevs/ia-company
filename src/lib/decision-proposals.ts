@@ -111,6 +111,7 @@ export async function applyApprovedProposal(
             tenantId,
             slug: productSlug,
             name: productName,
+            description: idea.description ?? undefined,
           });
           await setFocusProduct(tenantId, product.id);
           await updateCompanyPhase(tenantId, "building");
@@ -120,6 +121,7 @@ export async function applyApprovedProposal(
           tenantId,
           slug: productSlug,
           name: productName,
+          description: idea.description ?? undefined,
           phase: "building",
           goNoGo: "go",
         });

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   api,
   type AutonomousSchedule,
+  type TenantIntegrationsConfig,
   type TenantLlmConfig,
   type TenantMonthlyUsage,
   type TenantNotificationConfig,
@@ -16,13 +17,15 @@ import PageLoading from "../components/ui/PageLoading";
 import TabsBar from "../components/ui/TabsBar";
 import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPanel";
 
-type SettingsTab = "general" | "llm" | "opencode" | "notifications" | "limits" | "schedules";
-const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "notifications", "limits", "schedules"];
+type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "notifications" | "limits" | "schedules";
+const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "notifications", "limits", "schedules"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
   const [opencode, setOpencode] = useState<Partial<TenantOpencodeConfig>>({});
+  const [integrations, setIntegrations] = useState<Partial<TenantIntegrationsConfig>>({});
+  const [githubToken, setGithubToken] = useState("");
   const [notifications, setNotifications] = useState<Partial<TenantNotificationConfig>>({});
   const [limits, setLimits] = useState<Partial<TenantUsageLimits>>({});
   const [usage, setUsage] = useState<TenantMonthlyUsage | null>(null);
@@ -36,6 +39,9 @@ export default function SettingsPage() {
   const [opencodePassword, setOpencodePassword] = useState("");
   const [savingNotifications, setSavingNotifications] = useState(false);
   const [savingLimits, setSavingLimits] = useState(false);
+  const [savingIntegrations, setSavingIntegrations] = useState(false);
+  const [testingGithub, setTestingGithub] = useState(false);
+  const [githubTestResult, setGithubTestResult] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") as SettingsTab | null;
   const [activeTab, setActiveTab] = useState<SettingsTab>(
@@ -48,10 +54,11 @@ export default function SettingsPage() {
 
   const load = async () => {
     setLoading(true);
-    const [llmConfig, opencodeConfig, notif, limitConfig, usageData, scheduleList, workflowList] =
+    const [llmConfig, opencodeConfig, integrationsConfig, notif, limitConfig, usageData, scheduleList, workflowList] =
       await Promise.all([
         api.tenantSettings.getLlm(),
         api.tenantSettings.getOpencode(),
+        api.tenantSettings.getIntegrations(),
         api.tenantSettings.getNotifications(),
         api.tenantSettings.getLimits(),
         api.tenantSettings.getUsage(),
@@ -60,6 +67,8 @@ export default function SettingsPage() {
       ]);
     setLlm(llmConfig);
     setOpencode(opencodeConfig);
+    setIntegrations(integrationsConfig);
+    setGithubToken("");
     setOpencodePassword("");
     setNotifications(notif);
     setLimits(limitConfig);
@@ -147,6 +156,35 @@ export default function SettingsPage() {
     }
   };
 
+  const saveIntegrations = async () => {
+    setSavingIntegrations(true);
+    setGithubTestResult(null);
+    try {
+      const updated = await api.tenantSettings.updateIntegrations({
+        githubToken: githubToken || undefined,
+        githubUsername: integrations.githubUsername ?? null,
+      });
+      setIntegrations(updated);
+      setGithubToken("");
+    } finally {
+      setSavingIntegrations(false);
+    }
+  };
+
+  const testGithub = async () => {
+    setTestingGithub(true);
+    setGithubTestResult(null);
+    try {
+      if (githubToken) {
+        await api.tenantSettings.updateIntegrations({ githubToken });
+      }
+      const result = await api.tenantSettings.testGithub();
+      setGithubTestResult(result.ok ? result.message : result.message);
+    } finally {
+      setTestingGithub(false);
+    }
+  };
+
   const saveLimits = async () => {
     setSavingLimits(true);
     try {
@@ -168,6 +206,7 @@ export default function SettingsPage() {
           { id: "general", label: t("settings.tabs.general") },
           { id: "llm", label: t("settings.tabs.llm") },
           { id: "opencode", label: t("settings.tabs.opencode") },
+          { id: "integrations", label: t("settings.tabs.integrations") },
           { id: "notifications", label: t("settings.tabs.notifications") },
           { id: "limits", label: t("settings.tabs.limits") },
           { id: "schedules", label: t("settings.tabs.schedules") },
@@ -377,6 +416,60 @@ export default function SettingsPage() {
                 className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
               >
                 {testingOpencode ? t("common.loading") : t("opencode.settings.test")}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {activeTab === "integrations" && (
+        <div className="space-y-4">
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold">{t("settings.integrations.title")}</h2>
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              {t("settings.integrations.subtitle")}
+            </p>
+            <p
+              className={`text-xs ${integrations.githubConfigured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+            >
+              {integrations.githubConfigured
+                ? t("settings.integrations.configured", {
+                    username: integrations.githubUsername ?? "GitHub",
+                  })
+                : t("settings.integrations.notConfigured")}
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block space-y-1 text-sm md:col-span-2">
+                <span>{t("settings.integrations.githubToken")}</span>
+                <input
+                  type="password"
+                  value={githubToken}
+                  onChange={(e) => setGithubToken(e.target.value)}
+                  placeholder={integrations.githubToken ?? ""}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
+                />
+                <span className="text-xs text-[var(--color-muted-foreground)]">
+                  {t("settings.integrations.githubTokenHint")}
+                </span>
+              </label>
+            </div>
+            {githubTestResult && (
+              <p className="text-sm text-[var(--color-muted-foreground)]">{githubTestResult}</p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <button
+                disabled={savingIntegrations}
+                onClick={() => void saveIntegrations()}
+                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+              >
+                {savingIntegrations ? t("common.saving") : t("settings.integrations.save")}
+              </button>
+              <button
+                disabled={testingGithub}
+                onClick={() => void testGithub()}
+                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
+              >
+                {testingGithub ? t("common.loading") : t("settings.integrations.testGithub")}
               </button>
             </div>
           </section>

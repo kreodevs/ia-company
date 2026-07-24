@@ -29,6 +29,10 @@ import { createLanguageModel, estimateCostUsd } from "./providers.js";
 import { createAgentTools } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
+import {
+  buildProductProfilePromptSection,
+  parseProductProfile,
+} from "../lib/product-profile.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -313,6 +317,11 @@ export class WorkflowExecutor {
         );
       }
 
+      if (workflowName === WORKFLOW_NAMES.PRODUCT_INTAKE && input.tenantId) {
+        const { finalizeProductIntake } = await import("../lib/product-intake.js");
+        await finalizeProductIntake(input.tenantId, runId, sharedMemory, input.productSlug);
+      }
+
       await this.dispatchRunNotification(runId, input.tenantId, "COMPLETED", {
         totalTokens,
         totalCostUsd,
@@ -325,6 +334,17 @@ export class WorkflowExecutor {
         completedAt: new Date(),
         errorMessage: message,
       });
+      if (workflowName === WORKFLOW_NAMES.PRODUCT_INTAKE && input.tenantId) {
+        const { prisma: db } = await import("../lib/prisma.js");
+        await db.tenantProduct.updateMany({
+          where: {
+            tenantId: input.tenantId,
+            intakeRunId: runId,
+            intakeStatus: "running",
+          },
+          data: { intakeStatus: "failed" },
+        });
+      }
       await this.appendLog(runId, "error", message);
       emitEvent("error", { message });
       await this.dispatchRunNotification(runId, input.tenantId, "FAILED", {
@@ -550,9 +570,8 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
 
     let githubToken: string | undefined;
     try {
-      const { getPlatformSettingsSync } = await import("../lib/platform-settings.js");
-      const settings = getPlatformSettingsSync();
-      githubToken = settings.githubApiKey || undefined;
+      const { resolveTenantGithubToken } = await import("../lib/tenant-integrations.js");
+      githubToken = await resolveTenantGithubToken(tenantId);
     } catch {
       githubToken = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN;
     }
@@ -724,6 +743,22 @@ export function compileSystemPrompt(
     sections.push(
       `\n## Focus Product\n${sharedMemory.focusProductName ?? sharedMemory.focusProductSlug} (\`${sharedMemory.focusProductSlug}\`) — workspace root is this product repo.`,
     );
+    if (typeof sharedMemory.productDescription === "string" && sharedMemory.productDescription.trim()) {
+      sections.push(`\n### Product description\n${sharedMemory.productDescription.trim()}`);
+    }
+    if (typeof sharedMemory.productPhase === "string" && sharedMemory.productPhase.trim()) {
+      sections.push(`\n### Product phase\n${sharedMemory.productPhase.trim()}`);
+    }
+    if (typeof sharedMemory.githubRepoUrl === "string" && sharedMemory.githubRepoUrl.trim()) {
+      sections.push(`\n### GitHub repository\n${sharedMemory.githubRepoUrl.trim()}`);
+    }
+  }
+
+  if (sharedMemory.productProfile && typeof sharedMemory.productProfile === "object") {
+    const profileSection = buildProductProfilePromptSection(
+      parseProductProfile(sharedMemory.productProfile),
+    );
+    if (profileSection) sections.push(`\n${profileSection}`);
   }
 
   sections.push(`\n${buildWorkspacePromptSection({

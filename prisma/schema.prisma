@@ -43,6 +43,7 @@ model Tenant {
   pipelineIdeas PipelineIdea[]
   interests TenantInterest[]
   opencodeConfig TenantOpencodeConfig?
+  integrationConfig TenantIntegrationConfig?
   opencodeDelegations OpencodeDelegation[]
   opencodeRunGates OpencodeRunGate[]
   notifications TenantNotification[]
@@ -284,6 +285,14 @@ enum ProductPhase {
   archived
 }
 
+enum ProductIntakeStatus {
+  pending
+  running
+  completed
+  failed
+  skipped
+}
+
 enum GoNoGoDecision {
   pending
   go
@@ -314,18 +323,23 @@ model TenantCycleState {
 }
 
 model TenantProduct {
-  id           String         @id @default(cuid())
-  tenantId     String
-  slug         String
-  name         String
-  description  String?        @db.Text
-  phase        ProductPhase   @default(queued)
-  pipelineRank Int            @default(0)
-  goNoGo       GoNoGoDecision @default(pending)
-  revenueUsd   Float          @default(0)
-  lastRunId    String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id                 String              @id @default(cuid())
+  tenantId           String
+  slug               String
+  name               String
+  description        String?             @db.Text
+  phase              ProductPhase        @default(queued)
+  pipelineRank       Int                 @default(0)
+  goNoGo             GoNoGoDecision      @default(pending)
+  revenueUsd         Float               @default(0)
+  lastRunId          String?
+  githubRepoUrl      String?
+  githubDefaultBranch String?
+  metadata           Json?
+  intakeStatus       ProductIntakeStatus @default(skipped)
+  intakeRunId        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   focusCycles TenantCycleState[] @relation("FocusProduct")
@@ -543,6 +557,15 @@ model TenantOpencodeConfig {
   maxWaitMs              Int      @default(3600000)
   autoApprovePermissions Boolean  @default(true)
   updatedAt              DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantIntegrationConfig {
+  tenantId        String   @id
+  githubToken     String?  @db.Text
+  githubUsername  String?
+  updatedAt       DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }

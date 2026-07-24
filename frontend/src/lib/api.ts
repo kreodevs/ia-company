@@ -210,6 +210,8 @@ export type ProductPhase =
 
 export type GoNoGoDecision = "pending" | "go" | "no_go";
 
+export type ProductIntakeStatus = "pending" | "running" | "completed" | "failed" | "skipped";
+
 export interface TenantProduct {
   id: string;
   tenantId: string;
@@ -221,8 +223,19 @@ export interface TenantProduct {
   goNoGo: GoNoGoDecision;
   revenueUsd: number;
   lastRunId: string | null;
+  githubRepoUrl?: string | null;
+  githubDefaultBranch?: string | null;
+  intakeStatus?: ProductIntakeStatus | null;
+  intakeRunId?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TenantIntegrationsConfig {
+  tenantId: string;
+  githubToken: string | null;
+  githubUsername: string | null;
+  githubConfigured: boolean;
 }
 
 export interface PipelineIdea {
@@ -1136,12 +1149,21 @@ export const api = {
       name: string;
       description?: string;
       phase?: ProductPhase;
+      githubRepoUrl?: string;
+      runIntake?: boolean;
+      cloneRepo?: boolean;
     }) =>
       request<{
         product: TenantProduct;
         hasExistingCode: boolean;
         workspacePath: string;
+        intakeRunId: string | null;
+        intakeStatus: ProductIntakeStatus;
       }>("/products/register", { method: "POST", body: JSON.stringify(body) }),
+    startIntake: (id: string) =>
+      request<{ runId: string; workflowName: string }>(`/products/${id}/intake`, {
+        method: "POST",
+      }),
     launchOptions: (id: string) => request<ProductLaunchOptions>(`/products/${id}/launch-options`),
     launch: (
       id: string,
@@ -1315,6 +1337,17 @@ export const api = {
       request<{ ok: boolean; version?: string; error?: string }>("/tenant/settings/opencode/test", {
         method: "POST",
       }),
+    getIntegrations: () => request<TenantIntegrationsConfig>("/tenant/settings/integrations"),
+    updateIntegrations: (body: { githubToken?: string | null; githubUsername?: string | null }) =>
+      request<TenantIntegrationsConfig>("/tenant/settings/integrations", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    testGithub: () =>
+      request<{ ok: boolean; login?: string; message: string }>(
+        "/tenant/settings/integrations/github/test",
+        { method: "POST" },
+      ),
   },
   opencode: {
     getRun: (runId: string) => request<OpencodeRunInfo>(`/runs/${runId}/opencode`),

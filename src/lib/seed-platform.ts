@@ -198,6 +198,11 @@ const DEFAULT_WORKFLOWS = [
     description: "Marketing → Sales → Growth — campaign, funnel, outreach",
     steps: ["marketing-godin", "sales-ross", "operations-pg"],
   },
+  {
+    name: "product-intake",
+    description: "Research → Product → CEO → CTO — build shared product profile from GitHub and founder notes",
+    steps: ["research-thompson", "product-norman", "ceo-bezos", "cto-vogels"],
+  },
 ];
 
 export async function seedPlatformTemplates(client: PrismaClient) {
