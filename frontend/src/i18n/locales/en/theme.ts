@@ -1,5 +1,6 @@
 export const theme = {
   label: "Theme",
-  letter: "Paperclip Warm",
+  letter: "Stripe HDS Light",
+  paperclip: "Paperclip Warm",
   slash: "Dark (Slash)",
 } as const;

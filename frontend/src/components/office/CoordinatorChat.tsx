@@ -12,6 +12,7 @@ interface CoordinatorChatProps {
   productId?: string;
   serviceId?: string | null;
   initialUserMessage?: string | null;
+  welcomeMessageKey?: string;
   onPlanChange?: (plan: OfficeTaskPlan | null) => void;
   onExecuted?: (runId: string) => void;
 }
@@ -20,11 +21,13 @@ export default function CoordinatorChat({
   productId,
   serviceId,
   initialUserMessage,
+  welcomeMessageKey,
   onPlanChange,
   onExecuted,
 }: CoordinatorChatProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const welcomeKey = welcomeMessageKey ?? WELCOME_KEY;
   const [messages, setMessages] = useState<CoordinatorChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [plan, setPlan] = useState<OfficeTaskPlan | null>(null);
@@ -40,10 +43,10 @@ export default function CoordinatorChat({
     setMessages([
       {
         role: "assistant",
-        content: t(WELCOME_KEY),
+        content: t(welcomeKey),
       },
     ]);
-  }, [t]);
+  }, [t, welcomeKey]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -54,7 +57,7 @@ export default function CoordinatorChat({
     if (!trimmed || busy) return;
 
     const nextMessages: CoordinatorChatMessage[] = [
-      ...messages.filter((m) => !(m.role === "assistant" && m.content === t(WELCOME_KEY))),
+      ...messages.filter((m) => !(m.role === "assistant" && m.content === t(welcomeKey))),
       { role: "user", content: trimmed },
     ];
     setMessages(nextMessages);

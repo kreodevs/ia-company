@@ -1,11 +1,12 @@
 import type { ComponentProps } from "react";
 import { Toaster as SonnerToaster, toast } from "sonner";
 import { useTheme } from "../../context/ThemeContext";
+import type { AppTheme } from "../../lib/theme";
 
 type ToasterProps = ComponentProps<typeof SonnerToaster>;
 
-function sonnerTheme(_appTheme: "letter" | "slash"): ToasterProps["theme"] {
-  return "dark";
+function sonnerTheme(appTheme: AppTheme): ToasterProps["theme"] {
+  return appTheme === "letter" ? "light" : "dark";
 }
 
 const Toaster = ({ ...props }: ToasterProps) => {

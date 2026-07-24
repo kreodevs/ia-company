@@ -26,9 +26,10 @@ Sidebar groups (see `AppSidebar.tsx`): **Office** (home), **Portfolio & ops** (o
 | `/runs` | `RunsPage` |
 | `/runs/:id` | `RunDetailPage` |
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |
-| `/products` | `ProductsPage` | Oportunidades; **Añadir producto** (registrar existente o crear nuevo); productos activos con launcher de workflows/agentes |
-| `/war-room/:productId` | `WarRoomPage` | War room táctico + **launcher** de workflows/agentes por producto |
-| `/products/:id/consensus` | `ProductConsensusPage` | Memoria del producto (documento, revisiones, informes BD, **documentos docs/**) |
+| `/products` | `ProductsPage` | Oportunidades; **Añadir producto**; productos activos con enlaces a war room, código y **configuración** |
+| `/products/:id/settings` | `ProductSettingsPage` | Datos generales, GitHub, re-ejecutar intake, OpenCode |
+| `/war-room/:productId` | `WarRoomPage` | War room táctico + **chat del coordinador** (encargos bajo demanda) |
+| `/debug/products/:id/consensus` | `ProductConsensusPage` | Memoria técnica del producto (solo depuración) |
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
 | `/decisions` | `DecisionsPage` | Propuestas go/no-go de agentes |

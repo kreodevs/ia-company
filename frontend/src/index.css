@@ -1,8 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Libre+Caslon+Display:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&family=Libre+Caslon+Display:wght@400;600&display=swap");
 @import "sonner/dist/styles.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @import "./styles/letter-theme.css";
+@import "./styles/paperclip-theme.css";
 @import "./styles/slash-theme.css";
 @import "./styles/office-theme.css";
 @import "./styles/office-encargos.css";
@@ -48,7 +49,11 @@ html {
   scroll-behavior: smooth;
 }
 
-html[data-theme="letter"],
+html[data-theme="letter"] {
+  color-scheme: light;
+}
+
+html[data-theme="paperclip"],
 html[data-theme="slash"] {
   color-scheme: dark;
 }

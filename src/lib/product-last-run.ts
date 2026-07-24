@@ -11,6 +11,7 @@ export interface ProductLastRunStepTrace {
   memoryKeyChars: number;
   hasStructuredHandoff: boolean;
   outputPreview: string;
+  output: string;
   tokensUsed: number | null;
 }
 
@@ -157,6 +158,7 @@ export async function getProductLastRunTrace(
       memoryKeyChars,
       hasStructuredHandoff: hasStructuredHandoff(bestText),
       outputPreview: bestText.trim().slice(0, 280),
+      output: bestText.trim(),
       tokensUsed: agentId ? (tokensByAgentId.get(agentId) ?? null) : null,
     };
   });

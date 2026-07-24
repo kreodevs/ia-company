@@ -127,6 +127,7 @@ export async function productRoutes(app: FastifyInstance) {
       phase?: ProductPhase;
       goNoGo?: GoNoGoDecision;
       revenueUsd?: number;
+      githubRepoUrl?: string | null;
     };
   }>("/products/:id", async (request, reply) => {
     try {

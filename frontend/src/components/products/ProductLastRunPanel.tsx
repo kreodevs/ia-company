@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, ExternalLink, PlayCircle } from "lucide-react";
-import type { ProductLastRunTrace } from "../../lib/api";
+import { AlertTriangle, ExternalLink, Eye, PlayCircle } from "lucide-react";
+import type { ProductLastRunStepTrace, ProductLastRunTrace } from "../../lib/api";
 import Panel from "../ui/Panel";
 import StatusBadge from "../ui/StatusBadge";
 import EmptyState from "../ui/EmptyState";
+import Button from "../ui/Button";
+import AgentOutputPreviewModal from "./AgentOutputPreviewModal";
 
 function formatTime(iso: string | null): string {
   if (!iso) return "—";
@@ -27,6 +30,7 @@ export default function ProductLastRunPanel({
   productId,
 }: ProductLastRunPanelProps) {
   const { t } = useTranslation();
+  const [previewStep, setPreviewStep] = useState<ProductLastRunStepTrace | null>(null);
 
   if (loading) {
     return (
@@ -152,22 +156,35 @@ export default function ProductLastRunPanel({
                       </span>
                     </td>
                     <td className="px-3 py-2 align-top">
-                      <span
-                        className={
-                          outputOk
-                            ? "text-emerald-400"
-                            : "font-semibold text-[var(--color-destructive)]"
-                        }
-                      >
-                        {outputOk
-                          ? t("consensus.lastRun.chars", { count: chars })
-                          : t("consensus.lastRun.emptyOutput")}
-                      </span>
-                      {step.outputPreview && (
-                        <p className="mt-1 line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
-                          {step.outputPreview}
-                        </p>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <span
+                          className={
+                            outputOk
+                              ? "text-emerald-400"
+                              : "font-semibold text-[var(--color-destructive)]"
+                          }
+                        >
+                          {outputOk
+                            ? t("consensus.lastRun.chars", { count: chars })
+                            : t("consensus.lastRun.emptyOutput")}
+                        </span>
+                        {step.outputPreview && (
+                          <p className="line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
+                            {step.outputPreview}
+                          </p>
+                        )}
+                        {outputOk && (step.output || step.outputPreview) && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="w-fit"
+                            onClick={() => setPreviewStep(step)}
+                          >
+                            <Eye className="h-3.5 w-3.5" aria-hidden />
+                            {t("consensus.lastRun.viewOutput")}
+                          </Button>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-2 align-top text-xs">
                       {step.hasStructuredHandoff
@@ -198,6 +215,14 @@ export default function ProductLastRunPanel({
           <ExternalLink className="h-3 w-3" aria-hidden />
         </a>
       </p>
+
+      <AgentOutputPreviewModal
+        open={previewStep != null}
+        agentName={previewStep?.agentName ?? ""}
+        stepOrder={previewStep?.stepOrder ?? 0}
+        output={previewStep?.output ?? previewStep?.outputPreview ?? ""}
+        onClose={() => setPreviewStep(null)}
+      />
     </Panel>
   );
 }

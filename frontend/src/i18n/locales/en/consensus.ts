@@ -69,7 +69,7 @@ export const consensus = {
   },
   tip: {
     title: "Tip",
-    body: "Per-product memory lives at /products/:id/consensus. Use the scope selector to jump straight to one.",
+    body: "Per-product memory lives at /debug/products/:id/consensus (Debug office).",
   },
   reportsTab: "Agent reports",
   reportsEmptyTitle: "No agent reports yet",
@@ -130,6 +130,10 @@ export const consensus = {
     emptyOutput: "Empty",
     handoffJson: "Yes",
     handoffMissing: "No",
+    viewOutput: "View output",
+    previewTitle: "{{agent}} · step {{step}}",
+    previewSubtitle: "Rendered preview of the captured agent output.",
+    previewAria: "Output from {{agent}}",
     warRoomLink: "War room →",
     logsHint: "Live logs",
     diagnosis: {

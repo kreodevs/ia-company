@@ -37,7 +37,7 @@ Manage **products and opportunities** with specialized agents (CEO, CTO, product
 |------|-------|---------|
 | 1 | `/office` | Commission work via coordinator |
 | 2 | `/products` | Register products (GitHub or new), pipeline, focus |
-| 3 | `/war-room/:id` | Live tactical view + workflow launcher |
+| 3 | `/war-room/:id` | Live tactical view + coordinator chat |
 | 4 | `/office/encargos` | Job history and reports |
 | 5 | `/debug/runs` | Technical logs, tokens, cost |
 | 6 | `/settings` | Integrations, OpenCode, limits, schedules |
@@ -58,8 +58,8 @@ Manage **products and opportunities** with specialized agents (CEO, CTO, product
 |------|---------|
 | **Office** | Conversational coordinator, quick services, ROI, monthly spend |
 | **My jobs** | Commissioned work inbox with final report |
-| **Products** | Portfolio, idea pipeline, GitHub registration, focus, launchers |
-| **War room** | Per-product tactical table: live agents, docs, launcher |
+| **Products** | Portfolio, idea pipeline, GitHub registration, focus |
+| **War room** | Per-product tactical table: live agents, docs, coordinator |
 | **Debug office** | Runs, consensus, ops, decisions, AI catalog (workflows/agents/skills) |
 | **Settings** | Tenant LLM, global OpenCode, GitHub, notifications, limits, schedules |
 | **Help** | This guide |
@@ -164,7 +164,7 @@ Open **http://localhost:5173**. After tenant login you land on **`/office`**.
 | `/office/encargos/:runId` | Final report + team documents |
 | `/products` | Portfolio, pipeline, add product |
 | `/war-room/:productId` | Per-product war room |
-| `/products/:id/consensus` | Product memory |
+| `/debug/products/:id/consensus` | Product memory (debug) |
 | `/products/:id/code` | Workspace + per-product OpenCode |
 | `/settings` | Tenant configuration |
 | `/help` | Help center |
@@ -321,9 +321,9 @@ Each run (`/debug/runs/:id`) includes:
 
 Shared markdown: decisions, company phase, human **Next Action**.
 
-### Product consensus (`/products/:id/consensus`)
+### Product consensus (`/debug/products/:id/consensus`)
 
-Product-specific memory, revisions, reports.
+Technical memory, revisions, and agent reports — **Debug office** only. In the human office use **Jobs (Encargos)** for deliverables.
 
 ### Structured fields (shared memory)
 
@@ -454,7 +454,7 @@ Checklist:
 
 ### Job markdown low contrast
 
-- Use **Paperclip Warm** or **Slash** theme; reports use `--office-*` tokens
+- Use **Stripe HDS Light**, **Paperclip Warm**, or **Slash** theme; reports use `--office-*` tokens
 
 ### Stuck on same Next Action
 

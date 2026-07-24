@@ -1,12 +1,12 @@
 # Paperclip Dark Warm — Design System
 
-**Version:** alpha · **Theme id:** `letter`
+**Version:** alpha · **Theme id:** `paperclip`
 
 Primary visual anchor: **charcoal** `#141413` (page background, navbar). Typography: **Inter Tight** for display/nav, **Inter** for body, **JetBrains Mono** for code.
 
 ## Activation
 
-- `data-theme="letter"` on `<html>` — Paperclip Dark Warm (default)
+- `data-theme="paperclip"` on `<html>`
 - `data-theme="slash"` — midnight vault (copper accent)
 
 Preference: `localStorage` key `auto-company-ui-theme`.
@@ -45,15 +45,4 @@ Preference: `localStorage` key `auto-company-ui-theme`.
 
 Components use: `--background`, `--foreground`, `--primary`, `--card`, `--border`, `--muted-foreground`, `--font-sans`, `--font-display`.
 
-Office and War Room scopes override via `html[data-theme="letter"]` blocks in `office-theme.css`, `office-encargos.css`, `war-room.css`.
-
-## Do's
-
-- Use manila only for the primary action per screen
-- Keep WCAG AA contrast (manila on charcoal ≥ 4.5:1 for body)
-- Use spacing tokens from the 8px grid
-
-## Don'ts
-
-- Do not mix unrelated corner radii in one view
-- Do not invent colors outside the token table
+Office and War Room scopes override via `html[data-theme="paperclip"]` blocks in `office-theme.css`, `office-encargos.css`, `war-room.css`.

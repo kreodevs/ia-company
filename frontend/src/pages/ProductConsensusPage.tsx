@@ -124,7 +124,8 @@ export default function ProductConsensusPage() {
         eyebrow={
           <Breadcrumbs
             items={[
-              { label: t("nav.consensus"), to: "/consensus" },
+              { label: t("nav.sectionDebugOffice"), to: "/debug/runs" },
+              { label: t("nav.consensus"), to: "/debug/consensus" },
               { label: t("consensus.productTab", { defaultValue: "Product memory" }) },
             ]}
           />

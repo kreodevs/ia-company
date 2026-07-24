@@ -13,14 +13,14 @@ UI built with **Kreo registry components** styled via the **Paperclip Dark Warm*
 | Office | `office/` | `OfficeSpendWidget` — sidebar spend bar; main UI in `OfficePage` |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
-| Shared widgets | `ThemeSwitcher.tsx` | Paperclip Warm / Slash (dark) theme selector |
+| Shared widgets | `ThemeSwitcher.tsx` | Stripe HDS Light / Paperclip Warm / Slash theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
 | Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
 
 ## Themes
 
-Paperclip Warm (`letter`, default) and Slash — see `frontend/DESIGN.md`.
+Stripe HDS Light (`letter`, default), Paperclip Warm (`paperclip`), and Slash — see `frontend/DESIGN.md`.
 
 ## Import convention
 

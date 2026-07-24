@@ -6,6 +6,7 @@
 
 - `/products` — pestañas **Oportunidades** y **Productos activos**
 - `/products?tab=active` — abre directamente productos activos
+- `/products/:id/settings` — configuración del producto (datos, GitHub, intake, OpenCode)
 
 ## API
 
@@ -17,6 +18,7 @@
 |----------|--------|
 | Oportunidad | Evaluar con agentes, NO-GO |
 | Producto activo | Enfocar, pausar, archivar, NO-GO (`ProductActionsMenu`) |
-| Reportes | **War room** (`/war-room/:id`), memoria, código, última ejecución |
+| Reportes / entregables | **War room** (`/war-room/:id`), **Encargos** (`/office/encargos/:runId`), código |
+| Configuración | **Settings** (`/products/:id/settings`) — nombre, GitHub, re-intake, OpenCode |
 
 Operaciones del ciclo meta (KPIs, stepper) permanecen en `/ops`.

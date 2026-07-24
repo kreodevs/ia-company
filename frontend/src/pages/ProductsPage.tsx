@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FileText, Focus, PlayCircle, Plus, ScrollText, Target } from "lucide-react";
+import { FileText, Focus, PlayCircle, Plus, Settings2, Target } from "lucide-react";
 import { api, type OpencodeActiveInfo, type PipelineIdea, type ProductsOverview, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
@@ -14,7 +14,6 @@ import Panel from "../components/ui/Panel";
 import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import TabsBar from "../components/ui/TabsBar";
-import ProductWorkLauncher from "../components/products/ProductWorkLauncher";
 import AddProductDialog from "../components/products/AddProductDialog";
 
 type ProductsTab = "opportunities" | "active";
@@ -499,11 +498,11 @@ function ActiveProductCard({
             {t("products.active.warRoom")}
           </Link>
           <Link
-            to={`/products/${product.id}/consensus`}
+            to={`/products/${product.id}/settings`}
             className="interactive inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs hover:border-[var(--color-primary)]/40"
           >
-            <ScrollText className="h-3.5 w-3.5" aria-hidden />
-            {t("products.active.memory")}
+            <Settings2 className="h-3.5 w-3.5" aria-hidden />
+            {t("products.active.settings")}
           </Link>
           <Link
             to={`/products/${product.id}/code`}
@@ -514,7 +513,7 @@ function ActiveProductCard({
           </Link>
           {product.lastRunId ? (
             <Link
-              to={`/runs/${product.lastRunId}`}
+              to={`/office/encargos/${product.lastRunId}`}
               className="interactive inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs hover:border-[var(--color-primary)]/40"
             >
               <PlayCircle className="h-3.5 w-3.5" aria-hidden />
@@ -552,18 +551,6 @@ function ActiveProductCard({
             </>
           )}
         </div>
-
-        {!isArchived && (
-          <div className="mt-3">
-            <ProductWorkLauncher
-              productId={product.id}
-              productName={product.name}
-              compact
-              afterLaunch="war-room"
-              onLaunched={onChange}
-            />
-          </div>
-        )}
       </div>
 
       <ConfirmDialog

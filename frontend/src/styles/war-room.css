@@ -1,4 +1,4 @@
-/* War Room — theme-aware tactical board (Slash cyan / Paperclip Warm manila) */
+/* War Room — Slash cyan / Stripe light / Paperclip warm */
 
 .war-room {
   --war-room-bg:
@@ -54,7 +54,7 @@
   --war-room-launcher-tab-active-fg: #38bdf8;
 }
 
-html[data-theme="letter"] .war-room {
+html[data-theme="paperclip"] .war-room {
   --war-room-bg:
     radial-gradient(ellipse 80% 50% at 50% 0%, rgba(243, 230, 196, 0.08), transparent 60%),
     radial-gradient(ellipse 60% 40% at 100% 100%, rgba(229, 165, 54, 0.06), transparent 70%),
@@ -108,8 +108,63 @@ html[data-theme="letter"] .war-room {
   --war-room-launcher-tab-active-fg: #f3e6c4;
 }
 
-html[data-theme="letter"] .war-room {
+html[data-theme="paperclip"] .war-room {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="letter"] .war-room {
+  --war-room-bg:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(83, 58, 253, 0.06), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(127, 125, 252, 0.05), transparent 70%),
+    linear-gradient(180deg, #f8fafd 0%, #ffffff 100%);
+  --war-room-border: #e5edf5;
+  --war-room-fg: #061b31;
+  --war-room-fg-emphasis: #061b31;
+  --war-room-fg-muted: #50617a;
+  --war-room-fg-subtle: #64748d;
+  --war-room-accent: #533afd;
+  --war-room-accent-soft: rgba(83, 58, 253, 0.08);
+  --war-room-accent-border: rgba(83, 58, 253, 0.28);
+  --war-room-panel-bg: #ffffff;
+  --war-room-panel-item-bg: #f8fafd;
+  --war-room-table-bg:
+    radial-gradient(circle at 50% 50%, rgba(83, 58, 253, 0.04), transparent 70%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafd 100%);
+  --war-room-table-grid: rgba(83, 58, 253, 0.06);
+  --war-room-table-ring: rgba(83, 58, 253, 0.25);
+  --war-room-table-ring-inner: rgba(127, 125, 252, 0.18);
+  --war-room-table-ring-inner2: rgba(229, 237, 245, 0.9);
+  --war-room-pill-bg: #ffffff;
+  --war-room-pill-border: #e5edf5;
+  --war-room-pill-fg: #061b31;
+  --war-room-pill-link-fg: #533afd;
+  --war-room-pill-live-bg: rgba(239, 68, 68, 0.08);
+  --war-room-pill-live-border: rgba(239, 68, 68, 0.35);
+  --war-room-pill-live-fg: #dc2626;
+  --war-room-pill-duty-bg: rgba(83, 58, 253, 0.08);
+  --war-room-pill-duty-border: rgba(83, 58, 253, 0.3);
+  --war-room-pill-duty-fg: #533afd;
+  --war-room-core-bg: radial-gradient(circle, #ffffff 0%, rgba(248, 250, 253, 0.95) 80%, transparent 100%);
+  --war-room-core-glow: 0 0 24px rgba(83, 58, 253, 0.12), inset 0 0 16px rgba(83, 58, 253, 0.04);
+  --war-room-core-note-fg: #533afd;
+  --war-room-seat-name-bg: rgba(255, 255, 255, 0.95);
+  --war-room-seat-task-bg: rgba(83, 58, 253, 0.08);
+  --war-room-seat-task-fg: #533afd;
+  --war-room-briefing-bg: #f8fafd;
+  --war-room-thinking-bg: #f8fafd;
+  --war-room-thinking-name-fg: #061b31;
+  --war-room-thinking-task-fg: #50617a;
+  --war-room-legend-fg: #061b31;
+  --war-room-run-row-bg: #ffffff;
+  --war-room-run-row-hover-bg: #f8fafd;
+  --war-room-run-row-hover-border: rgba(83, 58, 253, 0.35);
+  --war-room-title-shadow: none;
+  --war-room-launcher-bg: #ffffff;
+  --war-room-launcher-item-bg: #f8fafd;
+  --war-room-launcher-tab-bg: #ffffff;
+  --war-room-launcher-tab-active-bg: rgba(83, 58, 253, 0.08);
+  --war-room-launcher-tab-active-fg: #533afd;
+  box-shadow: 0px 3px 6px 0px rgba(23, 23, 23, 0.06);
 }
 
 .war-room-page {
@@ -756,53 +811,31 @@ html[data-theme="letter"] .war-room {
   flex: 1;
 }
 
-/* Work launcher embedded in war room */
-.war-room-launcher {
+/* Coordinator chat embedded in war room */
+.war-room-coordinator {
   margin-bottom: 1.5rem;
-  background: var(--war-room-launcher-bg) !important;
-  border-color: var(--war-room-border) !important;
-  color: var(--war-room-fg);
 }
 
-.war-room-launcher h3 {
-  color: var(--war-room-fg-emphasis);
-}
-
-.war-room-launcher label,
-.war-room-launcher > div > p {
+.war-room-coordinator-subtitle {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
   color: var(--war-room-fg-muted);
 }
 
-.war-room-launcher li {
-  background: var(--war-room-launcher-item-bg) !important;
-  border-color: var(--war-room-border) !important;
+.war-room-coordinator-panel {
+  border-radius: 12px;
+  border: 1px solid var(--war-room-border);
+  background: var(--war-room-panel-bg);
+  padding: 0.85rem;
 }
 
-.war-room-launcher li .font-medium {
-  color: var(--war-room-fg-emphasis);
+.war-room-coordinator-panel .office-chat {
+  min-height: 280px;
 }
 
-.war-room-launcher li p {
-  color: var(--war-room-fg-muted);
-}
-
-.war-room-launcher > div.flex.rounded-lg.border {
-  background: var(--war-room-launcher-tab-bg);
-  border-color: var(--war-room-border) !important;
-}
-
-.war-room-launcher .product-work-tab-active {
-  background: var(--war-room-launcher-tab-active-bg) !important;
-  color: var(--war-room-launcher-tab-active-fg) !important;
-}
-
-.war-room-launcher .product-work-tab {
-  color: var(--war-room-fg-muted);
-}
-
-.war-room-launcher .product-work-tab:hover {
-  background: var(--war-room-launcher-item-bg);
-  color: var(--war-room-fg-emphasis);
+.war-room-coordinator-panel .office-chat-messages {
+  max-height: 220px;
 }
 
 .war-room .hero-strip {

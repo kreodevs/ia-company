@@ -37,7 +37,7 @@ Gestionar **productos y oportunidades** con agentes especializados (CEO, CTO, pr
 |------|-------|---------------|
 | 1 | `/office` | Encargar trabajo al coordinador |
 | 2 | `/products` | Registrar productos (GitHub o nuevo), pipeline, foco |
-| 3 | `/war-room/:id` | Vista táctica en vivo + launcher de workflows |
+| 3 | `/war-room/:id` | Vista táctica en vivo + chat con el coordinador |
 | 4 | `/office/encargos` | Historial de encargos e informes |
 | 5 | `/debug/runs` | Logs técnicos, tokens y coste |
 | 6 | `/settings` | Integraciones, OpenCode, límites, programaciones |
@@ -59,7 +59,7 @@ Gestionar **productos y oportunidades** con agentes especializados (CEO, CTO, pr
 | **Oficina** | Coordinador conversacional, servicios rápidos, ROI y gasto mensual |
 | **Mis encargos** | Bandeja de trabajos encargados con informe final |
 | **Productos** | Portfolio, pipeline de ideas, registro GitHub, foco, lanzadores |
-| **War room** | Mesa táctica por producto: agentes en vivo, documentos, launcher |
+| **War room** | Mesa táctica por producto: agentes en vivo, documentos, coordinador |
 | **Oficina de depuración** | Runs, consenso, ops, decisiones, catálogo IA (workflows/agentes/skills) |
 | **Configuración** | LLM tenant, OpenCode global, GitHub, notificaciones, límites, schedules |
 | **Ayuda** | Esta guía |
@@ -164,7 +164,7 @@ Abre **http://localhost:5173**. Tras login de tenant aterrizas en **`/office`**.
 | `/office/encargos/:runId` | Informe final + documentos del equipo |
 | `/products` | Portfolio, pipeline, añadir producto |
 | `/war-room/:productId` | War room táctico por producto |
-| `/products/:id/consensus` | Memoria del producto |
+| `/debug/products/:id/consensus` | Memoria técnica del producto (depuración) |
 | `/products/:id/code` | Workspace + OpenCode por producto |
 | `/settings` | Configuración del tenant |
 | `/help` | Centro de ayuda |
@@ -321,9 +321,9 @@ Cada run (`/debug/runs/:id`) incluye:
 
 Documento markdown compartido: decisiones, fase de empresa, **Next Action** humana.
 
-### Consenso por producto (`/products/:id/consensus`)
+### Consenso por producto (`/debug/products/:id/consensus`)
 
-Memoria específica del producto, revisiones e informes.
+Memoria técnica del producto, revisiones e informes — solo **Oficina de depuración**. En la oficina humana usa **Encargos** para ver entregables.
 
 ### Campos estructurados (shared memory)
 
@@ -454,7 +454,7 @@ Checklist:
 
 ### Encargo sin contraste en markdown
 
-- Usa tema **Paperclip Warm** o **Slash**; los informes usan tokens `--office-*`
+- Usa tema **Stripe HDS Light**, **Paperclip Warm** o **Slash**; los informes usan tokens `--office-*`
 
 ### Atascado en la misma Next Action
 
