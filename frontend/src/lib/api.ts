@@ -722,13 +722,18 @@ export interface TenantOpencodeConfig {
   baseUrl: string | null;
   username: string | null;
   password: string | null;
-  defaultAgent: string | null;
-  defaultModel: string | null;
-  projectPath: string | null;
   pollIntervalMs: number;
   maxWaitMs: number;
   autoApprovePermissions: boolean;
   configured: boolean;
+}
+
+export interface ProductOpencodeSettings {
+  productId: string;
+  defaultAgent: string | null;
+  defaultModel: string | null;
+  projectPath: string | null;
+  suggestedProjectPath: string;
 }
 
 export interface OpencodeDelegation {
@@ -1096,17 +1101,6 @@ export const api = {
     delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
     runNow: (id: string) =>
       request<{ runId: string; status: string }>(`/schedules/${id}/run-now`, { method: "POST" }),
-    ensureMeta: () =>
-      request<AutonomousSchedule>("/schedules", {
-        method: "POST",
-        body: JSON.stringify({
-          name: "Autonomous company (meta)",
-          scheduleKind: "meta",
-          orchestrationMode: "meta_dynamic",
-          intervalSec: 1800,
-          enabled: true,
-        }),
-      }),
   },
   products: {
     overview: () => request<ProductsOverview>("/products/overview"),
@@ -1222,6 +1216,21 @@ export const api = {
       request<ProductOpencodeHistory>(`/products/${id}/opencode/history`),
     opencodeLatest: (id: string) =>
       request<ProductOpencodeLatest>(`/products/${id}/opencode/latest`),
+    opencodeSettings: {
+      get: (id: string) => request<ProductOpencodeSettings>(`/products/${id}/opencode/settings`),
+      update: (
+        id: string,
+        body: {
+          defaultAgent?: string | null;
+          defaultModel?: string | null;
+          projectPath?: string | null;
+        },
+      ) =>
+        request<ProductOpencodeSettings>(`/products/${id}/opencode/settings`, {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }),
+    },
   },
   office: {
     dashboard: () => request<OfficeDashboard>("/office/dashboard"),

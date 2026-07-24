@@ -20,6 +20,15 @@ export const opencode = {
     testFail: "Connection failed",
     configured: "Ready to delegate",
     notConfigured: "Enable OpenCode and set URL + password to delegate implementation",
+    productHint:
+      "Agent, model, and project path are configured per product on the product code page.",
+  },
+  productSettings: {
+    title: "OpenCode for this product",
+    subtitle: "These settings apply when feature development delegates implementation to OpenCode for this product.",
+    projectPathHint: "If empty, defaults to {{path}} on the OpenCode server.",
+    save: "Save product OpenCode settings",
+    saved: "Saved",
   },
   gate: {
     title: "OpenCode is not configured",

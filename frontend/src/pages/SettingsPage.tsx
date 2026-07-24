@@ -110,9 +110,6 @@ export default function SettingsPage() {
         baseUrl: opencode.baseUrl ?? null,
         username: opencode.username ?? null,
         password: opencodePassword || undefined,
-        defaultAgent: opencode.defaultAgent ?? null,
-        defaultModel: opencode.defaultModel ?? null,
-        projectPath: opencode.projectPath ?? null,
         pollIntervalMs: opencode.pollIntervalMs,
         maxWaitMs: opencode.maxWaitMs,
         autoApprovePermissions: opencode.autoApprovePermissions,
@@ -322,6 +319,7 @@ export default function SettingsPage() {
           <section className="space-y-4">
             <h2 className="text-lg font-semibold">{t("opencode.settings.title")}</h2>
             <p className="text-sm text-[var(--color-muted-foreground)]">{t("opencode.settings.subtitle")}</p>
+            <p className="text-xs text-[var(--color-muted-foreground)]">{t("opencode.settings.productHint")}</p>
             <p
               className={`text-xs ${opencode.configured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
             >
@@ -365,30 +363,6 @@ export default function SettingsPage() {
                 <span className="text-xs text-[var(--color-muted-foreground)]">
                   {t("opencode.settings.passwordHint")}
                 </span>
-              </label>
-              <label className="block space-y-1 text-sm">
-                <span>{t("opencode.settings.defaultAgent")}</span>
-                <input
-                  value={opencode.defaultAgent ?? ""}
-                  onChange={(e) => setOpencode({ ...opencode, defaultAgent: e.target.value || null })}
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
-                />
-              </label>
-              <label className="block space-y-1 text-sm">
-                <span>{t("opencode.settings.defaultModel")}</span>
-                <input
-                  value={opencode.defaultModel ?? ""}
-                  onChange={(e) => setOpencode({ ...opencode, defaultModel: e.target.value || null })}
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
-                />
-              </label>
-              <label className="block space-y-1 text-sm md:col-span-2">
-                <span>{t("opencode.settings.projectPath")}</span>
-                <input
-                  value={opencode.projectPath ?? ""}
-                  onChange={(e) => setOpencode({ ...opencode, projectPath: e.target.value || null })}
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
-                />
               </label>
             </div>
             <label className="flex items-center gap-2 text-sm">

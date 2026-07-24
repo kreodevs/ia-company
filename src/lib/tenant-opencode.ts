@@ -8,9 +8,6 @@ export interface TenantOpencodeConfigPublic {
   baseUrl: string | null;
   username: string | null;
   password: string | null;
-  defaultAgent: string | null;
-  defaultModel: string | null;
-  projectPath: string | null;
   pollIntervalMs: number;
   maxWaitMs: number;
   autoApprovePermissions: boolean;
@@ -38,9 +35,6 @@ function toPublic(
     baseUrl: string | null;
     username: string | null;
     password: string | null;
-    defaultAgent: string | null;
-    defaultModel: string | null;
-    projectPath: string | null;
     pollIntervalMs: number;
     maxWaitMs: number;
     autoApprovePermissions: boolean;
@@ -54,9 +48,6 @@ function toPublic(
     baseUrl,
     username: row?.username ?? "opencode",
     password: maskSecret(password),
-    defaultAgent: row?.defaultAgent ?? null,
-    defaultModel: row?.defaultModel ?? null,
-    projectPath: row?.projectPath ?? null,
     pollIntervalMs: row?.pollIntervalMs ?? 5000,
     maxWaitMs: row?.maxWaitMs ?? 3_600_000,
     autoApprovePermissions: row?.autoApprovePermissions ?? true,
@@ -86,9 +77,9 @@ export async function resolveTenantOpencodeConfig(
     baseUrl: row.baseUrl.replace(/\/+$/, ""),
     username: row.username ?? "opencode",
     password,
-    defaultAgent: row.defaultAgent,
-    defaultModel: row.defaultModel,
-    projectPath: row.projectPath,
+    defaultAgent: null,
+    defaultModel: null,
+    projectPath: null,
     pollIntervalMs: row.pollIntervalMs,
     maxWaitMs: row.maxWaitMs,
     autoApprovePermissions: row.autoApprovePermissions,
@@ -102,9 +93,6 @@ export async function upsertTenantOpencodeConfig(
     baseUrl?: string | null;
     username?: string | null;
     password?: string | null;
-    defaultAgent?: string | null;
-    defaultModel?: string | null;
-    projectPath?: string | null;
     pollIntervalMs?: number;
     maxWaitMs?: number;
     autoApprovePermissions?: boolean;
@@ -127,9 +115,6 @@ export async function upsertTenantOpencodeConfig(
       ...(input.baseUrl !== undefined ? { baseUrl: input.baseUrl?.trim() || null } : {}),
       ...(input.username !== undefined ? { username: input.username?.trim() || "opencode" } : {}),
       ...(passwordUpdate !== undefined ? { password: passwordUpdate } : {}),
-      ...(input.defaultAgent !== undefined ? { defaultAgent: input.defaultAgent } : {}),
-      ...(input.defaultModel !== undefined ? { defaultModel: input.defaultModel } : {}),
-      ...(input.projectPath !== undefined ? { projectPath: input.projectPath?.trim() || null } : {}),
       ...(input.pollIntervalMs !== undefined ? { pollIntervalMs: input.pollIntervalMs } : {}),
       ...(input.maxWaitMs !== undefined ? { maxWaitMs: input.maxWaitMs } : {}),
       ...(input.autoApprovePermissions !== undefined
@@ -142,9 +127,6 @@ export async function upsertTenantOpencodeConfig(
       baseUrl: input.baseUrl?.trim() || null,
       username: input.username?.trim() || "opencode",
       password: passwordUpdate ?? null,
-      defaultAgent: input.defaultAgent ?? null,
-      defaultModel: input.defaultModel ?? null,
-      projectPath: input.projectPath?.trim() || null,
       pollIntervalMs: input.pollIntervalMs ?? 5000,
       maxWaitMs: input.maxWaitMs ?? 3_600_000,
       autoApprovePermissions: input.autoApprovePermissions ?? true,

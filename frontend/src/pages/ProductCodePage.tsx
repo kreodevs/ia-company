@@ -18,6 +18,7 @@ import Badge from "../components/ui/Badge";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import OpencodeDiffPanel from "../components/opencode/OpencodeDiffPanel";
 import OpencodeHistoryPanel from "../components/opencode/OpencodeHistoryPanel";
+import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -188,6 +189,8 @@ export default function ProductCodePage() {
         title={t("code.title", { name: product?.name ?? "Product" })}
         subtitle={t("code.subtitle")}
       />
+
+      {productId && <ProductOpencodeSettingsPanel productId={productId} />}
 
       {productId && <OpencodeHistoryPanel productId={productId} />}
 
