@@ -32,8 +32,8 @@ Two login modes at `/login`:
 |-------|-----------|---------|
 | `/agents` | `AgentsPage` | CRUD editor for agent personas, models, temperature, skills |
 | `/skills` | `SkillsPage` | CRUD editor for tenant skill prompts |
-| `/workflows` | `WorkflowsPage` | List workflows + create new empty workflow |
-| `/workflows/:id` | `WorkflowEditorPage` | React Flow canvas — drag agents, connect nodes, save & execute |
+| `/office/workflows` | `WorkflowsPage` | List workflows + create new empty workflow (Office nav) |
+| `/office/workflows/:id` | `WorkflowEditorPage` | React Flow canvas — drag agents, connect nodes, save & execute |
 | `/runs` | `RunsPage` | Historical execution runs with token/cost metrics |
 | `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
@@ -63,7 +63,7 @@ Touch targets use `min-h-11` (44px) on primary controls; forms stack vertically 
 - `AppHeader` — sticky header; full nav on `xl+`, hamburger drawer with overlay on mobile/tablet
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
-- `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/workflows` and admin `/admin/templates`)
+- `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/office/workflows` and admin `/admin/templates`)
 | `MarkdownDoc` — renders help articles (GFM markdown via `react-markdown` + `remark-gfm`); used per-section in Help with in-doc link navigation |
 | Help sections | `lib/markdown-sections.ts` splits tutorials by `##` / `###`; sidebar switches visible section container |
 

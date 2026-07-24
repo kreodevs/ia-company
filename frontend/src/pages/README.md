@@ -14,13 +14,15 @@ Route-level screens for the Auto-Company frontend.
 
 ## Tenant workspace
 
-Sidebar groups (see `AppSidebar.tsx`): **Office** (home), **Portfolio & ops** (ops → products → war room → decisions → runs), **Memoria** (consensus), **Catálogo IA** (workflows, agents, skills), **Administración** (settings, team). Default landing after login: `/office`.
+Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, **workflows**, war room, products), **Oficina de depuración** (runs, ops, agents, skills…), **Administración** (settings, team). Default landing after login: `/office`.
 
 | Route | Page |
 |-------|------|
 | `/` · `/office` | `OfficePage` | **Oficina bajo demanda** — coordinador, plan de equipo, presupuesto, actividad, ROI, servicios rápidos |
-| `/workflows` | `WorkflowsPage` |
-| `/workflows/:id` | `WorkflowEditorPage` |
+| `/office/encargos` | `OfficeEncargosPage` | Listado de encargos |
+| `/office/encargos/:runId` | `OfficeEncargoDetailPage` | Detalle de encargo |
+| `/office/workflows` | `WorkflowsPage` | Catálogo de flujos de agentes (Oficina) |
+| `/office/workflows/:id` | `WorkflowEditorPage` | Editor visual React Flow — pasos, agentes, ejecutar con objetivo |
 | `/agents` | `AgentsPage` | Lista de agentes (cards en desktop/tablet; select en móvil) + formulario de edición |
 | `/skills` | `SkillsPage` |
 | `/runs` | `RunsPage` |

@@ -48,6 +48,12 @@ function RedirectProductConsensus() {
   return <Navigate to={`/debug/products/${productId}/consensus`} replace />;
 }
 
+function RedirectWorkflowEditor() {
+  const { id } = useParams<{ id: string }>();
+  if (!id) return <Navigate to="/office/workflows" replace />;
+  return <Navigate to={`/office/workflows/${id}`} replace />;
+}
+
 function AppShell() {
   useDocumentLang();
 
@@ -77,16 +83,18 @@ function AppShell() {
               <Route path="office" element={<OfficePage />} />
               <Route path="office/encargos" element={<OfficeEncargosPage />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
+              <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="office/workflows" element={<WorkflowsPage />} />
               <Route path="agents" element={<AgentsPage />} />
               <Route path="skills" element={<SkillsPage />} />
-              <Route path="workflows" element={<WorkflowsPage />} />
-              <Route path="workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="workflows" element={<Navigate to="/office/workflows" replace />} />
+              <Route path="workflows/:id" element={<RedirectWorkflowEditor />} />
               <Route path="runs" element={<RunsPage />} />
               <Route path="runs/:id" element={<RunDetailPage />} />
               <Route path="debug/runs" element={<RunsPage />} />
               <Route path="debug/runs/:id" element={<RunDetailPage />} />
-              <Route path="debug/workflows" element={<WorkflowsPage />} />
-              <Route path="debug/workflows/:id" element={<WorkflowEditorPage />} />
+              <Route path="debug/workflows" element={<Navigate to="/office/workflows" replace />} />
+              <Route path="debug/workflows/:id" element={<RedirectWorkflowEditor />} />
               <Route path="debug/agents" element={<AgentsPage />} />
               <Route path="debug/skills" element={<SkillsPage />} />
               <Route path="debug/team" element={<TenantUsersPage />} />

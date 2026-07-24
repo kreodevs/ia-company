@@ -50,7 +50,7 @@ export default function WorkflowsPage() {
     try {
       const workflow = await api.workflows.create({ name: name.trim() });
       setName("");
-      await navigate(`/workflows/${workflow.id}`);
+      await navigate(`/office/workflows/${workflow.id}`);
     } finally {
       setCreating(false);
     }
@@ -132,7 +132,7 @@ export default function WorkflowsPage() {
             <li key={workflow.id}>
               <WorkflowTemplateCard
                 workflow={workflow}
-                editorPath={`/workflows/${workflow.id}`}
+                editorPath={`/office/workflows/${workflow.id}`}
                 deleting={deletingWorkflowId === workflow.id}
                 onDelete={() => void deleteWorkflow(workflow)}
               />

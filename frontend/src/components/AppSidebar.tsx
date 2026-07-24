@@ -46,6 +46,7 @@ import { cn } from "../lib/utils";
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin": LayoutDashboard,
   "/admin/templates": Layers,
+  "/office/workflows": GitBranch,
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
@@ -56,7 +57,6 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/debug/consensus": FileText,
   "/debug/ops": Activity,
   "/debug/decisions": ClipboardCheck,
-  "/debug/workflows": GitBranch,
   "/debug/agents": Bot,
   "/debug/skills": Sparkles,
   "/debug/team": Users,
@@ -333,6 +333,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
           { to: "/office/encargos", labelKey: "nav.encargos" },
+          { to: "/office/workflows", labelKey: "nav.workflows" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
         ],
@@ -346,7 +347,6 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         {
           labelKey: "nav.groupCatalog",
           children: [
-            { to: "/debug/workflows", labelKey: "nav.workflows" },
             { to: "/debug/agents", labelKey: "nav.agents" },
             { to: "/debug/skills", labelKey: "nav.skills" },
           ],

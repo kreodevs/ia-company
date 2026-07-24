@@ -177,7 +177,7 @@ Open **http://localhost:5173**. After tenant login you land on **`/office`**.
 | `/debug/consensus` | Tenant consensus |
 | `/debug/ops` | KPIs and active schedules |
 | `/debug/decisions` | Go/no-go proposals |
-| `/debug/workflows` · `/debug/workflows/:id` | React Flow visual editor |
+| `/office/workflows` · `/office/workflows/:id` | React Flow visual editor (Office) |
 | `/debug/agents` · `/debug/skills` | AI catalog |
 | `/debug/team` | Tenant users (admin) |
 
@@ -276,7 +276,7 @@ Expert persona: system prompt, model, temperature, linked skills.
 
 Reusable knowledge blocks injected into prompts.
 
-### Workflows (`/debug/workflows`)
+### Workflows (`/office/workflows`)
 
 Visual graph: agent order, shared memory, manual execute from editor.
 

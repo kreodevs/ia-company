@@ -84,7 +84,7 @@ export default function WorkflowEditorPage() {
           };
 
       const { runId } = await api.workflows.execute(workflow.id, body);
-      navigate(`/runs/${runId}`);
+      navigate(`/debug/runs/${runId}`);
     } finally {
       setExecuting(false);
     }
@@ -98,7 +98,7 @@ export default function WorkflowEditorPage() {
     <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
       <PageHeader
         eyebrow={
-          <Link to="/workflows" className="interactive text-[var(--color-primary)] hover:underline">
+          <Link to="/office/workflows" className="interactive text-[var(--color-primary)] hover:underline">
             ← {t("nav.workflows")}
           </Link>
         }

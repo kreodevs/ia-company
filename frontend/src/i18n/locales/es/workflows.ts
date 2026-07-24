@@ -2,7 +2,8 @@ export const workflows = {
   list: {
     loading: "Cargando workflows…",
     title: "Workflows",
-    subtitle: "Pipelines de agentes para tu organización. Abre un workflow para editar pasos y ejecutarlo.",
+    subtitle:
+      "Flujos de agentes reutilizables. El coordinador elige cuál ejecutar según el objetivo del encargo; aquí defines los pasos y agentes de cada flujo.",
     searchPlaceholder: "Buscar workflows o agentes…",
     newNamePlaceholder: "Nombre del nuevo workflow",
     createAndEdit: "Crear y editar",
