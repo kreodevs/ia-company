@@ -127,15 +127,12 @@ export default function SettingsPage() {
     setTestingOpencode(true);
     setOpencodeTestResult(null);
     try {
-      if (opencodePassword) {
-        await api.tenantSettings.updateOpencode({
-          enabled: opencode.enabled,
-          baseUrl: opencode.baseUrl ?? null,
-          username: opencode.username ?? null,
-          password: opencodePassword,
-        });
-      }
-      const result = await api.tenantSettings.testOpencode();
+      const result = await api.tenantSettings.testOpencode({
+        enabled: opencode.enabled,
+        baseUrl: opencode.baseUrl ?? null,
+        username: opencode.username ?? null,
+        password: opencodePassword || undefined,
+      });
       setOpencodeTestResult(
         result.ok
           ? `${t("opencode.settings.testOk")}${result.version ? ` (${result.version})` : ""}`
@@ -352,6 +349,9 @@ export default function SettingsPage() {
                   placeholder="https://opencode.example.com"
                   className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2"
                 />
+                <span className="text-xs text-[var(--color-muted-foreground)]">
+                  {t("opencode.settings.serverReachHint")}
+                </span>
               </label>
               <label className="block space-y-1 text-sm">
                 <span>{t("opencode.settings.username")}</span>

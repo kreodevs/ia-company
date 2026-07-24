@@ -22,6 +22,8 @@ export const opencode = {
     notConfigured: "Enable OpenCode and set URL + password to delegate implementation",
     platformDisabled:
       "OpenCode está desactivado a nivel plataforma. Pide al superadmin que lo habilite en Admin → Configuración de plataforma → OpenCode.",
+    serverReachHint:
+      "La prueba de conexión se ejecuta desde el servidor API de Auto-Company, no desde tu navegador. Usa una URL accesible desde ese servidor (localhost solo funciona si OpenCode corre en el mismo contenedor).",
     productHint:
       "Agent, model, and project path are configured per product on the product code page.",
   },

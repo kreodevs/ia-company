@@ -1,3 +1,8 @@
+import {
+  formatHttpFetchError,
+  httpFetch,
+  opencodeInsecureTlsEnabled,
+} from "./http-fetch.js";
 import type { TenantOpencodeConfigResolved } from "./tenant-opencode.js";
 
 export interface OpencodeSession {
@@ -25,28 +30,38 @@ export class OpencodeClient {
 
   private async request<T>(
     path: string,
-    init?: RequestInit & { expectEmpty?: boolean },
+    init?: { method?: string; body?: string; expectEmpty?: boolean },
   ): Promise<T> {
-    const res = await fetch(`${this.baseUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: this.authHeader,
-        Accept: "application/json",
-        ...(init?.body ? { "Content-Type": "application/json" } : {}),
-        ...(init?.headers ?? {}),
-      },
-    });
+    const url = `${this.baseUrl}${path}`;
+    try {
+      const res = await httpFetch(url, {
+        method: init?.method,
+        body: init?.body,
+        headers: {
+          Authorization: this.authHeader,
+          Accept: "application/json",
+          ...(init?.body ? { "Content-Type": "application/json" } : {}),
+        },
+        timeoutMs: 15_000,
+        insecureTls: opencodeInsecureTlsEnabled(),
+      });
 
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`OpenCode ${init?.method ?? "GET"} ${path} failed (${res.status}): ${body.slice(0, 500)}`);
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new Error(
+          `OpenCode ${init?.method ?? "GET"} ${path} failed (${res.status}): ${body.slice(0, 500)}`,
+        );
+      }
+
+      if (init?.expectEmpty || res.status === 204) {
+        return undefined as T;
+      }
+
+      return await res.json<T>();
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("OpenCode ")) throw err;
+      throw new Error(formatHttpFetchError(err, url));
     }
-
-    if (init?.expectEmpty || res.status === 204) {
-      return undefined as T;
-    }
-
-    return (await res.json()) as T;
   }
 
   async health(): Promise<{ healthy: boolean; version?: string }> {

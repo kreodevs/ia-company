@@ -25,6 +25,8 @@ Run pauses with status `AWAITING_USER`. Tenant admin chooses:
 ## Deploy notes
 
 - Worker must reach the tenant OpenCode URL (server-to-server).
+- The **Test connection** button also runs from the API container — not from the user's browser. `localhost` / `127.0.0.1` only work if OpenCode runs in the same container as the API/worker.
+- For self-signed HTTPS, set `OPENCODE_INSECURE_TLS=true` on the **api** and **worker** services.
 - Only `ENCRYPTION_KEY` / `JWT_SECRET` stays in platform env; tenant credentials live in DB encrypted.
 - Apply migration `20250722180000_opencode_integration`.
 - See also `docs/fullstack/opencode-bridge.md` for module map and API list.

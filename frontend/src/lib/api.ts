@@ -1386,9 +1386,15 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(body),
       }),
-    testOpencode: () =>
+    testOpencode: (body?: {
+      enabled?: boolean;
+      baseUrl?: string | null;
+      username?: string | null;
+      password?: string | null;
+    }) =>
       request<{ ok: boolean; version?: string; error?: string }>("/tenant/settings/opencode/test", {
         method: "POST",
+        body: JSON.stringify(body ?? {}),
       }),
     getIntegrations: () => request<TenantIntegrationsConfig>("/tenant/settings/integrations"),
     updateIntegrations: (body: Partial<TenantIntegrationsConfig> & {

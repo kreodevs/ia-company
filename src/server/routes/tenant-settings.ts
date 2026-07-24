@@ -227,11 +227,18 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
     }
   });
 
-  app.post("/tenant/settings/opencode/test", async (request, reply) => {
+  app.post<{
+    Body: {
+      enabled?: boolean;
+      baseUrl?: string | null;
+      username?: string | null;
+      password?: string | null;
+    };
+  }>("/tenant/settings/opencode/test", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { testTenantOpencodeConnection } = await import("../../lib/tenant-opencode.js");
-      return testTenantOpencodeConnection(tenantId);
+      return testTenantOpencodeConnection(tenantId, request.body ?? {});
     } catch (err) {
       return handleRouteError(reply, err);
     }

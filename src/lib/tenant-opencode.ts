@@ -70,27 +70,54 @@ export async function getTenantOpencodeConfigPublic(
 export async function resolveTenantOpencodeConfig(
   tenantId: string,
 ): Promise<TenantOpencodeConfigResolved | null> {
+  return resolveOpencodeConfigForTenant(tenantId);
+}
+
+async function resolveOpencodeConfigForTenant(
+  tenantId: string,
+  overrides?: {
+    enabled?: boolean;
+    baseUrl?: string | null;
+    username?: string | null;
+    password?: string | null;
+  },
+): Promise<TenantOpencodeConfigResolved | null> {
   const platform = getPlatformSettingsSync();
   if (!platform.opencodeEnabled) return null;
 
   const row = await prisma.tenantOpencodeConfig.findUnique({ where: { tenantId } });
-  if (!row?.enabled || !row.baseUrl) return null;
+  const enabled = overrides?.enabled ?? row?.enabled ?? false;
+  const baseUrlRaw = overrides?.baseUrl?.trim() || row?.baseUrl;
+  if (!enabled || !baseUrlRaw) return null;
 
-  const password = decryptSecret(row.password);
+  let baseUrl: string;
+  try {
+    const parsed = new URL(baseUrlRaw);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    baseUrl = baseUrlRaw.replace(/\/+$/, "");
+  } catch {
+    return null;
+  }
+
+  const overridePassword = overrides?.password?.trim();
+  const password =
+    overridePassword && overridePassword !== "••••••••"
+      ? overridePassword
+      : decryptSecret(row?.password);
   if (!password) return null;
 
   return {
     tenantId,
     enabled: true,
-    baseUrl: row.baseUrl.replace(/\/+$/, ""),
-    username: row.username ?? "opencode",
+    baseUrl,
+    username: overrides?.username?.trim() || row?.username || "opencode",
     password,
     defaultAgent: null,
     defaultModel: null,
     projectPath: null,
-    pollIntervalMs: row.pollIntervalMs,
-    maxWaitMs: row.maxWaitMs,
-    autoApprovePermissions: row.autoApprovePermissions,
+    pollIntervalMs: row?.pollIntervalMs ?? platform.opencodeDefaultPollIntervalMs,
+    maxWaitMs: row?.maxWaitMs ?? platform.opencodeDefaultMaxWaitMs,
+    autoApprovePermissions: row?.autoApprovePermissions ?? true,
   };
 }
 
@@ -149,24 +176,46 @@ export async function upsertTenantOpencodeConfig(
   return toPublic(tenantId, platform.opencodeEnabled, fresh ?? row);
 }
 
-export async function testTenantOpencodeConnection(tenantId: string): Promise<{
+export async function testTenantOpencodeConnection(
+  tenantId: string,
+  overrides?: {
+    enabled?: boolean;
+    baseUrl?: string | null;
+    username?: string | null;
+    password?: string | null;
+  },
+): Promise<{
   ok: boolean;
   version?: string;
   error?: string;
 }> {
-  const config = await resolveTenantOpencodeConfig(tenantId);
+  const platform = getPlatformSettingsSync();
+  if (!platform.opencodeEnabled) {
+    return { ok: false, error: "OpenCode is disabled at platform level — contact your superadmin" };
+  }
+
+  const config = await resolveOpencodeConfigForTenant(tenantId, overrides);
   if (!config) {
-    const platform = getPlatformSettingsSync();
-    if (!platform.opencodeEnabled) {
-      return { ok: false, error: "OpenCode is disabled at platform level — contact your superadmin" };
+    if (overrides?.baseUrl?.trim()) {
+      try {
+        const parsed = new URL(overrides.baseUrl.trim());
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+          return { ok: false, error: "OpenCode base URL must start with http:// or https://" };
+        }
+      } catch {
+        return { ok: false, error: "Invalid OpenCode base URL" };
+      }
     }
-    return { ok: false, error: "OpenCode is not enabled or missing URL/password" };
+    return { ok: false, error: "Enable OpenCode and provide URL + password before testing" };
   }
 
   try {
     const client = new OpencodeClient(config);
     const health = await client.health();
-    return { ok: health.healthy, version: health.version };
+    if (!health.healthy) {
+      return { ok: false, error: "OpenCode health check returned unhealthy" };
+    }
+    return { ok: true, version: health.version };
   } catch (err) {
     return {
       ok: false,
