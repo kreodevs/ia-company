@@ -114,7 +114,12 @@ export default function OfficeEncargoDetailPage() {
             <dt>{t("office.encargos.product")}</dt>
             <dd>{detail.productName}</dd>
           </div>
-        ) : null}
+        ) : (
+          <div>
+            <dt>{t("office.encargos.product")}</dt>
+            <dd>{t("office.encargos.scopeCompany")}</dd>
+          </div>
+        )}
         {detail.teamAgents.length > 0 ? (
           <div>
             <dt>{t("office.encargos.team")}</dt>

@@ -99,17 +99,19 @@ export default function OfficePage() {
           <h1 className="office-title">{t("office.title")}</h1>
           <p className="office-subtitle">{t("office.subtitle")}</p>
         </div>
-        <div
-          className="office-mode-pill"
-          data-mode={dashboard.mode}
-          title={t(`office.modeHint.${dashboard.mode}`)}
-        >
-          <span aria-hidden>●</span>
-          {t(`office.mode.${dashboard.mode}`)}
+        <div className="office-header-actions">
+          <div
+            className="office-mode-pill"
+            data-mode={dashboard.mode}
+            title={t(`office.modeHint.${dashboard.mode}`)}
+          >
+            <span aria-hidden>●</span>
+            {t(`office.mode.${dashboard.mode}`)}
+          </div>
+          <Link to="/office/encargos" className="office-link-btn">
+            {t("nav.encargos")}
+          </Link>
         </div>
-        <Link to="/office/encargos" className="office-link-btn">
-          {t("nav.encargos")}
-        </Link>
       </header>
 
       <NotificationPermissionPrompt />
@@ -225,9 +227,9 @@ export default function OfficePage() {
         </aside>
 
         <section className="office-task-panel office-chat-panel">
-          <div className="office-task-meta" style={{ marginBottom: "0.75rem" }}>
-            <div>
-              <label htmlFor="office-product">{t("office.task.productLabel")}</label>
+          <div className="office-scope-bar">
+            <div className="office-scope-select-wrap">
+              <label htmlFor="office-product">{t("office.task.scope")}</label>
               <select
                 id="office-product"
                 className="office-task-select"
@@ -242,6 +244,13 @@ export default function OfficePage() {
                 ))}
               </select>
             </div>
+            <p className="office-scope-hint">
+              {productId
+                ? t("office.task.scopeProductHint", {
+                    name: products.find((p) => p.id === productId)?.name ?? "",
+                  })
+                : t("office.task.scopeCompanyHint")}
+            </p>
           </div>
           <CoordinatorChat
             key={chatSeed ?? "default"}

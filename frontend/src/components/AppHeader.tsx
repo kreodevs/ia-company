@@ -54,14 +54,16 @@ export default function AppHeader({
             </svg>
           </button>
 
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
-            {activeTenant ? <NotificationBell enabled /> : null}
-            <div className="min-w-0 max-w-[min(100%,14rem)] sm:max-w-xs">
+          <div className="app-topbar-actions">
+            <div className="app-topbar-tenant min-w-0">
               <TenantImpersonationSelect />
             </div>
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            <Button variant="secondary" onClick={() => void logout()} className="hidden sm:inline-flex">
+            <div className="app-topbar-prefs hidden md:flex">
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+            </div>
+            {activeTenant ? <NotificationBell enabled /> : null}
+            <Button variant="secondary" onClick={() => void logout()} className="hidden sm:inline-flex shrink-0">
               {t("common.logout")}
             </Button>
           </div>

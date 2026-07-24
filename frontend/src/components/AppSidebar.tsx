@@ -23,6 +23,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Button from "./ui/Button";
+import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeSwitcher from "./ThemeSwitcher";
 import OfficeSpendWidget from "./office/OfficeSpendWidget";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -365,6 +367,12 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
           <div className="app-sidebar-footer space-y-2">
             {showTenantNav ? <OfficeSpendWidget collapsed={collapsed} /> : null}
+            {!collapsed ? (
+              <div className="app-sidebar-mobile-prefs flex flex-col gap-2 border-t border-[var(--surface-sidebar-border)] pt-2 md:hidden">
+                <ThemeSwitcher />
+                <LanguageSwitcher />
+              </div>
+            ) : null}
             <button
               type="button"
               onClick={toggleCollapsed}

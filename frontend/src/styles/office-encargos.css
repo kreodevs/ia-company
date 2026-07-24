@@ -24,6 +24,32 @@
   color: #94a3b8;
 }
 
+@media (max-width: 640px) {
+  .office-encargos-filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .office-encargos-filter {
+    flex-shrink: 0;
+  }
+
+  .office-encargo-detail-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .office-encargo-detail-toolbar .office-link-btn {
+    justify-content: center;
+  }
+
+  .office-encargo-detail-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .office-encargos-filters {
   display: flex;
   flex-wrap: wrap;
@@ -278,6 +304,58 @@
 .office-rich-markdown td {
   border: 1px solid rgba(148, 163, 184, 0.2);
   padding: 0.35rem 0.5rem;
+}
+
+.office-rich-markdown h1,
+.office-rich-markdown h2,
+.office-rich-markdown h3,
+.office-rich-markdown h4 {
+  font-family: var(--font-display);
+  color: var(--foreground);
+  margin: 1.1rem 0 0.55rem;
+  line-height: 1.25;
+}
+
+.office-rich-markdown h1 { font-size: 1.35rem; }
+.office-rich-markdown h2 { font-size: 1.15rem; }
+.office-rich-markdown h3 { font-size: 1rem; }
+
+.office-rich-markdown p {
+  margin: 0.55rem 0;
+}
+
+.office-rich-markdown ul,
+.office-rich-markdown ol {
+  margin: 0.55rem 0;
+  padding-left: 1.25rem;
+}
+
+.office-rich-markdown li {
+  margin: 0.25rem 0;
+}
+
+.office-rich-markdown strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.office-rich-markdown blockquote {
+  margin: 0.75rem 0;
+  padding-left: 0.85rem;
+  border-left: 3px solid rgba(56, 189, 248, 0.45);
+  color: #94a3b8;
+}
+
+.office-rich-markdown hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.office-rich-markdown a {
+  color: #7dd3fc;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .office-header {

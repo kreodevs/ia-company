@@ -65,6 +65,12 @@ export default function TeamProposalCard({
       </div>
       <div className="office-estimates">
         <div className="office-estimate">
+          <p className="office-estimate-label">{t("office.task.scope")}</p>
+          <p className="office-estimate-value" style={{ fontSize: "0.78rem", fontWeight: 500 }}>
+            {plan.productName ?? t("office.task.scopeCompany")}
+          </p>
+        </div>
+        <div className="office-estimate">
           <p className="office-estimate-label">{t("office.task.estimatedCost")}</p>
           <p className="office-estimate-value">
             {t("office.task.costRange", {
