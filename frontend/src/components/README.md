@@ -16,7 +16,7 @@ UI built with **Kreo registry components** styled via the **Paperclip Dark Warm*
 | Shared widgets | `ThemeSwitcher.tsx` | Stripe HDS Light / Paperclip Warm / Slash theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
-| Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
+| Layout | `AppHeader.tsx` | Fixed top bar (tenant, theme, language, logout); solid at top, translucent + blur on scroll |
 
 ## Themes
 

@@ -25,12 +25,17 @@ export default function AppHeader({
 
   useEffect(() => {
     const syncScrollState = () => {
-      setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+      setScrolled(y > SCROLL_THRESHOLD_PX);
     };
 
     syncScrollState();
     window.addEventListener("scroll", syncScrollState, { passive: true });
-    return () => window.removeEventListener("scroll", syncScrollState);
+    document.addEventListener("scroll", syncScrollState, { passive: true, capture: true });
+    return () => {
+      window.removeEventListener("scroll", syncScrollState);
+      document.removeEventListener("scroll", syncScrollState, { capture: true });
+    };
   }, []);
 
   return (
@@ -84,6 +89,7 @@ export default function AppHeader({
           </div>
         </div>
       </header>
+      <div className="app-topbar-spacer" aria-hidden="true" />
     </>
   );
 }

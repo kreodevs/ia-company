@@ -174,7 +174,7 @@
   /* Shell / navigation */
   --surface-header: var(--charcoal);
   --surface-header-border: var(--dark-border);
-  --surface-header-scrolled: rgba(20, 20, 19, 0.88);
+  --surface-header-scrolled: rgba(20, 20, 19, 0.78);
   --surface-header-border-scrolled: rgba(47, 44, 40, 0.85);
   --surface-header-shadow-scrolled: 0 1px 0 rgba(47, 44, 40, 0.6), 0 8px 28px rgba(0, 0, 0, 0.35);
   --nav-link-color: var(--stone-muted);

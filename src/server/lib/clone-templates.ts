@@ -341,10 +341,18 @@ export async function ensurePlatformWorkflowOnTenant(tenantId: string, workflowN
   });
   if (existing) return existing;
 
-  const platformWorkflow = await prisma.workflow.findFirst({
+  let platformWorkflow = await prisma.workflow.findFirst({
     where: { tenantId: null, name: workflowName },
     include: { steps: true, edges: true },
   });
+  if (!platformWorkflow) {
+    const { ensurePlatformWorkflowByName } = await import("../../lib/seed-platform.js");
+    await ensurePlatformWorkflowByName(prisma, workflowName);
+    platformWorkflow = await prisma.workflow.findFirst({
+      where: { tenantId: null, name: workflowName },
+      include: { steps: true, edges: true },
+    });
+  }
   if (!platformWorkflow) return null;
 
   const [platformAgents, tenantAgents] = await Promise.all([

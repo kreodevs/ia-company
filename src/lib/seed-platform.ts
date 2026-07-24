@@ -205,6 +205,40 @@ const DEFAULT_WORKFLOWS = [
   },
 ];
 
+async function buildPlatformAgentByName(client: PrismaClient): Promise<Map<string, string>> {
+  const platformAgents = await client.agent.findMany({
+    where: { tenantId: null },
+    select: { id: true, name: true },
+  });
+  return new Map(platformAgents.map((agent) => [agent.name, agent.id]));
+}
+
+/** Upserts a single platform workflow from DEFAULT_WORKFLOWS (idempotent). */
+export async function ensurePlatformWorkflowByName(
+  client: PrismaClient,
+  workflowName: string,
+): Promise<{ id: string; name: string } | null> {
+  const definition = DEFAULT_WORKFLOWS.find((workflow) => workflow.name === workflowName);
+  if (!definition) return null;
+
+  let agentByName = await buildPlatformAgentByName(client);
+  const missingAgents = definition.steps.filter((step) => !agentByName.has(step));
+  if (missingAgents.length > 0) {
+    await seedPlatformTemplates(client);
+    agentByName = await buildPlatformAgentByName(client);
+  }
+
+  const stillMissing = definition.steps.filter((step) => !agentByName.has(step));
+  if (stillMissing.length > 0) {
+    throw new Error(
+      `Cannot seed workflow "${workflowName}": missing platform agents: ${stillMissing.join(", ")}`,
+    );
+  }
+
+  const workflow = await upsertPlatformWorkflow(client, { ...definition, agentByName });
+  return { id: workflow.id, name: workflow.name };
+}
+
 export async function seedPlatformTemplates(client: PrismaClient) {
   await warmPlatformSettingsCache();
   const skillRecords = await loadSkills();

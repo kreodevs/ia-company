@@ -146,7 +146,7 @@
   /* Shell / navigation */
   --surface-header: var(--color-obsidian);
   --surface-header-border: var(--color-graphite);
-  --surface-header-scrolled: rgba(8, 8, 10, 0.82);
+  --surface-header-scrolled: rgba(8, 8, 10, 0.72);
   --surface-header-border-scrolled: rgba(28, 29, 34, 0.72);
   --surface-header-shadow-scrolled: 0 1px 0 rgba(28, 29, 34, 0.55), 0 8px 28px rgba(0, 0, 0, 0.35);
   --nav-link-color: var(--color-fog);

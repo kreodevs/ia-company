@@ -151,13 +151,18 @@ html[data-sidebar-collapsed="true"] .app-layout-column {
 }
 
 .app-topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  right: 0;
+  left: var(--sidebar-width);
   z-index: 30;
   border-bottom: 1px solid var(--surface-header-border);
   background: var(--surface-header);
   padding-top: env(safe-area-inset-top, 0px);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   transition:
+    left 200ms ease,
     background-color 220ms ease,
     border-color 220ms ease,
     box-shadow 220ms ease,
@@ -165,9 +170,18 @@ html[data-sidebar-collapsed="true"] .app-layout-column {
     -webkit-backdrop-filter 220ms ease;
 }
 
+html[data-sidebar-collapsed="true"] .app-topbar {
+  left: var(--sidebar-width-collapsed);
+}
+
+.app-topbar-spacer {
+  flex-shrink: 0;
+  height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+}
+
 .app-topbar--scrolled {
   border-bottom-color: var(--surface-header-border-scrolled, var(--surface-header-border));
-  background: var(--surface-header-scrolled, color-mix(in srgb, var(--surface-header) 82%, transparent));
+  background: var(--surface-header-scrolled, color-mix(in srgb, var(--surface-header) 78%, transparent));
   box-shadow: var(--surface-header-shadow-scrolled, none);
   -webkit-backdrop-filter: blur(14px) saturate(1.25);
   backdrop-filter: blur(14px) saturate(1.25);
@@ -482,6 +496,10 @@ html[data-sidebar-collapsed="true"] .app-sidebar {
 @media (max-width: 1023px) {
   .app-layout-column {
     margin-left: 0;
+  }
+
+  .app-topbar {
+    left: 0;
   }
 
   .app-sidebar {

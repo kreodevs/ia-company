@@ -181,10 +181,10 @@
   --color-surface: var(--background-secondary);
 
   /* Shell / navigation */
-  --surface-header: rgba(255, 255, 255, 0.82);
+  --surface-header: var(--surface-white);
   --surface-header-border: var(--quiet-surface);
-  --surface-header-scrolled: rgba(255, 255, 255, 0.88);
-  --surface-header-border-scrolled: rgba(229, 237, 245, 0.95);
+  --surface-header-scrolled: rgba(255, 255, 255, 0.76);
+  --surface-header-border-scrolled: rgba(229, 237, 245, 0.85);
   --surface-header-shadow-scrolled: var(--shadow-sm-bottom);
   --nav-link-color: var(--slate-body);
   --nav-link-hover-bg: var(--pale-background);
