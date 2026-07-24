@@ -21,7 +21,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Office** (home), **Portfolio & ops** (o
 | `/` · `/office` | `OfficePage` | **Oficina bajo demanda** — coordinador, plan de equipo, presupuesto, actividad, ROI, servicios rápidos |
 | `/workflows` | `WorkflowsPage` |
 | `/workflows/:id` | `WorkflowEditorPage` |
-| `/agents` | `AgentsPage` |
+| `/agents` | `AgentsPage` | Lista de agentes (cards en desktop/tablet; select en móvil) + formulario de edición |
 | `/skills` | `SkillsPage` |
 | `/runs` | `RunsPage` |
 | `/runs/:id` | `RunDetailPage` |

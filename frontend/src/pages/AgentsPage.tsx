@@ -7,6 +7,7 @@ import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import Select from "../components/ui/Select";
 
 export default function AgentsPage() {
   const { t } = useTranslation();
@@ -48,7 +49,28 @@ export default function AgentsPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <section className="min-w-0">
+        {!creating && (
+          <section className="min-w-0 md:hidden">
+            <Select
+              value={selected?.id ?? ""}
+              onChange={(id) => {
+                const agent = agents.find((a) => a.id === id) ?? null;
+                setSelected(agent);
+                setCreating(false);
+              }}
+              ariaLabel={t("workflows.agents.selectAgent")}
+              options={[
+                { value: "", label: t("workflows.agents.selectToEdit"), disabled: true },
+                ...agents.map((agent) => ({
+                  value: agent.id,
+                  label: agent.name,
+                })),
+              ]}
+            />
+          </section>
+        )}
+
+        <section className="min-w-0 hidden md:block">
           <ul className="space-y-2">
             {agents.map((agent) => (
               <li key={agent.id}>
@@ -78,6 +100,7 @@ export default function AgentsPage() {
           {(selected || creating) && (
             <Card>
               <AgentForm
+                key={creating ? "new" : (selected?.id ?? "none")}
                 agent={creating ? null : selected}
                 skills={skills}
                 onSave={() => {

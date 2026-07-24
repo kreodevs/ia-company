@@ -35,6 +35,7 @@ export const workflows = {
     title: "Agentes",
     newAgent: "Nuevo agente",
     selectToEdit: "Selecciona un agente para editar",
+    selectAgent: "Seleccionar agente",
     editAgent: "Editar agente",
     newAgentForm: "Nuevo agente",
     platformLlmHint: "El proveedor LLM lo define el superadmin en Configuración de plataforma. Todos los agentes usan ese proveedor compartido.",

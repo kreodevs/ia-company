@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type Agent, type Skill } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
@@ -10,9 +10,8 @@ interface AgentFormProps {
   onCancel: () => void;
 }
 
-export default function AgentForm({ agent, skills, onSave, onCancel }: AgentFormProps) {
-  const { t } = useTranslation();
-  const [form, setForm] = useState({
+function agentToForm(agent: Agent | null) {
+  return {
     name: agent?.name ?? "",
     role: agent?.role ?? "",
     systemPrompt: agent?.systemPrompt ?? "",
@@ -20,9 +19,19 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
     temperature: agent?.temperature ?? 0.7,
     isActive: agent?.isActive ?? true,
     skillIds: agent?.skills.map((s) => s.skill.id) ?? [],
-  });
+  };
+}
+
+export default function AgentForm({ agent, skills, onSave, onCancel }: AgentFormProps) {
+  const { t } = useTranslation();
+  const [form, setForm] = useState(() => agentToForm(agent));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setForm(agentToForm(agent));
+    setError(null);
+  }, [agent]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {

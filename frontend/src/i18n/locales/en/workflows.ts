@@ -35,6 +35,7 @@ export const workflows = {
     title: "Agents",
     newAgent: "New agent",
     selectToEdit: "Select an agent to edit",
+    selectAgent: "Select agent",
     editAgent: "Edit Agent",
     newAgentForm: "New Agent",
     platformLlmHint:
