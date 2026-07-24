@@ -68,6 +68,7 @@ export default function OfficeEncargoDetailPage() {
 
   const showFinal = tab === "final";
   const markdown = showFinal ? detail.finalReport : (selectedDoc?.markdown ?? "");
+  const showDocSidebar = tab === "documents" && documents.length > 0;
 
   return (
     <div className="office-page office-encargo-detail">
@@ -154,8 +155,10 @@ export default function OfficeEncargoDetailPage() {
         </button>
       </div>
 
-      <div className="office-encargo-detail-layout">
-        {tab === "documents" && documents.length > 0 ? (
+      <div
+        className={`office-encargo-detail-layout ${showDocSidebar ? "" : "office-encargo-detail-layout--full"}`}
+      >
+        {showDocSidebar ? (
           <aside className="office-panel office-encargo-doc-list">
             <h2 className="office-panel-title">{t("office.encargos.documentsTitle")}</h2>
             <ul>

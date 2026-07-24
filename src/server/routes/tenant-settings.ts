@@ -239,4 +239,41 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get("/tenant/settings/integrations", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getTenantIntegrationsPublic } = await import("../../lib/tenant-integrations.js");
+      return getTenantIntegrationsPublic(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{
+    Body: {
+      githubToken?: string | null;
+      githubUsername?: string | null;
+    };
+  }>("/tenant/settings/integrations", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { upsertTenantIntegrations } = await import("../../lib/tenant-integrations.js");
+      const config = await upsertTenantIntegrations(tenantId, request.body);
+      await logAudit(request, "tenant.integrations.update", { tenantId });
+      return config;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post("/tenant/settings/integrations/github/test", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { testTenantGithubConnection } = await import("../../lib/tenant-integrations.js");
+      return testTenantGithubConnection(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

@@ -8,6 +8,7 @@ export const settings = {
     notifications: "Notificaciones",
     limits: "Límites",
     schedules: "Programaciones",
+    integrations: "Integraciones",
   },
   interests: {
     heading: "Preferencias de investigación",
@@ -28,6 +29,18 @@ export const settings = {
     defaultModel: "Modelo predeterminado",
     maxCostPerRun: "Coste máximo por ejecución (USD)",
     save: "Guardar preferencias LLM",
+  },
+  integrations: {
+    title: "Integraciones",
+    subtitle:
+      "Conecta servicios externos del tenant. El token de GitHub permite clonar repos privados y enriquecer el intake de productos.",
+    configured: "GitHub conectado como @{{username}}",
+    notConfigured: "GitHub no configurado — necesario para repos privados",
+    githubToken: "Personal Access Token (GitHub)",
+    githubTokenHint:
+      "Scope recomendado: repo (privados) y read:org si aplica. Se guarda cifrado por tenant.",
+    save: "Guardar integraciones",
+    testGithub: "Probar conexión GitHub",
   },
   usage: {
     title: "Uso mensual",

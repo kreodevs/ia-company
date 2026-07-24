@@ -98,6 +98,11 @@ export const products = {
     slugHint: "Workspace: {{path}}",
     descriptionLabel: "Descripción (opcional)",
     descriptionPlaceholder: "Proxy inteligente de coste/latencia para LLMs…",
+    githubUrlLabel: "URL del repositorio GitHub (opcional)",
+    githubUrlHint:
+      "Configura tu token en Ajustes → Integraciones para repos privados. El equipo puede clonar el código y enriquecer el perfil del producto.",
+    cloneRepo: "Clonar repo al workspace si está vacío",
+    runIntake: "Enriquecer con el equipo (workflow product-intake)",
     phaseLabel: "Fase inicial",
     focusAfter: "Enfocar producto tras registrar",
     submitRegister: "Registrar producto",

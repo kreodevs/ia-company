@@ -8,6 +8,11 @@ import {
 } from "../server/lib/clone-templates.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { productConvergencePromptSection } from "./convergence.js";
+import {
+  loadProductProfile,
+  productProfileToInitialMemory,
+} from "./product-profile.js";
+import { loadProductConsensusInitialMemory } from "./product-consensus.js";
 
 export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
 
@@ -195,7 +200,15 @@ export async function launchProductWork(
 ): Promise<{ runId: string; workflowId: string; workflowName: string }> {
   const product = await prisma.tenantProduct.findFirst({
     where: { id: productId, tenantId },
-    select: { id: true, slug: true, name: true, phase: true },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      phase: true,
+      description: true,
+      githubRepoUrl: true,
+      metadata: true,
+    },
   });
   if (!product) {
     throw new Error("Product not found");
@@ -213,7 +226,10 @@ export async function launchProductWork(
   }
 
   const taskText = input.task?.trim();
-  const initialMemory = {
+  const profile = await loadProductProfile(product.id);
+  const profileMemory = productProfileToInitialMemory(product, profile);
+
+  const consensusMemory = await loadProductConsensusInitialMemory(tenantId, product.id, {
     ...(taskText
       ? {
           task: taskText,
@@ -227,7 +243,10 @@ export async function launchProductWork(
     focusProductSlug: product.slug,
     focusProductName: product.name,
     productId: product.id,
-  };
+    ...profileMemory,
+  });
+
+  const initialMemory = consensusMemory;
 
   const runId = await executeWorkflowInBackground(workflow.id, {
     tenantId,

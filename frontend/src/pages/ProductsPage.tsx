@@ -145,13 +145,14 @@ export default function ProductsPage() {
       <AddProductDialog
         open={addProductOpen}
         onClose={() => setAddProductOpen(false)}
-        onCreated={(product, mode) => {
+        onCreated={(product, mode, meta) => {
           toast.success(
             t(mode === "bootstrap" ? "products.toast.productBootstrapped" : "products.toast.productRegistered"),
           );
           void load().then(() => {
             setTab("active");
-            navigate(`/war-room/${product.id}`);
+            const runQuery = meta?.intakeRunId ? `?run=${meta.intakeRunId}` : "";
+            navigate(`/war-room/${product.id}${runQuery}`);
           });
         }}
       />

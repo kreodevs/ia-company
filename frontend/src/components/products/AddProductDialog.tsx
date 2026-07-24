@@ -22,7 +22,11 @@ function slugifyName(name: string): string {
 export interface AddProductDialogProps {
   open: boolean;
   onClose: () => void;
-  onCreated: (product: TenantProduct, mode: AddMode) => void;
+  onCreated: (
+    product: TenantProduct,
+    mode: AddMode,
+    meta?: { intakeRunId?: string | null },
+  ) => void;
 }
 
 export default function AddProductDialog({ open, onClose, onCreated }: AddProductDialogProps) {
@@ -33,6 +37,9 @@ export default function AddProductDialog({ open, onClose, onCreated }: AddProduc
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [description, setDescription] = useState("");
+  const [githubRepoUrl, setGithubRepoUrl] = useState("");
+  const [runIntake, setRunIntake] = useState(true);
+  const [cloneRepo, setCloneRepo] = useState(true);
   const [phase, setPhase] = useState<ProductPhase>("building");
   const [focusAfter, setFocusAfter] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -77,6 +84,9 @@ export default function AddProductDialog({ open, onClose, onCreated }: AddProduc
     setSlug("");
     setSlugTouched(false);
     setDescription("");
+    setGithubRepoUrl("");
+    setRunIntake(true);
+    setCloneRepo(true);
     setPhase("building");
     setFocusAfter(true);
     setMode("register");
@@ -115,14 +125,19 @@ export default function AddProductDialog({ open, onClose, onCreated }: AddProduc
     setError(null);
     try {
       let product: TenantProduct;
+      let intakeRunId: string | null = null;
       if (mode === "register") {
         const result = await api.products.register({
           name: trimmedName,
           slug: trimmedSlug,
           description: description.trim() || undefined,
           phase,
+          githubRepoUrl: githubRepoUrl.trim() || undefined,
+          runIntake: githubRepoUrl.trim() ? runIntake : false,
+          cloneRepo: cloneRepo && Boolean(githubRepoUrl.trim()),
         });
         product = result.product;
+        intakeRunId = result.intakeRunId;
       } else {
         product = await api.products.bootstrap({
           name: trimmedName,
@@ -135,7 +150,7 @@ export default function AddProductDialog({ open, onClose, onCreated }: AddProduc
         await api.products.focus(product.id);
       }
 
-      onCreated(product, mode);
+      onCreated(product, mode, { intakeRunId });
       reset();
       onClose();
     } catch (err) {
@@ -258,6 +273,44 @@ export default function AddProductDialog({ open, onClose, onCreated }: AddProduc
               placeholder={t("products.add.descriptionPlaceholder")}
             />
           </label>
+          {mode === "register" && (
+            <>
+              <Input
+                label={t("products.add.githubUrlLabel")}
+                value={githubRepoUrl}
+                onChange={(e) => setGithubRepoUrl(e.target.value)}
+                placeholder="https://github.com/org/repo"
+                disabled={busy}
+              />
+              <p className="-mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.add.githubUrlHint")}
+              </p>
+              {githubRepoUrl.trim() && (
+                <>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={cloneRepo}
+                      onChange={(e) => setCloneRepo(e.target.checked)}
+                      disabled={busy}
+                      className="rounded border-[var(--color-border)]"
+                    />
+                    {t("products.add.cloneRepo")}
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={runIntake}
+                      onChange={(e) => setRunIntake(e.target.checked)}
+                      disabled={busy}
+                      className="rounded border-[var(--color-border)]"
+                    />
+                    {t("products.add.runIntake")}
+                  </label>
+                </>
+              )}
+            </>
+          )}
           {mode === "register" && (
             <div>
               <label htmlFor="add-product-phase" className="mb-1 block text-sm font-medium">

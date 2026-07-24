@@ -16,7 +16,6 @@ import {
   deletePipelineIdea,
   cancelTenantProduct,
   deleteTenantProduct,
-  registerExistingProduct,
   setFocusProduct,
   updateCompanyPhase,
 } from "../../lib/product-registry.js";
@@ -307,27 +306,95 @@ export async function productRoutes(app: FastifyInstance) {
   });
 
   app.post<{
-    Body: { slug: string; name: string; description?: string; phase?: ProductPhase };
+    Body: {
+      slug: string;
+      name: string;
+      description?: string;
+      phase?: ProductPhase;
+      githubRepoUrl?: string;
+      runIntake?: boolean;
+      cloneRepo?: boolean;
+    };
   }>("/products/register", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { name, slug, description, phase } = request.body ?? {};
+      const { name, slug, description, phase, githubRepoUrl, runIntake, cloneRepo } =
+        request.body ?? {};
       if (!name?.trim() || !slug?.trim()) {
         return reply.status(400).send({ error: "name and slug are required" });
       }
-      const result = await registerExistingProduct({
+
+      const { registerProductWithIntake } = await import("../../lib/product-intake.js");
+      const result = await registerProductWithIntake({
         tenantId,
         name,
         slug,
         description,
         phase,
+        githubRepoUrl,
+        runIntake: runIntake !== false,
+        cloneRepo,
       });
+
       await logAudit(request, "product.register", {
         productId: result.product.id,
         slug: result.product.slug,
         hasExistingCode: result.hasExistingCode,
+        githubRepoUrl: result.product.githubRepoUrl,
+        intakeRunId: result.intakeRunId,
+        intakeStatus: result.intakeStatus,
       });
       return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string } }>("/products/:id/intake", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const { startProductIntake, prepareGitHubForProduct } = await import(
+        "../../lib/product-intake.js"
+      );
+      const { resolveProductWorkspaceRoot } = await import("../../lib/product-workspace.js");
+      const { access, readdir } = await import("node:fs/promises");
+
+      let githubContextText: string | undefined;
+      if (product.githubRepoUrl) {
+        let hasExistingCode = false;
+        try {
+          const root = resolveProductWorkspaceRoot(product.slug);
+          await access(root);
+          const entries = await readdir(root);
+          hasExistingCode = entries.some((e) => e !== ".git");
+        } catch {
+          hasExistingCode = false;
+        }
+        const gh = await prepareGitHubForProduct({
+          tenantId,
+          productSlug: product.slug,
+          githubRepoUrl: product.githubRepoUrl,
+          hasExistingCode,
+        });
+        githubContextText = gh.contextText;
+      }
+
+      const intake = await startProductIntake(tenantId, product.id, {
+        githubContextText,
+        userDescription: product.description ?? undefined,
+      });
+
+      await logAudit(request, "product.intake", {
+        productId: product.id,
+        runId: intake.runId,
+      });
+
+      return reply.status(202).send(intake);
     } catch (err) {
       return handleRouteError(reply, err);
     }
