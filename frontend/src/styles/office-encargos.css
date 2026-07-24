@@ -24,7 +24,7 @@
   --office-prose-quote: #94a3b8;
 }
 
-html[data-theme="letter"] .office-page {
+html[data-theme="paperclip"] .office-page {
   --office-accent: var(--manila);
   --office-accent-hover: #e8d4a8;
   --office-accent-bg: rgba(243, 230, 196, 0.08);
@@ -50,8 +50,38 @@ html[data-theme="letter"] .office-page {
   --office-prose-quote: var(--stone-muted);
 }
 
-html[data-theme="letter"] .office-encargo-card {
+html[data-theme="paperclip"] .office-encargo-card {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="letter"] .office-page {
+  --office-accent: #533afd;
+  --office-accent-hover: #4228e0;
+  --office-accent-bg: rgba(83, 58, 253, 0.08);
+  --office-accent-border: rgba(83, 58, 253, 0.28);
+  --office-accent-border-strong: rgba(83, 58, 253, 0.45);
+  --office-surface: rgba(255, 255, 255, 0.95);
+  --office-surface-deep: #f8fafd;
+  --office-surface-card: linear-gradient(145deg, #ffffff 0%, #f8fafd 100%);
+  --office-border: #e5edf5;
+  --office-border-subtle: rgba(229, 237, 245, 0.9);
+  --office-muted: #50617a;
+  --office-muted-dim: #64748d;
+  --office-text-emphasis: #061b31;
+  --office-text-on-accent: #ffffff;
+  --office-link: #533afd;
+  --office-filter-bg: #ffffff;
+  --office-filter-active-bg: rgba(83, 58, 253, 0.08);
+  --office-btn-muted-bg: #f8fafd;
+  --office-btn-muted-text: #50617a;
+  --office-prose-body: #50617a;
+  --office-prose-heading: #061b31;
+  --office-prose-link: #533afd;
+  --office-prose-quote: #64748d;
+}
+
+html[data-theme="letter"] .office-encargo-card {
+  box-shadow: 0px 3px 6px 0px rgba(23, 23, 23, 0.06);
 }
 
 .office-link-btn {
@@ -189,10 +219,16 @@ html[data-theme="letter"] .office-encargo-card {
   color: #fca5a5;
 }
 
-html[data-theme="letter"] .office-encargo-phase[data-phase="in_progress"],
-html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
+html[data-theme="paperclip"] .office-encargo-phase[data-phase="in_progress"],
+html[data-theme="paperclip"] .office-encargo-phase[data-phase="queued"] {
   border-color: rgba(243, 230, 196, 0.45);
   color: var(--manila);
+}
+
+html[data-theme="letter"] .office-encargo-phase[data-phase="in_progress"],
+html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
+  border-color: rgba(83, 58, 253, 0.35);
+  color: #533afd;
 }
 
 .office-encargo-card-title {

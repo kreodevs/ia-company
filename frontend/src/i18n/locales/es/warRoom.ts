@@ -7,6 +7,7 @@ export const warRoom = {
   liveRun: "En vivo: {{workflow}}",
   onDuty: "De turno: {{count}}",
   viewCode: "Ver código →",
+  settings: "Configuración",
   radar: "Radar de ideas",
   radarEmpty: "No hay ideas en el pipeline.",
   radarScore: "interés {{score}}",
@@ -19,8 +20,15 @@ export const warRoom = {
   workflow: "Workflow",
   startedAt: "Iniciado {{time}}",
   agentsOnRun: "{{count}} agentes en este run",
-  noActiveRun: "Sin run activo. Usa el launcher de abajo para asignar agentes o workflows.",
+  noActiveRun: "Sin run activo. Pide al coordinador que arme el equipo y lance el trabajo.",
   runStarted: "Run lanzado — sigue el progreso aquí en el war room.",
+  coordinator: {
+    title: "Coordinador",
+    subtitle:
+      "Describe qué necesitas para {{name}}. El coordinador propone equipo y plan; tú apruebas antes de ejecutar.",
+    welcome:
+      "Soy el coordinador de este producto. Cuéntame qué quieres lograr — SEO, un feature, pricing, revisión semanal… y preparo el equipo y el plan.",
+  },
   thinking: "Pensando ahora",
   thinkingGeneric: "Trabajando en el siguiente paso…",
   legend: "Leyenda",

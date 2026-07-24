@@ -217,18 +217,18 @@ export default function ProductCodePage() {
         )}
         {product && (
           <Link
-            to={`/war-room/${product.id}`}
-            className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+            to={`/products/${product.id}/settings`}
+            className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs font-semibold hover:border-[var(--color-primary)]/40"
           >
-            {t("warRoom.title", { name: product.name })}
+            {t("products.active.settings")}
           </Link>
         )}
         {product && (
           <Link
-            to={`/products/${product.id}/consensus`}
-            className="text-[var(--color-primary)] hover:underline"
+            to={`/war-room/${product.id}`}
+            className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
           >
-            {t("code.productMemory")}
+            {t("warRoom.title", { name: product.name })}
           </Link>
         )}
       </div>

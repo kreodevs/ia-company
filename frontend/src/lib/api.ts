@@ -369,6 +369,7 @@ export interface ProductLastRunStepTrace {
   memoryKeyChars: number;
   hasStructuredHandoff: boolean;
   outputPreview: string;
+  output: string;
   tokensUsed: number | null;
 }
 
@@ -1116,6 +1117,7 @@ export const api = {
         phase?: ProductPhase;
         goNoGo?: GoNoGoDecision;
         revenueUsd?: number;
+        githubRepoUrl?: string | null;
       },
     ) =>
       request<TenantProduct>(`/products/${id}`, {

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import {
   RequireSuperAdmin,
@@ -18,6 +18,7 @@ import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
+import ProductSettingsPage from "./pages/ProductSettingsPage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
 import ProductTeamPage from "./pages/ProductTeamPage";
 import WarRoomPage from "./pages/WarRoomPage";
@@ -40,6 +41,12 @@ import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import WorkflowsPage from "./pages/WorkflowsPage";
 import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
+
+function RedirectProductConsensus() {
+  const { productId } = useParams<{ productId: string }>();
+  if (!productId) return <Navigate to="/debug/consensus" replace />;
+  return <Navigate to={`/debug/products/${productId}/consensus`} replace />;
+}
 
 function AppShell() {
   useDocumentLang();
@@ -84,6 +91,7 @@ function AppShell() {
               <Route path="debug/skills" element={<SkillsPage />} />
               <Route path="debug/team" element={<TenantUsersPage />} />
               <Route path="debug/consensus" element={<ConsensusPage />} />
+              <Route path="debug/products/:productId/consensus" element={<ProductConsensusPage />} />
               <Route path="debug/ops" element={<OpsPage />} />
               <Route path="debug/decisions" element={<DecisionsPage />} />
               <Route path="ops" element={<OpsPage />} />
@@ -91,8 +99,9 @@ function AppShell() {
               <Route path="war-room" element={<WarRoomPage />} />
               <Route path="war-room/:productId" element={<WarRoomPage />} />
               <Route path="decisions" element={<DecisionsPage />} />
-              <Route path="consensus" element={<ConsensusPage />} />
-              <Route path="products/:productId/consensus" element={<ProductConsensusPage />} />
+              <Route path="consensus" element={<Navigate to="/debug/consensus" replace />} />
+              <Route path="products/:productId/consensus" element={<RedirectProductConsensus />} />
+              <Route path="products/:productId/settings" element={<ProductSettingsPage />} />
               <Route path="products/:productId/code" element={<ProductCodePage />} />
               <Route path="products/:productId/team" element={<ProductTeamPage />} />
               <Route path="settings" element={<SettingsPage />} />

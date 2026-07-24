@@ -69,7 +69,7 @@ export const consensus = {
   },
   tip: {
     title: "Consejo",
-    body: "La memoria por producto vive en /products/:id/consensus. Usa el selector de alcance para saltar directo a una.",
+    body: "La memoria por producto vive en /debug/products/:id/consensus (Oficina de depuración).",
   },
   reportsTab: "Informes por agente",
   reportsEmptyTitle: "Aún no hay informes de agentes",
@@ -130,6 +130,10 @@ export const consensus = {
     emptyOutput: "Vacío",
     handoffJson: "Sí",
     handoffMissing: "No",
+    viewOutput: "Ver output",
+    previewTitle: "{{agent}} · paso {{step}}",
+    previewSubtitle: "Vista previa renderizada del output capturado.",
+    previewAria: "Output de {{agent}}",
     warRoomLink: "War room →",
     logsHint: "Logs en vivo",
     diagnosis: {

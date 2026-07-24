@@ -1,35 +1,24 @@
-# War room UI
+# War room
 
-Tactical live view of agents assigned to a product.
-
-## Components
+Tactical live view for one product: agent seats, radar, runs, OpenCode history, and **coordinator chat** for commissioning work.
 
 | File | Role |
 |------|------|
-| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode history, **ProductWorkLauncher**) for one `productId` |
-| `WarRoomPage.tsx` (pages) | Sidebar route with product `<Select>` |
+| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode history, **CoordinatorChat**) for one `productId` |
 
 ## Routes
 
-- `/war-room` → redirects to focused or first product
-- `/war-room/:productId` → war room for that product
-- `/products/:id/team` → legacy redirect to `/war-room/:id`
-
-## API
-
-`GET /products/:id/team` — agent statuses, active run (incl. `DELEGATED`), OpenCode metadata, recent runs, pipeline radar.
-
-`GET /products/:id/opencode/history` — delegation history for the product.
-
-`GET /products/:id/launch-options` — presets, workflows, and agents available for this product.
-
-`POST /products/:id/launch` — execute workflow or single-agent task with `productId`/`productSlug` context.
+- `/war-room/:productId` — product-scoped war room (primary)
+- `/war-room` — product picker when no id
 
 ## Theming
 
-Styles live in `frontend/src/styles/war-room.css` with `--war-room-*` tokens on `.war-room`.
+Theme-aware via CSS variables in `src/styles/war-room.css`:
 
-- **Slash (dark):** tactical navy gradient (default tokens)
-- **Paperclip Warm (`letter`):** charcoal/manila warm dark — `html[data-theme="letter"] .war-room` overrides
+- **Slash (default vars):** cyan tactical dark
+- **Stripe HDS Light (`letter`):** pale/indigo — `html[data-theme="letter"] .war-room`
+- **Paperclip Warm (`paperclip`):** charcoal/manila — `html[data-theme="paperclip"] .war-room`
 
-`ProductWorkLauncher` receives `className="war-room-launcher"` for embedded contrast inside the war room shell.
+## Coordinator
+
+`CoordinatorChat` is embedded with `productId` so all presets, workflows, and agent selection happen conversationally — no manual launcher UI.

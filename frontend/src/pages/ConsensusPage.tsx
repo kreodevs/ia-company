@@ -84,13 +84,13 @@ export default function ConsensusPage() {
     setScope(next);
     setSearchParams(next === "company" ? {} : { scope: next }, { replace: true });
     if (next.startsWith("product:")) {
-      navigate(`/products/${next.slice("product:".length)}/consensus`);
+      navigate(`/debug/products/${next.slice("product:".length)}/consensus`);
     } else if (next.startsWith("idea:")) {
       const ideaId = next.slice("idea:".length);
       const idea = ideas.find((i) => i.id === ideaId);
       const linked = idea ? ideaProduct(idea) : null;
       if (linked) {
-        navigate(`/products/${linked.id}/consensus`);
+        navigate(`/debug/products/${linked.id}/consensus`);
       }
     }
   };
@@ -194,7 +194,7 @@ export default function ConsensusPage() {
             {products.map((p) => (
               <li key={p.id}>
                 <Link
-                  to={`/products/${p.id}/consensus`}
+                  to={`/debug/products/${p.id}/consensus`}
                   className="lift flex items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 hover:border-[var(--color-primary)]/40"
                 >
                   <span className="min-w-0 truncate">
@@ -274,7 +274,7 @@ export default function ConsensusPage() {
                   return (
                     <li key={idea.id}>
                       <Link
-                        to={linked ? `/products/${linked.id}/consensus` : "/ops"}
+                        to={linked ? `/debug/products/${linked.id}/consensus` : "/debug/ops"}
                         className="lift block rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3 hover:border-[var(--color-primary)]/40"
                       >
                         <div className="flex items-center gap-2">

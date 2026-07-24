@@ -25,7 +25,7 @@
   margin: 0 0 0.35rem;
 }
 
-html[data-theme="letter"] .office-eyebrow {
+html[data-theme="paperclip"] .office-eyebrow {
   color: var(--manila);
 }
 
@@ -138,7 +138,7 @@ html[data-theme="letter"] .office-eyebrow {
   padding: 1.1rem 1.15rem;
 }
 
-html[data-theme="letter"] .office-panel {
+html[data-theme="paperclip"] .office-panel {
   background: color-mix(in srgb, var(--dark-surface) 92%, transparent);
   border-color: var(--dark-border);
   box-shadow: none;
@@ -153,7 +153,7 @@ html[data-theme="letter"] .office-panel {
   margin: 0 0 0.85rem;
 }
 
-html[data-theme="letter"] .office-panel-title {
+html[data-theme="paperclip"] .office-panel-title {
   color: var(--stone-muted);
 }
 
@@ -175,7 +175,7 @@ html[data-theme="letter"] .office-panel-title {
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.06), 0 24px 48px rgba(0, 0, 0, 0.35);
 }
 
-html[data-theme="letter"] .office-task-panel {
+html[data-theme="paperclip"] .office-task-panel {
   background:
     radial-gradient(ellipse 80% 60% at 50% -10%, rgba(243, 230, 196, 0.1), transparent 55%),
     var(--dark-surface);
@@ -197,12 +197,12 @@ html[data-theme="letter"] .office-task-panel {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-html[data-theme="letter"] .office-task-textarea {
+html[data-theme="paperclip"] .office-task-textarea {
   background: var(--charcoal);
   border-color: var(--dark-border);
 }
 
-html[data-theme="letter"] .office-task-textarea:focus {
+html[data-theme="paperclip"] .office-task-textarea:focus {
   border-color: rgba(243, 230, 196, 0.45);
   box-shadow: 0 0 0 3px rgba(243, 230, 196, 0.12);
 }
@@ -273,12 +273,12 @@ html[data-theme="letter"] .office-task-textarea:focus {
   color: #94a3b8;
 }
 
-html[data-theme="letter"] .office-scope-bar {
+html[data-theme="paperclip"] .office-scope-bar {
   background: rgba(243, 230, 196, 0.06);
   border-color: rgba(243, 230, 196, 0.18);
 }
 
-html[data-theme="letter"] .office-scope-hint {
+html[data-theme="paperclip"] .office-scope-hint {
   color: var(--stone-muted);
 }
 
@@ -306,7 +306,7 @@ html[data-theme="letter"] .office-scope-hint {
   border-left: 3px solid #38bdf8;
 }
 
-html[data-theme="letter"] .office-coordinator-note {
+html[data-theme="paperclip"] .office-coordinator-note {
   color: var(--stone-muted);
   background: rgba(243, 230, 196, 0.06);
 }
@@ -329,7 +329,7 @@ html[data-theme="letter"] .office-coordinator-note {
   font-size: 0.78rem;
 }
 
-html[data-theme="letter"] .office-agent-chip {
+html[data-theme="paperclip"] .office-agent-chip {
   background: var(--dark-raised-surface);
 }
 
@@ -359,7 +359,7 @@ html[data-theme="letter"] .office-agent-chip {
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-html[data-theme="letter"] .office-estimate {
+html[data-theme="paperclip"] .office-estimate {
   background: var(--dark-surface);
 }
 
@@ -404,7 +404,7 @@ html[data-theme="letter"] .office-estimate {
   background: rgba(2, 6, 23, 0.45);
 }
 
-html[data-theme="letter"] .office-activity-item:hover {
+html[data-theme="paperclip"] .office-activity-item:hover {
   background: var(--dark-raised-surface);
 }
 
@@ -514,7 +514,7 @@ html[data-theme="letter"] .office-activity-item:hover {
   background: rgba(15, 23, 42, 0.35);
 }
 
-html[data-theme="letter"] .office-roi-item {
+html[data-theme="paperclip"] .office-roi-item {
   background: var(--dark-surface);
 }
 
@@ -598,7 +598,7 @@ html[data-theme="letter"] .office-roi-item {
   margin-bottom: 0.5rem;
 }
 
-html[data-theme="letter"] .office-spend-widget {
+html[data-theme="paperclip"] .office-spend-widget {
   background: var(--dark-surface);
 }
 
@@ -742,7 +742,7 @@ html[data-theme="letter"] .office-spend-widget {
   border: 1px solid rgba(148, 163, 184, 0.15);
 }
 
-html[data-theme="letter"] .office-chat-bubble-assistant p {
+html[data-theme="paperclip"] .office-chat-bubble-assistant p {
   background: var(--dark-raised-surface);
 }
 
@@ -751,7 +751,7 @@ html[data-theme="letter"] .office-chat-bubble-assistant p {
   border: 1px solid rgba(56, 189, 248, 0.25);
 }
 
-html[data-theme="letter"] .office-chat-bubble-user p {
+html[data-theme="paperclip"] .office-chat-bubble-user p {
   background: rgba(243, 230, 196, 0.15);
   border: 1px solid rgba(243, 230, 196, 0.25);
 }
@@ -785,7 +785,7 @@ html[data-theme="letter"] .office-chat-bubble-user p {
   min-height: 2.75rem;
 }
 
-html[data-theme="letter"] .office-chat-input {
+html[data-theme="paperclip"] .office-chat-input {
   background: var(--charcoal);
   border-color: var(--dark-border);
 }
@@ -882,7 +882,7 @@ html[data-theme="letter"] .office-chat-input {
   }
 }
 
-html[data-theme="letter"] .office-notif-panel {
+html[data-theme="paperclip"] .office-notif-panel {
   background: var(--dark-surface);
   border-color: var(--dark-border);
 }
@@ -998,4 +998,90 @@ html[data-theme="letter"] .office-notif-panel {
 .office-notif-permission-dismiss {
   background: transparent;
   color: #64748b;
+}
+
+/* Stripe HDS Light (letter) — Office scope overrides */
+html[data-theme="letter"] .office-eyebrow {
+  color: var(--stripe-indigo);
+}
+
+html[data-theme="letter"] .office-panel {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-panel-title {
+  color: var(--subdued-heading);
+}
+
+html[data-theme="letter"] .office-task-panel {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(83, 58, 253, 0.06), transparent 55%),
+    var(--surface-white);
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-task-textarea {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-task-textarea:focus {
+  border-color: rgba(83, 58, 253, 0.45);
+  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+}
+
+html[data-theme="letter"] .office-scope-bar {
+  background: rgba(83, 58, 253, 0.04);
+  border-color: rgba(83, 58, 253, 0.15);
+}
+
+html[data-theme="letter"] .office-scope-hint {
+  color: var(--slate-body);
+}
+
+html[data-theme="letter"] .office-coordinator-note {
+  color: var(--slate-body);
+  background: var(--pale-background);
+}
+
+html[data-theme="letter"] .office-agent-chip {
+  background: var(--pale-background);
+}
+
+html[data-theme="letter"] .office-estimate {
+  background: var(--pale-background);
+}
+
+html[data-theme="letter"] .office-activity-item:hover {
+  background: var(--pale-background);
+}
+
+html[data-theme="letter"] .office-roi-item {
+  background: var(--surface-white);
+}
+
+html[data-theme="letter"] .office-spend-widget {
+  background: var(--surface-white);
+}
+
+html[data-theme="letter"] .office-chat-bubble-assistant p {
+  background: var(--pale-background);
+  border: 1px solid var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-chat-bubble-user p {
+  background: rgba(83, 58, 253, 0.08);
+  border: 1px solid rgba(83, 58, 253, 0.2);
+}
+
+html[data-theme="letter"] .office-chat-input {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-notif-panel {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
 }

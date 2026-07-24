@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auto-Company Platform</title>
+    <script>
+      (function () {
+        var K = "auto-company-ui-theme";
+        var M = "auto-company-ui-theme-v3";
+        var s = localStorage.getItem(K);
+        if (s === "letter" && !localStorage.getItem(M)) {
+          localStorage.setItem(K, "paperclip");
+          localStorage.setItem(M, "1");
+          s = "paperclip";
+        }
+        var t = s === "slash" || s === "paperclip" || s === "letter" ? s : "letter";
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

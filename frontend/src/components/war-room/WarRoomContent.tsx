@@ -7,7 +7,7 @@ import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
 import ProductActionsMenu from "../ui/ProductActionsMenu";
 import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
-import ProductWorkLauncher from "../products/ProductWorkLauncher";
+import CoordinatorChat from "../office/CoordinatorChat";
 
 const ROLE_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -129,7 +129,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           <Badge>{data.product.phase}</Badge>
           <ProductActionsMenu product={data.product as TenantProduct} onChange={() => void refresh()} />
           {data.activeRun && (
-            <Link to={`/runs/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
+            <Link to={`/office/encargos/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
               <span className="war-room-pulse" aria-hidden />
               {data.activeRun.status === "DELEGATED"
                 ? t("opencode.externalImplementation")
@@ -146,10 +146,10 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
             {t("warRoom.viewCode")}
           </Link>
           <Link
-            to={`/products/${data.product.id}/consensus?tab=reports`}
+            to={`/products/${data.product.id}/settings`}
             className="war-room-pill war-room-pill-link"
           >
-            {t("warRoom.viewReports")}
+            {t("warRoom.settings")}
           </Link>
         </div>
       </header>
@@ -182,19 +182,27 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         />
       </section>
 
-      <ProductWorkLauncher
-        productId={data.product.id}
-        productName={data.product.name}
-        afterLaunch="stay"
-        className="war-room-launcher"
-        onLaunched={(runId) => {
-          flashNote(t("warRoom.runStarted"));
-          void refresh();
-          void api.runs.get(runId).then(() => refresh()).catch(() => refresh());
-          window.setTimeout(() => void refresh(), 800);
-          window.setTimeout(() => void refresh(), 2500);
-        }}
-      />
+      <section className="war-room-coordinator" aria-labelledby="war-room-coordinator-title">
+        <h2 id="war-room-coordinator-title" className="war-room-section-title">
+          {t("warRoom.coordinator.title")}
+        </h2>
+        <p className="war-room-coordinator-subtitle">
+          {t("warRoom.coordinator.subtitle", { name: data.product.name })}
+        </p>
+        <div className="war-room-coordinator-panel">
+          <CoordinatorChat
+            productId={data.product.id}
+            welcomeMessageKey="warRoom.coordinator.welcome"
+            onExecuted={(runId) => {
+              flashNote(t("warRoom.runStarted"));
+              void refresh();
+              void api.runs.get(runId).then(() => refresh()).catch(() => refresh());
+              window.setTimeout(() => void refresh(), 800);
+              window.setTimeout(() => void refresh(), 2500);
+            }}
+          />
+        </div>
+      </section>
 
       <div className="war-room-grid">
         <aside className="war-room-radar">
@@ -301,7 +309,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           ) : (
             data.recentRuns.map((r) => (
               <li key={r.id}>
-                <Link to={`/runs/${r.id}`} className="war-room-run-row">
+                <Link to={`/office/encargos/${r.id}`} className="war-room-run-row">
                   <span className="war-room-run-name">{r.workflowName}</span>
                   <span className="war-room-run-meta">
                     {shortTime(r.startedAt)} · {r.totalTokens.toLocaleString()} tokens
