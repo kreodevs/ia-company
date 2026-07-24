@@ -395,11 +395,9 @@ export async function planOfficeTask(
     workflowName = wf?.name ?? service.workflowName;
   }
 
-  const product =
-    (options.productId ? products.find((p) => p.id === options.productId) : null) ??
-    products.find((p) => p.phase === "building" || p.phase === "launching") ??
-    products[0] ??
-    null;
+  const product = options.productId
+    ? (products.find((p) => p.id === options.productId) ?? null)
+    : null;
 
   const agentCount = selectedAgents.length;
   const mode: OfficeTaskPlan["mode"] =

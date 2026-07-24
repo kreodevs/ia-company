@@ -7,6 +7,7 @@ import { getPlatformSettingsSync } from "./platform-settings.js";
 import { resolveEffectiveModel, tenantLlmFromRecord } from "./tenant-llm.js";
 import { getTenantMonthlyUsage } from "./usage-limits.js";
 import { planOfficeTask, type OfficeTaskPlan } from "./office-coordinator.js";
+import { listTenantProducts } from "./product-registry.js";
 
 const REPO_ROOT =
   process.env.NODE_ENV === "production" ? process.cwd() : resolve(import.meta.dirname, "../..");
@@ -58,6 +59,29 @@ function buildChatContextBlock(usage: Awaited<ReturnType<typeof getTenantMonthly
   ].join("\n");
 }
 
+function buildScopeBlock(
+  productId: string | undefined,
+  products: Array<{ id: string; name: string }>,
+): string {
+  if (productId) {
+    const product = products.find((p) => p.id === productId);
+    const name = product?.name ?? productId;
+    return [
+      "## Alcance del encargo",
+      "- Modo: producto específico",
+      `- Producto focal: **${name}**`,
+      "- Contextualiza propuestas y entregables a este producto.",
+    ].join("\n");
+  }
+
+  return [
+    "## Alcance del encargo",
+    "- Modo: exploración general (nivel empresa, sin producto focal)",
+    "- No asumas un producto concreto ni lo incluyas en el plan salvo que el fundador lo pida.",
+    "- Si la tarea podría aplicar a un producto concreto, **pregunta** si quiere alcance general o ligado a un producto antes de proponer equipo.",
+  ].join("\n");
+}
+
 function extractTaskRequest(messages: CoordinatorChatMessage[]): string {
   const userMessages = messages.filter((m) => m.role === "user").map((m) => m.content.trim());
   if (userMessages.length === 0) return "";
@@ -97,10 +121,11 @@ export async function chatWithCoordinator(
     throw new Error("At least one message is required");
   }
 
-  const [systemBase, usage, llmConfig] = await Promise.all([
+  const [systemBase, usage, llmConfig, products] = await Promise.all([
     loadCoordinatorSystemPrompt(tenantId),
     getTenantMonthlyUsage(tenantId),
     prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
+    listTenantProducts(tenantId),
   ]);
 
   const tenantLlm = tenantLlmFromRecord(llmConfig);
@@ -116,6 +141,8 @@ export async function chatWithCoordinator(
     systemBase,
     "",
     buildChatContextBlock(usage),
+    "",
+    buildScopeBlock(input.productId, products),
     "",
     "## Modo conversación",
     "Responde en español salvo que el fundador escriba en otro idioma.",

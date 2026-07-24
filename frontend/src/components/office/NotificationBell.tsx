@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Bell } from "lucide-react";
@@ -116,13 +117,79 @@ export default function NotificationBell({ enabled }: NotificationBellProps) {
 
   if (!enabled) return null;
 
+  const panel =
+    open && typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <button
+              type="button"
+              className="office-notif-backdrop"
+              aria-label={t("common.close")}
+              onClick={() => setOpen(false)}
+            />
+            <div
+              className="office-notif-panel office-notif-panel-portal"
+              role="dialog"
+              aria-label={t("office.notifications.title")}
+            >
+              <div className="office-notif-panel-head">
+                <p>{t("office.notifications.title")}</p>
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    className="office-notif-mark-all"
+                    onClick={() => void markAllRead()}
+                  >
+                    {t("office.notifications.markAllRead")}
+                  </button>
+                )}
+              </div>
+              <ul className="office-notif-list">
+                {items.length === 0 ? (
+                  <li className="office-notif-empty">{t("office.notifications.empty")}</li>
+                ) : (
+                  items.map((item) => (
+                    <li key={item.id}>
+                      {item.href ? (
+                        <Link
+                          to={item.href}
+                          className={cn("office-notif-item", !item.readAt && "office-notif-item-unread")}
+                          onClick={() => {
+                            void markRead(item.id);
+                            setOpen(false);
+                          }}
+                        >
+                          <NotificationRow item={item} t={t} />
+                        </Link>
+                      ) : (
+                        <div
+                          className={cn("office-notif-item", !item.readAt && "office-notif-item-unread")}
+                          onClick={() => void markRead(item.id)}
+                          onKeyDown={() => undefined}
+                          role="button"
+                          tabIndex={0}
+                        >
+                          <NotificationRow item={item} t={t} />
+                        </div>
+                      )}
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          </>,
+          document.body,
+        )
+      : null;
+
   return (
-    <div className="relative">
+    <>
       <button
         type="button"
-        className={cn("office-notif-btn interactive", open && "office-notif-btn-active")}
+        className={cn("office-notif-btn interactive shrink-0", open && "office-notif-btn-active")}
         aria-label={t("office.notifications.title")}
         aria-expanded={open}
+        aria-haspopup="dialog"
         onClick={() => setOpen(!open)}
       >
         <Bell className="h-4 w-4" aria-hidden />
@@ -132,57 +199,8 @@ export default function NotificationBell({ enabled }: NotificationBellProps) {
           </span>
         )}
       </button>
-
-      {open && (
-        <>
-          <button
-            type="button"
-            className="office-notif-backdrop"
-            aria-label={t("common.close")}
-            onClick={() => setOpen(false)}
-          />
-          <div className="office-notif-panel">
-            <div className="office-notif-panel-head">
-              <p>{t("office.notifications.title")}</p>
-              {unreadCount > 0 && (
-                <button type="button" className="office-notif-mark-all" onClick={() => void markAllRead()}>
-                  {t("office.notifications.markAllRead")}
-                </button>
-              )}
-            </div>
-            <ul className="office-notif-list">
-              {items.length === 0 ? (
-                <li className="office-notif-empty">{t("office.notifications.empty")}</li>
-              ) : (
-                items.map((item) => (
-                  <li key={item.id}>
-                    {item.href ? (
-                      <Link
-                        to={item.href}
-                        className={cn("office-notif-item", !item.readAt && "office-notif-item-unread")}
-                        onClick={() => void markRead(item.id)}
-                      >
-                        <NotificationRow item={item} t={t} />
-                      </Link>
-                    ) : (
-                      <div
-                        className={cn("office-notif-item", !item.readAt && "office-notif-item-unread")}
-                        onClick={() => void markRead(item.id)}
-                        onKeyDown={() => undefined}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <NotificationRow item={item} t={t} />
-                      </div>
-                    )}
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        </>
-      )}
-    </div>
+      {panel}
+    </>
   );
 }
 

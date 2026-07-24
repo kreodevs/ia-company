@@ -16,4 +16,19 @@ describe("office-coordinator", () => {
       assert.ok(service.labelKey.startsWith("office.serviceTemplates."));
     }
   });
+
+  it("does not auto-assign a product when productId is omitted", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const src = await readFile(new URL("../src/lib/office-coordinator.ts", import.meta.url), "utf-8");
+    assert.match(
+      src,
+      /const product = options\.productId[\s\S]*?: null;/,
+      "planOfficeTask must only bind a product when productId is explicitly passed",
+    );
+    assert.doesNotMatch(
+      src,
+      /products\.find\(\(p\) => p\.phase === "building"/,
+      "planOfficeTask must not default to building/launching product",
+    );
+  });
 });

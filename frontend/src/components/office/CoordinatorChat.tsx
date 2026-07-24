@@ -93,7 +93,7 @@ export default function CoordinatorChat({
     try {
       const result = await api.office.executeTask({
         request: plan.request,
-        productId: productId || plan.productId || undefined,
+        productId: productId || undefined,
         serviceId: serviceId ?? plan.serviceId ?? undefined,
         workflowId: plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,

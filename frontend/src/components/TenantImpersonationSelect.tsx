@@ -20,7 +20,7 @@ export default function TenantImpersonationSelect() {
   if (!isSuperAdmin) {
     if (!activeTenant) return null;
     return (
-      <span className="text-sm text-[var(--color-muted-foreground)]">
+      <span className="app-topbar-tenant-name truncate text-sm text-[var(--color-muted-foreground)]">
         {activeTenant.name}
       </span>
     );
