@@ -60,7 +60,7 @@ export default function RichMarkdownView({
   return (
     <article
       aria-label={ariaLabel}
-      className={`office-rich-markdown min-h-[8rem] rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 text-sm leading-relaxed prose prose-sm max-w-none dark:prose-invert ${className}`}
+      className={`office-rich-markdown min-h-[8rem] rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 text-sm leading-relaxed prose prose-sm max-w-none ${className}`}
     >
       <Markdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
         {value}

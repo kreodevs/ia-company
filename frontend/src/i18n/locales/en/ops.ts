@@ -3,8 +3,9 @@ export const ops = {
   loadFailed: "Unable to load the dashboard.",
   eyebrow: "Operations",
   title: "Operations",
-  subtitle: "Autonomous cycle, KPIs, and orchestration — products and opportunities live under Products.",
-  runMetaCycleNow: "Run meta cycle",
+  subtitle: "Optional KPIs and scheduling — launch work from the Office.",
+  runScheduledNow: "Run scheduled rule",
+  goToOffice: "Go to Office",
   pendingDecisionsMessage:
     "{{count}} go/no-go decision(s) are waiting on you. The autonomous company is paused.",
   reviewDecisions: "Review decisions →",
@@ -58,13 +59,13 @@ export const ops = {
     focusedProduct: "Focused product:",
   },
   metaCycle: {
-    title: "What does the meta cycle do?",
+    title: "Automatic scheduling (optional)",
     description:
-      "The orchestrator picks a workflow from phase, products, and approved ideas. It runs agents and updates consensus.",
-    step1: "Read phase, products, and ideas",
-    step2: "Pick discovery, evaluation, build, or launch",
-    step3: "Enqueue the run — track progress under Runs",
-    enableSchedule: "Enable automatic schedule",
+      "By default the Office is on demand: you launch discovery, evaluation, or build yourself. Add fixed rules here (e.g. weekly discovery) if you want partial autopilot.",
+    step1: "Pick a preset or add rules under Settings → Schedules",
+    step2: "Each rule runs a specific workflow when its conditions match",
+    step3: "Track progress under Runs — the Office remains available for manual work",
+    enableSchedule: "Configure schedules",
   },
   portfolio: {
     title: "Product portfolio",
@@ -125,10 +126,11 @@ export const ops = {
   schedules: {
     title: "Scheduled activities",
     subtitle:
-      "All autonomous cycles for this tenant. Adjust frequency, pause, or cancel fixed schedules.",
-    advanced: "Create schedules →",
-    emptyTitle: "No schedules yet",
-    emptyHint: "Enable the meta cycle so agents run autonomously.",
+      "Optional automatic execution rules. The primary flow remains the on-demand Office.",
+    advanced: "Configure presets →",
+    emptyTitle: "No active schedules",
+    emptyHint: "Expected in on-demand mode. Launch work from the Office, or apply a preset for weekly discovery or other autopilot tasks.",
+    configurePresets: "View presets",
     metaBadge: "Meta",
     metaDescription:
       "No fixed workflow: the native meta-orchestrator picks discovery, evaluation, build, or launch from portfolio and phase.",

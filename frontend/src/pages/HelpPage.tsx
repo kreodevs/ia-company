@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Building2, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
@@ -131,8 +132,37 @@ export default function HelpPage() {
     <div className="space-y-6">
       <PageHeader eyebrow={t("help.breadcrumb")} title={t("help.title")} subtitle={t("help.subtitle")} />
 
+      <section aria-label={t("help.quickLinks")}>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+          {t("help.quickLinks")}
+        </p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Link
+            to="/office"
+            className="interactive flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 hover:border-[var(--color-primary)]"
+          >
+            <Building2 className="h-5 w-5 shrink-0 text-[var(--color-primary)]" aria-hidden />
+            <span className="text-sm font-medium">{t("help.quickOffice")}</span>
+          </Link>
+          <Link
+            to="/products"
+            className="interactive flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 hover:border-[var(--color-primary)]"
+          >
+            <Package className="h-5 w-5 shrink-0 text-[var(--color-primary)]" aria-hidden />
+            <span className="text-sm font-medium">{t("help.quickProducts")}</span>
+          </Link>
+          <Link
+            to="/settings"
+            className="interactive flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 hover:border-[var(--color-primary)]"
+          >
+            <Settings className="h-5 w-5 shrink-0 text-[var(--color-primary)]" aria-hidden />
+            <span className="text-sm font-medium">{t("help.quickSettings")}</span>
+          </Link>
+        </div>
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
-        <aside className="space-y-2 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
+        <aside className="space-y-2 lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:max-h-[calc(100dvh-var(--header-height)-2rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
           <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
             {t("help.articles")}
           </p>

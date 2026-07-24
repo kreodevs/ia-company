@@ -79,31 +79,6 @@ export const ORCHESTRATION_PRESETS: Record<OrchestrationPresetId, OrchestrationP
       },
     ],
   },
-  full_autonomous: {
-    id: "full_autonomous",
-    labelKey: "settings.orchestration.presets.fullAutonomous.label",
-    descriptionKey: "settings.orchestration.presets.fullAutonomous.description",
-    rules: [
-      {
-        name: "Orquestador dinámico",
-        orchestrationMode: "meta_dynamic",
-        intervalSec: 1800,
-        priority: 30,
-        enabled: true,
-        conditions: { noPendingDecisions: true },
-      },
-      {
-        name: "Discovery semanal",
-        orchestrationMode: "fixed",
-        workflowName: WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY,
-        cronExpr: "0 9 * * 6",
-        intervalSec: 604800,
-        priority: 10,
-        enabled: true,
-        conditions: { pipelineEmpty: true },
-      },
-    ],
-  },
 };
 
 export function isOrchestrationPresetId(value: string): value is OrchestrationPresetId {

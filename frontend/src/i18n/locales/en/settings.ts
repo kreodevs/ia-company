@@ -90,7 +90,7 @@ export const settings = {
   orchestration: {
     title: "Operations plan",
     subtitle:
-      "Configure when each workflow runs. Rules are evaluated by priority; only one run executes per tenant at a time.",
+      "Optional workflow scheduling. The primary flow is the on-demand Office; add fixed rules here for partial autopilot.",
     rulesTitle: "Active rules",
     empty: "No orchestration rules yet. Apply a preset or add a rule.",
     addRuleTitle: "Add rule",
@@ -99,14 +99,14 @@ export const settings = {
     namePlaceholder: "Weekly discovery",
     modeLabel: "Mode",
     modeFixed: "Fixed workflow",
-    modeDynamic: "Dynamic orchestrator",
+    modeDynamic: "Dynamic orchestrator (advanced)",
     workflowLabel: "Workflow",
     dynamicWorkflow: "Dynamic workflow",
     dynamicDescription:
       "No fixed workflow: each cycle the meta-orchestrator picks one based on portfolio and phase.",
     dynamicModeTitle: "No fixed workflow — automatic selection",
     dynamicModeHint:
-      "This mode has no workflow selector because it does not always run the same one. On each tick the platform's native meta-orchestrator picks which workflow to launch based on pending ideas, building products, and company phase.",
+      "Advanced mode — not the recommended flow. On each tick the meta-orchestrator picks a workflow from portfolio and phase. Use the Office for one-off work.",
     dynamicPick: {
       discovery: "Empty pipeline or exploring phase → opportunity-discovery",
       evaluation: "Pending idea → new-product-evaluation",
@@ -156,11 +156,7 @@ export const settings = {
       },
       lightExploration: {
         label: "Light exploration",
-        description: "Weekly discovery, periodic evaluation, and Monday reviews.",
-      },
-      fullAutonomous: {
-        label: "Full autonomous",
-        description: "Dynamic orchestrator every 30 min plus weekly discovery backup.",
+        description: "Weekly discovery, periodic evaluation, and Monday reviews (no dynamic orchestrator).",
       },
     },
   },

@@ -24,3 +24,12 @@ Tactical live view of agents assigned to a product.
 `GET /products/:id/launch-options` — presets, workflows, and agents available for this product.
 
 `POST /products/:id/launch` — execute workflow or single-agent task with `productId`/`productSlug` context.
+
+## Theming
+
+Styles live in `frontend/src/styles/war-room.css` with `--war-room-*` tokens on `.war-room`.
+
+- **Slash (dark):** tactical navy gradient (default tokens)
+- **Paperclip Warm (`letter`):** charcoal/manila warm dark — `html[data-theme="letter"] .war-room` overrides
+
+`ProductWorkLauncher` receives `className="war-room-launcher"` for embedded contrast inside the war room shell.

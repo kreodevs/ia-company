@@ -90,7 +90,7 @@ export const settings = {
   orchestration: {
     title: "Plan de operaciones",
     subtitle:
-      "Configura cuándo corre cada workflow. Las reglas compiten por prioridad; solo una ejecución activa por tenant.",
+      "Programación opcional de workflows. El flujo principal es la Oficina bajo demanda; aquí defines reglas fijas si quieres piloto automático parcial.",
     rulesTitle: "Reglas activas",
     empty: "Aún no hay reglas. Aplica un preset o añade una regla.",
     addRuleTitle: "Añadir regla",
@@ -99,14 +99,14 @@ export const settings = {
     namePlaceholder: "Discovery semanal",
     modeLabel: "Modo",
     modeFixed: "Workflow fijo",
-    modeDynamic: "Orquestador dinámico",
+    modeDynamic: "Orquestador dinámico (avanzado)",
     workflowLabel: "Workflow",
     dynamicWorkflow: "Workflow dinámico",
     dynamicDescription:
       "No hay workflow fijo: en cada ciclo el meta-orchestrator elige uno según portfolio y fase.",
     dynamicModeTitle: "Sin workflow fijo — elección automática",
     dynamicModeHint:
-      "Este modo no muestra selector de workflow porque no ejecuta siempre el mismo. En cada tick el meta-orchestrator nativo de la plataforma decide cuál lanzar según ideas pendientes, productos en build y fase de la empresa.",
+      "Modo avanzado: no es el flujo recomendado. En cada tick el meta-orchestrator elige un workflow según portfolio y fase. Para encargos puntuales usa la Oficina.",
     dynamicPick: {
       discovery: "Pipeline vacío o fase exploring → opportunity-discovery",
       evaluation: "Idea pendiente → new-product-evaluation",
@@ -156,11 +156,7 @@ export const settings = {
       },
       lightExploration: {
         label: "Exploración ligera",
-        description: "Discovery semanal, evaluación periódica y revisión los lunes.",
-      },
-      fullAutonomous: {
-        label: "Autonomía completa",
-        description: "Orquestador dinámico cada 30 min más discovery semanal de respaldo.",
+        description: "Discovery semanal, evaluación periódica y revisión los lunes (sin orquestador dinámico).",
       },
     },
   },

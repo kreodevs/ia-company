@@ -170,14 +170,14 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
             title={t("ops.schedules.emptyTitle")}
             description={t("ops.schedules.emptyHint")}
             action={
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  void api.schedules.ensureMeta().then(() => onRefresh())
-                }
-              >
-                {t("ops.metaCycle.enableSchedule")}
-              </Button>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Link to="/office">
+                  <Button variant="primary">{t("ops.goToOffice")}</Button>
+                </Link>
+                <Link to="/settings?tab=schedules">
+                  <Button variant="secondary">{t("ops.schedules.configurePresets")}</Button>
+                </Link>
+              </div>
             }
           />
         ) : (

@@ -11,6 +11,7 @@ import {
 } from "../../lib/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import { cn } from "../../lib/utils";
 
 type LaunchTab = "presets" | "workflows" | "agents";
 
@@ -38,6 +39,7 @@ export interface ProductWorkLauncherProps {
   /** After launch: stay on page (default), open war room, or open run detail */
   afterLaunch?: "stay" | "war-room" | "run";
   onLaunched?: (runId: string) => void;
+  className?: string;
 }
 
 function presetLabelKey(id: string): string {
@@ -61,6 +63,7 @@ export default function ProductWorkLauncher({
   compact = false,
   afterLaunch = "stay",
   onLaunched,
+  className,
 }: ProductWorkLauncherProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -197,9 +200,11 @@ export default function ProductWorkLauncher({
 
   return (
     <section
-      className={`rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] ${
-        compact ? "p-3" : "p-4"
-      }`}
+      className={cn(
+        "rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]",
+        compact ? "p-3" : "p-4",
+        className,
+      )}
     >
       <div className="mb-3 space-y-1">
         <h3 className={`font-semibold ${compact ? "text-sm" : "text-base"}`}>
@@ -230,11 +235,12 @@ export default function ProductWorkLauncher({
             key={id}
             type="button"
             onClick={() => setTab(id)}
-            className={`interactive flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium sm:flex-none sm:px-3 ${
+            className={cn(
+              "product-work-tab interactive flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium sm:flex-none sm:px-3",
               tab === id
-                ? "bg-[var(--color-primary)]/15 text-[var(--color-primary)]"
-                : "text-[var(--color-muted-foreground)] hover:bg-[var(--color-background)]"
-            }`}
+                ? "product-work-tab-active bg-[var(--color-primary)]/15 text-[var(--color-primary)]"
+                : "text-[var(--color-muted-foreground)] hover:bg-[var(--color-background)]",
+            )}
           >
             <Icon className="h-3.5 w-3.5" aria-hidden />
             {label}

@@ -13,8 +13,7 @@ export interface ScheduleConditions {
 export type OrchestrationPresetId =
   | "on_demand"
   | "discovery_only"
-  | "light_exploration"
-  | "full_autonomous";
+  | "light_exploration";
 
 export interface OrchestrationPreviewEntry {
   scheduleId: string;

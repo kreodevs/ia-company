@@ -297,9 +297,9 @@ export default function OrchestrationPlanPanel({
 
         <div className="grid gap-3 md:grid-cols-3">
           {(presets.length > 0 ? presets : [
+            { id: "on_demand", labelKey: "settings.orchestration.presets.onDemand.label", descriptionKey: "settings.orchestration.presets.onDemand.description", ruleCount: 0 },
             { id: "discovery_only", labelKey: "settings.orchestration.presets.discoveryOnly.label", descriptionKey: "settings.orchestration.presets.discoveryOnly.description", ruleCount: 1 },
             { id: "light_exploration", labelKey: "settings.orchestration.presets.lightExploration.label", descriptionKey: "settings.orchestration.presets.lightExploration.description", ruleCount: 3 },
-            { id: "full_autonomous", labelKey: "settings.orchestration.presets.fullAutonomous.label", descriptionKey: "settings.orchestration.presets.fullAutonomous.description", ruleCount: 2 },
           ]).map((preset) => (
             <button
               key={preset.id}

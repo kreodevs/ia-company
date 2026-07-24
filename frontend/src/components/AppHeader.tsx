@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import NotificationBell from "./office/NotificationBell";
@@ -5,11 +6,14 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeSwitcher from "./ThemeSwitcher";
 import TenantImpersonationSelect from "./TenantImpersonationSelect";
 import Button from "./ui/Button";
+import { cn } from "../lib/utils";
 
 interface AppHeaderProps {
   mobileSidebarOpen: boolean;
   onMobileSidebarToggle: () => void;
 }
+
+const SCROLL_THRESHOLD_PX = 8;
 
 export default function AppHeader({
   mobileSidebarOpen,
@@ -17,6 +21,17 @@ export default function AppHeader({
 }: AppHeaderProps) {
   const { logout, activeTenant } = useAuth();
   const { t } = useTranslation();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const syncScrollState = () => {
+      setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
+    };
+
+    syncScrollState();
+    window.addEventListener("scroll", syncScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", syncScrollState);
+  }, []);
 
   return (
     <>
@@ -24,7 +39,7 @@ export default function AppHeader({
         {t("nav.skipToContent", { defaultValue: "Skip to content" })}
       </a>
 
-      <header className="app-topbar">
+      <header className={cn("app-topbar", scrolled && "app-topbar--scrolled")}>
         <div className="app-topbar-inner">
           <button
             type="button"

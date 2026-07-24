@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Libre+Caslon+Display:wght@400;600&family=Playfair+Display:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Libre+Caslon+Display:wght@400;600&display=swap");
 @import "sonner/dist/styles.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -6,6 +6,7 @@
 @import "./styles/slash-theme.css";
 @import "./styles/office-theme.css";
 @import "./styles/office-encargos.css";
+@import "./styles/war-room.css";
 
 @theme inline {
   --color-vault-ink: var(--color-vault-ink);
@@ -45,9 +46,9 @@
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
-  color-scheme: light;
 }
 
+html[data-theme="letter"],
 html[data-theme="slash"] {
   color-scheme: dark;
 }
@@ -150,6 +151,31 @@ html[data-sidebar-collapsed="true"] .app-layout-column {
   z-index: 30;
   border-bottom: 1px solid var(--surface-header-border);
   background: var(--surface-header);
+  padding-top: env(safe-area-inset-top, 0px);
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    backdrop-filter 220ms ease,
+    -webkit-backdrop-filter 220ms ease;
+}
+
+.app-topbar--scrolled {
+  border-bottom-color: var(--surface-header-border-scrolled, var(--surface-header-border));
+  background: var(--surface-header-scrolled, color-mix(in srgb, var(--surface-header) 82%, transparent));
+  box-shadow: var(--surface-header-shadow-scrolled, none);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .app-topbar--scrolled {
+    background: var(--surface-header);
+    border-bottom-color: var(--surface-header-border);
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .app-topbar-inner {

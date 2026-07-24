@@ -4,8 +4,8 @@ import { useTheme } from "../../context/ThemeContext";
 
 type ToasterProps = ComponentProps<typeof SonnerToaster>;
 
-function sonnerTheme(appTheme: "letter" | "slash"): ToasterProps["theme"] {
-  return appTheme === "slash" ? "dark" : "light";
+function sonnerTheme(_appTheme: "letter" | "slash"): ToasterProps["theme"] {
+  return "dark";
 }
 
 const Toaster = ({ ...props }: ToasterProps) => {
