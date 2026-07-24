@@ -183,6 +183,14 @@ export default function OfficeEncargoDetailPage() {
           <h2 className="office-panel-title">
             {showFinal ? t("office.encargos.finalReportTitle") : selectedDoc?.title}
           </h2>
+          {showFinal && detail.finalReportKind === "summary" ? (
+            <p className="office-encargo-summary-note">{t("office.encargos.finalReportSubtitle")}</p>
+          ) : null}
+          {showFinal && detail.finalReportKind === "agent" ? (
+            <p className="office-encargo-summary-note office-encargo-summary-note-muted">
+              {t("office.encargos.finalReportFallbackNote")}
+            </p>
+          ) : null}
           {detail.phase === "in_progress" || detail.phase === "queued" ? (
             <p className="office-encargo-progress-note">{t("office.encargos.inProgressNote")}</p>
           ) : null}

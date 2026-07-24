@@ -406,6 +406,18 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   color: var(--office-link);
 }
 
+.office-encargo-summary-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: var(--office-muted);
+  line-height: 1.45;
+}
+
+.office-encargo-summary-note-muted {
+  color: var(--office-muted-dim);
+  font-style: italic;
+}
+
 .office-rich-markdown {
   --tw-prose-body: var(--office-prose-body);
   --tw-prose-headings: var(--office-prose-heading);

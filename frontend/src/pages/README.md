@@ -7,7 +7,7 @@ Route-level screens for the Auto-Company frontend.
 | Route | Page | Description |
 |-------|------|-------------|
 | `/admin` | `SuperAdminDashboardPage` | Platform overview and tenants |
-| `/admin/settings` | `PlatformSettingsPage` | LLM, email, GitHub, rate limits |
+| `/admin/settings` | `PlatformSettingsPage` | Platform config with tabs: General, LLM, Email, Integrations (GitHub), OpenCode |
 | `/admin/templates` | `PlatformTemplatesPage` | Agent and skill templates + sync to tenants |
 | `/admin/templates/workflows` | `PlatformWorkflowTemplatesPage` | Platform workflow templates (list/create) |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Visual editor for a platform workflow |

@@ -18,6 +18,9 @@ export const PLATFORM_SETTINGS_DEFAULTS = {
   authRateLimitMax: 150,
   shellTimeoutMs: 30_000,
   schedulerTickMs: 60_000,
+  opencodeEnabled: false,
+  opencodeDefaultPollIntervalMs: 5_000,
+  opencodeDefaultMaxWaitMs: 3_600_000,
 };
 
 export interface ResolvedPlatformSettings {
@@ -38,6 +41,9 @@ export interface ResolvedPlatformSettings {
   };
   resendApiKey: string;
   githubApiKey: string;
+  opencodeEnabled: boolean;
+  opencodeDefaultPollIntervalMs: number;
+  opencodeDefaultMaxWaitMs: number;
 }
 
 export type PlatformSettingsPublic = Omit<
@@ -83,6 +89,15 @@ function envFallbackImport(): Partial<PlatformSettings> {
   if (process.env.SCHEDULER_TICK_MS) {
     data.schedulerTickMs = Number(process.env.SCHEDULER_TICK_MS);
   }
+  if (process.env.OPENCODE_ENABLED === "true" || process.env.OPENCODE_ENABLED === "1") {
+    data.opencodeEnabled = true;
+  }
+  if (process.env.OPENCODE_DEFAULT_POLL_INTERVAL_MS) {
+    data.opencodeDefaultPollIntervalMs = Number(process.env.OPENCODE_DEFAULT_POLL_INTERVAL_MS);
+  }
+  if (process.env.OPENCODE_DEFAULT_MAX_WAIT_MS) {
+    data.opencodeDefaultMaxWaitMs = Number(process.env.OPENCODE_DEFAULT_MAX_WAIT_MS);
+  }
 
   if (process.env.TOKENLAB_API_KEY) {
     data.tokenlabApiKey = encryptSecret(process.env.TOKENLAB_API_KEY);
@@ -122,6 +137,11 @@ function resolveSettings(row: PlatformSettings | null): ResolvedPlatformSettings
     openrouterReferer: row?.openrouterReferer ?? PLATFORM_SETTINGS_DEFAULTS.openrouterReferer,
     resendApiKey: decryptSecret(row?.resendApiKey) ?? "",
     githubApiKey: decryptSecret(row?.githubApiKey) ?? "",
+    opencodeEnabled: row?.opencodeEnabled ?? PLATFORM_SETTINGS_DEFAULTS.opencodeEnabled,
+    opencodeDefaultPollIntervalMs:
+      row?.opencodeDefaultPollIntervalMs ?? PLATFORM_SETTINGS_DEFAULTS.opencodeDefaultPollIntervalMs,
+    opencodeDefaultMaxWaitMs:
+      row?.opencodeDefaultMaxWaitMs ?? PLATFORM_SETTINGS_DEFAULTS.opencodeDefaultMaxWaitMs,
     providers: {
       tokenlab: {
         apiKey: decryptSecret(row?.tokenlabApiKey) ?? "",
@@ -203,6 +223,9 @@ export type PlatformSettingsUpdateInput = {
   authRateLimitMax?: number;
   shellTimeoutMs?: number;
   schedulerTickMs?: number;
+  opencodeEnabled?: boolean;
+  opencodeDefaultPollIntervalMs?: number;
+  opencodeDefaultMaxWaitMs?: number;
 };
 
 function mergeSecretField(
@@ -238,6 +261,9 @@ export async function updatePlatformSettings(
       authRateLimitMax: input.authRateLimitMax,
       shellTimeoutMs: input.shellTimeoutMs,
       schedulerTickMs: input.schedulerTickMs,
+      opencodeEnabled: input.opencodeEnabled,
+      opencodeDefaultPollIntervalMs: input.opencodeDefaultPollIntervalMs,
+      opencodeDefaultMaxWaitMs: input.opencodeDefaultMaxWaitMs,
       tokenlabApiKey: mergeSecretField(input.tokenlabApiKey, existing.tokenlabApiKey),
       openrouterApiKey: mergeSecretField(input.openrouterApiKey, existing.openrouterApiKey),
       customApiKey: mergeSecretField(input.customApiKey, existing.customApiKey),

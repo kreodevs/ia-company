@@ -622,6 +622,7 @@ export interface OfficeEncargoDocument {
 
 export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   finalReport: string;
+  finalReportKind: "summary" | "agent" | "none";
   documents: OfficeEncargoDocument[];
   debugHref: string;
   warRoomHref: string | null;
@@ -756,6 +757,7 @@ export interface CoordinatorChatResponse {
 
 export interface TenantOpencodeConfig {
   tenantId: string;
+  platformEnabled: boolean;
   enabled: boolean;
   baseUrl: string | null;
   username: string | null;
@@ -879,6 +881,9 @@ export interface PlatformSettings {
   authRateLimitMax: number;
   shellTimeoutMs: number;
   schedulerTickMs: number;
+  opencodeEnabled: boolean;
+  opencodeDefaultPollIntervalMs: number;
+  opencodeDefaultMaxWaitMs: number;
   updatedAt?: string;
 }
 

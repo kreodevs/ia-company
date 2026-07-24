@@ -8,7 +8,7 @@ On-demand AI office at `/office` — human-facing layer over the agent company.
 |-------|------|---------|
 | `/office` | `OfficePage.tsx` | Coordinator chat, services, activity, ROI |
 | `/office/encargos` | `OfficeEncargosPage.tsx` | Job inbox — commissioned work |
-| `/office/encargos/:runId` | `OfficeEncargoDetailPage.tsx` | Final report + team documents (markdown preview) |
+| `/office/encargos/:runId` | `OfficeEncargoDetailPage.tsx` | Consolidated **summary** + per-agent documents |
 
 ## Components
 
@@ -34,7 +34,7 @@ Technical routes for logs, consensus, ops, and AI catalog — linked from encarg
 1. User chats with the **coordinator** or picks a **Quick service**.
 2. Coordinator proposes team inline → **Approve & run**.
 3. User lands on **`/war-room/:productId?run=:runId`** to watch agents live (encargo at **`/office/encargos/:runId`** when finished).
-4. When finished: **Informe final** + per-agent documents in preview (GFM via `@tailwindcss/typography` + `RichMarkdownView`).
+4. When finished: **Resumen** (mandatory LLM synthesis) + per-agent documents in **Documentos** tab. Duplicates (revision vs step) are deduplicated in the list.
 5. **Scope** selector above chat: general exploration vs. a specific product — plan card shows scope before execute.
 6. **Notifications** link to the human encargo view.
 7. **War room** stays available for live tactical view.

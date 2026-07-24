@@ -75,6 +75,7 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
           resend: Boolean(settings.resendApiKey),
           github: Boolean(settings.githubApiKey),
         },
+        opencodeEnabled: settings.opencodeEnabled,
       };
     } catch (err) {
       return handleRouteError(reply, err);

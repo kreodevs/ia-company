@@ -1,9 +1,11 @@
 import { prisma } from "./prisma.js";
 import { decryptSecret, encryptSecret, maskSecret } from "./crypto.js";
+import { getPlatformSettingsSync } from "./platform-settings.js";
 import { OpencodeClient } from "./opencode-client.js";
 
 export interface TenantOpencodeConfigPublic {
   tenantId: string;
+  platformEnabled: boolean;
   enabled: boolean;
   baseUrl: string | null;
   username: string | null;
@@ -30,6 +32,7 @@ export interface TenantOpencodeConfigResolved {
 
 function toPublic(
   tenantId: string,
+  platformEnabled: boolean,
   row: {
     enabled: boolean;
     baseUrl: string | null;
@@ -44,6 +47,7 @@ function toPublic(
   const password = row?.password ?? null;
   return {
     tenantId,
+    platformEnabled,
     enabled: row?.enabled ?? false,
     baseUrl,
     username: row?.username ?? "opencode",
@@ -51,20 +55,24 @@ function toPublic(
     pollIntervalMs: row?.pollIntervalMs ?? 5000,
     maxWaitMs: row?.maxWaitMs ?? 3_600_000,
     autoApprovePermissions: row?.autoApprovePermissions ?? true,
-    configured: Boolean(row?.enabled && baseUrl && password),
+    configured: Boolean(platformEnabled && row?.enabled && baseUrl && password),
   };
 }
 
 export async function getTenantOpencodeConfigPublic(
   tenantId: string,
 ): Promise<TenantOpencodeConfigPublic> {
+  const platform = getPlatformSettingsSync();
   const row = await prisma.tenantOpencodeConfig.findUnique({ where: { tenantId } });
-  return toPublic(tenantId, row);
+  return toPublic(tenantId, platform.opencodeEnabled, row);
 }
 
 export async function resolveTenantOpencodeConfig(
   tenantId: string,
 ): Promise<TenantOpencodeConfigResolved | null> {
+  const platform = getPlatformSettingsSync();
+  if (!platform.opencodeEnabled) return null;
+
   const row = await prisma.tenantOpencodeConfig.findUnique({ where: { tenantId } });
   if (!row?.enabled || !row.baseUrl) return null;
 
@@ -108,6 +116,10 @@ export async function upsertTenantOpencodeConfig(
     }
   }
 
+  const platform = getPlatformSettingsSync();
+  const pollDefault = platform.opencodeDefaultPollIntervalMs;
+  const waitDefault = platform.opencodeDefaultMaxWaitMs;
+
   const row = await prisma.tenantOpencodeConfig.upsert({
     where: { tenantId },
     update: {
@@ -127,14 +139,14 @@ export async function upsertTenantOpencodeConfig(
       baseUrl: input.baseUrl?.trim() || null,
       username: input.username?.trim() || "opencode",
       password: passwordUpdate ?? null,
-      pollIntervalMs: input.pollIntervalMs ?? 5000,
-      maxWaitMs: input.maxWaitMs ?? 3_600_000,
+      pollIntervalMs: input.pollIntervalMs ?? pollDefault,
+      maxWaitMs: input.maxWaitMs ?? waitDefault,
       autoApprovePermissions: input.autoApprovePermissions ?? true,
     },
   });
 
   const fresh = await prisma.tenantOpencodeConfig.findUnique({ where: { tenantId } });
-  return toPublic(tenantId, fresh ?? row);
+  return toPublic(tenantId, platform.opencodeEnabled, fresh ?? row);
 }
 
 export async function testTenantOpencodeConnection(tenantId: string): Promise<{
@@ -144,6 +156,10 @@ export async function testTenantOpencodeConnection(tenantId: string): Promise<{
 }> {
   const config = await resolveTenantOpencodeConfig(tenantId);
   if (!config) {
+    const platform = getPlatformSettingsSync();
+    if (!platform.opencodeEnabled) {
+      return { ok: false, error: "OpenCode is disabled at platform level — contact your superadmin" };
+    }
     return { ok: false, error: "OpenCode is not enabled or missing URL/password" };
   }
 

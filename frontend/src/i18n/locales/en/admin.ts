@@ -65,6 +65,13 @@ export const admin = {
     subtitle:
       "Application configuration (LLM keys, email, limits). Infrastructure secrets stay in .env.",
     saved: "Platform settings saved",
+    tabs: {
+      general: "General",
+      llm: "LLM",
+      email: "Email",
+      integrations: "Integrations",
+      opencode: "OpenCode",
+    },
     general: {
       title: "General",
       publicUrl: "Public URL",
@@ -100,6 +107,15 @@ export const admin = {
       token: "GitHub personal access token",
       tokenPlaceholder: "ghp_… or fine-grained token",
       hint: "Used by workflow agents for git_commit and repo operations. Can also be set via GH_TOKEN in server environment.",
+    },
+    opencode: {
+      title: "OpenCode (platform)",
+      subtitle:
+        "Master switch for delegating feature-development implementation to tenant OpenCode servers. Tenants configure URL and credentials under Settings → OpenCode.",
+      enabled: "Enable OpenCode for all tenants",
+      defaultPollInterval: "Default poll interval for new tenants (ms)",
+      defaultMaxWait: "Default max wait for new tenants (ms)",
+      hint: "When disabled, tenants cannot connect or delegate runs to OpenCode even if they saved credentials.",
     },
     save: "Save platform settings",
   },

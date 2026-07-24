@@ -1,6 +1,12 @@
 # OpenCode integration
 
-Each tenant configures its own OpenCode server under **Settings → OpenCode**.
+**Platform (superadmin):** Admin → Platform settings → **OpenCode** — master enable + default poll/wait for new tenants.
+
+**Tenant:** Settings → OpenCode — URL, Basic Auth, enable per tenant.
+
+**Product:** Product code page — agent, model, project path per product.
+
+Each tenant connects to its own OpenCode server under **Settings → OpenCode**.
 
 ## Flow
 

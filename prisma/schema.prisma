@@ -755,5 +755,8 @@ model PlatformSettings {
   authRateLimitMax    Int           @default(150)
   shellTimeoutMs      Int           @default(30000)
   schedulerTickMs     Int           @default(60000)
+  opencodeEnabled     Boolean       @default(false)
+  opencodeDefaultPollIntervalMs Int @default(5000)
+  opencodeDefaultMaxWaitMs      Int @default(3600000)
   updatedAt           DateTime      @updatedAt
 }

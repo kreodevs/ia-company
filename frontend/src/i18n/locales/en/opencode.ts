@@ -20,6 +20,8 @@ export const opencode = {
     testFail: "Connection failed",
     configured: "Ready to delegate",
     notConfigured: "Enable OpenCode and set URL + password to delegate implementation",
+    platformDisabled:
+      "OpenCode is disabled at platform level. Ask your superadmin to enable it under Admin → Platform settings → OpenCode.",
     productHint:
       "Agent, model, and project path are configured per product on the product code page.",
   },

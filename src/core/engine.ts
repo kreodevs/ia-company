@@ -322,6 +322,45 @@ export class WorkflowExecutor {
         await finalizeProductIntake(input.tenantId, runId, sharedMemory, input.productSlug);
       }
 
+      if (input.tenantId) {
+        let productName: string | null = null;
+        if (input.productId || input.productSlug) {
+          const product = await prisma.tenantProduct.findFirst({
+            where: input.productId
+              ? { id: input.productId, tenantId: input.tenantId }
+              : { tenantId: input.tenantId, slug: input.productSlug! },
+            select: { name: true },
+          });
+          productName = product?.name ?? null;
+        }
+
+        try {
+          const { generateAndPersistRunSummary } = await import("../lib/run-summary.js");
+          const summary = await generateAndPersistRunSummary({
+            runId,
+            tenantId: input.tenantId,
+            workflowName,
+            sharedMemory,
+            productSlug: input.productSlug,
+            productName,
+            tenantLlm: tenantCtx.llm,
+          });
+          if (summary) {
+            sharedMemory.runSummary = summary;
+            sharedMemory.runSummaryGeneratedAt = new Date().toISOString();
+            await prisma.executionRun.update({
+              where: { id: runId },
+              data: { sharedMemory: sharedMemory as object },
+            });
+          }
+        } catch (summaryErr) {
+          const message = summaryErr instanceof Error ? summaryErr.message : String(summaryErr);
+          await this.appendLog(runId, "warn", "Run summary generation failed", {
+            payload: { error: message },
+          });
+        }
+      }
+
       await this.dispatchRunNotification(runId, input.tenantId, "COMPLETED", {
         totalTokens,
         totalCostUsd,

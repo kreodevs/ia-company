@@ -323,20 +323,27 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold">{t("opencode.settings.title")}</h2>
             <p className="text-sm text-[var(--color-muted-foreground)]">{t("opencode.settings.subtitle")}</p>
             <p className="text-xs text-[var(--color-muted-foreground)]">{t("opencode.settings.productHint")}</p>
-            <p
-              className={`text-xs ${opencode.configured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
-            >
-              {opencode.configured ? t("opencode.settings.configured") : t("opencode.settings.notConfigured")}
-            </p>
+            {!opencode.platformEnabled ? (
+              <p className="rounded-lg border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-3 py-2 text-sm text-[var(--color-destructive)]">
+                {t("opencode.settings.platformDisabled")}
+              </p>
+            ) : (
+              <p
+                className={`text-xs ${opencode.configured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+              >
+                {opencode.configured ? t("opencode.settings.configured") : t("opencode.settings.notConfigured")}
+              </p>
+            )}
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={opencode.enabled ?? false}
+                disabled={!opencode.platformEnabled}
                 onChange={(e) => setOpencode({ ...opencode, enabled: e.target.checked })}
               />
               {t("opencode.settings.enabled")}
             </label>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={`grid gap-4 md:grid-cols-2 ${!opencode.platformEnabled ? "pointer-events-none opacity-50" : ""}`}>
               <label className="block space-y-1 text-sm md:col-span-2">
                 <span>{t("opencode.settings.baseUrl")}</span>
                 <input
@@ -381,14 +388,14 @@ export default function SettingsPage() {
             )}
             <div className="flex flex-wrap gap-2">
               <button
-                disabled={savingOpencode}
+                disabled={savingOpencode || !opencode.platformEnabled}
                 onClick={() => void saveOpencode()}
                 className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
               >
                 {savingOpencode ? t("common.saving") : t("opencode.settings.save")}
               </button>
               <button
-                disabled={testingOpencode}
+                disabled={testingOpencode || !opencode.platformEnabled}
                 onClick={() => void testOpencode()}
                 className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
               >

@@ -37,6 +37,7 @@ export interface OfficeEncargoDocument {
 
 export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   finalReport: string;
+  finalReportKind: "summary" | "agent" | "none";
   documents: OfficeEncargoDocument[];
   debugHref: string;
   warRoomHref: string | null;
@@ -117,6 +118,16 @@ function pickFinalReport(
   return "";
 }
 
+export function resolveFinalReport(
+  memory: SharedMemory,
+  documents: OfficeEncargoDocument[],
+  revisions: Array<{ agentName: string; content: string; stepOrder: number }>,
+): string {
+  const runSummary = readMemoryString(memory, "runSummary");
+  if (runSummary) return runSummary;
+  return pickFinalReport(documents, revisions);
+}
+
 async function countDocumentsForRun(
   run: ExecutionRun & { workflow: { name: string } },
   productSlug: string | null,
@@ -161,7 +172,8 @@ async function mapRunToSummary(
   const documentCount = await countDocumentsForRun(run, product?.slug ?? null, consensusId ?? null);
 
   const phase = toPhase(run.status);
-  const hasFinalReport = phase === "delivered" && documentCount > 0;
+  const hasRunSummary = Boolean(readMemoryString(memory, "runSummary"));
+  const hasFinalReport = phase === "delivered" && (hasRunSummary || documentCount > 0);
 
   return {
     id: run.id,
@@ -227,11 +239,13 @@ async function loadRunDocuments(
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const documents: OfficeEncargoDocument[] = [];
   const seen = new Set<string>();
+  const revisionKeys = new Set<string>();
 
   const push = (doc: OfficeEncargoDocument) => {
-    const key = `${doc.kind}:${doc.agentName}:${doc.stepOrder}:${doc.path ?? doc.title}`;
-    if (seen.has(key)) return;
-    seen.add(key);
+    const agentStepKey = `${doc.agentName}:${doc.stepOrder}`;
+    const contentKey = `${agentStepKey}:${doc.markdown.trim().slice(0, 200)}`;
+    if (seen.has(contentKey)) return;
+    seen.add(contentKey);
     documents.push(doc);
   };
 
@@ -242,6 +256,7 @@ async function loadRunDocuments(
     });
     for (const rev of revisions) {
       if (!rev.content.trim()) continue;
+      revisionKeys.add(`${rev.agentName}:${rev.stepOrder}`);
       push({
         id: rev.id,
         kind: "revision",
@@ -258,7 +273,10 @@ async function loadRunDocuments(
     const step = history[i]!;
     const raw = typeof step.output === "string" ? step.output : "";
     if (!raw.trim()) continue;
-    const handoff = extractHandoffFromAgentOutput(raw, step.agentName, step.stepOrder ?? i + 1);
+    const stepOrder = step.stepOrder ?? i + 1;
+    if (revisionKeys.has(`${step.agentName}:${stepOrder}`)) continue;
+
+    const handoff = extractHandoffFromAgentOutput(raw, step.agentName, stepOrder);
     if (!handoff.content.trim()) continue;
     push({
       id: `step-${step.stepId ?? i}`,
@@ -266,11 +284,11 @@ async function loadRunDocuments(
       agentName: step.agentName,
       title: step.agentName.replace(/-/g, " "),
       markdown: handoff.content.trim(),
-      stepOrder: step.stepOrder ?? i + 1,
+      stepOrder,
     });
   }
 
-  if (product?.slug && run.completedAt) {
+  if (product?.slug && run.completedAt && revisionKeys.size === 0) {
     const docsIndex = await listProductAgentDocs(product.slug);
     const start = (run.startedAt ?? run.createdAt).getTime();
     const end = run.completedAt.getTime() + 5 * 60_000;
@@ -336,13 +354,19 @@ export async function getOfficeEncargoDetail(
     .filter((d) => d.kind === "revision")
     .map((d) => ({ agentName: d.agentName, content: d.markdown, stepOrder: d.stepOrder }));
 
-  const finalReport = pickFinalReport(documents, revisions);
+  const finalReport = resolveFinalReport(memory, documents, revisions);
+  const finalReportKind: OfficeEncargoDetail["finalReportKind"] = readMemoryString(memory, "runSummary")
+    ? "summary"
+    : finalReport
+      ? "agent"
+      : "none";
 
   return {
     ...summary,
     documentCount: documents.length,
     hasFinalReport: finalReport.length > 0,
     finalReport,
+    finalReportKind,
     documents,
     debugHref: `/debug/runs/${run.id}`,
     warRoomHref: product ? `/war-room/${product.id}` : null,
