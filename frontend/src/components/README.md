@@ -1,6 +1,6 @@
 # Frontend components
 
-UI built with **Kreo registry components** styled via the **Letter** design system (`../DESIGN.md`).
+UI built with **Kreo registry components** styled via the **Paperclip Dark Warm** design system (`../DESIGN-PAPERCLIP.md`).
 
 ## Structure
 
@@ -13,14 +13,14 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Office | `office/` | `OfficeSpendWidget` — sidebar spend bar; main UI in `OfficePage` |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
-| Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |
+| Shared widgets | `ThemeSwitcher.tsx` | Paperclip Warm / Slash (dark) theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
 | Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
 
 ## Themes
 
-Letter (light) and Slash (dark) — see `frontend/DESIGN.md`.
+Paperclip Warm (`letter`, default) and Slash — see `frontend/DESIGN.md`.
 
 ## Import convention
 
@@ -28,10 +28,10 @@ Letter (light) and Slash (dark) — see `frontend/DESIGN.md`.
 - **New Kreo usage:** import from `@/components/atoms/*` or `@/components/molecules/*`
 - **Utilities:** `@/lib/utils` (`cn()`)
 
-## Letter variants
+## Theme variants
 
 - **Card `tint`:** `none` | `peach` | `mint` | `lavender` | `mist`
-- **Button variants (Kreo):** `default` (teal), `violet`, `blue`, `secondary`, `outline`, `ghost`, `destructive`, `link`
+- **Button variants (Kreo):** `default` (manila), `violet`, `blue`, `secondary`, `outline`, `ghost`, `destructive`, `link`
 
 ## Toast notifications
 

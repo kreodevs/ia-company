@@ -3,8 +3,9 @@ export const ops = {
   loadFailed: "No se pudo cargar el panel.",
   eyebrow: "Operaciones",
   title: "Operaciones",
-  subtitle: "Ciclo autónomo, KPIs y orquestación — productos y oportunidades en el menú Productos.",
-  runMetaCycleNow: "Ejecutar ciclo meta",
+  subtitle: "KPIs y programación opcional — lanza encargos desde la Oficina.",
+  runScheduledNow: "Ejecutar programación",
+  goToOffice: "Ir a la Oficina",
   pendingDecisionsMessage:
     "{{count}} decisión(es) go/no-go esperando por ti. La compañía autónoma está pausada.",
   reviewDecisions: "Revisar decisiones →",
@@ -58,13 +59,13 @@ export const ops = {
     focusedProduct: "Producto en foco:",
   },
   metaCycle: {
-    title: "¿Qué hace el ciclo meta?",
+    title: "Programación automática (opcional)",
     description:
-      "El orquestador elige el workflow según la fase, los productos y las ideas aprobadas. Ejecuta agentes y actualiza el consenso.",
-    step1: "Lee fase, productos e ideas",
-    step2: "Elige discovery, evaluación, build o launch",
-    step3: "Encola la ejecución — sigue el progreso en Ejecuciones",
-    enableSchedule: "Activar programación automática",
+      "Por defecto la Oficina es bajo demanda: tú lanzas discovery, evaluación o build. Aquí puedes añadir reglas fijas (p. ej. discovery semanal) si quieres algo en piloto automático.",
+    step1: "Elige un preset o añade reglas en Configuración → Programaciones",
+    step2: "Cada regla ejecuta un workflow concreto cuando se cumplen las condiciones",
+    step3: "Sigue el progreso en Ejecuciones — la Oficina sigue disponible para encargos manuales",
+    enableSchedule: "Configurar programaciones",
   },
   portfolio: {
     title: "Portfolio de productos",
@@ -125,10 +126,11 @@ export const ops = {
   schedules: {
     title: "Actividades programadas",
     subtitle:
-      "Todos los ciclos autónomos del tenant. Ajusta la periodicidad, pausa o cancela programaciones fijas.",
-    advanced: "Crear programaciones →",
+      "Reglas opcionales de ejecución automática. El flujo principal sigue siendo la Oficina bajo demanda.",
+    advanced: "Configurar presets →",
     emptyTitle: "Sin programaciones activas",
-    emptyHint: "Activa el ciclo meta para que los agentes trabajen de forma autónoma.",
+    emptyHint: "Normal en modo bajo demanda. Lanza encargos desde la Oficina o aplica un preset si quieres discovery u otras tareas en piloto automático.",
+    configurePresets: "Ver presets",
     metaBadge: "Meta",
     metaDescription:
       "Sin workflow fijo: el meta-orchestrator nativo elige discovery, evaluación, build o launch según portfolio y fase.",

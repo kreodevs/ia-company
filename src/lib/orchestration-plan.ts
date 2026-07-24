@@ -13,6 +13,16 @@ import { executeMetaScheduleRun, resolveMetaOrchestratorDecision } from "../core
 import { executeWorkflowInBackground } from "../core/engine.js";
 import type { OrchestrationPreviewEntry } from "../types/orchestration.js";
 
+const LEGACY_META_NAME_PATTERNS = [/^autonomous company/i, /^orquestador din[aá]mico$/i];
+
+export function isLegacyMetaSchedule(
+  schedule: Pick<AutonomousSchedule, "name" | "orchestrationMode">,
+): boolean {
+  if (schedule.orchestrationMode !== "meta_dynamic") return false;
+  const name = schedule.name.trim();
+  return LEGACY_META_NAME_PATTERNS.some((pattern) => pattern.test(name));
+}
+
 export function scheduleKindFromMode(mode: OrchestrationMode): ScheduleKind {
   return mode === "meta_dynamic" ? "meta" : "workflow";
 }
@@ -36,6 +46,7 @@ export async function ensureDefaultOrchestrationPlan(tenantId: string) {
   const existing = await prisma.autonomousSchedule.findMany({ where: { tenantId } });
   if (existing.length > 0) {
     await migrateLegacySchedules(existing);
+    await migrateObsoleteOrchestrationPlan(tenantId, existing);
     return prisma.autonomousSchedule.findMany({
       where: { tenantId },
       orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
@@ -47,6 +58,29 @@ export async function ensureDefaultOrchestrationPlan(tenantId: string) {
     where: { tenantId },
     orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
   });
+}
+
+async function migrateObsoleteOrchestrationPlan(
+  tenantId: string,
+  schedules: AutonomousSchedule[],
+) {
+  const legacyMeta = schedules.filter(isLegacyMetaSchedule);
+  if (legacyMeta.length === 0) return;
+
+  const nonLegacy = schedules.filter((schedule) => !isLegacyMetaSchedule(schedule));
+
+  if (nonLegacy.length === 0) {
+    await applyOrchestrationPreset(tenantId, "on_demand");
+    return;
+  }
+
+  for (const schedule of legacyMeta) {
+    if (!schedule.enabled) continue;
+    await prisma.autonomousSchedule.update({
+      where: { id: schedule.id },
+      data: { enabled: false, nextRunAt: null },
+    });
+  }
 }
 
 async function migrateLegacySchedules(schedules: AutonomousSchedule[]) {

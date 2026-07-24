@@ -105,11 +105,11 @@ export default function OpsPage() {
         actions={
           primarySchedule ? (
             <Button onClick={() => void runMetaNow()} disabled={runningMeta}>
-              {runningMeta ? t("common.starting") : t("ops.runMetaCycleNow")}
+              {runningMeta ? t("common.starting") : t("ops.runScheduledNow")}
             </Button>
           ) : (
-            <Link to="/settings?tab=schedules">
-              <Button variant="secondary">{t("ops.metaCycle.enableSchedule")}</Button>
+            <Link to="/office">
+              <Button variant="secondary">{t("ops.goToOffice")}</Button>
             </Link>
           )
         }

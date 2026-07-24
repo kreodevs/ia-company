@@ -5,6 +5,7 @@ import {
   createOpencodeClientForTenant,
   resolveTenantOpencodeConfig,
 } from "./tenant-opencode.js";
+import { resolveOpencodeDelegationConfig } from "./product-opencode.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 import { emitRunEvent } from "../core/engine.js";
@@ -113,7 +114,7 @@ export async function startOpencodeDelegation(input: StartDelegationInput): Prom
   const existing = await prisma.opencodeDelegation.findUnique({ where: { runId: input.runId } });
   if (existing) return existing.id;
 
-  const config = await resolveTenantOpencodeConfig(input.tenantId);
+  const config = await resolveOpencodeDelegationConfig(input.tenantId, input.productId);
   if (!config) {
     throw new Error("OpenCode is not configured for this tenant");
   }

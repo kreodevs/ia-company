@@ -1,12 +1,68 @@
+.office-page {
+  --office-accent: #38bdf8;
+  --office-accent-hover: #7dd3fc;
+  --office-accent-bg: rgba(56, 189, 248, 0.08);
+  --office-accent-border: rgba(56, 189, 248, 0.35);
+  --office-accent-border-strong: rgba(56, 189, 248, 0.55);
+  --office-surface: rgba(15, 23, 42, 0.55);
+  --office-surface-deep: rgba(2, 6, 23, 0.55);
+  --office-surface-card: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.88));
+  --office-border: rgba(148, 163, 184, 0.18);
+  --office-border-subtle: rgba(148, 163, 184, 0.14);
+  --office-muted: #94a3b8;
+  --office-muted-dim: #64748b;
+  --office-text-emphasis: #e2e8f0;
+  --office-text-on-accent: #e0f2fe;
+  --office-link: #7dd3fc;
+  --office-filter-bg: rgba(15, 23, 42, 0.55);
+  --office-filter-active-bg: rgba(56, 189, 248, 0.12);
+  --office-btn-muted-bg: rgba(15, 23, 42, 0.5);
+  --office-btn-muted-text: #94a3b8;
+  --office-prose-body: var(--foreground-muted, #cbd5e1);
+  --office-prose-heading: var(--foreground, #f1f5f9);
+  --office-prose-link: #7dd3fc;
+  --office-prose-quote: #94a3b8;
+}
+
+html[data-theme="letter"] .office-page {
+  --office-accent: var(--manila);
+  --office-accent-hover: #e8d4a8;
+  --office-accent-bg: rgba(243, 230, 196, 0.08);
+  --office-accent-border: rgba(243, 230, 196, 0.35);
+  --office-accent-border-strong: rgba(243, 230, 196, 0.55);
+  --office-surface: rgba(31, 29, 26, 0.88);
+  --office-surface-deep: rgba(20, 20, 19, 0.95);
+  --office-surface-card: linear-gradient(145deg, #1f1d1a 0%, #141413 100%);
+  --office-border: var(--dark-border);
+  --office-border-subtle: rgba(47, 44, 40, 0.75);
+  --office-muted: var(--stone-muted);
+  --office-muted-dim: var(--dim-text);
+  --office-text-emphasis: var(--manila);
+  --office-text-on-accent: var(--charcoal);
+  --office-link: var(--manila);
+  --office-filter-bg: var(--dark-surface);
+  --office-filter-active-bg: rgba(243, 230, 196, 0.1);
+  --office-btn-muted-bg: var(--dark-raised-surface);
+  --office-btn-muted-text: var(--stone-muted);
+  --office-prose-body: var(--manila);
+  --office-prose-heading: var(--manila);
+  --office-prose-link: var(--manila);
+  --office-prose-quote: var(--stone-muted);
+}
+
+html[data-theme="letter"] .office-encargo-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .office-link-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.45rem 0.85rem;
   border-radius: 0.65rem;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  background: rgba(56, 189, 248, 0.08);
-  color: #7dd3fc;
+  border: 1px solid var(--office-accent-border);
+  background: var(--office-accent-bg);
+  color: var(--office-link);
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
@@ -14,14 +70,14 @@
 }
 
 .office-link-btn:hover {
-  background: rgba(56, 189, 248, 0.16);
-  border-color: rgba(56, 189, 248, 0.55);
+  background: color-mix(in srgb, var(--office-accent-bg) 70%, var(--office-accent) 30%);
+  border-color: var(--office-accent-border-strong);
 }
 
 .office-link-btn-muted {
-  border-color: rgba(148, 163, 184, 0.25);
-  background: rgba(15, 23, 42, 0.5);
-  color: #94a3b8;
+  border-color: var(--office-border);
+  background: var(--office-btn-muted-bg);
+  color: var(--office-btn-muted-text);
 }
 
 @media (max-width: 640px) {
@@ -58,9 +114,9 @@
 }
 
 .office-encargos-filter {
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.55);
-  color: #94a3b8;
+  border: 1px solid var(--office-border);
+  background: var(--office-filter-bg);
+  color: var(--office-muted);
   border-radius: 999px;
   padding: 0.35rem 0.75rem;
   font-size: 0.78rem;
@@ -71,9 +127,9 @@
 }
 
 .office-encargos-filter-active {
-  border-color: rgba(56, 189, 248, 0.55);
-  background: rgba(56, 189, 248, 0.12);
-  color: #e0f2fe;
+  border-color: var(--office-accent-border-strong);
+  background: var(--office-filter-active-bg);
+  color: var(--office-text-on-accent);
 }
 
 .office-encargos-list {
@@ -88,14 +144,14 @@
   display: block;
   padding: 1rem 1.1rem;
   border-radius: 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.88));
+  border: 1px solid var(--office-border-subtle);
+  background: var(--office-surface-card);
   text-decoration: none;
   color: inherit;
 }
 
 .office-encargo-card:hover {
-  border-color: rgba(56, 189, 248, 0.45);
+  border-color: var(--office-accent-border-strong);
 }
 
 .office-encargo-card-head {
@@ -133,6 +189,12 @@
   color: #fca5a5;
 }
 
+html[data-theme="letter"] .office-encargo-phase[data-phase="in_progress"],
+html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
+  border-color: rgba(243, 230, 196, 0.45);
+  color: var(--manila);
+}
+
 .office-encargo-card-title {
   margin: 0;
   font-size: 1rem;
@@ -143,7 +205,7 @@
 .office-encargo-card-request {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: var(--office-muted);
   line-height: 1.45;
 }
 
@@ -153,13 +215,13 @@
   gap: 0.35rem 0.75rem;
   margin-top: 0.55rem;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--office-muted-dim);
 }
 
 .office-encargo-card-team {
   margin: 0.45rem 0 0;
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--office-muted);
 }
 
 .office-encargo-card-foot {
@@ -169,16 +231,16 @@
   gap: 0.75rem;
   margin-top: 0.65rem;
   padding-top: 0.55rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid var(--office-border-subtle);
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--office-muted-dim);
 }
 
 .office-encargo-war-link {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: #7dd3fc;
+  color: var(--office-link);
 }
 
 .office-encargos-empty {
@@ -207,8 +269,8 @@
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--office-border-subtle);
+  background: var(--office-surface);
 }
 
 .office-encargo-detail-meta dt {
@@ -216,13 +278,13 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--office-muted-dim);
 }
 
 .office-encargo-detail-meta dd {
   margin: 0.15rem 0 0;
   font-size: 0.88rem;
-  color: #e2e8f0;
+  color: var(--office-text-emphasis);
 }
 
 .office-encargo-detail-tabs {
@@ -263,8 +325,8 @@
 .office-encargo-doc-item {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid var(--office-border-subtle);
+  background: var(--office-surface-deep);
   border-radius: 0.65rem;
   padding: 0.55rem 0.65rem;
   cursor: pointer;
@@ -272,14 +334,14 @@
 }
 
 .office-encargo-doc-item-active {
-  border-color: rgba(56, 189, 248, 0.5);
-  background: rgba(56, 189, 248, 0.08);
+  border-color: var(--office-accent-border-strong);
+  background: var(--office-accent-bg);
 }
 
 .office-encargo-doc-agent {
   display: block;
   font-size: 0.72rem;
-  color: #64748b;
+  color: var(--office-muted-dim);
   text-transform: capitalize;
 }
 
@@ -293,14 +355,33 @@
 .office-encargo-doc-kind {
   display: block;
   font-size: 0.68rem;
-  color: #64748b;
+  color: var(--office-muted-dim);
   margin-top: 0.15rem;
 }
 
 .office-encargo-progress-note {
   margin: 0 0 0.75rem;
   font-size: 0.82rem;
-  color: #7dd3fc;
+  color: var(--office-link);
+}
+
+.office-rich-markdown {
+  --tw-prose-body: var(--office-prose-body);
+  --tw-prose-headings: var(--office-prose-heading);
+  --tw-prose-lead: var(--office-prose-body);
+  --tw-prose-bold: var(--office-prose-heading);
+  --tw-prose-counters: var(--office-muted);
+  --tw-prose-bullets: var(--office-muted);
+  --tw-prose-hr: var(--office-border);
+  --tw-prose-quotes: var(--office-prose-quote);
+  --tw-prose-quote-borders: var(--office-accent-border-strong);
+  --tw-prose-captions: var(--office-muted);
+  --tw-prose-code: var(--office-prose-heading);
+  --tw-prose-pre-code: var(--office-prose-body);
+  --tw-prose-th-borders: var(--office-border);
+  --tw-prose-td-borders: var(--office-border-subtle);
+  --tw-prose-links: var(--office-prose-link);
+  color: var(--office-prose-body);
 }
 
 .office-rich-markdown table {
@@ -319,7 +400,7 @@
 .office-rich-markdown h3,
 .office-rich-markdown h4 {
   font-family: var(--font-display);
-  color: var(--foreground);
+  color: var(--office-prose-heading);
   margin: 1.1rem 0 0.55rem;
   line-height: 1.25;
 }
@@ -330,38 +411,41 @@
 
 .office-rich-markdown p {
   margin: 0.55rem 0;
+  color: var(--office-prose-body);
 }
 
 .office-rich-markdown ul,
 .office-rich-markdown ol {
   margin: 0.55rem 0;
   padding-left: 1.25rem;
+  color: var(--office-prose-body);
 }
 
 .office-rich-markdown li {
   margin: 0.25rem 0;
+  color: var(--office-prose-body);
 }
 
 .office-rich-markdown strong {
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--office-prose-heading);
 }
 
 .office-rich-markdown blockquote {
   margin: 0.75rem 0;
   padding-left: 0.85rem;
-  border-left: 3px solid rgba(56, 189, 248, 0.45);
-  color: #94a3b8;
+  border-left: 3px solid var(--office-accent-border-strong);
+  color: var(--office-prose-quote);
 }
 
 .office-rich-markdown hr {
   margin: 1rem 0;
   border: none;
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  border-top: 1px solid var(--office-border);
 }
 
 .office-rich-markdown a {
-  color: #7dd3fc;
+  color: var(--office-prose-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

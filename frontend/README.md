@@ -39,7 +39,7 @@ Two login modes at `/login`:
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
 | `/ops` | `OpsPage` | Multi-product portfolio, pipeline queue, meta-orchestrator preview |
 | `/settings` | `SettingsPage` | Tenant LLM keys + meta/fixed autonomous schedules (admin only) |
-| `/help` | `HelpPage` | Centro de ayuda — tutoriales en markdown |
+| `/help` | `HelpPage` | Centro de ayuda — guía Oficina bajo demanda (markdown por secciones) |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Superadmin — React Flow editor for global workflow templates |
 
 Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
@@ -73,7 +73,7 @@ Articles live under `src/content/help/`:
 
 | File | Route | Description |
 |------|-------|-------------|
-| `tutorial.md` | `/help/guia-completa` | Guía completa de la plataforma |
+| `tutorial.md` / `tutorial.en.md` | `/help/guia-completa` | Guía completa: Oficina, productos GitHub, war room, `/debug/*`, schedules opcionales |
 
 Register new articles in `src/content/help/index.ts`.
 

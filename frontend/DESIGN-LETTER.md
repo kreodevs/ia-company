@@ -1,13 +1,15 @@
-# Letter — Style Reference (Light theme)
+# Paperclip Dark Warm — Style Reference
 
-> Private gallery with iridescent vault artifacts.
+> Warm charcoal shell with manila typography — primary anchor `#141413`.
 
-**Theme id:** `letter` · **Mode:** light
+**Theme id:** `letter` (stored preference key unchanged) · **Label:** Paperclip Warm
 
-See the full Letter specification in the project design brief. Implementation:
+Full design spec: see project `DESIGN-PAPERCLIP.md`. Implementation:
 
 - Tokens: `src/styles/letter-theme.css`
-- Display serif: Playfair Display (`--font-display`)
-- UI sans: IBM Plex Sans (`--font-sans`)
-- Primary action: deep teal `#186f64`
-- Radii: 2px buttons/inputs, 0px cards
+- Display / nav: **Inter Tight** (`--font-display`)
+- Body: **Inter** (`--font-sans`)
+- Code: **JetBrains Mono** (`--font-mono`)
+- Primary action: manila `#f3e6c4` on charcoal `#141413`
+- Surfaces: `--dark-surface` (#1f1d1a), `--dark-raised-surface` (#3a3836)
+- Radii: 4px sm, 8px controls, 12px cards, pill badges

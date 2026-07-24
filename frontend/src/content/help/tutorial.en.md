@@ -1,66 +1,78 @@
-# Auto-Company Platform Complete Guide
+# Auto-Company Platform guide
 
-> **Auto-Company** is a multi-tenant platform for orchestrating AI agent teams that research, decide, implement, and launch products autonomously — with shared memory (*consensus*), visual workflows, and a scheduler that runs cycles without human intervention.
+> **Auto-Company** is a multi-tenant platform with an **on-demand Office**: you commission work through a coordinator and a team of AI agents; they research, decide, implement, and document in real products under `projects/`. Automatic scheduling is **optional**.
 
 ---
 
 ## What you can do with the app
 
-This section is your **getting-started tutorial**. It summarizes what Auto-Company is for and which flows you can run from the UI.
+This is your **getting-started tutorial**. It reflects the current Office-first product model.
 
 ### In one sentence
 
-Orchestrate an **AI agent team** (research, product, code, QA, growth…) that works in sequence, shares memory, and can run **on demand** or in **autonomous mode** to build and evolve products under `projects/`.
+Manage **products and opportunities** with specialized agents (CEO, CTO, product, code, growth…) sharing memory (*consensus*), working in per-product workspaces, launched **from the Office** when you decide.
+
+### Main flow: the Office
+
+1. Go to **`/office`** — tenant home after login.
+2. Chat with the **coordinator** or pick a **quick service** (discovery, evaluation, build…).
+3. Review the **team plan** (agents, estimated cost, scope) and click **Approve & run**.
+4. Follow progress in **War room** (`/war-room/:productId`) live.
+5. When done, the **job** appears under **`/office/encargos`** with final report and team documents.
+
+> **No automatic cycles by default.** The operations plan starts in *on-demand* mode (0 rules). Enable presets under **Settings → Schedules** only if you want weekly discovery or other partial autopilot.
 
 ### If you are a superadmin (platform)
 
-| Step | Where | What you get |
-|------|-------|--------------|
-| 1 | `/admin/settings` | Configure the **shared LLM** (OpenRouter or TokenLab) plus email/GitHub |
+| Step | Where | Outcome |
+|------|-------|---------|
+| 1 | `/admin/settings` | Shared LLM (OpenRouter or TokenLab), email, rate limits |
 | 2 | `/admin` | Create **tenants** and clone global templates |
-| 3 | `/admin/templates` | Edit master **agents, skills, and workflows** |
-| 4 | Impersonate tenant | Test the organization experience |
+| 3 | `/admin/templates` | Edit master **agents, skills, workflows** |
+| 4 | Header selector | **Impersonate** a tenant and try the Office |
 
-### If you are an organization user (tenant)
+### If you are a tenant user
 
-| Step | Where | What you get |
-|------|-------|--------------|
-| 1 | `/workflows` | Browse pipelines and open the **visual editor** |
-| 2 | `/workflows/:id` | Connect agents, save, and **execute** a workflow |
-| 3 | `/runs` | Track executions, tokens, cost, and live logs |
-| 4 | `/consensus` | Read and edit **shared memory** between cycles |
-| 5 | `/ops` | View the **multi-product portfolio** and launch meta cycles |
-| 6 | `/settings` | Enable **meta schedule**, limits, and notifications |
+| Step | Where | Outcome |
+|------|-------|---------|
+| 1 | `/office` | Commission work via coordinator |
+| 2 | `/products` | Register products (GitHub or new), pipeline, focus |
+| 3 | `/war-room/:id` | Live tactical view + workflow launcher |
+| 4 | `/office/encargos` | Job history and reports |
+| 5 | `/debug/runs` | Technical logs, tokens, cost |
+| 6 | `/settings` | Integrations, OpenCode, limits, schedules |
 
 ### Express tutorial (15 minutes)
 
-1. **Sign in** with your organization slug at `/login`.
-2. Open **Workflows** → pick a template → **Open editor**.
-3. Click **Execute workflow** (uses consensus as context when enabled).
-4. Go to **Runs** → open the run → watch SSE logs and shared memory.
-5. Open **Consensus** → review team decisions and edit the human *Next Action* to steer the next cycle.
-6. In **Ops**, review portfolio products and the next scheduled cycle.
-7. (Admin) In **Settings**, enable the **meta schedule** for continuous autonomy.
+1. **Log in** with your organization slug at `/login`.
+2. Open **Office** → ask the coordinator *“Explore 3 micro-SaaS ideas”* or use the discovery service.
+3. Approve the plan → watch the run in **War room**.
+4. Go to **Products** → register an existing repo (GitHub URL + optional *product-intake*) or create a new one.
+5. On the product: **Consensus**, **Code**, and **OpenCode** (agent/model/path per product).
+6. Review the finished job under **My jobs**.
+7. (Optional) **Settings → Schedules** → *Discovery only* preset for Saturday autopilot.
 
 ### What each main area does
 
-- **Agents** — AI personas: prompt, model, temperature, and assigned skills.
-- **Skills** — Reusable knowledge blocks (SEO, devops, pricing…).
-- **Workflows** — Visual graph: who acts after whom and with which memory.
-- **Runs** — A single execution with cost, tools (shell, git, npm…), and traceability.
-- **Consensus** — Living document (equivalent to `memories/consensus.md`) with phase, decisions, and next step.
-- **Ops** — **Multi-product** view: pipeline, schedules, and convergence.
-- **Help** — This guide; use the left menu to jump between sections.
+| Area | Purpose |
+|------|---------|
+| **Office** | Conversational coordinator, quick services, ROI, monthly spend |
+| **My jobs** | Commissioned work inbox with final report |
+| **Products** | Portfolio, idea pipeline, GitHub registration, focus, launchers |
+| **War room** | Per-product tactical table: live agents, docs, launcher |
+| **Debug office** | Runs, consensus, ops, decisions, AI catalog (workflows/agents/skills) |
+| **Settings** | Tenant LLM, global OpenCode, GitHub, notifications, limits, schedules |
+| **Help** | This guide |
 
 ### Usage modes
 
-| Mode | When to use | How |
-|------|-------------|-----|
-| **Manual** | Test a flow, debug an agent | Execute workflow from the editor |
-| **Scheduled** | Repeat a fixed workflow | Schedule in `/settings` |
-| **Autonomous** | 24/7 multi-product AI company | Meta schedule + server worker |
+| Mode | When | How |
+|------|------|-----|
+| **On demand** (default) | Daily use, full control | Office → approve plan → war room |
+| **Fixed schedule** | Weekly discovery, Monday review | Settings → Schedules → preset or rule |
+| **Technical debug** | Tune agents, SSE logs | `/debug/*` |
 
-> **Tip:** Always start in manual mode until a run completes successfully; then enable schedules.
+> **Tip:** Complete one manual Office job before enabling schedules.
 
 ---
 
@@ -70,27 +82,26 @@ Orchestrate an **AI agent team** (research, product, code, QA, growth…) that w
 2. [Getting started](#getting-started)
 3. [Roles and access](#roles-and-access)
 4. [Application map](#application-map)
-5. [Agents and skills](#agents-and-skills)
-6. [Visual workflows](#visual-workflows)
-7. [Execution runs](#execution-runs)
-8. [Consensus — shared memory](#consensus--shared-memory)
-9. [Multi-product operations (Ops)](#multi-product-operations-ops)
-10. [Autonomous mode](#autonomous-mode)
-11. [Tenant configuration](#tenant-configuration)
-12. [Platform administration](#platform-administration)
-13. [Products in `projects/`](#products-in-projects)
-14. [CLI and external automation](#cli-and-external-automation)
-15. [Production deployment](#production-deployment)
+5. [The on-demand Office](#the-on-demand-office)
+6. [Products and portfolio](#products-and-portfolio)
+7. [War room and jobs](#war-room-and-jobs)
+8. [Agents, skills, and workflows](#agents-skills-and-workflows)
+9. [Runs](#runs)
+10. [Consensus and memory](#consensus-and-memory)
+11. [Operations and scheduling](#operations-and-scheduling)
+12. [Tenant settings](#tenant-settings)
+13. [OpenCode and integrations](#opencode-and-integrations)
+14. [Platform administration](#platform-administration)
+15. [Deploy and worker](#deploy-and-worker)
 16. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Getting started
 
-### Local installation (development)
+### Local install (development)
 
 ```bash
-# From the repository root
 cp .env.example .env
 npm install
 npx prisma migrate dev
@@ -99,26 +110,24 @@ npm run db:seed
 # Terminal 1 — API
 npm run dev
 
-# Terminal 2 — Worker (queue + autonomous scheduler)
+# Terminal 2 — Worker (queue + optional scheduler)
 npm run worker
 
 # Terminal 3 — Frontend
 npm run dev:frontend
 ```
 
-Open **http://localhost:5173**.
+Open **http://localhost:5173**. After tenant login you land on **`/office`**.
 
-### First startup in the UI
+### First UI steps
 
 | Step | Route | Action |
-|------|------|--------|
-| 1 | `/setup` | Create the platform **superadmin** (first time only) |
-| 2 | `/admin` | Create a **tenant** (organization) and clone templates |
-| 3 | Impersonation | Select the tenant in the header |
-| 4 | `/settings` | Enable **meta schedule** and tenant limits |
-| 5 | `/ops` | View portfolio and launch the first autonomous cycle |
-
-> **Tip:** If a superadmin already exists, go directly to `/login`.
+|------|-------|--------|
+| 1 | `/setup` | Create **superadmin** (first time only) |
+| 2 | `/admin` | Create tenant and clone templates |
+| 3 | Header | Impersonate tenant |
+| 4 | `/settings?tab=integrations` | **GitHub** token (private repos + intake) |
+| 5 | `/office` | First coordinator job |
 
 ---
 
@@ -126,375 +135,331 @@ Open **http://localhost:5173**.
 
 ### Superadmin (platform)
 
-- Access to `/admin`, global templates, and platform settings.
-- Can **impersonate** any tenant from the header selector.
-- Without active impersonation, tenant routes redirect to `/admin`.
+- Access `/admin`, global templates, platform settings.
+- **Impersonate** tenants from the header selector.
+- Without impersonation, tenant routes redirect to `/admin`.
 
-### Organization user (tenant)
+### Tenant user
 
-- Login with **tenant slug** + email + password.
-- Direct access to workflows, runs, consensus, ops, and settings (depending on role).
+- Login: **slug** + email + password.
+- Default landing: **`/office`**.
 
-### Roles within the tenant
+### Tenant roles
 
 | Role | Permissions |
-|-----|----------|
-| **owner / admin** | Settings, schedules, team, usage limits |
-| **member** | Workflows, runs, consensus, ops (read/execute) |
+|------|-------------|
+| **owner / admin** | Settings, team, limits, schedules |
+| **member** | Office, products, war room, debug (read/execute) |
 
 ---
 
 ## Application map
 
+### Office (human flow)
+
 | Route | Description |
-|------|-------------|
-| `/workflows` | List and create workflows |
-| `/workflows/:id` | Visual editor (React Flow) — connect agents and execute |
-| `/agents` | Agent CRUD (persona, model, temperature, skills) |
-| `/skills` | Skill CRUD (reusable prompts) |
-| `/runs` | Execution history with cost and tokens |
-| `/runs/:id` | Live logs (SSE), shared memory, cancel run |
-| `/consensus` | Shared memory document between cycles |
-| `/ops` | Multi-product dashboard: portfolio, pipeline, next cycle |
-| `/settings` | Tenant preferences (optional model override, limits, schedules) — shared LLM via superadmin |
-| `/team` | Tenant users (admin) |
-| `/admin` | Superadmin dashboard |
-| `/admin/templates` | Global agent/skill/workflow templates |
-| `/admin/settings` | Shared LLM provider (OpenRouter **or** TokenLab), keys, email, GitHub, rate limits |
-| `/help` | This help section |
+|-------|-------------|
+| `/` · `/office` | Coordinator, services, activity, ROI |
+| `/office/encargos` | Job inbox |
+| `/office/encargos/:runId` | Final report + team documents |
+| `/products` | Portfolio, pipeline, add product |
+| `/war-room/:productId` | Per-product war room |
+| `/products/:id/consensus` | Product memory |
+| `/products/:id/code` | Workspace + per-product OpenCode |
+| `/settings` | Tenant configuration |
+| `/help` | Help center |
+
+### Debug office (technical)
+
+| Route | Description |
+|-------|-------------|
+| `/debug/runs` · `/debug/runs/:id` | Runs and SSE logs |
+| `/debug/consensus` | Tenant consensus |
+| `/debug/ops` | KPIs and active schedules |
+| `/debug/decisions` | Go/no-go proposals |
+| `/debug/workflows` · `/debug/workflows/:id` | React Flow visual editor |
+| `/debug/agents` · `/debug/skills` | AI catalog |
+| `/debug/team` | Tenant users (admin) |
+
+### Platform (superadmin)
+
+| Route | Description |
+|-------|-------------|
+| `/admin` | Dashboard and tenants |
+| `/admin/settings` | LLM, email, rate limits |
+| `/admin/templates` | Global templates |
 
 ---
 
-## Agents and skills
+## The on-demand Office
 
-### Agents
+### Coordinator
 
-Each agent represents an **expert persona** (CEO, CTO, QA, etc.):
+Chat at **`/office`** with tenant context and optional **product scope**. Proposes:
 
-- **System prompt** — base role instructions.
-- **Provider / model** — TokenLab, OpenRouter, or custom (OpenAI-compatible).
-- **Temperature** — creativity vs. determinism.
-- **Linked skills** — additional knowledge injected into the prompt.
+- Agent team and work order
+- Estimated cost and monthly spend bar in sidebar
+- Direct link to war room on execute
 
-### Skills
+### Quick services
 
-Specialized knowledge blocks (research, devops, pricing, etc.). Assigned to one or more agents and included automatically when executing a workflow step.
+Predefined shortcuts (discovery, evaluation, etc.) that skip small talk and produce an approvable plan.
 
-> **Best practice:** Keep skills atomic and reusable; avoid duplicating prompts across agents.
+### Notifications
+
+Header bell → alert when a job completes or fails. Mobile panel respects safe area.
+
+### Monthly spend
+
+Sidebar widget with progress vs tenant limits.
 
 ---
 
-## Visual workflows
+## Products and portfolio
 
-### Create and edit
+Each product lives in **`projects/{slug}/`** with phase, revenue, focus, and its own workspace.
 
-1. Go to **Workflows → New workflow** or edit an existing one.
-2. Drag **agent nodes** onto the canvas.
-3. Connect nodes with **edges** (data/memory flow).
-4. Save the graph.
+### Add product
 
-### Run manually
+At **`/products` → Add product**:
 
-In the editor:
+| Mode | Use |
+|------|-----|
+| **Register existing** | GitHub URL, optional clone, `product-intake` workflow for profile |
+| **Create new** | Empty bootstrap in `projects/{slug}/` |
 
-- **Execute** — launches the workflow.
-- By default loads the tenant **consensus** as initial memory.
-- On completion, can sync results back to consensus.
+**Requirement:** GitHub token under **Settings → Integrations** for private repos and API enrichment.
+
+### Pipeline and decisions
+
+- Discovery ideas → pipeline on Products
+- Manual **GO / NO-GO** or evaluation workflow
+- Agent proposals → **`/debug/decisions`**
+
+### Focus
+
+One **focused** product prioritizes development and product-scoped jobs.
+
+### Product profile
+
+After intake: `product-profile.json`, metadata, and product consensus feed agent prompts on focused runs.
+
+---
+
+## War room and jobs
+
+### War room (`/war-room/:productId`)
+
+- Tactical view while a workflow runs
+- Launcher: workflows and single agents per product
+- Documents under `docs/{role}/`
+
+### Jobs (`/office/encargos`)
+
+- List of Office-commissioned work
+- Detail: full-width **final report** + per-agent document sidebar
+- Rich markdown (GFM, Mermaid, charts)
+
+### Run ↔ job relationship
+
+During execution → war room. When complete → human job with readable report (light/dark themes).
+
+---
+
+## Agents, skills, and workflows
+
+### Agents (`/debug/agents`)
+
+Expert persona: system prompt, model, temperature, linked skills.
+
+### Skills (`/debug/skills`)
+
+Reusable knowledge blocks injected into prompts.
+
+### Workflows (`/debug/workflows`)
+
+Visual graph: agent order, shared memory, manual execute from editor.
 
 ### Standard workflows (templates)
 
 | Name | Purpose |
-|--------|-----------|
-| `opportunity-discovery` | Idea brainstorm → pipeline |
-| `new-product-evaluation` | Evaluate idea → GO / NO-GO |
-| `feature-development` | Implement in `projects/{slug}/` |
-| `product-launch` | Launch and growth |
-| `pricing-and-monetization` | Pricing and monetization |
+|------|---------|
+| `opportunity-discovery` | Ideas → pipeline |
+| `new-product-evaluation` | Evaluation → GO/NO-GO |
+| `product-intake` | Product profile from GitHub |
+| `feature-development` | Workspace implementation |
+| `product-launch` | Launch |
+| `pricing-and-monetization` | Pricing |
+| `weekly-review` | Operational review |
 
 ---
 
-## Execution runs
+## Runs
 
-Each execution creates an **ExecutionRun** with:
+Each run (`/debug/runs/:id`) includes:
 
 - Status: `PENDING` → `RUNNING` → `COMPLETED` / `FAILED` / `CANCELLED`
-- **Shared memory** — JSON accumulated between steps
-- **Logs** — per agent and step, with tokens and estimated cost
-- **SSE stream** — real-time logs at `/runs/:id`
+- **Shared memory** across steps
+- **SSE logs** in real time
+- Tokens and estimated cost
 
-### Tools available to agents
-
-During a run, agents can invoke tools in the workspace:
+### Agent tools
 
 | Tool | Function |
 |------|---------|
-| `read_file` / `write_file` / `list_dir` | Files in workspace |
-| `shell` | Shell command (configurable timeout) |
-| `git_status` / `git_commit` | Git in the project |
+| `read_file` / `write_file` / `list_dir` | Product workspace files |
+| `shell` | Commands (configurable timeout) |
+| `git_*` | Git in project |
 | `npm_run` | npm scripts |
-| `wrangler_deploy` | Deploy Cloudflare Workers |
-
-> A product workspace is `projects/{product-slug}/`. Without a focal product, uses `projects/{tenant-slug}/`.
+| `wrangler_deploy` | Cloudflare deploy |
 
 ---
 
-## Consensus — shared memory
+## Consensus and memory
 
-Equivalent to `memories/consensus.md` in the original Auto-Company.
+### Tenant consensus (`/debug/consensus`)
 
-### What it stores
+Shared markdown: decisions, company phase, human **Next Action**.
 
-- **Markdown document** — decisions, context, history.
-- **Next Action** — focus of the next cycle.
-- **Company phase** — `exploring`, `validating`, `building`, `launching`, `growing`.
+### Product consensus (`/products/:id/consensus`)
 
-### Typical cycle
+Product-specific memory, revisions, reports.
 
-```
-Run workflow
-  → Load consensus into initial memory
-  → Agents collaborate and update memory
-  → On finish: persist consensus + cycle summary
-  → Scheduler / meta-orchestrator repeats
-```
-
-### Structured fields (JSON memory)
-
-Agents can write to shared memory:
+### Structured fields (shared memory)
 
 | Field | Effect |
 |-------|--------|
-| `topIdeas[]` | Adds ideas to the pipeline |
-| `goNoGo` | `GO` / `NO-GO` → bootstrap or discard |
-| `productSlug`, `productName` | Registers product in portfolio |
-| `revenueUsd` | Marks product as *growing* |
+| `topIdeas[]` | Pipeline ideas |
+| `goNoGo` | GO / NO-GO |
+| `productSlug` | Portfolio registration |
+| `revenueUsd` | *Growing* phase |
 
 ---
 
-## Multi-product operations (Ops)
+## Operations and scheduling
 
-The **`/ops`** view centralizes the state of the “autonomous company”:
+### Ops view (`/debug/ops`)
 
-### Main panel
+KPIs, phase, portfolio summary, active schedules, 7-day preview.
 
-- **Company phase** and cycle number
-- **Products** in building / growing
-- **Pipeline** of ideas pending evaluation
-- **Revenue** recorded per product
-- **Next run preview** — which workflow the meta-orchestrator will choose
+### Operations plan (Settings → Schedules)
 
-### Actions
+| Preset | Rules |
+|--------|-------|
+| **On demand** (default) | 0 — control from Office |
+| **Discovery only** | Weekly Saturday discovery when pipeline empty |
+| **Light exploration** | Discovery + evaluation + Monday review |
 
-- **Run meta cycle now** — triggers an immediate cycle
-- **Focus** — mark priority product
-- **GO / NO-GO** — manually decide pipeline ideas
+**Fixed** workflow rules; dynamic orchestrator (meta) remains an advanced option when adding rules manually — **not the recommended flow**.
 
-### Product limit
+### Worker
 
-Maximum **2 products** simultaneously in *Building* or *Launching* phase. Products in *Growing* (e.g. SnapOG) do not block discovery of new ideas.
+The **`worker`** container processes the queue and evaluates schedules every ~60 s. Without it, schedules do not fire (Office still works).
 
 ---
 
-## Autonomous mode
+## Tenant settings
 
-### Meta schedule (recommended)
+Tabs at **`/settings`**:
 
-The **meta schedule** (`scheduleKind: meta`) does not point to a fixed workflow. On each tick the **meta-orchestrator** decides:
-
-```
-Pending idea?           → new-product-evaluation
-Product building?       → feature-development / product-launch
-Only growing?           → pricing / launch alternated
-Empty pipeline?         → opportunity-discovery
-```
-
-### Enable autonomy
-
-1. **Settings → Enable meta schedule** (or created when registering tenant)
-2. Verify the **worker** is running (`npm run worker` or Docker container)
-3. Default interval: **1800 s** (30 min) — editable in Settings
-4. Optional: **GitHub** token in Admin → Platform Settings for autonomous commits
-
-### Internal scheduler
-
-The worker checks schedules every **60 s** (`schedulerTickMs` in platform settings). When `nextRunAt` expires and the schedule is `enabled`, it enqueues execution.
-
-### Fixed schedules (optional)
-
-Besides the meta schedule you can create schedules that run **a specific workflow** on a fixed interval — useful for repetitive tasks outside the orchestrator.
+| Tab | Content |
+|-----|---------|
+| **General** | Discovery interests |
+| **LLM** | Model override, cost cap/run (provider via superadmin) |
+| **OpenCode** | URL, credentials, *enabled* **globally** |
+| **Integrations** | GitHub token per tenant |
+| **Notifications** | Webhook, Slack, email, in-app |
+| **Limits** | Monthly runs/tokens/cost |
+| **Schedules** | Operations plan and rules |
 
 ---
 
-## Tenant configuration
+## OpenCode and integrations
 
-In **`/settings`** (tenant admin):
+### GitHub (tenant)
 
-### LLM
+**Settings → Integrations** — PAT with `repo` scope for clone, README, languages, and `product-intake`.
 
-- **Provider and API key:** superadmin only at `/admin/settings` (shared by all tenants)
-- Choose **OpenRouter or TokenLab** (one active provider, not both at once)
-- Tenant `/settings`: optional model override and **max cost per run**
+### OpenCode
 
-### Notifications
+| Level | What you configure |
+|-------|-------------------|
+| **Tenant** | Base URL, username, password, enable/disable, auto-approve |
+| **Product** (`/products/:id/code`) | Default agent, model, project path |
 
-- Webhook, Slack, email (Resend) when runs complete or fail
-
-### Usage limits
-
-- Monthly runs, tokens, and cost — the scheduler respects these limits
-
-### Schedules
-
-- Meta schedule (autonomous company)
-- Fixed workflow schedules
+Delegation uses **per-product** config when implementing code.
 
 ---
 
 ## Platform administration
 
-**Superadmin** only at `/admin`:
-
 ### Create tenant
 
-- Name, slug, optional owner
-- **Clone templates** — copies global agents, skills, and workflows
+Name, slug, owner, **clone templates**.
 
 ### Templates (`/admin/templates`)
 
-- Edit master personas and workflows
-- **Reseed** — regenerate from seed
-- **Sync to tenants** — bulk merge or update
+Master agents, skills, workflows. **Sync to tenants** to propagate changes.
 
-### Platform settings (`/admin/settings`)
+### Platform settings
 
 | Setting | Use |
 |---------|-----|
-| Public URL | Links in emails and CORS |
-| LLM provider + key | Shared by all tenants (OpenRouter or TokenLab) |
-| Resend | Transactional emails |
-| GitHub token | `git_commit` / repos tools |
-| Rate limits | Auth and execute per minute |
-| Shell timeout | Maximum command time |
-| Scheduler tick | Worker loop frequency |
+| LLM provider + key | OpenRouter or TokenLab (one active) |
+| Public URL | Email and CORS |
+| Resend | Transactional email |
+| Rate limits | Auth and execute |
+| Scheduler tick | Worker frequency |
+
+> Platform GitHub token (if any) is separate from the **per-tenant** token in Integrations.
 
 ---
 
-## Products in `projects/`
+## Deploy and worker
 
-Each product lives in its folder:
+Docker Compose stack (Dokploy-ready): `postgres`, `redis`, `api`, `worker`, `web`.
 
-```
-projects/
-├── snapog/          # Example: OG images API (Cloudflare Worker)
-└── my-saas/         # Product bootstrapped by a GO cycle
-```
+Checklist:
 
-When approving a product (`GO`), the platform:
-
-1. Creates the `TenantProduct` record
-2. Bootstraps the workspace (`README`, base structure)
-3. Focuses development runs on `projects/{slug}/`
-
-### SnapOG (included product)
-
-- `/og` API — Open Graph image generation
-- Registration at `/register`, dashboard at `/dashboard`
-- Stripe checkout at `/checkout?tier=pro` (if keys configured)
-
----
-
-## CLI and external automation
-
-### One cycle from terminal
-
-```bash
-export API_URL=https://your-domain.com/api
-
-# Meta (autonomous — picks workflow dynamically)
-./scripts/platform/cycle.sh YOUR-SLUG owner@email.com 'password'
-
-# Fixed workflow by UUID
-./scripts/platform/cycle.sh YOUR-SLUG owner@email.com 'password' <workflow-id>
-```
-
-### Relevant API
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/workflows/:id/execute` | POST | Execute workflow |
-| `/api/schedules` | GET/POST | Tenant schedules |
-| `/api/schedules/:id/run-now` | POST | Manual trigger |
-| `/api/ops/portfolio` | GET | Multi-product state |
-| `/api/ops/next-run` | GET | Meta-orchestrator preview |
-| `/api/consensus` | GET/PUT | Shared memory |
-| `/api/products` | GET | Product portfolio |
-
----
-
-## Production deployment
-
-Docker Compose stack (Dokploy-ready):
-
-| Service | Function |
-|----------|----------|
-| `postgres` | Database |
-| `redis` | BullMQ queue |
-| `api` | Fastify + migrations |
-| `worker` | Processor + **autonomous scheduler** |
-| `web` | Static frontend (nginx) |
-
-Post-deploy checklist:
-
-- [ ] `RUN_MIGRATIONS=true` on first deploy
-- [ ] `JWT_SECRET`, `DATABASE_URL`, `REDIS_URL`, LLM keys variables
-- [ ] **worker** container healthy and running
-- [ ] Meta schedule **enabled** on tenant
-- [ ] Platform settings → correct Public URL
+- [ ] `npx prisma migrate deploy` in production
+- [ ] `worker` healthy (schedules + queue)
+- [ ] LLM configured at `/admin/settings`
+- [ ] Tenant GitHub token if using private intake
+- [ ] Operations plan: *on demand* unless you want partial autopilot
 
 ---
 
 ## Troubleshooting
 
-### Scheduler does not execute anything
+### Cannot clone a private repo
 
-- Is the **worker** running? (API alone is not enough)
-- Is the schedule **enabled** and `nextRunAt` in the past?
-- Was the **monthly limit** for runs/cost reached?
+- GitHub token under tenant **Settings → Integrations**
+- Test connection on the same tab
 
-### Runs fail due to LLM
+### Scheduling never runs
 
-- Superadmin → `/admin/settings`: choose **OpenRouter or TokenLab** and set the active provider's API key
-- Verify tenant `maxCostUsdPerRun` in `/settings`
+- Is **worker** running?
+- Any **enabled** rules under Schedules? (default: none)
+- Monthly limit reached?
 
-### Agents do not commit / deploy
+### Runs fail on LLM
 
-- Configure **GitHub token** in platform settings
-- Verify the run uses workspace `projects/{slug}/`
+- Superadmin → `/admin/settings`: active provider + API key
+- Check `maxCostUsdPerRun` under Settings → LLM
 
-### 404 in production after login
+### OpenCode does not delegate
 
-- The `web` container must pass healthcheck (Traefik excludes unhealthy)
-- SPA routes: nginx must serve `index.html` for frontend routes
+- OpenCode enabled under Settings → OpenCode (global)
+- Agent/model/path set on **product Code** page
 
-### Stuck on the same Next Action
+### Job markdown low contrast
 
-The **convergence** engine detects repetition and forces a pivot in consensus after 2 identical cycles.
+- Use **Paperclip Warm** or **Slash** theme; reports use `--office-*` tokens
 
----
+### Stuck on same Next Action
 
-## Summary: is it autonomous?
-
-| Component | Automatic? |
-|------------|--------------|
-| Workflow selection | ✅ Meta-orchestrator |
-| Memory between cycles | ✅ Consensus |
-| Periodic execution | ✅ Worker + meta schedule |
-| Code implementation | ✅ Workspace tools (with LLM + keys) |
-| Production deploy | ⚙️ With `wrangler_deploy` + credentials |
-| Initial human setup | ❌ Once: keys, tenant, enable schedule |
+**Convergence** engine pivots after repeated cycles — edit consensus manually if needed.
 
 ---
 
-> **Recommended next step:** impersonate your tenant → **Settings → Enable meta schedule** → **Ops → Run meta cycle now** → watch the run in **Runs**.
-
-Questions? Edit consensus manually at `/consensus` to steer the focus of the next cycle.
+> **Next step:** impersonate your tenant → **`/office`** → commission discovery → follow in **War room** → read the report under **My jobs**.

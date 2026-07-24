@@ -211,9 +211,6 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       baseUrl?: string | null;
       username?: string | null;
       password?: string | null;
-      defaultAgent?: string | null;
-      defaultModel?: string | null;
-      projectPath?: string | null;
       pollIntervalMs?: number;
       maxWaitMs?: number;
       autoApprovePermissions?: boolean;

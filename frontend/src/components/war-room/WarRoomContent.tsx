@@ -186,6 +186,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         productId={data.product.id}
         productName={data.product.name}
         afterLaunch="stay"
+        className="war-room-launcher"
         onLaunched={(runId) => {
           flashNote(t("warRoom.runStarted"));
           void refresh();

@@ -17,12 +17,12 @@ const ARTICLE_META: Record<
 > = {
   es: {
     title: "Guía completa",
-    description: "Tutorial de inicio: qué puedes hacer, roles, workflows, autonomía y operación.",
+    description: "Oficina bajo demanda, productos con GitHub, war room, encargos y programación opcional.",
     content: tutorialMdEs,
   },
   en: {
     title: "Complete guide",
-    description: "Getting-started tutorial: what you can do, roles, workflows, autonomy, and operations.",
+    description: "On-demand Office, GitHub products, war room, jobs, and optional scheduling.",
     content: tutorialMdEn,
   },
 };

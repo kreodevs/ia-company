@@ -338,6 +338,9 @@ model TenantProduct {
   metadata           Json?
   intakeStatus       ProductIntakeStatus @default(skipped)
   intakeRunId        String?
+  opencodeDefaultAgent  String?
+  opencodeDefaultModel  String?
+  opencodeProjectPath   String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
@@ -550,9 +553,6 @@ model TenantOpencodeConfig {
   baseUrl                String?
   username               String?  @default("opencode")
   password               String?  @db.Text
-  defaultAgent           String?
-  defaultModel           String?
-  projectPath            String?
   pollIntervalMs         Int      @default(5000)
   maxWaitMs              Int      @default(3600000)
   autoApprovePermissions Boolean  @default(true)

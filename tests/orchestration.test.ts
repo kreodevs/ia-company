@@ -6,6 +6,7 @@ import {
   evaluateScheduleConditions,
 } from "../src/lib/orchestration-conditions.js";
 import { isOrchestrationPresetId } from "../src/lib/orchestration-presets.js";
+import { isLegacyMetaSchedule } from "../src/lib/orchestration-plan.js";
 
 test("normalizeIntervalSec enforces minimum 60 seconds", () => {
   assert.equal(normalizeIntervalSec(30), 60);
@@ -57,6 +58,27 @@ test("conditionsAreEmpty detects empty condition objects", () => {
 });
 
 test("orchestration preset ids are validated", () => {
+  assert.equal(isOrchestrationPresetId("on_demand"), true);
   assert.equal(isOrchestrationPresetId("discovery_only"), true);
+  assert.equal(isOrchestrationPresetId("full_autonomous"), false);
   assert.equal(isOrchestrationPresetId("unknown"), false);
+});
+
+test("isLegacyMetaSchedule detects obsolete default meta rules", () => {
+  assert.equal(
+    isLegacyMetaSchedule({ name: "Autonomous company (meta)", orchestrationMode: "meta_dynamic" }),
+    true,
+  );
+  assert.equal(
+    isLegacyMetaSchedule({ name: "Orquestador dinámico", orchestrationMode: "meta_dynamic" }),
+    true,
+  );
+  assert.equal(
+    isLegacyMetaSchedule({ name: "Discovery semanal", orchestrationMode: "fixed" }),
+    false,
+  );
+  assert.equal(
+    isLegacyMetaSchedule({ name: "Custom meta rule", orchestrationMode: "meta_dynamic" }),
+    false,
+  );
 });

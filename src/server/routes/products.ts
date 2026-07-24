@@ -400,6 +400,44 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Params: { id: string } }>("/products/:id/opencode/settings", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getProductOpencodeSettings } = await import("../../lib/product-opencode.js");
+      const settings = await getProductOpencodeSettings(tenantId, request.params.id);
+      if (!settings) return reply.status(404).send({ error: "Product not found" });
+      return settings;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{
+    Params: { id: string };
+    Body: {
+      defaultAgent?: string | null;
+      defaultModel?: string | null;
+      projectPath?: string | null;
+    };
+  }>("/products/:id/opencode/settings", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { updateProductOpencodeSettings } = await import("../../lib/product-opencode.js");
+      const settings = await updateProductOpencodeSettings(
+        tenantId,
+        request.params.id,
+        request.body ?? {},
+      );
+      if (!settings) return reply.status(404).send({ error: "Product not found" });
+      await logAudit(request, "product.opencode_settings.update", {
+        productId: request.params.id,
+      });
+      return settings;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/consensus", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
