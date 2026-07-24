@@ -1,7 +1,10 @@
 import {
+  Activity,
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
+  ClipboardList,
   Crosshair,
   FileText,
   GitBranch,
@@ -10,7 +13,10 @@ import {
   Package,
   Play,
   Settings,
+  Sparkles,
+  Bot,
   Building2,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -35,9 +41,17 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
+  "/office/encargos": ClipboardList,
   "/products": Package,
   "/war-room": Crosshair,
-  "/runs": Play,
+  "/debug/runs": Play,
+  "/debug/consensus": FileText,
+  "/debug/ops": Activity,
+  "/debug/decisions": ClipboardCheck,
+  "/debug/workflows": GitBranch,
+  "/debug/agents": Bot,
+  "/debug/skills": Sparkles,
+  "/debug/team": Users,
   "/settings": Settings,
   "/help": BookOpen,
 };
@@ -241,21 +255,41 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     }
 
     if (showTenantNav) {
-      const items: NavItem[] = [
-        { to: "/office", labelKey: "nav.office", end: true },
-        { to: "/war-room", labelKey: "nav.warRoom" },
-        { to: "/products", labelKey: "nav.products" },
-        { to: "/runs", labelKey: "nav.runs" },
+      result.push({
+        id: "office",
+        titleKey: "nav.sectionOffice",
+        items: [
+          { to: "/office", labelKey: "nav.office", end: true },
+          { to: "/office/encargos", labelKey: "nav.encargos" },
+          { to: "/war-room", labelKey: "nav.warRoom" },
+          { to: "/products", labelKey: "nav.products" },
+        ],
+      });
+
+      const debugItems: NavItem[] = [
+        { to: "/debug/runs", labelKey: "nav.runs" },
+        { to: "/debug/consensus", labelKey: "nav.consensus" },
+        { to: "/debug/ops", labelKey: "nav.ops" },
+        { to: "/debug/decisions", labelKey: "nav.decisions" },
+        {
+          labelKey: "nav.groupCatalog",
+          children: [
+            { to: "/debug/workflows", labelKey: "nav.workflows" },
+            { to: "/debug/agents", labelKey: "nav.agents" },
+            { to: "/debug/skills", labelKey: "nav.skills" },
+          ],
+        },
       ];
 
       if (isTenantAdmin) {
-        items.push({ to: "/settings", labelKey: "nav.settings" });
+        debugItems.push({ to: "/debug/team", labelKey: "nav.team" });
+        debugItems.push({ to: "/settings", labelKey: "nav.settings" });
       }
 
       result.push({
-        id: "workspace",
-        titleKey: "nav.sectionWorkspace",
-        items,
+        id: "debug",
+        titleKey: "nav.sectionDebugOffice",
+        items: debugItems,
       });
     }
 

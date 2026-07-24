@@ -4,6 +4,7 @@
 @import "./styles/letter-theme.css";
 @import "./styles/slash-theme.css";
 @import "./styles/office-theme.css";
+@import "./styles/office-encargos.css";
 
 @theme inline {
   --color-vault-ink: var(--color-vault-ink);

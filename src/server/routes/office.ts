@@ -1,5 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import { chatWithCoordinator } from "../../lib/coordinator-chat.js";
+import {
+  chatWithCoordinator,
+} from "../../lib/coordinator-chat.js";
+import {
+  encargoHumanHref,
+  getOfficeEncargoDetail,
+  listOfficeEncargos,
+} from "../../lib/office-encargos.js";
 import {
   executeOfficeTask,
   getOfficeDashboard,
@@ -16,6 +23,37 @@ import { handleRouteError, requireImpersonatedTenant } from "../lib/request-cont
 export async function officeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
   app.addHook("preHandler", app.requireTenantContext);
+
+  app.get<{ Querystring: { limit?: string; phase?: string } }>(
+    "/office/encargos",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const { limit, phase } = request.query;
+        const validPhases = ["queued", "in_progress", "delivered", "failed", "cancelled"] as const;
+        const phaseFilter = validPhases.includes(phase as (typeof validPhases)[number])
+          ? (phase as (typeof validPhases)[number])
+          : undefined;
+        return listOfficeEncargos(tenantId, {
+          limit: limit ? Number(limit) : undefined,
+          phase: phaseFilter,
+        });
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { runId: string } }>("/office/encargos/:runId", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const detail = await getOfficeEncargoDetail(tenantId, request.params.runId);
+      if (!detail) return reply.status(404).send({ error: "Encargo not found" });
+      return detail;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 
   app.get("/office/dashboard", async (request, reply) => {
     try {
@@ -134,9 +172,9 @@ export async function officeRoutes(app: FastifyInstance) {
       await createTenantNotification({
         tenantId,
         type: "task_started",
-        title: "Tarea en curso",
-        body: `${result.workflowName} — sigue el progreso en Ejecuciones.`,
-        href: `/runs/${result.runId}`,
+        title: "Encargo en curso",
+        body: `${result.workflowName} — el equipo está trabajando.`,
+        href: encargoHumanHref(result.runId),
         runId: result.runId,
       });
 

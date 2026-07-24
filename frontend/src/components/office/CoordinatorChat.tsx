@@ -100,7 +100,7 @@ export default function CoordinatorChat({
         agentIds: plan.agents.map((a) => a.id),
       });
       onExecuted?.(result.runId);
-      navigate(`/runs/${result.runId}`);
+      navigate(`/office/encargos/${result.runId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("office.task.error"));
     } finally {

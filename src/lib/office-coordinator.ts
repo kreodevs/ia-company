@@ -628,7 +628,7 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       title: run.workflow?.name ?? "Workflow",
       subtitle: run.status,
       timestamp: (run.startedAt ?? run.createdAt).toISOString(),
-      href: `/runs/${run.id}`,
+      href: `/office/encargos/${run.id}`,
       status: run.status,
     });
   }
@@ -640,7 +640,7 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       title: run.workflow?.name ?? "Workflow",
       subtitle: run.status,
       timestamp: (run.completedAt ?? run.createdAt).toISOString(),
-      href: `/runs/${run.id}`,
+      href: `/office/encargos/${run.id}`,
       status: run.status,
       costUsd: run.totalCostUsd,
     });
