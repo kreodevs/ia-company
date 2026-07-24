@@ -434,7 +434,7 @@ export interface ExecuteOfficeTaskInput {
 export async function executeOfficeTask(
   tenantId: string,
   input: ExecuteOfficeTaskInput,
-): Promise<{ runId: string; workflowId: string; workflowName: string }> {
+): Promise<{ runId: string; workflowId: string; workflowName: string; productId: string | null }> {
   await assertTenantCanExecute(tenantId);
 
   const plan = await planOfficeTask(tenantId, input.request, {
@@ -443,18 +443,25 @@ export async function executeOfficeTask(
   });
 
   const task = input.request.trim();
-  const productId = input.productId ?? plan.productId ?? undefined;
+  const productId = input.productId || undefined;
+
+  const withProduct = (result: { runId: string; workflowId: string; workflowName: string }) => ({
+    ...result,
+    productId: productId ?? null,
+  });
 
   if (input.presetId ?? plan.presetId) {
     if (!productId) {
       throw new Error("A product is required for preset workflows. Create or select a product first.");
     }
-    return launchProductWork(tenantId, productId, {
-      presetId: input.presetId ?? plan.presetId ?? undefined,
-      task,
-      mergeConsensus: true,
-      setFocus: true,
-    });
+    return withProduct(
+      await launchProductWork(tenantId, productId, {
+        presetId: input.presetId ?? plan.presetId ?? undefined,
+        task,
+        mergeConsensus: true,
+        setFocus: true,
+      }),
+    );
   }
 
   if (input.workflowId ?? plan.workflowId) {
@@ -466,12 +473,14 @@ export async function executeOfficeTask(
     if (!workflow) throw new Error("Workflow not found");
 
     if (productId) {
-      return launchProductWork(tenantId, productId, {
-        workflowId: workflow.id,
-        task,
-        mergeConsensus: true,
-        setFocus: true,
-      });
+      return withProduct(
+        await launchProductWork(tenantId, productId, {
+          workflowId: workflow.id,
+          task,
+          mergeConsensus: true,
+          setFocus: true,
+        }),
+      );
     }
 
     const runId = await executeWorkflowInBackground(workflow.id, {
@@ -486,7 +495,7 @@ export async function executeOfficeTask(
         coordinatorNote: "Task dispatched from Office dashboard",
       },
     });
-    return { runId, workflowId: workflow.id, workflowName: workflow.name };
+    return withProduct({ runId, workflowId: workflow.id, workflowName: workflow.name });
   }
 
   const agentIds = input.agentIds?.length
@@ -498,11 +507,13 @@ export async function executeOfficeTask(
     if (!wf) throw new Error("Agent not found");
 
     if (productId) {
-      return launchProductWork(tenantId, productId, {
-        agentId: agentIds[0],
-        task,
-        mergeConsensus: true,
-      });
+      return withProduct(
+        await launchProductWork(tenantId, productId, {
+          agentId: agentIds[0],
+          task,
+          mergeConsensus: true,
+        }),
+      );
     }
 
     const runId = await executeWorkflowInBackground(wf.id, {
@@ -512,7 +523,7 @@ export async function executeOfficeTask(
       syncConsensus: true,
       initialMemory: { task, nextAction: task, officeRequest: task },
     });
-    return { runId, workflowId: wf.id, workflowName: wf.name };
+    return withProduct({ runId, workflowId: wf.id, workflowName: wf.name });
   }
 
   const teamWf = await ensureTeamTaskWorkflow(tenantId, agentIds, task.slice(0, 80));
@@ -538,7 +549,7 @@ export async function executeOfficeTask(
         teamAgents: plan.agents.map((a) => a.name),
       },
     });
-    return { runId, workflowId: teamWf.id, workflowName: teamWf.name };
+    return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
   }
 
   const runId = await executeWorkflowInBackground(teamWf.id, {
@@ -553,7 +564,7 @@ export async function executeOfficeTask(
       teamAgents: plan.agents.map((a) => a.name),
     },
   });
-  return { runId, workflowId: teamWf.id, workflowName: teamWf.name };
+  return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
 }
 
 export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashboard> {

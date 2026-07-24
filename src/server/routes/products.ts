@@ -512,7 +512,9 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get<{ Params: { id: string } }>("/products/:id/team", async (request, reply) => {
+  app.get<{ Params: { id: string }; Querystring: { watchRunId?: string } }>(
+    "/products/:id/team",
+    async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const product = await prisma.tenantProduct.findFirst({
@@ -579,6 +581,8 @@ export async function productRoutes(app: FastifyInstance) {
         (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
       );
 
+      const watchRunId = request.query.watchRunId?.trim() || null;
+
       const runsForProduct = runs.filter((r) => {
         if (r.id === product.lastRunId) return true;
         const mem = r.sharedMemory as {
@@ -588,10 +592,40 @@ export async function productRoutes(app: FastifyInstance) {
         return mem?.focusProductSlug === product.slug || mem?.productId === product.id;
       });
 
-      const activeRun =
+      let activeRun =
         runsForProduct.find((r) =>
           ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"].includes(r.status),
         ) ?? null;
+
+      if (watchRunId) {
+        const watched =
+          runs.find((r) => r.id === watchRunId) ??
+          (await prisma.executionRun.findFirst({
+            where: { id: watchRunId, tenantId },
+            include: {
+              workflow: { select: { name: true } },
+              logs: {
+                where: { agentId: { not: null } },
+                orderBy: { createdAt: "desc" },
+                take: 30,
+                select: {
+                  id: true,
+                  level: true,
+                  message: true,
+                  agentId: true,
+                  stepId: true,
+                  createdAt: true,
+                },
+              },
+            },
+          }));
+        if (
+          watched &&
+          ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"].includes(watched.status)
+        ) {
+          activeRun = watched;
+        }
+      }
 
       const activeDelegation = activeRun
         ? await prisma.opencodeDelegation.findUnique({

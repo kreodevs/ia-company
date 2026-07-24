@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TenantProduct } from "../lib/api";
 import WarRoomContent from "../components/war-room/WarRoomContent";
@@ -12,6 +12,8 @@ export default function WarRoomPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { productId } = useParams<{ productId?: string }>();
+  const [searchParams] = useSearchParams();
+  const watchRunId = searchParams.get("run");
   const [products, setProducts] = useState<TenantProduct[]>([]);
   const [focusProductId, setFocusProductId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,8 +33,11 @@ export default function WarRoomPage() {
 
   useEffect(() => {
     if (loading || productId || !defaultProductId) return;
-    navigate(`/war-room/${defaultProductId}`, { replace: true });
-  }, [loading, productId, defaultProductId, navigate]);
+    const runSuffix = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
+    navigate(`/war-room/${defaultProductId}${runSuffix}`, { replace: true });
+  }, [loading, productId, defaultProductId, navigate, watchRunId]);
+
+  const runQuery = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
 
   const selectOptions = useMemo(
     () =>
@@ -84,7 +89,7 @@ export default function WarRoomPage() {
         <Select
           id="war-room-product"
           value={selectedId}
-          onChange={(id) => navigate(`/war-room/${id}`)}
+          onChange={(id) => navigate(`/war-room/${id}${runQuery}`)}
           options={selectOptions}
           ariaLabel={t("warRoom.selectProduct")}
           className="war-room-toolbar-select"
@@ -94,7 +99,7 @@ export default function WarRoomPage() {
           {t("warRoom.manageProducts")}
         </Link>
       </div>
-      <WarRoomContent key={selectedId} productId={selectedId} />
+      <WarRoomContent key={`${selectedId}:${watchRunId ?? ""}`} productId={selectedId} watchRunId={watchRunId} />
     </div>
   );
 }

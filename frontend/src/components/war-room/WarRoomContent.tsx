@@ -55,9 +55,10 @@ function shortTime(iso: string | null): string {
 
 export interface WarRoomContentProps {
   productId: string;
+  watchRunId?: string | null;
 }
 
-export default function WarRoomContent({ productId }: WarRoomContentProps) {
+export default function WarRoomContent({ productId, watchRunId }: WarRoomContentProps) {
   const { t } = useTranslation();
   const [data, setData] = useState<ProductTeam | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,10 +72,10 @@ export default function WarRoomContent({ productId }: WarRoomContentProps) {
   }, []);
 
   const refresh = useCallback(async () => {
-    const fresh = await api.products.team(productId);
+    const fresh = await api.products.team(productId, watchRunId ?? undefined);
     setData(fresh);
     return fresh;
-  }, [productId]);
+  }, [productId, watchRunId]);
 
   useEffect(() => {
     setLoading(true);

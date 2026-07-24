@@ -15,7 +15,7 @@ UI built with **Kreo registry components** styled via the **Letter** design syst
 | Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
 | Shared widgets | `ThemeSwitcher.tsx` | Letter (light) / Slash (dark) theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
-| Layout | `AppSidebar.tsx` | Oficina (Inicio, Mis encargos, War room, Productos) + Oficina de depuración (runs, consenso, ops, catálogo IA) |
+| Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
 | Layout | `AppHeader.tsx` | Top bar: tenant, theme, language, logout |
 
 ## Themes
