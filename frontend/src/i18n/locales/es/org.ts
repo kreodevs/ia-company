@@ -55,5 +55,11 @@ export const org = {
     designMd: "Vista previa design.md",
     apply: "Crear departamento",
     applying: "Creando…",
+    createWorkItem: "Crear work item vinculado (slot producto/cliente)",
+    mungerHint: "Munger revisa la propuesta al aplicar — fallos fatales bloquean la creación (VETO).",
   },
+  artifactsLoading: "Cargando artefactos del departamento…",
+  warRoomNoArtifacts: "Aún no hay artefactos del departamento — abrir",
+  warRoomArtifactsTitle: "{{name}} — artefactos recientes",
+  viewAllArtifacts: "Ver todos",
 } as const;

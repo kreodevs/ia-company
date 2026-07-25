@@ -1538,8 +1538,14 @@ export const api = {
       name?: string;
       slug?: string;
       config?: Record<string, unknown>;
+      createWorkItem?: boolean;
+      workItemKind?: WorkItemKind;
     }) =>
-      request<{ orgUnit: import("./org-types").OrgUnit; agentsCreated: string[] }>(
+      request<{
+        orgUnit: import("./org-types").OrgUnit;
+        agentsCreated: string[];
+        workItem: TenantProduct | null;
+      }>(
         "/org-studio/apply",
         { method: "POST", body: JSON.stringify(body) },
       ),

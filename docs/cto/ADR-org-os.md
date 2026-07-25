@@ -38,19 +38,20 @@ Products/clients remain under `projects/{slug}/` with optional `orgUnitId` link.
 
 ### Org Studio (AI-assisted)
 
-1. `POST /org-studio/propose` — template + optional description → proposal (agents, schema, tokens, design.md draft).
-2. `POST /org-studio/apply` — creates `OrgUnit`, seeds agents, syncs workspace.
+1. `POST /org-studio/propose` — template + optional description → proposal (agents, schema, tokens, design.md draft). With tenant LLM: refines summary, brand voice, niche, and appends design.md.
+2. `POST /org-studio/apply` — Munger gate (LLM inversion / VETO on fatal flaws), creates `OrgUnit`, seeds agents, optional linked work item (`createWorkItem`, `workItemKind`), syncs workspace.
 
-Munger gate and full LLM customization remain future work; v1 uses template catalog + description merge.
+### Phase 4 (feat/org-os)
 
-### Phase 3 (feat/org-os)
-
-- Product ↔ department link in settings; artifacts auto from handoffs (deduped by run/step/agent).
-- Office UI passes `orgUnitId`; meta-orchestrator prefers org-linked products and department workflows (`content-sprint`, `campaign-launch`).
-- War room links to department artifact gallery.
+- **LLM propose:** `enhanceOrgProposalWithLlm` when mission ≥ 12 chars.
+- **Munger gate:** `reviewOrgProposalWithMunger` on apply; throws `VETO: …` on fatal flaws.
+- **Auto work item:** `createLinkedWorkItem` bootstraps product/client slot linked to department.
+- **workItemKind routing:** `org-work-item.ts` maps presets/workflows for meta-orchestrator and org launcher.
+- **War room:** `OrgArtifactsPanel` shows recent department artifacts in-place.
+- **SchemaDynamicForm:** native `color` field (Kreo DynamicForm pull deferred — MCP unavailable).
 
 ## Consequences
 
 - **Reversible:** feature lives on branch `feat/org-os`; existing tenants ignore `OrgUnit` until created.
 - **Migration:** additive columns on `TenantProduct`; new tables only.
-- **Future:** pull Kreo `DynamicForm` + `DataTable`; Org Studio LLM architect; Munger gate on apply.
+- **Future:** pull Kreo `DynamicForm` + `DataTable` when MCP bootstrap succeeds.

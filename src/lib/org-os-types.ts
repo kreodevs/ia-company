@@ -68,4 +68,8 @@ export interface OrgStudioProposal {
   suggestedWorkflows: string[];
   artifactTypes: string[];
   summary: string;
+  mungerReview?: {
+    approved: boolean;
+    notes: string;
+  };
 }

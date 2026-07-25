@@ -55,5 +55,11 @@ export const org = {
     designMd: "design.md preview",
     apply: "Create department",
     applying: "Creating…",
+    createWorkItem: "Create linked work item (product/client slot)",
+    mungerHint: "Munger reviews the proposal on apply — fatal flaws block creation (VETO).",
   },
+  artifactsLoading: "Loading department artifacts…",
+  warRoomNoArtifacts: "No department artifacts yet — open",
+  warRoomArtifactsTitle: "{{name}} — recent artifacts",
+  viewAllArtifacts: "View all",
 } as const;

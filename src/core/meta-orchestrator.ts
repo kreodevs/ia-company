@@ -18,6 +18,7 @@ import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import { canExecuteMetaScheduleRun } from "../lib/run-guards.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "../lib/org-context.js";
+import { workflowForOrgWorkItem } from "../lib/org-work-item.js";
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;
@@ -74,8 +75,11 @@ async function resolveOrgScopedWorkflow(
 
   const orgMemory = orgContextToInitialMemory(ctx);
   if (ctx.orgUnitType === "marketing_agency") {
-    const workflowName =
-      cycleNumber % 2 === 0 ? WORKFLOW_NAMES.CONTENT_SPRINT : WORKFLOW_NAMES.CAMPAIGN_LAUNCH;
+    const workflowName = workflowForOrgWorkItem(
+      product.workItemKind ?? "client",
+      ctx.orgUnitType,
+      cycleNumber,
+    );
     return { workflowName, orgMemory };
   }
   return { workflowName: defaultWorkflow, orgMemory };

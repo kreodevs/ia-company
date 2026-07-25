@@ -10,6 +10,7 @@ import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
 import DeliverableHealthBanner from "./DeliverableHealthBanner";
+import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 
 const ROLE_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -389,6 +390,12 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         productId={productId}
         activeRunStatus={data.activeRun?.status ?? null}
       />
+
+      {data.orgUnit && (
+        <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+          <OrgArtifactsPanel orgUnitId={data.orgUnit.id} orgUnitName={data.orgUnit.name} />
+        </div>
+      )}
 
       {(data.activeRun?.status === "DELEGATED" || data.activeRun?.status === "AWAITING_USER") && (
         <div className="mb-4">

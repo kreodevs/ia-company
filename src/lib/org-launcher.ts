@@ -5,12 +5,13 @@ import { recordProductRun } from "./product-registry.js";
 import { ensureTeamTaskWorkflow } from "../server/lib/clone-templates.js";
 import { launchProductWork } from "./product-work-launcher.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
+import { presetForOrgWorkItem } from "./org-work-item.js";
 import { serializeTenantProductForClient } from "./product-serializer.js";
 
-function cyclePresetForMarketing(orgSlug: string): "content-sprint" | "campaign-launch" {
+function cyclePresetForMarketing(orgSlug: string, workItemKind: import("@prisma/client").WorkItemKind): string {
   let h = 0;
   for (let i = 0; i < orgSlug.length; i++) h = (h * 31 + orgSlug.charCodeAt(i)) >>> 0;
-  return h % 2 === 0 ? "content-sprint" : "campaign-launch";
+  return presetForOrgWorkItem(workItemKind, "marketing_agency", h);
 }
 
 export async function listOrgUnitProducts(tenantId: string, orgUnitId: string) {
@@ -63,7 +64,14 @@ export async function launchOrgUnitWork(
   }
 
   if (orgCtx.orgUnitType === "marketing_agency" && productId) {
-    const presetId = cyclePresetForMarketing(orgCtx.orgUnitSlug);
+    const product = await prisma.tenantProduct.findFirst({
+      where: { id: productId, tenantId },
+      select: { workItemKind: true },
+    });
+    const presetId = cyclePresetForMarketing(
+      orgCtx.orgUnitSlug,
+      product?.workItemKind ?? "client",
+    );
     const result = await launchProductWork(tenantId, productId, {
       presetId,
       task,

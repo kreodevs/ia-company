@@ -184,8 +184,8 @@ export async function orgUnitRoutes(app: FastifyInstance) {
     "/org-studio/propose",
     async (request, reply) => {
       try {
-        requireImpersonatedTenant(request);
-        const proposal = await proposeOrgUnit(request.body ?? {});
+        const tenantId = requireImpersonatedTenant(request);
+        const proposal = await proposeOrgUnit({ ...request.body, tenantId, useLlm: true });
         return proposal;
       } catch (err) {
         return handleRouteError(reply, err);
@@ -193,7 +193,16 @@ export async function orgUnitRoutes(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: { proposal: OrgStudioProposal; name?: string; slug?: string; config?: Record<string, unknown> } }>(
+  app.post<{
+    Body: {
+      proposal: OrgStudioProposal;
+      name?: string;
+      slug?: string;
+      config?: Record<string, unknown>;
+      createWorkItem?: boolean;
+      workItemKind?: "product" | "client" | "campaign" | "project";
+    };
+  }>(
     "/org-studio/apply",
     async (request, reply) => {
       try {
@@ -206,11 +215,14 @@ export async function orgUnitRoutes(app: FastifyInstance) {
           name: request.body.name,
           slug: request.body.slug,
           config: request.body.config,
+          createWorkItem: request.body.createWorkItem,
+          workItemKind: request.body.workItemKind,
         });
         await logAudit(request, "org_studio.apply", {
           orgUnitId: result.orgUnit.id,
           templateSlug: proposal.templateSlug,
           agentsCreated: result.agentsCreated,
+          workItemId: result.workItem?.id,
         });
         return reply.status(201).send(result);
       } catch (err) {

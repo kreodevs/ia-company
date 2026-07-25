@@ -10,6 +10,7 @@ import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
 import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
 import PageLoading from "../components/ui/PageLoading";
+import { translateApiError } from "../lib/translate-error";
 
 export default function OrgStudioPage() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function OrgStudioPage() {
   const [loading, setLoading] = useState(true);
   const [proposing, setProposing] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [createWorkItem, setCreateWorkItem] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -59,10 +61,11 @@ export default function OrgStudioPage() {
         proposal: { ...proposal, configDefaults: config },
         name: name || proposal.suggestedName,
         config,
+        createWorkItem,
       });
       navigate(`/org-units/${result.orgUnit.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(translateApiError(err, t, "common.requestFailed"));
     } finally {
       setApplying(false);
     }
@@ -141,6 +144,16 @@ export default function OrgStudioPage() {
               {proposal.designMd}
             </pre>
           </Panel>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={createWorkItem}
+              onChange={(e) => setCreateWorkItem(e.target.checked)}
+            />
+            {t("org.studio.createWorkItem")}
+          </label>
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t("org.studio.mungerHint")}</p>
 
           <Button onClick={() => void runApply()} disabled={applying}>
             {applying ? t("org.studio.applying") : t("org.studio.apply")}

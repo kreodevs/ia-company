@@ -124,6 +124,13 @@ export default function SchemaDynamicForm({
                     />
                     {field.helpText ?? field.label}
                   </label>
+                ) : field.type === "color" ? (
+                  <input
+                    type="color"
+                    className="h-10 w-full max-w-[120px] cursor-pointer rounded-md border border-[var(--color-border)] bg-[var(--color-background)]"
+                    value={String(values[field.name] ?? "#C9A227")}
+                    onChange={(e) => setField(field.name, e.target.value)}
+                  />
                 ) : (
                   <Input
                     type={field.type === "number" ? "number" : field.type === "email" ? "email" : "text"}

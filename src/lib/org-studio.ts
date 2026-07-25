@@ -1,8 +1,12 @@
-import type { OrgUnitType } from "@prisma/client";
+import type { OrgUnitType, WorkItemKind } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { PLATFORM_BUSINESS_TEMPLATES } from "./business-templates.js";
 import { createOrgUnit } from "./org-unit.js";
 import { slugifyOrgName } from "./org-workspace.js";
+import { bootstrapProduct } from "./product-registry.js";
+import { serializeTenantProductForClient } from "./product-serializer.js";
+import { enhanceOrgProposalWithLlm, reviewOrgProposalWithMunger } from "./org-studio-llm.js";
+import { defaultWorkItemKindForOrgType } from "./org-work-item.js";
 import type {
   BusinessTemplateDefinition,
   OrgStudioProposal,
@@ -133,11 +137,17 @@ export async function proposeOrgUnit(input: {
   templateSlug?: string;
   name?: string;
   description?: string;
+  tenantId?: string;
+  useLlm?: boolean;
 }): Promise<OrgStudioProposal> {
   const slug = input.templateSlug?.trim() || "marketing-agency";
   const tpl = await loadTemplate(slug);
   if (!tpl) throw new Error(`Template "${slug}" not found`);
-  return buildProposalFromTemplate(tpl, input);
+  let proposal = buildProposalFromTemplate(tpl, input);
+  if (input.useLlm !== false && input.tenantId && input.description?.trim()) {
+    proposal = await enhanceOrgProposalWithLlm(input.tenantId, proposal, input.description);
+  }
+  return proposal;
 }
 
 async function ensureTenantAgents(
@@ -188,11 +198,57 @@ async function ensureTenantAgents(
   return created;
 }
 
+async function createLinkedWorkItem(
+  tenantId: string,
+  orgUnit: { id: string; slug: string; name: string },
+  proposal: OrgStudioProposal,
+  workItemKind?: WorkItemKind,
+) {
+  const kind = workItemKind ?? defaultWorkItemKindForOrgType(proposal.orgUnitType);
+  const slug = `${orgUnit.slug}-${kind}`.slice(0, 64);
+  const existing = await prisma.tenantProduct.findUnique({
+    where: { tenantId_slug: { tenantId, slug } },
+  });
+  if (existing) {
+    const updated = await prisma.tenantProduct.update({
+      where: { id: existing.id },
+      data: { orgUnitId: orgUnit.id, workItemKind: kind },
+    });
+    return serializeTenantProductForClient(updated);
+  }
+
+  const product = await bootstrapProduct({
+    tenantId,
+    name: `${orgUnit.name} (${kind})`,
+    slug,
+    description: proposal.description,
+  });
+  const updated = await prisma.tenantProduct.update({
+    where: { id: product.id },
+    data: { orgUnitId: orgUnit.id, workItemKind: kind },
+  });
+  return serializeTenantProductForClient(updated);
+}
+
 export async function applyOrgStudioProposal(
   tenantId: string,
   proposal: OrgStudioProposal,
-  overrides?: { name?: string; slug?: string; config?: Record<string, unknown> },
+  overrides?: {
+    name?: string;
+    slug?: string;
+    config?: Record<string, unknown>;
+    createWorkItem?: boolean;
+    workItemKind?: WorkItemKind;
+    skipMungerGate?: boolean;
+  },
 ) {
+  if (!overrides?.skipMungerGate) {
+    const review = await reviewOrgProposalWithMunger(tenantId, proposal);
+    if (!review.approved && review.veto) {
+      throw new Error(`VETO: ${review.veto.reason}`);
+    }
+  }
+
   const tpl = await loadTemplate(proposal.templateSlug);
   const unit = await createOrgUnit(tenantId, {
     name: overrides?.name?.trim() || proposal.suggestedName,
@@ -208,8 +264,14 @@ export async function applyOrgStudioProposal(
 
   const agentsCreated = await ensureTenantAgents(tenantId, proposal.suggestedAgents);
 
+  let workItem = null;
+  if (overrides?.createWorkItem !== false) {
+    workItem = await createLinkedWorkItem(tenantId, unit, proposal, overrides?.workItemKind);
+  }
+
   return {
     orgUnit: unit,
     agentsCreated,
+    workItem,
   };
 }
