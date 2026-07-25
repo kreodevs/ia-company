@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { ArtifactStatus, ArtifactType } from "@prisma/client";
 import { listArtifacts, createArtifact, updateArtifactStatus } from "../../lib/artifact.js";
 import { listOrgUnits, getOrgUnit, createOrgUnit, updateOrgUnit } from "../../lib/org-unit.js";
+import { launchOrgUnitWork, listOrgUnitProducts } from "../../lib/org-launcher.js";
 import {
   applyOrgStudioProposal,
   listBusinessTemplates,
@@ -70,6 +71,41 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       if (!unit) return reply.status(404).send({ error: "Org unit not found" });
       await logAudit(request, "org_unit.update", { orgUnitId: unit.id });
       return unit;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/org-units/:id/products", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const unit = await getOrgUnit(tenantId, request.params.id);
+      if (!unit) return reply.status(404).send({ error: "Org unit not found" });
+      return listOrgUnitProducts(tenantId, request.params.id);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { id: string };
+    Body: { task?: string; productId?: string; presetId?: string };
+  }>("/org-units/:id/launch", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const task = request.body?.task?.trim();
+      if (!task) return reply.status(400).send({ error: "task is required" });
+      const result = await launchOrgUnitWork(tenantId, request.params.id, {
+        task,
+        productId: request.body?.productId,
+        presetId: request.body?.presetId,
+      });
+      await logAudit(request, "org_unit.launch", {
+        orgUnitId: request.params.id,
+        runId: result.runId,
+        productId: result.productId,
+      });
+      return reply.status(201).send(result);
     } catch (err) {
       return handleRouteError(reply, err);
     }

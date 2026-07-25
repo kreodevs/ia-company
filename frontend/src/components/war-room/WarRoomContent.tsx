@@ -56,6 +56,104 @@ function shortTime(iso: string | null): string {
 }
 
 const TEAM_REFRESH_MIN_MS = 2500;
+/** Keep active agent states visible long enough to read the war-room table. */
+const AGENT_STATUS_HOLD_MS = 2800;
+const STEP_EVENT_REFRESH_MS = 2800;
+
+function statusPriority(status: TeamAgentStatus): number {
+  if (status === "thinking") return 3;
+  if (status === "queued") return 2;
+  return 1;
+}
+
+function seatRadiusPct(total: number): number {
+  if (total <= 4) return 36;
+  if (total <= 8) return 38;
+  if (total <= 12) return 40;
+  if (total <= 16) return 38;
+  return 34;
+}
+
+function useHeldAgentTeam(team: TeamAgent[]): TeamAgent[] {
+  const [display, setDisplay] = useState(team);
+  const teamRef = useRef(team);
+  teamRef.current = team;
+  const holdsRef = useRef(new Map<string, { status: TeamAgentStatus; currentTask: string | null; releaseAt: number }>());
+  const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  useEffect(() => {
+    setDisplay((prevDisplay) => {
+      const now = Date.now();
+      return team.map((agent) => {
+        const prev = prevDisplay.find((entry) => entry.id === agent.id) ?? agent;
+        const hold = holdsRef.current.get(agent.id);
+
+        if (hold && now < hold.releaseAt) {
+          if (statusPriority(agent.status) > statusPriority(hold.status)) {
+            holdsRef.current.delete(agent.id);
+            const timer = timersRef.current.get(agent.id);
+            if (timer) clearTimeout(timer);
+            timersRef.current.delete(agent.id);
+            return agent;
+          }
+          return {
+            ...agent,
+            status: hold.status,
+            currentTask: hold.currentTask ?? agent.currentTask,
+          };
+        }
+
+        if (statusPriority(prev.status) > statusPriority(agent.status)) {
+          const releaseAt = now + AGENT_STATUS_HOLD_MS;
+          holdsRef.current.set(agent.id, {
+            status: prev.status,
+            currentTask: prev.currentTask,
+            releaseAt,
+          });
+          const existing = timersRef.current.get(agent.id);
+          if (existing) clearTimeout(existing);
+          const agentId = agent.id;
+          const timer = setTimeout(() => {
+            timersRef.current.delete(agentId);
+            holdsRef.current.delete(agentId);
+            setDisplay((current) =>
+              current.map((entry) =>
+                entry.id === agentId ? teamRef.current.find((member) => member.id === agentId) ?? entry : entry,
+              ),
+            );
+          }, AGENT_STATUS_HOLD_MS);
+          timersRef.current.set(agent.id, timer);
+          return {
+            ...agent,
+            status: prev.status,
+            currentTask: prev.currentTask ?? agent.currentTask,
+          };
+        }
+
+        return agent;
+      });
+    });
+  }, [team]);
+
+  useEffect(() => {
+    if (team.length === 0) {
+      for (const timer of timersRef.current.values()) clearTimeout(timer);
+      timersRef.current.clear();
+      holdsRef.current.clear();
+      setDisplay([]);
+    }
+  }, [team.length]);
+
+  useEffect(() => {
+    return () => {
+      for (const timer of timersRef.current.values()) clearTimeout(timer);
+      timersRef.current.clear();
+      holdsRef.current.clear();
+    };
+  }, []);
+
+  return display;
+}
 
 function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
   let inFlight = false;
@@ -179,7 +277,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         const preview = String(evt.data?.message ?? "").slice(0, 80);
         if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
       } else if (evt.type === "step_start" || evt.type === "step_complete") {
-        refreshScheduler.current.schedule(1200);
+        refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS);
       } else if (evt.type === "done") {
         refreshScheduler.current.flush();
       }
@@ -189,6 +287,8 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
       refreshScheduler.current.dispose();
     };
   }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote]);
+
+  const displayTeam = useHeldAgentTeam(data?.team ?? []);
 
   if (loading) return <PageLoading message={t("warRoom.loading")} />;
 
@@ -224,9 +324,10 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const activeRunVeto =
     data.activeRun?.errorMessage?.startsWith("VETO:") ? data.activeRun.errorMessage : recentVeto ?? null;
 
-  const thinking = data.team.filter((a) => a.status === "thinking");
-  const onDuty = data.team.filter((a) => a.status !== "idle");
-  const totalAgents = data.team.length;
+  const thinking = displayTeam.filter((a) => a.status === "thinking");
+  const onDuty = displayTeam.filter((a) => a.status !== "idle");
+  const totalAgents = displayTeam.length;
+  const tableDensity = totalAgents > 14 ? "compact" : totalAgents > 10 ? "cozy" : "normal";
 
   return (
     <div className="war-room">
@@ -362,28 +463,36 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           )}
         </aside>
 
-        <section className="war-room-table" aria-label={t("warRoom.tableAria")}>
-          <div className="war-room-table-grid" />
-          <div className="war-room-table-ring" aria-hidden />
-          <div className="war-room-core">
-            <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
-            <p className="war-room-core-name">
-              {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
-            </p>
-            <p className="war-room-core-status">
-              {data.activeRun
-                ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
-                : t("warRoom.coreIdle", { count: totalAgents })}
-            </p>
-            {liveNote && (
-              <p className="war-room-core-note" role="status">
-                <span className="war-room-pulse" aria-hidden /> {liveNote}
-              </p>
-            )}
+        <section
+          className="war-room-table"
+          data-density={tableDensity}
+          aria-label={t("warRoom.tableAria")}
+        >
+          <div className="war-room-table-backdrop" aria-hidden>
+            <div className="war-room-table-grid" />
+            <div className="war-room-table-ring" />
           </div>
-          {data.team.map((agent, i) => (
-            <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
-          ))}
+          <div className="war-room-table-stage">
+            <div className="war-room-core">
+              <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
+              <p className="war-room-core-name">
+                {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
+              </p>
+              <p className="war-room-core-status">
+                {data.activeRun
+                  ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
+                  : t("warRoom.coreIdle", { count: totalAgents })}
+              </p>
+              {liveNote && (
+                <p className="war-room-core-note" role="status">
+                  <span className="war-room-pulse" aria-hidden /> {liveNote}
+                </p>
+              )}
+            </div>
+            {displayTeam.map((agent, i) => (
+              <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
+            ))}
+          </div>
         </section>
 
         <aside className="war-room-details">
@@ -463,7 +572,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
 
 function AgentSeat({ agent, index, total }: { agent: TeamAgent; index: number; total: number }) {
   const { t } = useTranslation();
-  const radiusPct = total <= 4 ? 38 : total <= 8 ? 42 : total <= 12 ? 45 : 47;
+  const radiusPct = seatRadiusPct(total);
   const { x, y } = positionOnCircle(index, total, radiusPct);
   const emoji = ROLE_EMOJI[agent.name] ?? "🧑‍💼";
   const ringColor = statusRingColor(agent.status);

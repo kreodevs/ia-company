@@ -212,6 +212,8 @@ export type GoNoGoDecision = "pending" | "go" | "no_go";
 
 export type ProductIntakeStatus = "pending" | "running" | "completed" | "failed" | "skipped";
 
+export type WorkItemKind = "product" | "client" | "campaign" | "project";
+
 export interface TenantProduct {
   id: string;
   tenantId: string;
@@ -223,6 +225,8 @@ export interface TenantProduct {
   goNoGo: GoNoGoDecision;
   revenueUsd: number;
   lastRunId: string | null;
+  orgUnitId?: string | null;
+  workItemKind?: WorkItemKind;
   githubRepoUrl?: string | null;
   githubDefaultBranch?: string | null;
   intakeStatus?: ProductIntakeStatus | null;
@@ -1181,6 +1185,8 @@ export const api = {
         revenueUsd?: number;
         githubRepoUrl?: string | null;
         stripeWebhookSecret?: string | null;
+        orgUnitId?: string | null;
+        workItemKind?: WorkItemKind;
       },
     ) =>
       request<TenantProduct>(`/products/${id}`, {
@@ -1498,8 +1504,22 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(body),
       }),
+    products: (id: string) => request<TenantProduct[]>(`/org-units/${id}/products`),
+    launch: (
+      id: string,
+      body: { task: string; productId?: string; presetId?: string },
+    ) =>
+      request<{ runId: string; workflowId: string; workflowName: string; productId: string | null }>(
+        `/org-units/${id}/launch`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
     artifacts: (id: string) =>
       request<import("./org-types").Artifact[]>(`/org-units/${id}/artifacts`),
+    updateArtifactStatus: (artifactId: string, status: string) =>
+      request<import("./org-types").Artifact>(`/artifacts/${artifactId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
   },
   orgStudio: {
     templates: () => request<import("./org-types").BusinessTemplateSummary[]>("/org-studio/templates"),

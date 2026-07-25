@@ -8,6 +8,7 @@ import {
 } from "./decision-proposals.js";
 import { appendProductHandoff, extractHandoffFromAgentOutput } from "./product-consensus.js";
 import { persistHandoffAsAgentDoc, shouldSkipHandoffDocPersist } from "./agent-deliverables.js";
+import { persistOrgUnitHandoffsFromRun } from "./org-artifacts.js";
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import {
   addPipelineIdeas,
@@ -155,6 +156,17 @@ export async function processConvergenceAfterRun(
             content: docBody,
           });
         }
+      }
+
+      if (product.orgUnitId) {
+        await persistOrgUnitHandoffsFromRun({
+          tenantId: product.tenantId,
+          productId: product.id,
+          orgUnitId: product.orgUnitId,
+          runId,
+          workflowName,
+          history,
+        });
       }
     }
   }

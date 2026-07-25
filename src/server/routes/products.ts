@@ -134,6 +134,8 @@ export async function productRoutes(app: FastifyInstance) {
       revenueUsd?: number;
       githubRepoUrl?: string | null;
       stripeWebhookSecret?: string | null;
+      orgUnitId?: string | null;
+      workItemKind?: "product" | "client" | "campaign" | "project";
     };
   }>("/products/:id", async (request, reply) => {
     try {
@@ -146,8 +148,21 @@ export async function productRoutes(app: FastifyInstance) {
       const phaseChanged = request.body?.phase && request.body.phase !== existing.phase;
       const goNoGoChanged = request.body?.goNoGo && request.body.goNoGo !== existing.goNoGo;
 
-      const { stripeWebhookSecret, ...bodyRest } = request.body ?? {};
+      const { stripeWebhookSecret, orgUnitId, ...bodyRest } = request.body ?? {};
       const data: Record<string, unknown> = { ...bodyRest };
+
+      if (orgUnitId !== undefined) {
+        if (orgUnitId === null || orgUnitId === "") {
+          data.orgUnitId = null;
+        } else {
+          const org = await prisma.orgUnit.findFirst({
+            where: { id: orgUnitId, tenantId },
+            select: { id: true },
+          });
+          if (!org) return reply.status(400).send({ error: "Org unit not found" });
+          data.orgUnitId = orgUnitId;
+        }
+      }
       if (stripeWebhookSecret !== undefined) {
         const baseMeta =
           typeof existing.metadata === "object" && existing.metadata

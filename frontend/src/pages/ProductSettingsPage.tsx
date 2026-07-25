@@ -15,6 +15,8 @@ import Badge from "../components/ui/Badge";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
 import ProductRevenueSettingsPanel from "../components/products/ProductRevenueSettingsPanel";
+import Select from "../components/ui/Select";
+import type { OrgUnit } from "../lib/org-types";
 
 function productPhaseLabel(
   phase: TenantProduct["phase"],
@@ -37,18 +39,27 @@ export default function ProductSettingsPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [githubRepoUrl, setGithubRepoUrl] = useState("");
+  const [orgUnitId, setOrgUnitId] = useState("");
+  const [workItemKind, setWorkItemKind] = useState("product");
+  const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
 
   const load = useCallback(async () => {
     if (!productId) return;
     setLoading(true);
     try {
       const list = await api.products.list();
-      const found = list.find((p) => p.id === productId) ?? null;
+      const [found, units] = await Promise.all([
+        Promise.resolve(list.find((p) => p.id === productId) ?? null),
+        api.orgUnits.list().catch(() => [] as OrgUnit[]),
+      ]);
+      setOrgUnits(units);
       setProduct(found);
       if (found) {
         setName(found.name);
         setDescription(found.description ?? "");
         setGithubRepoUrl(found.githubRepoUrl ?? "");
+        setOrgUnitId(found.orgUnitId ?? "");
+        setWorkItemKind(found.workItemKind ?? "product");
       }
     } finally {
       setLoading(false);
@@ -64,9 +75,11 @@ export default function ProductSettingsPage() {
     return (
       name.trim() !== product.name ||
       description.trim() !== (product.description ?? "") ||
-      githubRepoUrl.trim() !== (product.githubRepoUrl ?? "")
+      githubRepoUrl.trim() !== (product.githubRepoUrl ?? "") ||
+      orgUnitId !== (product.orgUnitId ?? "") ||
+      workItemKind !== (product.workItemKind ?? "product")
     );
-  }, [product, name, description, githubRepoUrl]);
+  }, [product, name, description, githubRepoUrl, orgUnitId, workItemKind]);
 
   const save = async () => {
     if (!productId || !product) return;
@@ -76,11 +89,15 @@ export default function ProductSettingsPage() {
         name: name.trim(),
         description: description.trim() || undefined,
         githubRepoUrl: githubRepoUrl.trim() || undefined,
+        orgUnitId: orgUnitId || null,
+        workItemKind: workItemKind as "product" | "client" | "campaign" | "project",
       });
       setProduct(updated);
       setName(updated.name);
       setDescription(updated.description ?? "");
       setGithubRepoUrl(updated.githubRepoUrl ?? "");
+      setOrgUnitId(updated.orgUnitId ?? "");
+      setWorkItemKind(updated.workItemKind ?? "product");
       toast.success(t("products.settings.saved"));
     } catch (err) {
       toast.error(translateApiError(err, t, "common.saveFailed"));
@@ -179,6 +196,39 @@ export default function ProductSettingsPage() {
                 {t("products.settings.integrationsLink")}
               </Link>
             </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+              {t("products.settings.orgUnitLabel")}
+            </label>
+            <Select
+              value={orgUnitId}
+              onChange={setOrgUnitId}
+              ariaLabel={t("products.settings.orgUnitLabel")}
+              options={[
+                { value: "", label: t("products.settings.orgUnitNone") },
+                ...orgUnits.map((u) => ({ value: u.id, label: u.name })),
+              ]}
+            />
+            <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+              {t("products.settings.orgUnitHint")}
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+              {t("products.settings.workItemKindLabel")}
+            </label>
+            <Select
+              value={workItemKind}
+              onChange={setWorkItemKind}
+              ariaLabel={t("products.settings.workItemKindLabel")}
+              options={[
+                { value: "product", label: t("products.settings.workItemKind.product") },
+                { value: "client", label: t("products.settings.workItemKind.client") },
+                { value: "campaign", label: t("products.settings.workItemKind.campaign") },
+                { value: "project", label: t("products.settings.workItemKind.project") },
+              ]}
+            />
           </div>
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {t("products.settings.slugReadonly", { slug: product.slug, path: `projects/${product.slug}/` })}

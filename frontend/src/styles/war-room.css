@@ -323,7 +323,7 @@ html[data-theme="letter"] .war-room {
   display: grid;
   grid-template-columns: 220px 1fr 240px;
   gap: 1rem;
-  align-items: stretch;
+  align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -426,11 +426,53 @@ html[data-theme="letter"] .war-room {
 .war-room-table {
   position: relative;
   aspect-ratio: 1 / 1;
-  min-height: 420px;
+  min-height: 460px;
   border-radius: 16px;
   border: 1px solid var(--war-room-accent-border);
   background: var(--war-room-table-bg);
+  overflow: visible;
+}
+
+.war-room-table-backdrop {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.war-room-table-stage {
+  position: absolute;
+  inset: 7% 5% 11% 5%;
+}
+
+.war-room-table[data-density="cozy"] .war-room-seat-avatar {
+  width: 56px;
+  height: 56px;
+}
+
+.war-room-table[data-density="cozy"] .war-room-seat-name {
+  font-size: 0.65rem;
+  max-width: 7rem;
+}
+
+.war-room-table[data-density="compact"] .war-room-seat-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.war-room-table[data-density="compact"] .war-room-seat-emoji {
+  font-size: 1.2rem;
+}
+
+.war-room-table[data-density="compact"] .war-room-seat-name {
+  font-size: 0.6rem;
+  max-width: 6.5rem;
+}
+
+.war-room-table[data-density="compact"] .war-room-seat-task {
+  font-size: 0.58rem;
+  max-width: 7.5rem;
 }
 
 .war-room-table-grid {
@@ -531,6 +573,7 @@ html[data-theme="letter"] .war-room {
   gap: 0.3rem;
   z-index: 3;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  transition: filter 320ms ease;
 }
 
 .war-room-seat-pill {
@@ -587,7 +630,11 @@ html[data-theme="letter"] .war-room {
   align-items: center;
   justify-content: center;
   border: 2px solid var(--ring, rgba(148, 163, 184, 0.45));
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition:
+    transform 320ms ease,
+    box-shadow 320ms ease,
+    border-color 320ms ease,
+    opacity 320ms ease;
   position: relative;
 }
 
