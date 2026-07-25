@@ -18,7 +18,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, workflows, w
 
 | Route | Page |
 |-------|------|
-| `/` · `/office` | `OfficePage` |
+| `/` · `/office` | `OfficePage` — coordinador en contexto general; opcionalmente filtra por departamento si hay org units |
 | `/office/encargos` | `OfficeEncargosPage` |
 | `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
 | `/office/workflows` | `WorkflowsPage` |
