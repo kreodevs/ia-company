@@ -101,6 +101,13 @@ export const admin = {
       modelsLoadFailed: "No se pudieron cargar los modelos del proveedor.",
       modelsEmpty: "Ningún modelo coincide con la búsqueda.",
       modelPricing: "Entrada {{input}} / 1M · Salida {{output}} / 1M",
+      testButton: "Probar conexión LLM",
+      testRunning: "Probando…",
+      testHint: "Envía un mensaje corto con una herramienta de prueba usando la configuración guardada.",
+      testOk: "Conexión OK — respuesta: {{text}}",
+      testOkShort: "LLM responde correctamente",
+      testFailed: "La prueba LLM falló. Revisa la clave, el modelo y la URL base.",
+      testFailedShort: "Prueba LLM fallida",
     },
     email: {
       title: "Email (Resend)",

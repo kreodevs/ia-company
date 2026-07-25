@@ -1037,6 +1037,16 @@ export const api = {
           `/admin/settings/platform/models?${qs.toString()}`,
         );
       },
+      testLlm: () =>
+        request<{
+          ok: boolean;
+          provider: string;
+          model: string;
+          text?: string;
+          error?: string;
+          statusCode?: number | null;
+          responseBody?: string | null;
+        }>("/admin/settings/platform/llm-test", { method: "POST" }),
     },
     templates: {
       summary: () =>

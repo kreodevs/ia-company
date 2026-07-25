@@ -26,7 +26,8 @@ import type {
   StepResult,
   WorkflowGraph,
 } from "../types/index.js";
-import { createLanguageModel, estimateCostUsd, formatLlmProviderError } from "./providers.js";
+import { createLanguageModel, estimateCostUsd, findApiCallError, formatLlmProviderError } from "./providers.js";
+import { prepareSharedMemoryForPrompt } from "../lib/prompt-memory.js";
 import { createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
@@ -539,7 +540,11 @@ export class WorkflowExecutor {
     let delegated = false;
     const toolMode = this.resolveToolMode(agent.name, tenantCtx, stepOrder);
 
-    const systemPrompt = compileSystemPrompt(agent, sharedMemory, inputConfig, {
+    const systemPrompt = compileSystemPrompt(
+      agent,
+      prepareSharedMemoryForPrompt(sharedMemory),
+      inputConfig,
+      {
       productSlug: tenantCtx.productSlug,
       productName:
         typeof sharedMemory.focusProductName === "string"
@@ -548,7 +553,7 @@ export class WorkflowExecutor {
       toolMode,
       afterOpencodeDelegation: tenantCtx.afterOpencodeDelegation,
     });
-    const userPrompt = compileUserPrompt(sharedMemory, inputConfig);
+    const userPrompt = compileUserPrompt(prepareSharedMemoryForPrompt(sharedMemory), inputConfig);
 
     const providerConfig = resolveAgentProviderConfig(agent, tenantCtx.llm);
 
@@ -599,6 +604,16 @@ export class WorkflowExecutor {
         maxSteps: 10,
       });
     } catch (err) {
+      const apiErr = findApiCallError(err);
+      if (apiErr?.responseBody) {
+        await this.appendLog(runId, "error", "LLM provider response body", {
+          agentId: agent.id,
+          payload: {
+            statusCode: apiErr.statusCode,
+            body: apiErr.responseBody.slice(0, 2_000),
+          },
+        });
+      }
       throw new Error(formatLlmProviderError(err, providerConfig));
     }
 

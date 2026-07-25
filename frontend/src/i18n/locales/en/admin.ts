@@ -102,6 +102,13 @@ export const admin = {
       modelsLoadFailed: "Could not load provider models.",
       modelsEmpty: "No models match your search.",
       modelPricing: "Input {{input}} / 1M · Output {{output}} / 1M",
+      testButton: "Test LLM connection",
+      testRunning: "Testing…",
+      testHint: "Sends a short prompt with a sample tool using the saved platform settings.",
+      testOk: "Connection OK — response: {{text}}",
+      testOkShort: "LLM responded successfully",
+      testFailed: "LLM test failed. Check API key, model, and base URL.",
+      testFailedShort: "LLM test failed",
     },
     email: {
       title: "Email (Resend)",

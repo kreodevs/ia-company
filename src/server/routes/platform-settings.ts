@@ -81,4 +81,56 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.post("/admin/settings/platform/llm-test", async (_request, reply) => {
+    try {
+      const { generateText, tool } = await import("ai");
+      const { z } = await import("zod");
+      const { createLanguageModel, findApiCallError, formatLlmProviderError } = await import(
+        "../../core/providers.js"
+      );
+      const settings = await getPlatformSettings();
+      const providerConfig = {
+        provider: settings.defaultProvider,
+        model: settings.defaultModel,
+        temperature: settings.defaultTemperature,
+        apiKey: undefined,
+        baseURL: undefined,
+      };
+      const model = createLanguageModel(providerConfig);
+
+      try {
+        const result = await generateText({
+          model,
+          prompt: "Reply with exactly: LLM OK",
+          maxSteps: 2,
+          tools: {
+            ping: tool({
+              description: "Health check tool",
+              parameters: z.object({ ok: z.boolean().optional() }),
+              execute: async () => "pong",
+            }),
+          },
+        });
+        return {
+          ok: true,
+          provider: settings.defaultProvider,
+          model: settings.defaultModel,
+          text: result.text.slice(0, 200),
+        };
+      } catch (err) {
+        const apiErr = findApiCallError(err);
+        return reply.status(502).send({
+          ok: false,
+          provider: settings.defaultProvider,
+          model: settings.defaultModel,
+          error: formatLlmProviderError(err, providerConfig),
+          statusCode: apiErr?.statusCode ?? null,
+          responseBody: apiErr?.responseBody?.slice(0, 2_000) ?? null,
+        });
+      }
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

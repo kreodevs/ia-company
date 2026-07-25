@@ -87,6 +87,19 @@ export function providerDisplayName(provider: AgentProvider): string {
   return names[provider];
 }
 
+export function findApiCallError(err: unknown): APICallError | null {
+  let current: unknown = err;
+  while (current) {
+    if (current instanceof APICallError) return current;
+    if (current instanceof Error && current.cause) {
+      current = current.cause;
+      continue;
+    }
+    break;
+  }
+  return null;
+}
+
 export function formatLlmProviderError(
   err: unknown,
   config: { provider: string; model: string },
@@ -102,24 +115,15 @@ export function formatLlmProviderError(
     if (msg && !parts.includes(msg)) parts.push(msg);
   }
 
-  if (err instanceof APICallError) {
-    if (err.statusCode) parts.push(`HTTP ${err.statusCode}`);
-    const providerDetail = extractProviderResponseDetail(err.responseBody);
-    if (providerDetail && !parts.includes(providerDetail)) parts.push(providerDetail);
-  } else if (
-    err &&
-    typeof err === "object" &&
-    "responseBody" in err &&
-    typeof (err as { responseBody?: unknown }).responseBody === "string"
-  ) {
-    const providerDetail = extractProviderResponseDetail(
-      (err as { responseBody: string }).responseBody,
-    );
+  const apiErr = findApiCallError(err);
+  if (apiErr) {
+    if (apiErr.statusCode) parts.push(`HTTP ${apiErr.statusCode}`);
+    const providerDetail = extractProviderResponseDetail(apiErr.responseBody);
     if (providerDetail && !parts.includes(providerDetail)) parts.push(providerDetail);
   }
 
   const combined = parts.join(" — ");
-  if (/provider returned error|failed to fetch|401|403|404|429|invalid model|insufficient credits|user not found/i.test(combined)) {
+  if (/provider returned error|failed to fetch|401|403|404|429|400|invalid model|insufficient credits|user not found/i.test(combined)) {
     return `LLM ${config.provider}/${config.model} error: ${combined}. Check Admin → Platform settings (API key, base URL) and that the model id is valid on the provider.`;
   }
   return combined;

@@ -16,6 +16,8 @@ export default function PlatformSettingsPage() {
   const { t } = useTranslation();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [saving, setSaving] = useState(false);
+  const [llmTesting, setLlmTesting] = useState(false);
+  const [llmTestResult, setLlmTestResult] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") as PlatformSettingsTab | null;
   const [activeTab, setActiveTab] = useState<PlatformSettingsTab>(
@@ -46,6 +48,28 @@ export default function PlatformSettingsPage() {
       toast.error(translateApiError(err, t, "common.saveFailed"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const testLlm = async () => {
+    setLlmTesting(true);
+    setLlmTestResult(null);
+    try {
+      const result = await api.admin.platformSettings.testLlm();
+      if (result.ok) {
+        setLlmTestResult(t("admin.platformSettings.defaultLlm.testOk", { text: result.text ?? "OK" }));
+        toast.success(t("admin.platformSettings.defaultLlm.testOkShort"));
+      } else {
+        const detail = [result.error, result.responseBody].filter(Boolean).join("\n\n");
+        setLlmTestResult(detail || t("admin.platformSettings.defaultLlm.testFailed"));
+        toast.error(t("admin.platformSettings.defaultLlm.testFailedShort"));
+      }
+    } catch (err) {
+      const message = translateApiError(err, t, "admin.platformSettings.defaultLlm.testFailedShort");
+      setLlmTestResult(message);
+      toast.error(message);
+    } finally {
+      setLlmTesting(false);
     }
   };
 
@@ -311,6 +335,27 @@ export default function PlatformSettingsPage() {
               </div>
             )}
           </div>
+
+          <div className="flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">
+            <button
+              type="button"
+              disabled={llmTesting}
+              onClick={() => void testLlm()}
+              className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-medium hover:bg-[var(--color-muted)] disabled:opacity-50"
+            >
+              {llmTesting
+                ? t("admin.platformSettings.defaultLlm.testRunning")
+                : t("admin.platformSettings.defaultLlm.testButton")}
+            </button>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("admin.platformSettings.defaultLlm.testHint")}
+            </p>
+          </div>
+          {llmTestResult && (
+            <pre className="max-h-48 overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3 text-xs whitespace-pre-wrap">
+              {llmTestResult}
+            </pre>
+          )}
         </section>
       )}
 
