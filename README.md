@@ -4,84 +4,96 @@
 
 **Plataforma multi-tenant para orquestar una empresa de agentes IA** — Office, workflows visuales, consenso en PostgreSQL y ejecución bajo demanda o programada.
 
-Desarrollado y mantenido por **[Kreo Devs](https://github.com/kreodevs)** · [`ia-company`](https://github.com/kreodevs/ia-company) <a href="README-ZH.md"><img alt="[中文说明]" src="https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
+Desarrollado y mantenido por **[Kreo Devs](https://github.com/kreodevs)** · [`ia-company`](https://github.com/kreodevs/ia-company)
 
-[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](#quick-start)
-[![React](https://img.shields.io/badge/UI-React-61DAFB?logo=react&logoColor=black)](#architecture)
-[![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](#architecture)
-[![Redis](https://img.shields.io/badge/Queue-Redis-BullMQ-DC382D?logo=redis&logoColor=white)](#architecture)
-[![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED?logo=docker&logoColor=white)](#production)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](#inicio-rápido)
+[![React](https://img.shields.io/badge/UI-React-61DAFB?logo=react&logoColor=black)](#arquitectura)
+[![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](#arquitectura)
+[![Redis](https://img.shields.io/badge/Queue-Redis-BullMQ-DC382D?logo=redis&logoColor=white)](#arquitectura)
+[![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED?logo=docker&logoColor=white)](#producción)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
 
 </div>
 
 ---
 
-## About this project
+## Qué es
 
-**Auto Company Platform** es la evolución del concepto *Auto Company* hacia una aplicación web **self-hosted** y **multi-tenant**. En lugar de un loop bash 24/7 con un único `consensus.md`, aquí cada organización tiene su propio tenant, sus agentes, sus workflows y su memoria de consenso en base de datos.
+**Auto Company Platform** es una aplicación web **self-hosted** y **multi-tenant** para coordinar equipos de agentes IA con roles de expertos, skills reutilizables y workflows encadenados.
 
-El flujo principal es **Office-first**:
-
-1. Hablas con el **coordinador** en `/office` y defines el encargo.
-2. Apruebas el brief (equipo, presupuesto, alcance).
-3. El **worker** ejecuta el workflow contra proveedores LLM (OpenRouter, OpenCode, etc.).
-4. Opcionalmente, **reglas fijas** en Settings disparan workflows en intervalo o cron.
-
-La plataforma conserva el ADN del proyecto original: **14 agentes con personas de expertos reales**, **30+ skills** reutilizables y **workflows de convergencia** (descubrir → evaluar → construir → crecer), pero con control humano explícito, aislamiento por tenant y observabilidad en la UI.
+Cada organización (tenant) tiene sus propios agentes, workflows, productos, consenso y workspace aislado. El modelo operativo es **Office-first**: tú defines el encargo, apruebas el brief y la plataforma ejecuta.
 
 ---
 
-## What you get
+## Cómo opera (v2)
 
-| Area | Capabilities |
+```text
+/office  →  Coordinador (chat + brief)
+         →  Aprobación (equipo, presupuesto, alcance)
+         →  Worker + motor de workflows
+         →  Proveedores LLM (OpenRouter, OpenCode, …)
+         →  Consenso y artefactos en PostgreSQL + projects/{tenant}/
+```
+
+| Paso | Dónde | Qué pasa |
+|------|--------|----------|
+| 1 | `/office` | Conversas con el coordinador y defines el encargo |
+| 2 | Office | Revisas y apruebas el brief antes de ejecutar |
+| 3 | Worker | Encola y ejecuta el workflow paso a paso |
+| 4 | Settings → Orchestration | *(Opcional)* Reglas fijas disparan workflows por intervalo o cron |
+| 5 | `/ops` | Portfolio, pipeline de ideas, decisiones GO/NO-GO |
+
+Rutas clave: `/office` · `/office/workflows` · `/ops` · `/settings` · `/admin`
+
+Documentación: [`docs/platform.md`](docs/platform.md) · [`CLAUDE.md`](CLAUDE.md)
+
+---
+
+## Capacidades
+
+| Área | Funcionalidad |
 |------|----------------|
-| **Office** | Chat con coordinador, síntesis de brief, aprobación antes de ejecutar |
-| **Workflows** | Editor visual (React Flow) en `/office/workflows` |
-| **Agents & skills** | CRUD por tenant; seed desde `.claude/agents/` y `.claude/skills/` |
-| **Ops** | Portfolio de productos, pipeline de ideas, decisiones GO/NO-GO |
-| **Orchestration** | Reglas programadas por workflow (sin meta-orquestador 24/7) |
-| **Integrations** | SMTP saliente, servidores MCP, OpenCode bridge, tokens GitHub |
+| **Office** | Chat con coordinador, síntesis de brief, aprobación previa |
+| **Workflows** | Editor visual (React Flow) |
+| **Agents & skills** | CRUD por tenant; plantillas desde seed |
+| **Ops** | Productos, pipeline, decisiones |
+| **Orchestration** | Schedules por workflow |
+| **Integrations** | SMTP, MCP, OpenCode, GitHub |
 | **Admin** | Superadmin, impersonación, límites de coste, auditoría |
-
-Documentación detallada: [`docs/platform.md`](docs/platform.md) · [`CLAUDE.md`](CLAUDE.md) (misión, guardrails, equipo).
 
 ---
 
 ## Stack
 
-| Layer | Technology |
-|-------|------------|
+| Capa | Tecnología |
+|------|------------|
 | API | Node.js · Fastify · Prisma · PostgreSQL |
-| Queue | Redis · BullMQ worker + scheduler |
-| UI | React · React Flow · Tailwind v4 · Kreo design tokens |
-| Deploy | Docker Compose (Dokploy-ready) |
+| Cola | Redis · BullMQ · worker + scheduler |
+| UI | React · React Flow · Tailwind v4 |
+| Deploy | Docker Compose (Dokploy) |
 
 ---
 
-## Quick start
+## Inicio rápido
 
 ```bash
-# 1. Environment
 cp .env.example .env
-# DATABASE_URL, JWT_SECRET, REDIS_URL, LLM keys
+# DATABASE_URL, JWT_SECRET, REDIS_URL, claves LLM
 
-# 2. Database + templates
 npm install
 npx prisma migrate dev
 npm run db:seed
 
-# 3. API, worker, frontend (three terminals)
 npm run dev          # API :3001
-npm run worker       # BullMQ + scheduler
+npm run worker       # worker + scheduler
 npm run dev:frontend # UI :5173
 ```
 
-**First visit:** `/setup` → superadmin → `/admin` → crear tenant → impersonar → configurar agentes y workflows → **Office**.
+Primera visita: `/setup` → superadmin → `/admin` → tenant → impersonar → agentes/workflows → **Office**.
 
 ---
 
-## Architecture
+## Arquitectura
 
 ```text
 Browser (React + React Flow)
@@ -90,48 +102,37 @@ Browser (React + React Flow)
         ↓
    PostgreSQL (Prisma)     Redis (BullMQ)
         ↓                        ↓
-   Tenant data              Worker + Scheduler
+   Datos por tenant         Worker + Scheduler
                                    ↓
-                            Workflow engine → LLM providers
+                            Motor de workflows → LLM
                                    ↓
-                     projects/{tenant-slug}/  (workspace aislado)
+                     projects/{tenant-slug}/  (sandbox)
 ```
 
-- **Consenso:** `TenantConsensus` en PostgreSQL (equivalente a `memories/consensus.md` del CLI original), espejado al workspace para herramientas de archivos.
-- **Aislamiento:** cada tenant filtrado por `tenantId`; sandbox en `projects/{tenant-slug}/`.
-- **Secretos:** claves LLM cifradas con `ENCRYPTION_KEY` o `JWT_SECRET`.
+- **Consenso:** `TenantConsensus` en PostgreSQL, espejado al workspace para herramientas de archivos.
+- **Aislamiento:** filtrado por `tenantId`; sandbox en `projects/{tenant-slug}/`.
+- **Secretos:** claves LLM cifradas (`ENCRYPTION_KEY` o `JWT_SECRET`).
 
 ---
 
-## The 14-agent team
+## Equipo de 14 agentes
 
-Herencia directa del diseño original: role prompting con modelos mentales de referentes, no “eres un developer genérico”.
+Role prompting con modelos mentales de referentes reales (CEO, CTO, producto, ingeniería, negocio, research). Definiciones en `.claude/agents/`; skills en `.claude/skills/`.
 
-| Layer | Role | Expert Persona |
-|------|------|----------------|
-| **Strategy** | CEO | Jeff Bezos |
-| | CTO | Werner Vogels |
-| | Inversion | Charlie Munger |
-| **Product** | Product Design | Don Norman |
-| | UI Design | Matias Duarte |
-| | Interaction Design | Alan Cooper |
-| **Engineering** | Full-Stack | DHH |
-| | QA | James Bach |
-| | DevOps/SRE | Kelsey Hightower |
-| **Business** | Marketing | Seth Godin |
-| | Operations | Paul Graham |
-| | Sales | Aaron Ross |
-| | CFO | Patrick Campbell |
-| **Intelligence** | Research Analyst | Ben Thompson |
-
-Definiciones en `.claude/agents/` · Skills en `.claude/skills/`.
+| Capa | Rol | Persona |
+|------|-----|---------|
+| **Strategy** | CEO · CTO · Inversión | Bezos · Vogels · Munger |
+| **Product** | Producto · UI · Interacción | Norman · Duarte · Cooper |
+| **Engineering** | Full-stack · QA · DevOps | DHH · Bach · Hightower |
+| **Business** | Marketing · Ops · Sales · CFO | Godin · Graham · Ross · Campbell |
+| **Intelligence** | Research | Thompson |
 
 ---
 
-## Standard workflows
+## Workflows estándar
 
-| # | Workflow | Chain |
-|---|----------|-------|
+| # | Workflow | Cadena |
+|---|----------|--------|
 | 1 | New Product Evaluation | Research → CEO → Munger → Product → CTO → CFO |
 | 2 | Feature Development | Interaction → UI → Full-stack → QA → DevOps |
 | 3 | Product Launch | QA → DevOps → Marketing → Sales → Ops → CEO |
@@ -141,64 +142,45 @@ Definiciones en `.claude/agents/` · Skills en `.claude/skills/`.
 
 ---
 
-## Project structure (v2)
+## Estructura del repo
 
 ```text
 auto-company/
-├── src/                    # API, worker, engine, coordinator
-├── frontend/               # React UI (Office, Ops, Settings, Admin)
-├── prisma/                 # Schema, migrations, seed
-├── projects/               # Tenant workspaces (runtime)
-├── claude/agents/          # Agent personas (seeded to DB)
-├── claude/skills/          # Reusable skills (seeded to DB)
-├── archive/legacy-cli/     # Original bash auto-loop (archived)
-├── docs/                   # Platform docs + agent outputs
+├── src/              # API, worker, engine, coordinator
+├── frontend/         # UI (Office, Ops, Settings, Admin)
+├── prisma/           # Schema, migrations, seed
+├── projects/         # Workspaces de tenants (runtime)
+├── claude/           # Agentes y skills (seed)
+├── docs/             # Documentación de plataforma
 ├── docker-compose.yml
-└── CLAUDE.md               # Charter, guardrails, team rules
+└── CLAUDE.md         # Misión, guardrails, equipo
 ```
 
 ---
 
-## Production
+## Producción
 
-See [`docker-compose.yml`](docker-compose.yml), [`.env.production.example`](.env.production.example), and [`docs/platform.md`](docs/platform.md).
+[`docker-compose.yml`](docker-compose.yml) · [`.env.production.example`](.env.production.example) · [`docker/README.md`](docker/README.md) · [`docs/platform.md`](docs/platform.md)
 
----
-
-## Legacy CLI (archived)
-
-El workflow original (`auto-loop.sh` + `memories/consensus.md` + daemon macOS/WSL) **no forma parte del runtime v2**. Está preservado en [`archive/legacy-cli/`](archive/legacy-cli/README.md) como referencia histórica. Los stubs en `scripts/core/` muestran un mensaje de deprecación.
-
-Para nuevos despliegues, usa la plataforma descrita arriba.
+En Dokploy: Compose → variables de entorno → dominio al servicio `web:80` → `/setup` en el primer acceso.
 
 ---
 
-## Acknowledgments & Inspiration
+## Agradecimientos
 
-### Agradecimientos
-
-Este proyecto **no existiría sin la inspiración, el diseño y el trabajo del [Auto Company](https://github.com/MaxMiksa/Auto-Company) original**. Kreo Devs tomó esa visión — una empresa autónoma de agentes IA con personas de expertos, skills compartidos y memoria de consenso — y la reimaginó como plataforma multi-tenant con Office, worker y PostgreSQL.
-
-**Gracias especialmente a:**
+Este proyecto está **inspirado** en [Auto Company](https://github.com/MaxMiksa/Auto-Company) de **Zheyuan (Max) Kong** — especialmente las personas de los 14 agentes, la biblioteca de skills y la idea de memoria de consenso entre ciclos. Kreo Devs desarrolló el motor, la UI y el modelo multi-tenant de esta plataforma.
 
 | Persona / proyecto | Contribución |
 |--------------------|--------------|
-| **[Zheyuan (Max) Kong](https://github.com/MaxMiksa)** · [MaxMiksa/Auto-Company](https://github.com/MaxMiksa/Auto-Company) | Autor del proyecto original: arquitectura de 14 agentes, `CLAUDE.md`, skills, workflows de convergencia y el loop CLI que demostró que una “empresa IA” puede operar de forma continua. |
-| **[@JasonQWJ](https://github.com/JasonQWJ)** y **[@cnwillz](https://github.com/cnwillz)** | Propuestas e implementaciones tempranas de dashboard multi-plataforma que informaron el diseño de observabilidad. |
-| **[nicepkg/auto-company](https://github.com/nicepkg/auto-company)** | Edición macOS inicial del concepto. |
-| **[continuous-claude](https://github.com/AnandChowdhary/continuous-claude)** | Patrón de notas compartidas entre sesiones. |
-| **[ralph-claude-code](https://github.com/frankbria/ralph-claude-code)** | Intercepción de señales de salida en loops autónomos. |
-| **[claude-auto-resume](https://github.com/terryso/claude-auto-resume)** | Patrón de reanudación ante límites de uso. |
+| **[MaxMiksa/Auto-Company](https://github.com/MaxMiksa/Auto-Company)** | Concepto, agentes, skills y charter (`CLAUDE.md`) |
+| **[@JasonQWJ](https://github.com/JasonQWJ)** · **[@cnwillz](https://github.com/cnwillz)** | Ideas tempranas de dashboard |
+| **[nicepkg/auto-company](https://github.com/nicepkg/auto-company)** | Edición macOS del concepto |
+| **[continuous-claude](https://github.com/AnandChowdhary/continuous-claude)** · **[ralph-claude-code](https://github.com/frankbria/ralph-claude-code)** · **[claude-auto-resume](https://github.com/terryso/claude-auto-resume)** | Patrones de loops y memoria entre sesiones |
 
-Conservamos en este repositorio las definiciones de agentes y skills del original (bajo `.claude/`) como **homenaje y base semántica**; el motor de ejecución, la UI y el modelo operativo son obra de **Auto Company Platform (Kreo Devs)**.
-
-Si usas o extiendes este fork, considera dar visibilidad al repositorio original y respetar su licencia MIT.
-
-**Proyecto original:** https://github.com/MaxMiksa/Auto-Company  
-**Esta plataforma:** https://github.com/kreodevs/ia-company
+**Original:** https://github.com/MaxMiksa/Auto-Company · **Esta plataforma:** https://github.com/kreodevs/ia-company
 
 ---
 
-## License
+## Licencia
 
-MIT — see [LICENSE](LICENSE) if present in the repository. The original Auto Company project is also MIT-licensed.
+MIT. El proyecto original Auto Company también usa licencia MIT.
