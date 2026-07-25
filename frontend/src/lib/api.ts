@@ -397,12 +397,23 @@ export interface TeamActiveRun {
   status: string;
   startedAt: string | null;
   agentIds: string[];
+  task?: string | null;
   errorMessage?: string | null;
   opencode?: {
     delegationId: string;
     sessionId: string;
     status: string;
   } | null;
+}
+
+/** Lightweight entry for run picker when several flows are active. */
+export interface TeamActiveRunSummary {
+  id: string;
+  workflowName: string;
+  status: string;
+  startedAt: string | null;
+  agentIds: string[];
+  task: string | null;
 }
 
 export interface TeamRecentRun {
@@ -467,6 +478,7 @@ export interface ProductTeam {
   };
   orgUnit: { id: string; name: string; slug: string; type: string } | null;
   activeRun: TeamActiveRun | null;
+  activeRuns: TeamActiveRunSummary[];
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
@@ -1227,7 +1239,10 @@ export const api = {
     ) => request<AutonomousSchedule>(`/schedules/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     delete: (id: string) => request<void>(`/schedules/${id}`, { method: "DELETE" }),
     runNow: (id: string) =>
-      request<{ runId: string; status: string }>(`/schedules/${id}/run-now`, { method: "POST" }),
+      request<{ runId: string; status: string; productId?: string | null }>(
+        `/schedules/${id}/run-now`,
+        { method: "POST" },
+      ),
   },
   products: {
     overview: () => request<ProductsOverview>("/products/overview"),

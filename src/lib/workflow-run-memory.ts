@@ -65,10 +65,13 @@ export async function buildScheduledWorkflowInitialMemory(
   ]);
 
   const pendingIdea = findIdeaToEvaluate(ideas, products);
-  const focusProduct =
+  let focusProduct =
     options.productId != null
       ? (products.find((product) => product.id === options.productId) ?? null)
       : null;
+  if (!focusProduct && cycle.focusProductId) {
+    focusProduct = products.find((product) => product.id === cycle.focusProductId) ?? null;
+  }
 
   const phase = consensus?.companyPhase ?? cycle.phase;
   const task = taskForScheduledWorkflow(workflowName, {
@@ -97,7 +100,12 @@ export async function buildScheduledWorkflowInitialMemory(
     const productMemory = await loadProductConsensusInitialMemory(
       tenantId,
       focusProduct.id,
-      base,
+      {
+        ...base,
+        focusProductSlug: focusProduct.slug,
+        focusProductName: focusProduct.name,
+        productId: focusProduct.id,
+      },
     );
     return {
       ...productMemory,

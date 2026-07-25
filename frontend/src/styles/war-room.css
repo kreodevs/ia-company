@@ -1075,3 +1075,129 @@ html[data-theme="letter"] .war-room {
 .war-room .hero-strip {
   margin-bottom: 1.5rem;
 }
+
+.war-room-table-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 0;
+}
+
+.war-room-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--war-room-border);
+  background: var(--war-room-panel-bg);
+}
+
+.war-room-table-toolbar-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.war-room-table-toolbar-label,
+.war-room-briefing-picker-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--war-room-fg-subtle);
+}
+
+.war-room-table-toolbar-select,
+.war-room-briefing-picker-select {
+  min-width: 14rem;
+  max-width: 26rem;
+  flex: 1;
+}
+
+.war-room-table-toolbar-count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--war-room-accent);
+  white-space: nowrap;
+}
+
+.war-room-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--war-room-accent-border);
+  background: var(--war-room-accent-soft);
+  color: var(--war-room-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.war-room-fullscreen-btn:hover {
+  border-color: var(--war-room-accent);
+}
+
+.war-room-table-shell.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  padding: 1rem;
+  background: var(--war-room-bg);
+  border: none;
+  border-radius: 0;
+}
+
+.war-room-table-shell.is-fullscreen .war-room-table {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: unset;
+  height: auto;
+}
+
+.war-room-table-shell.is-fullscreen .war-room-table-toolbar {
+  flex-shrink: 0;
+}
+
+.war-room-core-task {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--war-room-fg-muted);
+  max-width: 22ch;
+  text-align: center;
+}
+
+.war-room-briefing-run-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.war-room-briefing-multi {
+  margin-bottom: 0.5rem;
+  color: var(--war-room-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .war-room-fullscreen-btn span {
+    display: none;
+  }
+
+  .war-room-table-toolbar-select,
+  .war-room-briefing-picker-select {
+    min-width: 100%;
+    max-width: none;
+  }
+}

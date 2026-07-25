@@ -704,7 +704,7 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, ideas, lastLinkedRun, lastRunTrace] = await Promise.all([
+      const [agents, ideas, lastLinkedRun, lastRunTrace, cycle] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
@@ -734,31 +734,52 @@ export async function productRoutes(app: FastifyInstance) {
         import("../../lib/product-last-run.js").then(({ getProductLastRunTrace }) =>
           getProductLastRunTrace(tenantId, product.id),
         ),
+        import("../../lib/product-registry.js").then(({ ensureTenantCycleState }) =>
+          ensureTenantCycleState(tenantId),
+        ),
       ]);
 
-      const recentRunsQuery = await prisma.executionRun.findMany({
-        where: { tenantId },
-        orderBy: { createdAt: "desc" },
-        take: 15,
-        include: {
-          workflow: { select: { name: true } },
-          logs: {
-            where: { agentId: { not: null } },
-            orderBy: { createdAt: "desc" },
-            take: 30,
-            select: {
-              id: true,
-              level: true,
-              message: true,
-              agentId: true,
-              stepId: true,
-              createdAt: true,
-            },
+      const { runBelongsToProduct, extractRunTaskPreview } = await import(
+        "../../lib/product-run-association.js"
+      );
+      const isFocusProduct = cycle.focusProductId === product.id;
+      const activeStatuses = ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"] as const;
+      const runInclude = {
+        workflow: { select: { name: true } },
+        logs: {
+          where: { agentId: { not: null } },
+          orderBy: { createdAt: "desc" as const },
+          take: 30,
+          select: {
+            id: true,
+            level: true,
+            message: true,
+            agentId: true,
+            stepId: true,
+            createdAt: true,
           },
         },
-      });
+      };
+
+      const [activeRunsQuery, recentRunsQuery] = await Promise.all([
+        prisma.executionRun.findMany({
+          where: { tenantId, status: { in: [...activeStatuses] } },
+          orderBy: { createdAt: "desc" },
+          take: 20,
+          include: runInclude,
+        }),
+        prisma.executionRun.findMany({
+          where: { tenantId },
+          orderBy: { createdAt: "desc" },
+          take: 30,
+          include: runInclude,
+        }),
+      ]);
 
       const runsById = new Map(recentRunsQuery.map((run) => [run.id, run]));
+      for (const run of activeRunsQuery) {
+        if (!runsById.has(run.id)) runsById.set(run.id, run);
+      }
       if (lastLinkedRun && !runsById.has(lastLinkedRun.id)) {
         runsById.set(lastLinkedRun.id, lastLinkedRun);
       }
@@ -767,20 +788,17 @@ export async function productRoutes(app: FastifyInstance) {
       );
 
       const watchRunId = request.query.watchRunId?.trim() || null;
+      const productMatcher = (run: (typeof runs)[number]) =>
+        runBelongsToProduct(run, product, { isFocusProduct });
 
-      const runsForProduct = runs.filter((r) => {
-        if (r.id === product.lastRunId) return true;
-        const mem = r.sharedMemory as {
-          focusProductSlug?: unknown;
-          productId?: unknown;
-        } | null;
-        return mem?.focusProductSlug === product.slug || mem?.productId === product.id;
-      });
+      const runsForProduct = runs.filter(productMatcher);
+      const productActiveRuns = activeRunsQuery.filter(productMatcher);
 
       let activeRun =
-        runsForProduct.find((r) =>
-          ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"].includes(r.status),
-        ) ?? null;
+        (watchRunId ? productActiveRuns.find((r) => r.id === watchRunId) : null) ??
+        productActiveRuns[0] ??
+        runsForProduct.find((r) => activeStatuses.includes(r.status as (typeof activeStatuses)[number])) ??
+        null;
 
       if (watchRunId) {
         const watched =
@@ -806,11 +824,26 @@ export async function productRoutes(app: FastifyInstance) {
           }));
         if (
           watched &&
-          ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"].includes(watched.status)
+          activeStatuses.includes(watched.status as (typeof activeStatuses)[number])
         ) {
           activeRun = watched;
         }
       }
+
+      const activeRuns = productActiveRuns.map((run) => {
+        const agentIds = new Set<string>();
+        for (const log of run.logs) {
+          if (log.agentId) agentIds.add(log.agentId);
+        }
+        return {
+          id: run.id,
+          workflowName: run.workflow.name,
+          status: run.status,
+          startedAt: run.startedAt,
+          agentIds: Array.from(agentIds),
+          task: extractRunTaskPreview(run.sharedMemory),
+        };
+      });
 
       const activeDelegation = activeRun
         ? await prisma.opencodeDelegation.findUnique({
@@ -835,7 +868,8 @@ export async function productRoutes(app: FastifyInstance) {
       }));
 
       const lastWorkedAt = new Map<string, { at: Date; message: string }>();
-      for (const r of runsForProduct) {
+      const runsForAgentActivity = activeRun ? [activeRun] : runsForProduct;
+      for (const r of runsForAgentActivity) {
         for (const log of r.logs) {
           if (!log.agentId) continue;
           const existing = lastWorkedAt.get(log.agentId);
@@ -903,6 +937,7 @@ export async function productRoutes(app: FastifyInstance) {
               status: activeRun.status,
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),
+              task: extractRunTaskPreview(activeRun.sharedMemory),
               errorMessage: activeRun.errorMessage,
               opencode: activeDelegation
                 ? {
@@ -913,6 +948,7 @@ export async function productRoutes(app: FastifyInstance) {
                 : null,
             }
           : null,
+        activeRuns,
         recentRuns,
         team,
         pipeline: ideas.slice(0, 6).map((i) => ({

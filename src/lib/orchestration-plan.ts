@@ -188,6 +188,16 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
   let productId: string | undefined;
   let productSlug: string | undefined;
   let orgMemory: Record<string, unknown> | undefined;
+
+  if (!orgUnitId) {
+    const { resolveFocusProductForTenant } = await import("./product-run-association.js");
+    const focused = await resolveFocusProductForTenant(schedule.tenantId);
+    if (focused) {
+      productId = focused.id;
+      productSlug = focused.slug;
+    }
+  }
+
   if (orgUnitId) {
     const linked = await prisma.tenantProduct.findFirst({
       where: {

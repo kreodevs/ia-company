@@ -303,8 +303,12 @@ export default function OrchestrationPlanPanel({
     setBusyId(id);
     setError(null);
     try {
-      const { runId } = await api.schedules.runNow(id);
-      navigate(`/runs/${runId}`);
+      const { runId, productId } = await api.schedules.runNow(id);
+      if (productId) {
+        navigate(`/war-room/${productId}?run=${encodeURIComponent(runId)}`);
+      } else {
+        navigate(`/runs/${runId}`);
+      }
     } catch (err) {
       setError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
     } finally {

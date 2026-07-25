@@ -277,7 +277,21 @@ export async function scheduleRoutes(app: FastifyInstance) {
       });
 
       await logAudit(request, "schedule.run_now", { scheduleId: schedule.id, runId });
-      return reply.status(202).send({ runId, status: "PENDING" });
+
+      const { extractRunProductMemory, resolveFocusProductForTenant } = await import(
+        "../../lib/product-run-association.js"
+      );
+      const run = await prisma.executionRun.findUnique({
+        where: { id: runId },
+        select: { sharedMemory: true },
+      });
+      let productId = extractRunProductMemory(run?.sharedMemory).productId;
+      if (!productId) {
+        const focused = await resolveFocusProductForTenant(tenantId);
+        productId = focused?.id ?? null;
+      }
+
+      return reply.status(202).send({ runId, status: "PENDING", productId });
     } catch (err) {
       return handleRouteError(reply, err);
     }

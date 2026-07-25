@@ -1217,6 +1217,11 @@ export async function executeWorkflowInBackground(
     },
   });
 
+  if (input.productId) {
+    const { recordProductRun } = await import("../lib/product-registry.js");
+    await recordProductRun(input.productId, run.id);
+  }
+
   const jobData = {
     runId: run.id,
     workflowId,

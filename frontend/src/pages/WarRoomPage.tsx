@@ -12,7 +12,7 @@ export default function WarRoomPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { productId } = useParams<{ productId?: string }>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const watchRunId = searchParams.get("run");
   const [products, setProducts] = useState<TenantProduct[]>([]);
   const [focusProductId, setFocusProductId] = useState<string | null>(null);
@@ -36,6 +36,14 @@ export default function WarRoomPage() {
     const runSuffix = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
     navigate(`/war-room/${defaultProductId}${runSuffix}`, { replace: true });
   }, [loading, productId, defaultProductId, navigate, watchRunId]);
+
+  const handleWatchRunChange = (runId: string | null) => {
+    if (runId) {
+      setSearchParams({ run: runId }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  };
 
   const runQuery = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
 
@@ -99,7 +107,11 @@ export default function WarRoomPage() {
           {t("warRoom.manageProducts")}
         </Link>
       </div>
-      <WarRoomContent key={`${selectedId}:${watchRunId ?? ""}`} productId={selectedId} watchRunId={watchRunId} />
+      <WarRoomContent
+        productId={selectedId}
+        watchRunId={watchRunId}
+        onWatchRunChange={handleWatchRunChange}
+      />
     </div>
   );
 }

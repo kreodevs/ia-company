@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, MessageSquare, Minimize2 } from "lucide-react";
 import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
@@ -12,6 +12,7 @@ import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
 import DeliverableHealthBanner from "./DeliverableHealthBanner";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
+import WarRoomRunSelector from "./WarRoomRunSelector";
 
 const ROLE_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -222,15 +223,17 @@ function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
 export interface WarRoomContentProps {
   productId: string;
   watchRunId?: string | null;
+  onWatchRunChange?: (runId: string | null) => void;
 }
 
-export default function WarRoomContent({ productId, watchRunId }: WarRoomContentProps) {
+export default function WarRoomContent({ productId, watchRunId, onWatchRunChange }: WarRoomContentProps) {
   const { t } = useTranslation();
   const [data, setData] = useState<ProductTeam | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [liveNote, setLiveNote] = useState<string | null>(null);
   const [coordinatorCollapsed, setCoordinatorCollapsed] = useState(readCoordinatorCollapsed);
+  const [tableFullscreen, setTableFullscreen] = useState(false);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const toggleCoordinatorCollapsed = useCallback(() => {
@@ -270,6 +273,25 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
       })
       .finally(() => setLoading(false));
   }, [productId, refresh]);
+
+  useEffect(() => {
+    if (loading) return;
+    void refresh().catch(() => undefined);
+  }, [watchRunId, loading, refresh]);
+
+  useEffect(() => {
+    if (!tableFullscreen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setTableFullscreen(false);
+    };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [tableFullscreen]);
 
   useEffect(() => {
     const active = data?.activeRun;
@@ -356,6 +378,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const onDuty = displayTeam.filter((a) => a.status !== "idle");
   const totalAgents = displayTeam.length;
   const tableDensity = totalAgents > 16 ? "compact" : totalAgents > 12 ? "cozy" : "normal";
+  const activeRuns = data.activeRuns ?? [];
 
   return (
     <div className="war-room">
@@ -449,13 +472,15 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         />
         <KpiCard
           label={t("warRoom.kpis.activeRun")}
-          value={data.activeRun ? 1 : 0}
+          value={activeRuns.length > 0 ? activeRuns.length : 0}
           delta={
-            data.activeRun
-              ? t("warRoom.kpis.activeRunDelta", { workflow: data.activeRun.workflowName })
-              : t("warRoom.kpis.standby")
+            activeRuns.length > 1
+              ? t("warRoom.kpis.activeRunsDelta", { count: activeRuns.length })
+              : data.activeRun
+                ? t("warRoom.kpis.activeRunDelta", { workflow: data.activeRun.workflowName })
+                : t("warRoom.kpis.standby")
           }
-          trend={data.activeRun ? "up" : "down"}
+          trend={activeRuns.length > 0 ? "up" : "down"}
         />
       </section>
 
@@ -505,6 +530,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
                   orgUnitId={data.orgUnit?.id}
                   welcomeMessageKey="warRoom.coordinator.welcome"
                   onExecuted={(runId) => {
+                    onWatchRunChange?.(runId);
                     flashNote(t("warRoom.runStarted"));
                     refreshScheduler.current.schedule(800);
                     window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
@@ -516,37 +542,72 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           )}
         </aside>
 
-        <section
-          className="war-room-table"
-          data-density={tableDensity}
-          aria-label={t("warRoom.tableAria")}
-        >
-          <div className="war-room-table-backdrop" aria-hidden>
-            <div className="war-room-table-grid" />
-          </div>
-          <div className="war-room-table-stage">
-            <div className="war-room-table-ring" aria-hidden />
-            <div className="war-room-core">
-              <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
-              <p className="war-room-core-name">
-                {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
-              </p>
-              <p className="war-room-core-status">
-                {data.activeRun
-                  ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
-                  : t("warRoom.coreIdle", { count: totalAgents })}
-              </p>
-              {liveNote && (
-                <p className="war-room-core-note" role="status">
-                  <span className="war-room-pulse" aria-hidden /> {liveNote}
-                </p>
+        <div className={`war-room-table-shell${tableFullscreen ? " is-fullscreen" : ""}`}>
+          <div className="war-room-table-toolbar">
+            <div className="war-room-table-toolbar-main">
+              <label htmlFor="war-room-run-inline" className="war-room-table-toolbar-label">
+                {t("warRoom.runSelector.label")}
+              </label>
+              <WarRoomRunSelector
+                id="war-room-run-inline"
+                activeRuns={activeRuns}
+                selectedRunId={watchRunId ?? null}
+                onSelect={(runId) => onWatchRunChange?.(runId)}
+                className="war-room-table-toolbar-select"
+              />
+              {activeRuns.length > 1 && (
+                <span className="war-room-table-toolbar-count">
+                  {t("warRoom.runSelector.count", { count: activeRuns.length })}
+                </span>
               )}
             </div>
-            {displayTeam.map((agent, i) => (
-              <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
-            ))}
+            <button
+              type="button"
+              className="war-room-fullscreen-btn"
+              onClick={() => setTableFullscreen((prev) => !prev)}
+              aria-pressed={tableFullscreen}
+              aria-label={tableFullscreen ? t("warRoom.exitFullscreen") : t("warRoom.fullscreen")}
+            >
+              {tableFullscreen ? <Minimize2 className="h-4 w-4" aria-hidden /> : <Maximize2 className="h-4 w-4" aria-hidden />}
+              <span>{tableFullscreen ? t("warRoom.exitFullscreen") : t("warRoom.fullscreen")}</span>
+            </button>
           </div>
-        </section>
+
+          <section
+            className="war-room-table"
+            data-density={tableDensity}
+            aria-label={t("warRoom.tableAria")}
+          >
+            <div className="war-room-table-backdrop" aria-hidden>
+              <div className="war-room-table-grid" />
+            </div>
+            <div className="war-room-table-stage">
+              <div className="war-room-table-ring" aria-hidden />
+              <div className="war-room-core">
+                <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
+                <p className="war-room-core-name">
+                  {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
+                </p>
+                <p className="war-room-core-status">
+                  {data.activeRun
+                    ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
+                    : t("warRoom.coreIdle", { count: totalAgents })}
+                </p>
+                {data.activeRun?.task && (
+                  <p className="war-room-core-task">{data.activeRun.task}</p>
+                )}
+                {liveNote && (
+                  <p className="war-room-core-note" role="status">
+                    <span className="war-room-pulse" aria-hidden /> {liveNote}
+                  </p>
+                )}
+              </div>
+              {displayTeam.map((agent, i) => (
+                <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
       <aside className="war-room-details war-room-briefing-bar">
@@ -554,10 +615,21 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           <h2 className="war-room-section-title">{t("warRoom.briefing")}</h2>
           {data.activeRun ? (
             <div className="war-room-briefing">
+              {activeRuns.length > 1 && (
+                <p className="war-room-briefing-meta war-room-briefing-multi">
+                  {t("warRoom.runSelector.viewingOneOf", { count: activeRuns.length })}
+                </p>
+              )}
               <Link to={`/runs/${data.activeRun.id}`} className="war-room-briefing-link">
                 <p className="war-room-briefing-label">{t("warRoom.workflow")}</p>
                 <p className="war-room-briefing-name">{data.activeRun.workflowName}</p>
               </Link>
+              {data.activeRun.task && (
+                <p className="war-room-briefing-meta">
+                  <span className="font-medium">{t("warRoom.runSelector.task")}: </span>
+                  {data.activeRun.task}
+                </p>
+              )}
               <p className="war-room-briefing-meta">
                 {t("warRoom.startedAt", { time: shortTime(data.activeRun.startedAt) })}
               </p>

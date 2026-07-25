@@ -62,12 +62,16 @@ export default function OpsPage() {
     setMetaRunError(null);
 
     try {
-      const { runId } = await api.schedules.runNow(target.id);
+      const { runId, productId } = await api.schedules.runNow(target.id);
       if (!runId) {
         throw new Error(t("settings.metaSchedule.runFailed"));
       }
       await load();
-      navigate(`/runs/${runId}`);
+      if (productId) {
+        navigate(`/war-room/${productId}?run=${encodeURIComponent(runId)}`);
+      } else {
+        navigate(`/runs/${runId}`);
+      }
     } catch (err) {
       setMetaRunError(translateApiError(err, t, "settings.metaSchedule.runFailed"));
     } finally {

@@ -122,10 +122,14 @@ export default function OpsSchedulesPanel({ schedules, onRefresh }: OpsSchedules
   const runNow = async (schedule: AutonomousSchedule) => {
     setBusyId(schedule.id);
     try {
-      const { runId } = await api.schedules.runNow(schedule.id);
+      const { runId, productId } = await api.schedules.runNow(schedule.id);
       toast.success(t("ops.schedules.runStarted"));
       await onRefresh();
-      if (runId) navigate(`/runs/${runId}`);
+      if (productId) {
+        navigate(`/war-room/${productId}?run=${encodeURIComponent(runId)}`);
+      } else if (runId) {
+        navigate(`/runs/${runId}`);
+      }
     } catch (err) {
       toast.error(translateApiError(err, t, "settings.metaSchedule.runFailed"));
     } finally {
