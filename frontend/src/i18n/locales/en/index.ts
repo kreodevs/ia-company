@@ -1,6 +1,7 @@
 import { admin } from "./admin";
 import { auth } from "./auth";
 import { code } from "./code";
+import { catalogStudio } from "./catalogStudio";
 import { common } from "./common";
 import { consensus } from "./consensus";
 import { decisions } from "./decisions";
@@ -50,6 +51,7 @@ export const en = {
   status,
   phase,
   workflowDisplay,
+  catalogStudio,
 } as const;
 
 export type EnTranslations = typeof en;

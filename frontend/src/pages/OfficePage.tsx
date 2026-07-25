@@ -245,7 +245,7 @@ export default function OfficePage() {
               </span>
             ))}
           </div>
-          <Link to="/agents" className="office-roi-link">
+          <Link to="/ai-team" className="office-roi-link">
             {t("office.agents.viewAll")}
           </Link>
         </aside>

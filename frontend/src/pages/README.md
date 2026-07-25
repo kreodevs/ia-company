@@ -14,17 +14,17 @@ Route-level screens for the Auto-Company frontend.
 
 ## Tenant workspace
 
-Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, **workflows**, war room, products), **Oficina de depuración** (runs, ops, agents, skills…), **Administración** (settings, team). Default landing after login: `/office`.
+Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, workflows, war room, products, deptos, **Equipo IA**), **Oficina de depuración** (runs, ops…), **Administración** (settings, team). Default landing after login: `/office`.
 
 | Route | Page |
 |-------|------|
-| `/` · `/office` | `OfficePage` | **Oficina bajo demanda** — coordinador, plan de equipo, presupuesto, actividad, ROI, servicios rápidos |
-| `/office/encargos` | `OfficeEncargosPage` | Listado de encargos |
-| `/office/encargos/:runId` | `OfficeEncargoDetailPage` | Detalle de encargo |
-| `/office/workflows` | `WorkflowsPage` | Catálogo de flujos de agentes (Oficina) |
-| `/office/workflows/:id` | `WorkflowEditorPage` | Editor visual React Flow — pasos, agentes, ejecutar con objetivo |
-| `/agents` | `AgentsPage` | Lista de agentes (cards en desktop/tablet; select en móvil) + formulario de edición |
-| `/skills` | `SkillsPage` |
+| `/` · `/office` | `OfficePage` |
+| `/office/encargos` | `OfficeEncargosPage` |
+| `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
+| `/office/workflows` | `WorkflowsPage` |
+| `/office/workflows/:id` | `WorkflowEditorPage` |
+| `/ai-team` | `AiTeamHubPage` — tabs Agentes, Habilidades, Catalog Studio |
+| `/agents` · `/skills` | redirect → `/ai-team` |
 | `/runs` | `RunsPage` |
 | `/runs/:id` | `RunDetailPage` |
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |

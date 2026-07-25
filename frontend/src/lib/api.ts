@@ -1564,4 +1564,43 @@ export const api = {
         { method: "POST", body: JSON.stringify(body) },
       ),
   },
+  catalogStudio: {
+    skills: {
+      propose: (body: { brief: string }) =>
+        request<import("./catalog-studio-types").SkillStudioProposal>(
+          "/catalog-studio/skills/propose",
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+      apply: (body: {
+        proposal: import("./catalog-studio-types").SkillStudioProposal;
+        approved: boolean;
+      }) =>
+        request<{ skill: Skill | undefined; created: boolean; reused: boolean }>(
+          "/catalog-studio/skills/apply",
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+    },
+    agents: {
+      propose: (body: { brief: string; orgUnitId?: string }) =>
+        request<import("./catalog-studio-types").AgentStudioProposal>(
+          "/catalog-studio/agents/propose",
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+      apply: (body: {
+        proposal: import("./catalog-studio-types").AgentStudioProposal;
+        approved: boolean;
+        approvedNewSkillNames?: string[];
+        orgUnitId?: string;
+      }) =>
+        request<{
+          agent: Agent | undefined;
+          created: boolean;
+          reused: boolean;
+          skillsCreated: string[];
+        }>("/catalog-studio/agents/apply", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+    },
+  },
 };

@@ -60,7 +60,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/debug/consensus": FileText,
   "/debug/ops": Activity,
   "/debug/decisions": ClipboardCheck,
-  "/debug/agents": Bot,
+  "/ai-team": Bot,
   "/debug/skills": Sparkles,
   "/debug/team": Users,
   "/settings": Settings,
@@ -340,6 +340,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
           { to: "/org-units", labelKey: "nav.orgUnits" },
+          { to: "/ai-team", labelKey: "nav.aiTeam" },
         ],
       });
 
@@ -348,13 +349,6 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         { to: "/debug/consensus", labelKey: "nav.consensus" },
         { to: "/debug/ops", labelKey: "nav.ops" },
         { to: "/debug/decisions", labelKey: "nav.decisions" },
-        {
-          labelKey: "nav.groupCatalog",
-          children: [
-            { to: "/debug/agents", labelKey: "nav.agents" },
-            { to: "/debug/skills", labelKey: "nav.skills" },
-          ],
-        },
       ];
 
       if (isTenantAdmin) {

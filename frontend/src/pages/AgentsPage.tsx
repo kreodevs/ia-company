@@ -9,7 +9,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Select from "../components/ui/Select";
 
-export default function AgentsPage() {
+export default function AgentsPage({ embedded = false }: { embedded?: boolean }) {
   const { t } = useTranslation();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -33,9 +33,25 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t("nav.agents")}
-        actions={
+      {!embedded && (
+        <PageHeader
+          title={t("nav.agents")}
+          actions={
+            <Button
+              onClick={() => {
+                setCreating(true);
+                setSelected(null);
+              }}
+              fullWidthMobile
+            >
+              {t("workflows.agents.newAgent")}
+            </Button>
+          }
+        />
+      )}
+
+      {embedded && (
+        <div className="flex justify-end">
           <Button
             onClick={() => {
               setCreating(true);
@@ -45,8 +61,8 @@ export default function AgentsPage() {
           >
             {t("workflows.agents.newAgent")}
           </Button>
-        }
-      />
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-2">
         {!creating && (

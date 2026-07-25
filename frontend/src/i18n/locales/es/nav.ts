@@ -12,6 +12,7 @@ export const nav = {
   templates: "Plantillas",
   settings: "Configuración",
   agents: "Agentes",
+  aiTeam: "Equipo IA",
   skills: "Habilidades",
   workflows: "Flujos",
   runs: "Ejecuciones",

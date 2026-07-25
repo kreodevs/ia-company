@@ -8,13 +8,13 @@ import {
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { useDocumentLang } from "./hooks/useDocumentLang";
+import AiTeamHubPage from "./pages/ai-team/AiTeamHubPage";
 import HelpPage from "./pages/HelpPage";
 import OfficePage from "./pages/OfficePage";
 import OfficeEncargosPage from "./pages/OfficeEncargosPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
-import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
@@ -33,7 +33,6 @@ import PlatformWorkflowTemplatesPage from "./pages/PlatformWorkflowTemplatesPage
 import PlatformWorkflowEditorPage from "./pages/PlatformWorkflowEditorPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import AgentsPage from "./pages/AgentsPage";
 import LoginPage from "./pages/LoginPage";
 import RunDetailPage from "./pages/RunDetailPage";
 import RunsPage from "./pages/RunsPage";
@@ -44,6 +43,10 @@ import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import WorkflowsPage from "./pages/WorkflowsPage";
 import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
+
+function RedirectAiTeamTab({ tab }: { tab: "agents" | "skills" }) {
+  return <Navigate to={tab === "agents" ? "/ai-team" : `/ai-team?tab=${tab}`} replace />;
+}
 
 function RedirectProductConsensus() {
   const { productId } = useParams<{ productId: string }>();
@@ -88,8 +91,9 @@ function AppShell() {
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="office/workflows" element={<WorkflowsPage />} />
-              <Route path="agents" element={<AgentsPage />} />
-              <Route path="skills" element={<SkillsPage />} />
+              <Route path="ai-team" element={<AiTeamHubPage />} />
+              <Route path="agents" element={<RedirectAiTeamTab tab="agents" />} />
+              <Route path="skills" element={<RedirectAiTeamTab tab="skills" />} />
               <Route path="workflows" element={<Navigate to="/office/workflows" replace />} />
               <Route path="workflows/:id" element={<RedirectWorkflowEditor />} />
               <Route path="runs" element={<RunsPage />} />
@@ -98,8 +102,8 @@ function AppShell() {
               <Route path="debug/runs/:id" element={<RunDetailPage />} />
               <Route path="debug/workflows" element={<Navigate to="/office/workflows" replace />} />
               <Route path="debug/workflows/:id" element={<RedirectWorkflowEditor />} />
-              <Route path="debug/agents" element={<AgentsPage />} />
-              <Route path="debug/skills" element={<SkillsPage />} />
+              <Route path="debug/agents" element={<RedirectAiTeamTab tab="agents" />} />
+              <Route path="debug/skills" element={<RedirectAiTeamTab tab="skills" />} />
               <Route path="debug/team" element={<TenantUsersPage />} />
               <Route path="debug/consensus" element={<ConsensusPage />} />
               <Route path="debug/products/:productId/consensus" element={<ProductConsensusPage />} />

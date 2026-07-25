@@ -28,6 +28,7 @@ import { tenantUserRoutes } from "./routes/tenant-users.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { webhookRoutes } from "./routes/webhooks.js";
 import { orgUnitRoutes } from "./routes/org-units.js";
+import { catalogStudioRoutes } from "./routes/catalog-studio.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -83,6 +84,7 @@ async function buildServer() {
     await api.register(opencodeRoutes);
     await api.register(webhookRoutes);
     await api.register(orgUnitRoutes);
+    await api.register(catalogStudioRoutes);
   }, { prefix: "/api" });
 
   return app;

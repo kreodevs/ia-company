@@ -8,7 +8,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 
-export default function SkillsPage() {
+export default function SkillsPage({ embedded = false }: { embedded?: boolean }) {
   const { t } = useTranslation();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [selected, setSelected] = useState<Skill | null>(null);
@@ -70,14 +70,24 @@ export default function SkillsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t("nav.skills")}
-        actions={
+      {!embedded && (
+        <PageHeader
+          title={t("nav.skills")}
+          actions={
+            <Button onClick={openCreate} fullWidthMobile>
+              {t("workflows.skills.newSkill")}
+            </Button>
+          }
+        />
+      )}
+
+      {embedded && (
+        <div className="flex justify-end">
           <Button onClick={openCreate} fullWidthMobile>
             {t("workflows.skills.newSkill")}
           </Button>
-        }
-      />
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="min-w-0">

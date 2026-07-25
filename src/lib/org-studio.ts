@@ -5,10 +5,10 @@ import { createOrgUnit } from "./org-unit.js";
 import { slugifyOrgName } from "./org-workspace.js";
 import { enhanceOrgProposalWithLlm, reviewOrgProposalWithMunger } from "./org-studio-llm.js";
 import { createDefaultOrgWorkItem } from "./org-work-items.js";
+import { ensureTenantAgents } from "./tenant-catalog.js";
 import type {
   BusinessTemplateDefinition,
   OrgStudioProposal,
-  SuggestedAgentDef,
 } from "./org-os-types.js";
 
 export async function seedBusinessTemplates(): Promise<number> {
@@ -158,54 +158,6 @@ export async function proposeOrgUnit(input: {
     };
   }
   return proposal;
-}
-
-async function ensureTenantAgents(
-  tenantId: string,
-  agents: SuggestedAgentDef[],
-): Promise<string[]> {
-  const created: string[] = [];
-  for (const spec of agents) {
-    const existing = await prisma.agent.findFirst({
-      where: { tenantId, name: spec.name },
-    });
-    if (existing) {
-      created.push(existing.name);
-      continue;
-    }
-    await prisma.agent.create({
-      data: {
-        tenantId,
-        name: spec.name,
-        role: spec.role,
-        systemPrompt: spec.systemPrompt,
-        isActive: true,
-      },
-    });
-    created.push(spec.name);
-
-    if (spec.skillNames?.length) {
-      const agent = await prisma.agent.findFirst({
-        where: { tenantId, name: spec.name },
-      });
-      if (!agent) continue;
-      for (const skillName of spec.skillNames) {
-        const skill = await prisma.skill.findFirst({
-          where: {
-            name: skillName,
-            OR: [{ tenantId }, { tenantId: null }],
-          },
-        });
-        if (!skill) continue;
-        await prisma.agentSkill.upsert({
-          where: { agentId_skillId: { agentId: agent.id, skillId: skill.id } },
-          update: {},
-          create: { agentId: agent.id, skillId: skill.id },
-        });
-      }
-    }
-  }
-  return created;
 }
 
 async function createLinkedWorkItem(
