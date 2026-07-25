@@ -339,14 +339,6 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         </div>
         <div className="war-room-header-meta">
           <Badge>{data.product.phase}</Badge>
-          {data.orgUnit && (
-            <Link
-              to={`/org-units/${data.orgUnit.id}`}
-              className="war-room-pill text-xs text-[var(--color-primary)] hover:underline"
-            >
-              {t("warRoom.departmentLink", { name: data.orgUnit.name })}
-            </Link>
-          )}
           <ProductActionsMenu product={data.product as TenantProduct} onChange={() => void refresh()} />
           {data.activeRun && (
             <Link to={`/office/encargos/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
