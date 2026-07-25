@@ -34,8 +34,7 @@ export default function ConfirmDialog({
       confirmLabel={busy ? t("common.loading") : (confirmLabel ?? t("common.save"))}
       cancelLabel={cancelLabel ?? t("common.cancel")}
       variant={destructive ? "destructive" : "default"}
-      busy={busy}
-      onConfirm={onConfirm}
+      onConfirm={busy ? undefined : onConfirm}
       onCancel={onCancel}
     />
   );

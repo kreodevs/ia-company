@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils";
 
 export interface MultiSelectOption {
   label: string;
-  value: unknown;
+  value: any;
 }
 
 export interface MultiSelectInputProps {
   options?: MultiSelectOption[];
-  value?: unknown[];
-  onChange?: (e: { value: unknown[] }) => void;
+  value?: any[];
+  onChange?: (e: { value: any[] }) => void;
   placeholder?: string;
   error?: boolean;
   display?: "chip";
@@ -42,7 +42,9 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
     const searchInputRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
-      if (!open) setSearch("");
+      if (!open) {
+        setSearch("");
+      }
     }, [open]);
 
     React.useEffect(() => {
@@ -52,16 +54,19 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
     }, [open]);
 
     const selectedCount = value.length;
-    const isSelected = (optionValue: unknown) => value.some((v) => v === optionValue);
+    const isSelected = (optionValue: any) => value.some((v) => v === optionValue);
 
-    const toggleOption = (optionValue: unknown) => {
-      const newValue = isSelected(optionValue) ? value.filter((v) => v !== optionValue) : [...value, optionValue];
+    const toggleOption = (optionValue: any) => {
+      const newValue = isSelected(optionValue)
+        ? value.filter((v) => v !== optionValue)
+        : [...value, optionValue];
       onChange?.({ value: newValue });
     };
 
-    const removeChip = (e: React.MouseEvent, optionValue: unknown) => {
+    const removeChip = (e: React.MouseEvent, optionValue: any) => {
       e.stopPropagation();
-      onChange?.({ value: value.filter((v) => v !== optionValue) });
+      const newValue = value.filter((v) => v !== optionValue);
+      onChange?.({ value: newValue });
     };
 
     const filteredOptions = search.trim()
@@ -110,7 +115,9 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
                       </span>
                     ))}
                     {selectedCount > 3 && (
-                      <span className="text-xs text-[var(--foreground-muted)]">+{selectedCount - 3} más</span>
+                      <span className="text-xs text-[var(--foreground-muted)]">
+                        +{selectedCount - 3} más
+                      </span>
                     )}
                   </>
                 ) : (
@@ -210,7 +217,10 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
                         )}
                       >
                         <CheckboxPrimitive.Indicator className="flex items-center justify-center">
-                          <Check className="w-3 h-3 text-[var(--primary-foreground)]" strokeWidth={3} />
+                          <Check
+                            className="w-3 h-3 text-[var(--primary-foreground)]"
+                            strokeWidth={3}
+                          />
                         </CheckboxPrimitive.Indicator>
                       </CheckboxPrimitive.Root>
                       <span className="flex-1 text-sm">{option.label}</span>

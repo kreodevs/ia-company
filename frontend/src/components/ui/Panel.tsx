@@ -32,8 +32,7 @@ export default function Panel({
 
   return (
     <KreoCard
-      padding="none"
-      className={cn("app-panel", hover && "app-panel-hover", toneClass, className)}
+      className={cn("app-panel [&>div]:p-0", hover && "app-panel-hover", toneClass, className)}
       {...rest}
     >
       {hasHeader && (

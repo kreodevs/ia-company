@@ -1,157 +1,400 @@
-import { Calendar as PrimeCalendar, type CalendarProps as PrimeCalendarProps } from "primereact/calendar";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { forwardRef } from "react";
-import { type Nullable } from "primereact/ts-helpers";
+import { format, setHours, setMinutes, setSeconds } from "date-fns";
+import { es } from "date-fns/locale";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { forwardRef, useMemo, useState, type ComponentPropsWithoutRef } from "react";
+import type { Matcher } from "react-day-picker";
 
-export interface CalendarInputProps extends Omit<PrimeCalendarProps, "pt" | "variant" | "selectionMode"> {
+import { cn } from "@/lib/utils";
+import { CalendarPrimitive } from "@/components/atoms/CalendarPrimitive";
+import { Button } from "@/components/atoms/Button";
+import { InputText } from "@/components/atoms/InputText";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/Popover";
+
+export type Nullable<T> = T | null | undefined;
+
+type CalendarChangeEvent<T> = { value: T };
+
+const DATE_FORMAT_MAP: Record<string, string> = {
+  "dd/mm/yy": "dd/MM/yyyy",
+  "mm/yy": "MM/yyyy",
+  yy: "yyyy",
+};
+
+function mapDateFormat(dateFormat?: string): string {
+  if (!dateFormat) return "dd/MM/yyyy";
+  return DATE_FORMAT_MAP[dateFormat] ?? dateFormat;
+}
+
+function buildDisabledMatchers(options: {
+  minDate?: Date;
+  maxDate?: Date;
+  disabledDates?: Date[];
+  disabledDays?: number[];
+}): Matcher[] {
+  const matchers: Matcher[] = [];
+  if (options.minDate) matchers.push({ before: options.minDate });
+  if (options.maxDate) matchers.push({ after: options.maxDate });
+  if (options.disabledDays?.length) {
+    matchers.push({ dayOfWeek: options.disabledDays as [number, ...number[]] });
+  }
+  if (options.disabledDates?.length) {
+    matchers.push(...options.disabledDates);
+  }
+  return matchers;
+}
+
+function formatDisplayValue(value: unknown, selectionMode: "single" | "multiple" | "range", dateFormat: string): string {
+  const fmt = mapDateFormat(dateFormat);
+  if (selectionMode === "single" && value instanceof Date) {
+    return format(value, fmt, { locale: es });
+  }
+  if (selectionMode === "multiple" && Array.isArray(value)) {
+    return value
+      .filter((d): d is Date => d instanceof Date)
+      .map((d) => format(d, fmt, { locale: es }))
+      .join(", ");
+  }
+  if (selectionMode === "range" && Array.isArray(value)) {
+    const [from, to] = value as (Date | null | undefined)[];
+    if (from && to) {
+      return `${format(from, fmt, { locale: es })} - ${format(to, fmt, { locale: es })}`;
+    }
+    if (from) return format(from, fmt, { locale: es });
+  }
+  return "";
+}
+
+function MonthYearGrid({
+  mode,
+  value,
+  onSelect,
+  minDate,
+  maxDate,
+}: {
+  mode: "month" | "year";
+  value?: Date | null;
+  onSelect: (date: Date) => void;
+  minDate?: Date;
+  maxDate?: Date;
+}) {
+  const now = new Date();
+  const [viewYear, setViewYear] = useState(value?.getFullYear() ?? now.getFullYear());
+
+  if (mode === "month") {
+    const months = Array.from({ length: 12 }, (_, i) => i);
+    return (
+      <div className="p-[var(--spacing-sm)] space-y-[var(--spacing-sm)]">
+        <div className="flex items-center justify-between">
+          <Button type="button" variant="ghost" size="icon" onClick={() => setViewYear((y) => y - 1)}>
+            ‹
+          </Button>
+          <span className="text-sm font-medium">{viewYear}</span>
+          <Button type="button" variant="ghost" size="icon" onClick={() => setViewYear((y) => y + 1)}>
+            ›
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-[var(--spacing-sm)]">
+          {months.map((month) => {
+            const date = new Date(viewYear, month, 1);
+            const disabled =
+              (minDate && date < new Date(minDate.getFullYear(), minDate.getMonth(), 1)) ||
+              (maxDate && date > new Date(maxDate.getFullYear(), maxDate.getMonth(), 1));
+            const selected = value && value.getFullYear() === viewYear && value.getMonth() === month;
+            return (
+              <Button
+                key={month}
+                type="button"
+                variant={selected ? "default" : "ghost"}
+                size="sm"
+                disabled={Boolean(disabled)}
+                onClick={() => onSelect(date)}
+                className="text-xs"
+              >
+                {format(date, "MMM", { locale: es })}
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  const startYear = Math.floor(viewYear / 12) * 12;
+  const years = Array.from({ length: 12 }, (_, i) => startYear + i);
+
+  return (
+    <div className="p-[var(--spacing-sm)] space-y-[var(--spacing-sm)]">
+      <div className="flex items-center justify-between">
+        <Button type="button" variant="ghost" size="icon" onClick={() => setViewYear((y) => y - 12)}>
+          ‹
+        </Button>
+        <span className="text-sm font-medium">
+          {startYear} – {startYear + 11}
+        </span>
+        <Button type="button" variant="ghost" size="icon" onClick={() => setViewYear((y) => y + 12)}>
+          ›
+        </Button>
+      </div>
+      <div className="grid grid-cols-3 gap-[var(--spacing-sm)]">
+        {years.map((year) => {
+          const date = new Date(year, 0, 1);
+          const disabled = (minDate && year < minDate.getFullYear()) || (maxDate && year > maxDate.getFullYear());
+          const selected = value?.getFullYear() === year;
+          return (
+            <Button
+              key={year}
+              type="button"
+              variant={selected ? "default" : "ghost"}
+              size="sm"
+              disabled={Boolean(disabled)}
+              onClick={() => onSelect(date)}
+              className="text-xs"
+            >
+              {year}
+            </Button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export interface CalendarInputProps extends Omit<ComponentPropsWithoutRef<"div">, "onChange" | "value"> {
+  value?: Nullable<Date | Date[] | (Date | null)[]>;
+  onChange?: (e: CalendarChangeEvent<Nullable<Date | Date[] | (Date | null)[]>>) => void;
   error?: boolean;
   fullWidth?: boolean;
   variant?: "default" | "inline";
   rounded?: boolean;
   selectionMode?: "single" | "multiple" | "range";
+  placeholder?: string;
+  dateFormat?: string;
+  disabled?: boolean;
+  readOnlyInput?: boolean;
+  minDate?: Date;
+  maxDate?: Date;
+  disabledDates?: Date[];
+  disabledDays?: number[];
+  showTime?: boolean;
+  hourFormat?: "12" | "24";
+  view?: "date" | "month" | "year";
+  numberOfMonths?: number;
+  showButtonBar?: boolean;
 }
 
-export const Calendar = forwardRef<any, CalendarInputProps>(
+export const Calendar = forwardRef<HTMLDivElement, CalendarInputProps>(
   (
-    { error, fullWidth, variant = "default", rounded = false, className = "", selectionMode = "single", ...props },
+    {
+      value,
+      onChange,
+      error,
+      fullWidth,
+      variant = "default",
+      rounded = false,
+      className = "",
+      selectionMode = "single",
+      placeholder = "Seleccionar fecha",
+      dateFormat = "dd/mm/yy",
+      disabled,
+      readOnlyInput,
+      minDate,
+      maxDate,
+      disabledDates,
+      disabledDays,
+      showTime = false,
+      hourFormat = "24",
+      view = "date",
+      numberOfMonths = 1,
+      showButtonBar = true,
+      ...props
+    },
     ref,
   ) => {
-    const roundedClass = rounded ? "!rounded-full" : "!rounded-[var(--radius)]";
+    void readOnlyInput;
+    const [open, setOpen] = useState(false);
+    const disabledMatchers = useMemo(
+      () => buildDisabledMatchers({ minDate, maxDate, disabledDates, disabledDays }),
+      [minDate, maxDate, disabledDates, disabledDays],
+    );
 
-    const inputStyles = `
-      !flex !h-10 !w-full ${roundedClass}
-      !border !border-[var(--input-border)]
-      !bg-[var(--input)] !px-3 !py-2 !pr-10 !text-sm !text-[var(--foreground)]
-      placeholder:!text-[var(--foreground-muted)]
-      transition-all duration-[var(--transition-base)]
-      focus:!outline-none focus:!ring-2 focus:!ring-[var(--ring)] focus:!ring-offset-2 focus:!ring-offset-[var(--ring-offset)] focus:!border-[var(--input-focus)]
-      disabled:!cursor-not-allowed disabled:!opacity-50 disabled:!bg-[var(--muted)]
-    `;
+    const displayText = formatDisplayValue(value, selectionMode, dateFormat);
 
-    const errorStyles = error ? "!border-[var(--destructive)] focus:!ring-[var(--destructive)]" : "";
-    const widthStyles = fullWidth ? "!w-full" : "";
-
-    const ptStyles = {
-      root: { className: `${widthStyles} ${className} !relative`.trim() },
-      input: { className: `${inputStyles} ${errorStyles}`.trim() },
-      dropdownButton: {
-        root: {
-          className: `
-            !absolute !right-1 !top-1/2 !-translate-y-1/2 !h-8 !w-8
-            !text-[var(--foreground-muted)]
-            hover:!text-[var(--foreground)] hover:!bg-[var(--secondary)]
-            transition-colors !bg-transparent !border-0
-            !flex !items-center !justify-center !rounded-full
-          `,
-        },
-      },
-      panel: {
-        className: `
-          !mt-1 !p-3 !rounded-[var(--radius)] !border !border-[var(--border)]
-          !bg-[var(--popover)] !shadow-lg !z-[var(--z-dropdown)]
-        `,
-      },
-      header: { className: "flex items-center justify-between mb-[var(--spacing-sm)]" },
-      previousButton: {
-        className:
-          "p-1.5 rounded-[var(--radius-sm)] text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      nextButton: {
-        className:
-          "p-1.5 rounded-[var(--radius-sm)] text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      title: { className: "flex items-center gap-[var(--spacing-sm)]" },
-      monthTitle: {
-        className:
-          "px-[var(--spacing-sm)] py-[var(--spacing-xs)] rounded-[var(--radius-sm)] text-sm font-medium text-[var(--foreground)] hover:bg-[var(--secondary)] cursor-pointer transition-colors",
-      },
-      yearTitle: {
-        className:
-          "px-[var(--spacing-sm)] py-[var(--spacing-xs)] rounded-[var(--radius-sm)] text-sm font-medium text-[var(--foreground)] hover:bg-[var(--secondary)] cursor-pointer transition-colors",
-      },
-      table: { className: "w-full border-collapse" },
-      tableHeader: { className: "" },
-      tableHeaderCell: {
-        className: "p-[var(--spacing-sm)] text-xs font-medium text-[var(--foreground-muted)] text-center",
-      },
-      tableBody: { className: "" },
-      tableBodyRow: { className: "" },
-      day: {
-        className: `
-          w-9 h-9 p-0 m-[var(--spacing-xxs)] text-sm text-center rounded-[var(--radius-sm)] cursor-pointer transition-colors
-          hover:bg-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)]
-          [&[data-p-today=true]]:font-bold [&[data-p-today=true]]:text-[var(--accent)]
-          [&[data-p-highlight=true]]:bg-[var(--primary)] [&[data-p-highlight=true]]:text-[var(--primary-foreground)]
-          [&[data-p-disabled=true]]:opacity-30 [&[data-p-disabled=true]]:cursor-not-allowed
-          [&[data-p-other-month=true]]:text-[var(--foreground-subtle)]
-        `,
-      },
-      dayLabel: { className: "flex items-center justify-center w-full h-full" },
-      monthPicker: { className: "grid grid-cols-3 gap-[var(--spacing-sm)] p-[var(--spacing-sm)]" },
-      month: {
-        className:
-          "px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm text-center rounded-[var(--radius)] cursor-pointer transition-colors hover:bg-[var(--secondary)] [&[data-p-highlight=true]]:bg-[var(--primary)] [&[data-p-highlight=true]]:text-[var(--primary-foreground)]",
-      },
-      yearPicker: { className: "grid grid-cols-4 gap-[var(--spacing-sm)] p-[var(--spacing-sm)]" },
-      year: {
-        className:
-          "px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm text-center rounded-[var(--radius)] cursor-pointer transition-colors hover:bg-[var(--secondary)] [&[data-p-highlight=true]]:bg-[var(--primary)] [&[data-p-highlight=true]]:text-[var(--primary-foreground)]",
-      },
-      timePicker: {
-        className:
-          "flex items-center justify-center gap-[var(--spacing-sm)] pt-[var(--spacing-md)] mt-[var(--spacing-md)] border-t border-[var(--border)]",
-      },
-      hourPicker: { className: "flex flex-col items-center" },
-      minutePicker: { className: "flex flex-col items-center" },
-      secondPicker: { className: "flex flex-col items-center" },
-      incrementButton: {
-        className:
-          "p-[var(--spacing-xs)] rounded-[var(--radius-sm)] text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      decrementButton: {
-        className:
-          "p-[var(--spacing-xs)] rounded-[var(--radius-sm)] text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      separator: { className: "text-[var(--foreground-muted)] text-lg" },
-      ampm: {
-        className:
-          "px-[var(--spacing-sm)] py-[var(--spacing-xs)] rounded-[var(--radius-sm)] text-sm font-medium cursor-pointer transition-colors hover:bg-[var(--secondary)]",
-      },
-      buttonBar: {
-        className:
-          "flex items-center justify-end gap-[var(--spacing-sm)] pt-[var(--spacing-md)] mt-[var(--spacing-md)] border-t border-[var(--border)]",
-      },
-      todayButton: {
-        className:
-          "px-[var(--spacing-md)] py-1.5 text-xs font-medium rounded-[var(--radius)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      clearButton: {
-        className:
-          "px-[var(--spacing-md)] py-1.5 text-xs font-medium rounded-[var(--radius)] text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors",
-      },
-      group: { className: "flex gap-[var(--spacing-md)]" },
-      groupPanel: { className: "" },
-      datepickerMask: { className: "fixed inset-0" },
+    const emitChange = (next: Nullable<Date | Date[] | (Date | null)[]>) => {
+      onChange?.({ value: next });
     };
 
+    const handleSingleSelect = (date: Date | undefined) => {
+      if (!date) {
+        emitChange(null);
+        return;
+      }
+      let next = date;
+      if (showTime && value instanceof Date) {
+        next = setHours(setMinutes(setSeconds(date, value.getSeconds()), value.getMinutes()), value.getHours());
+      }
+      emitChange(next);
+      if (!showTime && variant === "default") setOpen(false);
+    };
+
+    const handleMultipleSelect = (dates: Date[] | undefined) => {
+      emitChange(dates ?? null);
+    };
+
+    const handleRangeSelect = (range: { from?: Date; to?: Date } | undefined) => {
+      if (!range) {
+        emitChange(null);
+        return;
+      }
+      emitChange([range.from ?? null, range.to ?? null]);
+    };
+
+    const handleTimeChange = (type: "hours" | "minutes", raw: string) => {
+      if (!(value instanceof Date)) return;
+      const num = parseInt(raw, 10);
+      if (Number.isNaN(num)) return;
+      const next =
+        type === "hours"
+          ? setHours(value, Math.min(hourFormat === "12" ? 12 : 23, Math.max(0, num)))
+          : setMinutes(value, Math.min(59, Math.max(0, num)));
+      emitChange(next);
+    };
+
+    const timeSection =
+      showTime && value instanceof Date ? (
+        <div className="flex items-center justify-center gap-[var(--spacing-sm)] pt-[var(--spacing-md)] mt-[var(--spacing-md)] border-t border-[var(--border)]">
+          <InputText
+            type="number"
+            min={0}
+            max={hourFormat === "24" ? 23 : 12}
+            value={String(value.getHours()).padStart(2, "0")}
+            onChange={(e) => handleTimeChange("hours", e.target.value)}
+            className="w-16 h-8 text-center"
+            aria-label="Horas"
+          />
+          <span className="text-[var(--foreground-muted)]">:</span>
+          <InputText
+            type="number"
+            min={0}
+            max={59}
+            value={String(value.getMinutes()).padStart(2, "0")}
+            onChange={(e) => handleTimeChange("minutes", e.target.value)}
+            className="w-16 h-8 text-center"
+            aria-label="Minutos"
+          />
+        </div>
+      ) : null;
+
+    const buttonBar = showButtonBar ? (
+      <div className="flex items-center justify-end gap-[var(--spacing-sm)] pt-[var(--spacing-md)] mt-[var(--spacing-md)] border-t border-[var(--border)]">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const today = new Date();
+            if (selectionMode === "single") emitChange(today);
+            else if (selectionMode === "range") emitChange([today, today]);
+            else emitChange([today]);
+          }}
+        >
+          Hoy
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => emitChange(null)}>
+          Limpiar
+        </Button>
+      </div>
+    ) : null;
+
+    const calendarPanel = (
+      <div
+        className={cn(
+          "rounded-[var(--radius)] border border-[var(--border)] bg-[var(--popover)] shadow-lg",
+          variant === "inline" && "shadow-none",
+        )}
+      >
+        {view === "month" || view === "year" ? (
+          <MonthYearGrid
+            mode={view}
+            value={value instanceof Date ? value : null}
+            onSelect={(date) => {
+              emitChange(date);
+              if (variant === "default") setOpen(false);
+            }}
+            minDate={minDate}
+            maxDate={maxDate}
+          />
+        ) : selectionMode === "single" ? (
+          <CalendarPrimitive
+            mode="single"
+            selected={value instanceof Date ? value : undefined}
+            onSelect={handleSingleSelect}
+            disabled={disabledMatchers.length ? disabledMatchers : undefined}
+            numberOfMonths={numberOfMonths}
+            defaultMonth={value instanceof Date ? value : undefined}
+          />
+        ) : selectionMode === "multiple" ? (
+          <CalendarPrimitive
+            mode="multiple"
+            selected={Array.isArray(value) ? (value.filter((d) => d instanceof Date) as Date[]) : undefined}
+            onSelect={handleMultipleSelect}
+            disabled={disabledMatchers.length ? disabledMatchers : undefined}
+            numberOfMonths={numberOfMonths}
+          />
+        ) : (
+          <CalendarPrimitive
+            mode="range"
+            selected={
+              Array.isArray(value)
+                ? { from: (value[0] as Date | null) ?? undefined, to: (value[1] as Date | null) ?? undefined }
+                : undefined
+            }
+            onSelect={handleRangeSelect}
+            disabled={disabledMatchers.length ? disabledMatchers : undefined}
+            numberOfMonths={numberOfMonths}
+          />
+        )}
+        {timeSection}
+        {buttonBar}
+      </div>
+    );
+
+    const roundedClass = rounded ? "rounded-full" : "rounded-[var(--radius)]";
+    const inputStyles = cn(
+      "flex h-10 w-full pr-10 text-sm text-[var(--foreground)]",
+      "border border-[var(--input-border)] bg-[var(--input)] px-[var(--spacing-md)] py-[var(--spacing-sm)]",
+      "placeholder:text-[var(--foreground-muted)] transition-all duration-[var(--transition-base)]",
+      "focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--ring-offset)] focus:border-[var(--input-focus)]",
+      "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--muted)]",
+      error && "border-[var(--destructive)] focus:ring-[var(--destructive)]",
+      roundedClass,
+      fullWidth && "w-full",
+    );
+
+    if (variant === "inline") {
+      return (
+        <div ref={ref} className={cn(fullWidth && "w-full", className)} {...props}>
+          {calendarPanel}
+        </div>
+      );
+    }
+
     return (
-      <PrimeCalendar
-        ref={ref}
-        selectionMode={selectionMode}
-        showIcon={variant === "default"}
-        showButtonBar
-        todayButtonClassName={ptStyles.todayButton.className}
-        clearButtonClassName={ptStyles.clearButton.className}
-        {...props}
-        pt={ptStyles}
-        inputClassName={ptStyles.input.className}
-        icon={<CalendarIcon className="w-4 h-4 ml-[var(--spacing-sm)]" />}
-        prevIcon={<ChevronLeft className="w-4 h-4" />}
-        nextIcon={<ChevronRight className="w-4 h-4" />}
-        incrementIcon={<ChevronLeft className="w-3 h-3 rotate-90" />}
-        decrementIcon={<ChevronRight className="w-3 h-3 rotate-90" />}
-        inline={variant === "inline"}
-      />
+      <div ref={ref} className={cn("relative", fullWidth && "w-full", className)} {...props}>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild disabled={disabled}>
+            <button type="button" disabled={disabled} className={cn(inputStyles, "text-left cursor-pointer")}>
+              <span className={cn(!displayText && "text-[var(--foreground-muted)]")}>{displayText || placeholder}</span>
+              <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground-muted)] pointer-events-none" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto p-0 border-[var(--border)] bg-[var(--popover)] z-[var(--z-dropdown)]"
+            align="start"
+          >
+            {calendarPanel}
+          </PopoverContent>
+        </Popover>
+      </div>
     );
   },
 );
@@ -164,12 +407,12 @@ export interface DateRangePickerProps extends Omit<CalendarInputProps, "selectio
   numberOfMonths?: number;
 }
 
-export const DateRangePicker = forwardRef<HTMLSpanElement, DateRangePickerProps>(
+export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
   ({ value, onChange, numberOfMonths = 2, placeholder = "Seleccionar rango de fechas", ...props }, ref) => {
     return (
       <Calendar
         ref={ref}
-        value={value as any}
+        value={value as CalendarInputProps["value"]}
         onChange={(e) => onChange?.(e.value as Nullable<(Date | null)[]>)}
         selectionMode="range"
         numberOfMonths={numberOfMonths}

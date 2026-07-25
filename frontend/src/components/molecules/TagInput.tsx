@@ -1,4 +1,10 @@
-import { forwardRef, useState, useRef, type KeyboardEvent, type ChangeEvent } from "react";
+import {
+  forwardRef,
+  useState,
+  useRef,
+  type KeyboardEvent,
+  type ChangeEvent,
+} from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +39,8 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     };
 
     const removeTag = (index: number) => {
-      onChange?.({ value: value.filter((_, i) => i !== index) });
+      const newValue = value.filter((_, i) => i !== index);
+      onChange?.({ value: newValue });
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -55,7 +62,11 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
 
     return (
       <div className="flex flex-col gap-1.5 w-full">
-        {label && <label className="text-sm font-medium leading-none text-[var(--foreground)]">{label}</label>}
+        {label && (
+          <label className="text-sm font-medium leading-none text-[var(--foreground)]">
+            {label}
+          </label>
+        )}
         <div
           className={cn(
             "flex flex-wrap gap-[var(--spacing-sm)] p-[var(--spacing-sm)] w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)] ring-offset-[var(--background)] transition-colors focus-within:ring-2 focus-within:ring-[var(--ring)] focus-within:ring-offset-2 hover:border-[var(--border-hover)] cursor-text",
@@ -103,3 +114,5 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
   },
 );
 TagInput.displayName = "TagInput";
+
+export default TagInput;

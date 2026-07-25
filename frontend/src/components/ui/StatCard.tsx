@@ -7,5 +7,5 @@ interface StatCardProps {
 }
 
 export default function StatCard({ label, value, hint }: StatCardProps) {
-  return <StatsCard title={label} value={value} description={hint} tint="mist" />;
+  return <StatsCard title={label} value={value} description={hint} />;
 }

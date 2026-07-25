@@ -12,7 +12,19 @@ export interface RatingProps extends Omit<HTMLAttributes<HTMLDivElement>, "onCha
 }
 
 export const Rating = forwardRef<HTMLDivElement, RatingProps>(
-  ({ value = 0, onChange, stars = 5, cancel = false, readOnly = false, className, label, ...props }, ref) => {
+  (
+    {
+      value = 0,
+      onChange,
+      stars = 5,
+      cancel = false,
+      readOnly = false,
+      className,
+      label,
+      ...props
+    },
+    ref,
+  ) => {
     const handleClick = (starValue: number) => {
       if (readOnly) return;
       const newValue = starValue === value && cancel ? 0 : starValue;
@@ -21,7 +33,9 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(
 
     return (
       <div ref={ref} className="flex flex-col gap-1.5" {...props}>
-        {label && <label className="text-sm font-medium text-[var(--foreground)]">{label}</label>}
+        {label && (
+          <label className="text-sm font-medium text-[var(--foreground)]">{label}</label>
+        )}
         <div className={cn("flex items-center gap-1", className)}>
           {Array.from({ length: stars }, (_, i) => i + 1).map((starValue) => (
             <button
@@ -54,7 +68,8 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(
               onClick={() => onChange?.({ value: 0 })}
               className={cn(
                 "outline-none rounded-full transition-opacity",
-                !readOnly && "cursor-pointer hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                !readOnly &&
+                  "cursor-pointer hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
                 readOnly && "cursor-default",
               )}
               aria-label="Clear rating"
@@ -68,3 +83,5 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(
   },
 );
 Rating.displayName = "Rating";
+
+export default Rating;

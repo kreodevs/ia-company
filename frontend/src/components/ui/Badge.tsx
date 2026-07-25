@@ -7,5 +7,5 @@ interface BadgeProps {
 }
 
 export default function Badge({ children, variant = "default" }: BadgeProps) {
-  return <KreoBadge variant={variant === "primary" ? "primary" : "default"}>{children}</KreoBadge>;
+  return <KreoBadge variant={variant === "primary" ? "default" : "secondary"}>{children}</KreoBadge>;
 }

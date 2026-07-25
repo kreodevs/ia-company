@@ -72,7 +72,10 @@ export const MermaidDiagram = ({
       try {
         const mermaid = await initMermaidTheme();
         await mermaid.parse(renderCode);
-        const { svg: rendered } = await mermaid.render(`mermaid-${renderId}-${Date.now()}`, renderCode);
+        const { svg: rendered } = await mermaid.render(
+          `mermaid-${renderId}-${Date.now()}`,
+          renderCode,
+        );
         if (cancelled) return;
         setSvg(rendered);
         setError(null);

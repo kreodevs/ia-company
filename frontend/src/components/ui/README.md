@@ -35,3 +35,5 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 Org OS uses Kreo **DynamicForm** and **DataTable** directly under `components/org/`.
 
 Global styles: `src/index.css`, `src/styles/kreo-vars.css` (supplemental aliases only — themes own palette).
+
+Kreo stack: Radix UI + TanStack Table + react-day-picker under `atoms/`, `molecules/`, `organisms/` (registry v5.3, no PrimeReact).

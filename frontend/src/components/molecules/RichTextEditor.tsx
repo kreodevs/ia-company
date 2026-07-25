@@ -51,7 +51,11 @@ export const RichTextEditor = forwardRef<ReactQuill, RichTextEditorProps>(
   ({ className, error, label, value, onChange, placeholder }, ref) => {
     return (
       <div className="flex flex-col gap-1.5 w-full">
-        {label && <label className="text-sm font-medium leading-none text-[var(--foreground)]">{label}</label>}
+        {label && (
+          <label className="text-sm font-medium leading-none text-[var(--foreground)]">
+            {label}
+          </label>
+        )}
         <div
           className={cn(
             "w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)] overflow-hidden",
@@ -69,9 +73,13 @@ export const RichTextEditor = forwardRef<ReactQuill, RichTextEditorProps>(
             theme="snow"
           />
         </div>
-        {error && <span className="text-[14px] text-[var(--destructive)] font-medium">{error}</span>}
+        {error && (
+          <span className="text-[14px] text-[var(--destructive)] font-medium">{error}</span>
+        )}
       </div>
     );
   },
 );
 RichTextEditor.displayName = "RichTextEditor";
+
+export default RichTextEditor;

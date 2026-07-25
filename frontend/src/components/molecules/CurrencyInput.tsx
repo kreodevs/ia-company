@@ -12,7 +12,7 @@ export interface CurrencyInputProps
   decimals?: number;
 }
 
-function formatCurrencyValue(
+function formatCurrency(
   value: number | null | undefined,
   locale: string,
   currency: string,
@@ -45,13 +45,16 @@ function parseNumberInput(input: string, locale: string): number | null {
 
     let normalized;
     if (decimalSep !== ".") {
-      normalized = cleaned.replace(new RegExp(`\\${groupSep}`, "g"), "").replace(new RegExp(`\\${decimalSep}`), ".");
+      normalized = cleaned
+        .replace(new RegExp(`\\${groupSep}`, "g"), "")
+        .replace(new RegExp(`\\${decimalSep}`), ".");
     } else {
       normalized = cleaned.replace(new RegExp(`\\${groupSep}`, "g"), "");
     }
 
     const parts = normalized.split(".");
-    const final = parts.length > 1 ? parts[0] + "." + parts.slice(1).join("") : normalized;
+    const final =
+      parts.length > 1 ? parts[0] + "." + parts.slice(1).join("") : normalized;
 
     const num = parseFloat(final);
     return isNaN(num) ? null : num;
@@ -89,13 +92,13 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
     const safeCurrency = currency.length === 3 ? currency : "USD";
 
     const [displayText, setDisplayText] = useState(() =>
-      formatCurrencyValue(value, safeLocale, safeCurrency, decimals),
+      formatCurrency(value, safeLocale, safeCurrency, decimals),
     );
     const [focused, setFocused] = useState(false);
 
     useEffect(() => {
       if (!focused) {
-        setDisplayText(formatCurrencyValue(value, safeLocale, safeCurrency, decimals));
+        setDisplayText(formatCurrency(value, safeLocale, safeCurrency, decimals));
       }
     }, [value, focused, safeLocale, safeCurrency, decimals]);
 
@@ -111,7 +114,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       if (parsed !== value) {
         onChange?.(parsed);
       }
-      setDisplayText(formatCurrencyValue(parsed, safeLocale, safeCurrency, decimals));
+      setDisplayText(formatCurrency(parsed, safeLocale, safeCurrency, decimals));
     }, [displayText, onChange, safeLocale, safeCurrency, decimals, value]);
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +129,11 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
 
     return (
       <div className="flex flex-col gap-1.5 w-full">
-        {label && <label className="text-sm font-medium leading-none text-[var(--foreground)]">{label}</label>}
+        {label && (
+          <label className="text-sm font-medium leading-none text-[var(--foreground)]">
+            {label}
+          </label>
+        )}
 
         <input
           ref={ref}
@@ -153,3 +160,5 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   },
 );
 CurrencyInput.displayName = "CurrencyInput";
+
+export default CurrencyInput;

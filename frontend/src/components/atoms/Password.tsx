@@ -29,7 +29,12 @@ export const Password = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     return (
       <div className="relative">
-        <input ref={ref} type={visible ? "text" : "password"} className={inputStyles} {...props} />
+        <input
+          ref={ref}
+          type={visible ? "text" : "password"}
+          className={inputStyles}
+          {...props}
+        />
         <button
           type="button"
           onClick={() => setVisible((prev) => !prev)}

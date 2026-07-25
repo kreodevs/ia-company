@@ -106,3 +106,5 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
   },
 );
 ColorPicker.displayName = "ColorPicker";
+
+export default ColorPicker;

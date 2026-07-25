@@ -1,52 +1,106 @@
-import { forwardRef, type ReactNode } from "react";
-import { Card } from "@/components/molecules/Card";
-import { Skeleton } from "@/components/atoms/Skeleton";
+import { forwardRef, ReactNode } from "react";
+import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { Card } from "./Card";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/atoms/Skeleton";
 
 export interface StatsCardProps {
   title: string;
   value: string | number;
   description?: string;
+  trend?: {
+    value: number | string;
+    label?: string;
+    direction: "up" | "down" | "neutral";
+  };
   icon?: ReactNode;
   className?: string;
-  tint?: "none" | "peach" | "mint" | "lavender" | "mist";
+  variant?: "default" | "bordered" | "elevated";
   loading?: boolean;
 }
 
 export const StatsCard = forwardRef<HTMLDivElement, StatsCardProps>(
-  ({ title, value, description, icon, className, tint = "mist", loading = false }, ref) => {
+  (
+    {
+      title,
+      value,
+      description,
+      trend,
+      icon,
+      className,
+      variant: _variant = "default",
+      loading = false,
+    },
+    ref,
+  ) => {
+    const isUp = trend?.direction === "up";
+    const isDown = trend?.direction === "down";
+
     if (loading) {
       return (
-        <Card ref={ref} tint={tint} className={className}>
-          <div className="space-y-3">
-            <Skeleton width="100px" height="0.875rem" />
-            <Skeleton width="80px" height="1.75rem" />
-            <Skeleton width="140px" height="0.75rem" />
+        <Card ref={ref} className={cn("relative overflow-hidden", className)}>
+          <div className="flex items-start justify-between">
+            <div className="space-y-[var(--spacing-xs)]">
+              <Skeleton width="100px" height="0.875rem" animation="pulse" />
+              <Skeleton width="60px" height="1.5rem" animation="pulse" />
+            </div>
+            <Skeleton width="40px" height="40px" variant="circular" animation="pulse" />
           </div>
+
+          <div className="mt-[var(--spacing-md)] flex items-center gap-[var(--spacing-sm)]">
+            <Skeleton width="80px" height="1.25rem" animation="pulse" variant="rounded" />
+            <Skeleton width="120px" height="0.75rem" animation="pulse" />
+          </div>
+
+          <div className="absolute -right-2 -bottom-2 w-16 h-16 bg-[var(--primary)] opacity-[0.03] rounded-full blur-2xl" />
         </Card>
       );
     }
 
     return (
-      <Card ref={ref} tint={tint} padding="md" className={cn(className)}>
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 space-y-2">
-            <p className="text-xs font-medium uppercase tracking-[0.08em] text-[var(--foreground-muted)]">
+      <Card ref={ref} className={cn("relative overflow-hidden", className)}>
+        <div className="flex items-start justify-between">
+          <div className="space-y-[var(--spacing-xs)]">
+            <p className="text-sm font-medium text-[var(--foreground-muted)] uppercase tracking-wider">
               {title}
             </p>
-            <p className="font-[family-name:var(--font-display)] text-3xl font-semibold tabular-nums text-[var(--foreground)]">
-              {value}
-            </p>
-            {description ? (
-              <p className="text-xs leading-relaxed text-[var(--foreground-muted)]">{description}</p>
-            ) : null}
+            <div className="flex items-baseline gap-[var(--spacing-sm)]">
+              <h3 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">{value}</h3>
+            </div>
           </div>
-          {icon ? (
-            <div className="shrink-0 rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-paper-white)] p-2 text-[var(--color-deep-teal)]">
+          {icon && (
+            <div className="p-[var(--spacing-sm)] bg-[var(--background-tertiary)] rounded-lg text-[var(--primary)] border border-[var(--border)]">
               {icon}
             </div>
-          ) : null}
+          )}
         </div>
+
+        {(trend || description) && (
+          <div className="mt-[var(--spacing-md)] flex items-center gap-[var(--spacing-sm)]">
+            {trend && (
+              <div
+                className={cn(
+                  "flex items-center text-xs font-semibold px-1.5 py-[var(--spacing-xxs)] rounded-md",
+                  isUp && "text-[var(--success)] bg-[var(--success)]/10",
+                  isDown && "text-[var(--destructive)] bg-[var(--destructive)]/10",
+                  !isUp && !isDown && "text-[var(--foreground-muted)] bg-[var(--secondary)]",
+                )}
+              >
+                {isUp && <ArrowUpRight className="w-3 h-3 mr-[var(--spacing-xxs)]" />}
+                {isDown && <ArrowDownRight className="w-3 h-3 mr-[var(--spacing-xxs)]" />}
+                {!isUp && !isDown && <Minus className="w-3 h-3 mr-[var(--spacing-xxs)]" />}
+                {trend.value}
+              </div>
+            )}
+            {description && (
+              <p className="text-xs text-[var(--foreground-subtle)] truncate">
+                {trend?.label || description}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="absolute -right-2 -bottom-2 w-16 h-16 bg-[var(--primary)] opacity-[0.03] rounded-full blur-2xl" />
       </Card>
     );
   },

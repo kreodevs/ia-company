@@ -2,7 +2,8 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { forwardRef, type ReactNode, type ComponentPropsWithoutRef } from "react";
 
-export interface DialogInputProps extends Omit<ComponentPropsWithoutRef<typeof DialogPrimitive.Content>, "title"> {
+export interface DialogInputProps
+  extends Omit<ComponentPropsWithoutRef<typeof DialogPrimitive.Content>, "title"> {
   visible?: boolean;
   onHide?: () => void;
   header?: ReactNode;
@@ -52,7 +53,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogInputProps>(
           <DialogPrimitive.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-[var(--background)]/60 backdrop-blur-sm transition-opacity duration-200 data-[state=entering]:animate-fade-in" />
           <DialogPrimitive.Content
             ref={ref}
-            className={`fixed left-1/2 top-1/2 z-[var(--z-modal)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-y-auto w-full ${sizeClass} rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)] shadow-xl animate-slide-in ${className}`}
+            className={`relative w-full ${sizeClass} rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)] shadow-xl animate-slide-in overflow-hidden ${className}`}
             {...props}
           >
             {header ? (
@@ -106,7 +107,6 @@ export interface AlertDialogProps extends Omit<DialogInputProps, "footer"> {
   onConfirm?: () => void;
   onCancel?: () => void;
   variant?: "default" | "destructive";
-  busy?: boolean;
 }
 
 export const AlertDialog = ({
@@ -118,10 +118,18 @@ export const AlertDialog = ({
   onCancel,
   onHide,
   variant = "default",
-  busy = false,
-  visible,
   ...props
 }: AlertDialogProps) => {
+  const handleConfirm = () => {
+    onConfirm?.();
+    onHide?.();
+  };
+
+  const handleCancel = () => {
+    onCancel?.();
+    onHide?.();
+  };
+
   const confirmButtonStyles =
     variant === "destructive"
       ? "bg-[var(--destructive)] text-[var(--destructive-foreground)] hover:bg-[var(--destructive)]/90"
@@ -133,25 +141,18 @@ export const AlertDialog = ({
       description={description}
       size="sm"
       showClose={false}
-      visible={visible}
-      onHide={() => {
-        if (!busy) onCancel?.();
-      }}
+      onHide={onHide}
       footer={
         <>
           <button
-            type="button"
-            disabled={busy}
-            onClick={() => onCancel?.()}
-            className="px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm font-medium rounded-[var(--radius)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors disabled:opacity-50"
+            onClick={handleCancel}
+            className="px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm font-medium rounded-[var(--radius)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors"
           >
             {cancelLabel}
           </button>
           <button
-            type="button"
-            disabled={busy}
-            onClick={() => onConfirm?.()}
-            className={`px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm font-medium rounded-[var(--radius)] ${confirmButtonStyles} transition-colors disabled:opacity-50`}
+            onClick={handleConfirm}
+            className={`px-[var(--spacing-md)] py-[var(--spacing-sm)] text-sm font-medium rounded-[var(--radius)] ${confirmButtonStyles} transition-colors`}
           >
             {confirmLabel}
           </button>

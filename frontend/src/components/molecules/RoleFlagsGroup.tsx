@@ -29,7 +29,10 @@ export interface RoleFlagsGroupProps {
   name?: string;
 }
 
-export const RoleFlagsGroup = forwardRef<HTMLFieldSetElement | HTMLDivElement, RoleFlagsGroupProps>(
+export const RoleFlagsGroup = forwardRef<
+  HTMLFieldSetElement | HTMLDivElement,
+  RoleFlagsGroupProps
+>(
   (
     {
       value,
@@ -120,7 +123,9 @@ export const RoleFlagsGroup = forwardRef<HTMLFieldSetElement | HTMLDivElement, R
             className,
           )}
         >
-          <legend className="px-[var(--spacing-xs)] text-sm font-semibold text-[var(--foreground)]">Roles</legend>
+          <legend className="px-[var(--spacing-xs)] text-sm font-semibold text-[var(--foreground)]">
+            Roles
+          </legend>
           <div className="mt-[var(--spacing-sm)]">{flags.map(renderStackedFlag)}</div>
         </fieldset>
       );
