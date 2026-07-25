@@ -177,9 +177,17 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
     throw new Error(`Schedule ${schedule.id} has no workflow configured`);
   }
 
+  const workflow = await prisma.workflow.findUnique({
+    where: { id: schedule.workflowId },
+    select: { id: true, name: true },
+  });
+  if (!workflow) {
+    throw new Error(`Workflow ${schedule.workflowId} not found`);
+  }
+
   let productId: string | undefined;
   let productSlug: string | undefined;
-  let initialMemory: Record<string, unknown> | undefined;
+  let orgMemory: Record<string, unknown> | undefined;
   if (orgUnitId) {
     const linked = await prisma.tenantProduct.findFirst({
       where: {
@@ -194,20 +202,34 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
     productSlug = linked?.slug;
     const orgCtx = await loadOrgUnitContext(schedule.tenantId, orgUnitId);
     if (orgCtx) {
-      initialMemory = {
+      orgMemory = {
         ...orgContextToInitialMemory(orgCtx),
         ...(linked ? { focusProductSlug: linked.slug, productId: linked.id } : {}),
       };
     }
   }
 
+  const { buildScheduledWorkflowInitialMemory } = await import("./workflow-run-memory.js");
+  const initialMemory = await buildScheduledWorkflowInitialMemory(
+    schedule.tenantId,
+    workflow.name,
+    {
+      reason: `Scheduled: ${schedule.name}`,
+      productId,
+      productSlug,
+      orgMemory,
+    },
+  );
+
   return executeWorkflowInBackground(schedule.workflowId, {
     tenantId: schedule.tenantId,
     productId,
     productSlug,
-    mergeConsensus: true,
+    workflowName: workflow.name,
+    mergeConsensus: false,
     syncConsensus: true,
     initialMemory,
+    metaReason: `Scheduled: ${schedule.name}`,
   });
 }
 
