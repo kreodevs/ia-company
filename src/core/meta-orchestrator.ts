@@ -87,6 +87,7 @@ async function resolveOrgScopedWorkflow(
 
 export async function resolveMetaOrchestratorDecision(
   tenantId: string,
+  options?: { orgUnitId?: string },
 ): Promise<MetaOrchestratorDecision> {
   const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
   await ensureDefaultProducts(tenantId, tenant.slug);
@@ -111,7 +112,10 @@ export async function resolveMetaOrchestratorDecision(
       ? buildingProducts
       : growingProducts.filter((p) => p.revenueUsd <= 0);
 
-  const orgLinkedProducts = products.filter((p) => p.orgUnitId && p.phase !== "archived");
+  let orgLinkedProducts = products.filter((p) => p.orgUnitId && p.phase !== "archived");
+  if (options?.orgUnitId) {
+    orgLinkedProducts = orgLinkedProducts.filter((p) => p.orgUnitId === options.orgUnitId);
+  }
 
   let focusProduct: TenantProduct | null =
     rotatableProducts.length > 1
@@ -249,14 +253,17 @@ export async function resolveMetaOrchestratorDecision(
   };
 }
 
-export async function executeMetaScheduleRun(tenantId: string): Promise<string | null> {
+export async function executeMetaScheduleRun(
+  tenantId: string,
+  options?: { orgUnitId?: string },
+): Promise<string | null> {
   const guard = await canExecuteMetaScheduleRun(tenantId);
   if (!guard.ok) {
     console.log(`Meta-orchestrator skipped for tenant ${tenantId}: ${guard.reason}`);
     return null;
   }
 
-  const decision = await resolveMetaOrchestratorDecision(tenantId);
+  const decision = await resolveMetaOrchestratorDecision(tenantId, options);
   const { executeWorkflowInBackground } = await import("../core/engine.js");
 
   const runId = await executeWorkflowInBackground(decision.workflowId, {

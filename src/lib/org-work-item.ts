@@ -36,5 +36,7 @@ export function workflowForOrgWorkItem(
 }
 
 export function defaultWorkItemKindForOrgType(orgUnitType: string): WorkItemKind {
-  return orgUnitType === "marketing_agency" ? "client" : "product";
+  if (orgUnitType === "marketing_agency") return "client";
+  if (orgUnitType === "custom" || orgUnitType === "department") return "project";
+  return "product";
 }

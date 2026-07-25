@@ -50,6 +50,14 @@ Products/clients remain under `projects/{slug}/` with optional `orgUnitId` link.
 - **War room:** `OrgArtifactsPanel` shows recent department artifacts in-place.
 - **SchemaDynamicForm:** native `color` field (Kreo DynamicForm pull deferred — MCP unavailable).
 
+### Phase 5 (feat/org-os)
+
+- **War room:** coordinator passes `orgUnitId` when product is linked to a department.
+- **Org Studio:** `workItemKind` selector, Munger pre-mortem on propose (blocks apply on VETO).
+- **Multi work item:** `POST /org-units/:id/work-items` + UI on department detail.
+- **Templates:** product-studio agents, `custom-department` template, `brandPrimaryColor` in schema.
+- **Orchestration:** schedule `conditions.orgUnitId` scopes fixed/meta runs to a department.
+
 ## Consequences
 
 - **Reversible:** feature lives on branch `feat/org-os`; existing tenants ignore `OrgUnit` until created.

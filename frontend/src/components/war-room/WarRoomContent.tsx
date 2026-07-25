@@ -446,6 +446,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           <div className="war-room-coordinator-panel">
             <CoordinatorChat
               productId={data.product.id}
+              orgUnitId={data.orgUnit?.id}
               welcomeMessageKey="warRoom.coordinator.welcome"
               onExecuted={(runId) => {
                 flashNote(t("warRoom.runStarted"));

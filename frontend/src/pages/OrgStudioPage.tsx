@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api } from "../lib/api";
+import { api, type WorkItemKind } from "../lib/api";
 import type { BusinessTemplateSummary, OrgStudioProposal } from "../lib/org-types";
 import PageHeader from "../components/ui/PageHeader";
 import Panel from "../components/ui/Panel";
@@ -11,6 +11,14 @@ import Select from "../components/ui/Select";
 import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
 import PageLoading from "../components/ui/PageLoading";
 import { translateApiError } from "../lib/translate-error";
+
+function defaultWorkItemKindForTemplate(orgUnitType: string): WorkItemKind {
+  if (orgUnitType === "marketing_agency") return "client";
+  if (orgUnitType === "custom" || orgUnitType === "department") return "project";
+  return "product";
+}
+
+const WORK_ITEM_OPTIONS: WorkItemKind[] = ["product", "client", "campaign", "project"];
 
 export default function OrgStudioPage() {
   const { t } = useTranslation();
@@ -25,7 +33,16 @@ export default function OrgStudioPage() {
   const [proposing, setProposing] = useState(false);
   const [applying, setApplying] = useState(false);
   const [createWorkItem, setCreateWorkItem] = useState(true);
+  const [workItemKind, setWorkItemKind] = useState<WorkItemKind>("client");
   const [error, setError] = useState<string | null>(null);
+
+  const selectedTemplate = templates.find((tpl) => tpl.slug === templateSlug);
+
+  useEffect(() => {
+    if (selectedTemplate) {
+      setWorkItemKind(defaultWorkItemKindForTemplate(selectedTemplate.orgUnitType));
+    }
+  }, [selectedTemplate?.orgUnitType, selectedTemplate?.slug]);
 
   useEffect(() => {
     api.orgStudio
@@ -44,6 +61,7 @@ export default function OrgStudioPage() {
       const p = await api.orgStudio.propose({ templateSlug, name: name || undefined, description });
       setProposal(p);
       setConfig(p.configDefaults);
+      setWorkItemKind(defaultWorkItemKindForTemplate(p.orgUnitType));
       if (!name) setName(p.suggestedName);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -54,6 +72,7 @@ export default function OrgStudioPage() {
 
   const runApply = async () => {
     if (!proposal) return;
+    if (proposal.mungerReview && !proposal.mungerReview.approved) return;
     setApplying(true);
     setError(null);
     try {
@@ -62,6 +81,7 @@ export default function OrgStudioPage() {
         name: name || proposal.suggestedName,
         config,
         createWorkItem,
+        workItemKind,
       });
       navigate(`/org-units/${result.orgUnit.id}`);
     } catch (err) {
@@ -70,6 +90,8 @@ export default function OrgStudioPage() {
       setApplying(false);
     }
   };
+
+  const mungerBlocked = Boolean(proposal?.mungerReview && !proposal.mungerReview.approved);
 
   if (loading) return <PageLoading message={t("org.studio.loading")} />;
 
@@ -139,6 +161,25 @@ export default function OrgStudioPage() {
             />
           </Panel>
 
+          {proposal.mungerReview && (
+            <Panel
+              title={t("org.studio.mungerTitle")}
+              bodySize="sm"
+              subtitle={
+                proposal.mungerReview.approved
+                  ? t("org.studio.mungerApproved")
+                  : t("org.studio.mungerVeto")
+              }
+            >
+              <p className="text-sm whitespace-pre-wrap">{proposal.mungerReview.notes}</p>
+              {proposal.mungerReview.veto && (
+                <p className="mt-2 text-sm text-[var(--color-destructive)]">
+                  {proposal.mungerReview.veto.reason}
+                </p>
+              )}
+            </Panel>
+          )}
+
           <Panel title={t("org.studio.designMd")} bodySize="sm">
             <pre className="max-h-48 overflow-auto rounded-md bg-[var(--color-background)] p-3 text-xs whitespace-pre-wrap">
               {proposal.designMd}
@@ -153,9 +194,27 @@ export default function OrgStudioPage() {
             />
             {t("org.studio.createWorkItem")}
           </label>
+
+          {createWorkItem && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+                {t("org.studio.workItemKindLabel")}
+              </label>
+              <Select
+                value={workItemKind}
+                onChange={(v) => setWorkItemKind(v as WorkItemKind)}
+                options={WORK_ITEM_OPTIONS.map((kind) => ({
+                  value: kind,
+                  label: t(`products.settings.workItemKind.${kind}`),
+                }))}
+                ariaLabel={t("org.studio.workItemKindLabel")}
+              />
+            </div>
+          )}
+
           <p className="text-xs text-[var(--color-muted-foreground)]">{t("org.studio.mungerHint")}</p>
 
-          <Button onClick={() => void runApply()} disabled={applying}>
+          <Button onClick={() => void runApply()} disabled={applying || mungerBlocked}>
             {applying ? t("org.studio.applying") : t("org.studio.apply")}
           </Button>
         </>

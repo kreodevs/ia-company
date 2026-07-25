@@ -3,6 +3,7 @@ import type { ArtifactStatus, ArtifactType } from "@prisma/client";
 import { listArtifacts, createArtifact, updateArtifactStatus } from "../../lib/artifact.js";
 import { listOrgUnits, getOrgUnit, createOrgUnit, updateOrgUnit } from "../../lib/org-unit.js";
 import { launchOrgUnitWork, listOrgUnitProducts } from "../../lib/org-launcher.js";
+import { createOrgWorkItem } from "../../lib/org-work-items.js";
 import {
   applyOrgStudioProposal,
   listBusinessTemplates,
@@ -82,6 +83,38 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       const unit = await getOrgUnit(tenantId, request.params.id);
       if (!unit) return reply.status(404).send({ error: "Org unit not found" });
       return listOrgUnitProducts(tenantId, request.params.id);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { id: string };
+    Body: {
+      name: string;
+      workItemKind?: "product" | "client" | "campaign" | "project";
+      description?: string;
+      slug?: string;
+    };
+  }>("/org-units/:id/work-items", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const unit = await getOrgUnit(tenantId, request.params.id);
+      if (!unit) return reply.status(404).send({ error: "Org unit not found" });
+      const name = request.body?.name?.trim();
+      if (!name) return reply.status(400).send({ error: "name is required" });
+      const workItem = await createOrgWorkItem(tenantId, unit, {
+        name,
+        workItemKind: request.body.workItemKind ?? "client",
+        description: request.body.description,
+        slug: request.body.slug,
+      });
+      await logAudit(request, "org_unit.work_item.create", {
+        orgUnitId: unit.id,
+        productId: workItem.id,
+        workItemKind: workItem.workItemKind,
+      });
+      return reply.status(201).send(workItem);
     } catch (err) {
       return handleRouteError(reply, err);
     }

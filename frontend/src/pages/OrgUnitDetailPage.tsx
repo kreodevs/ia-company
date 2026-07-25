@@ -26,6 +26,9 @@ export default function OrgUnitDetailPage() {
   const [launchTask, setLaunchTask] = useState("");
   const [launchProductId, setLaunchProductId] = useState("");
   const [launching, setLaunching] = useState(false);
+  const [newWorkItemName, setNewWorkItemName] = useState("");
+  const [newWorkItemKind, setNewWorkItemKind] = useState("client");
+  const [creatingWorkItem, setCreatingWorkItem] = useState(false);
 
   const load = async () => {
     if (!id) return;
@@ -46,6 +49,24 @@ export default function OrgUnitDetailPage() {
     if (!id) return;
     load().finally(() => setLoading(false));
   }, [id]);
+
+  const addWorkItem = async () => {
+    if (!id || !newWorkItemName.trim()) return;
+    setCreatingWorkItem(true);
+    try {
+      await api.orgUnits.createWorkItem(id, {
+        name: newWorkItemName.trim(),
+        workItemKind: newWorkItemKind as "product" | "client" | "campaign" | "project",
+      });
+      setNewWorkItemName("");
+      toast.success(t("org.workItemCreated"));
+      await load();
+    } catch (err) {
+      toast.error(translateApiError(err, t, "common.requestFailed"));
+    } finally {
+      setCreatingWorkItem(false);
+    }
+  };
 
   const launchWork = async () => {
     if (!id || !launchTask.trim()) return;
@@ -135,6 +156,41 @@ export default function OrgUnitDetailPage() {
           </ul>
         </Panel>
       )}
+
+      <Panel title={t("org.addWorkItemTitle")} subtitle={t("org.addWorkItemSubtitle")} bodySize="sm">
+        <div className="grid gap-3 md:grid-cols-2">
+          <Input
+            label={t("org.addWorkItemName")}
+            value={newWorkItemName}
+            onChange={(e) => setNewWorkItemName(e.target.value)}
+            placeholder={t("org.addWorkItemNamePlaceholder")}
+            disabled={creatingWorkItem}
+          />
+          <div>
+            <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+              {t("org.studio.workItemKindLabel")}
+            </label>
+            <Select
+              value={newWorkItemKind}
+              onChange={setNewWorkItemKind}
+              options={[
+                { value: "product", label: t("products.settings.workItemKind.product") },
+                { value: "client", label: t("products.settings.workItemKind.client") },
+                { value: "campaign", label: t("products.settings.workItemKind.campaign") },
+                { value: "project", label: t("products.settings.workItemKind.project") },
+              ]}
+              ariaLabel={t("org.studio.workItemKindLabel")}
+            />
+          </div>
+        </div>
+        <Button
+          className="mt-3"
+          onClick={() => void addWorkItem()}
+          disabled={creatingWorkItem || !newWorkItemName.trim()}
+        >
+          {creatingWorkItem ? t("org.addWorkItemCreating") : t("org.addWorkItemCta")}
+        </Button>
+      </Panel>
 
       <Panel title={t("org.configTitle")} bodySize="sm">
         {unit.configSchema?.sections?.length || unit.configSchema?.fields?.length ? (

@@ -71,5 +71,6 @@ export interface OrgStudioProposal {
   mungerReview?: {
     approved: boolean;
     notes: string;
+    veto?: { by: string; reason: string };
   };
 }

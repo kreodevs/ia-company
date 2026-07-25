@@ -3,10 +3,8 @@ import { prisma } from "./prisma.js";
 import { PLATFORM_BUSINESS_TEMPLATES } from "./business-templates.js";
 import { createOrgUnit } from "./org-unit.js";
 import { slugifyOrgName } from "./org-workspace.js";
-import { bootstrapProduct } from "./product-registry.js";
-import { serializeTenantProductForClient } from "./product-serializer.js";
 import { enhanceOrgProposalWithLlm, reviewOrgProposalWithMunger } from "./org-studio-llm.js";
-import { defaultWorkItemKindForOrgType } from "./org-work-item.js";
+import { createDefaultOrgWorkItem } from "./org-work-items.js";
 import type {
   BusinessTemplateDefinition,
   OrgStudioProposal,
@@ -139,6 +137,7 @@ export async function proposeOrgUnit(input: {
   description?: string;
   tenantId?: string;
   useLlm?: boolean;
+  includeMungerReview?: boolean;
 }): Promise<OrgStudioProposal> {
   const slug = input.templateSlug?.trim() || "marketing-agency";
   const tpl = await loadTemplate(slug);
@@ -146,6 +145,17 @@ export async function proposeOrgUnit(input: {
   let proposal = buildProposalFromTemplate(tpl, input);
   if (input.useLlm !== false && input.tenantId && input.description?.trim()) {
     proposal = await enhanceOrgProposalWithLlm(input.tenantId, proposal, input.description);
+  }
+  if (input.tenantId && input.includeMungerReview !== false) {
+    const review = await reviewOrgProposalWithMunger(input.tenantId, proposal);
+    proposal = {
+      ...proposal,
+      mungerReview: {
+        approved: review.approved,
+        notes: review.notes,
+        veto: review.veto,
+      },
+    };
   }
   return proposal;
 }
@@ -204,30 +214,13 @@ async function createLinkedWorkItem(
   proposal: OrgStudioProposal,
   workItemKind?: WorkItemKind,
 ) {
-  const kind = workItemKind ?? defaultWorkItemKindForOrgType(proposal.orgUnitType);
-  const slug = `${orgUnit.slug}-${kind}`.slice(0, 64);
-  const existing = await prisma.tenantProduct.findUnique({
-    where: { tenantId_slug: { tenantId, slug } },
-  });
-  if (existing) {
-    const updated = await prisma.tenantProduct.update({
-      where: { id: existing.id },
-      data: { orgUnitId: orgUnit.id, workItemKind: kind },
-    });
-    return serializeTenantProductForClient(updated);
-  }
-
-  const product = await bootstrapProduct({
+  return createDefaultOrgWorkItem(
     tenantId,
-    name: `${orgUnit.name} (${kind})`,
-    slug,
-    description: proposal.description,
-  });
-  const updated = await prisma.tenantProduct.update({
-    where: { id: product.id },
-    data: { orgUnitId: orgUnit.id, workItemKind: kind },
-  });
-  return serializeTenantProductForClient(updated);
+    orgUnit,
+    proposal.orgUnitType,
+    workItemKind,
+    proposal.description,
+  );
 }
 
 export async function applyOrgStudioProposal(

@@ -12,6 +12,7 @@ import { ORCHESTRATION_PRESETS, isOrchestrationPresetId } from "./orchestration-
 import { executeMetaScheduleRun, resolveMetaOrchestratorDecision } from "../core/meta-orchestrator.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
 import type { OrchestrationPreviewEntry } from "../types/orchestration.js";
+import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 
 const LEGACY_META_NAME_PATTERNS = [/^autonomous company/i, /^orquestador din[aá]mico$/i];
 
@@ -152,16 +153,47 @@ export async function applyOrchestrationPreset(
 }
 
 export async function executeScheduleRule(schedule: AutonomousSchedule): Promise<string | null> {
+  const conditions = parseScheduleConditions(schedule.conditions);
+  const orgUnitId = conditions?.orgUnitId;
+
   if (schedule.orchestrationMode === "meta_dynamic") {
-    return executeMetaScheduleRun(schedule.tenantId);
+    return executeMetaScheduleRun(schedule.tenantId, { orgUnitId });
   }
   if (!schedule.workflowId) {
     throw new Error(`Schedule ${schedule.id} has no workflow configured`);
   }
+
+  let productId: string | undefined;
+  let productSlug: string | undefined;
+  let initialMemory: Record<string, unknown> | undefined;
+  if (orgUnitId) {
+    const linked = await prisma.tenantProduct.findFirst({
+      where: {
+        tenantId: schedule.tenantId,
+        orgUnitId,
+        phase: { not: "archived" },
+      },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true, slug: true },
+    });
+    productId = linked?.id;
+    productSlug = linked?.slug;
+    const orgCtx = await loadOrgUnitContext(schedule.tenantId, orgUnitId);
+    if (orgCtx) {
+      initialMemory = {
+        ...orgContextToInitialMemory(orgCtx),
+        ...(linked ? { focusProductSlug: linked.slug, productId: linked.id } : {}),
+      };
+    }
+  }
+
   return executeWorkflowInBackground(schedule.workflowId, {
     tenantId: schedule.tenantId,
+    productId,
+    productSlug,
     mergeConsensus: true,
     syncConsensus: true,
+    initialMemory,
   });
 }
 
@@ -209,7 +241,9 @@ export async function previewOrchestrationPlan(
     const evaluation = evaluateScheduleConditions(conditions, context);
     const workflowName =
       schedule.orchestrationMode === "meta_dynamic"
-        ? (await resolveMetaOrchestratorDecision(tenantId)).workflowName
+        ? (await resolveMetaOrchestratorDecision(tenantId, {
+            orgUnitId: conditions?.orgUnitId,
+          })).workflowName
         : schedule.workflowId
           ? (
               await prisma.workflow.findUnique({

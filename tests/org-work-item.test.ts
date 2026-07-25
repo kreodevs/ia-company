@@ -11,6 +11,7 @@ describe("org work item mapping", () => {
   it("defaults client for marketing agency", () => {
     assert.equal(defaultWorkItemKindForOrgType("marketing_agency"), "client");
     assert.equal(defaultWorkItemKindForOrgType("product_studio"), "product");
+    assert.equal(defaultWorkItemKindForOrgType("custom"), "project");
   });
 
   it("maps marketing agency campaign to content-sprint", () => {

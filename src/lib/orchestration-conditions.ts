@@ -11,6 +11,7 @@ export interface ScheduleConditionContext {
   growingCount: number;
   hasPendingIdea: boolean;
   pendingDecisions: number;
+  orgUnitsWithProducts: Set<string>;
 }
 
 export function parseScheduleConditions(raw: unknown): ScheduleConditions | null {
@@ -54,6 +55,9 @@ export function evaluateScheduleConditions(
   if (conditions.noPendingDecisions === true && context.pendingDecisions > 0) {
     return { met: false, reason: "Human decisions pending" };
   }
+  if (conditions.orgUnitId && !context.orgUnitsWithProducts.has(conditions.orgUnitId)) {
+    return { met: false, reason: "Department has no linked work items" };
+  }
 
   return { met: true };
 }
@@ -61,12 +65,16 @@ export function evaluateScheduleConditions(
 export async function loadScheduleConditionContext(
   tenantId: string,
 ): Promise<ScheduleConditionContext> {
-  const [consensus, products, ideas, pendingDecisions] = await Promise.all([
+  const [consensus, products, ideas, pendingDecisions, orgLinkedRows] = await Promise.all([
     prisma.tenantConsensus.findUnique({ where: { tenantId } }),
     listTenantProducts(tenantId),
     listPipelineIdeas(tenantId),
     prisma.decisionProposal.count({
       where: { tenantId, status: { in: ["pending_review", "drilling"] } },
+    }),
+    prisma.tenantProduct.findMany({
+      where: { tenantId, orgUnitId: { not: null }, phase: { not: "archived" } },
+      select: { orgUnitId: true },
     }),
   ]);
 
@@ -80,6 +88,9 @@ export async function loadScheduleConditionContext(
     growingCount: products.filter((p) => p.phase === "growing").length,
     hasPendingIdea: pendingIdea !== null,
     pendingDecisions,
+    orgUnitsWithProducts: new Set(
+      orgLinkedRows.map((row) => row.orgUnitId).filter((id): id is string => Boolean(id)),
+    ),
   };
 }
 

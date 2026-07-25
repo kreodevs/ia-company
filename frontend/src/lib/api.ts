@@ -700,6 +700,7 @@ export interface ScheduleConditions {
   hasGrowingProduct?: boolean;
   hasPendingIdea?: boolean;
   noPendingDecisions?: boolean;
+  orgUnitId?: string;
 }
 
 export interface AutonomousSchedule {
@@ -1510,6 +1511,19 @@ export const api = {
         body: JSON.stringify(body),
       }),
     products: (id: string) => request<TenantProduct[]>(`/org-units/${id}/products`),
+    createWorkItem: (
+      id: string,
+      body: {
+        name: string;
+        workItemKind?: WorkItemKind;
+        description?: string;
+        slug?: string;
+      },
+    ) =>
+      request<TenantProduct>(`/org-units/${id}/work-items`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     launch: (
       id: string,
       body: { task: string; productId?: string; presetId?: string },

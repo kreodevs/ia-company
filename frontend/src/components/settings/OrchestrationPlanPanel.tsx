@@ -8,6 +8,7 @@ import {
   type ScheduleConditions,
   type Workflow,
 } from "../../lib/api";
+import type { OrgUnit } from "../../lib/org-types";
 import { translateApiError } from "../../lib/translate-error";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 
@@ -55,9 +56,17 @@ function formatTiming(schedule: AutonomousSchedule, t: (key: string, options?: R
 function conditionsSummary(
   conditions: ScheduleConditions | null | undefined,
   t: (key: string, options?: Record<string, unknown>) => string,
+  orgUnitName?: string,
 ) {
   if (!conditions) return t("settings.orchestration.conditions.none");
   const parts: string[] = [];
+  if (conditions.orgUnitId) {
+    parts.push(
+      t("settings.orchestration.conditions.orgUnit", {
+        name: orgUnitName ?? conditions.orgUnitId,
+      }),
+    );
+  }
   if (conditions.pipelineEmpty) parts.push(t("settings.orchestration.conditions.pipelineEmpty"));
   if (conditions.pipelineHasIdeas) parts.push(t("settings.orchestration.conditions.pipelineHasIdeas"));
   if (conditions.hasPendingIdea) parts.push(t("settings.orchestration.conditions.hasPendingIdea"));
@@ -84,6 +93,7 @@ export default function OrchestrationPlanPanel({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [presets, setPresets] = useState<OrchestrationPresetSummary[]>([]);
+  const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<RuleDraft>>>({});
@@ -109,9 +119,16 @@ export default function OrchestrationPlanPanel({
     return map;
   }, [workflows]);
 
+  const orgUnitNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const unit of orgUnits) map.set(unit.id, unit.name);
+    return map;
+  }, [orgUnits]);
+
   const loadPresets = async () => {
-    const items = await api.schedules.presets();
+    const [items, units] = await Promise.all([api.schedules.presets(), api.orgUnits.list()]);
     setPresets(items);
+    setOrgUnits(units);
   };
 
   useEffect(() => {
@@ -321,7 +338,8 @@ export default function OrchestrationPlanPanel({
                         {schedule.enabled ? t("common.enabled") : t("common.paused")}
                       </p>
                       <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-                        {t("settings.orchestration.conditionsLabel")}: {conditionsSummary(schedule.conditions, t)}
+                        {t("settings.orchestration.conditionsLabel")}:{" "}
+                        {conditionsSummary(schedule.conditions, t, orgUnitNameById.get(schedule.conditions?.orgUnitId ?? ""))}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -464,6 +482,28 @@ export default function OrchestrationPlanPanel({
                         </label>
                       ))}
                     </div>
+                    <label className="block space-y-1 text-sm md:col-span-2">
+                      <span>{t("settings.orchestration.conditions.orgUnitLabel")}</span>
+                      <select
+                        value={draft.conditions.orgUnitId ?? ""}
+                        onChange={(e) =>
+                          patchDraft(schedule.id, {
+                            conditions: {
+                              ...draft.conditions,
+                              orgUnitId: e.target.value || undefined,
+                            },
+                          })
+                        }
+                        className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                      >
+                        <option value="">{t("settings.orchestration.conditions.orgUnitAny")}</option>
+                        {orgUnits.map((unit) => (
+                          <option key={unit.id} value={unit.id}>
+                            {unit.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                   </fieldset>
 
                   {drafts[schedule.id] ? (
@@ -537,6 +577,29 @@ export default function OrchestrationPlanPanel({
             </select>
           )}
         </div>
+        <label className="block space-y-1 text-sm">
+          <span>{t("settings.orchestration.conditions.orgUnitLabel")}</span>
+          <select
+            value={newRule.conditions.orgUnitId ?? ""}
+            onChange={(e) =>
+              setNewRule({
+                ...newRule,
+                conditions: {
+                  ...newRule.conditions,
+                  orgUnitId: e.target.value || undefined,
+                },
+              })
+            }
+            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+          >
+            <option value="">{t("settings.orchestration.conditions.orgUnitAny")}</option>
+            {orgUnits.map((unit) => (
+              <option key={unit.id} value={unit.id}>
+                {unit.name}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           type="button"
           disabled={busyId === "create" || !newRule.name.trim()}

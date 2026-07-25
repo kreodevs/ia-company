@@ -47,6 +47,13 @@ export const MARKETING_AGENCY_TEMPLATE: BusinessTemplateDefinition = {
             placeholder: "Direct, expert, no hype…",
             colSpan: 12,
           },
+          {
+            name: "brandPrimaryColor",
+            label: "Brand primary color",
+            type: "color",
+            defaultValue: "#C9A227",
+            colSpan: 6,
+          },
         ],
       },
     ],
@@ -56,6 +63,7 @@ export const MARKETING_AGENCY_TEMPLATE: BusinessTemplateDefinition = {
     channels: ["linkedin", "blog"],
     postingCadence: "3x-week",
     brandVoice: "Clear, credible, founder-friendly. Short sentences. No jargon without explanation.",
+    brandPrimaryColor: "#C9A227",
   },
   tokens: {
     color: {
@@ -123,30 +131,44 @@ export const MARKETING_AGENCY_TEMPLATE: BusinessTemplateDefinition = {
 
 export const PRODUCT_STUDIO_TEMPLATE: BusinessTemplateDefinition = {
   configSchema: {
-    fields: [
+    sections: [
       {
-        name: "maxBuildingProducts",
-        label: "Max products in build",
-        type: "number",
-        defaultValue: 2,
-        colSpan: 6,
-      },
-      {
-        name: "defaultWorkflow",
-        label: "Default workflow",
-        type: "select",
-        options: [
-          { label: "Feature development", value: "feature-development" },
-          { label: "Product launch", value: "product-launch" },
+        title: "Product studio",
+        description: "How this product-building department operates.",
+        fields: [
+          {
+            name: "maxBuildingProducts",
+            label: "Max products in build",
+            type: "number",
+            defaultValue: 2,
+            colSpan: 6,
+          },
+          {
+            name: "defaultWorkflow",
+            label: "Default workflow",
+            type: "select",
+            options: [
+              { label: "Feature development", value: "feature-development" },
+              { label: "Product launch", value: "product-launch" },
+            ],
+            defaultValue: "feature-development",
+            colSpan: 6,
+          },
+          {
+            name: "brandPrimaryColor",
+            label: "Accent color",
+            type: "color",
+            defaultValue: "#C9A227",
+            colSpan: 6,
+          },
         ],
-        defaultValue: "feature-development",
-        colSpan: 6,
       },
     ],
   },
   configDefaults: {
     maxBuildingProducts: 2,
     defaultWorkflow: "feature-development",
+    brandPrimaryColor: "#C9A227",
   },
   tokens: {
     color: {
@@ -157,9 +179,113 @@ export const PRODUCT_STUDIO_TEMPLATE: BusinessTemplateDefinition = {
   designMd: `# Product Studio
 
 Ship product-led assets under \`docs/{role}/\`. Follow platform consensus + product consensus.`,
-  suggestedAgents: [],
+  suggestedAgents: [
+    {
+      name: "product-norman",
+      role: "Product Lead",
+      systemPrompt:
+        "You are the Product Lead (Norman-style). Define specs, usability, and acceptance criteria. End with JSON handoff.",
+      skillNames: ["product-strategist", "ux-audit-rethink"],
+      artifactTypes: ["report"],
+    },
+    {
+      name: "fullstack-dhh",
+      role: "Full Stack Engineer",
+      systemPrompt:
+        "You implement features in the product workspace. Prefer simple, shippable diffs. End with JSON handoff.",
+      skillNames: ["code-review-security"],
+      artifactTypes: ["code"],
+    },
+    {
+      name: "qa-bach",
+      role: "QA Lead",
+      systemPrompt:
+        "You own release quality, test strategy, and bug classification. End with JSON handoff.",
+      skillNames: ["senior-qa"],
+      artifactTypes: ["report"],
+    },
+    {
+      name: "devops-hightower",
+      role: "DevOps",
+      systemPrompt:
+        "You handle deploy pipelines, observability, and production readiness. End with JSON handoff.",
+      skillNames: ["devops"],
+      artifactTypes: ["report"],
+    },
+  ],
   suggestedWorkflows: ["feature-development", "pricing-and-monetization"],
   artifactTypes: ["report", "code"],
+};
+
+export const CUSTOM_DEPARTMENT_TEMPLATE: BusinessTemplateDefinition = {
+  configSchema: {
+    sections: [
+      {
+        title: "Department profile",
+        fields: [
+          {
+            name: "mission",
+            label: "Mission",
+            type: "textarea",
+            required: true,
+            colSpan: 12,
+          },
+          {
+            name: "operatingModel",
+            label: "Operating model",
+            type: "select",
+            options: [
+              { label: "Project-based", value: "project" },
+              { label: "Retainer / client", value: "client" },
+              { label: "Internal product", value: "product" },
+            ],
+            defaultValue: "project",
+            colSpan: 6,
+          },
+          {
+            name: "brandPrimaryColor",
+            label: "Brand color",
+            type: "color",
+            defaultValue: "#C9A227",
+            colSpan: 6,
+          },
+        ],
+      },
+    ],
+  },
+  configDefaults: {
+    mission: "Deliver outcomes for linked work items.",
+    operatingModel: "project",
+    brandPrimaryColor: "#C9A227",
+  },
+  tokens: {
+    color: {
+      primary: { $value: "#C9A227", $type: "color" },
+      background: { $value: "#0A0A0A", $type: "color" },
+    },
+  },
+  designMd: `# Custom Department
+
+Define voice, deliverables, and handoff format in this file after Org Studio apply.`,
+  suggestedAgents: [
+    {
+      name: "dept-coordinator",
+      role: "Department Coordinator",
+      systemPrompt:
+        "You coordinate work across the department. Break down tasks, assign focus, summarize outcomes. End with JSON handoff.",
+      skillNames: ["team"],
+      artifactTypes: ["report"],
+    },
+    {
+      name: "dept-specialist",
+      role: "Domain Specialist",
+      systemPrompt:
+        "You execute the core craft of this department per design.md and config. End with JSON handoff.",
+      artifactTypes: ["report"],
+    },
+  ],
+  suggestedWorkflows: ["feature-development"],
+  artifactTypes: ["report", "other"],
 };
 
 export const PLATFORM_BUSINESS_TEMPLATES = [
@@ -177,5 +303,12 @@ export const PLATFORM_BUSINESS_TEMPLATES = [
     description: "Maps to existing Virtual Company OS product-building flow.",
     orgUnitType: "product_studio" as const,
     definition: PRODUCT_STUDIO_TEMPLATE,
+  },
+  {
+    slug: "custom-department",
+    name: "Custom Department",
+    description: "Flexible department with coordinator + specialist agents.",
+    orgUnitType: "custom" as const,
+    definition: CUSTOM_DEPARTMENT_TEMPLATE,
   },
 ];

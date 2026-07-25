@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { MARKETING_AGENCY_TEMPLATE } from "../src/lib/business-templates.js";
+import { MARKETING_AGENCY_TEMPLATE, PLATFORM_BUSINESS_TEMPLATES } from "../src/lib/business-templates.js";
 import { proposeOrgUnit } from "../src/lib/org-studio.js";
 import { slugifyOrgName } from "../src/lib/org-workspace.js";
 
@@ -25,5 +25,12 @@ describe("org studio", () => {
     assert.ok(proposal.configSchema.sections?.[0]?.fields.length);
     assert.match(proposal.summary, /marketing/i);
     assert.ok(proposal.suggestedAgents.length >= 3);
+  });
+
+  it("product studio and custom templates include agents", () => {
+    const productStudio = PLATFORM_BUSINESS_TEMPLATES.find((t) => t.slug === "product-studio");
+    const custom = PLATFORM_BUSINESS_TEMPLATES.find((t) => t.slug === "custom-department");
+    assert.ok((productStudio?.definition.suggestedAgents.length ?? 0) >= 3);
+    assert.ok((custom?.definition.suggestedAgents.length ?? 0) >= 2);
   });
 });
