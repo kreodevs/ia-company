@@ -16,7 +16,7 @@ export class RunGuardError extends Error {
 export interface RunGuardOptions {
   /** Skip active-run check (e.g. resume after OpenCode). */
   allowActiveRun?: boolean;
-  /** Skip pending GO/NO-GO gate (e.g. human-initiated drill-down). */
+  /** @deprecated Pending GO/NO-GO no longer blocks manual launches. Kept for call-site compatibility. */
   allowPendingDecisions?: boolean;
 }
 
@@ -36,13 +36,8 @@ export async function assertTenantCanLaunchRun(
       "A workflow is already running. Wait for it to finish or cancel it before starting new work.",
     );
   }
-
-  if (!options.allowPendingDecisions && (await countPendingDecisions(tenantId)) > 0) {
-    throw new RunGuardError(
-      "PENDING_DECISIONS",
-      "Human GO/NO-GO decisions are pending. Review them at /decisions before launching new work.",
-    );
-  }
+  // Pending GO/NO-GO decisions do not block human-initiated launches.
+  // Autonomous meta-orchestrator and schedule conditions use canExecuteMetaScheduleRun instead.
 }
 
 export async function canExecuteMetaScheduleRun(
