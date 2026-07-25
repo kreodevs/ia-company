@@ -37,6 +37,8 @@
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
   --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
 }

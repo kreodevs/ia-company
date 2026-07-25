@@ -34,4 +34,4 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 
 Org OS uses Kreo **DynamicForm** and **DataTable** directly under `components/org/`.
 
-Global styles: `src/index.css`, `src/styles/kreo-vars.css`.
+Global styles: `src/index.css`, `src/styles/kreo-vars.css` (supplemental aliases only — themes own palette).
