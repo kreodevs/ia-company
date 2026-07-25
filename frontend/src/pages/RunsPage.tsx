@@ -45,7 +45,7 @@ function RunCard({ run }: { run: ExecutionRun }) {
             {run.startedAt ? new Date(run.startedAt).toLocaleString() : "—"}
           </p>
           {run.errorMessage?.startsWith("VETO:") && (
-            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">{run.errorMessage}</p>
+            <p className="mt-2 text-xs text-[var(--foreground-muted)]">{run.errorMessage}</p>
           )}
         </div>
         <StatusBadge status={run.status} label={statusLabel} errorMessage={run.errorMessage} />
@@ -209,7 +209,7 @@ export default function RunsPage() {
                         {run.workflow?.name ?? run.workflowId.slice(0, 8)}
                       </Link>
                       {run.errorMessage?.startsWith("VETO:") && (
-                        <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">{run.errorMessage}</p>
+                        <p className="mt-1 text-xs text-[var(--foreground-muted)]">{run.errorMessage}</p>
                       )}
                     </td>
                     <td className="px-4 py-3">

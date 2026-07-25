@@ -403,10 +403,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
       </header>
 
       {activeRunVeto && (
-        <div
-          className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100"
-          role="status"
-        >
+        <div className="mb-4 app-alert app-alert--warning" role="status">
           <strong>{t("warRoom.vetoTitle", { defaultValue: "Munger veto — run stopped" })}</strong>
           <p className="mt-1">{activeRunVeto.replace(/^VETO:\s*/, "")}</p>
         </div>

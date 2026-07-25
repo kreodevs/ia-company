@@ -71,11 +71,8 @@ export default function ProductLastRunPanel({
       }
     >
       {showWarning && (
-        <div
-          className="mb-4 flex gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100"
-          role="status"
-        >
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" aria-hidden />
+        <div className="mb-4 flex gap-2 app-alert app-alert--warning" role="status">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 app-alert__icon--warning" aria-hidden />
           <p>{t(`consensus.lastRun.diagnosis.${diagnosis}`)}</p>
         </div>
       )}

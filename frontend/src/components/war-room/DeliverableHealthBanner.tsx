@@ -41,26 +41,20 @@ export default function DeliverableHealthBanner({
 
   return (
     <div
-      className={
-        isCritical
-          ? "mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100"
-          : "mb-4 rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-950 dark:text-sky-100"
-      }
+      className={`mb-4 app-alert ${isCritical ? "app-alert--warning" : "app-alert--info"}`}
       role="status"
     >
       <div className="flex gap-3">
         {isCritical ? (
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 app-alert__icon--warning" aria-hidden />
         ) : (
-          <FileWarning className="mt-0.5 h-4 w-4 shrink-0 text-sky-500" aria-hidden />
+          <FileWarning className="mt-0.5 h-4 w-4 shrink-0 app-alert__icon--info" aria-hidden />
         )}
         <div className="min-w-0 flex-1">
           <p className="font-medium">{t("warRoom.deliverables.title")}</p>
-          <p className="mt-1">
-            {t(`consensus.lastRun.diagnosis.${trace.diagnosis}`, { defaultValue: trace.diagnosis })}
-          </p>
+          <p className="mt-1">{t(`consensus.lastRun.diagnosis.${trace.diagnosis}`, { defaultValue: trace.diagnosis })}</p>
           {weakSteps > 0 && trace.steps.length > 0 && (
-            <p className="mt-1 text-xs opacity-90">
+            <p className="mt-1 text-xs app-alert__meta">
               {t("warRoom.deliverables.weakSteps", {
                 count: weakSteps,
                 total: trace.steps.length,

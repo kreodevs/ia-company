@@ -284,7 +284,7 @@ export default function ProductSettingsPage() {
             {intakeBusy ? t("products.settings.intakeRunning") : t("products.settings.rerunIntake")}
           </Button>
           {!githubRepoUrl.trim() && (
-            <p className="w-full text-xs text-amber-600 dark:text-amber-300">
+            <p className="w-full text-xs text-[var(--foreground-muted)]">
               {t("products.settings.intakeNeedsGithub")}
             </p>
           )}

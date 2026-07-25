@@ -131,7 +131,7 @@ export default function OrgUnitDetailPage() {
               />
             </div>
           ) : (
-            <p className="text-xs text-amber-600 dark:text-amber-300">{t("org.launchNeedsProduct")}</p>
+            <p className="text-xs text-[var(--foreground-muted)]">{t("org.launchNeedsProduct")}</p>
           )}
           <Button
             onClick={() => void launchWork()}
