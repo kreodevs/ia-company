@@ -33,6 +33,11 @@ export interface ProductLastRunTrace {
   steps: ProductLastRunStepTrace[];
   revisionsRecorded: number;
   docsInWorkspace: number;
+  deliverablesSaved: number;
+  deliverablesTotal: number;
+  consensusSizeKb: number;
+  mcpToolCalls: number;
+  mcpFallbackUsed: boolean;
   /** Short hint for operators — why the UI might look empty */
   diagnosis: string;
 }
@@ -75,6 +80,12 @@ export function buildProductLastRunDiagnosis(input: {
 }): string {
   if (!input.run) {
     return "no_run";
+  }
+  if (
+    input.run.status === "CANCELLED" &&
+    input.run.errorMessage?.startsWith("VETO:")
+  ) {
+    return "munger_veto";
   }
   if (input.run.status === "FAILED") {
     return "run_failed";
@@ -146,6 +157,11 @@ export async function getProductLastRunTrace(
       steps: [],
       revisionsRecorded: 0,
       docsInWorkspace: 0,
+      deliverablesSaved: 0,
+      deliverablesTotal: 0,
+      consensusSizeKb: 0,
+      mcpToolCalls: 0,
+      mcpFallbackUsed: false,
       diagnosis: "no_run",
     };
   }
@@ -217,6 +233,32 @@ export async function getProductLastRunTrace(
   const docsIndex = await listProductAgentDocs(product.slug);
   const docsInWorkspace = docsIndex.total;
 
+  const deliverablesSaved = steps.filter((s) => s.deliverableStatus === "saved_to_disk").length;
+  const deliverablesTotal = steps.length;
+
+  const closure = memory._runClosure as
+    | {
+        consensusSizeBytes?: number;
+        mcpToolCalls?: number;
+        mcpFallbackUsed?: boolean;
+        deliverablesSaved?: number;
+      }
+    | undefined;
+  const consensusSizeKb = Math.round(
+    ((closure?.consensusSizeBytes ??
+      Buffer.byteLength(consensus?.content ?? "", "utf8")) /
+      1024) *
+      10,
+  ) / 10;
+  const mcpToolCalls =
+    typeof closure?.mcpToolCalls === "number"
+      ? closure.mcpToolCalls
+      : typeof memory._mcpToolCalls === "number"
+        ? memory._mcpToolCalls
+        : 0;
+  const mcpFallbackUsed =
+    closure?.mcpFallbackUsed === true || memory._mcpFallbackUsed === true;
+
   const trace: ProductLastRunTrace = {
     run: {
       id: run.id,
@@ -232,6 +274,11 @@ export async function getProductLastRunTrace(
     steps,
     revisionsRecorded,
     docsInWorkspace,
+    deliverablesSaved: closure?.deliverablesSaved ?? deliverablesSaved,
+    deliverablesTotal,
+    consensusSizeKb,
+    mcpToolCalls,
+    mcpFallbackUsed,
     diagnosis: "ok",
   };
   trace.diagnosis = buildProductLastRunDiagnosis(trace);

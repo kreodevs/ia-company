@@ -245,6 +245,18 @@ export interface ProductRevenueSettings {
   revenueLastSyncedAt: string | null;
   revenueSource: string | null;
   webhookUrl: string;
+  waitlistWebhookUrl: string;
+  waitlistApiKey: string;
+}
+
+export interface ProductMetricsSnapshot {
+  revenueUsd: number;
+  revenueLastSyncedAt: string | null;
+  revenueSource: string | null;
+  stripeWebhookConfigured: boolean;
+  waitlistCount: number;
+  revenueEventCount: number;
+  waitlistLastSignupAt: string | null;
 }
 
 export interface TenantIntegrationsConfig {
@@ -456,6 +468,11 @@ export interface ProductLastRunTrace {
   steps: ProductLastRunStepTrace[];
   revisionsRecorded: number;
   docsInWorkspace: number;
+  deliverablesSaved: number;
+  deliverablesTotal: number;
+  consensusSizeKb: number;
+  mcpToolCalls: number;
+  mcpFallbackUsed: boolean;
   diagnosis: string;
 }
 
@@ -483,6 +500,7 @@ export interface ProductTeam {
   team: TeamAgent[];
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
   lastRunTrace: ProductLastRunTrace | null;
+  metrics: ProductMetricsSnapshot | null;
 }
 
 export interface OpencodeActiveInfo {
@@ -1270,6 +1288,7 @@ export const api = {
       }),
     revenueSettings: (id: string) =>
       request<ProductRevenueSettings>(`/products/${id}/revenue-settings`),
+    metrics: (id: string) => request<ProductMetricsSnapshot>(`/products/${id}/metrics`),
     pipelineDecision: (id: string, decision: GoNoGoDecision) =>
       request<PipelineIdea>(`/products/pipeline/${id}`, {
         method: "PUT",

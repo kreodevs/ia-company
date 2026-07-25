@@ -152,6 +152,7 @@ export const consensus = {
     diagnosis: {
       no_run: "No runs linked to this product yet.",
       run_failed: "The last run failed — check the error message and logs.",
+      munger_veto: "Munger stopped the run — review the veto reason before relaunching.",
       run_in_progress: "A run is in progress — refresh when it finishes.",
       no_steps_in_memory: "Run finished but no steps in sharedMemory._history.",
       empty_agent_output: "Agents consumed tokens but left no captured text — check the run or model.",

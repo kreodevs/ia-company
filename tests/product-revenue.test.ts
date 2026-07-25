@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import { describe, it } from "node:test";
 import { buildStripeTestSignature } from "../src/lib/product-revenue.js";
+import { buildWaitlistWebhookUrl } from "../src/lib/product-serializer.js";
 
 describe("product revenue", () => {
   it("extracts USD from Stripe checkout session object shape", () => {
@@ -24,7 +25,9 @@ describe("product revenue", () => {
   });
 
   it("builds verifiable Stripe test signatures", () => {
-    const payload = Buffer.from(JSON.stringify({ type: "checkout.session.completed" }));
+    const payload = Buffer.from(
+      JSON.stringify({ id: "evt_test", type: "checkout.session.completed" }),
+    );
     const secret = "whsec_test_secret";
     const timestamp = 1_700_000_000;
     const signature = buildStripeTestSignature(payload, secret, timestamp);
@@ -35,5 +38,10 @@ describe("product revenue", () => {
       .update(`${timestamp}.${payload.toString("utf8")}`)
       .digest("hex");
     assert.equal(v1, expected);
+  });
+
+  it("builds waitlist webhook URLs from public API base", () => {
+    const url = buildWaitlistWebhookUrl("prod_123", "https://api.example.com/api");
+    assert.equal(url, "https://api.example.com/api/webhooks/waitlist/prod_123");
   });
 });

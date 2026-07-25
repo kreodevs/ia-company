@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { ingestStripeWebhook } from "../../lib/product-revenue.js";
+import { recordWaitlistSignup } from "../../lib/product-waitlist.js";
 import { HttpError, handleRouteError } from "../lib/request-context.js";
 
 type RequestWithRawBody = FastifyRequest & { rawBody?: Buffer };
@@ -55,4 +56,55 @@ export async function webhookRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.post<{
+    Params: { productId: string };
+    Body: { email?: string; apiKey?: string; source?: string };
+  }>("/webhooks/waitlist/:productId", async (request, reply) => {
+    try {
+      const product = await prisma.tenantProduct.findUnique({
+        where: { id: request.params.productId },
+        select: { id: true, tenantId: true },
+      });
+      if (!product) {
+        return reply.status(404).send({ error: "Product not found" });
+      }
+
+      const email = request.body?.email?.trim();
+      if (!email) {
+        throw new HttpError(400, "Email is required");
+      }
+
+      const apiKey =
+        (request.headers["x-waitlist-key"] as string | undefined)?.trim() ||
+        request.body?.apiKey?.trim();
+      if (!apiKey) {
+        throw new HttpError(401, "Waitlist API key is required");
+      }
+
+      const result = await recordWaitlistSignup({
+        productId: product.id,
+        tenantId: product.tenantId,
+        email,
+        apiKey,
+        source: request.body?.source,
+      });
+
+      return reply.status(result.created ? 201 : 200).send({
+        ok: true,
+        created: result.created,
+        waitlistCount: result.waitlistCount,
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "Invalid email address") {
+          return reply.status(400).send({ error: err.message });
+        }
+        if (err.message === "Invalid waitlist API key") {
+          return reply.status(401).send({ error: err.message });
+        }
+      }
+      return handleRouteError(reply, err);
+    }
+  });
 }

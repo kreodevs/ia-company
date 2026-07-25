@@ -152,6 +152,7 @@ export const consensus = {
     diagnosis: {
       no_run: "Aún no hay runs vinculados a este producto.",
       run_failed: "El último run falló — revisa el mensaje de error y los logs.",
+      munger_veto: "Munger detuvo el run — revisa el motivo del veto antes de relanzar.",
       run_in_progress: "Hay un run en curso — vuelve a cargar cuando termine.",
       no_steps_in_memory: "El run terminó pero no quedaron pasos en sharedMemory._history.",
       empty_agent_output: "Los agentes consumieron tokens pero no dejaron texto capturado — revisa el run o el modelo.",

@@ -103,3 +103,18 @@ export async function tenantHasActiveRun(tenantId: string): Promise<boolean> {
   });
   return active > 0;
 }
+
+/** True when another run (not excludeRunId) is active — used at worker start to avoid races. */
+export async function tenantHasOtherActiveRun(
+  tenantId: string,
+  excludeRunId: string,
+): Promise<boolean> {
+  const active = await prisma.executionRun.count({
+    where: {
+      tenantId,
+      id: { not: excludeRunId },
+      status: { in: ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"] },
+    },
+  });
+  return active > 0;
+}

@@ -11,6 +11,8 @@ import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
 import DeliverableHealthBanner from "./DeliverableHealthBanner";
+import ProductHealthPanel from "./ProductHealthPanel";
+import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 
@@ -432,11 +434,23 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
         </div>
       )}
 
-      <DeliverableHealthBanner
+      <ProductMetricsStrip metrics={data.metrics} productId={productId} />
+
+      <ProductHealthPanel
         trace={data.lastRunTrace}
         productId={productId}
         activeRunStatus={data.activeRun?.status ?? null}
       />
+
+      {!["ok", "run_in_progress"].includes(data.lastRunTrace?.diagnosis ?? "") &&
+        data.lastRunTrace?.diagnosis !== "munger_veto" && (
+        <DeliverableHealthBanner
+          trace={data.lastRunTrace}
+          productId={productId}
+          hideDuringActiveRun
+          activeRunStatus={data.activeRun?.status ?? null}
+        />
+      )}
 
       {data.orgUnit && (
         <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">

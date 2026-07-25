@@ -4,6 +4,8 @@
 |------|------|
 | `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode panel, Munger veto banner, **deliverable health banner**, **CoordinatorChat**) for one `productId` |
 | `WarRoomRunSelector.tsx` | Chip tabs to pick which **active run/flow** to watch (up to ~5 simultaneous) |
+| `ProductHealthPanel.tsx` | Operational health strip: deliverables X/Y, consensus KB, MCP usage, last run diagnosis |
+| `ProductMetricsStrip.tsx` | Live revenue (Stripe) and waitlist signup counts with link to settings |
 | `DeliverableHealthBanner.tsx` | Warns when last run steps lack on-disk deliverables |
 
 ## Routes

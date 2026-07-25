@@ -61,7 +61,12 @@ export async function ingestStripeWebhook(input: {
   tenantId: string;
   payload: Buffer;
   signature: string | undefined;
-}): Promise<{ handled: boolean; revenueUsd?: number; eventType?: string }> {
+}): Promise<{
+  handled: boolean;
+  duplicate?: boolean;
+  revenueUsd?: number;
+  eventType?: string;
+}> {
   const product = await prisma.tenantProduct.findFirst({
     where: { id: input.productId, tenantId: input.tenantId },
     select: { id: true, metadata: true },
@@ -74,7 +79,7 @@ export async function ingestStripeWebhook(input: {
     throw new Error("Stripe webhook secret is not configured for this product");
   }
 
-  let event: { type: string; data?: { object?: Record<string, unknown> } };
+  let event: { id?: string; type: string; data?: { object?: Record<string, unknown> } };
   try {
     event = parseStripeEvent(input.payload, input.signature, secret);
   } catch (err) {
@@ -95,6 +100,28 @@ export async function ingestStripeWebhook(input: {
   const amountUsd = extractStripeAmountUsd(object);
   if (amountUsd <= 0) {
     return { handled: false, eventType: event.type };
+  }
+
+  const stripeEventId = event.id?.trim();
+  if (!stripeEventId) {
+    throw new Error("Stripe event id is missing");
+  }
+
+  try {
+    await prisma.productRevenueEvent.create({
+      data: {
+        productId: product.id,
+        stripeEventId,
+        amountUsd,
+        eventType: event.type,
+      },
+    });
+  } catch (err) {
+    const code = (err as { code?: string }).code;
+    if (code === "P2002") {
+      return { handled: true, duplicate: true, eventType: event.type };
+    }
+    throw err;
   }
 
   const { revenueUsd } = await recordProductRevenue({
@@ -133,7 +160,7 @@ function parseStripeEvent(
   payload: Buffer,
   signature: string | undefined,
   secret: string,
-): { type: string; data?: { object?: Record<string, unknown> } } {
+): { id?: string; type: string; data?: { object?: Record<string, unknown> } } {
   if (!signature) {
     throw new Error("Missing Stripe-Signature header");
   }
@@ -168,6 +195,7 @@ function parseStripeEvent(
   }
 
   const parsed = JSON.parse(payload.toString("utf8")) as {
+    id?: string;
     type: string;
     data?: { object?: Record<string, unknown> };
   };

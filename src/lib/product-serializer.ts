@@ -25,3 +25,11 @@ export function buildStripeWebhookUrl(productId: string, publicApiBase?: string)
   );
   return `${base}/webhooks/stripe/${productId}`;
 }
+
+export function buildWaitlistWebhookUrl(productId: string, publicApiBase?: string): string {
+  const base = (publicApiBase ?? process.env.PUBLIC_API_URL ?? "http://localhost:3001/api").replace(
+    /\/$/,
+    "",
+  );
+  return `${base}/webhooks/waitlist/${productId}`;
+}

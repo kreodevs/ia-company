@@ -77,6 +77,26 @@ export default function ProductRevenueSettingsPanel({
     }
   };
 
+  const copyWaitlistUrl = async () => {
+    if (!settings?.waitlistWebhookUrl) return;
+    try {
+      await navigator.clipboard.writeText(settings.waitlistWebhookUrl);
+      toast.success(t("products.settings.revenue.waitlistCopied"));
+    } catch {
+      toast.error(t("common.copyFailed", { defaultValue: "Could not copy" }));
+    }
+  };
+
+  const copyWaitlistKey = async () => {
+    if (!settings?.waitlistApiKey) return;
+    try {
+      await navigator.clipboard.writeText(settings.waitlistApiKey);
+      toast.success(t("products.settings.revenue.waitlistCopied"));
+    } catch {
+      toast.error(t("common.copyFailed", { defaultValue: "Could not copy" }));
+    }
+  };
+
   if (loading) {
     return (
       <Panel title={t("products.settings.revenue.title")}>
@@ -135,6 +155,44 @@ export default function ProductRevenueSettingsPanel({
           <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
             {t("products.settings.revenue.webhookHint")}
           </p>
+        </div>
+
+        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3" id="revenue">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+            {t("products.settings.revenue.waitlistTitle")}
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+            {t("products.settings.revenue.waitlistHint")}
+          </p>
+          <div className="mt-3 space-y-3">
+            <div>
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.revenue.waitlistUrlLabel")}
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <code className="flex-1 break-all text-xs">{settings.waitlistWebhookUrl}</code>
+                <Button type="button" variant="secondary" onClick={() => void copyWaitlistUrl()}>
+                  <Copy className="h-4 w-4" aria-hidden />
+                  {t("common.copy", { defaultValue: "Copy" })}
+                </Button>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.revenue.waitlistKeyLabel")}
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <code className="flex-1 break-all text-xs">{settings.waitlistApiKey}</code>
+                <Button type="button" variant="secondary" onClick={() => void copyWaitlistKey()}>
+                  <Copy className="h-4 w-4" aria-hidden />
+                  {t("common.copy", { defaultValue: "Copy" })}
+                </Button>
+              </div>
+            </div>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("products.settings.revenue.waitlistExample")}
+            </p>
+          </div>
         </div>
 
         {(settings.revenueLastSyncedAt || settings.revenueSource) && (

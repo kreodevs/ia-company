@@ -120,8 +120,10 @@ export async function processConvergenceAfterRun(
   memory: SharedMemory,
   runId: string,
   productSlug?: string,
+  runStatus: "COMPLETED" | "FAILED" | "CANCELLED" = "COMPLETED",
 ): Promise<void> {
   const enriched = enrichSharedMemoryFromAgentOutputs(memory);
+  const stoppedByVeto = memory._stoppedByVeto === true;
 
   // 1. Per-product handoffs (one revision per step) — only when a product is in scope.
   if (productSlug) {
@@ -173,7 +175,33 @@ export async function processConvergenceAfterRun(
           history,
         });
       }
+
+      const { finalizeProductRunClosure } = await import("./product-run-closure.js");
+      await finalizeProductRunClosure({
+        tenantId,
+        productId: product.id,
+        productSlug: product.slug,
+        productName: product.name,
+        memory,
+        runId,
+        workflowName,
+        runStatus: stoppedByVeto ? "CANCELLED" : runStatus,
+      });
     }
+  }
+
+  if (stoppedByVeto) {
+    const companyMemory: SharedMemory = {
+      ...enriched,
+      nextAction: asString(memory.nextAction) ?? undefined,
+    };
+    await persistCompanyConsensusFromRun(tenantId, companyMemory);
+    const cycle = await ensureTenantCycleState(tenantId);
+    await prisma.tenantCycleState.update({
+      where: { tenantId },
+      data: { cycleNumber: cycle.cycleNumber + 1 },
+    });
+    return;
   }
 
   // 2. Company-level (tenant) memory: cycle strategy, pipeline, next action, phase.

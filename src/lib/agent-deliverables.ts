@@ -13,13 +13,23 @@ function slugifySegment(value: string): string {
 
 export function agentWroteDocsInStep<TOOLS extends ToolSet>(
   response: GenerateTextResult<TOOLS, unknown>,
+  agentName?: string,
 ): boolean {
+  const rolePrefix = agentName
+    ? `${agentDocsPath(agentName).replace(/\\/g, "/")}/`
+    : null;
+
   for (const step of response.steps ?? []) {
     for (const toolResult of step.toolResults ?? []) {
       if (toolResult.toolName !== "write_file") continue;
       const result = toolResult.result as { path?: string } | undefined;
-      const path = typeof result?.path === "string" ? result.path : "";
-      if (path.startsWith("docs/")) return true;
+      const path = typeof result?.path === "string" ? result.path.replace(/\\/g, "/") : "";
+      if (!path.startsWith("docs/")) continue;
+      if (rolePrefix) {
+        if (path.startsWith(rolePrefix)) return true;
+        continue;
+      }
+      return true;
     }
   }
   return false;
@@ -151,7 +161,7 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
   output: string;
   response: GenerateTextResult<TOOLS, unknown>;
 }): Promise<string | null> {
-  if (agentWroteDocsInStep(input.response)) return null;
+  if (agentWroteDocsInStep(input.response, input.agentName)) return null;
 
   return persistHandoffAsAgentDoc({
     workspaceRoot: input.workspaceRoot,

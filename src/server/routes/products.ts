@@ -30,8 +30,11 @@ import { normalizeOpencodeDiff } from "../../lib/opencode-diff.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import {
   buildStripeWebhookUrl,
+  buildWaitlistWebhookUrl,
   serializeTenantProductForClient,
 } from "../../lib/product-serializer.js";
+import { getProductMetrics } from "../../lib/product-metrics.js";
+import { ensureWaitlistApiKey } from "../../lib/product-waitlist.js";
 
 export async function productRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -228,6 +231,7 @@ export async function productRoutes(app: FastifyInstance) {
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
       const serialized = serializeTenantProductForClient(product);
+      const waitlistApiKey = await ensureWaitlistApiKey(product.id);
       return {
         productId: product.id,
         revenueUsd: product.revenueUsd,
@@ -235,7 +239,20 @@ export async function productRoutes(app: FastifyInstance) {
         revenueLastSyncedAt: serialized.revenueLastSyncedAt,
         revenueSource: serialized.revenueSource,
         webhookUrl: buildStripeWebhookUrl(product.id),
+        waitlistWebhookUrl: buildWaitlistWebhookUrl(product.id),
+        waitlistApiKey,
       };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/products/:id/metrics", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const metrics = await getProductMetrics(tenantId, request.params.id);
+      if (!metrics) return reply.status(404).send({ error: "Product not found" });
+      return metrics;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -704,7 +721,7 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, ideas, lastLinkedRun, lastRunTrace, cycle] = await Promise.all([
+      const [agents, ideas, lastLinkedRun, lastRunTrace, cycle, metrics] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
@@ -737,6 +754,7 @@ export async function productRoutes(app: FastifyInstance) {
         import("../../lib/product-registry.js").then(({ ensureTenantCycleState }) =>
           ensureTenantCycleState(tenantId),
         ),
+        getProductMetrics(tenantId, product.id),
       ]);
 
       const { runBelongsToProduct, extractRunTaskPreview } = await import(
@@ -957,6 +975,7 @@ export async function productRoutes(app: FastifyInstance) {
           interestScore: i.interestScore,
         })),
         lastRunTrace,
+        metrics,
       };
     } catch (err) {
       return handleRouteError(reply, err);

@@ -187,6 +187,26 @@ export class WorkflowExecutor {
       tenantCtx.afterOpencodeDelegation = input.afterOpencodeDelegation;
       tenantCtx.fullstackStepOrder = resolveFullstackStepOrder(orderedSteps);
 
+      if (
+        input.tenantId &&
+        resumeFromStepOrder === 0 &&
+        !input.afterOpencodeDelegation
+      ) {
+        const { tenantHasOtherActiveRun } = await import("../lib/orchestration-conditions.js");
+        if (await tenantHasOtherActiveRun(input.tenantId, runId)) {
+          const blockMessage =
+            "Blocked: another workflow is already active for this tenant. Wait for it to finish.";
+          await this.updateRunStatus(runId, "FAILED", {
+            completedAt: new Date(),
+            errorMessage: blockMessage,
+          });
+          await this.appendLog(runId, "error", blockMessage);
+          emitEvent("error", { message: blockMessage });
+          emitEvent("done", { status: "FAILED", error: blockMessage });
+          return;
+        }
+      }
+
       let totalTokens = 0;
       let totalCostUsd = 0;
 
@@ -252,6 +272,14 @@ export class WorkflowExecutor {
             savedDeliverablePath: result.savedDeliverablePath,
           },
         );
+
+        if (result.mcpToolCalls && result.mcpToolCalls > 0) {
+          sharedMemory._mcpToolCalls =
+            ((sharedMemory._mcpToolCalls as number | undefined) ?? 0) + result.mcpToolCalls;
+        }
+        if (result.mcpFallbackUsed) {
+          sharedMemory._mcpFallbackUsed = true;
+        }
 
         const veto = extractMungerVeto(step.agent.name, result.output);
         if (veto) {
@@ -478,6 +506,33 @@ export class WorkflowExecutor {
       emitEvent("done", { status: "COMPLETED", totalTokens, totalCostUsd });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+
+      if (input.tenantId && syncConsensus) {
+        try {
+          const failedRun = await prisma.executionRun.findUnique({
+            where: { id: runId },
+            select: { sharedMemory: true },
+          });
+          const failedMemory = (failedRun?.sharedMemory ?? {}) as SharedMemory;
+          const history = Array.isArray(failedMemory._history) ? failedMemory._history : [];
+          if (history.length > 0) {
+            await processConvergenceAfterRun(
+              input.tenantId,
+              workflowName,
+              failedMemory,
+              runId,
+              input.productSlug,
+              "FAILED",
+            );
+          }
+        } catch (convErr) {
+          const convMessage = convErr instanceof Error ? convErr.message : String(convErr);
+          await this.appendLog(runId, "warn", "Partial convergence sync failed after run error", {
+            payload: { error: convMessage },
+          });
+        }
+      }
+
       await this.updateRunStatus(runId, "FAILED", {
         completedAt: new Date(),
         errorMessage: message,
@@ -597,6 +652,9 @@ export class WorkflowExecutor {
     const tools = await createAgentToolsWithIntegrations(toolContext);
     const mcpToolCount = Object.keys(tools).length - Object.keys(baseTools).length;
 
+    const baseToolNames = new Set(Object.keys(baseTools));
+    let mcpFallbackUsed = false;
+
     const callLlm = (activeTools: typeof tools) =>
       generateText({
         model,
@@ -617,6 +675,7 @@ export class WorkflowExecutor {
             agentId: agent.id,
             payload: { mcpToolCount, statusCode: apiErr.statusCode },
           });
+          mcpFallbackUsed = true;
           try {
             return await callLlm(baseTools);
           } catch (retryErr) {
@@ -668,7 +727,14 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     }
 
     const totalTokens = promptTokens + completionTokens;
-    const wroteDocs = agentWroteDocsInStep(response);
+    let mcpToolCalls = 0;
+    for (const llmStep of response.steps ?? []) {
+      for (const tc of llmStep.toolCalls ?? []) {
+        if (!baseToolNames.has(tc.toolName)) mcpToolCalls += 1;
+      }
+    }
+
+    const wroteDocs = agentWroteDocsInStep(response, agent.name);
     let savedDeliverablePath: string | undefined;
 
     if (tenantCtx.productSlug && output.trim() && !wroteDocs) {
@@ -706,6 +772,8 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
       delegated,
       wroteDocs,
       savedDeliverablePath,
+      mcpToolCalls,
+      mcpFallbackUsed,
     };
   }
 

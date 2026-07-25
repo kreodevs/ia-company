@@ -359,10 +359,38 @@ model TenantProduct {
   workItemKind WorkItemKind @default(product)
   orgUnit      OrgUnit?     @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
   artifacts    Artifact[]
+  revenueEvents ProductRevenueEvent[]
+  waitlistSignups ProductWaitlistSignup[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
   @@index([tenantId, orgUnitId])
+}
+
+model ProductRevenueEvent {
+  id            String   @id @default(cuid())
+  productId     String
+  stripeEventId String   @unique
+  amountUsd     Float
+  eventType     String
+  createdAt     DateTime @default(now())
+
+  product TenantProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+}
+
+model ProductWaitlistSignup {
+  id        String   @id @default(cuid())
+  productId String
+  email     String
+  source    String?
+  createdAt DateTime @default(now())
+
+  product TenantProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, email])
+  @@index([productId, createdAt])
 }
 
 // ─── Per-product consensus (primary memory per product) ─────────────────────

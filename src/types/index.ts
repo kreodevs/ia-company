@@ -109,6 +109,8 @@ export interface StepResult {
   output: string;
   usage: LLMUsage;
   toolCalls: number;
+  mcpToolCalls?: number;
+  mcpFallbackUsed?: boolean;
   delegated?: boolean;
   wroteDocs?: boolean;
   savedDeliverablePath?: string;

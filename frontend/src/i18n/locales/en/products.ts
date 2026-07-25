@@ -165,6 +165,12 @@ export const products = {
       lastSource: "Last source",
       stripeReady: "Stripe webhook configured",
       saved: "Revenue settings saved.",
+      waitlistTitle: "Waitlist endpoint",
+      waitlistHint: "POST from your landing with email and X-Waitlist-Key header.",
+      waitlistUrlLabel: "Waitlist URL",
+      waitlistKeyLabel: "Waitlist API key",
+      waitlistCopied: "Copied to clipboard.",
+      waitlistExample: 'Example: curl -X POST -H "X-Waitlist-Key: …" -H "Content-Type: application/json" -d \'{"email":"user@example.com"}\' …',
     },
   },
   actions: {
