@@ -1490,4 +1490,33 @@ export const api = {
     cancelDelegation: (runId: string) =>
       request<{ ok: boolean; status: string }>(`/runs/${runId}/opencode/cancel`, { method: "POST" }),
   },
+  orgUnits: {
+    list: () => request<import("./org-types").OrgUnit[]>("/org-units"),
+    get: (id: string) => request<import("./org-types").OrgUnit>(`/org-units/${id}`),
+    update: (id: string, body: { config?: Record<string, unknown>; designMd?: string }) =>
+      request<import("./org-types").OrgUnit>(`/org-units/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    artifacts: (id: string) =>
+      request<import("./org-types").Artifact[]>(`/org-units/${id}/artifacts`),
+  },
+  orgStudio: {
+    templates: () => request<import("./org-types").BusinessTemplateSummary[]>("/org-studio/templates"),
+    propose: (body: { templateSlug?: string; name?: string; description?: string }) =>
+      request<import("./org-types").OrgStudioProposal>("/org-studio/propose", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    apply: (body: {
+      proposal: import("./org-types").OrgStudioProposal;
+      name?: string;
+      slug?: string;
+      config?: Record<string, unknown>;
+    }) =>
+      request<{ orgUnit: import("./org-types").OrgUnit; agentsCreated: string[] }>(
+        "/org-studio/apply",
+        { method: "POST", body: JSON.stringify(body) },
+      ),
+  },
 };

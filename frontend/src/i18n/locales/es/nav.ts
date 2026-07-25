@@ -19,6 +19,7 @@ export const nav = {
   encargos: "Mis encargos",
   ops: "Operaciones",
   products: "Productos",
+  orgUnits: "Departamentos",
   warRoom: "War room",
   consensus: "Consenso",
   team: "Equipo",

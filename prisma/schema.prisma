@@ -49,6 +49,8 @@ model Tenant {
   opencodeDelegations OpencodeDelegation[]
   opencodeRunGates OpencodeRunGate[]
   notifications TenantNotification[]
+  orgUnits OrgUnit[]
+  artifacts Artifact[]
 }
 
 enum TenantUserRole {
@@ -352,8 +354,14 @@ model TenantProduct {
   consensus   ProductConsensus?
   opencodeDelegations OpencodeDelegation[]
 
+  orgUnitId    String?
+  workItemKind WorkItemKind @default(product)
+  orgUnit      OrgUnit?     @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
+  artifacts    Artifact[]
+
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
+  @@index([tenantId, orgUnitId])
 }
 
 // ─── Per-product consensus (primary memory per product) ─────────────────────
@@ -704,6 +712,101 @@ model OpencodeRunGate {
   run    ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+}
+
+// ─── Org OS (departments / virtual companies) ─────────────────────────────────
+
+enum OrgUnitType {
+  product_studio
+  marketing_agency
+  department
+  custom
+}
+
+enum WorkItemKind {
+  product
+  client
+  campaign
+  project
+}
+
+enum ArtifactType {
+  copy
+  social_post
+  design
+  report
+  code
+  other
+}
+
+enum ArtifactStatus {
+  draft
+  approved
+  published
+  archived
+}
+
+model BusinessTemplate {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String      @db.Text
+  orgUnitType OrgUnitType
+  definition  Json
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  orgUnits OrgUnit[]
+}
+
+model OrgUnit {
+  id           String      @id @default(cuid())
+  tenantId     String
+  slug         String
+  name         String
+  description  String?     @db.Text
+  type         OrgUnitType @default(custom)
+  templateId   String?
+  config       Json        @default("{}")
+  configSchema Json        @default("{}")
+  tokens       Json        @default("{}")
+  designMd     String?     @db.Text
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  template BusinessTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  products TenantProduct[]
+  artifacts Artifact[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, type])
+}
+
+model Artifact {
+  id             String         @id @default(cuid())
+  tenantId       String
+  orgUnitId      String
+  productId      String?
+  runId          String?
+  type           ArtifactType   @default(other)
+  status         ArtifactStatus @default(draft)
+  title          String
+  body           Json           @default("{}")
+  previewText    String?        @db.Text
+  createdByAgent String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orgUnit OrgUnit        @relation(fields: [orgUnitId], references: [id], onDelete: Cascade)
+  product TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, orgUnitId])
+  @@index([orgUnitId, type])
+  @@index([productId])
 }
 
 // ─── Usage limits (monthly caps) ─────────────────────────────────────────────
