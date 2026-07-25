@@ -796,6 +796,9 @@ export interface TenantOpencodeConfig {
   baseUrl: string | null;
   username: string | null;
   password: string | null;
+  defaultAgent: string | null;
+  defaultModel: string | null;
+  defaultProjectPath: string | null;
   pollIntervalMs: number;
   maxWaitMs: number;
   autoApprovePermissions: boolean;
@@ -808,6 +811,16 @@ export interface ProductOpencodeSettings {
   defaultModel: string | null;
   projectPath: string | null;
   suggestedProjectPath: string;
+  tenantDefaults: {
+    defaultAgent: string | null;
+    defaultModel: string | null;
+    projectPath: string | null;
+  };
+  effectiveDefaults: {
+    defaultAgent: string | null;
+    defaultModel: string | null;
+    projectPath: string | null;
+  };
 }
 
 export interface OpencodeDelegation {
@@ -831,8 +844,19 @@ export interface OpencodeDiffEntry {
 export interface OpencodeRunInfo {
   run: { id: string; status: string };
   delegation: OpencodeDelegation | null;
-  gate: { reason: string; decision: string | null } | null;
+  gate: {
+    reason: string;
+    decision: string | null;
+    pendingBriefPreview?: string | null;
+  } | null;
   diff: OpencodeDiffEntry[];
+  confirmDefaults: {
+    agent: string | null;
+    model: string | null;
+    projectPath: string | null;
+    suggestedProjectPath: string;
+  } | null;
+  awaitingOpencodeConfirm?: boolean;
 }
 
 export interface ProductOpencodeHistoryItem {
@@ -1500,10 +1524,14 @@ export const api = {
   },
   opencode: {
     getRun: (runId: string) => request<OpencodeRunInfo>(`/runs/${runId}/opencode`),
-    resolveGate: (runId: string, decision: "proceed_local" | "cancel") =>
+    resolveGate: (
+      runId: string,
+      decision: "proceed_local" | "proceed_opencode" | "cancel",
+      overrides?: { agent?: string | null; model?: string | null; projectPath?: string | null },
+    ) =>
       request<{ ok: boolean; decision: string }>(`/runs/${runId}/opencode-gate`, {
         method: "POST",
-        body: JSON.stringify({ decision }),
+        body: JSON.stringify({ decision, ...overrides }),
       }),
     cancelDelegation: (runId: string) =>
       request<{ ok: boolean; status: string }>(`/runs/${runId}/opencode/cancel`, { method: "POST" }),

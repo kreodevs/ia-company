@@ -10,6 +10,9 @@ export interface TenantOpencodeConfigPublic {
   baseUrl: string | null;
   username: string | null;
   password: string | null;
+  defaultAgent: string | null;
+  defaultModel: string | null;
+  defaultProjectPath: string | null;
   pollIntervalMs: number;
   maxWaitMs: number;
   autoApprovePermissions: boolean;
@@ -38,6 +41,9 @@ function toPublic(
     baseUrl: string | null;
     username: string | null;
     password: string | null;
+    defaultAgent?: string | null;
+    defaultModel?: string | null;
+    defaultProjectPath?: string | null;
     pollIntervalMs: number;
     maxWaitMs: number;
     autoApprovePermissions: boolean;
@@ -52,6 +58,9 @@ function toPublic(
     baseUrl,
     username: row?.username ?? "opencode",
     password: maskSecret(password),
+    defaultAgent: row?.defaultAgent ?? null,
+    defaultModel: row?.defaultModel ?? null,
+    defaultProjectPath: row?.defaultProjectPath ?? null,
     pollIntervalMs: row?.pollIntervalMs ?? 5000,
     maxWaitMs: row?.maxWaitMs ?? 3_600_000,
     autoApprovePermissions: row?.autoApprovePermissions ?? true,
@@ -112,9 +121,9 @@ async function resolveOpencodeConfigForTenant(
     baseUrl,
     username: overrides?.username?.trim() || row?.username || "opencode",
     password,
-    defaultAgent: null,
-    defaultModel: null,
-    projectPath: null,
+    defaultAgent: row?.defaultAgent ?? null,
+    defaultModel: row?.defaultModel ?? null,
+    projectPath: row?.defaultProjectPath ?? null,
     pollIntervalMs: row?.pollIntervalMs ?? platform.opencodeDefaultPollIntervalMs,
     maxWaitMs: row?.maxWaitMs ?? platform.opencodeDefaultMaxWaitMs,
     autoApprovePermissions: row?.autoApprovePermissions ?? true,
@@ -128,6 +137,9 @@ export async function upsertTenantOpencodeConfig(
     baseUrl?: string | null;
     username?: string | null;
     password?: string | null;
+    defaultAgent?: string | null;
+    defaultModel?: string | null;
+    defaultProjectPath?: string | null;
     pollIntervalMs?: number;
     maxWaitMs?: number;
     autoApprovePermissions?: boolean;
@@ -154,6 +166,15 @@ export async function upsertTenantOpencodeConfig(
       ...(input.baseUrl !== undefined ? { baseUrl: input.baseUrl?.trim() || null } : {}),
       ...(input.username !== undefined ? { username: input.username?.trim() || "opencode" } : {}),
       ...(passwordUpdate !== undefined ? { password: passwordUpdate } : {}),
+      ...(input.defaultAgent !== undefined
+        ? { defaultAgent: input.defaultAgent?.trim() || null }
+        : {}),
+      ...(input.defaultModel !== undefined
+        ? { defaultModel: input.defaultModel?.trim() || null }
+        : {}),
+      ...(input.defaultProjectPath !== undefined
+        ? { defaultProjectPath: input.defaultProjectPath?.trim() || null }
+        : {}),
       ...(input.pollIntervalMs !== undefined ? { pollIntervalMs: input.pollIntervalMs } : {}),
       ...(input.maxWaitMs !== undefined ? { maxWaitMs: input.maxWaitMs } : {}),
       ...(input.autoApprovePermissions !== undefined
@@ -166,6 +187,9 @@ export async function upsertTenantOpencodeConfig(
       baseUrl: input.baseUrl?.trim() || null,
       username: input.username?.trim() || "opencode",
       password: passwordUpdate ?? null,
+      defaultAgent: input.defaultAgent?.trim() || null,
+      defaultModel: input.defaultModel?.trim() || null,
+      defaultProjectPath: input.defaultProjectPath?.trim() || null,
       pollIntervalMs: input.pollIntervalMs ?? pollDefault,
       maxWaitMs: input.maxWaitMs ?? waitDefault,
       autoApprovePermissions: input.autoApprovePermissions ?? true,

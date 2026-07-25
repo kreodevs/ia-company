@@ -564,6 +564,9 @@ model TenantOpencodeConfig {
   baseUrl                String?
   username               String?  @default("opencode")
   password               String?  @db.Text
+  defaultAgent           String?
+  defaultModel           String?
+  defaultProjectPath     String?
   pollIntervalMs         Int      @default(5000)
   maxWaitMs              Int      @default(3600000)
   autoApprovePermissions Boolean  @default(true)
@@ -696,6 +699,7 @@ model OpencodeDelegation {
 
 enum OpencodeGateDecision {
   proceed_local
+  proceed_opencode
   cancel
 }
 
@@ -705,6 +709,10 @@ model OpencodeRunGate {
   runId      String                @unique
   reason     String
   decision   OpencodeGateDecision?
+  pendingBrief         String?      @db.Text
+  overrideAgent        String?
+  overrideModel        String?
+  overrideProjectPath  String?
   createdAt  DateTime              @default(now())
   resolvedAt DateTime?
 

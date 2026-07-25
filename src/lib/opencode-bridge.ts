@@ -5,7 +5,7 @@ import {
   createOpencodeClientForTenant,
   resolveTenantOpencodeConfig,
 } from "./tenant-opencode.js";
-import { resolveOpencodeDelegationConfig } from "./product-opencode.js";
+import { resolveOpencodeDelegationConfig, readOpencodeRunOverrides, getEffectiveOpencodeDefaults, type OpencodeRunOverrides } from "./product-opencode.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 import { emitRunEvent } from "../core/engine.js";
@@ -27,6 +27,15 @@ export function isTransientOpencodePollError(err: unknown): boolean {
   );
 }
 
+export class OpencodeConfirmationPendingError extends Error {
+  constructor() {
+    super("OpenCode delegation awaiting user confirmation");
+    this.name = "OpencodeConfirmationPendingError";
+  }
+}
+
+export const OPENCODE_CONFIRM_REASON = "opencode_confirm";
+
 export interface StartDelegationInput {
   tenantId: string;
   runId: string;
@@ -35,6 +44,8 @@ export interface StartDelegationInput {
   productSlug?: string;
   productId?: string;
   resumeFromStepOrder?: number;
+  /** Skip the per-run confirmation gate (internal use after user confirms). */
+  skipConfirmation?: boolean;
 }
 
 export async function isOpencodeReadyForTenant(tenantId: string): Promise<boolean> {
@@ -126,11 +137,205 @@ export async function resolveOpencodeRunGate(input: {
   return { ok: true };
 }
 
+export async function pauseForOpencodeConfirmation(input: {
+  tenantId: string;
+  runId: string;
+  brief: string;
+  productId?: string | null;
+}): Promise<void> {
+  await prisma.opencodeRunGate.upsert({
+    where: { runId: input.runId },
+    update: {
+      reason: OPENCODE_CONFIRM_REASON,
+      pendingBrief: input.brief.slice(0, 50_000),
+      decision: null,
+      resolvedAt: null,
+    },
+    create: {
+      tenantId: input.tenantId,
+      runId: input.runId,
+      reason: OPENCODE_CONFIRM_REASON,
+      pendingBrief: input.brief.slice(0, 50_000),
+    },
+  });
+
+  await prisma.executionRun.update({
+    where: { id: input.runId },
+    data: { status: "AWAITING_USER" },
+  });
+
+  emitRunEvent({
+    type: "status",
+    runId: input.runId,
+    timestamp: new Date().toISOString(),
+    data: { status: "AWAITING_USER", reason: OPENCODE_CONFIRM_REASON },
+  });
+}
+
+export async function getOpencodeRunContext(runId: string, tenantId: string) {
+  const run = await prisma.executionRun.findFirst({
+    where: { id: runId, tenantId },
+    select: { id: true, status: true, sharedMemory: true },
+  });
+  if (!run) return null;
+
+  const sharedMemory = run.sharedMemory as Record<string, unknown>;
+  const productSlug =
+    typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined;
+  let productId: string | undefined;
+  if (productSlug) {
+    const product = await prisma.tenantProduct.findUnique({
+      where: { tenantId_slug: { tenantId, slug: productSlug } },
+      select: { id: true },
+    });
+    productId = product?.id;
+  }
+
+  const gate = await prisma.opencodeRunGate.findUnique({ where: { runId } });
+  const memoryOverrides = readOpencodeRunOverrides(sharedMemory);
+
+  const effectiveDefaults = productId
+    ? await getEffectiveOpencodeDefaults(tenantId, productId)
+    : await getEffectiveOpencodeDefaults(tenantId);
+
+  const confirmDefaults = {
+    agent:
+      gate?.overrideAgent ??
+      memoryOverrides?.agent ??
+      effectiveDefaults.defaultAgent,
+    model:
+      gate?.overrideModel ??
+      memoryOverrides?.model ??
+      effectiveDefaults.defaultModel,
+    projectPath:
+      gate?.overrideProjectPath ??
+      memoryOverrides?.projectPath ??
+      effectiveDefaults.projectPath,
+    suggestedProjectPath: productSlug ? `projects/${productSlug}` : "projects/{slug}",
+  };
+
+  return {
+    run,
+    gate,
+    confirmDefaults,
+    memoryOverrides,
+    pendingBriefPreview: gate?.pendingBrief?.slice(0, 800) ?? null,
+  };
+}
+
+export async function confirmOpencodeDelegation(input: {
+  tenantId: string;
+  runId: string;
+  overrides?: OpencodeRunOverrides;
+}): Promise<{ ok: boolean; error?: string }> {
+  const gate = await prisma.opencodeRunGate.findFirst({
+    where: { runId: input.runId, tenantId: input.tenantId },
+  });
+  if (!gate || gate.reason !== OPENCODE_CONFIRM_REASON) {
+    return { ok: false, error: "No OpenCode confirmation pending for this run" };
+  }
+  if (gate.decision) return { ok: false, error: "Gate already resolved" };
+
+  const brief = gate.pendingBrief?.trim();
+  if (!brief) return { ok: false, error: "Missing implementation brief on gate" };
+
+  const run = await prisma.executionRun.findFirst({
+    where: { id: input.runId, tenantId: input.tenantId },
+    include: { workflow: { select: { name: true, steps: { select: { stepOrder: true, agent: { select: { name: true } } } } } } },
+  });
+  if (!run) return { ok: false, error: "Run not found" };
+
+  const sharedMemoryBase = run.sharedMemory as SharedMemory;
+  const productSlug =
+    typeof sharedMemoryBase.focusProductSlug === "string"
+      ? sharedMemoryBase.focusProductSlug
+      : undefined;
+  let productId: string | undefined;
+  if (productSlug) {
+    const product = await prisma.tenantProduct.findUnique({
+      where: { tenantId_slug: { tenantId: input.tenantId, slug: productSlug } },
+      select: { id: true },
+    });
+    productId = product?.id;
+  }
+
+  const runOverrides: OpencodeRunOverrides = {
+    agent: input.overrides?.agent ?? gate.overrideAgent,
+    model: input.overrides?.model ?? gate.overrideModel,
+    projectPath: input.overrides?.projectPath ?? gate.overrideProjectPath,
+  };
+
+  await prisma.opencodeRunGate.update({
+    where: { id: gate.id },
+    data: {
+      decision: "proceed_opencode",
+      resolvedAt: new Date(),
+      overrideAgent: runOverrides.agent?.trim() || null,
+      overrideModel: runOverrides.model?.trim() || null,
+      overrideProjectPath: runOverrides.projectPath?.trim() || null,
+    },
+  });
+
+  const sharedMemory = {
+    ...sharedMemoryBase,
+    opencodeDelegationApproved: true,
+    opencodeRunOverrides: {
+      agent: runOverrides.agent?.trim() || null,
+      model: runOverrides.model?.trim() || null,
+      projectPath: runOverrides.projectPath?.trim() || null,
+    },
+  } as SharedMemory;
+
+  await prisma.executionRun.update({
+    where: { id: run.id },
+    data: { sharedMemory: sharedMemory as object, status: "RUNNING" },
+  });
+
+  const resumeFromStepOrder = resolveResumeAfterFullstackStepOrder(run.workflow.steps);
+
+  try {
+    await startOpencodeDelegation({
+      tenantId: input.tenantId,
+      runId: input.runId,
+      brief,
+      sharedMemory,
+      productSlug,
+      productId,
+      resumeFromStepOrder,
+      skipConfirmation: true,
+    });
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+
+  return { ok: true };
+}
+
 export async function startOpencodeDelegation(input: StartDelegationInput): Promise<string> {
   const existing = await prisma.opencodeDelegation.findUnique({ where: { runId: input.runId } });
   if (existing) return existing.id;
 
-  const config = await resolveOpencodeDelegationConfig(input.tenantId, input.productId);
+  const approved =
+    input.skipConfirmation === true ||
+    (input.sharedMemory as SharedMemory & { opencodeDelegationApproved?: boolean })
+      .opencodeDelegationApproved === true;
+
+  if (!approved) {
+    await pauseForOpencodeConfirmation({
+      tenantId: input.tenantId,
+      runId: input.runId,
+      brief: input.brief,
+      productId: input.productId,
+    });
+    throw new OpencodeConfirmationPendingError();
+  }
+
+  const runOverrides = readOpencodeRunOverrides(input.sharedMemory as Record<string, unknown>);
+  const config = await resolveOpencodeDelegationConfig(
+    input.tenantId,
+    input.productId,
+    runOverrides,
+  );
   if (!config) {
     throw new Error("OpenCode is not configured for this tenant");
   }

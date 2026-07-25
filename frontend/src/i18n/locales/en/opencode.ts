@@ -25,11 +25,18 @@ export const opencode = {
     serverReachHint:
       "The connection test runs from the Auto-Company API server, not your browser. Use a URL reachable from that server (localhost only works if OpenCode runs in the same container).",
     productHint:
-      "Agent, model, and project path are configured per product on the product code page.",
+      "Products can override these tenant defaults. Per-run overrides are available when confirming delegation.",
+    tenantDefaultsHint:
+      "Tenant defaults apply to all products unless a product sets its own agent, model, or path.",
+    tenantDefaultOptional: "Optional — falls back to OpenCode server default",
+    tenantProjectPathHint:
+      "Default workspace path on OpenCode. Products without a path use this, or projects/{slug} if empty.",
   },
   productSettings: {
     title: "OpenCode for this product",
     subtitle: "These settings apply when feature development delegates implementation to OpenCode for this product.",
+    inheritTenant: "Inherit tenant default",
+    effectiveHint: "Effective for this product: agent {{agent}}, model {{model}}, path {{path}}",
     projectPathHint: "If empty, defaults to {{path}} on the OpenCode server.",
     save: "Save product OpenCode settings",
     saved: "Saved",
@@ -40,6 +47,12 @@ export const opencode = {
       "This feature-development run would delegate coding to OpenCode, but your tenant has no OpenCode connection. Continue with local Auto-Company agents or cancel the run.",
     continueLocal: "Continue with Auto-Company",
     cancelRun: "Cancel run",
+  },
+  confirm: {
+    title: "Confirm OpenCode delegation",
+    body:
+      "Review or override the project path, model, and agent for this run. OpenCode will receive the implementation brief below.",
+    delegate: "Delegate to OpenCode",
   },
   delegated: {
     title: "Delegated to OpenCode",

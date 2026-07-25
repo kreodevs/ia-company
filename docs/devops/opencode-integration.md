@@ -2,9 +2,9 @@
 
 **Platform (superadmin):** Admin → Platform settings → **OpenCode** — master enable + default poll/wait for new tenants.
 
-**Tenant:** Settings → OpenCode — URL, Basic Auth, enable per tenant.
+**Tenant:** Settings → OpenCode — URL, Basic Auth, enable, and **tenant-wide defaults** (agent, model, project path).
 
-**Product:** Product code page — agent, model, project path per product.
+**Product:** Product settings / code page — optional overrides per product (inherits tenant defaults when empty).
 
 Each tenant connects to its own OpenCode server under **Settings → OpenCode**.
 
@@ -12,8 +12,9 @@ Each tenant connects to its own OpenCode server under **Settings → OpenCode**.
 
 1. `feature-development` runs strategy steps locally (interaction, UI).
 2. If OpenCode is configured, `fullstack-dhh` delegates via `delegate_implementation`.
-3. Run status becomes `DELEGATED`; worker polls OpenCode until idle.
-4. QA + DevOps resume locally using the OpenCode summary in shared memory.
+3. Before delegating, the run pauses at **AWAITING_USER** (`opencode_confirm`) so the tenant admin can override **project path**, **model**, and **agent** for that run (defaults come from product OpenCode settings).
+4. Run status becomes `DELEGATED`; worker polls OpenCode until idle.
+5. QA + DevOps resume locally using the OpenCode summary in shared memory.
 
 ## If OpenCode is not configured
 

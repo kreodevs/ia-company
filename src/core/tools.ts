@@ -248,30 +248,44 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         throw new Error("Implementation brief is required");
       }
 
-      const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+      const { startOpencodeDelegation, OpencodeConfirmationPendingError } = await import(
+        "../lib/opencode-bridge.js"
+      );
 
       if (ctx.resumeFromStepOrder == null) {
         throw new Error("resumeFromStepOrder is required to delegate implementation");
       }
 
-      const delegationId = await startOpencodeDelegation({
-        tenantId: ctx.tenantId,
-        runId: ctx.runId,
-        brief,
-        sharedMemory: ctx.sharedMemory ?? {},
-        productSlug: ctx.productSlug,
-        productId: ctx.productId,
-        resumeFromStepOrder: ctx.resumeFromStepOrder,
-      });
+      try {
+        const delegationId = await startOpencodeDelegation({
+          tenantId: ctx.tenantId,
+          runId: ctx.runId,
+          brief,
+          sharedMemory: ctx.sharedMemory ?? {},
+          productSlug: ctx.productSlug,
+          productId: ctx.productId,
+          resumeFromStepOrder: ctx.resumeFromStepOrder,
+        });
 
-      ctx.onDelegationStarted?.();
-      log("opencode: delegation started", { delegationId });
+        ctx.onDelegationStarted?.();
+        log("opencode: delegation started", { delegationId });
 
-      return {
-        delegated: true,
-        delegationId,
-        message: "Implementation delegated to OpenCode. The run will resume after OpenCode finishes.",
-      };
+        return {
+          delegated: true,
+          delegationId,
+          message: "Implementation delegated to OpenCode. The run will resume after OpenCode finishes.",
+        };
+      } catch (err) {
+        if (err instanceof OpencodeConfirmationPendingError) {
+          return {
+            delegated: false,
+            awaitingOpencodeConfirmation: true,
+            message:
+              "OpenCode delegation paused for confirmation. Review path, model, and agent on the run page, then click Delegate.",
+          };
+        }
+        throw err;
+      }
     },
   });
 

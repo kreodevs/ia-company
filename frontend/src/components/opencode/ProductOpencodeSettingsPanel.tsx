@@ -71,12 +71,14 @@ export default function ProductOpencodeSettingsPanel({ productId }: ProductOpenc
           label={t("opencode.settings.defaultAgent")}
           value={defaultAgent}
           onChange={(e) => setDefaultAgent(e.target.value)}
+          placeholder={settings.tenantDefaults.defaultAgent ?? t("opencode.productSettings.inheritTenant")}
           disabled={saving}
         />
         <Input
           label={t("opencode.settings.defaultModel")}
           value={defaultModel}
           onChange={(e) => setDefaultModel(e.target.value)}
+          placeholder={settings.tenantDefaults.defaultModel ?? t("opencode.productSettings.inheritTenant")}
           disabled={saving}
         />
         <div className="md:col-span-2">
@@ -84,12 +86,17 @@ export default function ProductOpencodeSettingsPanel({ productId }: ProductOpenc
             label={t("opencode.settings.projectPath")}
             value={projectPath}
             onChange={(e) => setProjectPath(e.target.value)}
-            placeholder={settings.suggestedProjectPath}
+            placeholder={
+              settings.tenantDefaults.projectPath ??
+              settings.suggestedProjectPath
+            }
             disabled={saving}
           />
           <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            {t("opencode.productSettings.projectPathHint", {
-              path: settings.suggestedProjectPath,
+            {t("opencode.productSettings.effectiveHint", {
+              agent: settings.effectiveDefaults.defaultAgent ?? "—",
+              model: settings.effectiveDefaults.defaultModel ?? "—",
+              path: settings.effectiveDefaults.projectPath ?? settings.suggestedProjectPath,
             })}
           </p>
         </div>

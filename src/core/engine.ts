@@ -320,9 +320,17 @@ export class WorkflowExecutor {
             emitEvent("done", { status: "DELEGATED" });
             return;
           }
+          if (runAfterStep?.status === "AWAITING_USER") {
+            await prisma.executionRun.update({
+              where: { id: runId },
+              data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+            });
+            emitEvent("done", { status: "AWAITING_USER", reason: "opencode_confirm" });
+            return;
+          }
 
           if (!result.delegated) {
-            const { startOpencodeDelegation, degradeRunToLocalImplementation } = await import(
+            const { startOpencodeDelegation, degradeRunToLocalImplementation, OpencodeConfirmationPendingError } = await import(
               "../lib/opencode-bridge.js"
             );
             if (input.tenantId) {
@@ -343,6 +351,14 @@ export class WorkflowExecutor {
                 emitEvent("done", { status: "DELEGATED" });
                 return;
               } catch (err) {
+                if (err instanceof OpencodeConfirmationPendingError) {
+                  await prisma.executionRun.update({
+                    where: { id: runId },
+                    data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+                  });
+                  emitEvent("done", { status: "AWAITING_USER", reason: "opencode_confirm" });
+                  return;
+                }
                 const reason = err instanceof Error ? err.message : String(err);
                 await this.appendLog(runId, "warn", "OpenCode delegation failed — degrading to local", {
                   stepId: step.id,

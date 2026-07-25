@@ -1,13 +1,15 @@
 # OpenCode UI
 
-- `OpencodeRunPanel.tsx` — gate (OpenCode not configured) and delegated-run status on run detail.
+- `OpencodeRunPanel.tsx` — gate (OpenCode not configured), **per-run confirm** (path/model/agent), and delegated-run status on run detail.
 - `OpencodeDiffPanel.tsx` — summary + file diff list from OpenCode delegation.
 - `OpencodeHistoryPanel.tsx` — recent delegations for a product (War room / code page).
 - `ProductOpencodeSettingsPanel.tsx` — per-product agent, model, and project path (`/products/:id/settings`).
 
-**Tenant settings** (global): base URL, Basic Auth, enable flag, auto-approve permissions.
+**Tenant settings** (`/settings` → OpenCode): base URL, Basic Auth, enable flag, auto-approve permissions, and **tenant-wide default agent / model / project path**.
 
-**Product settings** (per product): default agent, default model, project path on the OpenCode server.
+**Product settings** (per product): optional overrides; empty fields inherit tenant defaults.
+
+**Per run** (feature-development): when OpenCode is configured, the run pauses before delegation. On the run detail / war room panel, confirm or override path, model, and agent, then click **Delegate to OpenCode**. API: `POST /runs/:id/opencode-gate` with `decision: "proceed_opencode"`.
 
 **Backend hardening:**
 - Dynamic `resumeFromStepOrder` from workflow graph (no hardcoded step 3)

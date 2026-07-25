@@ -25,21 +25,34 @@ export const opencode = {
     serverReachHint:
       "La prueba de conexión se ejecuta desde el servidor API de Auto-Company, no desde tu navegador. Usa una URL accesible desde ese servidor (localhost solo funciona si OpenCode corre en el mismo contenedor).",
     productHint:
-      "Agent, model, and project path are configured per product on the product code page.",
+      "Los productos pueden sobreescribir estos defaults del tenant. Al confirmar una delegación puedes ajustarlos por run.",
+    tenantDefaultsHint:
+      "Los defaults del tenant aplican a todos los productos salvo que el producto defina agente, modelo o ruta propios.",
+    tenantDefaultOptional: "Opcional — si vacío, usa el default del servidor OpenCode",
+    tenantProjectPathHint:
+      "Ruta de workspace en OpenCode. Si un producto no define ruta, usa esta o projects/{slug} si también está vacía.",
   },
   productSettings: {
-    title: "OpenCode for this product",
-    subtitle: "These settings apply when feature development delegates implementation to OpenCode for this product.",
-    projectPathHint: "If empty, defaults to {{path}} on the OpenCode server.",
+    title: "OpenCode para este producto",
+    subtitle: "Estos ajustes aplican cuando feature-development delega la implementación a OpenCode para este producto.",
+    inheritTenant: "Heredar default del tenant",
+    effectiveHint: "Efectivo para este producto: agente {{agent}}, modelo {{model}}, ruta {{path}}",
+    projectPathHint: "Si vacío, por defecto {{path}} en el servidor OpenCode.",
     save: "Save product OpenCode settings",
     saved: "Saved",
   },
   gate: {
-    title: "OpenCode is not configured",
+    title: "OpenCode no está configurado",
     body:
-      "This feature-development run would delegate coding to OpenCode, but your tenant has no OpenCode connection. Continue with local Auto-Company agents or cancel the run.",
-    continueLocal: "Continue with Auto-Company",
-    cancelRun: "Cancel run",
+      "Este run de feature-development delegaría el código a OpenCode, pero tu tenant no tiene conexión OpenCode. Continúa con agentes locales de Auto-Company o cancela el run.",
+    continueLocal: "Continuar con Auto-Company",
+    cancelRun: "Cancelar run",
+  },
+  confirm: {
+    title: "Confirmar delegación a OpenCode",
+    body:
+      "Revisa o cambia la carpeta del proyecto, el modelo y el agente para este run. OpenCode recibirá el brief de implementación abajo.",
+    delegate: "Delegar a OpenCode",
   },
   delegated: {
     title: "Delegado a OpenCode",
