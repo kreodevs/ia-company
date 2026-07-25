@@ -7,6 +7,7 @@ import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
 import ProductActionsMenu from "../ui/ProductActionsMenu";
 import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
+import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
 
 const ROLE_EMOJI: Record<string, string> = {
@@ -109,6 +110,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const { t } = useTranslation();
   const [data, setData] = useState<ProductTeam | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [liveNote, setLiveNote] = useState<string | null>(null);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -121,6 +123,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const refresh = useCallback(async () => {
     const fresh = await api.products.team(productId, watchRunId ?? undefined);
     setData(fresh);
+    setLoadError(null);
     return fresh;
   }, [productId, watchRunId]);
 
@@ -132,10 +135,31 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   useEffect(() => {
     setLoading(true);
     setData(null);
+    setLoadError(null);
     refresh()
-      .catch(() => undefined)
+      .catch((err) => {
+        setLoadError(err instanceof Error ? err.message : String(err));
+        setData(null);
+      })
       .finally(() => setLoading(false));
   }, [productId, refresh]);
+
+  useEffect(() => {
+    const active = data?.activeRun;
+    if (!active) return;
+
+    const needsPoll =
+      active.status === "DELEGATED" ||
+      active.status === "AWAITING_USER" ||
+      active.status === "RUNNING" ||
+      active.status === "PENDING";
+
+    if (!needsPoll) return;
+
+    const intervalMs = active.status === "DELEGATED" ? 4000 : 8000;
+    const timer = window.setInterval(() => refreshScheduler.current.schedule(intervalMs), intervalMs);
+    return () => window.clearInterval(timer);
+  }, [data?.activeRun?.id, data?.activeRun?.status]);
 
   useEffect(() => {
     if (
@@ -165,7 +189,39 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
     };
   }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote]);
 
-  if (loading || !data) return <PageLoading message={t("warRoom.loading")} />;
+  if (loading) return <PageLoading message={t("warRoom.loading")} />;
+
+  if (loadError || !data) {
+    return (
+      <div className="war-room">
+        <div
+          className="rounded-xl border border-[var(--color-destructive)]/40 bg-[var(--color-destructive)]/10 px-4 py-4"
+          role="alert"
+        >
+          <p className="font-medium">{t("warRoom.loadErrorTitle", { defaultValue: "Could not load war room" })}</p>
+          <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
+            {loadError ?? t("warRoom.loadErrorUnknown", { defaultValue: "Unknown error" })}
+          </p>
+          <button
+            type="button"
+            className="mt-3 text-sm font-medium text-[var(--color-primary)] hover:underline"
+            onClick={() => {
+              setLoading(true);
+              void refresh()
+                .catch((err) => setLoadError(err instanceof Error ? err.message : String(err)))
+                .finally(() => setLoading(false));
+            }}
+          >
+            {t("warRoom.retry", { defaultValue: "Try again" })}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const recentVeto = data.recentRuns.find((r) => r.errorMessage?.startsWith("VETO:"))?.errorMessage;
+  const activeRunVeto =
+    data.activeRun?.errorMessage?.startsWith("VETO:") ? data.activeRun.errorMessage : recentVeto ?? null;
 
   const thinking = data.team.filter((a) => a.status === "thinking");
   const onDuty = data.team.filter((a) => a.status !== "idle");
@@ -207,6 +263,26 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           </Link>
         </div>
       </header>
+
+      {activeRunVeto && (
+        <div
+          className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100"
+          role="status"
+        >
+          <strong>{t("warRoom.vetoTitle", { defaultValue: "Munger veto — run stopped" })}</strong>
+          <p className="mt-1">{activeRunVeto.replace(/^VETO:\s*/, "")}</p>
+        </div>
+      )}
+
+      {(data.activeRun?.status === "DELEGATED" || data.activeRun?.status === "AWAITING_USER") && (
+        <div className="mb-4">
+          <OpencodeRunPanel
+            runId={data.activeRun.id}
+            status={data.activeRun.status}
+            onUpdated={() => refreshScheduler.current.flush()}
+          />
+        </div>
+      )}
 
       <section className="hero-strip">
         <KpiCard label={t("warRoom.kpis.totalAgents")} value={data.team.length} />

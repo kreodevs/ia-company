@@ -6,4 +6,5 @@ export const status = {
   COMPLETED: "Completado",
   FAILED: "Fallido",
   CANCELLED: "Cancelado",
+  VETO: "Bloqueado por Munger",
 } as const;

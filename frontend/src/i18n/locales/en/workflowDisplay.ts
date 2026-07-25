@@ -12,6 +12,11 @@ export const workflowDisplay = {
     "feature-development": "Feature Development",
     "product-launch": "Product Launch",
     "pricing-and-monetization": "Pricing and Monetization",
+    "weekly-review": "Weekly Review",
+    "seo-review": "SEO Review",
+    "marketing-sprint": "Marketing Sprint",
+    "research-drilldown": "Research Drill-down",
+    "product-intake": "Product Intake",
   },
   descriptions: {
     "opportunity-discovery": "Brainstorm ideas → pipeline",
@@ -19,5 +24,10 @@ export const workflowDisplay = {
     "feature-development": "Implement in projects/{slug}/",
     "product-launch": "Launch and growth",
     "pricing-and-monetization": "Pricing and monetization",
+    "weekly-review": "Ops, sales, finance, QA, CEO review",
+    "seo-review": "SEO audit and content plan",
+    "marketing-sprint": "Campaign, funnel, outreach",
+    "research-drilldown": "Deep research after human pivot",
+    "product-intake": "Build product profile from GitHub",
   },
 } as const;

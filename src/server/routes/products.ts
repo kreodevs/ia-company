@@ -128,6 +128,7 @@ export async function productRoutes(app: FastifyInstance) {
       goNoGo?: GoNoGoDecision;
       revenueUsd?: number;
       githubRepoUrl?: string | null;
+      stripeWebhookSecret?: string | null;
     };
   }>("/products/:id", async (request, reply) => {
     try {
@@ -140,9 +141,24 @@ export async function productRoutes(app: FastifyInstance) {
       const phaseChanged = request.body?.phase && request.body.phase !== existing.phase;
       const goNoGoChanged = request.body?.goNoGo && request.body.goNoGo !== existing.goNoGo;
 
+      const { stripeWebhookSecret, ...bodyRest } = request.body ?? {};
+      const data: Record<string, unknown> = { ...bodyRest };
+      if (stripeWebhookSecret !== undefined) {
+        const baseMeta =
+          typeof existing.metadata === "object" && existing.metadata
+            ? (existing.metadata as Record<string, unknown>)
+            : {};
+        if (stripeWebhookSecret === null || stripeWebhookSecret === "") {
+          delete baseMeta.stripeWebhookSecret;
+        } else {
+          baseMeta.stripeWebhookSecret = stripeWebhookSecret;
+        }
+        data.metadata = baseMeta;
+      }
+
       const product = await prisma.tenantProduct.update({
         where: { id: request.params.id },
-        data: request.body,
+        data: data as never,
       });
 
       if (request.body?.phase === "archived" || request.body?.phase === "paused") {
@@ -777,8 +793,9 @@ export async function productRoutes(app: FastifyInstance) {
         const isActive = activeAgentIds.has(a.id);
         const lastWork = lastWorkedAt.get(a.id);
         let status: "idle" | "thinking" | "queued" = "idle";
-        if (activeRun && activeRun.status === "RUNNING" && isActive) status = "thinking";
-        else if (activeRun && activeRun.status === "PENDING") status = "queued";
+        if (activeRun && ["RUNNING", "DELEGATED"].includes(activeRun.status) && isActive) {
+          status = "thinking";
+        } else if (activeRun && activeRun.status === "PENDING") status = "queued";
         return {
           id: a.id,
           name: a.name,
@@ -815,6 +832,7 @@ export async function productRoutes(app: FastifyInstance) {
               status: activeRun.status,
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),
+              errorMessage: activeRun.errorMessage,
               opencode: activeDelegation
                 ? {
                     delegationId: activeDelegation.id,

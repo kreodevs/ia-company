@@ -151,7 +151,7 @@ export async function applyOrchestrationPreset(
   return created;
 }
 
-export async function executeScheduleRule(schedule: AutonomousSchedule): Promise<string> {
+export async function executeScheduleRule(schedule: AutonomousSchedule): Promise<string | null> {
   if (schedule.orchestrationMode === "meta_dynamic") {
     return executeMetaScheduleRun(schedule.tenantId);
   }
@@ -318,6 +318,20 @@ export async function tickOrchestrationSchedules(now = new Date()): Promise<void
       await assertTenantCanExecute(schedule.tenantId);
 
       const runId = await executeScheduleRule(schedule);
+      if (!runId) {
+        await prisma.autonomousSchedule.update({
+          where: { id: schedule.id },
+          data: {
+            nextRunAt: computeNextRunAt({
+              from: now,
+              intervalSec: schedule.intervalSec,
+              cronExpr: schedule.cronExpr,
+            }),
+          },
+        });
+        continue;
+      }
+
       await prisma.autonomousSchedule.update({
         where: { id: schedule.id },
         data: {

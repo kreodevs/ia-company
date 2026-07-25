@@ -30,6 +30,10 @@ import { createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import {
+  extractMungerVeto,
+  formatMungerVetoError,
+} from "../lib/munger-veto.js";
+import {
   buildProductProfilePromptSection,
   parseProductProfile,
 } from "../lib/product-profile.js";
@@ -118,6 +122,7 @@ export class WorkflowExecutor {
       });
 
       const orderedSteps = topologicalSort(workflow);
+      const usesOpencode = workflowHasFullstackStep(workflow);
       let sharedMemory: SharedMemory = {
         ...(input.initialMemory ?? {}),
         _history: input.initialMemory?._history ?? [],
@@ -132,12 +137,12 @@ export class WorkflowExecutor {
 
       if (
         input.tenantId &&
-        workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT &&
+        usesOpencode &&
         !input.afterOpencodeDelegation &&
         resumeFromStepOrder === 0
       ) {
-        const { prepareFeatureDevelopmentGate } = await import("../lib/opencode-bridge.js");
-        const gateResult = await prepareFeatureDevelopmentGate({
+        const { prepareOpencodeImplementationGate } = await import("../lib/opencode-bridge.js");
+        const gateResult = await prepareOpencodeImplementationGate({
           tenantId: input.tenantId,
           runId,
           forceLocalImplementation: input.forceLocalImplementation,
@@ -233,6 +238,57 @@ export class WorkflowExecutor {
           result.output,
           step.stepOrder,
         );
+
+        const veto = extractMungerVeto(step.agent.name, result.output);
+        if (veto) {
+          sharedMemory.veto = veto;
+          sharedMemory._stoppedByVeto = true;
+          sharedMemory.nextAction = `Blocked by Munger veto: ${veto.reason}`;
+
+          await prisma.executionRun.update({
+            where: { id: runId },
+            data: {
+              sharedMemory: sharedMemory as object,
+              totalTokens,
+              totalCostUsd,
+            },
+          });
+
+          if (input.tenantId && syncConsensus) {
+            await processConvergenceAfterRun(
+              input.tenantId,
+              workflowName,
+              sharedMemory,
+              runId,
+              input.productSlug,
+            );
+          }
+
+          const vetoMessage = formatMungerVetoError(veto);
+          await this.updateRunStatus(runId, "CANCELLED", {
+            completedAt: new Date(),
+            errorMessage: vetoMessage,
+            totalTokens,
+            totalCostUsd,
+            sharedMemory: sharedMemory as object,
+          });
+
+          await this.appendLog(runId, "warn", vetoMessage, {
+            stepId: step.id,
+            agentId: step.agent.id,
+            payload: { veto },
+          });
+
+          await this.dispatchRunNotification(runId, input.tenantId, "FAILED", {
+            totalTokens,
+            totalCostUsd,
+            errorMessage: vetoMessage,
+          });
+
+          emitEvent("veto", { by: veto.by, reason: veto.reason, agentName: step.agent.name });
+          emitEvent("done", { status: "CANCELLED", reason: "veto", veto });
+          return;
+        }
 
         if (
           tenantCtx.implementationMode === "opencode" &&
@@ -477,6 +533,7 @@ export class WorkflowExecutor {
       onDelegationStarted: () => {
         delegated = true;
       },
+      resumeFromStepOrder: stepOrder != null ? stepOrder + 1 : undefined,
     });
 
     let response;
@@ -919,6 +976,10 @@ function mergeStepOutput(
   return next;
 }
 
+function workflowHasFullstackStep(workflow: WorkflowGraph): boolean {
+  return workflow.steps.some((step) => step.agent.name === "fullstack-dhh");
+}
+
 export function topologicalSort(workflow: WorkflowGraph) {
   const stepMap = new Map(workflow.steps.map((s) => [s.id, s]));
   const inDegree = new Map<string, number>();
@@ -981,6 +1042,11 @@ export async function executeWorkflowInBackground(
 ): Promise<string> {
   const { warmPlatformSettingsCache } = await import("../lib/platform-settings.js");
   await warmPlatformSettingsCache();
+
+  if (input.tenantId && !input.skipRunGuard) {
+    const { assertTenantCanLaunchRun } = await import("../lib/run-guards.js");
+    await assertTenantCanLaunchRun(input.tenantId);
+  }
 
   let initialMemory = input.initialMemory;
   if (input.tenantId && input.mergeConsensus !== false) {

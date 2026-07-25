@@ -381,6 +381,7 @@ export interface TeamActiveRun {
   status: string;
   startedAt: string | null;
   agentIds: string[];
+  errorMessage?: string | null;
   opencode?: {
     delegationId: string;
     sessionId: string;
@@ -1092,7 +1093,7 @@ export const api = {
       }),
   },
   runs: {
-    list: () => request<ExecutionRun[]>("/runs"),
+    list: (query?: string) => request<ExecutionRun[]>(`/runs${query ?? ""}`),
     get: (id: string) => request<ExecutionRun>(`/runs/${id}`),
     cancel: (id: string) =>
       request<{ ok: boolean; status: string }>(`/runs/${id}/cancel`, { method: "POST" }),

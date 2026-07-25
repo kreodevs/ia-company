@@ -241,9 +241,17 @@ export async function scheduleRoutes(app: FastifyInstance) {
       if (!schedule) return reply.status(404).send({ error: "Schedule not found" });
 
       const { assertTenantCanExecute } = await import("../../lib/usage-limits.js");
+      const { assertTenantCanLaunchRun } = await import("../../lib/run-guards.js");
       await assertTenantCanExecute(tenantId);
+      await assertTenantCanLaunchRun(tenantId);
 
       const runId = await executeScheduleRule(schedule);
+      if (!runId) {
+        return reply.status(409).send({
+          error: "Schedule could not run — an active run or pending decision is blocking execution",
+          code: "BLOCKED",
+        });
+      }
 
       await prisma.autonomousSchedule.update({
         where: { id: schedule.id },

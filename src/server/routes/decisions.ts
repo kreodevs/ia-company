@@ -93,14 +93,23 @@ export async function decisionRoutes(app: FastifyInstance) {
         if (proposal.status !== "pending_review" && proposal.status !== "drilling") {
           return reply.status(409).send({ error: `Proposal already ${proposal.status}` });
         }
-        const drilldownWorkflow = await prisma.workflow.findFirst({
-          where: { tenantId, name: WORKFLOW_NAMES.RESEARCH_DRILLDOWN },
-        });
+        const drilldownWorkflow =
+          (await prisma.workflow.findFirst({
+            where: { tenantId, name: WORKFLOW_NAMES.RESEARCH_DRILLDOWN },
+          })) ??
+          (await (async () => {
+            const { ensurePlatformWorkflowOnTenant } = await import("../lib/clone-templates.js");
+            return ensurePlatformWorkflowOnTenant(tenantId, WORKFLOW_NAMES.RESEARCH_DRILLDOWN);
+          })());
         if (!drilldownWorkflow) {
           return reply.status(412).send({
             error: `Workflow ${WORKFLOW_NAMES.RESEARCH_DRILLDOWN} is not configured for this tenant`,
           });
         }
+
+        const { assertTenantCanLaunchRun } = await import("../../lib/run-guards.js");
+        await assertTenantCanLaunchRun(tenantId, { allowPendingDecisions: true });
+
         const [consensus, cycle, interests, products] = await Promise.all([
           prisma.tenantConsensus.findUnique({ where: { tenantId } }),
           ensureTenantCycleState(tenantId),

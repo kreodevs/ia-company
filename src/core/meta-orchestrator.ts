@@ -16,6 +16,7 @@ import {
 import { getTenantInterestCategories } from "../lib/tenant-interests.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
+import { canExecuteMetaScheduleRun } from "../lib/run-guards.js";
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;
@@ -79,6 +80,9 @@ export async function resolveMetaOrchestratorDecision(
         ? WORKFLOW_NAMES.PRODUCT_LAUNCH
         : WORKFLOW_NAMES.FEATURE_DEVELOPMENT;
     reason = `Build product ${focusProduct.slug}`;
+  } else if (growingProducts.length > 0 && focusProduct && focusProduct.revenueUsd <= 0) {
+    workflowName = WORKFLOW_NAMES.PRICING_MONETIZATION;
+    reason = `Product ${focusProduct.slug} has no recorded revenue — pricing review`;
   } else if (growingProducts.length > 0 && ideas.length === 0) {
     focusProduct = growingProducts[0];
     workflowName =
@@ -158,7 +162,13 @@ export async function resolveMetaOrchestratorDecision(
   };
 }
 
-export async function executeMetaScheduleRun(tenantId: string): Promise<string> {
+export async function executeMetaScheduleRun(tenantId: string): Promise<string | null> {
+  const guard = await canExecuteMetaScheduleRun(tenantId);
+  if (!guard.ok) {
+    console.log(`Meta-orchestrator skipped for tenant ${tenantId}: ${guard.reason}`);
+    return null;
+  }
+
   const decision = await resolveMetaOrchestratorDecision(tenantId);
   const { executeWorkflowInBackground } = await import("../core/engine.js");
 

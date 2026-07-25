@@ -203,6 +203,11 @@ const DEFAULT_WORKFLOWS = [
     description: "Research → Product → CEO → CTO — build shared product profile from GitHub and founder notes",
     steps: ["research-thompson", "product-norman", "ceo-bezos", "cto-vogels"],
   },
+  {
+    name: "research-drilldown",
+    description: "Deep research on a pipeline idea after human pivot — Research → Munger → CFO",
+    steps: ["research-thompson", "critic-munger", "cfo-campbell"],
+  },
 ];
 
 async function buildPlatformAgentByName(client: PrismaClient): Promise<Map<string, string>> {

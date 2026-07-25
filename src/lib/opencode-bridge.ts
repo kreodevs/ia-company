@@ -346,7 +346,67 @@ export async function finalizeOpencodeDelegation(delegationId: string): Promise<
   });
 }
 
-async function failDelegation(delegationId: string, runId: string, message: string): Promise<void> {
+async function failDelegation(
+  delegationId: string,
+  runId: string,
+  message: string,
+  options?: { degradeToLocal?: boolean },
+): Promise<void> {
+  const delegation = await prisma.opencodeDelegation.findUnique({
+    where: { id: delegationId },
+    include: { run: { include: { workflow: { select: { name: true, id: true } } } } },
+  });
+  if (!delegation) return;
+
+  const degrade = options?.degradeToLocal !== false;
+
+  if (degrade && delegation.run.tenantId) {
+    await prisma.opencodeDelegation.update({
+      where: { id: delegationId },
+      data: {
+        status: "FAILED",
+        errorMessage: message,
+        completedAt: new Date(),
+      },
+    });
+
+    const sharedMemory = {
+      ...(delegation.run.sharedMemory as SharedMemory),
+      _implementationMode: "local",
+      opencodeDegraded: true,
+      opencodeDegradeReason: message,
+    } as SharedMemory;
+
+    await prisma.executionRun.update({
+      where: { id: runId },
+      data: {
+        status: "PENDING",
+        errorMessage: `OpenCode unavailable — continuing locally: ${message}`,
+        sharedMemory: sharedMemory as object,
+      },
+    });
+
+    await appendDelegationLog(runId, "warn", "OpenCode failed — degrading to local implementation", {
+      error: message,
+    });
+
+    const { enqueueWorkflowRun } = await import("../worker/queue.js");
+    await enqueueWorkflowRun({
+      runId,
+      workflowId: delegation.run.workflowId,
+      tenantId: delegation.run.tenantId,
+      initialMemory: sharedMemory,
+      mergeConsensus: false,
+      syncConsensus: true,
+      productSlug:
+        typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined,
+      workflowName: delegation.run.workflow.name,
+      resumeFromStepOrder: delegation.resumeFromStepOrder,
+      forceLocalImplementation: true,
+    });
+    return;
+  }
+
   await prisma.opencodeDelegation.update({
     where: { id: delegationId },
     data: {
@@ -451,12 +511,13 @@ export async function appendDelegationLog(
 export function shouldUseOpencodeForWorkflow(
   workflowName: string,
   forceLocalImplementation?: boolean,
+  hasFullstackStep = workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT,
 ): boolean {
   if (forceLocalImplementation) return false;
-  return workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT;
+  return hasFullstackStep;
 }
 
-export async function prepareFeatureDevelopmentGate(input: {
+export async function prepareOpencodeImplementationGate(input: {
   tenantId: string;
   runId: string;
   forceLocalImplementation?: boolean;
@@ -507,3 +568,6 @@ export async function prepareFeatureDevelopmentGate(input: {
 
   return "awaiting_user";
 }
+
+/** @deprecated Use prepareOpencodeImplementationGate */
+export const prepareFeatureDevelopmentGate = prepareOpencodeImplementationGate;

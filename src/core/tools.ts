@@ -5,17 +5,9 @@ import { promisify } from "node:util";
 import { tool } from "ai";
 import { z } from "zod";
 import type { ToolExecutionContext } from "../types/index.js";
+import { assertShellCommandAllowed } from "../lib/shell-policy.js";
 
 const execFileAsync = promisify(execFile);
-
-const BLOCKED_COMMANDS = [
-  "rm -rf /",
-  "rm -rf ~",
-  "mkfs",
-  ":(){ :|:& };:",
-  "dd if=",
-  "> /dev/sd",
-];
 
 const BLOCKED_PATHS = [".git/config", ".env", "node_modules/.cache"];
 
@@ -31,11 +23,6 @@ function resolveSafePath(workspaceRoot: string, relativePath: string): string {
     }
   }
   return target;
-}
-
-function isCommandSafe(command: string): boolean {
-  const lower = command.toLowerCase();
-  return !BLOCKED_COMMANDS.some((blocked) => lower.includes(blocked));
 }
 
 export function createAgentTools(ctx: ToolExecutionContext) {
@@ -54,9 +41,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         .describe("Working directory relative to workspace root"),
     }),
     execute: async ({ command, cwd }) => {
-      if (!isCommandSafe(command)) {
-        throw new Error("Command blocked by safety policy");
-      }
+      assertShellCommandAllowed(command);
 
       const workDir = cwd
         ? resolveSafePath(ctx.workspaceRoot, cwd)
@@ -271,7 +256,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         sharedMemory: ctx.sharedMemory ?? {},
         productSlug: ctx.productSlug,
         productId: ctx.productId,
-        resumeFromStepOrder: 3,
+        resumeFromStepOrder: ctx.resumeFromStepOrder ?? 3,
       });
 
       ctx.onDelegationStarted?.();
@@ -372,16 +357,7 @@ async function runShell(
   command: string,
   cwd: string,
 ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  if (!isCommandSafe(command)) {
-    throw new Error("Command blocked by safety policy");
-  }
-  const lower = command.toLowerCase();
-  if (lower.includes("push --force") || lower.includes("push -f")) {
-    throw new Error("Force push blocked by safety policy");
-  }
-  if (lower.includes("gh repo delete") || lower.includes("wrangler delete")) {
-    throw new Error("Destructive command blocked");
-  }
+  assertShellCommandAllowed(command);
 
   ctx.onLog?.(`shell: ${command}`, { cwd });
 

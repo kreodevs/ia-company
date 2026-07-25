@@ -4,7 +4,7 @@ Tactical live view for one product: agent seats, radar, runs, OpenCode history, 
 
 | File | Role |
 |------|------|
-| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode history, **CoordinatorChat**) for one `productId` |
+| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode panel, Munger veto banner, **CoordinatorChat**) for one `productId` |
 
 ## Routes
 
@@ -21,4 +21,4 @@ Theme-aware via CSS variables in `src/styles/war-room.css`:
 
 ## Coordinator
 
-`CoordinatorChat` is embedded with `productId` so all presets, workflows, and agent selection happen conversationally — no manual launcher UI. Live run updates use SSE; `/products/:id/team` refreshes are throttled (~2.5s) to stay under API rate limits.
+`CoordinatorChat` is embedded with `productId` so all presets, workflows, and agent selection happen conversationally — no manual launcher UI. Live run updates use SSE; `/products/:id/team` refreshes are throttled (~2.5s) to stay under API rate limits. **DELEGATED** and **AWAITING_USER** runs poll every 4–8s and show `OpencodeRunPanel`. Load failures surface a retry banner instead of a blank screen.

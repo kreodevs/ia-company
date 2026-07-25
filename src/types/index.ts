@@ -91,6 +91,7 @@ export interface ToolExecutionContext {
   sharedMemory?: SharedMemory;
   onLog?: (message: string, payload?: Record<string, unknown>) => void;
   onDelegationStarted?: () => void;
+  resumeFromStepOrder?: number;
 }
 
 export interface LLMUsage {
@@ -166,4 +167,6 @@ export interface ExecuteWorkflowInput {
   resumeFromStepOrder?: number;
   forceLocalImplementation?: boolean;
   afterOpencodeDelegation?: boolean;
+  /** Bypass launch guards (e.g. human-initiated drill-down). */
+  skipRunGuard?: boolean;
 }

@@ -2,6 +2,15 @@ export const runs = {
   list: {
     loading: "Loading runs…",
     title: "Execution Runs",
+    refresh: "Refresh",
+    autoRefresh: "Auto-refreshing every 5s while runs are active",
+    emptyTitle: "No runs yet",
+    filters: {
+      workflow: "Workflow",
+      status: "Status",
+      allWorkflows: "All workflows",
+      allStatuses: "All statuses",
+    },
     columns: {
       workflow: "Workflow",
       status: "Status",

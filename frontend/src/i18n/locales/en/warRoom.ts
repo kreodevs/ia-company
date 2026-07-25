@@ -1,5 +1,9 @@
 export const warRoom = {
   loading: "Loading the war room…",
+  loadErrorTitle: "Could not load war room",
+  loadErrorUnknown: "Unknown error",
+  retry: "Try again",
+  vetoTitle: "Munger veto — run stopped",
   eyebrow: "Live operations",
   title: "War room — {{name}}",
   subtitle:
