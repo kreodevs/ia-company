@@ -85,3 +85,25 @@ export function providerDisplayName(provider: AgentProvider): string {
   };
   return names[provider];
 }
+
+export function formatLlmProviderError(
+  err: unknown,
+  config: { provider: string; model: string },
+): string {
+  if (!(err instanceof Error)) return String(err);
+
+  const parts: string[] = [err.message];
+  const cause = err.cause;
+  if (cause instanceof Error && cause.message && !parts.includes(cause.message)) {
+    parts.push(cause.message);
+  } else if (cause && typeof cause === "object" && "message" in cause) {
+    const msg = String((cause as { message: unknown }).message);
+    if (msg && !parts.includes(msg)) parts.push(msg);
+  }
+
+  const combined = parts.join(" — ");
+  if (/provider returned error|failed to fetch|401|403|404|429|invalid model/i.test(combined)) {
+    return `LLM ${config.provider}/${config.model} error: ${combined}. Check Admin → Platform settings (API key, base URL) and that the model id is valid on the provider.`;
+  }
+  return combined;
+}

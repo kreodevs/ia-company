@@ -25,7 +25,7 @@ import type {
   StepResult,
   WorkflowGraph,
 } from "../types/index.js";
-import { createLanguageModel, estimateCostUsd } from "./providers.js";
+import { createLanguageModel, estimateCostUsd, formatLlmProviderError } from "./providers.js";
 import { createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
@@ -479,14 +479,19 @@ export class WorkflowExecutor {
       },
     });
 
-    const response = await generateText({
-      model,
-      temperature: agent.temperature,
-      system: systemPrompt,
-      prompt: userPrompt,
-      tools: tools as unknown as NonNullable<Parameters<typeof generateText>[0]["tools"]>,
-      maxSteps: 10,
-    });
+    let response;
+    try {
+      response = await generateText({
+        model,
+        temperature: agent.temperature,
+        system: systemPrompt,
+        prompt: userPrompt,
+        tools: tools as unknown as NonNullable<Parameters<typeof generateText>[0]["tools"]>,
+        maxSteps: 10,
+      });
+    } catch (err) {
+      throw new Error(formatLlmProviderError(err, providerConfig));
+    }
 
     let output = collectAgentStepOutput(response);
     let promptTokens = response.usage?.promptTokens ?? 0;
@@ -515,6 +520,8 @@ ${taskHint}
 
 ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the deliverable now in markdown (actionable, not meta-commentary), then end with the mandatory JSON handoff fenced block from the system instructions. Do not use tools.`,
         maxSteps: 1,
+      }).catch((err) => {
+        throw new Error(formatLlmProviderError(err, providerConfig));
       });
 
       output = collectAgentStepOutput(synthesis) || toolArtifacts;
