@@ -83,5 +83,22 @@ export async function recordWaitlistSignup(input: {
     where: { productId: product.id },
   });
 
+  if (created) {
+    try {
+      const { recordProductSignal } = await import("./product-signals.js");
+      await recordProductSignal({
+        tenantId: input.tenantId,
+        productId: product.id,
+        kind: "waitlist_signup",
+        title: `Waitlist signup: ${normalizedEmail}`,
+        payload: { email: normalizedEmail, source: input.source ?? null, waitlistCount },
+      });
+      const { syncRecommendationsToDesk } = await import("./product-desk-recommender.js");
+      await syncRecommendationsToDesk({ tenantId: input.tenantId, productId: product.id });
+    } catch (err) {
+      console.warn("[waitlist] signal sync failed:", err);
+    }
+  }
+
   return { created, waitlistCount };
 }

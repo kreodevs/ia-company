@@ -171,7 +171,10 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
   const orgUnitId = conditions?.orgUnitId;
 
   if (schedule.orchestrationMode === "meta_dynamic") {
-    return executeMetaScheduleRun(schedule.tenantId, { orgUnitId });
+    return executeMetaScheduleRun(schedule.tenantId, {
+      orgUnitId,
+      suggestOnly: conditions?.suggestOnly === true,
+    });
   }
   if (!schedule.workflowId) {
     throw new Error(`Schedule ${schedule.id} has no workflow configured`);

@@ -14,6 +14,10 @@ import {
 } from "./product-profile.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 import { loadProductConsensusInitialMemory } from "./product-consensus.js";
+import {
+  attachScopeContract,
+  buildProductScopeContract,
+} from "./scope-contract.js";
 
 export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
 
@@ -339,7 +343,15 @@ export async function launchProductWork(
     if (orgCtx) orgMemory = orgContextToInitialMemory(orgCtx);
   }
 
-  const initialMemory = { ...consensusMemory, ...orgMemory };
+  const initialMemory = attachScopeContract(
+    { ...consensusMemory, ...orgMemory },
+    buildProductScopeContract({
+      productId: product.id,
+      productSlug: product.slug,
+      orgUnitId: product.orgUnitId,
+      intent: "deliver",
+    }),
+  );
 
   const runId = await executeWorkflowInBackground(workflow.id, {
     tenantId,

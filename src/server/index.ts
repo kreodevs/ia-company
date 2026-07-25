@@ -29,6 +29,7 @@ import { workflowRoutes } from "./routes/workflows.js";
 import { webhookRoutes } from "./routes/webhooks.js";
 import { orgUnitRoutes } from "./routes/org-units.js";
 import { catalogStudioRoutes } from "./routes/catalog-studio.js";
+import { productDeskRoutes } from "./routes/product-desk.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -86,6 +87,7 @@ async function buildServer() {
     await api.register(webhookRoutes);
     await api.register(orgUnitRoutes);
     await api.register(catalogStudioRoutes);
+    await api.register(productDeskRoutes);
   }, { prefix: "/api" });
 
   return app;

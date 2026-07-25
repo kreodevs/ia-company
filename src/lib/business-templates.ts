@@ -730,6 +730,89 @@ export const FINANCE_PRICING_TEMPLATE: BusinessTemplateDefinition = {
   artifactTypes: ["report"],
 };
 
+export const CUSTOMER_SUPPORT_TEMPLATE: BusinessTemplateDefinition = {
+  configSchema: {
+    sections: [
+      {
+        title: "Support desk",
+        description: "Product-scoped customer support with RAG knowledge base.",
+        fields: [
+          {
+            name: "supportEmail",
+            label: "Support inbox",
+            type: "email",
+            placeholder: "support@yourproduct.com",
+            colSpan: 12,
+          },
+          {
+            name: "ragMcpSlug",
+            label: "RAG MCP server slug",
+            type: "text",
+            placeholder: "support-rag",
+            helpText: "Tenant MCP server with product KB namespace.",
+            colSpan: 12,
+          },
+          {
+            name: "slaHours",
+            label: "First response SLA (hours)",
+            type: "number",
+            defaultValue: 24,
+            colSpan: 6,
+          },
+        ],
+      },
+    ],
+  },
+  configDefaults: {
+    supportEmail: "",
+    ragMcpSlug: "support-rag",
+    slaHours: 24,
+  },
+  tokens: {
+    color: {
+      primary: { $value: "#3B82F6", $type: "color" },
+      background: { $value: "#0A0A0A", $type: "color" },
+    },
+  },
+  designMd: `# Customer Support
+
+## Voice
+- Empathetic, precise, no blame
+- Confirm issue, state next step, set expectation
+
+## Deliverables
+- Triage notes and reply drafts under \`docs/support/\`
+`,
+  suggestedAgents: [
+    {
+      name: "support-lead",
+      role: "Support Lead",
+      systemPrompt:
+        "You are Support Lead. Triage tickets, query the product RAG MCP for answers, draft replies. End with JSON handoff.",
+      skillNames: ["senior-qa"],
+      artifactTypes: ["report", "copy"],
+    },
+    {
+      name: "kb-curator",
+      role: "Knowledge Curator",
+      systemPrompt:
+        "You maintain the product support KB. Summarize gaps and propose FAQ entries. End with JSON handoff.",
+      skillNames: ["deep-reading-analyst"],
+      artifactTypes: ["report"],
+    },
+    {
+      name: "escalation-coordinator",
+      role: "Escalation Coordinator",
+      systemPrompt:
+        "You route complex support cases to engineering or product. Summarize impact and reproduction steps. End with JSON handoff.",
+      skillNames: ["deep-analysis"],
+      artifactTypes: ["report", "spec"],
+    },
+  ],
+  suggestedWorkflows: ["weekly-review", "feature-development"],
+  artifactTypes: ["report", "copy"],
+};
+
 export const PLATFORM_BUSINESS_TEMPLATES = [
   {
     slug: "marketing-agency",
@@ -773,6 +856,13 @@ export const PLATFORM_BUSINESS_TEMPLATES = [
     description: "Unit economics, pricing tiers, and financial planning memos.",
     orgUnitType: "department" as const,
     definition: FINANCE_PRICING_TEMPLATE,
+  },
+  {
+    slug: "customer-support",
+    name: "Customer Support",
+    description: "Ticket triage, RAG-backed replies, and knowledge base curation.",
+    orgUnitType: "department" as const,
+    definition: CUSTOMER_SUPPORT_TEMPLATE,
   },
   {
     slug: "custom-department",

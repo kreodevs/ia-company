@@ -5,6 +5,7 @@ import {
   getPlatformSettingsSync,
   warmPlatformSettingsCache,
 } from "./platform-settings.js";
+import { contractForAgentName } from "./agent-contract.js";
 
 const REPO_ROOT = process.env.NODE_ENV === "production" 
   ? process.cwd() 
@@ -317,12 +318,15 @@ async function upsertPlatformAgent(
     where: { tenantId: null, name: agent.name },
   });
   const settings = getPlatformSettingsSync();
+  const contract = contractForAgentName(agent.name);
   const data = {
     role: agent.role,
     systemPrompt: agent.systemPrompt,
     model: agent.model,
     provider: settings.defaultProvider,
     temperature: settings.defaultTemperature,
+    contractInputs: contract.inputs,
+    contractOutputs: contract.outputs,
   };
   if (existing) {
     return client.agent.update({ where: { id: existing.id }, data });

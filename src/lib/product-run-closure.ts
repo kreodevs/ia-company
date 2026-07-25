@@ -24,6 +24,7 @@ export interface RunClosureMeta {
   consensusSizeBytes: number;
   mcpToolCalls: number;
   mcpFallbackUsed: boolean;
+  deskItemsCreated?: number;
 }
 
 const VAGUE_NEXT_ACTION = /^(execute|continue|proceed|next step|tbd|n\/a)/i;
@@ -159,6 +160,40 @@ export async function finalizeProductRunClosure(input: {
       } as object,
     },
   });
+
+  try {
+    const { persistDeskItemsFromRun } = await import("./product-desk.js");
+    const deskCreated = await persistDeskItemsFromRun({
+      tenantId: input.tenantId,
+      productId: input.productId,
+      productName: input.productName,
+      runId: input.runId,
+      workflowName: input.workflowName,
+      memory: { ...input.memory, nextAction },
+    });
+    closure.deskItemsCreated = deskCreated;
+
+    const { syncRecommendationsToDesk } = await import("./product-desk-recommender.js");
+    await syncRecommendationsToDesk({ tenantId: input.tenantId, productId: input.productId });
+
+    const inputRefs = Array.isArray(input.memory.deskInputRefs)
+      ? (input.memory.deskInputRefs as Array<{ deskItemId?: string }>)
+      : [];
+    const deskIds = inputRefs
+      .map((r) => (typeof r.deskItemId === "string" ? r.deskItemId : null))
+      .filter((id): id is string => Boolean(id));
+    if (deskIds.length > 0) {
+      const { markDeskItemsConsumed } = await import("./product-desk.js");
+      await markDeskItemsConsumed({ deskItemIds: deskIds, runId: input.runId });
+    }
+
+    await prisma.productDeskItem.updateMany({
+      where: { consumedByRunId: input.runId, status: "in_progress" },
+      data: { status: "consumed" },
+    });
+  } catch (err) {
+    console.warn("[product-run-closure] desk persist failed:", err);
+  }
 
   return {
     ...input.memory,

@@ -97,6 +97,8 @@ model Agent {
   provider         AgentProvider @default(tokenlab)
   model            String        @default("claude-3-5-sonnet-20241022")
   temperature      Float         @default(0.7)
+  contractInputs   Json          @default("[]")
+  contractOutputs  Json          @default("[]")
   isActive         Boolean       @default(true)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -359,6 +361,8 @@ model TenantProduct {
   workItemKind WorkItemKind @default(product)
   orgUnit      OrgUnit?     @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
   artifacts    Artifact[]
+  deskItems    ProductDeskItem[]
+  productSignals ProductSignal[]
   revenueEvents ProductRevenueEvent[]
   waitlistSignups ProductWaitlistSignup[]
 
@@ -775,7 +779,100 @@ enum ArtifactType {
   design
   report
   code
+  spec
+  adr
+  task
   other
+}
+
+enum DeskItemType {
+  spec
+  adr
+  copy
+  design
+  code
+  report
+  social_post
+  task
+  other
+}
+
+enum DeskItemStatus {
+  draft
+  approved
+  in_progress
+  consumed
+  archived
+}
+
+enum DeskItemSourceKind {
+  agent
+  mcp
+  webhook
+  human
+  run
+  recommendation
+}
+
+enum KanbanColumn {
+  backlog
+  approved
+  in_progress
+  done
+}
+
+enum ProductSignalKind {
+  revenue_received
+  waitlist_signup
+  campaign_metric
+  support_ticket
+  custom
+}
+
+model ProductDeskItem {
+  id                String             @id @default(cuid())
+  tenantId          String
+  productId         String
+  type              DeskItemType       @default(other)
+  status            DeskItemStatus     @default(draft)
+  title             String
+  previewText       String?            @db.Text
+  body              Json               @default("{}")
+  sourceKind        DeskItemSourceKind @default(run)
+  sourceMeta        Json               @default("{}")
+  runId             String?
+  createdByAgent    String?
+  suggestedNextRole String?
+  approvedByUserId  String?
+  approvedAt        DateTime?
+  consumedByRunId   String?
+  kanbanColumn      KanbanColumn?
+  playbookId        String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  product TenantProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, productId, status])
+  @@index([productId, type, status])
+  @@index([productId, createdAt])
+  @@index([productId, kanbanColumn])
+}
+
+model ProductSignal {
+  id        String            @id @default(cuid())
+  tenantId  String
+  productId String
+  kind      ProductSignalKind @default(custom)
+  title     String
+  payload   Json              @default("{}")
+  amountUsd Float?
+  createdAt DateTime          @default(now())
+
+  product TenantProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([tenantId, productId, kind])
 }
 
 enum ArtifactStatus {

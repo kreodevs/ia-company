@@ -8,6 +8,13 @@ import {
   listTenantProducts,
 } from "./product-registry.js";
 import { loadProductConsensusInitialMemory } from "./product-consensus.js";
+import {
+  attachScopeContract,
+  buildCompanyScopeContract,
+  buildProductScopeContract,
+  isCompanyScopedWorkflow,
+  shouldMergeProductConsensus,
+} from "./scope-contract.js";
 import { getTenantInterestCategories } from "./tenant-interests.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
@@ -96,7 +103,14 @@ export async function buildScheduledWorkflowInitialMemory(
 
   base.convergenceRules = convergencePromptSection(cycle.cycleNumber, phase, interests);
 
-  if (focusProduct) {
+  if (isCompanyScopedWorkflow(workflowName)) {
+    return attachScopeContract(base, buildCompanyScopeContract("discovery")) as SharedMemory;
+  }
+
+  if (
+    focusProduct &&
+    shouldMergeProductConsensus({ workflowName, productId: focusProduct.id })
+  ) {
     const productMemory = await loadProductConsensusInitialMemory(
       tenantId,
       focusProduct.id,
@@ -113,8 +127,16 @@ export async function buildScheduledWorkflowInitialMemory(
       nextAction: base.nextAction,
       convergenceRules: base.convergenceRules,
       metaReason: options.reason,
+      ...attachScopeContract(
+        {},
+        buildProductScopeContract({
+          productId: focusProduct.id,
+          productSlug: focusProduct.slug,
+          intent: "operate",
+        }),
+      ),
     };
   }
 
-  return base;
+  return attachScopeContract(base, buildCompanyScopeContract("operate")) as SharedMemory;
 }

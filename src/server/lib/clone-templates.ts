@@ -185,6 +185,8 @@ async function syncAgentsForTenant(
       temperature: agent.temperature,
       isActive: agent.isActive,
       platformSourceId: agent.id,
+      contractInputs: agent.contractInputs ?? [],
+      contractOutputs: agent.contractOutputs ?? [],
     };
 
     if (!existing) {

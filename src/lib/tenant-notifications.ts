@@ -6,7 +6,8 @@ export type TenantNotificationType =
   | "run_completed"
   | "run_failed"
   | "decision_pending"
-  | "task_started";
+  | "task_started"
+  | "playbook_suggestion";
 
 export interface TenantNotificationDto {
   id: string;

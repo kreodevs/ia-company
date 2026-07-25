@@ -131,6 +131,22 @@ export async function ingestStripeWebhook(input: {
     source: `stripe:${event.type}`,
   });
 
+  try {
+    const { recordProductSignal } = await import("./product-signals.js");
+    await recordProductSignal({
+      tenantId: input.tenantId,
+      productId: product.id,
+      kind: "revenue_received",
+      title: `Payment received ($${amountUsd})`,
+      amountUsd,
+      payload: { eventType: event.type, stripeEventId },
+    });
+    const { syncRecommendationsToDesk } = await import("./product-desk-recommender.js");
+    await syncRecommendationsToDesk({ tenantId: input.tenantId, productId: product.id });
+  } catch (err) {
+    console.warn("[stripe] signal sync failed:", err);
+  }
+
   return { handled: true, revenueUsd, eventType: event.type };
 }
 

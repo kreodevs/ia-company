@@ -415,6 +415,9 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
           <span className="war-room-pill war-room-pill-duty">
             {t("warRoom.onDuty", { count: onDuty.length })}
           </span>
+          <Link to={`/products/${data.product.id}/desk`} className="war-room-pill war-room-pill-link">
+            {t("productDesk.title")}
+          </Link>
           <Link to={`/products/${data.product.id}/code`} className="war-room-pill war-room-pill-link">
             {t("warRoom.viewCode")}
           </Link>

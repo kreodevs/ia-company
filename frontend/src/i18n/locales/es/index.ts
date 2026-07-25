@@ -14,6 +14,7 @@ import { office } from "./office";
 import { opencode } from "./opencode";
 import { ops } from "./ops";
 import { phase } from "./phase";
+import { productDesk } from "./productDesk";
 import { products } from "./products";
 import { productWork } from "./productWork";
 import { runs } from "./runs";
@@ -36,6 +37,7 @@ export const es = {
   ops,
   opencode,
   products,
+  productDesk,
   productWork,
   settings,
   team,

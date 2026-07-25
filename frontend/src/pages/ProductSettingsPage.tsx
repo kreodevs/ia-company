@@ -16,10 +16,11 @@ import TabsBar from "../components/ui/TabsBar";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
 import ProductRevenueSettingsPanel from "../components/products/ProductRevenueSettingsPanel";
+import ProductIntegrationsPanel from "../components/products/ProductIntegrationsPanel";
 import Select from "../components/ui/Select";
 import type { OrgUnit } from "../lib/org-types";
 
-const VALID_TABS = ["general", "intake", "revenue", "opencode"] as const;
+const VALID_TABS = ["general", "intake", "revenue", "opencode", "integrations"] as const;
 type ProductSettingsTab = (typeof VALID_TABS)[number];
 
 function parseSettingsTab(searchParams: URLSearchParams): ProductSettingsTab {
@@ -176,6 +177,7 @@ export default function ProductSettingsPage() {
     { id: "intake", label: t("products.settings.tabs.intake") },
     { id: "revenue", label: t("products.settings.tabs.revenue") },
     { id: "opencode", label: t("products.settings.tabs.opencode") },
+    { id: "integrations", label: t("products.settings.tabs.integrations") },
   ];
 
   return (
@@ -200,6 +202,12 @@ export default function ProductSettingsPage() {
               className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
             >
               {t("products.active.warRoom")}
+            </Link>
+            <Link
+              to={`/products/${product.id}/desk`}
+              className="text-xs text-[var(--color-primary)] hover:underline"
+            >
+              {t("productDesk.title")} →
             </Link>
             <Link
               to={`/products/${product.id}/code`}
@@ -349,6 +357,10 @@ export default function ProductSettingsPage() {
       )}
 
       {activeTab === "opencode" && <ProductOpencodeSettingsPanel productId={productId} />}
+
+      {activeTab === "integrations" && productId && (
+        <ProductIntegrationsPanel productId={productId} />
+      )}
 
       <p className="text-xs text-[var(--color-muted-foreground)]">
         {t("products.settings.debugHint")}{" "}

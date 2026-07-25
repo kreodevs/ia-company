@@ -35,8 +35,14 @@ describe("org studio", () => {
   });
 
   it("vertical templates are registered with agents and config schema", () => {
-    const verticalSlugs = ["sales-revops", "customer-success", "seo-content-studio", "finance-pricing"];
-    assert.equal(PLATFORM_BUSINESS_TEMPLATES.length, 7);
+    const verticalSlugs = [
+      "sales-revops",
+      "customer-success",
+      "customer-support",
+      "seo-content-studio",
+      "finance-pricing",
+    ];
+    assert.equal(PLATFORM_BUSINESS_TEMPLATES.length, 8);
     for (const slug of verticalSlugs) {
       const tpl = PLATFORM_BUSINESS_TEMPLATES.find((t) => t.slug === slug);
       assert.ok(tpl, `missing template ${slug}`);

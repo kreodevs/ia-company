@@ -10,6 +10,8 @@ export interface ScheduleConditions {
   noPendingDecisions?: boolean;
   /** When set, schedule only runs if this department has linked work items. */
   orgUnitId?: string;
+  /** When true, meta schedule creates in-app suggestion instead of launching a run. */
+  suggestOnly?: boolean;
 }
 
 export type OrchestrationPresetId =

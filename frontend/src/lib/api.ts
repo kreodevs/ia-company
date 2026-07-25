@@ -214,6 +214,67 @@ export type ProductIntakeStatus = "pending" | "running" | "completed" | "failed"
 
 export type WorkItemKind = "product" | "client" | "campaign" | "project";
 
+export interface DeskItemDto {
+  id: string;
+  productId: string;
+  type: string;
+  status: string;
+  title: string;
+  previewText: string | null;
+  body: Record<string, unknown>;
+  sourceKind: string;
+  sourceMeta: Record<string, unknown>;
+  runId: string | null;
+  createdByAgent: string | null;
+  suggestedNextRole: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  humanTypeLabel: string;
+  playbookId: string | null;
+  kanbanColumn: string | null;
+  eligibleAgents: Array<{ id: string; name: string; role: string }>;
+}
+
+export interface ProductRoadmapBoard {
+  backlog: DeskItemDto[];
+  approved: DeskItemDto[];
+  inProgress: DeskItemDto[];
+  done: DeskItemDto[];
+}
+
+export interface ProductSignalDto {
+  id: string;
+  kind: string;
+  title: string;
+  payload: Record<string, unknown>;
+  amountUsd: number | null;
+  createdAt: string;
+}
+
+export interface ProductSignalSummary {
+  revenueUsd: number;
+  waitlistCount: number;
+  revenueEvents30d: number;
+  waitlistSignups30d: number;
+  campaignSignals30d: number;
+  daysSinceLastRevenue: number | null;
+  pricingCyclesWithoutRevenue: number;
+}
+
+export interface ProductPlaybookDto {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export interface ProductDeskBoard {
+  forYou: DeskItemDto[];
+  ready: DeskItemDto[];
+  inProgress: DeskItemDto[];
+  recent: DeskItemDto[];
+}
+
 export interface TenantProduct {
   id: string;
   tenantId: string;
@@ -1400,6 +1461,64 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
+    desk: (id: string) =>
+      request<{ board: ProductDeskBoard; counts: { draft: number; approved: number; inProgress: number } }>(
+        `/products/${id}/desk`,
+      ),
+    approveDeskItem: (productId: string, deskItemId: string) =>
+      request<{ item: DeskItemDto; autoDispatched?: { runId: string; agentName: string } | null }>(
+        `/products/${productId}/desk/${deskItemId}/approve`,
+        { method: "POST" },
+      ),
+    archiveDeskItem: (productId: string, deskItemId: string) =>
+      request<{ item: DeskItemDto }>(`/products/${productId}/desk/${deskItemId}/archive`, {
+        method: "POST",
+      }),
+    dispatchDeskItem: (productId: string, deskItemId: string, agentId?: string) =>
+      request<{ runId: string; workflowId: string; workflowName: string; agentName: string }>(
+        `/products/${productId}/desk/${deskItemId}/dispatch`,
+        { method: "POST", body: JSON.stringify({ agentId }) },
+      ),
+    syncTheForge: (id: string) =>
+      request<{ created: number; skipped: boolean; reason?: string }>(
+        `/products/${id}/desk/sync-theforge`,
+        { method: "POST" },
+      ),
+    refreshRecommendations: (id: string) =>
+      request<{ created: number }>(`/products/${id}/desk/refresh-recommendations`, {
+        method: "POST",
+      }),
+    signals: (id: string) =>
+      request<{ signals: ProductSignalDto[]; summary: ProductSignalSummary }>(
+        `/products/${id}/signals`,
+      ),
+    playbooks: (id: string) =>
+      request<{ playbooks: ProductPlaybookDto[] }>(`/products/${id}/playbooks`),
+    launchPlaybook: (productId: string, playbookId: string) =>
+      request<{ runId: string; workflowName: string }>(
+        `/products/${productId}/playbooks/${playbookId}/launch`,
+        { method: "POST" },
+      ),
+    roadmap: (id: string) =>
+      request<{ board: ProductRoadmapBoard }>(`/products/${id}/roadmap`),
+    updateDeskKanban: (productId: string, deskItemId: string, column: string) =>
+      request<{ item: DeskItemDto }>(`/products/${productId}/desk/${deskItemId}/kanban`, {
+        method: "PATCH",
+        body: JSON.stringify({ column }),
+      }),
+    integrations: (id: string) =>
+      request<{
+        integrations: Record<string, unknown>;
+        form: { theforgeProjectId: string; supportRagMcpSlug: string; autoDispatchSpec: boolean };
+      }>(`/products/${id}/integrations`),
+    updateIntegrations: (
+      id: string,
+      body: { theforgeProjectId?: string; supportRagMcpSlug?: string; autoDispatchSpec?: boolean },
+    ) =>
+      request<{
+        integrations: Record<string, unknown>;
+        form: { theforgeProjectId: string; supportRagMcpSlug: string; autoDispatchSpec: boolean };
+      }>(`/products/${id}/integrations`, { method: "PATCH", body: JSON.stringify(body) }),
   },
   office: {
     dashboard: () => request<OfficeDashboard>("/office/dashboard"),

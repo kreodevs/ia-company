@@ -1241,7 +1241,15 @@ export async function executeWorkflowInBackground(
 
   let initialMemory = input.initialMemory;
   if (input.tenantId && input.mergeConsensus !== false) {
-    if (input.productSlug) {
+    const { shouldMergeProductConsensus } = await import("../lib/scope-contract.js");
+    const mergeProduct =
+      Boolean(input.productSlug) &&
+      shouldMergeProductConsensus({
+        workflowName: input.workflowName,
+        productId: input.productId,
+      });
+
+    if (mergeProduct && input.productSlug) {
       const { loadProductConsensusInitialMemory } = await import("../lib/product-consensus.js");
       const product = await prisma.tenantProduct.findUnique({
         where: { tenantId_slug: { tenantId: input.tenantId, slug: input.productSlug } },

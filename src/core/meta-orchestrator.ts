@@ -18,7 +18,8 @@ import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import { canExecuteMetaScheduleRun } from "../lib/run-guards.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "../lib/org-context.js";
-import { workflowForOrgWorkItem } from "../lib/org-work-item.js";
+import { getProductSignalSummary } from "../lib/product-signals.js";
+import { attachScopeContract, buildCompanyScopeContract, buildProductScopeContract } from "../lib/scope-contract.js";
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;
@@ -143,18 +144,22 @@ export async function resolveMetaOrchestratorDecision(
         : "";
     reason = `Build product ${focusProduct.slug}${rotationHint}`;
   } else if (growingProducts.length > 0 && focusProduct && focusProduct.revenueUsd <= 0) {
+    const signals = await getProductSignalSummary(tenantId, focusProduct.id);
     workflowName = WORKFLOW_NAMES.PRICING_MONETIZATION;
-    reason = `Product ${focusProduct.slug} has no recorded revenue — pricing review`;
+    reason = `Product ${focusProduct.slug} has no recorded revenue (${signals.daysSinceLastRevenue ?? "?"}d) — pricing review`;
   } else if (growingProducts.length > 0 && ideas.length === 0) {
     focusProduct =
       (growingProducts.length > 1
         ? pickRotatingFocusProduct(growingProducts, cycle.cycleNumber)
         : growingProducts[0]) ?? growingProducts[0];
+    const signals = await getProductSignalSummary(tenantId, focusProduct.id);
     workflowName =
-      cycle.cycleNumber % 2 === 0
-        ? WORKFLOW_NAMES.PRICING_MONETIZATION
-        : WORKFLOW_NAMES.PRODUCT_LAUNCH;
-    reason = `Grow product ${focusProduct.slug}`;
+      focusProduct.revenueUsd > 0 && signals.waitlistSignups30d >= 5
+        ? WORKFLOW_NAMES.MARKETING_SPRINT
+        : cycle.cycleNumber % 2 === 0
+          ? WORKFLOW_NAMES.PRICING_MONETIZATION
+          : WORKFLOW_NAMES.PRODUCT_LAUNCH;
+    reason = `Grow product ${focusProduct.slug}${focusProduct.revenueUsd > 0 ? " (revenue + signals)" : ""}`;
   } else if (orgLinkedProducts.length > 0 && ideas.length === 0 && buildingProducts.length === 0) {
     focusProduct =
       orgLinkedProducts.length > 1
@@ -223,6 +228,20 @@ export async function resolveMetaOrchestratorDecision(
     baseMemory.consensus = productMemory.consensus;
     baseMemory.nextAction = productMemory.nextAction;
     baseMemory.task = productMemory.task;
+    Object.assign(
+      baseMemory,
+      attachScopeContract(
+        {},
+        buildProductScopeContract({
+          productId: focusProduct.id,
+          productSlug: focusProduct.slug,
+          orgUnitId: focusProduct.orgUnitId,
+          intent: "operate",
+        }),
+      ),
+    );
+  } else {
+    Object.assign(baseMemory, attachScopeContract(baseMemory, buildCompanyScopeContract("operate")));
   }
 
   baseMemory.convergenceRules = convergencePromptSection(
@@ -255,7 +274,7 @@ export async function resolveMetaOrchestratorDecision(
 
 export async function executeMetaScheduleRun(
   tenantId: string,
-  options?: { orgUnitId?: string },
+  options?: { orgUnitId?: string; suggestOnly?: boolean },
 ): Promise<string | null> {
   const guard = await canExecuteMetaScheduleRun(tenantId);
   if (!guard.ok) {
@@ -264,6 +283,19 @@ export async function executeMetaScheduleRun(
   }
 
   const decision = await resolveMetaOrchestratorDecision(tenantId, options);
+
+  if (options?.suggestOnly) {
+    const { suggestMetaOrchestratorRun } = await import("../lib/product-playbook-launcher.js");
+    await suggestMetaOrchestratorRun({
+      tenantId,
+      workflowName: decision.workflowName,
+      productId: decision.productId,
+      productSlug: decision.productSlug,
+      reason: decision.reason,
+    });
+    return null;
+  }
+
   const { executeWorkflowInBackground } = await import("../core/engine.js");
 
   const runId = await executeWorkflowInBackground(decision.workflowId, {
