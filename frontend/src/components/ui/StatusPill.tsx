@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import KreoStatusPill from "@/components/atoms/StatusPill";
 import { cn } from "@/lib/utils";
+import { mapDomainStatusToKreo } from "./kreo-status-map";
 
 export interface StatusPillProps {
   status: string;
@@ -12,9 +14,10 @@ export default function StatusPill({ status, children, className }: StatusPillPr
   const { t } = useTranslation();
   const normalized = status.toLowerCase();
   const label = children ?? t(`status.${normalized}`, { defaultValue: status });
+
   return (
-    <span className={cn("status-pill", `status-pill--${normalized}`, className)}>
+    <KreoStatusPill status={mapDomainStatusToKreo(status)} className={cn(className)}>
       {label}
-    </span>
+    </KreoStatusPill>
   );
 }

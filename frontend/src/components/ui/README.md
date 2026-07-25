@@ -1,20 +1,37 @@
 # UI primitives
 
-Shared layout and interaction components for consistent responsive UX across Auto-Company Platform.
+Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms/`). Pages and feature modules import from here so APIs stay stable while the design system evolves.
+
+## Kreo-backed adapters
+
+| Component | Kreo source | Notes |
+|-----------|-------------|--------|
+| `Button` | `atoms/Button` | Maps `primary` → `default` variant |
+| `Input` | `atoms/InputText` | |
+| `Select` | `atoms/Select` (Radix) | String `value` / `onChange` API |
+| `Badge` | `atoms/Badge` | |
+| `Card` | `molecules/Card` | |
+| `Panel` | `molecules/Card` | Keeps `app-panel-*` layout classes |
+| `PageHeader` | `molecules/PageHeader` | |
+| `PageLoading` | `atoms/Skeleton` | |
+| `EmptyState` | `molecules/EmptyState` | |
+| `StatCard` | `molecules/StatsCard` | |
+| `KpiCard` | `organisms/DashboardKPI` | Sparkline + trend |
+| `StatusPill` | `atoms/StatusPill` | Domain status → Kreo semantic via `kreo-status-map.ts` |
+| `StatusBadge` | `atoms/StatusPill` | Run status mapping |
+| `ConfirmDialog` | `molecules/Dialog` (`AlertDialog`) | |
+| `Breadcrumbs` | `atoms/Breadcrumb` | React Router `to` links |
+| `TabsBar` | Radix tabs + Kreo underline tokens | Header-only tabs |
+| `MermaidDiagram` | `molecules/MermaidDiagram` | Prop `chart` → `code` |
+
+## App-specific (not Kreo)
 
 | Component | Purpose |
 |-----------|---------|
-| `Button` | Touch-friendly actions (min 44px height on mobile) |
-| `Input` / `Select` | Form controls with focus rings |
-| `Card` | Bordered surface container |
-| `PageHeader` | Title, subtitle, optional actions |
-| `PageLoading` | Centered loading state |
-| `EmptyState` | Dashed empty / no-results blocks |
-| `StatCard` | Metric tiles (Ops, dashboards) |
-| `StatusBadge` | Run status with semantic colors |
-| `Badge` | Generic phase / label chips |
-| `ProductActionsMenu` | Product lifecycle menu: pause, resume, NO-GO, cancel/archive, delete from registry, archive |
-| `ConfirmDialog` | Destructive action confirmation modal |
-| `MarkdownView` | Read-only rendered markdown (agent docs preview) |
+| `ProductActionsMenu` | Product lifecycle actions |
+| `MarkdownView` / `MarkdownPreview` / `RichMarkdownView` | Read-only markdown (react-markdown) |
+| `MarkdownChartBlock` | Chart blocks inside markdown |
 
-Global styles live in `src/index.css` (focus rings, reduced motion, safe overflow).
+Org OS uses Kreo **DynamicForm** and **DataTable** directly under `components/org/`.
+
+Global styles: `src/index.css`, `src/styles/kreo-vars.css`.
