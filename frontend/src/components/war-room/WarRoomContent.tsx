@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
 import ProductActionsMenu from "../ui/ProductActionsMenu";
 import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
+import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
+import DeliverableHealthBanner from "./DeliverableHealthBanner";
+import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 
 const ROLE_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -54,6 +58,121 @@ function shortTime(iso: string | null): string {
 }
 
 const TEAM_REFRESH_MIN_MS = 2500;
+/** Keep active agent states visible long enough to read the war-room table. */
+const AGENT_STATUS_HOLD_MS = 2800;
+const STEP_EVENT_REFRESH_MS = 2800;
+const COORDINATOR_COLLAPSED_KEY = "war-room-coordinator-collapsed";
+
+function readCoordinatorCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COORDINATOR_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeCoordinatorCollapsed(collapsed: boolean): void {
+  try {
+    localStorage.setItem(COORDINATOR_COLLAPSED_KEY, collapsed ? "1" : "0");
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+function statusPriority(status: TeamAgentStatus): number {
+  if (status === "thinking") return 3;
+  if (status === "queued") return 2;
+  return 1;
+}
+
+function seatRadiusPct(total: number): number {
+  if (total <= 4) return 40;
+  if (total <= 8) return 42;
+  if (total <= 12) return 44;
+  if (total <= 16) return 42;
+  return 40;
+}
+
+function useHeldAgentTeam(team: TeamAgent[]): TeamAgent[] {
+  const [display, setDisplay] = useState(team);
+  const teamRef = useRef(team);
+  teamRef.current = team;
+  const holdsRef = useRef(new Map<string, { status: TeamAgentStatus; currentTask: string | null; releaseAt: number }>());
+  const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  useEffect(() => {
+    setDisplay((prevDisplay) => {
+      const now = Date.now();
+      return team.map((agent) => {
+        const prev = prevDisplay.find((entry) => entry.id === agent.id) ?? agent;
+        const hold = holdsRef.current.get(agent.id);
+
+        if (hold && now < hold.releaseAt) {
+          if (statusPriority(agent.status) > statusPriority(hold.status)) {
+            holdsRef.current.delete(agent.id);
+            const timer = timersRef.current.get(agent.id);
+            if (timer) clearTimeout(timer);
+            timersRef.current.delete(agent.id);
+            return agent;
+          }
+          return {
+            ...agent,
+            status: hold.status,
+            currentTask: hold.currentTask ?? agent.currentTask,
+          };
+        }
+
+        if (statusPriority(prev.status) > statusPriority(agent.status)) {
+          const releaseAt = now + AGENT_STATUS_HOLD_MS;
+          holdsRef.current.set(agent.id, {
+            status: prev.status,
+            currentTask: prev.currentTask,
+            releaseAt,
+          });
+          const existing = timersRef.current.get(agent.id);
+          if (existing) clearTimeout(existing);
+          const agentId = agent.id;
+          const timer = setTimeout(() => {
+            timersRef.current.delete(agentId);
+            holdsRef.current.delete(agentId);
+            setDisplay((current) =>
+              current.map((entry) =>
+                entry.id === agentId ? teamRef.current.find((member) => member.id === agentId) ?? entry : entry,
+              ),
+            );
+          }, AGENT_STATUS_HOLD_MS);
+          timersRef.current.set(agent.id, timer);
+          return {
+            ...agent,
+            status: prev.status,
+            currentTask: prev.currentTask ?? agent.currentTask,
+          };
+        }
+
+        return agent;
+      });
+    });
+  }, [team]);
+
+  useEffect(() => {
+    if (team.length === 0) {
+      for (const timer of timersRef.current.values()) clearTimeout(timer);
+      timersRef.current.clear();
+      holdsRef.current.clear();
+      setDisplay([]);
+    }
+  }, [team.length]);
+
+  useEffect(() => {
+    return () => {
+      for (const timer of timersRef.current.values()) clearTimeout(timer);
+      timersRef.current.clear();
+      holdsRef.current.clear();
+    };
+  }, []);
+
+  return display;
+}
 
 function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
   let inFlight = false;
@@ -109,8 +228,18 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const { t } = useTranslation();
   const [data, setData] = useState<ProductTeam | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [liveNote, setLiveNote] = useState<string | null>(null);
+  const [coordinatorCollapsed, setCoordinatorCollapsed] = useState(readCoordinatorCollapsed);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const toggleCoordinatorCollapsed = useCallback(() => {
+    setCoordinatorCollapsed((prev) => {
+      const next = !prev;
+      writeCoordinatorCollapsed(next);
+      return next;
+    });
+  }, []);
 
   const flashNote = useCallback((note: string) => {
     setLiveNote(note);
@@ -121,6 +250,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const refresh = useCallback(async () => {
     const fresh = await api.products.team(productId, watchRunId ?? undefined);
     setData(fresh);
+    setLoadError(null);
     return fresh;
   }, [productId, watchRunId]);
 
@@ -132,10 +262,31 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   useEffect(() => {
     setLoading(true);
     setData(null);
+    setLoadError(null);
     refresh()
-      .catch(() => undefined)
+      .catch((err) => {
+        setLoadError(err instanceof Error ? err.message : String(err));
+        setData(null);
+      })
       .finally(() => setLoading(false));
   }, [productId, refresh]);
+
+  useEffect(() => {
+    const active = data?.activeRun;
+    if (!active) return;
+
+    const needsPoll =
+      active.status === "DELEGATED" ||
+      active.status === "AWAITING_USER" ||
+      active.status === "RUNNING" ||
+      active.status === "PENDING";
+
+    if (!needsPoll) return;
+
+    const intervalMs = active.status === "DELEGATED" ? 4000 : 8000;
+    const timer = window.setInterval(() => refreshScheduler.current.schedule(intervalMs), intervalMs);
+    return () => window.clearInterval(timer);
+  }, [data?.activeRun?.id, data?.activeRun?.status]);
 
   useEffect(() => {
     if (
@@ -154,7 +305,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         const preview = String(evt.data?.message ?? "").slice(0, 80);
         if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
       } else if (evt.type === "step_start" || evt.type === "step_complete") {
-        refreshScheduler.current.schedule(1200);
+        refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS);
       } else if (evt.type === "done") {
         refreshScheduler.current.flush();
       }
@@ -165,11 +316,46 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
     };
   }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote]);
 
-  if (loading || !data) return <PageLoading message={t("warRoom.loading")} />;
+  const displayTeam = useHeldAgentTeam(data?.team ?? []);
 
-  const thinking = data.team.filter((a) => a.status === "thinking");
-  const onDuty = data.team.filter((a) => a.status !== "idle");
-  const totalAgents = data.team.length;
+  if (loading) return <PageLoading message={t("warRoom.loading")} />;
+
+  if (loadError || !data) {
+    return (
+      <div className="war-room">
+        <div
+          className="rounded-xl border border-[var(--color-destructive)]/40 bg-[var(--color-destructive)]/10 px-4 py-4"
+          role="alert"
+        >
+          <p className="font-medium">{t("warRoom.loadErrorTitle", { defaultValue: "Could not load war room" })}</p>
+          <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">
+            {loadError ?? t("warRoom.loadErrorUnknown", { defaultValue: "Unknown error" })}
+          </p>
+          <button
+            type="button"
+            className="mt-3 text-sm font-medium text-[var(--color-primary)] hover:underline"
+            onClick={() => {
+              setLoading(true);
+              void refresh()
+                .catch((err) => setLoadError(err instanceof Error ? err.message : String(err)))
+                .finally(() => setLoading(false));
+            }}
+          >
+            {t("warRoom.retry", { defaultValue: "Try again" })}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const recentVeto = data.recentRuns.find((r) => r.errorMessage?.startsWith("VETO:"))?.errorMessage;
+  const activeRunVeto =
+    data.activeRun?.errorMessage?.startsWith("VETO:") ? data.activeRun.errorMessage : recentVeto ?? null;
+
+  const thinking = displayTeam.filter((a) => a.status === "thinking");
+  const onDuty = displayTeam.filter((a) => a.status !== "idle");
+  const totalAgents = displayTeam.length;
+  const tableDensity = totalAgents > 16 ? "compact" : totalAgents > 12 ? "cozy" : "normal";
 
   return (
     <div className="war-room">
@@ -181,6 +367,14 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         </div>
         <div className="war-room-header-meta">
           <Badge>{data.product.phase}</Badge>
+          {data.orgUnit && (
+            <Link
+              to={`/org-units/${data.orgUnit.id}`}
+              className="war-room-pill text-xs text-[var(--color-primary)] hover:underline"
+            >
+              {t("warRoom.departmentLink", { name: data.orgUnit.name })}
+            </Link>
+          )}
           <ProductActionsMenu product={data.product as TenantProduct} onChange={() => void refresh()} />
           {data.activeRun && (
             <Link to={`/office/encargos/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
@@ -207,6 +401,35 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           </Link>
         </div>
       </header>
+
+      {activeRunVeto && (
+        <div className="mb-4 app-alert app-alert--warning" role="status">
+          <strong>{t("warRoom.vetoTitle", { defaultValue: "Munger veto — run stopped" })}</strong>
+          <p className="mt-1">{activeRunVeto.replace(/^VETO:\s*/, "")}</p>
+        </div>
+      )}
+
+      <DeliverableHealthBanner
+        trace={data.lastRunTrace}
+        productId={productId}
+        activeRunStatus={data.activeRun?.status ?? null}
+      />
+
+      {data.orgUnit && (
+        <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+          <OrgArtifactsPanel orgUnitId={data.orgUnit.id} orgUnitName={data.orgUnit.name} />
+        </div>
+      )}
+
+      {(data.activeRun?.status === "DELEGATED" || data.activeRun?.status === "AWAITING_USER") && (
+        <div className="mb-4">
+          <OpencodeRunPanel
+            runId={data.activeRun.id}
+            status={data.activeRun.status}
+            onUpdated={() => refreshScheduler.current.flush()}
+          />
+        </div>
+      )}
 
       <section className="hero-strip">
         <KpiCard label={t("warRoom.kpis.totalAgents")} value={data.team.length} />
@@ -236,74 +459,98 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         />
       </section>
 
-      <section className="war-room-coordinator" aria-labelledby="war-room-coordinator-title">
-        <h2 id="war-room-coordinator-title" className="war-room-section-title">
-          {t("warRoom.coordinator.title")}
-        </h2>
-        <p className="war-room-coordinator-subtitle">
-          {t("warRoom.coordinator.subtitle", { name: data.product.name })}
-        </p>
-        <div className="war-room-coordinator-panel">
-          <CoordinatorChat
-            productId={data.product.id}
-            welcomeMessageKey="warRoom.coordinator.welcome"
-            onExecuted={(runId) => {
-              flashNote(t("warRoom.runStarted"));
-              refreshScheduler.current.schedule(800);
-              window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
-              void api.runs.get(runId).catch(() => undefined);
-            }}
-          />
-        </div>
-      </section>
-
-      <div className="war-room-grid">
-        <aside className="war-room-radar">
-          <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>
-          {data.pipeline.length === 0 ? (
-            <p className="war-room-empty">{t("warRoom.radarEmpty")}</p>
+      <div
+        className={`war-room-main${coordinatorCollapsed ? " war-room-main--coordinator-collapsed" : ""}`}
+      >
+        <aside
+          className={`war-room-coordinator war-room-coordinator-inline${coordinatorCollapsed ? " is-collapsed" : ""}`}
+          aria-labelledby="war-room-coordinator-title"
+        >
+          {coordinatorCollapsed ? (
+            <button
+              type="button"
+              className="war-room-coordinator-expand"
+              onClick={toggleCoordinatorCollapsed}
+              aria-label={t("warRoom.coordinator.expand")}
+              aria-expanded={false}
+              aria-controls="war-room-coordinator-panel"
+            >
+              <MessageSquare className="h-4 w-4" aria-hidden />
+              <ChevronRight className="h-4 w-4" aria-hidden />
+              <span className="war-room-coordinator-expand-label">{t("warRoom.coordinator.title")}</span>
+            </button>
           ) : (
-            <ul className="war-room-radar-list">
-              {data.pipeline.map((idea, i) => (
-                <li key={idea.id} className="war-room-radar-item">
-                  <span className="war-room-radar-blip" data-rank={i % 4} aria-hidden />
-                  <div className="war-room-radar-body">
-                    <p className="war-room-radar-title">{idea.title}</p>
-                    <p className="war-room-radar-meta">
-                      {t("warRoom.radarScore", { score: idea.interestScore.toFixed(1) })}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <>
+              <div className="war-room-coordinator-header">
+                <h2 id="war-room-coordinator-title" className="war-room-section-title">
+                  {t("warRoom.coordinator.title")}
+                </h2>
+                <button
+                  type="button"
+                  className="war-room-coordinator-collapse"
+                  onClick={toggleCoordinatorCollapsed}
+                  aria-label={t("warRoom.coordinator.collapse")}
+                  aria-expanded
+                  aria-controls="war-room-coordinator-panel"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+              <p className="war-room-coordinator-subtitle">
+                {t("warRoom.coordinator.subtitle", { name: data.product.name })}
+              </p>
+              <div id="war-room-coordinator-panel" className="war-room-coordinator-panel">
+                <CoordinatorChat
+                  productId={data.product.id}
+                  orgUnitId={data.orgUnit?.id}
+                  welcomeMessageKey="warRoom.coordinator.welcome"
+                  onExecuted={(runId) => {
+                    flashNote(t("warRoom.runStarted"));
+                    refreshScheduler.current.schedule(800);
+                    window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
+                    void api.runs.get(runId).catch(() => undefined);
+                  }}
+                />
+              </div>
+            </>
           )}
         </aside>
 
-        <section className="war-room-table" aria-label={t("warRoom.tableAria")}>
-          <div className="war-room-table-grid" />
-          <div className="war-room-table-ring" aria-hidden />
-          <div className="war-room-core">
-            <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
-            <p className="war-room-core-name">
-              {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
-            </p>
-            <p className="war-room-core-status">
-              {data.activeRun
-                ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
-                : t("warRoom.coreIdle", { count: totalAgents })}
-            </p>
-            {liveNote && (
-              <p className="war-room-core-note" role="status">
-                <span className="war-room-pulse" aria-hidden /> {liveNote}
-              </p>
-            )}
+        <section
+          className="war-room-table"
+          data-density={tableDensity}
+          aria-label={t("warRoom.tableAria")}
+        >
+          <div className="war-room-table-backdrop" aria-hidden>
+            <div className="war-room-table-grid" />
           </div>
-          {data.team.map((agent, i) => (
-            <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
-          ))}
+          <div className="war-room-table-stage">
+            <div className="war-room-table-ring" aria-hidden />
+            <div className="war-room-core">
+              <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
+              <p className="war-room-core-name">
+                {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
+              </p>
+              <p className="war-room-core-status">
+                {data.activeRun
+                  ? t("warRoom.coreRunning", { agents: data.activeRun.agentIds.length })
+                  : t("warRoom.coreIdle", { count: totalAgents })}
+              </p>
+              {liveNote && (
+                <p className="war-room-core-note" role="status">
+                  <span className="war-room-pulse" aria-hidden /> {liveNote}
+                </p>
+              )}
+            </div>
+            {displayTeam.map((agent, i) => (
+              <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
+            ))}
+          </div>
         </section>
+      </div>
 
-        <aside className="war-room-details">
+      <aside className="war-room-details war-room-briefing-bar">
+        <div className="war-room-briefing-col">
           <h2 className="war-room-section-title">{t("warRoom.briefing")}</h2>
           {data.activeRun ? (
             <div className="war-room-briefing">
@@ -321,36 +568,57 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           ) : (
             <p className="war-room-empty">{t("warRoom.noActiveRun")}</p>
           )}
+        </div>
 
-          {thinking[0] && (
-            <div className="war-room-thinking">
-              <p className="war-room-section-subtitle">{t("warRoom.thinking")}</p>
-              <p className="war-room-thinking-name">{thinking[0].name}</p>
-              <p className="war-room-thinking-task">
-                {thinking[0].currentTask ?? t("warRoom.thinkingGeneric")}
-              </p>
-            </div>
-          )}
-
-          <div className="war-room-legend">
-            <p className="war-room-section-subtitle">{t("warRoom.legend")}</p>
-            <ul>
-              <li>
-                <span className="war-room-dot" data-status="thinking" />
-                {t("warRoom.status.thinking")}
-              </li>
-              <li>
-                <span className="war-room-dot" data-status="queued" />
-                {t("warRoom.status.queued")}
-              </li>
-              <li>
-                <span className="war-room-dot" data-status="idle" />
-                {t("warRoom.status.idle")}
-              </li>
-            </ul>
+        {thinking[0] && (
+          <div className="war-room-thinking war-room-briefing-col">
+            <p className="war-room-section-subtitle">{t("warRoom.thinking")}</p>
+            <p className="war-room-thinking-name">{thinking[0].name}</p>
+            <p className="war-room-thinking-task">
+              {thinking[0].currentTask ?? t("warRoom.thinkingGeneric")}
+            </p>
           </div>
-        </aside>
-      </div>
+        )}
+
+        <div className="war-room-legend war-room-briefing-col">
+          <p className="war-room-section-subtitle">{t("warRoom.legend")}</p>
+          <ul>
+            <li>
+              <span className="war-room-dot" data-status="thinking" />
+              {t("warRoom.status.thinking")}
+            </li>
+            <li>
+              <span className="war-room-dot" data-status="queued" />
+              {t("warRoom.status.queued")}
+            </li>
+            <li>
+              <span className="war-room-dot" data-status="idle" />
+              {t("warRoom.status.idle")}
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <section className="war-room-radar war-room-radar-bottom">
+        <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>
+        {data.pipeline.length === 0 ? (
+          <p className="war-room-empty">{t("warRoom.radarEmpty")}</p>
+        ) : (
+          <ul className="war-room-radar-list war-room-radar-list-horizontal">
+            {data.pipeline.map((idea, i) => (
+              <li key={idea.id} className="war-room-radar-item">
+                <span className="war-room-radar-blip" data-rank={i % 4} aria-hidden />
+                <div className="war-room-radar-body">
+                  <p className="war-room-radar-title">{idea.title}</p>
+                  <p className="war-room-radar-meta">
+                    {t("warRoom.radarScore", { score: idea.interestScore.toFixed(1) })}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <OpencodeHistoryPanel productId={productId} />
 
@@ -380,7 +648,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
 
 function AgentSeat({ agent, index, total }: { agent: TeamAgent; index: number; total: number }) {
   const { t } = useTranslation();
-  const radiusPct = total <= 4 ? 38 : total <= 8 ? 42 : total <= 12 ? 45 : 47;
+  const radiusPct = seatRadiusPct(total);
   const { x, y } = positionOnCircle(index, total, radiusPct);
   const emoji = ROLE_EMOJI[agent.name] ?? "🧑‍💼";
   const ringColor = statusRingColor(agent.status);

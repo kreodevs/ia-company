@@ -10,6 +10,9 @@ export interface ProductLastRunStepTrace {
   outputChars: number;
   memoryKeyChars: number;
   hasStructuredHandoff: boolean;
+  wroteDocs: boolean;
+  savedDeliverablePath: string | null;
+  deliverableStatus: "saved_to_disk" | "handoff_only" | "missing";
   outputPreview: string;
   output: string;
   tokensUsed: number | null;
@@ -47,7 +50,24 @@ function hasStructuredHandoff(text: string): boolean {
   return /```(?:json)?[\s\S]*?consensusUpdate|```(?:json)?[\s\S]*?"nextAction"/i.test(text);
 }
 
-function buildDiagnosis(input: {
+export function resolveStepDeliverableStatus(input: {
+  outputChars: number;
+  memoryKeyChars: number;
+  hasStructuredHandoff: boolean;
+  wroteDocs?: boolean;
+  savedDeliverablePath?: string;
+}): ProductLastRunStepTrace["deliverableStatus"] {
+  const hasOutput = input.outputChars > 0 || input.memoryKeyChars > 0;
+  if (input.wroteDocs || input.savedDeliverablePath?.trim()) {
+    return "saved_to_disk";
+  }
+  if (hasOutput || input.hasStructuredHandoff) {
+    return "handoff_only";
+  }
+  return "missing";
+}
+
+export function buildProductLastRunDiagnosis(input: {
   run: ProductLastRunTrace["run"];
   steps: ProductLastRunStepTrace[];
   revisionsRecorded: number;
@@ -73,10 +93,20 @@ function buildDiagnosis(input: {
     return "revisions_not_listed";
   }
   if (input.docsInWorkspace === 0 && withOutput.every((s) => !s.hasStructuredHandoff)) {
+    const anySaved = withOutput.some(
+      (s) => s.wroteDocs || Boolean(s.savedDeliverablePath?.trim()),
+    );
+    if (anySaved) {
+      return "no_docs_on_disk";
+    }
     return "no_docs_and_weak_handoff";
   }
   if (input.docsInWorkspace === 0) {
     return "no_docs_on_disk";
+  }
+  const withHandoff = withOutput.filter((s) => s.hasStructuredHandoff);
+  if (withHandoff.length > 0 && withHandoff.length < withOutput.length) {
+    return "partial_handoff";
   }
   return "ok";
 }
@@ -157,6 +187,19 @@ export async function getProductLastRunTrace(
       outputChars,
       memoryKeyChars,
       hasStructuredHandoff: hasStructuredHandoff(bestText),
+      wroteDocs: h.wroteDocs === true,
+      savedDeliverablePath:
+        typeof h.savedDeliverablePath === "string" && h.savedDeliverablePath.trim()
+          ? h.savedDeliverablePath.trim()
+          : null,
+      deliverableStatus: resolveStepDeliverableStatus({
+        outputChars,
+        memoryKeyChars,
+        hasStructuredHandoff: hasStructuredHandoff(bestText),
+        wroteDocs: h.wroteDocs === true,
+        savedDeliverablePath:
+          typeof h.savedDeliverablePath === "string" ? h.savedDeliverablePath : undefined,
+      }),
       outputPreview: bestText.trim().slice(0, 280),
       output: bestText.trim(),
       tokensUsed: agentId ? (tokensByAgentId.get(agentId) ?? null) : null,
@@ -191,6 +234,6 @@ export async function getProductLastRunTrace(
     docsInWorkspace,
     diagnosis: "ok",
   };
-  trace.diagnosis = buildDiagnosis(trace);
+  trace.diagnosis = buildProductLastRunDiagnosis(trace);
   return trace;
 }

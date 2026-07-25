@@ -48,7 +48,7 @@ export default function MarkdownChartBlock({ specText }: { specText: string }) {
   const spec = parseChartSpec(specText);
   if (!spec) {
     return (
-      <pre className="overflow-x-auto rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-100">
+      <pre className="overflow-x-auto app-alert app-alert--warning p-3 text-xs">
         {specText}
       </pre>
     );

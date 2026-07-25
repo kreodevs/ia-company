@@ -18,6 +18,9 @@ import SkillsPage from "./pages/SkillsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
+import OrgUnitsPage from "./pages/OrgUnitsPage";
+import OrgStudioPage from "./pages/OrgStudioPage";
+import OrgUnitDetailPage from "./pages/OrgUnitDetailPage";
 import ProductSettingsPage from "./pages/ProductSettingsPage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
 import ProductTeamPage from "./pages/ProductTeamPage";
@@ -104,6 +107,9 @@ function AppShell() {
               <Route path="debug/decisions" element={<DecisionsPage />} />
               <Route path="ops" element={<OpsPage />} />
               <Route path="products" element={<ProductsPage />} />
+              <Route path="org-units" element={<OrgUnitsPage />} />
+              <Route path="org-units/:id" element={<OrgUnitDetailPage />} />
+              <Route path="org-studio" element={<OrgStudioPage />} />
               <Route path="war-room" element={<WarRoomPage />} />
               <Route path="war-room/:productId" element={<WarRoomPage />} />
               <Route path="decisions" element={<DecisionsPage />} />

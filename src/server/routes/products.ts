@@ -28,6 +28,10 @@ import {
 import { getActiveOpencodeByProduct, getLatestCompletedDelegationForProduct, listProductOpencodeHistory } from "../../lib/opencode-history.js";
 import { normalizeOpencodeDiff } from "../../lib/opencode-diff.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import {
+  buildStripeWebhookUrl,
+  serializeTenantProductForClient,
+} from "../../lib/product-serializer.js";
 
 export async function productRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -36,7 +40,8 @@ export async function productRoutes(app: FastifyInstance) {
   app.get("/products", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      return listTenantProducts(tenantId);
+      const products = await listTenantProducts(tenantId);
+      return products.map(serializeTenantProductForClient);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -128,6 +133,9 @@ export async function productRoutes(app: FastifyInstance) {
       goNoGo?: GoNoGoDecision;
       revenueUsd?: number;
       githubRepoUrl?: string | null;
+      stripeWebhookSecret?: string | null;
+      orgUnitId?: string | null;
+      workItemKind?: "product" | "client" | "campaign" | "project";
     };
   }>("/products/:id", async (request, reply) => {
     try {
@@ -140,9 +148,37 @@ export async function productRoutes(app: FastifyInstance) {
       const phaseChanged = request.body?.phase && request.body.phase !== existing.phase;
       const goNoGoChanged = request.body?.goNoGo && request.body.goNoGo !== existing.goNoGo;
 
+      const { stripeWebhookSecret, orgUnitId, ...bodyRest } = request.body ?? {};
+      const data: Record<string, unknown> = { ...bodyRest };
+
+      if (orgUnitId !== undefined) {
+        if (orgUnitId === null || orgUnitId === "") {
+          data.orgUnitId = null;
+        } else {
+          const org = await prisma.orgUnit.findFirst({
+            where: { id: orgUnitId, tenantId },
+            select: { id: true },
+          });
+          if (!org) return reply.status(400).send({ error: "Org unit not found" });
+          data.orgUnitId = orgUnitId;
+        }
+      }
+      if (stripeWebhookSecret !== undefined) {
+        const baseMeta =
+          typeof existing.metadata === "object" && existing.metadata
+            ? (existing.metadata as Record<string, unknown>)
+            : {};
+        if (stripeWebhookSecret === null || stripeWebhookSecret === "") {
+          delete baseMeta.stripeWebhookSecret;
+        } else {
+          baseMeta.stripeWebhookSecret = stripeWebhookSecret;
+        }
+        data.metadata = baseMeta;
+      }
+
       const product = await prisma.tenantProduct.update({
         where: { id: request.params.id },
-        data: request.body,
+        data: data as never,
       });
 
       if (request.body?.phase === "archived" || request.body?.phase === "paused") {
@@ -177,7 +213,29 @@ export async function productRoutes(app: FastifyInstance) {
       } else {
         await logAudit(request, "product.update", { productId: product.id });
       }
-      return product;
+      return serializeTenantProductForClient(product);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/products/:id/revenue-settings", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const serialized = serializeTenantProductForClient(product);
+      return {
+        productId: product.id,
+        revenueUsd: product.revenueUsd,
+        stripeWebhookConfigured: serialized.stripeWebhookConfigured,
+        revenueLastSyncedAt: serialized.revenueLastSyncedAt,
+        revenueSource: serialized.revenueSource,
+        webhookUrl: buildStripeWebhookUrl(product.id),
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -628,7 +686,7 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, ideas, lastLinkedRun] = await Promise.all([
+      const [agents, ideas, lastLinkedRun, lastRunTrace] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
@@ -655,6 +713,9 @@ export async function productRoutes(app: FastifyInstance) {
               },
             })
           : Promise.resolve(null),
+        import("../../lib/product-last-run.js").then(({ getProductLastRunTrace }) =>
+          getProductLastRunTrace(tenantId, product.id),
+        ),
       ]);
 
       const recentRunsQuery = await prisma.executionRun.findMany({
@@ -777,8 +838,9 @@ export async function productRoutes(app: FastifyInstance) {
         const isActive = activeAgentIds.has(a.id);
         const lastWork = lastWorkedAt.get(a.id);
         let status: "idle" | "thinking" | "queued" = "idle";
-        if (activeRun && activeRun.status === "RUNNING" && isActive) status = "thinking";
-        else if (activeRun && activeRun.status === "PENDING") status = "queued";
+        if (activeRun && ["RUNNING", "DELEGATED"].includes(activeRun.status) && isActive) {
+          status = "thinking";
+        } else if (activeRun && activeRun.status === "PENDING") status = "queued";
         return {
           id: a.id,
           name: a.name,
@@ -805,9 +867,17 @@ export async function productRoutes(app: FastifyInstance) {
           goNoGo: product.goNoGo,
           revenueUsd: product.revenueUsd,
           lastRunId: product.lastRunId,
+          orgUnitId: product.orgUnitId,
+          workItemKind: product.workItemKind,
           createdAt: product.createdAt.toISOString(),
           updatedAt: product.updatedAt.toISOString(),
         },
+        orgUnit: product.orgUnitId
+          ? await prisma.orgUnit.findFirst({
+              where: { id: product.orgUnitId, tenantId },
+              select: { id: true, name: true, slug: true, type: true },
+            })
+          : null,
         activeRun: activeRun
           ? {
               id: activeRun.id,
@@ -815,6 +885,7 @@ export async function productRoutes(app: FastifyInstance) {
               status: activeRun.status,
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),
+              errorMessage: activeRun.errorMessage,
               opencode: activeDelegation
                 ? {
                     delegationId: activeDelegation.id,
@@ -831,6 +902,7 @@ export async function productRoutes(app: FastifyInstance) {
           title: i.title,
           interestScore: i.interestScore,
         })),
+        lastRunTrace,
       };
     } catch (err) {
       return handleRouteError(reply, err);

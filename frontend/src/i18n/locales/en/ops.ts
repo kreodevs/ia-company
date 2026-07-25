@@ -55,7 +55,8 @@ export const ops = {
   status: {
     cycle: "Cycle #{{number}}",
     nextWorkflow: "Next automatic step:",
-    nextReason: "Reason:",
+    nextReason: "Next meta step:",
+    nextReasonBlocked: "Would run when unblocked:",
     focusedProduct: "Focused product:",
   },
   metaCycle: {
@@ -161,5 +162,9 @@ export const ops = {
     empty: "No enabled rules scheduled in the next 7 days.",
     willRun: "Will run",
     skipped: "Skipped: {{reason}}",
+  },
+  launchBlocked: {
+    title: "Meta cycle paused",
+    viewRuns: "View active runs",
   },
 } as const;

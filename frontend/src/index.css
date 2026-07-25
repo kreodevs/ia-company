@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&family=Libre+Caslon+Display:wght@400;600&display=swap");
 @import "sonner/dist/styles.css";
 @import "tailwindcss";
+@custom-variant dark (html[data-theme="slash"] &, html[data-theme="paperclip"] &);
 @plugin "@tailwindcss/typography";
 @import "./styles/letter-theme.css";
 @import "./styles/paperclip-theme.css";
@@ -8,6 +9,7 @@
 @import "./styles/office-theme.css";
 @import "./styles/office-encargos.css";
 @import "./styles/war-room.css";
+@import "./styles/kreo-vars.css";
 
 @theme inline {
   --color-vault-ink: var(--color-vault-ink);
@@ -36,6 +38,8 @@
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
   --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
 }
@@ -126,6 +130,37 @@ textarea:focus-visible {
 
 .skip-link:focus {
   top: 1rem;
+}
+
+/* Theme-aware status banners — use semantic tokens, not Tailwind palette + OS dark mode */
+.app-alert {
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.app-alert--info {
+  border: 1px solid color-mix(in srgb, var(--info) 35%, transparent);
+  background: color-mix(in srgb, var(--info) 10%, var(--card));
+}
+
+.app-alert--warning {
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, var(--card));
+}
+
+.app-alert__icon--info {
+  color: var(--info);
+}
+
+.app-alert__icon--warning {
+  color: var(--warning);
+}
+
+.app-alert__meta {
+  color: var(--foreground-muted);
 }
 
 .page-shell {

@@ -1,9 +1,15 @@
 export const warRoom = {
   loading: "Loading the war room…",
+  loadErrorTitle: "Could not load war room",
+  loadErrorUnknown: "Unknown error",
+  retry: "Try again",
+  vetoTitle: "Munger veto — run stopped",
   eyebrow: "Live operations",
   title: "War room — {{name}}",
   subtitle:
     "Tactical view of every agent assigned to this product. The room updates in real time while a run is in flight.",
+  departmentLink: "Dept: {{name}} →",
+  artifactsLink: "View department artifacts →",
   liveRun: "Live: {{workflow}}",
   onDuty: "On duty: {{count}}",
   viewCode: "View code →",
@@ -24,6 +30,8 @@ export const warRoom = {
   runStarted: "Run launched — follow progress here in the war room.",
   coordinator: {
     title: "Coordinator",
+    collapse: "Hide coordinator",
+    expand: "Show coordinator",
     subtitle:
       "Describe what you need for {{name}}. The coordinator proposes team and plan; you approve before anything runs.",
     welcome:
@@ -54,5 +62,12 @@ export const warRoom = {
     idle: "idle",
     queued: "queued",
     thinking: "thinking",
+  },
+  deliverables: {
+    title: "Deliverable health",
+    weakSteps: "{{count}} of {{total}} steps without files on disk",
+    viewTrace: "Last run trace →",
+    openRun: "Open run logs",
+    agentDocs: "{{count}} agent docs",
   },
 } as const;

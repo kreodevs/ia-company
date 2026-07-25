@@ -1,470 +1,439 @@
-# Guía de Auto-Company Platform
+# Manual de usuario — Tu oficina virtual con agentes IA
 
-> **Auto-Company** es una plataforma multi-tenant con **Oficina bajo demanda**: tú encargas el trabajo a un coordinador y un equipo de agentes IA; ellos investigan, deciden, implementan y documentan en productos reales bajo `projects/`. La programación automática es **opcional**.
+Bienvenido. Esta guía explica **cómo operar tu empresa virtual**: pedir trabajo, crear departamentos, armar equipos de agentes, conectar productos y recibir entregables. No necesitas saber de programación ni de infraestructura.
 
 ---
 
-## Qué puedes hacer con la aplicación
+## Inicio rápido (Oficina)
 
-Esta sección es tu **tutorial de inicio**. Resume el flujo actual de la plataforma tras el rediseño hacia la Oficina.
+Si acabas de entrar, empieza aquí. En **cinco minutos** puedes completar tu primer encargo.
 
-### En una frase
+### Paso 1 — Entra a la Oficina
 
-Gestionar **productos y oportunidades** con agentes especializados (CEO, CTO, producto, código, growth…) que comparten memoria (*consensus*), trabajan en workspaces por producto y se lanzan **desde la Oficina** cuando tú lo decides.
+Tras iniciar sesión, abre **Inicio** en el menú lateral (es tu **Oficina**). Verás el chat del **Coordinador**, tu punto de contacto con todo el equipo de agentes.
 
-### Flujo principal: la Oficina
+### Paso 2 — Di qué necesitas
 
-1. Entra en **`/office`** — home del tenant tras el login.
-2. Habla con el **coordinador** o elige un **servicio rápido** (discovery, evaluación, build…).
-3. Revisa el **plan de equipo** (agentes, coste estimado, alcance) y pulsa **Aprobar y ejecutar**.
-4. Sigue el progreso en **War room** (`/war-room/:productId`) en vivo.
-5. Cuando termina, el **encargo** aparece en **`/office/encargos`** con informe final y documentos del equipo.
+Escribe en lenguaje natural, como hablarías con un jefe de proyectos:
 
-> **Por defecto no hay ciclos automáticos.** El plan de operaciones arranca en modo *bajo demanda* (0 reglas). Activa presets en **Configuración → Programaciones** solo si quieres discovery semanal u otra automatización parcial.
+- *«Investiga si tiene sentido un SaaS de facturación para freelancers en México»*
+- *«Prepara tres posts de LinkedIn para el lanzamiento de nuestro producto»*
+- *«Revisa la propuesta de precios del competidor X»*
 
-### Si eres superadmin (plataforma)
+También puedes usar **Servicios rápidos**: plantillas listas (discovery, validación de idea, sprint de feature…) que puedes editar antes de lanzar.
 
-| Paso | Dónde | Qué consigues |
-|------|-------|---------------|
-| 1 | `/admin/settings` | LLM compartido (OpenRouter o TokenLab), email, rate limits |
-| 2 | `/admin` | Crear **tenants** y clonar plantillas globales |
-| 3 | `/admin/templates` | Editar **agentes, skills y workflows** maestros |
-| 4 | Selector del header | **Impersonar** un tenant y probar la Oficina |
+### Paso 3 — Elige el alcance (opcional)
 
-### Si eres usuario de organización (tenant)
+Antes de aprobar, puedes indicar:
 
-| Paso | Dónde | Qué consigues |
-|------|-------|---------------|
-| 1 | `/office` | Encargar trabajo al coordinador |
-| 2 | `/products` | Registrar productos (GitHub o nuevo), pipeline, foco |
-| 3 | `/war-room/:id` | Vista táctica en vivo + chat con el coordinador |
-| 4 | `/office/encargos` | Historial de encargos e informes |
-| 5 | `/debug/runs` | Logs técnicos, tokens y coste |
-| 6 | `/settings` | Integraciones, OpenCode, límites, programaciones |
+- **Exploración general** — sin producto concreto; ideal para ideas nuevas.
+- **Un producto** — el equipo usará el contexto de ese producto.
+- **Un departamento** — el equipo usará los agentes, el estilo y los entregables de ese departamento (por ejemplo, Marketing o Product Studio).
 
-### Tutorial express (15 minutos)
+### Paso 4 — Revisa y aprueba
 
-1. **Login** con el slug de tu organización en `/login`.
-2. Abre **Oficina** → pide al coordinador *“Explora 3 ideas de micro-SaaS”* o usa el servicio de discovery.
-3. Aprueba el plan → observa el run en **War room**.
-4. Ve a **Productos** → registra un repo existente (URL GitHub + opcional *product-intake*) o crea uno nuevo.
-5. En el producto: **Consenso**, **Código** y **OpenCode** (agente/modelo/ruta por producto).
-6. Revisa el encargo terminado en **Mis encargos**.
-7. (Opcional) **Configuración → Programaciones** → preset *Solo discovery* si quieres piloto automático los sábados.
+El Coordinador te propone un **plan de equipo**: qué agentes participarán, qué entregarán, tiempo y coste estimados. Si te convence, pulsa **Aprobar y ejecutar**. Nada se ejecuta hasta que tú lo autorices.
 
-### Qué hace cada área principal
+### Paso 5 — Sigue el progreso y recoge el resultado
 
-| Área | Para qué sirve |
-|------|----------------|
-| **Oficina** | Coordinador conversacional, servicios rápidos, ROI y gasto mensual |
-| **Mis encargos** | Bandeja de trabajos encargados con informe final |
-| **Productos** | Portfolio, pipeline de ideas, registro GitHub, foco, lanzadores |
-| **War room** | Mesa táctica por producto: agentes en vivo, documentos, coordinador |
-| **Oficina de depuración** | Runs, consenso, ops, decisiones, catálogo IA (workflows/agentes/skills) |
-| **Configuración** | LLM tenant, OpenCode global, GitHub, notificaciones, límites, schedules |
-| **Ayuda** | Esta guía |
+- Durante la ejecución: abre **War room** para ver el estado en vivo.
+- Al terminar: entra en **Mis encargos** para leer el resumen y descargar documentos.
 
-### Modos de uso
-
-| Modo | Cuándo | Cómo |
-|------|--------|------|
-| **Bajo demanda** (default) | Uso diario, control total | Oficina → aprobar plan → war room |
-| **Programación fija** | Discovery semanal, revisión lunes | Settings → Programaciones → preset o regla |
-| **Depuración técnica** | Ajustar agentes, ver logs SSE | `/debug/*` |
-
-> **Consejo:** Domina un encargo manual desde la Oficina antes de activar schedules.
+> **Recuerda:** por defecto todo funciona **bajo demanda**. Nada corre solo hasta que tú lo pidas y lo apruebes.
 
 ---
 
 ## Tabla de contenidos
 
-1. [Qué puedes hacer con la aplicación](#qué-puedes-hacer-con-la-aplicación)
-2. [Primeros pasos](#primeros-pasos)
-3. [Roles y acceso](#roles-y-acceso)
-4. [Mapa de la aplicación](#mapa-de-la-aplicación)
-5. [La Oficina bajo demanda](#la-oficina-bajo-demanda)
-6. [Productos y portfolio](#productos-y-portfolio)
-7. [War room y encargos](#war-room-y-encargos)
-8. [Agentes, skills y workflows](#agentes-skills-y-workflows)
-9. [Ejecuciones (Runs)](#ejecuciones-runs)
-10. [Consensus y memoria](#consensus-y-memoria)
-11. [Operaciones y programación](#operaciones-y-programación)
-12. [Configuración del tenant](#configuración-del-tenant)
-13. [OpenCode e integraciones](#opencode-e-integraciones)
-14. [Administración de plataforma](#administración-de-plataforma)
-15. [Despliegue y worker](#despliegue-y-worker)
-16. [Solución de problemas](#solución-de-problemas)
+1. [Inicio rápido (Oficina)](#inicio-rápido-oficina)
+2. [Qué es tu oficina virtual](#qué-es-tu-oficina-virtual)
+3. [Cómo pedir trabajo a los agentes](#cómo-pedir-trabajo-a-los-agentes)
+4. [Mis encargos: recibir resultados](#mis-encargos-recibir-resultados)
+5. [War room: seguir el trabajo en vivo](#war-room-seguir-el-trabajo-en-vivo)
+6. [Productos y oportunidades](#productos-y-oportunidades)
+7. [Departamentos virtuales](#departamentos-virtuales)
+8. [Crear y configurar agentes](#crear-y-configurar-agentes)
+9. [Habilidades (skills)](#habilidades-skills)
+10. [Flujos de trabajo](#flujos-de-trabajo)
+11. [Conectar departamentos, productos y equipos](#conectar-departamentos-productos-y-equipos)
+12. [Memoria y consenso](#memoria-y-consenso)
+13. [Programaciones automáticas (opcional)](#programaciones-automáticas-opcional)
+14. [Decisiones que requieren tu visto bueno](#decisiones-que-requieren-tu-visto-bueno)
+15. [Configuración de tu organización](#configuración-de-tu-organización)
+16. [Equipo humano y permisos](#equipo-humano-y-permisos)
+17. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
-## Primeros pasos
+## Qué es tu oficina virtual
 
-### Instalación local (desarrollo)
+Imagina una empresa donde cada “empleado” es un especialista de IA: estrategia, producto, diseño, código, marketing, finanzas, calidad… Todos comparten contexto y trabajan bajo un **Coordinador** que organiza el equipo según lo que tú pidas.
 
-```bash
-cp .env.example .env
-npm install
-npx prisma migrate dev
-npm run db:seed
+Tú eres quien **encarga**, **aprueba** y **decide**. Los agentes **investigan, redactan, diseñan y ejecutan** dentro de los límites que configures.
 
-# Terminal 1 — API
-npm run dev
+### Las piezas principales
 
-# Terminal 2 — Worker (cola + scheduler opcional)
-npm run worker
+| Pieza | Para qué sirve |
+|-------|----------------|
+| **Oficina (Inicio)** | Pedir trabajo al Coordinador y lanzar encargos |
+| **Mis encargos** | Bandeja de trabajos terminados con informes y documentos |
+| **War room** | Vista táctica en vivo mientras el equipo trabaja |
+| **Productos** | Cartera de ideas y productos reales con los que operar |
+| **Departamentos** | Equipos virtuales especializados (marketing, product studio, etc.) |
+| **Flujos** | Secuencias de agentes que puedes reutilizar |
+| **Agentes y Habilidades** | Catálogo de especialistas y sus capacidades |
+| **Consenso** | Memoria compartida de la compañía y de cada producto |
 
-# Terminal 3 — Frontend
-npm run dev:frontend
-```
+### Tres formas de trabajar
 
-Abre **http://localhost:5173**. Tras login de tenant aterrizas en **`/office`**.
-
-### Primer arranque en la UI
-
-| Paso | Ruta | Acción |
-|------|------|--------|
-| 1 | `/setup` | Crear **superadmin** (solo la primera vez) |
-| 2 | `/admin` | Crear tenant y clonar plantillas |
-| 3 | Header | Impersonar el tenant |
-| 4 | `/settings?tab=integrations` | Token **GitHub** (repos privados e intake) |
-| 5 | `/office` | Primer encargo al coordinador |
+| Modo | Cuándo usarlo |
+|------|----------------|
+| **Bajo demanda** | Uso diario. Tú pides, revisas el plan y apruebas. *(Predeterminado)* |
+| **Tareas programadas** | Quieres que ciertas tareas se repitan en fechas fijas (por ejemplo, un barrido de mercado los sábados) |
+| **Modo autónomo** | Ciclo continuo con menos intervención. Actívalo solo cuando domines el flujo manual |
 
 ---
 
-## Roles y acceso
+## Cómo pedir trabajo a los agentes
 
-### Superadmin (plataforma)
+### Hablar con el Coordinador
 
-- Acceso a `/admin`, plantillas globales y settings de plataforma.
-- **Impersona** tenants desde el selector del header.
-- Sin impersonación, las rutas de tenant redirigen a `/admin`.
+El Coordinador es tu **jefe de staff**: entiende tu petición, elige especialistas, estima esfuerzo y te presenta un plan antes de mover un dedo.
 
-### Usuario de organización (tenant)
+**Consejos para buenos encargos:**
 
-- Login: **slug** + email + contraseña.
-- Aterrizaje por defecto: **`/office`**.
-
-### Roles dentro del tenant
-
-| Rol | Permisos |
-|-----|----------|
-| **owner / admin** | Settings, equipo, límites, programaciones |
-| **member** | Oficina, productos, war room, depuración (lectura/ejecución) |
-
----
-
-## Mapa de la aplicación
-
-### Oficina (flujo humano)
-
-| Ruta | Descripción |
-|------|-------------|
-| `/` · `/office` | Coordinador, servicios, actividad, ROI |
-| `/office/encargos` | Bandeja de encargos |
-| `/office/encargos/:runId` | Informe final + documentos del equipo |
-| `/products` | Portfolio, pipeline, añadir producto |
-| `/war-room/:productId` | War room táctico por producto |
-| `/debug/products/:id/consensus` | Memoria técnica del producto (depuración) |
-| `/products/:id/code` | Workspace + OpenCode por producto |
-| `/settings` | Configuración del tenant |
-| `/help` | Centro de ayuda |
-
-### Oficina de depuración (técnico)
-
-| Ruta | Descripción |
-|------|-------------|
-| `/debug/runs` · `/debug/runs/:id` | Ejecuciones y logs SSE |
-| `/debug/consensus` | Consenso del tenant |
-| `/debug/ops` | KPIs y programaciones activas |
-| `/debug/decisions` | Propuestas go/no-go |
-| `/office/workflows` · `/office/workflows/:id` | Editor visual React Flow (Oficina) |
-| `/debug/agents` · `/debug/skills` | Catálogo IA |
-| `/debug/team` | Usuarios del tenant (admin) |
-
-### Plataforma (superadmin)
-
-| Ruta | Descripción |
-|------|-------------|
-| `/admin` | Dashboard y tenants |
-| `/admin/settings` | LLM, email, rate limits |
-| `/admin/templates` | Plantillas globales |
-
----
-
-## La Oficina bajo demanda
-
-### Coordinador
-
-Chat en **`/office`** con contexto del tenant y, si eliges alcance, de un **producto concreto**. Propone:
-
-- Equipo de agentes y orden de trabajo
-- Coste estimado y presupuesto mensual visible en sidebar
-- Enlace directo al war room al ejecutar
+- Sé **concreto** en el objetivo (*«3 posts LinkedIn»* mejor que *«haz marketing»*).
+- Indica **audiencia, mercado o producto** si aplica.
+- Menciona **formato del entregable** (informe, copy, diseño, código, presentación).
+- Si hay restricciones (tono de marca, plazos, competidores a evitar), dilo desde el principio.
 
 ### Servicios rápidos
 
-Atajos predefinidos (discovery, evaluación, etc.) que saltan la conversación y generan un plan listo para aprobar.
+Son atajos con prompts ya preparados: discovery de mercado, evaluación de idea, sprint de feature, revisión de lanzamiento… Selecciona uno, ajusta el texto si quieres y sigue el mismo flujo de aprobación.
 
-### Notificaciones
+### Elegir alcance antes de ejecutar
 
-Campana en el header → aviso cuando un encargo termina o falla. En móvil el panel respeta *safe area*.
+| Alcance | Efecto |
+|---------|--------|
+| Exploración general | El equipo investiga sin anclarse a un producto |
+| Producto concreto | Los entregables usan memoria, código y contexto de ese producto |
+| Departamento | Participan los agentes y reglas de ese departamento; los artefactos van a su galería |
 
-### Gasto mensual
+### Aprobar o ajustar
 
-Widget en sidebar (*Gasto mensual*) con barra de progreso respecto a límites del tenant.
+Cuando veas la propuesta del Coordinador, revisa:
 
----
+- ¿Los agentes son los adecuados?
+- ¿El entregable coincide con lo que pediste?
+- ¿El coste y tiempo estimados te parecen razonables?
 
-## Productos y portfolio
-
-Cada producto vive en **`projects/{slug}/`** con fase, revenue, foco y workspace propio.
-
-### Añadir producto
-
-En **`/products` → Añadir producto**:
-
-| Modo | Uso |
-|------|-----|
-| **Registrar existente** | URL GitHub, clone opcional, workflow `product-intake` para perfil |
-| **Crear nuevo** | Bootstrap vacío en `projects/{slug}/` |
-
-**Requisito:** token GitHub en **Settings → Integraciones** para repos privados y enriquecimiento API.
-
-### Pipeline y decisiones
-
-- Ideas del discovery → pipeline en Productos
-- **GO / NO-GO** manual o vía workflow de evaluación
-- Propuestas de agentes → **`/debug/decisions`**
-
-### Foco
-
-Un solo producto **en foco** prioriza desarrollo y encargos con alcance producto.
-
-### Perfil de producto
-
-Tras intake: `product-profile.json`, metadata y consenso del producto alimentan prompts de agentes en runs focalizados.
+Si algo no encaja, escribe de nuevo en el chat para **ajustar el plan** antes de aprobar.
 
 ---
 
-## War room y encargos
+## Mis encargos: recibir resultados
 
-### War room (`/war-room/:productId`)
+**Mis encargos** es tu bandeja de salida. Cada fila es un trabajo que encargaste y que ya terminó (o falló).
 
-- Vista táctica mientras corre un workflow
-- Launcher: workflows y agentes individuales por producto
-- Documentos generados en `docs/{rol}/`
+Dentro de cada encargo encontrarás:
 
-### Encargos (`/office/encargos`)
+- **Resumen** — qué hizo el equipo y conclusiones principales.
+- **Documentos** — informes, copys, diseños u otros archivos generados.
 
-- Lista de trabajos encargados desde la Oficina
-- Detalle: **informe final** a ancho completo + sidebar de documentos por agente
-- Markdown enriquecido (GFM, Mermaid, gráficos)
-
-### Relación run ↔ encargo
-
-Durante ejecución → war room. Al completar → encargo humano con informe legible (temas claro/oscuro).
+Usa esta vista para **archivar, compartir con tu equipo humano o pedir un encargo de seguimiento** en la Oficina (*«Con base en el informe anterior, prepara la landing»*).
 
 ---
 
-## Agentes, skills y workflows
+## War room: seguir el trabajo en vivo
 
-### Agentes (`/debug/agents`)
+La **War room** es la sala de operaciones de un producto. Muestra:
 
-Persona experta: system prompt, modelo, temperatura, skills vinculados.
+- **Mesa táctica** — qué agente está activo, en espera o terminó.
+- **Coordinador embebido** — puedes encargar trabajo adicional sin salir de la sala.
+- **Radar de pipeline** — estado general del producto.
+- **Ejecuciones recientes** — historial rápido.
+- **Artefactos del departamento** — si el producto está vinculado a un departamento.
 
-### Skills (`/debug/skills`)
-
-Bloques de conocimiento reutilizables inyectados en el prompt.
-
-### Workflows (`/office/workflows`)
-
-Grafo visual: orden de agentes, memoria compartida, ejecución manual desde el editor.
-
-### Workflows estándar (plantillas)
-
-| Nombre | Propósito |
-|--------|-----------|
-| `opportunity-discovery` | Ideas → pipeline |
-| `new-product-evaluation` | Evaluación → GO/NO-GO |
-| `product-intake` | Perfil de producto desde GitHub |
-| `feature-development` | Implementación en workspace |
-| `product-launch` | Lanzamiento |
-| `pricing-and-monetization` | Pricing |
-| `weekly-review` | Revisión operativa |
+Abre la War room desde **Productos** (botón del producto) o desde un enlace en **Actividad** mientras corre un encargo.
 
 ---
 
-## Ejecuciones (Runs)
+## Productos y oportunidades
 
-Cada run (`/debug/runs/:id`) incluye:
+En **Productos** gestionas tu cartera en dos pestañas:
 
-- Estado: `PENDING` → `RUNNING` → `COMPLETED` / `FAILED` / `CANCELLED`
-- **Shared memory** entre steps
-- **Logs SSE** en tiempo real
-- Tokens y coste estimado
+### Oportunidades
 
-### Herramientas de agentes
+Ideas detectadas por discovery o añadidas manualmente. Para cada una puedes:
 
-| Tool | Función |
-|------|---------|
-| `read_file` / `write_file` / `list_dir` | Archivos en workspace del producto |
-| `shell` | Comandos (timeout configurable) |
-| `git_*` | Git en el proyecto |
-| `npm_run` | Scripts npm |
-| `wrangler_deploy` | Deploy Cloudflare |
+- **Evaluar** — el equipo analiza viabilidad y te propone GO o NO-GO.
+- **Rechazar** — descartar sin crear producto.
+- **Convertir en producto activo** — si la evaluación es positiva.
 
----
+### Productos activos
 
-## Consensus y memoria
+Productos reales con los que operas día a día. Desde cada producto accedes a:
 
-### Consenso del tenant (`/debug/consensus`)
+- **War room** — operación en vivo.
+- **Configuración** — datos del producto, enlace con GitHub, departamento vinculado, OpenCode (delegación de código).
+- **Memoria** — consenso específico del producto.
 
-Documento markdown compartido: decisiones, fase de empresa, **Next Action** humana.
+### Añadir un producto
 
-### Consenso por producto (`/debug/products/:id/consensus`)
+Puedes **registrar un repositorio existente** (URL de GitHub) o **crear un espacio nuevo** para que el equipo empiece desde cero.
 
-Memoria técnica del producto, revisiones e informes — solo **Oficina de depuración**. En la oficina humana usa **Encargos** para ver entregables.
+### Enfocar un producto
 
-### Campos estructurados (shared memory)
-
-| Campo | Efecto |
-|-------|--------|
-| `topIdeas[]` | Ideas al pipeline |
-| `goNoGo` | GO / NO-GO |
-| `productSlug` | Registro en portfolio |
-| `revenueUsd` | Fase *growing* |
+Marca un producto como **en foco** para que la Oficina y la War room lo tengan presente por defecto.
 
 ---
 
-## Operaciones y programación
+## Departamentos virtuales
 
-### Vista Ops (`/debug/ops`)
+Un **departamento** es una unidad de negocio virtual: agencia de marketing, product studio, equipo de contenido, etc. Cada departamento tiene:
 
-KPIs, fase, portfolio resumido, programaciones activas y preview de próximos 7 días.
+- **Agentes propios** (o sugeridos al crearlo).
+- **Configuración** — formulario con parámetros de marca, tono, canales, etc.
+- **design.md** — guía visual y de estilo generada o editada.
+- **Galería de artefactos** — copys, posts, diseños, informes producidos por el equipo.
+- **Work items** — slots de cliente, campaña o proyecto vinculados.
 
-### Plan de operaciones (Settings → Programaciones)
+### Crear un departamento con Org Studio
 
-| Preset | Reglas |
-|--------|--------|
-| **Bajo demanda** (default) | 0 — control desde Oficina |
-| **Solo discovery** | Discovery semanal sábados si pipeline vacío |
-| **Exploración ligera** | Discovery + evaluación + revisión lunes |
+1. Ve a **Departamentos** → **Abrir Org Studio**.
+2. **Paso 1** — Elige plantilla (marketing, product studio, custom…), pon nombre y misión.
+3. Pulsa **Generar propuesta**. La IA sugiere agentes, configuración y vista previa de design.md.
+4. **Paso 2** — Revisa la propuesta. **Munger** (control de riesgos) puede emitir un **VETO** si detecta fallos graves; en ese caso ajusta la misión o la plantilla.
+5. Opcional: marca **Crear work item vinculado** para abrir un slot de producto/cliente al mismo tiempo.
+6. Pulsa **Crear departamento**.
 
-Reglas **fijas** por workflow; el orquestador dinámico (meta) queda como opción avanzada al crear reglas manualmente — **no es el flujo recomendado**.
+### Operar un departamento existente
 
-### Worker
+En la ficha del departamento:
 
-El contenedor **`worker`** procesa cola y evalúa schedules cada ~60 s. Sin worker, las programaciones no disparan solas (la Oficina sigue funcionando).
-
----
-
-## Configuración del tenant
-
-Pestañas en **`/settings`**:
-
-| Pestaña | Contenido |
-|---------|-----------|
-| **General** | Intereses de discovery |
-| **LLM** | Override de modelo, tope coste/run (proveedor vía superadmin) |
-| **OpenCode** | URL, credenciales y *enabled* **globales** |
-| **Integraciones** | Token GitHub, SMTP del tenant para email de agentes |
-| **Servidores MCP** | Registrar MCP stdio, grants por agente, sync de tools |
-| **Notificaciones** | Webhook, Slack, email, in-app |
-| **Límites** | Runs/tokens/coste mensual |
-| **Programaciones** | Plan de operaciones y reglas |
+- **Configuración** — guarda cambios de marca, objetivos, canales.
+- **design.md** — consulta o sincroniza la guía de estilo.
+- **Galería** — revisa entregables; filtra, cambia estado (borrador, aprobado, publicado).
+- **Lanzar trabajo del departamento** — escribe un brief y elige un producto vinculado; el equipo del departamento ejecuta sobre ese contexto.
 
 ---
 
-## OpenCode e integraciones
+## Crear y configurar agentes
 
-### GitHub (tenant)
+Los **agentes** son los especialistas de tu empresa virtual. Cada uno tiene personalidad, modelo de IA, temperatura y **habilidades** asociadas.
 
-**Settings → Integraciones** — PAT con scope `repo` para clone, README, languages y `product-intake`.
+### Dónde gestionarlos
 
-**SMTP (misma pestaña)** — Host, credenciales, allowlist y tope diario para que los agentes usen `send_email`. Solo direcciones permitidas; cada envío queda auditado.
+Menú **Oficina de depuración** → **Catálogo IA** → **Agentes**.
 
-**Settings → Servidores MCP** — Comandos stdio, sync de herramientas y grants por agente. Modo solo lectura bloquea tools mutables por defecto; cada servidor tiene presupuesto de llamadas por run.
+*(Si no ves esta sección, tu rol puede ser solo de miembro; pide a un administrador que cree o ajuste agentes.)*
 
-### OpenCode
+### Crear un agente
 
-| Nivel | Qué configuras |
-|-------|----------------|
-| **Tenant** | Base URL, usuario, contraseña, activar/desactivar, auto-approve |
-| **Producto** (`/products/:id/code`) | Agente default, modelo, ruta del proyecto |
+1. Pulsa **Nuevo agente**.
+2. Define **nombre** y **persona** (cómo piensa y habla: estratega, redactor, devops…).
+3. Elige **modelo** y **temperatura** (más creativo vs. más preciso).
+4. Asigna **habilidades** que amplíen lo que puede hacer (research, SEO, revisión de código…).
+5. Guarda.
 
-La delegación a OpenCode usa la config **por producto** al implementar código.
+### Cuándo crear agentes nuevos
 
----
+- Necesitas un rol que no cubre nadie del catálogo.
+- Quieres una variante con otro tono (por ejemplo, «Copy B2B formal» vs. «Copy startup casual»).
+- Un departamento requiere especialistas dedicados.
 
-## Administración de plataforma
-
-### Crear tenant
-
-Nombre, slug, owner, **clone templates**.
-
-### Plantillas (`/admin/templates`)
-
-Agentes, skills y workflows maestros. **Sync to tenants** para propagar cambios.
-
-### Platform settings
-
-| Setting | Uso |
-|---------|-----|
-| LLM provider + key | OpenRouter o TokenLab (uno activo) |
-| Public URL | Emails y CORS |
-| Resend | Email transaccional |
-| Rate limits | Auth y execute |
-| Scheduler tick | Frecuencia del worker |
-
-> El token GitHub de **plataforma** (si existiera) es distinto del token **por tenant** en Integraciones.
+Los agentes creados aquí pueden usarse en **Flujos**, en encargos del **Coordinador** y en **departamentos**.
 
 ---
 
-## Despliegue y worker
+## Habilidades (skills)
 
-Stack Docker Compose (Dokploy-ready): `postgres`, `redis`, `api`, `worker`, `web`.
+Las **habilidades** son capacidades reutilizables: investigación profunda, auditoría SEO, modelado financiero, diseño de landing… Un agente puede tener varias habilidades; una habilidad puede usarse en varios agentes.
 
-Checklist:
+### Dónde gestionarlas
 
-- [x] Migraciones en deploy — automáticas vía entrypoint del api (`RUN_MIGRATIONS` true por defecto)
-- [ ] `worker` healthy (schedules + cola)
-- [ ] LLM configurado en `/admin/settings`
-- [ ] Token GitHub en tenant si usas intake privado
-- [ ] Plan de operaciones: *bajo demanda* salvo que quieras autopilot parcial
+**Oficina de depuración** → **Catálogo IA** → **Habilidades**.
 
----
+### Crear una habilidad
 
-## Solución de problemas
+1. **Nuevo** → nombre claro (*«Auditoría UX de onboarding»*).
+2. Describe **cuándo usarla** y **qué debe entregar**.
+3. Guarda y **asóciala a los agentes** que la necesiten.
 
-### No puedo clonar un repo privado
+### Buenas prácticas
 
-- Token GitHub en **Settings → Integraciones** del tenant
-- Probar conexión en la misma pestaña
-
-### La programación no ejecuta nada
-
-- ¿Corre el **worker**?
-- ¿Hay reglas **activas** en Programaciones? (default: ninguna)
-- ¿Límite mensual alcanzado?
-
-### Runs fallan por LLM
-
-- Superadmin → `/admin/settings`: proveedor activo + API key
-- Revisar `maxCostUsdPerRun` en Settings → LLM
-
-### OpenCode no delega
-
-- OpenCode activo en Settings → OpenCode (global)
-- Agente/modelo/ruta configurados en **Código del producto**
-
-### Encargo sin contraste en markdown
-
-- Usa tema **Stripe HDS Light**, **Paperclip Warm** o **Slash**; los informes usan tokens `--office-*`
-
-### Atascado en la misma Next Action
-
-El motor de **convergencia** fuerza pivot tras ciclos repetidos — edita consenso manualmente si hace falta.
+- Nombres orientados a resultado, no a herramientas internas.
+- Una habilidad = un tipo de trabajo reconocible.
+- Evita duplicar habilidades casi iguales; mejor refinar la descripción.
 
 ---
 
-> **Siguiente paso:** impersona tu tenant → **`/office`** → encarga un discovery → sigue en **War room** → revisa el informe en **Mis encargos**.
+## Flujos de trabajo
+
+Un **flujo** es una **cadena de agentes** en orden: por ejemplo, Research → CEO → Producto → Código → QA.
+
+### Dónde crearlos
+
+Menú **Flujos** (dentro de **Tu oficina**).
+
+### Crear un flujo
+
+1. **Nuevo flujo** → pon nombre y descripción.
+2. Abre el **editor visual** y arrastra nodos de agentes.
+3. Conecta el orden de ejecución.
+4. **Guarda**.
+
+### Usar un flujo
+
+- El **Coordinador** puede elegir flujos al planificar encargos complejos.
+- Puedes **ejecutar un flujo directamente** desde el editor con una semilla de tarea (texto inicial).
+- En **Programaciones**, una regla puede disparar un flujo concreto en una fecha.
+
+Piensa en los flujos como **playbooks**: procesos que quieres repetir con el mismo equipo.
+
+---
+
+## Conectar departamentos, productos y equipos
+
+Así encaja el rompecabezas:
+
+```
+Tú (Oficina)
+    ↓ encargo + alcance
+Coordinador → elige agentes / flujo / departamento
+    ↓
+Producto (contexto, memoria, código)
+    ↔ vinculado a → Departamento (agentes, design.md, artefactos)
+    ↓
+War room (seguimiento) → Mis encargos (entregables)
+```
+
+### Vincular producto ↔ departamento
+
+1. Abre **Configuración del producto**.
+2. Sección **Departamento** → elige el departamento.
+3. Guarda.
+
+A partir de ahí:
+
+- Los encargos con alcance «departamento» usan ese equipo y estilo.
+- Los **artefactos** del run pueden aparecer en la **galería del departamento**.
+- Desde el departamento puedes **lanzar runs** eligiendo ese producto como work item.
+
+### Work items en un departamento
+
+Un departamento puede tener **varios work items** (clientes, campañas, proyectos). Cada uno suele mapear a un **producto vinculado**. Créalos desde la ficha del departamento o al crear el departamento en Org Studio.
+
+### Agentes ↔ Flujos ↔ Departamentos
+
+| Quieres… | Haz esto |
+|----------|----------|
+| Agentes solo para Marketing | Créalos o asígnalos al crear el dept. en Org Studio |
+| Mismo proceso siempre | Define un **Flujo** y úsalo en encargos o programaciones |
+| Entregables de marca unificada | Configura el dept. + **design.md** + agentes con habilidades de copy/diseño |
+
+---
+
+## Memoria y consenso
+
+Los agentes necesitan **contexto compartido** para no contradecirse.
+
+### Memoria de la compañía
+
+En **Consenso** (menú depuración) editas el documento global: misión, principios, mercados prioritarios, decisiones estratégicas. Todo el equipo lo lee al planificar.
+
+### Memoria por producto
+
+Cada producto tiene su **memoria propia**: positioning, pricing acordado, decisiones de feature, aprendizajes de discovery.
+
+**Consejo:** tras un encargo importante, pide al Coordinador que **resuma decisiones en consenso** o actualízalo tú en la vista de memoria del producto.
+
+---
+
+## Programaciones automáticas (opcional)
+
+Por defecto **no hay automatización**: tú mandas. Si quieres tareas recurrentes:
+
+1. Ve a **Configuración** → pestaña **Programaciones**.
+2. Revisa el **Plan de operaciones**. El preset **Bajo demanda** no tiene reglas (recomendado al empezar).
+3. Para piloto automático ligero, elige un preset como **Solo discovery** o crea una **regla fija**: qué flujo o tarea, cada cuánto, y condiciones.
+
+También puedes ver el calendario previsto en **Operaciones** (menú depuración).
+
+> Domina primero los encargos manuales desde la Oficina. Añade programaciones cuando sepas qué quieres que se repita solo.
+
+---
+
+## Decisiones que requieren tu visto bueno
+
+En **Decisiones** (menú depuración) aparecen propuestas que el equipo no puede cerrar solo: lanzar producto, cambiar pricing, pivot estratégico…
+
+Cada tarjeta resume la propuesta. Tú marcas **GO** o **NO-GO**. Hasta que respondas, el ciclo relacionado puede quedar en pausa.
+
+---
+
+## Configuración de tu organización
+
+En **Configuración** (administradores) ajustas el entorno de trabajo:
+
+| Pestaña | Qué configuras (en lenguaje llano) |
+|---------|-----------------------------------|
+| **General** | Nombre y datos básicos de tu organización |
+| **LLM** | Proveedor de inteligencia artificial y modelos por defecto |
+| **OpenCode** | Agente externo de código (si lo usas) |
+| **Integraciones** | GitHub, correo, etc. |
+| **Notificaciones** | Avisos cuando termina un encargo o falla algo |
+| **Límites** | Tope de gasto mensual en IA |
+| **Programaciones** | Plan de operaciones y reglas automáticas |
+
+Los **miembros** sin rol de admin usan la Oficina y productos; no necesitan entrar aquí a diario.
+
+---
+
+## Equipo humano y permisos
+
+En **Equipo** invitas personas reales a tu organización.
+
+| Rol | Qué puede hacer |
+|-----|-----------------|
+| **Propietario / Admin** | Configuración, agentes, flujos, programaciones, invitar usuarios |
+| **Miembro** | Oficina, encargos, productos, war room, departamentos (según política) |
+
+Comparte este manual con nuevos miembros para que encarguen trabajo desde el primer día.
+
+---
+
+## Preguntas frecuentes
+
+### ¿Los agentes ejecutan cosas sin mi permiso?
+
+No, en modo **bajo demanda**. Siempre ves un plan y pulsas **Aprobar y ejecutar**. Las programaciones automáticas son opt-in.
+
+### ¿Cuál es la diferencia entre Oficina y War room?
+
+- **Oficina** — pedir y planificar trabajo (cualquier alcance).
+- **War room** — seguir un **producto concreto** en vivo y encargar desde ahí.
+
+### ¿Necesito un departamento para empezar?
+
+No. Puedes operar solo con **Oficina + Productos**. Los departamentos ayudan cuando quieres equipos especializados con marca, artefactos y agentes dedicados.
+
+### ¿Qué es Munger y el VETO?
+
+Es una revisión de **riesgos** antes de crear un departamento. Si la propuesta tiene fallos graves (mercado incoherente, misión imposible…), bloquea la creación hasta que ajustes.
+
+### ¿Dónde veo cuánto gasté en IA?
+
+En la **Oficina** (KPIs del mes) y en **Configuración → Límites**. Cada encargo muestra coste estimado antes de aprobar.
+
+### ¿Qué hago si un encargo falla?
+
+Abre **Mis encargos** o **Ejecuciones** (vista técnica), lee el mensaje de error en lenguaje claro si está disponible, ajusta el brief y vuelve a encargar. Si persiste, revisa límites de gasto y configuración de modelos con tu admin.
+
+### ¿Puedo reutilizar el mismo flujo para clientes distintos?
+
+Sí. Crea **work items** o **productos** por cliente, vincúlalos al mismo **departamento** y lanza el mismo **flujo** o servicio rápido cambiando solo el brief.
+
+---
+
+*¿Algo no está claro? Vuelve a **Inicio rápido** o pide al Coordinador en la Oficina: «Explícame cómo crear un departamento de marketing» — te guiará paso a paso dentro de la app.*

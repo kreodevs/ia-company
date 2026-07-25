@@ -12,6 +12,7 @@ import {
   loadProductProfile,
   productProfileToInitialMemory,
 } from "./product-profile.js";
+import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 import { loadProductConsensusInitialMemory } from "./product-consensus.js";
 
 export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
@@ -35,6 +36,18 @@ export const PRODUCT_WORK_PRESETS: ProductWorkPreset[] = [
     workflowName: WORKFLOW_NAMES.MARKETING_SPRINT,
     category: "marketing",
     agentCount: 3,
+  },
+  {
+    id: "content-sprint",
+    workflowName: WORKFLOW_NAMES.CONTENT_SPRINT,
+    category: "marketing",
+    agentCount: 3,
+  },
+  {
+    id: "campaign-launch",
+    workflowName: WORKFLOW_NAMES.CAMPAIGN_LAUNCH,
+    category: "marketing",
+    agentCount: 4,
   },
   {
     id: "product-launch",
@@ -69,6 +82,7 @@ export interface LaunchProductWorkInput {
   task?: string;
   mergeConsensus?: boolean;
   setFocus?: boolean;
+  orgContext?: Record<string, unknown>;
 }
 
 export interface ProductLaunchOptionPreset {
@@ -208,6 +222,7 @@ export async function launchProductWork(
       description: true,
       githubRepoUrl: true,
       metadata: true,
+      orgUnitId: true,
     },
   });
   if (!product) {
@@ -246,7 +261,13 @@ export async function launchProductWork(
     ...profileMemory,
   });
 
-  const initialMemory = consensusMemory;
+  let orgMemory: Record<string, unknown> = input.orgContext ?? {};
+  if (!input.orgContext && product.orgUnitId) {
+    const orgCtx = await loadOrgUnitContext(tenantId, product.orgUnitId);
+    if (orgCtx) orgMemory = orgContextToInitialMemory(orgCtx);
+  }
+
+  const initialMemory = { ...consensusMemory, ...orgMemory };
 
   const runId = await executeWorkflowInBackground(workflow.id, {
     tenantId,

@@ -1,8 +1,7 @@
-import type { LucideIcon } from "lucide-react";
-import { Search } from "lucide-react";
-import type { ReactNode } from "react";
-import { Button } from "@/components/atoms/Button";
+import * as React from "react";
+import { type LucideIcon, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "../atoms/Button";
 
 export interface EmptyStateProps {
   title: string;
@@ -11,9 +10,8 @@ export interface EmptyStateProps {
   action?: {
     label: string;
     onClick: () => void;
-    icon?: ReactNode;
+    icon?: React.ReactNode;
   };
-  children?: ReactNode;
   className?: string;
 }
 
@@ -22,34 +20,32 @@ export function EmptyState({
   description,
   icon: Icon = Search,
   action,
-  children,
   className,
 }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex min-h-[240px] flex-col items-center justify-center rounded-[var(--radius-cards)] border border-dashed border-[var(--color-hairline)] bg-[var(--color-mist-white)] px-6 py-10 text-center sm:py-12",
+        "flex flex-col items-center justify-center p-[var(--spacing-xl)] text-center bg-[var(--background-secondary)] rounded-[var(--radius-lg)] border border-[var(--border)] border-dashed min-h-[300px]",
         className,
       )}
     >
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-paper-white)] text-[var(--color-fog-gray)]">
-        <Icon className="h-7 w-7 opacity-60" aria-hidden />
+      <div className="flex items-center justify-center w-16 h-16 mb-[var(--spacing-md)] rounded-full bg-[var(--secondary)] text-[var(--foreground-subtle)]">
+        <Icon className="w-8 h-8 opacity-40" />
       </div>
-      <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-subheading)] font-semibold text-[var(--foreground)]">
+      <h3 className="text-lg font-semibold text-[var(--foreground)] mb-[var(--spacing-xs)]">
         {title}
       </h3>
-      {description ? (
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--foreground-muted)]">
+      {description && (
+        <p className="max-w-[300px] text-sm text-[var(--foreground-muted)] mb-[var(--spacing-lg)]">
           {description}
         </p>
-      ) : null}
-      {children ? <div className="mt-4">{children}</div> : null}
-      {action ? (
-        <Button onClick={action.onClick} variant="outline" className="mt-4 gap-2">
+      )}
+      {action && (
+        <Button onClick={action.onClick} variant="outline" className="gap-[var(--spacing-sm)]">
           {action.icon}
           {action.label}
         </Button>
-      ) : null}
+      )}
     </div>
   );
 }

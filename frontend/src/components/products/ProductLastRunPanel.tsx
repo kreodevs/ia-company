@@ -71,11 +71,8 @@ export default function ProductLastRunPanel({
       }
     >
       {showWarning && (
-        <div
-          className="mb-4 flex gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100"
-          role="status"
-        >
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" aria-hidden />
+        <div className="mb-4 flex gap-2 app-alert app-alert--warning" role="status">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 app-alert__icon--warning" aria-hidden />
           <p>{t(`consensus.lastRun.diagnosis.${diagnosis}`)}</p>
         </div>
       )}
@@ -137,6 +134,7 @@ export default function ProductLastRunPanel({
                 <th className="px-3 py-2">{t("consensus.lastRun.colAgent")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colOutput")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colHandoff")}</th>
+                <th className="px-3 py-2">{t("consensus.lastRun.colDocs")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colTokens")}</th>
               </tr>
             </thead>
@@ -190,6 +188,24 @@ export default function ProductLastRunPanel({
                       {step.hasStructuredHandoff
                         ? t("consensus.lastRun.handoffJson")
                         : t("consensus.lastRun.handoffMissing")}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs">
+                      <span
+                        className={
+                          step.deliverableStatus === "saved_to_disk"
+                            ? "text-emerald-400"
+                            : step.deliverableStatus === "handoff_only"
+                              ? "text-amber-300"
+                              : "font-semibold text-[var(--color-destructive)]"
+                        }
+                      >
+                        {t(`consensus.lastRun.deliverableStatus.${step.deliverableStatus}`)}
+                      </span>
+                      {step.savedDeliverablePath && (
+                        <p className="mt-1 font-mono text-[10px] text-[var(--color-muted-foreground)]">
+                          {step.savedDeliverablePath}
+                        </p>
+                      )}
                     </td>
                     <td className="px-3 py-2 align-top text-xs text-[var(--color-muted-foreground)]">
                       {step.tokensUsed != null ? step.tokensUsed.toLocaleString() : "—"}

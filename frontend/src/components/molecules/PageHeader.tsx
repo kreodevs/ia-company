@@ -1,40 +1,44 @@
-import type { ReactNode } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 
 export interface PageHeaderProps {
-  title: ReactNode;
-  description?: ReactNode;
-  breadcrumbs?: ReactNode;
-  actions?: ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  breadcrumbs?: React.ReactNode;
+  actions?: React.ReactNode;
   className?: string;
 }
 
-export function PageHeader({ title, description, breadcrumbs, actions, className }: PageHeaderProps) {
+export const PageHeader = ({
+  title,
+  description,
+  breadcrumbs,
+  actions,
+  className,
+}: PageHeaderProps) => {
   return (
     <div
       className={cn(
-        "mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between",
+        "flex flex-col md:flex-row md:items-start justify-between gap-[var(--spacing-md)] mb-[var(--spacing-xl)]",
         className,
       )}
     >
-      <div className="min-w-0 flex-1 space-y-2">
-        {breadcrumbs ? <div className="text-sm text-[var(--foreground-muted)]">{breadcrumbs}</div> : null}
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold leading-[var(--leading-heading)] tracking-[var(--tracking-heading)] text-[var(--foreground)] sm:text-4xl">
+      <div className="flex flex-col gap-1.5">
+        {breadcrumbs && <div className="mb-[var(--spacing-sm)]">{breadcrumbs}</div>}
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)]">
           {title}
         </h1>
-        {description ? (
-          <p className="max-w-3xl text-base leading-[var(--leading-body)] text-[var(--foreground-muted)]">
+        {description && (
+          <p className="text-[var(--foreground-muted)] text-sm mt-[var(--spacing-xs)] max-w-2xl">
             {description}
           </p>
-        ) : null}
+        )}
       </div>
-      {actions ? (
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
-          {actions}
-        </div>
-      ) : null}
+      {actions && (
+        <div className="flex items-center gap-[var(--spacing-md)] shrink-0">{actions}</div>
+      )}
     </div>
   );
-}
+};
 
 export default PageHeader;

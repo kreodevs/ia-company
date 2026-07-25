@@ -1,6 +1,6 @@
 # Help content
 
-Markdown articles for the in-app **Ayuda / Help** section (`/help`).
+User-facing manuals for the in-app **Ayuda / Help** section (`/help`).
 
 ## Languages
 
@@ -9,25 +9,26 @@ Markdown articles for the in-app **Ayuda / Help** section (`/help`).
 | `tutorial.md` | Spanish (`es`) | `/help/guia-completa` |
 | `tutorial.en.md` | English (`en`) | `/help/guia-completa` |
 
-Article title and description come from `index.ts` per locale. Body markdown switches when the user changes language in the header.
+Title and description come from `index.ts` and `i18n/locales/{es,en}/help.ts`. Body markdown switches with the header language selector.
 
-## Current guide scope (2026)
+## Manual scope
 
-The guide reflects the **Office-first** model:
+Non-technical **user manual** covering:
 
-- Default landing `/office`, jobs at `/office/encargos`
-- Products with GitHub intake and per-product OpenCode
-- Technical routes under `/debug/*` (runs, consensus, ops, catalog)
-- Operations plan default: **on demand** (optional weekly presets)
+- Office: commissioning work, Coordinator, quick services, approve and run
+- My jobs, War room, Products, Departments, Org Studio
+- Agents, skills, workflows, linking products and departments
+- Consensus memory, optional schedules, GO/NO-GO decisions
+- Organization settings and human team roles
+
+No install, Docker, worker, or API documentation — operators only.
 
 ## Adding an article
 
-1. Create `your-article.md` and `your-article.en.md` in this folder (GFM).
-2. Register entries in `ARTICLE_META` inside `index.ts` for both `es` and `en`.
-3. Add a sidebar entry via `getHelpArticles()` (extend the returned array).
+1. Create `your-article.md` and `your-article.en.md` (GFM).
+2. Register in `ARTICLE_META` inside `index.ts` for both locales.
+3. Extend `getHelpArticles()` return array.
 
-Default route: `/help` redirects to `/help/guia-completa`.
+Default route: `/help` → `/help/guia-completa`.
 
-The guide opens on the **quick start (Office)** section — first `##` block before the table of contents. Sidebar navigation renders each `##` / `###` as its own panel (`HelpPage` + `lib/markdown-sections.ts`).
-
-UI strings for the help shell live in `src/i18n/locales/{es,en}/help.ts`.
+First `##` section (excluding “Tabla de contenidos”) opens by default as quick start. Sidebar renders each `##` / `###` as its own panel (`HelpPage` + `lib/markdown-sections.ts`).

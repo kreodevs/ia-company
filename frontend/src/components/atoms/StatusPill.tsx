@@ -1,29 +1,23 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const statusPillVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-[var(--radius-tags)] border px-2.5 py-0.5 text-xs font-medium",
+  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-[var(--spacing-xxs)] text-xs font-semibold border transition-all duration-[var(--transition-base)]",
   {
     variants: {
       status: {
-        success:
-          "border-[var(--color-deep-teal)]/25 bg-[var(--color-mint-wall)] text-[var(--color-deep-teal)]",
-        warning:
-          "border-[var(--warning)]/25 bg-[var(--color-peach-wall)] text-[var(--warning)]",
-        error:
-          "border-[var(--destructive)]/25 bg-[var(--color-peach-wall)] text-[var(--destructive)]",
-        info:
-          "border-[var(--color-sapphire-blue)]/25 bg-[var(--color-lavender-wall)] text-[var(--color-sapphire-blue)]",
-        neutral:
-          "border-[var(--color-hairline)] bg-[var(--color-mist-white)] text-[var(--color-fog-gray)]",
-        running:
-          "border-[var(--color-electric-violet)]/25 bg-[var(--color-lavender-wall)] text-[var(--color-electric-violet)]",
+        success: "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20",
+        warning: "bg-[var(--warning)]/10 text-[var(--warning)] border-[var(--warning)]/20",
+        error: "bg-[var(--destructive)]/10 text-[var(--destructive)] border-[var(--destructive)]/20",
+        info: "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/20",
+        neutral: "bg-[var(--secondary)] text-[var(--foreground-muted)] border-[var(--border)]",
+        luxury: "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20 shadow-gold",
       },
       size: {
-        sm: "px-2 py-0.5 text-[10px]",
-        md: "px-2.5 py-0.5 text-xs",
-        lg: "px-3 py-1 text-sm",
+        sm: "px-[var(--spacing-sm)] py-0.25 text-[10px]",
+        md: "px-2.5 py-[var(--spacing-xxs)] text-xs",
+        lg: "px-[var(--spacing-md)] py-[var(--spacing-xs)] text-sm",
       },
     },
     defaultVariants: {
@@ -34,17 +28,24 @@ const statusPillVariants = cva(
 );
 
 export interface StatusPillProps
-  extends HTMLAttributes<HTMLSpanElement>,
+  extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof statusPillVariants> {
-  icon?: ReactNode;
+  icon?: React.ReactNode;
 }
 
-export function StatusPill({ className, status, size, icon, children, ...props }: StatusPillProps) {
+export function StatusPill({
+  className,
+  status,
+  size,
+  icon,
+  children,
+  ...props
+}: StatusPillProps) {
   return (
-    <span className={cn(statusPillVariants({ status, size }), className)} {...props}>
-      {icon ? <span className="shrink-0">{icon}</span> : null}
+    <div className={cn(statusPillVariants({ status, size, className }))} {...props}>
+      {icon && <span className="flex-shrink-0">{icon}</span>}
       {children}
-    </span>
+    </div>
   );
 }
 

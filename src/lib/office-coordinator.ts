@@ -10,6 +10,7 @@ import {
 import { launchProductWork } from "./product-work-launcher.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { listTenantProducts } from "./product-registry.js";
+import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -327,7 +328,7 @@ function planIdFor(request: string): string {
 export async function planOfficeTask(
   tenantId: string,
   request: string,
-  options: { productId?: string; serviceId?: string } = {},
+  options: { productId?: string; serviceId?: string; orgUnitId?: string } = {},
 ): Promise<OfficeTaskPlan> {
   const trimmed = request.trim();
   if (!trimmed) throw new Error("Task request is required");
@@ -342,6 +343,13 @@ export async function planOfficeTask(
   ]);
 
   const agentByName = new Map(agents.map((a) => [a.name, a]));
+  let scopedProducts = products;
+  const orgCtx = options.orgUnitId
+    ? await loadOrgUnitContext(tenantId, options.orgUnitId)
+    : null;
+  if (options.orgUnitId) {
+    scopedProducts = products.filter((p) => p.orgUnitId === options.orgUnitId);
+  }
   let service: OfficeServiceTemplate | undefined;
 
   if (options.serviceId) {
@@ -371,6 +379,20 @@ export async function planOfficeTask(
     });
   }
 
+  if (orgCtx?.suggestedAgentNames.length) {
+    selectedAgents.length = 0;
+    for (const name of orgCtx.suggestedAgentNames) {
+      const agent = agentByName.get(name);
+      if (!agent) continue;
+      selectedAgents.push({
+        id: agent.id,
+        name: agent.name,
+        role: agent.role,
+        reasonKey: agentReasons[name] ?? "office.reasons.contributes",
+      });
+    }
+  }
+
   if (selectedAgents.length === 0 && agents.length > 0) {
     const fallback = agents.find((a) => a.name === "research-thompson") ?? agents[0];
     selectedAgents.push({
@@ -396,8 +418,10 @@ export async function planOfficeTask(
   }
 
   const product = options.productId
-    ? (products.find((p) => p.id === options.productId) ?? null)
-    : null;
+    ? (scopedProducts.find((p) => p.id === options.productId) ??
+        products.find((p) => p.id === options.productId) ??
+        null)
+    : (scopedProducts[0] ?? null);
 
   const agentCount = selectedAgents.length;
   const mode: OfficeTaskPlan["mode"] =
@@ -425,6 +449,7 @@ export async function planOfficeTask(
 export interface ExecuteOfficeTaskInput {
   request: string;
   productId?: string;
+  orgUnitId?: string;
   serviceId?: string;
   agentIds?: string[];
   workflowId?: string;
@@ -440,10 +465,14 @@ export async function executeOfficeTask(
   const plan = await planOfficeTask(tenantId, input.request, {
     productId: input.productId,
     serviceId: input.serviceId,
+    orgUnitId: input.orgUnitId,
   });
 
   const task = input.request.trim();
-  const productId = input.productId || undefined;
+  const productId = input.productId || plan.productId || undefined;
+  const orgCtx = input.orgUnitId ? await loadOrgUnitContext(tenantId, input.orgUnitId) : null;
+  const orgMemory = orgCtx ? orgContextToInitialMemory(orgCtx) : {};
+  const withOrgMemory = (mem: Record<string, unknown>) => ({ ...mem, ...orgMemory });
 
   const withProduct = (result: { runId: string; workflowId: string; workflowName: string }) => ({
     ...result,
@@ -460,6 +489,7 @@ export async function executeOfficeTask(
         task,
         mergeConsensus: true,
         setFocus: true,
+        orgContext: orgMemory,
       }),
     );
   }
@@ -479,6 +509,7 @@ export async function executeOfficeTask(
           task,
           mergeConsensus: true,
           setFocus: true,
+          orgContext: orgMemory,
         }),
       );
     }
@@ -488,12 +519,12 @@ export async function executeOfficeTask(
       workflowName: workflow.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: {
+      initialMemory: withOrgMemory({
         task,
         nextAction: task,
         officeRequest: task,
         coordinatorNote: "Task dispatched from Office dashboard",
-      },
+      }),
     });
     return withProduct({ runId, workflowId: workflow.id, workflowName: workflow.name });
   }
@@ -512,6 +543,7 @@ export async function executeOfficeTask(
           agentId: agentIds[0],
           task,
           mergeConsensus: true,
+          orgContext: orgMemory,
         }),
       );
     }
@@ -521,7 +553,7 @@ export async function executeOfficeTask(
       workflowName: wf.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: { task, nextAction: task, officeRequest: task },
+      initialMemory: withOrgMemory({ task, nextAction: task, officeRequest: task }),
     });
     return withProduct({ runId, workflowId: wf.id, workflowName: wf.name });
   }
@@ -542,12 +574,12 @@ export async function executeOfficeTask(
       workflowName: teamWf.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: {
+      initialMemory: withOrgMemory({
         task,
         nextAction: task,
         officeRequest: task,
         teamAgents: plan.agents.map((a) => a.name),
-      },
+      }),
     });
     return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
   }
@@ -557,12 +589,12 @@ export async function executeOfficeTask(
     workflowName: teamWf.name,
     mergeConsensus: true,
     syncConsensus: true,
-    initialMemory: {
+    initialMemory: withOrgMemory({
       task,
       nextAction: task,
       officeRequest: task,
       teamAgents: plan.agents.map((a) => a.name),
-    },
+    }),
   });
   return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
 }
@@ -620,7 +652,12 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
   }
 
   const scheduledOnly = schedules.some((s) => s.enabled);
-  const mode: OfficeDashboard["mode"] = scheduledOnly ? "scheduled" : "on_demand";
+  const autonomyEnabled = schedules.some((s) => s.orchestrationMode === "meta_dynamic");
+  const mode: OfficeDashboard["mode"] = autonomyEnabled
+    ? "autonomous"
+    : scheduledOnly
+      ? "scheduled"
+      : "on_demand";
 
   const activity: OfficeActivityItem[] = [];
 

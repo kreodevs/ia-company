@@ -20,7 +20,16 @@ export default function OpencodeRunPanel({ runId, status, onUpdated }: OpencodeR
 
   useEffect(() => {
     if (status !== "AWAITING_USER" && status !== "DELEGATED") return;
-    void api.opencode.getRun(runId).then(setDelegation);
+
+    const load = () => {
+      void api.opencode.getRun(runId).then(setDelegation).catch(() => undefined);
+    };
+
+    load();
+    if (status !== "DELEGATED") return;
+
+    const timer = window.setInterval(load, 5000);
+    return () => window.clearInterval(timer);
   }, [runId, status]);
 
   const resolveGate = async (decision: "proceed_local" | "cancel") => {

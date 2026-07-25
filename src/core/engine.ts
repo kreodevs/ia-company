@@ -2,6 +2,7 @@ import { generateText } from "ai";
 import type { ExecutionStatus, LogLevel } from "@prisma/client";
 import { processConvergenceAfterRun } from "../lib/convergence.js";
 import {
+  agentWroteDocsInStep,
   collectAgentStepOutput,
   collectToolStepArtifacts,
   persistAgentDeliverableIfMissing,
@@ -30,9 +31,19 @@ import { createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import {
+  extractMungerVeto,
+  formatMungerVetoError,
+} from "../lib/munger-veto.js";
+import {
   buildProductProfilePromptSection,
   parseProductProfile,
 } from "../lib/product-profile.js";
+import {
+  FULLSTACK_AGENT_NAME,
+  resolveFullstackStepOrder,
+  shouldUseReadonlyToolsAfterOpencode,
+  workflowHasFullstackStep,
+} from "../lib/opencode-workflow.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -46,6 +57,7 @@ interface TenantExecutionContext {
   githubToken?: string;
   implementationMode?: "local" | "opencode";
   afterOpencodeDelegation?: boolean;
+  fullstackStepOrder?: number | null;
 }
 
 export class WorkflowExecutor {
@@ -118,6 +130,7 @@ export class WorkflowExecutor {
       });
 
       const orderedSteps = topologicalSort(workflow);
+      const usesOpencode = workflowHasFullstackStep(workflow);
       let sharedMemory: SharedMemory = {
         ...(input.initialMemory ?? {}),
         _history: input.initialMemory?._history ?? [],
@@ -132,12 +145,12 @@ export class WorkflowExecutor {
 
       if (
         input.tenantId &&
-        workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT &&
+        usesOpencode &&
         !input.afterOpencodeDelegation &&
         resumeFromStepOrder === 0
       ) {
-        const { prepareFeatureDevelopmentGate } = await import("../lib/opencode-bridge.js");
-        const gateResult = await prepareFeatureDevelopmentGate({
+        const { prepareOpencodeImplementationGate } = await import("../lib/opencode-bridge.js");
+        const gateResult = await prepareOpencodeImplementationGate({
           tenantId: input.tenantId,
           runId,
           forceLocalImplementation: input.forceLocalImplementation,
@@ -171,6 +184,7 @@ export class WorkflowExecutor {
       tenantCtx.productId = input.productId;
       tenantCtx.implementationMode = implementationMode;
       tenantCtx.afterOpencodeDelegation = input.afterOpencodeDelegation;
+      tenantCtx.fullstackStepOrder = resolveFullstackStepOrder(orderedSteps);
 
       let totalTokens = 0;
       let totalCostUsd = 0;
@@ -232,11 +246,66 @@ export class WorkflowExecutor {
           step.agent.name,
           result.output,
           step.stepOrder,
+          {
+            wroteDocs: result.wroteDocs,
+            savedDeliverablePath: result.savedDeliverablePath,
+          },
         );
+
+        const veto = extractMungerVeto(step.agent.name, result.output);
+        if (veto) {
+          sharedMemory.veto = veto;
+          sharedMemory._stoppedByVeto = true;
+          sharedMemory.nextAction = `Blocked by Munger veto: ${veto.reason}`;
+
+          await prisma.executionRun.update({
+            where: { id: runId },
+            data: {
+              sharedMemory: sharedMemory as object,
+              totalTokens,
+              totalCostUsd,
+            },
+          });
+
+          if (input.tenantId && syncConsensus) {
+            await processConvergenceAfterRun(
+              input.tenantId,
+              workflowName,
+              sharedMemory,
+              runId,
+              input.productSlug,
+            );
+          }
+
+          const vetoMessage = formatMungerVetoError(veto);
+          await this.updateRunStatus(runId, "CANCELLED", {
+            completedAt: new Date(),
+            errorMessage: vetoMessage,
+            totalTokens,
+            totalCostUsd,
+            sharedMemory: sharedMemory as object,
+          });
+
+          await this.appendLog(runId, "warn", vetoMessage, {
+            stepId: step.id,
+            agentId: step.agent.id,
+            payload: { veto },
+          });
+
+          await this.dispatchRunNotification(runId, input.tenantId, "FAILED", {
+            totalTokens,
+            totalCostUsd,
+            errorMessage: vetoMessage,
+          });
+
+          emitEvent("veto", { by: veto.by, reason: veto.reason, agentName: step.agent.name });
+          emitEvent("done", { status: "CANCELLED", reason: "veto", veto });
+          return;
+        }
 
         if (
           tenantCtx.implementationMode === "opencode" &&
-          step.agent.name === "fullstack-dhh" &&
+          step.agent.name === FULLSTACK_AGENT_NAME &&
           !input.afterOpencodeDelegation
         ) {
           const runAfterStep = await prisma.executionRun.findUnique({
@@ -253,23 +322,46 @@ export class WorkflowExecutor {
           }
 
           if (!result.delegated) {
-            const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+            const { startOpencodeDelegation, degradeRunToLocalImplementation } = await import(
+              "../lib/opencode-bridge.js"
+            );
             if (input.tenantId) {
-              await startOpencodeDelegation({
-                tenantId: input.tenantId,
-                runId,
-                brief: result.output,
-                sharedMemory,
-                productSlug: input.productSlug,
-                productId: input.productId,
-                resumeFromStepOrder: step.stepOrder + 1,
-              });
-              await prisma.executionRun.update({
-                where: { id: runId },
-                data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
-              });
-              emitEvent("done", { status: "DELEGATED" });
-              return;
+              try {
+                await startOpencodeDelegation({
+                  tenantId: input.tenantId,
+                  runId,
+                  brief: result.output,
+                  sharedMemory,
+                  productSlug: input.productSlug,
+                  productId: input.productId,
+                  resumeFromStepOrder: step.stepOrder + 1,
+                });
+                await prisma.executionRun.update({
+                  where: { id: runId },
+                  data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+                });
+                emitEvent("done", { status: "DELEGATED" });
+                return;
+              } catch (err) {
+                const reason = err instanceof Error ? err.message : String(err);
+                await this.appendLog(runId, "warn", "OpenCode delegation failed — degrading to local", {
+                  stepId: step.id,
+                  agentId: step.agent.id,
+                  payload: { error: reason },
+                });
+                await degradeRunToLocalImplementation({
+                  runId,
+                  tenantId: input.tenantId,
+                  workflowId: workflow.id,
+                  workflowName,
+                  sharedMemory,
+                  productSlug: input.productSlug,
+                  resumeFromStepOrder: step.stepOrder,
+                  reason,
+                });
+                emitEvent("done", { status: "PENDING", degraded: true });
+                return;
+              }
             }
           }
         }
@@ -477,6 +569,7 @@ export class WorkflowExecutor {
       onDelegationStarted: () => {
         delegated = true;
       },
+      resumeFromStepOrder: stepOrder != null ? stepOrder + 1 : undefined,
     });
 
     let response;
@@ -530,8 +623,10 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     }
 
     const totalTokens = promptTokens + completionTokens;
+    const wroteDocs = agentWroteDocsInStep(response);
+    let savedDeliverablePath: string | undefined;
 
-    if (tenantCtx.productSlug && output.trim()) {
+    if (tenantCtx.productSlug && output.trim() && !wroteDocs) {
       const savedPath = await persistAgentDeliverableIfMissing({
         workspaceRoot: tenantCtx.workspaceRoot,
         agentName: agent.name,
@@ -541,6 +636,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
         response,
       });
       if (savedPath) {
+        savedDeliverablePath = savedPath;
         await this.appendLog(runId, "info", `Saved agent deliverable: ${savedPath}`, {
           agentId: agent.id,
           payload: { path: savedPath },
@@ -563,6 +659,8 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
       },
       toolCalls: response.steps?.length ?? 0,
       delegated,
+      wroteDocs,
+      savedDeliverablePath,
     };
   }
 
@@ -572,10 +670,13 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     stepOrder?: number,
   ): "full" | "readonly" | "opencode_delegate" {
     if (tenantCtx.implementationMode === "opencode") {
-      if (agentName === "fullstack-dhh" && !tenantCtx.afterOpencodeDelegation) {
+      if (agentName === FULLSTACK_AGENT_NAME && !tenantCtx.afterOpencodeDelegation) {
         return "opencode_delegate";
       }
-      if (tenantCtx.afterOpencodeDelegation && stepOrder != null && stepOrder >= 3) {
+      if (
+        tenantCtx.afterOpencodeDelegation &&
+        shouldUseReadonlyToolsAfterOpencode(stepOrder, tenantCtx.fullstackStepOrder ?? null)
+      ) {
         return "readonly";
       }
     }
@@ -894,6 +995,7 @@ function mergeStepOutput(
   agentName: string,
   output: string,
   stepOrder?: number,
+  deliverableMeta?: { wroteDocs?: boolean; savedDeliverablePath?: string },
 ): SharedMemory {
   const history = memory._history ?? [];
   const next: SharedMemory = {
@@ -906,6 +1008,10 @@ function mergeStepOutput(
         output,
         timestamp: new Date().toISOString(),
         ...(stepOrder != null ? { stepOrder } : {}),
+        ...(deliverableMeta?.wroteDocs ? { wroteDocs: true } : {}),
+        ...(deliverableMeta?.savedDeliverablePath
+          ? { savedDeliverablePath: deliverableMeta.savedDeliverablePath }
+          : {}),
       },
     ],
     lastOutput: output,
@@ -981,6 +1087,11 @@ export async function executeWorkflowInBackground(
 ): Promise<string> {
   const { warmPlatformSettingsCache } = await import("../lib/platform-settings.js");
   await warmPlatformSettingsCache();
+
+  if (input.tenantId && !input.skipRunGuard) {
+    const { assertTenantCanLaunchRun } = await import("../lib/run-guards.js");
+    await assertTenantCanLaunchRun(input.tenantId);
+  }
 
   let initialMemory = input.initialMemory;
   if (input.tenantId && input.mergeConsensus !== false) {

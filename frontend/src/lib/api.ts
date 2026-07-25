@@ -212,6 +212,8 @@ export type GoNoGoDecision = "pending" | "go" | "no_go";
 
 export type ProductIntakeStatus = "pending" | "running" | "completed" | "failed" | "skipped";
 
+export type WorkItemKind = "product" | "client" | "campaign" | "project";
+
 export interface TenantProduct {
   id: string;
   tenantId: string;
@@ -223,12 +225,26 @@ export interface TenantProduct {
   goNoGo: GoNoGoDecision;
   revenueUsd: number;
   lastRunId: string | null;
+  orgUnitId?: string | null;
+  workItemKind?: WorkItemKind;
   githubRepoUrl?: string | null;
   githubDefaultBranch?: string | null;
   intakeStatus?: ProductIntakeStatus | null;
   intakeRunId?: string | null;
+  stripeWebhookConfigured?: boolean;
+  revenueLastSyncedAt?: string | null;
+  revenueSource?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProductRevenueSettings {
+  productId: string;
+  revenueUsd: number;
+  stripeWebhookConfigured: boolean;
+  revenueLastSyncedAt: string | null;
+  revenueSource: string | null;
+  webhookUrl: string;
 }
 
 export interface TenantIntegrationsConfig {
@@ -381,6 +397,7 @@ export interface TeamActiveRun {
   status: string;
   startedAt: string | null;
   agentIds: string[];
+  errorMessage?: string | null;
   opencode?: {
     delegationId: string;
     sessionId: string;
@@ -405,6 +422,9 @@ export interface ProductLastRunStepTrace {
   outputChars: number;
   memoryKeyChars: number;
   hasStructuredHandoff: boolean;
+  wroteDocs: boolean;
+  savedDeliverablePath: string | null;
+  deliverableStatus: "saved_to_disk" | "handoff_only" | "missing";
   outputPreview: string;
   output: string;
   tokensUsed: number | null;
@@ -440,13 +460,17 @@ export interface ProductTeam {
     goNoGo: GoNoGoDecision;
     revenueUsd: number;
     lastRunId: string | null;
+    orgUnitId?: string | null;
+    workItemKind?: WorkItemKind;
     createdAt: string;
     updatedAt: string;
   };
+  orgUnit: { id: string; name: string; slug: string; type: string } | null;
   activeRun: TeamActiveRun | null;
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
+  lastRunTrace: ProductLastRunTrace | null;
 }
 
 export interface OpencodeActiveInfo {
@@ -527,6 +551,9 @@ export interface OpsNextRun {
   workflowName: string;
   productSlug: string | null;
   reason: string;
+  canExecute: boolean;
+  blockedCode: "ACTIVE_RUN" | "PENDING_DECISIONS" | null;
+  blockedMessage: string | null;
 }
 
 export type OfficeMode = "on_demand" | "scheduled" | "autonomous";
@@ -673,6 +700,7 @@ export interface ScheduleConditions {
   hasGrowingProduct?: boolean;
   hasPendingIdea?: boolean;
   noPendingDecisions?: boolean;
+  orgUnitId?: string;
 }
 
 export interface AutonomousSchedule {
@@ -1092,7 +1120,7 @@ export const api = {
       }),
   },
   runs: {
-    list: () => request<ExecutionRun[]>("/runs"),
+    list: (query?: string) => request<ExecutionRun[]>(`/runs${query ?? ""}`),
     get: (id: string) => request<ExecutionRun>(`/runs/${id}`),
     cancel: (id: string) =>
       request<{ ok: boolean; status: string }>(`/runs/${id}/cancel`, { method: "POST" }),
@@ -1160,12 +1188,17 @@ export const api = {
         goNoGo?: GoNoGoDecision;
         revenueUsd?: number;
         githubRepoUrl?: string | null;
+        stripeWebhookSecret?: string | null;
+        orgUnitId?: string | null;
+        workItemKind?: WorkItemKind;
       },
     ) =>
       request<TenantProduct>(`/products/${id}`, {
         method: "PUT",
         body: JSON.stringify(body),
       }),
+    revenueSettings: (id: string) =>
+      request<ProductRevenueSettings>(`/products/${id}/revenue-settings`),
     pipelineDecision: (id: string, decision: GoNoGoDecision) =>
       request<PipelineIdea>(`/products/pipeline/${id}`, {
         method: "PUT",
@@ -1289,6 +1322,7 @@ export const api = {
     chat: (body: {
       messages: CoordinatorChatMessage[];
       productId?: string;
+      orgUnitId?: string;
       serviceId?: string;
       requestPlan?: boolean;
     }) =>
@@ -1310,11 +1344,12 @@ export const api = {
       request<TenantNotificationItem>(`/office/notifications/${id}/read`, { method: "POST" }),
     markAllNotificationsRead: () =>
       request<{ count: number }>("/office/notifications/read-all", { method: "POST" }),
-    planTask: (body: { request: string; productId?: string; serviceId?: string }) =>
+    planTask: (body: { request: string; productId?: string; orgUnitId?: string; serviceId?: string }) =>
       request<OfficeTaskPlan>("/office/tasks/plan", { method: "POST", body: JSON.stringify(body) }),
     executeTask: (body: {
       request: string;
       productId?: string;
+      orgUnitId?: string;
       serviceId?: string;
       agentIds?: string[];
       workflowId?: string;
@@ -1466,5 +1501,67 @@ export const api = {
       }),
     cancelDelegation: (runId: string) =>
       request<{ ok: boolean; status: string }>(`/runs/${runId}/opencode/cancel`, { method: "POST" }),
+  },
+  orgUnits: {
+    list: () => request<import("./org-types").OrgUnit[]>("/org-units"),
+    get: (id: string) => request<import("./org-types").OrgUnit>(`/org-units/${id}`),
+    update: (id: string, body: { config?: Record<string, unknown>; designMd?: string }) =>
+      request<import("./org-types").OrgUnit>(`/org-units/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    products: (id: string) => request<TenantProduct[]>(`/org-units/${id}/products`),
+    createWorkItem: (
+      id: string,
+      body: {
+        name: string;
+        workItemKind?: WorkItemKind;
+        description?: string;
+        slug?: string;
+      },
+    ) =>
+      request<TenantProduct>(`/org-units/${id}/work-items`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    launch: (
+      id: string,
+      body: { task: string; productId?: string; presetId?: string },
+    ) =>
+      request<{ runId: string; workflowId: string; workflowName: string; productId: string | null }>(
+        `/org-units/${id}/launch`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
+    artifacts: (id: string) =>
+      request<import("./org-types").Artifact[]>(`/org-units/${id}/artifacts`),
+    updateArtifactStatus: (artifactId: string, status: string) =>
+      request<import("./org-types").Artifact>(`/artifacts/${artifactId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+  },
+  orgStudio: {
+    templates: () => request<import("./org-types").BusinessTemplateSummary[]>("/org-studio/templates"),
+    propose: (body: { templateSlug?: string; name?: string; description?: string }) =>
+      request<import("./org-types").OrgStudioProposal>("/org-studio/propose", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    apply: (body: {
+      proposal: import("./org-types").OrgStudioProposal;
+      name?: string;
+      slug?: string;
+      config?: Record<string, unknown>;
+      createWorkItem?: boolean;
+      workItemKind?: WorkItemKind;
+    }) =>
+      request<{
+        orgUnit: import("./org-types").OrgUnit;
+        agentsCreated: string[];
+        workItem: TenantProduct | null;
+      }>(
+        "/org-studio/apply",
+        { method: "POST", body: JSON.stringify(body) },
+      ),
   },
 };

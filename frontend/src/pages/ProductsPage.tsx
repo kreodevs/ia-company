@@ -30,6 +30,7 @@ export default function ProductsPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [overview, setOverview] = useState<ProductsOverview | null>(null);
+  const [orgUnitNames, setOrgUnitNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [evaluatingIdeaId, setEvaluatingIdeaId] = useState<string | null>(null);
   const [addProductOpen, setAddProductOpen] = useState(false);
@@ -40,7 +41,12 @@ export default function ProductsPage() {
   const load = async () => {
     setLoading(true);
     try {
-      setOverview(await api.products.overview());
+      const [nextOverview, units] = await Promise.all([
+        api.products.overview(),
+        api.orgUnits.list().catch(() => []),
+      ]);
+      setOverview(nextOverview);
+      setOrgUnitNames(Object.fromEntries(units.map((u) => [u.id, u.name])));
     } finally {
       setLoading(false);
     }
@@ -260,6 +266,7 @@ export default function ProductsPage() {
                 <ActiveProductCard
                   key={product.id}
                   product={product}
+                  orgUnitName={product.orgUnitId ? orgUnitNames[product.orgUnitId] : undefined}
                   isFocused={overview.focusProduct?.id === product.id}
                   opencodeActive={overview.opencodeActiveByProductId?.[product.id] ?? null}
                   onFocus={() => void focusProduct(product)}
@@ -392,6 +399,7 @@ function OpportunityRow({
 
 function ActiveProductCard({
   product,
+  orgUnitName,
   isFocused,
   opencodeActive,
   onFocus,
@@ -401,6 +409,7 @@ function ActiveProductCard({
   t,
 }: {
   product: TenantProduct;
+  orgUnitName?: string;
   isFocused: boolean;
   opencodeActive: OpencodeActiveInfo | null;
   onFocus: () => void;
@@ -456,6 +465,19 @@ function ActiveProductCard({
                 </span>
               )}
               <StatusPill status={product.phase} />
+              {orgUnitName && product.orgUnitId && (
+                <Link
+                  to={`/org-units/${product.orgUnitId}`}
+                  className="inline-flex items-center rounded-full border border-[var(--color-border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)]"
+                >
+                  {t("products.active.orgUnitBadge", { name: orgUnitName })}
+                </Link>
+              )}
+              {product.workItemKind && product.workItemKind !== "product" && (
+                <span className="text-[10px] font-semibold uppercase text-[var(--color-muted-foreground)]">
+                  {t(`products.settings.workItemKind.${product.workItemKind}`)}
+                </span>
+              )}
               {opencodeActive && (
                 <Link
                   to={`/runs/${opencodeActive.runId}`}

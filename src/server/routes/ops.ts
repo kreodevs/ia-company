@@ -111,12 +111,19 @@ export async function opsRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { resolveMetaOrchestratorDecision } = await import("../../core/meta-orchestrator.js");
-      const decision = await resolveMetaOrchestratorDecision(tenantId);
+      const { describeRunLaunchBlock } = await import("../../lib/run-guards.js");
+      const [decision, launchBlock] = await Promise.all([
+        resolveMetaOrchestratorDecision(tenantId),
+        describeRunLaunchBlock(tenantId),
+      ]);
       return {
         workflowId: decision.workflowId,
         workflowName: decision.workflowName,
         productSlug: decision.productSlug ?? null,
         reason: decision.reason,
+        canExecute: launchBlock.canExecute,
+        blockedCode: launchBlock.canExecute ? null : launchBlock.code,
+        blockedMessage: launchBlock.canExecute ? null : launchBlock.message,
       };
     } catch (err) {
       return handleRouteError(reply, err);

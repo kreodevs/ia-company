@@ -35,6 +35,7 @@ test("evaluateScheduleConditions respects pipeline and phase gates", () => {
     growingCount: 0,
     hasPendingIdea: false,
     pendingDecisions: 0,
+    orgUnitsWithProducts: new Set<string>(),
   };
 
   assert.equal(
@@ -47,6 +48,20 @@ test("evaluateScheduleConditions respects pipeline and phase gates", () => {
   );
   assert.equal(
     evaluateScheduleConditions({ noPendingDecisions: true }, { ...base, pendingDecisions: 1 }).met,
+    false,
+  );
+  assert.equal(
+    evaluateScheduleConditions(
+      { orgUnitId: "dept-1" },
+      { ...base, orgUnitsWithProducts: new Set(["dept-1"]) },
+    ).met,
+    true,
+  );
+  assert.equal(
+    evaluateScheduleConditions(
+      { orgUnitId: "dept-2" },
+      { ...base, orgUnitsWithProducts: new Set(["dept-1"]) },
+    ).met,
     false,
   );
 });

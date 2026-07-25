@@ -18,6 +18,7 @@ import {
   Bot,
   Building2,
   Users,
+  Network,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -52,6 +53,8 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/office": Building2,
   "/office/encargos": ClipboardList,
   "/products": Package,
+  "/org-units": Network,
+  "/org-studio": Network,
   "/war-room": Crosshair,
   "/debug/runs": Play,
   "/debug/consensus": FileText,
@@ -336,6 +339,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           { to: "/office/workflows", labelKey: "nav.workflows" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
+          { to: "/org-units", labelKey: "nav.orgUnits" },
         ],
       });
 

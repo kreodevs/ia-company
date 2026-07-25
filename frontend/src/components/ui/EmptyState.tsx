@@ -8,9 +8,14 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({ title, description, action }: EmptyStateProps) {
+  if (!action) {
+    return <KreoEmptyState title={title} description={description} />;
+  }
+
   return (
-    <KreoEmptyState title={title} description={description}>
-      {action ? <div className="flex justify-center">{action}</div> : null}
-    </KreoEmptyState>
+    <div className="flex flex-col items-center gap-[var(--spacing-lg)]">
+      <KreoEmptyState title={title} description={description} className="min-h-0 w-full border-0 bg-transparent p-0" />
+      <div className="flex justify-center">{action}</div>
+    </div>
   );
 }

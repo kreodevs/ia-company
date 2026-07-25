@@ -16,7 +16,8 @@ export function getOpencodeQueue(): Queue<OpencodePollJobData> {
       defaultJobOptions: {
         removeOnComplete: 200,
         removeOnFail: 200,
-        attempts: 1,
+        attempts: 5,
+        backoff: { type: "exponential", delay: 3000 },
       },
     });
   }

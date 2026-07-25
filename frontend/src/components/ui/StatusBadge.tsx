@@ -1,8 +1,8 @@
 import StatusPill from "@/components/atoms/StatusPill";
 
-const statusMap: Record<string, "success" | "warning" | "error" | "info" | "neutral" | "running"> = {
+const statusMap: Record<string, "success" | "warning" | "error" | "info" | "neutral" | "luxury"> = {
   PENDING: "warning",
-  RUNNING: "running",
+  RUNNING: "info",
   DELEGATED: "info",
   AWAITING_USER: "warning",
   COMPLETED: "success",
@@ -13,8 +13,11 @@ const statusMap: Record<string, "success" | "warning" | "error" | "info" | "neut
 interface StatusBadgeProps {
   status: string;
   label: string;
+  errorMessage?: string | null;
 }
 
-export default function StatusBadge({ status, label }: StatusBadgeProps) {
-  return <StatusPill status={statusMap[status] ?? "neutral"}>{label}</StatusPill>;
+export default function StatusBadge({ status, label, errorMessage }: StatusBadgeProps) {
+  const mapped =
+    errorMessage?.startsWith("VETO:") ? "warning" : (statusMap[status] ?? "neutral");
+  return <StatusPill status={mapped}>{label}</StatusPill>;
 }

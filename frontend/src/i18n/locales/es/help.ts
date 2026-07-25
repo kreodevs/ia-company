@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Ayuda",
   title: "Centro de ayuda",
-  subtitle: "Guía actualizada: Oficina bajo demanda, productos, war room y depuración técnica.",
+  subtitle: "Manual de usuario para operar tu oficina virtual: encargos, departamentos, agentes y flujos.",
   articles: "Artículos",
   articlesHeading: "Artículos",
   sections: "En este artículo",
@@ -16,7 +16,7 @@ export const help = {
   quickSettings: "Configuración",
   article: {
     slug: "guia-completa",
-    title: "Guía completa",
-    description: "Oficina, productos con GitHub, encargos, OpenCode y programación opcional.",
+    title: "Manual de usuario",
+    description: "Pedir trabajo a agentes, crear departamentos, agentes, habilidades y conectar equipos.",
   },
 } as const;

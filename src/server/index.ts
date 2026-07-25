@@ -26,6 +26,8 @@ import { tenantSettingsRoutes } from "./routes/tenant-settings.js";
 import { tenantMcpRoutes } from "./routes/tenant-mcp.js";
 import { tenantUserRoutes } from "./routes/tenant-users.js";
 import { workflowRoutes } from "./routes/workflows.js";
+import { webhookRoutes } from "./routes/webhooks.js";
+import { orgUnitRoutes } from "./routes/org-units.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -79,6 +81,8 @@ async function buildServer() {
     await api.register(workflowRoutes);
     await api.register(runRoutes);
     await api.register(opencodeRoutes);
+    await api.register(webhookRoutes);
+    await api.register(orgUnitRoutes);
   }, { prefix: "/api" });
 
   return app;

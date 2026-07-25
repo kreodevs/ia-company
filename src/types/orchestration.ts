@@ -8,6 +8,8 @@ export interface ScheduleConditions {
   hasGrowingProduct?: boolean;
   hasPendingIdea?: boolean;
   noPendingDecisions?: boolean;
+  /** When set, schedule only runs if this department has linked work items. */
+  orgUnitId?: string;
 }
 
 export type OrchestrationPresetId =

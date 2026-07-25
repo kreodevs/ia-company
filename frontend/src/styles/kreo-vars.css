@@ -1,0 +1,48 @@
+/* Kreo component bridge — supplemental aliases only.
+ * Does NOT override theme palettes (letter / slash / paperclip).
+ * Semantic colors come from theme files; this fills gaps Kreo components expect.
+ */
+
+:root,
+[data-theme="letter"],
+[data-theme="slash"],
+[data-theme="paperclip"] {
+  --popover: var(--card);
+  --popover-foreground: var(--card-foreground);
+  --accent-muted: var(--muted-foreground);
+  --background-tertiary: var(--background-secondary);
+
+  --radius-2xl: var(--radius-cards, var(--radius-xl, var(--radius-lg)));
+
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  --transition-fast: var(--transition-base, 150ms ease);
+  --transition-slow: 300ms ease;
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  --shadow-gold: var(--shadow-md, var(--shadow-sm));
+
+  --chart-1: var(--primary);
+  --chart-2: var(--muted-foreground);
+  --chart-3: var(--success);
+  --chart-4: var(--info);
+  --chart-5: var(--destructive);
+  --chart-6: var(--accent);
+  --chart-7: var(--warning);
+  --chart-8: var(--success);
+  --chart-9: var(--warning);
+  --chart-10: var(--muted-foreground);
+}
+
+/* Org Kreo widgets inherit the active app theme (no isolated gold palette). */
+.kreo-org {
+  color: var(--foreground);
+}

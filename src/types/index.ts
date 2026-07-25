@@ -29,11 +29,15 @@ export interface SharedMemory {
     output: string;
     timestamp: string;
     stepOrder?: number;
+    /** Agent used write_file under docs/ during the step. */
+    wroteDocs?: boolean;
+    /** Engine already persisted a fallback deliverable for this step. */
+    savedDeliverablePath?: string;
   }>;
 }
 
 export interface ExecutionEvent {
-  type: "status" | "log" | "step_start" | "step_complete" | "error" | "done";
+  type: "status" | "log" | "step_start" | "step_complete" | "error" | "done" | "veto";
   runId: string;
   timestamp: string;
   data: Record<string, unknown>;
@@ -91,6 +95,7 @@ export interface ToolExecutionContext {
   sharedMemory?: SharedMemory;
   onLog?: (message: string, payload?: Record<string, unknown>) => void;
   onDelegationStarted?: () => void;
+  resumeFromStepOrder?: number;
 }
 
 export interface LLMUsage {
@@ -105,6 +110,8 @@ export interface StepResult {
   usage: LLMUsage;
   toolCalls: number;
   delegated?: boolean;
+  wroteDocs?: boolean;
+  savedDeliverablePath?: string;
 }
 
 export interface CreateAgentInput {
@@ -166,4 +173,6 @@ export interface ExecuteWorkflowInput {
   resumeFromStepOrder?: number;
   forceLocalImplementation?: boolean;
   afterOpencodeDelegation?: boolean;
+  /** Bypass launch guards (e.g. human-initiated drill-down). */
+  skipRunGuard?: boolean;
 }
