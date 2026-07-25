@@ -33,7 +33,7 @@ Ver commits `8c36231`, `66bd375`.
 - [ ] **6.1** Entrega cliente (link read-only artefactos)
 - [ ] **6.2** Cadencia por dept. + work item
 - [ ] **6.3** ROI por departamento / work item
-- [ ] **6.4** Plantillas verticales adicionales
+- [x] **6.4** Plantillas verticales adicionales (`sales-revops`, `customer-success`, `seo-content-studio`, `finance-pricing`)
 
 ---
 
@@ -51,3 +51,4 @@ Ver commits `8c36231`, `66bd375`.
 | 2026-07-24 | Fase 0–2 backend + hub `/ai-team` → `8c36231` |
 | 2026-07-24 | Manual, Mejorar con IA, Org Studio, coordinador LLM → `66bd375` |
 | 2026-07-24 | Tanda 3: orgUnitId apply, onboarding office, tests integración (sin commit) |
+| 2026-07-24 | 6.4: cuatro plantillas verticales en Org Studio (sin commit) |

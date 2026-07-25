@@ -201,7 +201,7 @@ Un **departamento** es una unidad de negocio virtual: agencia de marketing, prod
 ### Crear un departamento con Org Studio
 
 1. Ve a **Departamentos** → **Abrir Org Studio**.
-2. **Paso 1** — Elige plantilla (marketing, product studio, custom…), pon nombre y misión.
+2. **Paso 1** — Elige plantilla (marketing agency, product studio, sales & RevOps, customer success, SEO & content, finance & pricing, custom…), pon nombre y misión.
 3. Pulsa **Generar propuesta**. La IA sugiere agentes, configuración y vista previa de design.md.
 4. **Paso 2** — Revisa la propuesta. **Munger** (control de riesgos) puede emitir un **VETO** si detecta fallos graves; en ese caso ajusta la misión o la plantilla.
 5. Opcional: marca **Crear work item vinculado** para abrir un slot de producto/cliente al mismo tiempo.

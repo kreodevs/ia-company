@@ -11,6 +11,11 @@ const DEFAULT_AGENT_ARTIFACT: Record<string, ArtifactType> = {
   "marketing-strategist": "report",
   "marketing-godin": "report",
   "fullstack-dhh": "code",
+  "sdr-outbound": "copy",
+  "seo-strategist": "report",
+  "content-editor": "copy",
+  "onboarding-specialist": "copy",
+  "pricing-analyst": "report",
 };
 
 async function resolveArtifactType(

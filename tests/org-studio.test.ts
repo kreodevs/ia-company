@@ -33,4 +33,26 @@ describe("org studio", () => {
     assert.ok((productStudio?.definition.suggestedAgents.length ?? 0) >= 3);
     assert.ok((custom?.definition.suggestedAgents.length ?? 0) >= 2);
   });
+
+  it("vertical templates are registered with agents and config schema", () => {
+    const verticalSlugs = ["sales-revops", "customer-success", "seo-content-studio", "finance-pricing"];
+    assert.equal(PLATFORM_BUSINESS_TEMPLATES.length, 7);
+    for (const slug of verticalSlugs) {
+      const tpl = PLATFORM_BUSINESS_TEMPLATES.find((t) => t.slug === slug);
+      assert.ok(tpl, `missing template ${slug}`);
+      assert.ok(tpl!.definition.suggestedAgents.length >= 3);
+      assert.ok(tpl!.definition.configSchema.sections?.length);
+      assert.ok((tpl!.definition.suggestedWorkflows?.length ?? 0) >= 2);
+    }
+  });
+
+  it("proposeOrgUnit works for sales-revops template", async () => {
+    const proposal = await proposeOrgUnit({
+      templateSlug: "sales-revops",
+      description: "Outbound for mid-market SaaS",
+    });
+    assert.equal(proposal.templateSlug, "sales-revops");
+    assert.equal(proposal.orgUnitType, "department");
+    assert.ok(proposal.suggestedAgents.some((a) => a.name === "sales-ross"));
+  });
 });

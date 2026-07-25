@@ -201,7 +201,7 @@ A **department** is a virtual business unit: marketing agency, product studio, c
 ### Create a department with Org Studio
 
 1. Go to **Departments** → **Open Org Studio**.
-2. **Step 1** — Pick a template (marketing, product studio, custom…), name and mission.
+2. **Step 1** — Pick a template (marketing agency, product studio, sales & RevOps, customer success, SEO & content, finance & pricing, custom…), name and mission.
 3. Click **Generate proposal**. AI suggests agents, config, and a design.md preview.
 4. **Step 2** — Review the proposal. **Munger** (risk control) may **VETO** if it finds fatal flaws; adjust mission or template.
 5. Optional: check **Create linked work item** to open a product/client slot at the same time.

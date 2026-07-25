@@ -13,7 +13,7 @@ Introduce an **additive Org layer** — no breaking changes to existing `TenantP
 
 | Concept | Model | Notes |
 |---------|--------|-------|
-| Business template | `BusinessTemplate` | Platform seed (marketing-agency, product-studio) |
+| Business template | `BusinessTemplate` | Platform seed (marketing-agency, product-studio, sales-revops, customer-success, seo-content-studio, finance-pricing, custom-department) |
 | Department / virtual co | `OrgUnit` | Per tenant; JSONB `config`, `configSchema`, `tokens`, `designMd` |
 | Work item | `TenantProduct` + `workItemKind` | `product \| client \| campaign \| project`; optional `orgUnitId` |
 | Deliverable | `Artifact` | Typed JSONB body + gallery UI |
