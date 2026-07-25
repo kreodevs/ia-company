@@ -11,15 +11,19 @@ import MungerReviewPanel from "./MungerReviewPanel";
 interface CatalogStudioAgentPanelProps {
   onApplied?: () => void;
   initialBrief?: string;
+  initialOrgUnitId?: string;
 }
 
 export default function CatalogStudioAgentPanel({
   onApplied,
   initialBrief = "",
+  initialOrgUnitId = "",
 }: CatalogStudioAgentPanelProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [brief, setBrief] = useState(initialBrief);
+  const [orgUnitId, setOrgUnitId] = useState(initialOrgUnitId);
+  const [orgUnits, setOrgUnits] = useState<Array<{ id: string; name: string }>>([]);
   const [proposal, setProposal] = useState<AgentStudioProposal | null>(null);
   const [approvedAgent, setApprovedAgent] = useState(false);
   const [approvedSkills, setApprovedSkills] = useState<Set<string>>(new Set());
@@ -31,6 +35,17 @@ export default function CatalogStudioAgentPanel({
   useEffect(() => {
     if (initialBrief) setBrief(initialBrief);
   }, [initialBrief]);
+
+  useEffect(() => {
+    if (initialOrgUnitId) setOrgUnitId(initialOrgUnitId);
+  }, [initialOrgUnitId]);
+
+  useEffect(() => {
+    api.orgUnits
+      .list()
+      .then((units) => setOrgUnits(units.map((u) => ({ id: u.id, name: u.name }))))
+      .catch(() => undefined);
+  }, []);
 
   const mungerBlocked = Boolean(proposal?.mungerReview && !proposal.mungerReview.approved);
   const needsAgentApproval = Boolean(proposal && !proposal.reuse && proposal.agent);
@@ -55,7 +70,10 @@ export default function CatalogStudioAgentPanel({
     setApprovedAgent(false);
     setApprovedSkills(new Set());
     try {
-      const p = await api.catalogStudio.agents.propose({ brief });
+      const p = await api.catalogStudio.agents.propose({
+        brief,
+        orgUnitId: orgUnitId || undefined,
+      });
       setProposal(p);
     } catch (err) {
       setError(translateApiError(err, t, "common.requestFailed"));
@@ -76,6 +94,7 @@ export default function CatalogStudioAgentPanel({
         proposal,
         approved: proposal.reuse ? false : approvedAgent,
         approvedNewSkillNames: [...approvedSkills],
+        orgUnitId: orgUnitId || undefined,
       });
       setDone(true);
       onApplied?.();
@@ -101,6 +120,28 @@ export default function CatalogStudioAgentPanel({
               placeholder={t("catalogStudio.briefPlaceholderAgent")}
             />
           </div>
+          {orgUnits.length > 0 && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+                {t("catalogStudio.orgUnitLabel")}
+              </label>
+              <select
+                className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                value={orgUnitId}
+                onChange={(e) => setOrgUnitId(e.target.value)}
+              >
+                <option value="">{t("catalogStudio.orgUnitAny")}</option>
+                {orgUnits.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("catalogStudio.orgUnitHint")}
+              </p>
+            </div>
+          )}
           <p className="text-xs text-[var(--color-muted-foreground)]">{t("catalogStudio.humanApprovalHint")}</p>
           <Button onClick={() => void runPropose()} disabled={proposing || brief.trim().length < 8}>
             {proposing ? t("catalogStudio.proposing") : t("catalogStudio.propose")}
@@ -187,6 +228,11 @@ export default function CatalogStudioAgentPanel({
           {done && (
             <Panel bodySize="sm">
               <p className="text-sm">{t("catalogStudio.appliedAgent")}</p>
+              {orgUnitId && (
+                <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                  {t("catalogStudio.linkedToOrg")}
+                </p>
+              )}
               <Button className="mt-3" variant="secondary" onClick={() => navigate("/ai-team?tab=agents")}>
                 {t("catalogStudio.viewAgents")}
               </Button>

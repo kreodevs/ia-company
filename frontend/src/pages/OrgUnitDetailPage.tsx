@@ -103,9 +103,14 @@ export default function OrgUnitDetailPage() {
         title={unit.name}
         subtitle={`${unit.type} · ${unit.workspacePath}`}
         actions={
-          <Link to="/org-units">
-            <Button variant="secondary">{t("org.back")}</Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to={`/ai-team?tab=create-agent&orgUnitId=${unit.id}`}>
+              <Button variant="secondary">{t("org.createAgentForDept")}</Button>
+            </Link>
+            <Link to="/org-units">
+              <Button variant="secondary">{t("org.back")}</Button>
+            </Link>
+          </div>
         }
       />
 

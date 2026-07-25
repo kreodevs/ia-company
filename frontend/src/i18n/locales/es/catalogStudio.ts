@@ -39,4 +39,8 @@ export const catalogStudio = {
   reuseExistingAgent: "Ya existe «{{name}}» — considera reutilizarlo en lugar de crear uno nuevo.",
   reuseExistingSkill: "Ya existe «{{name}}» — considera reutilizarla.",
   draftPrefilled: "Borrador generado — revisa y guarda cuando esté listo.",
+  orgUnitLabel: "Vincular a departamento (opcional)",
+  orgUnitAny: "Sin departamento",
+  orgUnitHint: "Al aplicar, el agente se añade a linkedAgentNames del departamento.",
+  linkedToOrg: "Vinculado al departamento.",
 } as const;

@@ -13,6 +13,8 @@ Hub del catálogo tenant: agentes, habilidades y **Catalog Studio** con LLM.
 
 Redirects legacy: `/agents`, `/skills`, `/debug/agents`, `/debug/skills` → `/ai-team`.
 
+Query params for **Crear agente**: `?tab=create-agent&brief=…&orgUnitId=…` (links from dept detail and coordinator missing roles).
+
 ## Flujo Catalog Studio
 
 1. **Propose** — LLM propone reutilizar existente o draft nuevo (solo catálogo del tenant).

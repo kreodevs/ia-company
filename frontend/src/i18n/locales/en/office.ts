@@ -176,6 +176,18 @@ export const office = {
     send: "Send",
     requestPlan: "Propose team",
   },
+  onboarding: {
+    title: "Get started in your office",
+    subtitle: "Set up your team, optionally a department, then your first job — that order usually works best.",
+    dismiss: "Hide guide",
+    startStep: "Start →",
+    stepTeam: "Build your AI team",
+    stepTeamDesc: "Create or review tenant agents and skills.",
+    stepDept: "Create a department (optional)",
+    stepDeptDesc: "Org Studio deploys agents, design.md, and work items.",
+    stepTask: "Commission your first job",
+    stepTaskDesc: "Describe the task to the coordinator and approve the plan before it runs.",
+  },
   notifications: {
     title: "Notifications",
     empty: "No notifications yet.",

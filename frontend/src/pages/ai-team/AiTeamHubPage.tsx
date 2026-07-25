@@ -19,6 +19,7 @@ export default function AiTeamHubPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = parseTab(searchParams.get("tab"));
   const createAgentBrief = searchParams.get("brief") ?? "";
+  const createAgentOrgUnitId = searchParams.get("orgUnitId") ?? "";
 
   const setTab = (tab: AiTeamTab) => {
     setSearchParams(tab === "agents" ? {} : { tab });
@@ -39,7 +40,10 @@ export default function AiTeamHubPage() {
       {activeTab === "agents" && <AgentsPage embedded />}
       {activeTab === "skills" && <SkillsPage embedded />}
       {activeTab === "create-agent" && (
-        <CatalogStudioAgentPanel initialBrief={createAgentBrief} />
+        <CatalogStudioAgentPanel
+          initialBrief={createAgentBrief}
+          initialOrgUnitId={createAgentOrgUnitId}
+        />
       )}
       {activeTab === "create-skill" && <CatalogStudioSkillPanel />}
     </div>

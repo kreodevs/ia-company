@@ -65,6 +65,7 @@ export const org = {
     missingSkillsTitle: "Missing skills (require approval)",
     approveMissingSkill: "I approve creating «{{name}}»",
   },
+  createAgentForDept: "Create agent for this department",
   addWorkItemTitle: "Add work item",
   addWorkItemSubtitle: "Create another client, campaign, or project slot linked to this department.",
   addWorkItemName: "Work item name",

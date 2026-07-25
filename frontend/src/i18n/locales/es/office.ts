@@ -176,6 +176,18 @@ export const office = {
     send: "Enviar",
     requestPlan: "Proponer equipo",
   },
+  onboarding: {
+    title: "Primeros pasos en tu oficina",
+    subtitle: "Configura equipo, departamento y tu primer encargo — en ese orden suele ir mejor.",
+    dismiss: "Ocultar guía",
+    startStep: "Empezar →",
+    stepTeam: "Arma tu Equipo IA",
+    stepTeamDesc: "Crea o revisa agentes y habilidades del tenant.",
+    stepDept: "Crea un departamento (opcional)",
+    stepDeptDesc: "Org Studio despliega agentes, design.md y work items.",
+    stepTask: "Pide tu primer encargo",
+    stepTaskDesc: "Describe la tarea al coordinador y aprueba el plan antes de ejecutar.",
+  },
   notifications: {
     title: "Notificaciones",
     empty: "Sin notificaciones aún.",

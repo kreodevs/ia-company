@@ -16,6 +16,7 @@ import type { SuggestedAgentDef } from "./org-os-types.js";
 import {
   ensureTenantAgents,
   ensureTenantSkill,
+  linkAgentNameToOrgUnit,
   linkAgentSkillsByName,
   listTenantAgentsForCatalog,
   listTenantSkillsForCatalog,
@@ -205,9 +206,10 @@ export async function applyAgentProposal(
     proposal: AgentStudioProposal;
     approved: boolean;
     approvedNewSkillNames?: string[];
+    orgUnitId?: string;
   },
 ) {
-  const { proposal, approved, approvedNewSkillNames = [] } = input;
+  const { proposal, approved, approvedNewSkillNames = [], orgUnitId } = input;
 
   if (proposal.mungerReview && !proposal.mungerReview.approved) {
     throw new Error(`VETO: ${proposal.mungerReview.veto?.reason ?? "Munger blocked this agent."}`);
@@ -219,6 +221,9 @@ export async function applyAgentProposal(
       include: { skills: { include: { skill: true } } },
     });
     if (!agent) throw new Error("Reused agent no longer exists.");
+    if (orgUnitId) {
+      await linkAgentNameToOrgUnit(tenantId, orgUnitId, agent.name);
+    }
     return { agent, created: false, reused: true, skillsCreated: [] as string[] };
   }
 
@@ -271,6 +276,10 @@ export async function applyAgentProposal(
     where: { id: agent.id },
     include: { skills: { include: { skill: true } } },
   });
+
+  if (orgUnitId && agent) {
+    await linkAgentNameToOrgUnit(tenantId, orgUnitId, agent.name);
+  }
 
   return { agent, created: true, reused: false, skillsCreated };
 }

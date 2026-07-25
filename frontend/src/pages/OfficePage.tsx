@@ -8,6 +8,10 @@ import {
   type TenantProduct,
 } from "../lib/api";
 import CoordinatorChat from "../components/office/CoordinatorChat";
+import OfficeOnboardingPanel, {
+  dismissOfficeOnboarding,
+  shouldShowOfficeOnboarding,
+} from "../components/office/OfficeOnboardingPanel";
 import { NotificationPermissionPrompt } from "../components/office/NotificationBell";
 import PageLoading from "../components/ui/PageLoading";
 import KpiCard from "../components/ui/KpiCard";
@@ -47,6 +51,7 @@ export default function OfficePage() {
   const [orgUnits, setOrgUnits] = useState<Array<{ id: string; name: string }>>([]);
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [chatSeed, setChatSeed] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const refresh = useCallback(async () => {
     const [dash, overview, units] = await Promise.all([
@@ -65,6 +70,12 @@ export default function OfficePage() {
       .catch(() => undefined)
       .finally(() => setLoading(false));
   }, [refresh]);
+
+  useEffect(() => {
+    if (dashboard) {
+      setShowOnboarding(shouldShowOfficeOnboarding(dashboard));
+    }
+  }, [dashboard]);
 
   useEffect(() => {
     if (!dashboard?.stats.activeRuns) return;
@@ -139,6 +150,16 @@ export default function OfficePage() {
       </header>
 
       <NotificationPermissionPrompt />
+
+      {showOnboarding && (
+        <OfficeOnboardingPanel
+          dashboard={dashboard}
+          onDismiss={() => {
+            dismissOfficeOnboarding();
+            setShowOnboarding(false);
+          }}
+        />
+      )}
 
       <section className="office-hero-strip hero-strip">
         <KpiCard
@@ -250,7 +271,7 @@ export default function OfficePage() {
           </Link>
         </aside>
 
-        <section className="office-task-panel office-chat-panel">
+        <section className="office-task-panel office-chat-panel" id="office-coordinator-chat">
           <div className="office-scope-bar">
             <div className="office-scope-select-wrap">
               <label htmlFor="office-org">{t("office.task.orgUnitLabel")}</label>

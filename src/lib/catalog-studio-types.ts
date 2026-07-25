@@ -57,5 +57,6 @@ export interface ApplyAgentStudioInput {
   approved: boolean;
   /** Subset of `proposal.newSkills[].name` the user explicitly approved. */
   approvedNewSkillNames?: string[];
+  /** When set, agent name is appended to org unit config.linkedAgentNames. */
   orgUnitId?: string;
 }

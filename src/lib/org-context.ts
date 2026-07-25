@@ -37,16 +37,23 @@ export async function loadOrgUnitContext(
   });
   if (!org) return null;
 
-  const suggestedAgentNames = org.template?.definition
+  const config = (org.config as Record<string, unknown>) ?? {};
+  const linkedFromConfig = Array.isArray(config.linkedAgentNames)
+    ? config.linkedAgentNames.filter((n): n is string => typeof n === "string")
+    : [];
+
+  const fromTemplate = org.template?.definition
     ? suggestedAgentsFromTemplate(org.template.definition, org.type)
     : suggestedAgentsFromTemplate(null, org.type);
+
+  const suggestedAgentNames = [...new Set([...fromTemplate, ...linkedFromConfig])];
 
   return {
     orgUnitId: org.id,
     orgUnitSlug: org.slug,
     orgUnitName: org.name,
     orgUnitType: org.type,
-    orgUnitConfig: (org.config as Record<string, unknown>) ?? {},
+    orgUnitConfig: config,
     orgUnitDesignMd: org.designMd,
     orgUnitTokens: (org.tokens as Record<string, unknown>) ?? {},
     suggestedAgentNames,

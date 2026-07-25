@@ -92,12 +92,14 @@ export async function catalogStudioRoutes(app: FastifyInstance) {
         proposal,
         approved: request.body.approved === true,
         approvedNewSkillNames: request.body.approvedNewSkillNames,
+        orgUnitId: request.body.orgUnitId,
       });
       await logAudit(request, "catalog_studio.agent.apply", {
         agentName: result.agent?.name,
         created: result.created,
         reused: result.reused,
         skillsCreated: result.skillsCreated,
+        orgUnitId: request.body.orgUnitId ?? null,
       });
       return reply.status(result.created ? 201 : 200).send(result);
     } catch (err) {
