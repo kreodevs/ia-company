@@ -20,6 +20,7 @@ import { canExecuteMetaScheduleRun } from "../lib/run-guards.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "../lib/org-context.js";
 import { getProductSignalSummary } from "../lib/product-signals.js";
 import { attachScopeContract, buildCompanyScopeContract, buildProductScopeContract } from "../lib/scope-contract.js";
+import { workflowForOrgWorkItem } from "../lib/org-work-item.js";
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;

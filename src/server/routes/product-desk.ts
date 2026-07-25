@@ -55,7 +55,7 @@ export async function productDeskRoutes(app: FastifyInstance) {
       try {
         const tenantId = requireImpersonatedTenant(request);
         const userId =
-          request.session?.kind === "tenant" ? request.session.tenantUserId : undefined;
+          request.session?.kind === "tenant" ? request.session.sub : undefined;
         const { productId, deskItemId } = request.params;
         const item = await approveDeskItem({
           tenantId,

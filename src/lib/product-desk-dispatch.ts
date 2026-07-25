@@ -2,7 +2,7 @@ import { prisma } from "./prisma.js";
 import { buildDeskInputBrief, markDeskItemsInProgress } from "./product-desk.js";
 import { launchProductWork } from "./product-work-launcher.js";
 import { attachScopeContract, buildProductScopeContract } from "./scope-contract.js";
-import { agentAcceptsInput } from "./agent-contract.js";
+import { agentAcceptsInput, humanLabelForDeskType } from "./agent-contract.js";
 import type { DeskItemDto } from "./product-desk.js";
 import { getProductDeskBoard } from "./product-desk.js";
 
@@ -42,10 +42,14 @@ async function loadApprovedDeskItem(input: {
     approvedAt: row.approvedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-    humanTypeLabel: row.type,
+    humanTypeLabel: humanLabelForDeskType(row.type),
+    playbookId: row.playbookId ?? null,
+    kanbanColumn: row.kanbanColumn ?? null,
     eligibleAgents: [],
   };
 }
+
+type DispatchAgent = { id: string; name: string };
 
 export async function launchProductWorkFromDesk(input: {
   tenantId: string;
@@ -64,9 +68,10 @@ export async function launchProductWorkFromDesk(input: {
     throw new Error("Desk item must be approved before dispatch");
   }
 
-  let agent = input.agentId
+  let agent: DispatchAgent | null = input.agentId
     ? await prisma.agent.findFirst({
         where: { id: input.agentId, tenantId: input.tenantId, isActive: true },
+        select: { id: true, name: true },
       })
     : null;
 
@@ -77,13 +82,14 @@ export async function launchProductWorkFromDesk(input: {
         name: deskItem.suggestedNextRole,
         isActive: true,
       },
+      select: { id: true, name: true },
     });
   }
 
   if (!agent) {
     const candidates = await prisma.agent.findMany({
       where: { tenantId: input.tenantId, isActive: true },
-      select: { id: true, name: true, role: true, contractInputs: true },
+      select: { id: true, name: true, contractInputs: true },
     });
     agent =
       candidates.find((a) => agentAcceptsInput(a.contractInputs, deskItem.type)) ?? null;
