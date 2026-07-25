@@ -211,23 +211,20 @@ export default function OrchestrationPlanPanel({
   };
 
   const saveRule = async (schedule: AutonomousSchedule) => {
-    const draft = drafts[schedule.id];
-    if (!draft) return;
+    if (!drafts[schedule.id]) return;
+    const draft = getDraft(schedule);
 
     setBusyId(schedule.id);
     setError(null);
     try {
       await api.schedules.update(schedule.id, {
-        name: draft.name ?? schedule.name,
-        workflowId: draft.workflowId ?? schedule.workflowId,
-        priority: draft.priority ?? schedule.priority,
-        enabled: draft.enabled ?? schedule.enabled,
-        intervalSec: draft.timingMode === "interval" ? draft.intervalSec ?? schedule.intervalSec : schedule.intervalSec,
-        cronExpr:
-          draft.timingMode === "cron"
-            ? draft.cronExpr ?? schedule.cronExpr
-            : null,
-        conditions: draft.conditions ?? schedule.conditions,
+        name: draft.name,
+        workflowId: draft.workflowId,
+        priority: draft.priority,
+        enabled: draft.enabled,
+        intervalSec: draft.timingMode === "interval" ? draft.intervalSec : schedule.intervalSec,
+        cronExpr: draft.timingMode === "cron" ? draft.cronExpr.trim() || "0 9 * * 6" : null,
+        conditions: draft.conditions,
       });
       setDrafts((prev) => {
         const next = { ...prev };
@@ -572,7 +569,15 @@ export default function OrchestrationPlanPanel({
                       <span>{t("settings.orchestration.timingModeLabel")}</span>
                       <select
                         value={draft.timingMode}
-                        onChange={(e) => patchDraft(schedule.id, { timingMode: e.target.value as TimingMode })}
+                        onChange={(e) => {
+                          const timingMode = e.target.value as TimingMode;
+                          patchDraft(schedule.id, {
+                            timingMode,
+                            ...(timingMode === "cron"
+                              ? { cronExpr: draft.cronExpr || schedule.cronExpr || "0 9 * * 6" }
+                              : {}),
+                          });
+                        }}
                         className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
                       >
                         <option value="interval">{t("settings.orchestration.timingInterval")}</option>
