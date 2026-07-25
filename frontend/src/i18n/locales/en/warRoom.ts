@@ -52,7 +52,8 @@ export const warRoom = {
   exitFullscreen: "Exit full screen",
   runSelector: {
     label: "Live flow",
-    auto: "Auto (most recent)",
+    auto: "Auto",
+    autoHint: "most recent",
     none: "No active flows",
     count: "{{count}} in progress",
     option: "{{workflow}} · {{status}} · {{time}}",

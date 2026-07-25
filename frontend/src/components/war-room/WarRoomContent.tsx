@@ -553,13 +553,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
                 activeRuns={activeRuns}
                 selectedRunId={watchRunId ?? null}
                 onSelect={(runId) => onWatchRunChange?.(runId)}
-                className="war-room-table-toolbar-select"
               />
-              {activeRuns.length > 1 && (
-                <span className="war-room-table-toolbar-count">
-                  {t("warRoom.runSelector.count", { count: activeRuns.length })}
-                </span>
-              )}
             </div>
             <button
               type="button"

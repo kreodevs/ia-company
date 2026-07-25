@@ -1097,15 +1097,14 @@ html[data-theme="letter"] .war-room {
 
 .war-room-table-toolbar-main {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
   min-width: 0;
   flex: 1;
 }
 
-.war-room-table-toolbar-label,
-.war-room-briefing-picker-label {
+.war-room-table-toolbar-label {
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -1113,18 +1112,93 @@ html[data-theme="letter"] .war-room {
   color: var(--war-room-fg-subtle);
 }
 
-.war-room-table-toolbar-select,
-.war-room-briefing-picker-select {
-  min-width: 14rem;
-  max-width: 26rem;
-  flex: 1;
+.war-room-run-empty {
+  font-size: 0.75rem;
+  color: var(--war-room-fg-subtle);
+  font-style: italic;
 }
 
-.war-room-table-toolbar-count {
-  font-size: 0.72rem;
+.war-room-run-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.war-room-run-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  max-width: 14rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--war-room-pill-border);
+  background: var(--war-room-pill-bg);
+  color: var(--war-room-pill-fg);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.war-room-run-chip:hover {
+  border-color: var(--war-room-accent-border);
+}
+
+.war-room-run-chip.is-selected {
+  border-color: var(--war-room-accent);
+  background: var(--war-room-accent-soft);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--war-room-accent) 35%, transparent);
+}
+
+.war-room-run-chip-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.war-room-run-chip-dot {
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--war-room-fg-subtle);
+}
+
+.war-room-run-chip-dot.is-live {
+  background: #f87171;
+  box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
+  animation: war-room-ping 1.6s ease-out infinite;
+}
+
+.war-room-run-chip--queued .war-room-run-chip-dot {
+  background: #fbbf24;
+}
+
+.war-room-run-chip--waiting .war-room-run-chip-dot {
+  background: var(--war-room-fg-muted);
+}
+
+.war-room-run-chip-title {
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--war-room-accent);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.war-room-run-chip-meta {
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--war-room-fg-muted);
+  line-height: 1.2;
+}
+
+.war-room-run-chip.is-selected .war-room-run-chip-meta {
+  color: var(--war-room-accent);
 }
 
 .war-room-fullscreen-btn {
@@ -1176,14 +1250,6 @@ html[data-theme="letter"] .war-room {
   text-align: center;
 }
 
-.war-room-briefing-run-picker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
 .war-room-briefing-multi {
   margin-bottom: 0.5rem;
   color: var(--war-room-accent);
@@ -1195,9 +1261,8 @@ html[data-theme="letter"] .war-room {
     display: none;
   }
 
-  .war-room-table-toolbar-select,
-  .war-room-briefing-picker-select {
-    min-width: 100%;
-    max-width: none;
+  .war-room-run-chip {
+    max-width: 100%;
+    flex: 1 1 calc(50% - 0.45rem);
   }
 }
