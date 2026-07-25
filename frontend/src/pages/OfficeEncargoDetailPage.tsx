@@ -334,6 +334,7 @@ export default function OfficeEncargoDetailPage() {
                     type="button"
                     className={`office-encargo-doc-item ${selectedDoc?.id === doc.id ? "office-encargo-doc-item-active" : ""}`}
                     onClick={() => setSelectedDocId(doc.id)}
+                    title={[doc.agentName.replace(/-/g, " "), doc.title].join(" — ")}
                   >
                     <span className="office-encargo-doc-agent">{doc.agentName.replace(/-/g, " ")}</span>
                     <span className="office-encargo-doc-title">{doc.title}</span>
