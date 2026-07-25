@@ -11,6 +11,7 @@ import { launchProductWork } from "./product-work-launcher.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { listTenantProducts } from "./product-registry.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
+import { selectOfficeAgentsWithLlm } from "./office-coordinator-llm.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -42,12 +43,18 @@ export interface OfficeTaskAgent {
   reasonKey: string;
 }
 
+export interface OfficeMissingAgentRole {
+  name: string;
+  suggestedBrief: string;
+}
+
 export interface OfficeTaskPlan {
   planId: string;
   request: string;
   summary: string;
   coordinatorNoteKey: string;
   agents: OfficeTaskAgent[];
+  missingAgentRoles: OfficeMissingAgentRole[];
   workflowId: string | null;
   workflowName: string | null;
   presetId: string | null;
@@ -367,20 +374,59 @@ export async function planOfficeTask(
   const coordinatorNoteKey = match?.coordinatorNoteKey ?? "office.notes.default";
   const agentReasons = match?.agentReasons ?? {};
 
-  const selectedAgents: OfficeTaskAgent[] = [];
-  for (const name of service.agentNames) {
-    const agent = agentByName.get(name);
-    if (!agent) continue;
-    selectedAgents.push({
-      id: agent.id,
-      name: agent.name,
-      role: agent.role,
-      reasonKey: agentReasons[name] ?? "office.reasons.contributes",
-    });
+  let missingAgentRoles: OfficeMissingAgentRole[] = [];
+  let selectedAgents: OfficeTaskAgent[] = [];
+  let summaryOverride: string | undefined;
+
+  const useLlmPlan = process.env.OFFICE_PLAN_USE_LLM !== "false" && agents.length > 0;
+  if (useLlmPlan) {
+    const llmPick = await selectOfficeAgentsWithLlm(
+      tenantId,
+      trimmed,
+      agents.map((a) => ({ name: a.name, role: a.role })),
+      {
+        preferredNames: orgCtx?.suggestedAgentNames,
+        maxAgents: 5,
+      },
+    );
+    if (llmPick) {
+      summaryOverride = llmPick.summary;
+      missingAgentRoles = llmPick.missingRoles;
+      for (const name of llmPick.agentNames) {
+        const agent = agentByName.get(name);
+        if (!agent) continue;
+        selectedAgents.push({
+          id: agent.id,
+          name: agent.name,
+          role: agent.role,
+          reasonKey: agentReasons[name] ?? "office.reasons.contributes",
+        });
+      }
+    }
   }
 
-  if (orgCtx?.suggestedAgentNames.length) {
-    selectedAgents.length = 0;
+  if (selectedAgents.length === 0) {
+    for (const name of service.agentNames) {
+      const agent = agentByName.get(name);
+      if (!agent) {
+        if (!missingAgentRoles.some((m) => m.name === name)) {
+          missingAgentRoles.push({
+            name,
+            suggestedBrief: `Agente ${name.replace(/-/g, " ")} para: ${trimmed.slice(0, 120)}`,
+          });
+        }
+        continue;
+      }
+      selectedAgents.push({
+        id: agent.id,
+        name: agent.name,
+        role: agent.role,
+        reasonKey: agentReasons[name] ?? "office.reasons.contributes",
+      });
+    }
+  }
+
+  if (orgCtx?.suggestedAgentNames.length && selectedAgents.length === 0) {
     for (const name of orgCtx.suggestedAgentNames) {
       const agent = agentByName.get(name);
       if (!agent) continue;
@@ -430,9 +476,10 @@ export async function planOfficeTask(
   return {
     planId: planIdFor(trimmed),
     request: trimmed,
-    summary: trimmed.slice(0, 160),
+    summary: summaryOverride ?? trimmed.slice(0, 160),
     coordinatorNoteKey,
     agents: selectedAgents,
+    missingAgentRoles,
     workflowId,
     workflowName,
     presetId: service.presetId ?? null,

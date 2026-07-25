@@ -96,4 +96,5 @@ export interface OrgStudioProposal {
     notes: string;
     veto?: { by: string; reason: string };
   };
+  missingSkills?: Array<{ name: string; description: string; promptContent: string }>;
 }

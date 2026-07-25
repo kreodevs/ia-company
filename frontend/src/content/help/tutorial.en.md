@@ -81,7 +81,7 @@ You **commission**, **approve**, and **decide**. Agents **research, write, desig
 | **Products** | Portfolio of ideas and real products to operate on |
 | **Departments** | Specialized virtual teams (marketing, product studio, etc.) |
 | **Workflows** | Reusable agent sequences |
-| **Agents & Skills** | Specialist catalog and their capabilities |
+| **AI team** | Agent/skill catalog and **Catalog Studio** (LLM-assisted create) |
 | **Consensus** | Shared company and product memory |
 
 ### Three ways to work
@@ -224,25 +224,42 @@ On the department page:
 
 ### Where to manage them
 
-Sidebar **Debug office** → **AI catalog** → **Agents**.
+Sidebar **Your office** → **AI team** (`/ai-team`).
 
-*(If you don’t see this section, your role may be member-only; ask an admin to create or adjust agents.)*
+Three ways to grow the catalog:
 
-### Create an agent
+1. **Manual** — **Agents** tab → **New agent**.
+2. **Catalog Studio** — **Create agent** tab: describe the role; AI proposes reuse or a new draft; **you approve** before anything is created.
+3. **Org Studio** — when creating a department, AI suggests agents aligned to the template and mission.
+
+*(If you don’t see AI team, your role may be member-only; ask an admin to create or adjust agents.)*
+
+### Create an agent (manual)
 
 1. Click **New agent**.
 2. Set **name** and **persona** (how they think and speak: strategist, writer, devops…).
-3. Choose **model** and **temperature** (more creative vs. more precise).
-4. Assign **skills** that extend what they can do (research, SEO, code review…).
-5. Save.
+3. Optional: **Improve with AI** — write a brief and AI prefills the draft (edit before saving).
+4. Choose **model** and **temperature** (more creative vs. more precise).
+5. Assign **skills** that extend what they can do.
+6. Save.
+
+### Catalog Studio (create agent with AI)
+
+1. **AI team** → **Create agent**.
+2. Describe the role you need in plain language.
+3. Review the proposal: **reuse** an existing agent or a new draft.
+4. **Munger** runs a pre-mortem; a VETO blocks apply.
+5. Check **I approve creating this agent** (and each new skill, if any).
+6. Click **Approve and apply** — nothing is created without your explicit checkbox.
 
 ### When to create new agents
 
 - You need a role no one in the catalog covers.
 - You want a variant with different tone (e.g. “Formal B2B copy” vs. “Startup casual copy”).
 - A department needs dedicated specialists.
+- The **Coordinator** flags a missing role — deep link to **Create agent** with a prefilled brief.
 
-Agents created here can be used in **Workflows**, **Coordinator** jobs, and **departments**.
+Catalog agents can be used in **Workflows**, **Coordinator** jobs, and **departments**.
 
 ---
 
@@ -252,19 +269,26 @@ Agents created here can be used in **Workflows**, **Coordinator** jobs, and **de
 
 ### Where to manage them
 
-**Debug office** → **AI catalog** → **Skills**.
+**Your office** → **AI team** → **Skills** tab (manual) or **Create skill** (Catalog Studio with AI).
 
-### Create a skill
+### Create a skill (manual)
 
-1. **New** → clear name (*“Onboarding UX audit”*).
-2. Describe **when to use it** and **what it should deliver**.
-3. Save and **attach it to agents** that need it.
+1. **New skill** → clear name (*“Onboarding UX audit”*).
+2. Optional: **Improve with AI** to generate description and prompt from a brief.
+3. Describe **when to use it** and **what it should deliver**.
+4. Save and **attach it to agents** that need it.
+
+### Catalog Studio (create skill with AI)
+
+Same flow as agents: brief → proposal (reuse or new) → Munger → **explicit approval** → apply.
+
+When creating a **department** in Org Studio, missing tenant skills appear as checkboxes you must approve before the dept is created.
 
 ### Good practices
 
 - Name for outcomes, not internal tools.
 - One skill = one recognizable type of work.
-- Avoid near-duplicates; refine the description instead.
+- **Reuse** before duplicating — Catalog Studio prefers what you already have.
 
 ---
 

@@ -32,4 +32,11 @@ export const catalogStudio = {
   appliedAgent: "Agente listo.",
   viewAgents: "Ver agentes",
   viewSkills: "Ver habilidades",
+  improveWithAi: "Mejorar con IA",
+  improving: "Generando borrador…",
+  improveBriefLabel: "Brief para la IA (opcional)",
+  improveBriefPlaceholder: "Describe el rol o habilidad que quieres generar…",
+  reuseExistingAgent: "Ya existe «{{name}}» — considera reutilizarlo en lugar de crear uno nuevo.",
+  reuseExistingSkill: "Ya existe «{{name}}» — considera reutilizarla.",
+  draftPrefilled: "Borrador generado — revisa y guarda cuando esté listo.",
 } as const;

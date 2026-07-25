@@ -1,4 +1,6 @@
 /** Kreo-compatible DynamicForm field definition (subset). */
+import type { NewSkillDraft } from "./catalog-studio-types.js";
+
 export interface DynamicFormFieldOption {
   label: string;
   value: string;
@@ -73,4 +75,6 @@ export interface OrgStudioProposal {
     notes: string;
     veto?: { by: string; reason: string };
   };
+  /** Skills referenced by agents but missing in tenant — require explicit approval on apply. */
+  missingSkills?: NewSkillDraft[];
 }

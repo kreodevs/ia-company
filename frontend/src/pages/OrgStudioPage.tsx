@@ -34,6 +34,7 @@ export default function OrgStudioPage() {
   const [applying, setApplying] = useState(false);
   const [createWorkItem, setCreateWorkItem] = useState(true);
   const [workItemKind, setWorkItemKind] = useState<WorkItemKind>("client");
+  const [approvedMissingSkills, setApprovedMissingSkills] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
 
   const selectedTemplate = templates.find((tpl) => tpl.slug === templateSlug);
@@ -61,6 +62,7 @@ export default function OrgStudioPage() {
       const p = await api.orgStudio.propose({ templateSlug, name: name || undefined, description });
       setProposal(p);
       setConfig(p.configDefaults);
+      setApprovedMissingSkills(new Set());
       setWorkItemKind(defaultWorkItemKindForTemplate(p.orgUnitType));
       if (!name) setName(p.suggestedName);
     } catch (err) {
@@ -82,6 +84,9 @@ export default function OrgStudioPage() {
         config,
         createWorkItem,
         workItemKind,
+        approvedNewSkillNames: proposal.missingSkills?.length
+          ? [...approvedMissingSkills]
+          : undefined,
       });
       navigate(`/org-units/${result.orgUnit.id}`);
     } catch (err) {
@@ -92,6 +97,9 @@ export default function OrgStudioPage() {
   };
 
   const mungerBlocked = Boolean(proposal?.mungerReview && !proposal.mungerReview.approved);
+  const allMissingSkillsApproved =
+    !proposal?.missingSkills?.length ||
+    proposal.missingSkills.every((s) => approvedMissingSkills.has(s.name));
 
   if (loading) return <PageLoading message={t("org.studio.loading")} />;
 
@@ -180,6 +188,34 @@ export default function OrgStudioPage() {
             </Panel>
           )}
 
+          {proposal.missingSkills && proposal.missingSkills.length > 0 && (
+            <Panel title={t("org.studio.missingSkillsTitle")} bodySize="sm">
+              <ul className="space-y-3">
+                {proposal.missingSkills.map((skill) => (
+                  <li key={skill.name} className="rounded-md border border-[var(--color-border)] p-3">
+                    <p className="text-sm font-medium">{skill.name}</p>
+                    <p className="text-xs text-[var(--color-muted-foreground)]">{skill.description}</p>
+                    <label className="mt-2 flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={approvedMissingSkills.has(skill.name)}
+                        onChange={(e) => {
+                          setApprovedMissingSkills((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.add(skill.name);
+                            else next.delete(skill.name);
+                            return next;
+                          });
+                        }}
+                      />
+                      {t("org.studio.approveMissingSkill", { name: skill.name })}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+
           <Panel title={t("org.studio.designMd")} bodySize="sm">
             <pre className="max-h-48 overflow-auto rounded-md bg-[var(--color-background)] p-3 text-xs whitespace-pre-wrap">
               {proposal.designMd}
@@ -214,7 +250,10 @@ export default function OrgStudioPage() {
 
           <p className="text-xs text-[var(--color-muted-foreground)]">{t("org.studio.mungerHint")}</p>
 
-          <Button onClick={() => void runApply()} disabled={applying || mungerBlocked}>
+          <Button
+            onClick={() => void runApply()}
+            disabled={applying || mungerBlocked || !allMissingSkillsApproved}
+          >
             {applying ? t("org.studio.applying") : t("org.studio.apply")}
           </Button>
         </>

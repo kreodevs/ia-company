@@ -3,9 +3,14 @@ import { prisma } from "./prisma.js";
 import { PLATFORM_BUSINESS_TEMPLATES } from "./business-templates.js";
 import { createOrgUnit } from "./org-unit.js";
 import { slugifyOrgName } from "./org-workspace.js";
-import { enhanceOrgProposalWithLlm, reviewOrgProposalWithMunger } from "./org-studio-llm.js";
+import { enhanceOrgProposalWithLlm, proposeMissingSkillsForOrg, refineOrgSuggestedAgentsWithLlm, reviewOrgProposalWithMunger } from "./org-studio-llm.js";
 import { createDefaultOrgWorkItem } from "./org-work-items.js";
-import { ensureTenantAgents } from "./tenant-catalog.js";
+import {
+  collectSkillNamesFromAgents,
+  ensureTenantAgents,
+  ensureTenantSkill,
+  findMissingSkillNames,
+} from "./tenant-catalog.js";
 import type {
   BusinessTemplateDefinition,
   OrgStudioProposal,
@@ -145,6 +150,37 @@ export async function proposeOrgUnit(input: {
   let proposal = buildProposalFromTemplate(tpl, input);
   if (input.useLlm !== false && input.tenantId && input.description?.trim()) {
     proposal = await enhanceOrgProposalWithLlm(input.tenantId, proposal, input.description);
+    proposal = {
+      ...proposal,
+      suggestedAgents: await refineOrgSuggestedAgentsWithLlm(
+        input.tenantId,
+        proposal,
+        input.description,
+      ),
+    };
+  }
+  if (input.tenantId) {
+    const missingNames = await findMissingSkillNames(
+      input.tenantId,
+      collectSkillNamesFromAgents(proposal.suggestedAgents),
+    );
+    if (missingNames.length) {
+      proposal = {
+        ...proposal,
+        missingSkills:
+          input.description?.trim() && input.useLlm !== false
+            ? await proposeMissingSkillsForOrg(
+                input.tenantId,
+                missingNames,
+                input.description,
+              )
+            : missingNames.map((name) => ({
+                name,
+                description: `Skill for ${name.replace(/-/g, " ")}`,
+                promptContent: `You are the ${name} skill. Execute department tasks. End with JSON handoff when required.`,
+              })),
+      };
+    }
   }
   if (input.tenantId && input.includeMungerReview !== false) {
     const review = await reviewOrgProposalWithMunger(input.tenantId, proposal);
@@ -185,6 +221,7 @@ export async function applyOrgStudioProposal(
     createWorkItem?: boolean;
     workItemKind?: WorkItemKind;
     skipMungerGate?: boolean;
+    approvedNewSkillNames?: string[];
   },
 ) {
   if (!overrides?.skipMungerGate) {
@@ -192,6 +229,16 @@ export async function applyOrgStudioProposal(
     if (!review.approved && review.veto) {
       throw new Error(`VETO: ${review.veto.reason}`);
     }
+  }
+
+  const approvedSet = new Set((overrides?.approvedNewSkillNames ?? []).map((n) => n.trim()));
+  for (const draft of proposal.missingSkills ?? []) {
+    if (!approvedSet.has(draft.name)) {
+      throw new Error(
+        `Skill "${draft.name}" was not approved. Pass approvedNewSkillNames including each missing skill to create.`,
+      );
+    }
+    await ensureTenantSkill(tenantId, draft);
   }
 
   const tpl = await loadTemplate(proposal.templateSlug);

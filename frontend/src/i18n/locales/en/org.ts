@@ -62,6 +62,8 @@ export const org = {
     mungerTitle: "Munger pre-mortem",
     mungerApproved: "No fatal flaws detected",
     mungerVeto: "VETO — cannot create department",
+    missingSkillsTitle: "Missing skills (require approval)",
+    approveMissingSkill: "I approve creating «{{name}}»",
   },
   addWorkItemTitle: "Add work item",
   addWorkItemSubtitle: "Create another client, campaign, or project slot linked to this department.",

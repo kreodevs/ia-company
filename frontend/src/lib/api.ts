@@ -565,12 +565,18 @@ export interface OfficeTaskAgent {
   reasonKey: string;
 }
 
+export interface OfficeMissingAgentRole {
+  name: string;
+  suggestedBrief: string;
+}
+
 export interface OfficeTaskPlan {
   planId: string;
   request: string;
   summary: string;
   coordinatorNoteKey: string;
   agents: OfficeTaskAgent[];
+  missingAgentRoles?: OfficeMissingAgentRole[];
   workflowId: string | null;
   workflowName: string | null;
   presetId: string | null;
@@ -1554,6 +1560,7 @@ export const api = {
       config?: Record<string, unknown>;
       createWorkItem?: boolean;
       workItemKind?: WorkItemKind;
+      approvedNewSkillNames?: string[];
     }) =>
       request<{
         orgUnit: import("./org-types").OrgUnit;

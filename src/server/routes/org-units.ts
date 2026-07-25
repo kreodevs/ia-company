@@ -234,6 +234,7 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       config?: Record<string, unknown>;
       createWorkItem?: boolean;
       workItemKind?: "product" | "client" | "campaign" | "project";
+      approvedNewSkillNames?: string[];
     };
   }>(
     "/org-studio/apply",
@@ -250,6 +251,7 @@ export async function orgUnitRoutes(app: FastifyInstance) {
           config: request.body.config,
           createWorkItem: request.body.createWorkItem,
           workItemKind: request.body.workItemKind,
+          approvedNewSkillNames: request.body.approvedNewSkillNames,
         });
         await logAudit(request, "org_studio.apply", {
           orgUnitId: result.orgUnit.id,

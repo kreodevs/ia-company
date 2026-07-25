@@ -120,3 +120,23 @@ export async function linkAgentSkillsByName(
     });
   }
 }
+
+export function collectSkillNamesFromAgents(agents: SuggestedAgentDef[]): string[] {
+  const names = new Set<string>();
+  for (const agent of agents) {
+    for (const raw of agent.skillNames ?? []) {
+      names.add(slugifyCatalogName(raw));
+    }
+  }
+  return [...names];
+}
+
+export async function findMissingSkillNames(
+  tenantId: string,
+  skillNames: string[],
+): Promise<string[]> {
+  if (!skillNames.length) return [];
+  const existing = await listTenantSkillsForCatalog(tenantId);
+  const known = new Set(existing.map((s) => s.name));
+  return skillNames.filter((name) => !known.has(slugifyCatalogName(name)));
+}

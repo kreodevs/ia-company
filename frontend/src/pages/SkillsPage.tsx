@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type Skill } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
@@ -16,6 +17,9 @@ export default function SkillsPage({ embedded = false }: { embedded?: boolean })
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", promptContent: "" });
+  const [aiBrief, setAiBrief] = useState("");
+  const [improving, setImproving] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -31,6 +35,36 @@ export default function SkillsPage({ embedded = false }: { embedded?: boolean })
     setCreating(true);
     setSelected(null);
     setForm({ name: "", description: "", promptContent: "" });
+    setAiBrief("");
+    setInfo(null);
+  };
+
+  const improveWithAi = async () => {
+    const brief =
+      aiBrief.trim() ||
+      [form.name, form.description].filter(Boolean).join(": ").trim();
+    if (brief.length < 8) return;
+    setImproving(true);
+    setInfo(null);
+    try {
+      const proposal = await api.catalogStudio.skills.propose({ brief });
+      if (proposal.reuse) {
+        setInfo(t("catalogStudio.reuseExistingSkill", { name: proposal.reuse.existingSkillName }));
+        return;
+      }
+      if (proposal.skill) {
+        setForm({
+          name: proposal.skill.name,
+          description: proposal.skill.description,
+          promptContent: proposal.skill.promptContent,
+        });
+        setInfo(t("catalogStudio.draftPrefilled"));
+      }
+    } catch (err) {
+      setInfo(translateApiError(err, t, "common.requestFailed"));
+    } finally {
+      setImproving(false);
+    }
   };
 
   const openEdit = (skill: Skill) => {
@@ -119,6 +153,30 @@ export default function SkillsPage({ embedded = false }: { embedded?: boolean })
               <h2 className="font-semibold">
                 {creating ? t("workflows.skills.createSkill") : t("workflows.skills.editSkill")}
               </h2>
+              {info && (
+                <p className="rounded-lg bg-[var(--color-primary)]/10 px-3 py-2 text-sm">{info}</p>
+              )}
+              {creating && (
+                <div className="space-y-2 rounded-lg border border-dashed border-[var(--color-border)] p-3">
+                  <label className="block text-sm">
+                    {t("catalogStudio.improveBriefLabel")}
+                    <textarea
+                      className="mt-1 h-20 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                      value={aiBrief}
+                      onChange={(e) => setAiBrief(e.target.value)}
+                      placeholder={t("catalogStudio.improveBriefPlaceholder")}
+                    />
+                  </label>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={improving}
+                    onClick={() => void improveWithAi()}
+                  >
+                    {improving ? t("catalogStudio.improving") : t("catalogStudio.improveWithAi")}
+                  </Button>
+                </div>
+              )}
               <Input
                 label={t("common.name")}
                 value={form.name}

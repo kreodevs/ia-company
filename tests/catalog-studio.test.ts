@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parseJsonFromLlm } from "../src/lib/catalog-studio-llm.js";
-import { slugifyCatalogName } from "../src/lib/tenant-catalog.js";
+import { slugifyCatalogName, collectSkillNamesFromAgents } from "../src/lib/tenant-catalog.js";
+import { applyOrgStudioProposal } from "../src/lib/org-studio.js";
+import { MARKETING_AGENCY_TEMPLATE } from "../src/lib/business-templates.js";
 import { applySkillProposal } from "../src/lib/skill-studio.js";
 import { applyAgentProposal } from "../src/lib/agent-studio.js";
 import type { AgentStudioProposal, SkillStudioProposal } from "../src/lib/catalog-studio-types.js";
@@ -102,6 +104,47 @@ describe("agent studio apply", () => {
           proposal,
           approved: true,
           approvedNewSkillNames: [],
+        }),
+      /was not approved/,
+    );
+  });
+});
+
+describe("tenant catalog helpers", () => {
+  it("collectSkillNamesFromAgents deduplicates kebab names", () => {
+    const names = collectSkillNamesFromAgents([
+      { name: "a", role: "r", systemPrompt: "p", skillNames: ["seo-audit", "seo-audit"] },
+      { name: "b", role: "r", systemPrompt: "p", skillNames: ["copywriting"] },
+    ]);
+    assert.deepEqual(names.sort(), ["copywriting", "seo-audit"]);
+  });
+});
+
+describe("org studio apply missing skills", () => {
+  it("requires approvedNewSkillNames for missing skills", async () => {
+    const proposal = {
+      templateSlug: "marketing-agency",
+      templateName: "Marketing",
+      orgUnitType: "marketing_agency",
+      suggestedName: "Test",
+      suggestedSlug: "test",
+      description: "Test dept",
+      configSchema: MARKETING_AGENCY_TEMPLATE.configSchema,
+      configDefaults: {},
+      tokens: {},
+      designMd: "",
+      suggestedAgents: MARKETING_AGENCY_TEMPLATE.suggestedAgents.slice(0, 1),
+      suggestedWorkflows: [],
+      artifactTypes: [],
+      summary: "test",
+      missingSkills: [{ name: "missing-skill", description: "d", promptContent: "p" }],
+    };
+
+    await assert.rejects(
+      () =>
+        applyOrgStudioProposal("tenant-x", proposal, {
+          approvedNewSkillNames: [],
+          skipMungerGate: true,
         }),
       /was not approved/,
     );

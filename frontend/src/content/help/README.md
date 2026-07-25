@@ -18,6 +18,7 @@ Non-technical **user manual** covering:
 - Office: commissioning work, Coordinator, quick services, approve and run
 - My jobs, War room, Products, Departments, Org Studio
 - Agents, skills, workflows, linking products and departments
+- **Equipo IA** hub and **Catalog Studio** (LLM propose → human approve → apply)
 - Consensus memory, optional schedules, GO/NO-GO decisions
 - Organization settings and human team roles
 

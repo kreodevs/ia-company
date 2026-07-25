@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
@@ -10,12 +10,16 @@ import MungerReviewPanel from "./MungerReviewPanel";
 
 interface CatalogStudioAgentPanelProps {
   onApplied?: () => void;
+  initialBrief?: string;
 }
 
-export default function CatalogStudioAgentPanel({ onApplied }: CatalogStudioAgentPanelProps) {
+export default function CatalogStudioAgentPanel({
+  onApplied,
+  initialBrief = "",
+}: CatalogStudioAgentPanelProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [brief, setBrief] = useState("");
+  const [brief, setBrief] = useState(initialBrief);
   const [proposal, setProposal] = useState<AgentStudioProposal | null>(null);
   const [approvedAgent, setApprovedAgent] = useState(false);
   const [approvedSkills, setApprovedSkills] = useState<Set<string>>(new Set());
@@ -23,6 +27,10 @@ export default function CatalogStudioAgentPanel({ onApplied }: CatalogStudioAgen
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (initialBrief) setBrief(initialBrief);
+  }, [initialBrief]);
 
   const mungerBlocked = Boolean(proposal?.mungerReview && !proposal.mungerReview.approved);
   const needsAgentApproval = Boolean(proposal && !proposal.reuse && proposal.agent);

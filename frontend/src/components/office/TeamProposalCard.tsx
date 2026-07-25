@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { OfficeTaskPlan } from "../../lib/api";
 import Button from "../ui/Button";
@@ -63,6 +64,26 @@ export default function TeamProposalCard({
           </div>
         ))}
       </div>
+      {plan.missingAgentRoles && plan.missingAgentRoles.length > 0 && (
+        <div className="office-missing-roles mt-4 rounded-lg border border-[var(--color-border)] p-3">
+          <p className="text-sm font-medium">{t("office.task.missingRoleTitle")}</p>
+          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+            {t("office.task.missingRoleHint")}
+          </p>
+          <ul className="mt-2 space-y-2">
+            {plan.missingAgentRoles.map((role) => (
+              <li key={role.name}>
+                <Link
+                  to={`/ai-team?tab=create-agent&brief=${encodeURIComponent(role.suggestedBrief)}`}
+                  className="text-sm text-[var(--color-primary)] underline"
+                >
+                  {t("office.task.createMissingRole", { name: role.name.replace(/-/g, " ") })}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="office-estimates">
         <div className="office-estimate">
           <p className="office-estimate-label">{t("office.task.scope")}</p>

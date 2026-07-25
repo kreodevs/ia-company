@@ -25,13 +25,59 @@ function agentToForm(agent: Agent | null) {
 export default function AgentForm({ agent, skills, onSave, onCancel }: AgentFormProps) {
   const { t } = useTranslation();
   const [form, setForm] = useState(() => agentToForm(agent));
+  const [aiBrief, setAiBrief] = useState("");
+  const [improving, setImproving] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(agentToForm(agent));
     setError(null);
+    setInfo(null);
   }, [agent]);
+
+  const improveWithAi = async () => {
+    const brief =
+      aiBrief.trim() ||
+      [form.role, form.systemPrompt].filter(Boolean).join(": ").trim();
+    if (brief.length < 8) {
+      setError(t("catalogStudio.briefPlaceholderAgent"));
+      return;
+    }
+    setImproving(true);
+    setError(null);
+    setInfo(null);
+    try {
+      const proposal = await api.catalogStudio.agents.propose({ brief });
+      if (proposal.reuse) {
+        setInfo(t("catalogStudio.reuseExistingAgent", { name: proposal.reuse.existingAgentName }));
+        return;
+      }
+      if (proposal.agent) {
+        const skillIdSet = new Set(form.skillIds);
+        for (const skillName of [
+          ...proposal.existingSkillNames,
+          ...(proposal.agent.skillNames ?? []),
+        ]) {
+          const match = skills.find((s) => s.name === skillName);
+          if (match) skillIdSet.add(match.id);
+        }
+        setForm({
+          ...form,
+          name: proposal.agent.name,
+          role: proposal.agent.role,
+          systemPrompt: proposal.agent.systemPrompt,
+          skillIds: [...skillIdSet],
+        });
+        setInfo(t("catalogStudio.draftPrefilled"));
+      }
+    } catch (err) {
+      setError(translateApiError(err, t, "common.requestFailed"));
+    } finally {
+      setImproving(false);
+    }
+  };
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -64,6 +110,34 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
         <p className="rounded-lg bg-[var(--color-destructive)]/15 px-3 py-2 text-sm text-[var(--color-destructive)]">
           {error}
         </p>
+      )}
+
+      {info && (
+        <p className="rounded-lg bg-[var(--color-primary)]/10 px-3 py-2 text-sm text-[var(--color-foreground)]">
+          {info}
+        </p>
+      )}
+
+      {!agent && (
+        <div className="space-y-2 rounded-lg border border-dashed border-[var(--color-border)] p-3">
+          <label className="block text-sm">
+            {t("catalogStudio.improveBriefLabel")}
+            <textarea
+              className="mt-1 h-20 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+              value={aiBrief}
+              onChange={(e) => setAiBrief(e.target.value)}
+              placeholder={t("catalogStudio.improveBriefPlaceholder")}
+            />
+          </label>
+          <button
+            type="button"
+            disabled={improving}
+            onClick={() => void improveWithAi()}
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm hover:bg-[var(--color-muted)]/30 disabled:opacity-50"
+          >
+            {improving ? t("catalogStudio.improving") : t("catalogStudio.improveWithAi")}
+          </button>
+        </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">

@@ -50,6 +50,9 @@ export const office = {
     costRange: "${{min}}–${{max}}",
     success: "Task launched — track progress in Activity.",
     error: "Could not launch task",
+    missingRoleTitle: "Roles missing from your catalog",
+    missingRoleHint: "Create these agents in AI team to cover the job.",
+    createMissingRole: "Create «{{name}}»",
   },
   activity: {
     title: "Activity",

@@ -81,7 +81,7 @@ Tú eres quien **encarga**, **aprueba** y **decide**. Los agentes **investigan, 
 | **Productos** | Cartera de ideas y productos reales con los que operar |
 | **Departamentos** | Equipos virtuales especializados (marketing, product studio, etc.) |
 | **Flujos** | Secuencias de agentes que puedes reutilizar |
-| **Agentes y Habilidades** | Catálogo de especialistas y sus capacidades |
+| **Equipo IA** | Catálogo de agentes, habilidades y **Catalog Studio** (crear con IA) |
 | **Consenso** | Memoria compartida de la compañía y de cada producto |
 
 ### Tres formas de trabajar
@@ -224,25 +224,42 @@ Los **agentes** son los especialistas de tu empresa virtual. Cada uno tiene pers
 
 ### Dónde gestionarlos
 
-Menú **Oficina de depuración** → **Catálogo IA** → **Agentes**.
+Menú **Tu oficina** → **Equipo IA** (`/ai-team`).
 
-*(Si no ves esta sección, tu rol puede ser solo de miembro; pide a un administrador que cree o ajuste agentes.)*
+Tres formas de ampliar el catálogo:
 
-### Crear un agente
+1. **Manual** — pestaña **Agentes** → **Nuevo agente**.
+2. **Catalog Studio** — pestaña **Crear agente**: describes el rol, la IA propone reutilizar uno existente o un borrador nuevo; **tú apruebas** antes de crear.
+3. **Org Studio** — al crear un departamento, la IA sugiere agentes alineados a la plantilla y misión.
+
+*(Si no ves Equipo IA, tu rol puede ser solo de miembro; pide a un administrador que cree o ajuste agentes.)*
+
+### Crear un agente (manual)
 
 1. Pulsa **Nuevo agente**.
 2. Define **nombre** y **persona** (cómo piensa y habla: estratega, redactor, devops…).
-3. Elige **modelo** y **temperatura** (más creativo vs. más preciso).
-4. Asigna **habilidades** que amplíen lo que puede hacer (research, SEO, revisión de código…).
-5. Guarda.
+3. Opcional: **Mejorar con IA** — escribe un brief y la IA rellena el borrador (puedes editar antes de guardar).
+4. Elige **modelo** y **temperatura** (más creativo vs. más preciso).
+5. Asigna **habilidades** que amplíen lo que puede hacer.
+6. Guarda.
+
+### Catalog Studio (crear agente con IA)
+
+1. **Equipo IA** → **Crear agente**.
+2. Describe en lenguaje natural qué rol necesitas.
+3. Revisa la propuesta: puede recomendar **reutilizar** un agente existente o proponer uno nuevo.
+4. **Munger** hace un pre-mortem; si hay VETO, no podrás aplicar.
+5. Marca **Apruebo crear este agente** (y cada habilidad nueva, si las hay).
+6. Pulsa **Aprobar y aplicar** — nada se crea sin tu checkbox explícito.
 
 ### Cuándo crear agentes nuevos
 
 - Necesitas un rol que no cubre nadie del catálogo.
 - Quieres una variante con otro tono (por ejemplo, «Copy B2B formal» vs. «Copy startup casual»).
 - Un departamento requiere especialistas dedicados.
+- El **Coordinador** te avisa que falta un rol — enlace directo a **Crear agente** con el brief precargado.
 
-Los agentes creados aquí pueden usarse en **Flujos**, en encargos del **Coordinador** y en **departamentos**.
+Los agentes del catálogo pueden usarse en **Flujos**, encargos del **Coordinador** y **departamentos**.
 
 ---
 
@@ -252,19 +269,26 @@ Las **habilidades** son capacidades reutilizables: investigación profunda, audi
 
 ### Dónde gestionarlas
 
-**Oficina de depuración** → **Catálogo IA** → **Habilidades**.
+**Tu oficina** → **Equipo IA** → pestaña **Habilidades** (edición manual) o **Crear habilidad** (Catalog Studio con IA).
 
-### Crear una habilidad
+### Crear una habilidad (manual)
 
-1. **Nuevo** → nombre claro (*«Auditoría UX de onboarding»*).
-2. Describe **cuándo usarla** y **qué debe entregar**.
-3. Guarda y **asóciala a los agentes** que la necesiten.
+1. **Nueva skill** → nombre claro (*«Auditoría UX de onboarding»*).
+2. Opcional: **Mejorar con IA** para generar descripción y prompt desde un brief.
+3. Describe **cuándo usarla** y **qué debe entregar**.
+4. Guarda y **asóciala a los agentes** que la necesiten.
+
+### Catalog Studio (crear habilidad con IA)
+
+Mismo flujo que agentes: brief → propuesta (reutilizar o nueva) → Munger → **aprobación explícita** → aplicar.
+
+Al crear un **departamento** en Org Studio, si faltan habilidades en tu tenant, verás checkboxes para aprobar cada una antes de crear el dept.
 
 ### Buenas prácticas
 
 - Nombres orientados a resultado, no a herramientas internas.
 - Una habilidad = un tipo de trabajo reconocible.
-- Evita duplicar habilidades casi iguales; mejor refinar la descripción.
+- **Reutiliza** antes de duplicar — Catalog Studio prioriza lo que ya tienes.
 
 ---
 

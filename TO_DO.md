@@ -32,7 +32,7 @@
 - [x] **1.7** UI tab **Crear habilidad** en `AiTeamHubPage`
 - [x] **1.8** i18n `catalogStudio` es/en
 - [x] **1.9** Tests `tests/catalog-studio.test.ts` (apply gates / parse JSON)
-- [ ] **1.10** Manual ayuda — sección Skill Studio
+- [x] **1.10** Manual ayuda — sección Skill Studio
 
 ---
 
@@ -46,23 +46,23 @@
 - [x] **2.6** API frontend + tab **Crear agente**
 - [ ] **2.7** Opcional v1: vincular a `orgUnitId` en config dept. (propose acepta orgUnitId; apply pendiente UI)
 - [x] **2.8** Tests apply gates en `tests/catalog-studio.test.ts`
-- [ ] **2.9** Botón «Mejorar con IA» en `AgentForm` / `SkillsPage` (rellenar borrador)
+- [x] **2.9** Botón «Mejorar con IA» en `AgentForm` / `SkillsPage` (rellenar borrador)
 
 ---
 
 ## Fase 3 — Org Studio unificado
 
-- [ ] **3.1** LLM refina `suggestedAgents[]` en Org Studio (además de summary/design.md)
-- [ ] **3.2** Apply dept.: skills faltantes → proponer crear (UI confirmación), no silenciar `continue`
+- [x] **3.1** LLM refina `suggestedAgents[]` en Org Studio (además de summary/design.md)
+- [x] **3.2** Apply dept.: skills faltantes → proponer crear (UI confirmación), no silenciar `continue`
 - [x] **3.3** Reutilizar `tenant-catalog` en todo el flujo org
 
 ---
 
 ## Fase 4 — Coordinador dinámico
 
-- [ ] **4.1** `planOfficeTaskWithLlm` — elige agentes del catálogo tenant
-- [ ] **4.2** Tarjeta «Falta rol X» → deep link Agent Studio con brief
-- [ ] **4.3** Scope departamento prioriza agentes del dept.
+- [x] **4.1** `selectOfficeAgentsWithLlm` — elige agentes del catálogo tenant (`office-coordinator-llm.ts`)
+- [x] **4.2** Tarjeta «Falta rol X» → deep link Agent Studio con brief (`TeamProposalCard`)
+- [x] **4.3** Scope departamento prioriza agentes del dept. (ya en `planOfficeTask` + LLM preferredNames)
 
 ---
 
@@ -72,7 +72,7 @@
 - [x] **5.2** Nav **Tu oficina** → Equipo IA; quitar catálogo de depuración
 - [x] **5.3** Redirect `/agents`, `/skills`, `/debug/agents`, `/debug/skills` → `/ai-team?tab=…`
 - [ ] **5.4** Onboarding vertical post-login
-- [ ] **5.5** Actualizar manual ayuda completo
+- [x] **5.5** Actualizar manual ayuda completo
 
 ---
 
@@ -98,4 +98,5 @@
 | Fecha | Commit / nota |
 |-------|----------------|
 | 2026-07-24 | Creado TO_DO.md; arranque Fase 0–2 + 5.1 |
-| 2026-07-24 | Fase 0–2 backend + rutas API + hub `/ai-team` + i18n + tests unitarios + ADR (sin commit) |
+| 2026-07-24 | Fase 0–2 backend + rutas API + hub `/ai-team` + i18n + tests + ADR → `8c36231` |
+| 2026-07-24 | Tanda 2: manual ayuda, Mejorar con IA, Org Studio agents/skills, coordinador LLM + missing roles (sin commit) |

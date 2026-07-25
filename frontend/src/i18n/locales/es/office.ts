@@ -50,6 +50,9 @@ export const office = {
     costRange: "${{min}}–${{max}}",
     success: "Tarea lanzada — sigue el progreso en Actividad.",
     error: "No se pudo lanzar la tarea",
+    missingRoleTitle: "Roles faltantes en tu catálogo",
+    missingRoleHint: "Crea estos agentes en Equipo IA para cubrir el encargo.",
+    createMissingRole: "Crear «{{name}}»",
   },
   activity: {
     title: "Actividad",
