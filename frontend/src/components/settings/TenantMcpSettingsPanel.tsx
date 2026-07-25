@@ -23,6 +23,8 @@ export default function TenantMcpSettingsPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [validatingId, setValidatingId] = useState<string | null>(null);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -118,11 +120,38 @@ export default function TenantMcpSettingsPanel() {
 
   const sync = async (id: string) => {
     setSyncingId(id);
+    setValidationMessage(null);
     try {
       await api.tenantMcp.syncServer(id);
       await load();
     } finally {
       setSyncingId(null);
+    }
+  };
+
+  const validateLlm = async (id: string) => {
+    setValidatingId(id);
+    setValidationMessage(null);
+    try {
+      const result = await api.tenantMcp.validateLlm(id);
+      if (result.ok) {
+        setValidationMessage(
+          t("settings.mcp.validateOk", {
+            provider: result.provider,
+            model: result.model,
+            count: result.toolCount,
+          }),
+        );
+      } else {
+        setValidationMessage(
+          [result.error, result.responseBody].filter(Boolean).join("\n\n") ||
+            t("settings.mcp.validateFailed"),
+        );
+      }
+    } catch (err) {
+      setValidationMessage(err instanceof Error ? err.message : String(err));
+    } finally {
+      setValidatingId(null);
     }
   };
 
@@ -150,6 +179,12 @@ export default function TenantMcpSettingsPanel() {
           <li>{t("settings.mcp.guardrailQuota")}</li>
         </ul>
       </section>
+
+      {validationMessage && (
+        <pre className="max-h-48 overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3 text-xs whitespace-pre-wrap">
+          {validationMessage}
+        </pre>
+      )}
 
       {servers.length > 0 && (
         <section className="space-y-3">
@@ -187,6 +222,14 @@ export default function TenantMcpSettingsPanel() {
                     className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-xs disabled:opacity-50"
                   >
                     {syncingId === server.id ? t("common.loading") : t("settings.mcp.sync")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={validatingId === server.id || server.tools.length === 0}
+                    onClick={() => void validateLlm(server.id)}
+                    className="rounded-lg border border-[var(--color-border)] px-3 py-1 text-xs disabled:opacity-50"
+                  >
+                    {validatingId === server.id ? t("common.loading") : t("settings.mcp.validateLlm")}
                   </button>
                   <button
                     type="button"

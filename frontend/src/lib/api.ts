@@ -1555,6 +1555,17 @@ export const api = {
       request<{ ok: boolean }>(`/tenant/mcp/servers/${id}`, { method: "DELETE" }),
     syncServer: (id: string) =>
       request<TenantMcpServer>(`/tenant/mcp/servers/${id}/sync`, { method: "POST" }),
+    validateLlm: (id: string) =>
+      request<{
+        ok: boolean;
+        provider: string;
+        model: string;
+        toolCount: number;
+        error?: string;
+        statusCode?: number | null;
+        responseBody?: string | null;
+        skippedTools?: Array<{ toolName: string; reason: string }>;
+      }>(`/tenant/mcp/servers/${id}/validate-llm`, { method: "POST" }),
   },
   opencode: {
     getRun: (runId: string) => request<OpencodeRunInfo>(`/runs/${runId}/opencode`),

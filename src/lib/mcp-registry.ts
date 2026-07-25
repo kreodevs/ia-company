@@ -2,6 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { prisma } from "./prisma.js";
 import { decryptSecret, encryptSecret } from "./crypto.js";
+import { sanitizeMcpInputSchema } from "./mcp-tool-schema.js";
 
 const MCP_CONNECT_TIMEOUT_MS = 15_000;
 const MCP_CALL_TIMEOUT_MS = 30_000;
@@ -226,7 +227,7 @@ export async function syncTenantMcpServerTools(tenantId: string, serverId: strin
         serverId,
         name: tool.name,
         description: tool.description ?? null,
-        inputSchemaJson: JSON.stringify(tool.inputSchema ?? {}),
+        inputSchemaJson: JSON.stringify(sanitizeMcpInputSchema(tool.inputSchema ?? {})),
         enabled: true,
       })),
     });

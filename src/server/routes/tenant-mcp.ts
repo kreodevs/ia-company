@@ -137,4 +137,40 @@ export async function tenantMcpRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.post<{ Params: { id: string } }>(
+    "/tenant/mcp/servers/:id/validate-llm",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const server = await getTenantMcpServer(tenantId, request.params.id);
+        if (!server) return reply.status(404).send({ error: "MCP server not found" });
+
+        const { validateMcpToolsWithPlatformLlm } = await import("../../lib/mcp-llm-validation.js");
+        const result = await validateMcpToolsWithPlatformLlm(
+          server.tools
+            .filter((tool) => tool.enabled)
+            .map((tool) => ({
+              serverSlug: server.slug,
+              toolName: tool.name,
+              description: tool.description,
+              inputSchemaJson: tool.inputSchemaJson,
+            })),
+        );
+
+        await logAudit(request, "tenant.mcp_server.validate_llm", {
+          serverId: request.params.id,
+          ok: result.ok,
+          toolCount: result.toolCount,
+        });
+
+        if (!result.ok) {
+          return reply.status(502).send(result);
+        }
+        return result;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 }

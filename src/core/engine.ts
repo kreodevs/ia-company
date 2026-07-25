@@ -613,7 +613,7 @@ export class WorkflowExecutor {
       } catch (err) {
         const apiErr = findApiCallError(err);
         if (apiErr?.statusCode === 400 && mcpToolCount > 0) {
-          await this.appendLog(runId, "warn", "LLM HTTP 400 with MCP tools — retrying without MCP", {
+          await this.appendLog(runId, "warn", "LLM HTTP 400 with MCP tools — retrying with base tools only (re-sync MCP or run Validate LLM in Settings)", {
             agentId: agent.id,
             payload: { mcpToolCount, statusCode: apiErr.statusCode },
           });

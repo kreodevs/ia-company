@@ -1,7 +1,12 @@
-import { tool } from "ai";
-import { z } from "zod";
+import { tool, jsonSchema } from "ai";
 import type { ToolExecutionContext } from "../types/index.js";
 import { callTenantMcpTool, loadAgentMcpToolDefinitions } from "./mcp-registry.js";
+import {
+  buildMcpToolKey,
+  MAX_MCP_TOOLS_PER_AGENT,
+  parseMcpInputSchemaJson,
+  sanitizeMcpToolDescription,
+} from "./mcp-tool-schema.js";
 
 class McpCallBudget {
   private counts = new Map<string, number>();
@@ -16,40 +21,6 @@ class McpCallBudget {
     }
     this.counts.set(serverId, used + 1);
   }
-}
-
-const MAX_MCP_TOOLS_PER_AGENT = 24;
-
-function jsonSchemaToZod(schema: Record<string, unknown>): z.ZodObject<z.ZodRawShape> {
-  const props = schema.properties as Record<string, Record<string, unknown>> | undefined;
-  if (!props || typeof props !== "object") {
-    return z.object({});
-  }
-
-  const required = new Set(
-    Array.isArray(schema.required) ? schema.required.map(String) : [],
-  );
-  const shape: Record<string, z.ZodTypeAny> = {};
-
-  for (const [key, prop] of Object.entries(props)) {
-    const desc = typeof prop.description === "string" ? prop.description : key;
-    let field: z.ZodTypeAny = z.string().describe(desc);
-    if (prop.type === "string") field = z.string().describe(desc);
-    else if (prop.type === "number" || prop.type === "integer") field = z.number().describe(desc);
-    else if (prop.type === "boolean") field = z.boolean().describe(desc);
-    else if (prop.type === "array") field = z.array(z.string()).describe(desc);
-    else if (prop.type === "object") field = z.object({}).describe(desc);
-
-    if (!required.has(key)) field = field.optional();
-    shape[key] = field;
-  }
-
-  return z.object(shape);
-}
-
-function mcpToolKey(serverSlug: string, toolName: string): string {
-  const safe = `${serverSlug}__${toolName}`.replace(/[^a-zA-Z0-9_]/g, "_").slice(0, 60);
-  return `mcp_${safe}`;
 }
 
 export async function buildMcpToolsForAgent(
@@ -68,38 +39,44 @@ export async function buildMcpToolsForAgent(
   const budget = new McpCallBudget(limits);
 
   const tools: Record<string, unknown> = {};
+  const usedKeys = new Set<string>();
 
   for (const def of defs) {
     if (!def.command) continue;
 
-    let schema: z.ZodObject<z.ZodRawShape>;
-    try {
-      schema = jsonSchemaToZod(JSON.parse(def.inputSchemaJson) as Record<string, unknown>);
-    } catch {
-      schema = z.object({});
+    let toolKey = buildMcpToolKey(def.serverSlug, def.toolName);
+    if (usedKeys.has(toolKey)) {
+      toolKey = `${toolKey}_${usedKeys.size}`;
     }
+    usedKeys.add(toolKey);
 
-    const toolKey = mcpToolKey(def.serverSlug, def.toolName);
-    const description =
-      def.description?.trim() ||
-      `MCP tool ${def.toolName} from server ${def.serverName}`;
+    try {
+      const schema = parseMcpInputSchemaJson(def.inputSchemaJson);
+      const description =
+        sanitizeMcpToolDescription(def.description) ||
+        `MCP tool ${def.toolName} from server ${def.serverName}`;
 
-    tools[toolKey] = tool({
-      description: `[MCP:${def.serverSlug}] ${description}`,
-      parameters: schema,
-      execute: async (args) => {
-        budget.consume(def.serverId);
-        ctx.onLog?.(`mcp: ${def.serverSlug}/${def.toolName}`, { args });
-        const result = await callTenantMcpTool({
-          command: def.command,
-          argsJson: def.argsJson,
-          envJson: def.envJson,
-          toolName: def.toolName,
-          args: args as Record<string, unknown>,
-        });
-        return result;
-      },
-    });
+      tools[toolKey] = tool({
+        description: `[MCP:${def.serverSlug}] ${description}`,
+        parameters: jsonSchema(schema),
+        execute: async (args) => {
+          budget.consume(def.serverId);
+          ctx.onLog?.(`mcp: ${def.serverSlug}/${def.toolName}`, { args });
+          const result = await callTenantMcpTool({
+            command: def.command,
+            argsJson: def.argsJson,
+            envJson: def.envJson,
+            toolName: def.toolName,
+            args: args as Record<string, unknown>,
+          });
+          return result;
+        },
+      });
+    } catch (err) {
+      ctx.onLog?.(`mcp: skipped tool ${def.serverSlug}/${def.toolName}`, {
+        reason: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
   return tools;
