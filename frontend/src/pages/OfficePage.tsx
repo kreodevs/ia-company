@@ -43,15 +43,19 @@ export default function OfficePage() {
   const [products, setProducts] = useState<TenantProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [productId, setProductId] = useState<string>("");
+  const [orgUnitId, setOrgUnitId] = useState<string>("");
+  const [orgUnits, setOrgUnits] = useState<Array<{ id: string; name: string }>>([]);
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [chatSeed, setChatSeed] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const [dash, overview] = await Promise.all([
+    const [dash, overview, units] = await Promise.all([
       api.office.dashboard(),
       api.products.overview().catch(() => null),
+      api.orgUnits.list().catch(() => []),
     ]);
     setDashboard(dash);
+    setOrgUnits(units.map((u) => ({ id: u.id, name: u.name })));
     if (overview?.products) setProducts(overview.products.filter((p) => p.phase !== "archived"));
   }, []);
 
@@ -74,6 +78,26 @@ export default function OfficePage() {
     if (!limit) return 0;
     return Math.min(100, (dashboard.usage.totalCostUsd / limit) * 100);
   }, [dashboard]);
+
+  const scopedProducts = useMemo(() => {
+    if (!orgUnitId) return products;
+    return products.filter((p) => p.orgUnitId === orgUnitId);
+  }, [products, orgUnitId]);
+
+  useEffect(() => {
+    if (!productId) return;
+    const p = products.find((item) => item.id === productId);
+    if (p?.orgUnitId && p.orgUnitId !== orgUnitId) {
+      setOrgUnitId(p.orgUnitId);
+    }
+  }, [productId, products, orgUnitId]);
+
+  useEffect(() => {
+    if (!productId) return;
+    if (!scopedProducts.some((p) => p.id === productId)) {
+      setProductId("");
+    }
+  }, [orgUnitId, productId, scopedProducts]);
 
   const portfolioRoi = useMemo(() => {
     if (!dashboard) return null;
@@ -229,6 +253,22 @@ export default function OfficePage() {
         <section className="office-task-panel office-chat-panel">
           <div className="office-scope-bar">
             <div className="office-scope-select-wrap">
+              <label htmlFor="office-org">{t("office.task.orgUnitLabel")}</label>
+              <select
+                id="office-org"
+                className="office-task-select"
+                value={orgUnitId}
+                onChange={(e) => setOrgUnitId(e.target.value)}
+              >
+                <option value="">{t("office.task.orgUnitAny")}</option>
+                {orgUnits.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="office-scope-select-wrap">
               <label htmlFor="office-product">{t("office.task.scope")}</label>
               <select
                 id="office-product"
@@ -237,15 +277,20 @@ export default function OfficePage() {
                 onChange={(e) => setProductId(e.target.value)}
               >
                 <option value="">{t("office.task.productAny")}</option>
-                {products.map((p) => (
+                {scopedProducts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
+                    {p.workItemKind && p.workItemKind !== "product" ? ` (${p.workItemKind})` : ""}
                   </option>
                 ))}
               </select>
             </div>
             <p className="office-scope-hint">
-              {productId
+              {orgUnitId
+                ? t("office.task.scopeOrgHint", {
+                    name: orgUnits.find((u) => u.id === orgUnitId)?.name ?? "",
+                  })
+                : productId
                 ? t("office.task.scopeProductHint", {
                     name: products.find((p) => p.id === productId)?.name ?? "",
                   })
@@ -255,6 +300,7 @@ export default function OfficePage() {
           <CoordinatorChat
             key={chatSeed ?? "default"}
             productId={productId || undefined}
+            orgUnitId={orgUnitId || undefined}
             serviceId={serviceId}
             initialUserMessage={chatSeed}
             onExecuted={() => void refresh()}

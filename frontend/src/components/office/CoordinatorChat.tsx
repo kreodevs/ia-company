@@ -10,6 +10,7 @@ const WELCOME_KEY = "office.chat.welcome";
 
 interface CoordinatorChatProps {
   productId?: string;
+  orgUnitId?: string;
   serviceId?: string | null;
   initialUserMessage?: string | null;
   welcomeMessageKey?: string;
@@ -19,6 +20,7 @@ interface CoordinatorChatProps {
 
 export default function CoordinatorChat({
   productId,
+  orgUnitId,
   serviceId,
   initialUserMessage,
   welcomeMessageKey,
@@ -69,6 +71,7 @@ export default function CoordinatorChat({
       const response = await api.office.chat({
         messages: nextMessages,
         productId: productId || undefined,
+        orgUnitId: orgUnitId || undefined,
         serviceId: serviceId ?? undefined,
         requestPlan,
       });
@@ -97,6 +100,7 @@ export default function CoordinatorChat({
       const result = await api.office.executeTask({
         request: plan.request,
         productId: productId || undefined,
+        orgUnitId: orgUnitId || undefined,
         serviceId: serviceId ?? plan.serviceId ?? undefined,
         workflowId: plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,

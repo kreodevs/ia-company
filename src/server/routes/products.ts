@@ -867,9 +867,17 @@ export async function productRoutes(app: FastifyInstance) {
           goNoGo: product.goNoGo,
           revenueUsd: product.revenueUsd,
           lastRunId: product.lastRunId,
+          orgUnitId: product.orgUnitId,
+          workItemKind: product.workItemKind,
           createdAt: product.createdAt.toISOString(),
           updatedAt: product.updatedAt.toISOString(),
         },
+        orgUnit: product.orgUnitId
+          ? await prisma.orgUnit.findFirst({
+              where: { id: product.orgUnitId, tenantId },
+              select: { id: true, name: true, slug: true, type: true },
+            })
+          : null,
         activeRun: activeRun
           ? {
               id: activeRun.id,

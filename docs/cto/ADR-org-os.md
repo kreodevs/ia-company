@@ -41,10 +41,16 @@ Products/clients remain under `projects/{slug}/` with optional `orgUnitId` link.
 1. `POST /org-studio/propose` — template + optional description → proposal (agents, schema, tokens, design.md draft).
 2. `POST /org-studio/apply` — creates `OrgUnit`, seeds agents, syncs workspace.
 
-Munger gate and full LLM customization are phase 2; v1 uses template catalog + description merge.
+Munger gate and full LLM customization remain future work; v1 uses template catalog + description merge.
+
+### Phase 3 (feat/org-os)
+
+- Product ↔ department link in settings; artifacts auto from handoffs (deduped by run/step/agent).
+- Office UI passes `orgUnitId`; meta-orchestrator prefers org-linked products and department workflows (`content-sprint`, `campaign-launch`).
+- War room links to department artifact gallery.
 
 ## Consequences
 
 - **Reversible:** feature lives on branch `feat/org-os`; existing tenants ignore `OrgUnit` until created.
 - **Migration:** additive columns on `TenantProduct`; new tables only.
-- **Next:** pull Kreo `DynamicForm` + `DataTable` for artifact gallery; wire meta-orchestrator to `orgUnitId`.
+- **Future:** pull Kreo `DynamicForm` + `DataTable`; Org Studio LLM architect; Munger gate on apply.

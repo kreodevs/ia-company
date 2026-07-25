@@ -199,6 +199,16 @@ const DEFAULT_WORKFLOWS = [
     steps: ["marketing-godin", "sales-ross", "operations-pg"],
   },
   {
+    name: "content-sprint",
+    description: "Copy → Community → Design — department content production",
+    steps: ["copy-manager", "community-manager", "design-lead"],
+  },
+  {
+    name: "campaign-launch",
+    description: "Strategy → Copy → Community → Design — full campaign launch",
+    steps: ["marketing-strategist", "copy-manager", "community-manager", "design-lead"],
+  },
+  {
     name: "product-intake",
     description: "Research → Product → CEO → CTO — build shared product profile from GitHub and founder notes",
     steps: ["research-thompson", "product-norman", "ceo-bezos", "cto-vogels"],

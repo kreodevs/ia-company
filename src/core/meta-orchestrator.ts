@@ -17,6 +17,7 @@ import { getTenantInterestCategories } from "../lib/tenant-interests.js";
 import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import { canExecuteMetaScheduleRun } from "../lib/run-guards.js";
+import { loadOrgUnitContext, orgContextToInitialMemory } from "../lib/org-context.js";
 export interface MetaOrchestratorDecision {
   workflowId: string;
   workflowName: string;
@@ -59,6 +60,27 @@ function phaseDefaultWorkflow(phase: CompanyPhase, hasBuilding: boolean): string
   return WORKFLOW_NAMES.PRICING_MONETIZATION;
 }
 
+async function resolveOrgScopedWorkflow(
+  tenantId: string,
+  product: TenantProduct,
+  cycleNumber: number,
+  defaultWorkflow: string,
+): Promise<{ workflowName: string; orgMemory: Record<string, unknown> }> {
+  if (!product.orgUnitId) {
+    return { workflowName: defaultWorkflow, orgMemory: {} };
+  }
+  const ctx = await loadOrgUnitContext(tenantId, product.orgUnitId);
+  if (!ctx) return { workflowName: defaultWorkflow, orgMemory: {} };
+
+  const orgMemory = orgContextToInitialMemory(ctx);
+  if (ctx.orgUnitType === "marketing_agency") {
+    const workflowName =
+      cycleNumber % 2 === 0 ? WORKFLOW_NAMES.CONTENT_SPRINT : WORKFLOW_NAMES.CAMPAIGN_LAUNCH;
+    return { workflowName, orgMemory };
+  }
+  return { workflowName: defaultWorkflow, orgMemory };
+}
+
 export async function resolveMetaOrchestratorDecision(
   tenantId: string,
 ): Promise<MetaOrchestratorDecision> {
@@ -84,6 +106,8 @@ export async function resolveMetaOrchestratorDecision(
     buildingProducts.length > 0
       ? buildingProducts
       : growingProducts.filter((p) => p.revenueUsd <= 0);
+
+  const orgLinkedProducts = products.filter((p) => p.orgUnitId && p.phase !== "archived");
 
   let focusProduct: TenantProduct | null =
     rotatableProducts.length > 1
@@ -123,6 +147,16 @@ export async function resolveMetaOrchestratorDecision(
         ? WORKFLOW_NAMES.PRICING_MONETIZATION
         : WORKFLOW_NAMES.PRODUCT_LAUNCH;
     reason = `Grow product ${focusProduct.slug}`;
+  } else if (orgLinkedProducts.length > 0 && ideas.length === 0 && buildingProducts.length === 0) {
+    focusProduct =
+      orgLinkedProducts.length > 1
+        ? pickRotatingFocusProduct(orgLinkedProducts, cycle.cycleNumber)
+        : orgLinkedProducts[0];
+    workflowName =
+      cycle.cycleNumber % 2 === 0
+        ? WORKFLOW_NAMES.CONTENT_SPRINT
+        : WORKFLOW_NAMES.CAMPAIGN_LAUNCH;
+    reason = `Org-linked work item ${focusProduct?.slug ?? "unknown"} — department marketing cycle`;
   } else if (ideas.length === 0 || cycle.phase === "exploring") {
     workflowName = WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY;
     reason = "Discover new product opportunities (multi-product pipeline)";
@@ -133,6 +167,21 @@ export async function resolveMetaOrchestratorDecision(
       buildingProducts.length > 0,
     );
     reason = `Company phase ${consensus?.companyPhase ?? cycle.phase}`;
+  }
+
+  let orgMemory: Record<string, unknown> = {};
+  if (focusProduct?.orgUnitId) {
+    const scoped = await resolveOrgScopedWorkflow(
+      tenantId,
+      focusProduct,
+      cycle.cycleNumber,
+      workflowName,
+    );
+    workflowName = scoped.workflowName;
+    orgMemory = scoped.orgMemory;
+    if (orgMemory.orgUnitName) {
+      reason = `${reason} · dept ${orgMemory.orgUnitName}`;
+    }
   }
 
   const workflow =
@@ -184,6 +233,7 @@ export async function resolveMetaOrchestratorDecision(
 
   const buildingCount = await countBuildingProducts(tenantId);
   baseMemory.buildingProductCount = buildingCount;
+  Object.assign(baseMemory, orgMemory);
 
   return {
     workflowId: workflow.id,

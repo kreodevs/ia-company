@@ -460,9 +460,12 @@ export interface ProductTeam {
     goNoGo: GoNoGoDecision;
     revenueUsd: number;
     lastRunId: string | null;
+    orgUnitId?: string | null;
+    workItemKind?: WorkItemKind;
     createdAt: string;
     updatedAt: string;
   };
+  orgUnit: { id: string; name: string; slug: string; type: string } | null;
   activeRun: TeamActiveRun | null;
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
@@ -1318,6 +1321,7 @@ export const api = {
     chat: (body: {
       messages: CoordinatorChatMessage[];
       productId?: string;
+      orgUnitId?: string;
       serviceId?: string;
       requestPlan?: boolean;
     }) =>
@@ -1339,11 +1343,12 @@ export const api = {
       request<TenantNotificationItem>(`/office/notifications/${id}/read`, { method: "POST" }),
     markAllNotificationsRead: () =>
       request<{ count: number }>("/office/notifications/read-all", { method: "POST" }),
-    planTask: (body: { request: string; productId?: string; serviceId?: string }) =>
+    planTask: (body: { request: string; productId?: string; orgUnitId?: string; serviceId?: string }) =>
       request<OfficeTaskPlan>("/office/tasks/plan", { method: "POST", body: JSON.stringify(body) }),
     executeTask: (body: {
       request: string;
       productId?: string;
+      orgUnitId?: string;
       serviceId?: string;
       agentIds?: string[];
       workflowId?: string;

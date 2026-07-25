@@ -67,11 +67,11 @@ function statusPriority(status: TeamAgentStatus): number {
 }
 
 function seatRadiusPct(total: number): number {
-  if (total <= 4) return 36;
-  if (total <= 8) return 38;
-  if (total <= 12) return 40;
-  if (total <= 16) return 38;
-  return 34;
+  if (total <= 4) return 40;
+  if (total <= 8) return 42;
+  if (total <= 12) return 44;
+  if (total <= 16) return 42;
+  return 40;
 }
 
 function useHeldAgentTeam(team: TeamAgent[]): TeamAgent[] {
@@ -327,7 +327,7 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const thinking = displayTeam.filter((a) => a.status === "thinking");
   const onDuty = displayTeam.filter((a) => a.status !== "idle");
   const totalAgents = displayTeam.length;
-  const tableDensity = totalAgents > 14 ? "compact" : totalAgents > 10 ? "cozy" : "normal";
+  const tableDensity = totalAgents > 16 ? "compact" : totalAgents > 12 ? "cozy" : "normal";
 
   return (
     <div className="war-room">
@@ -339,6 +339,14 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         </div>
         <div className="war-room-header-meta">
           <Badge>{data.product.phase}</Badge>
+          {data.orgUnit && (
+            <Link
+              to={`/org-units/${data.orgUnit.id}`}
+              className="war-room-pill text-xs text-[var(--color-primary)] hover:underline"
+            >
+              {t("warRoom.departmentLink", { name: data.orgUnit.name })}
+            </Link>
+          )}
           <ProductActionsMenu product={data.product as TenantProduct} onChange={() => void refresh()} />
           {data.activeRun && (
             <Link to={`/office/encargos/${data.activeRun.id}`} className="war-room-pill war-room-pill-live">
@@ -473,8 +481,10 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
             ))}
           </div>
         </section>
+      </div>
 
-        <aside className="war-room-details">
+      <aside className="war-room-details war-room-briefing-bar">
+        <div className="war-room-briefing-col">
           <h2 className="war-room-section-title">{t("warRoom.briefing")}</h2>
           {data.activeRun ? (
             <div className="war-room-briefing">
@@ -492,36 +502,36 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           ) : (
             <p className="war-room-empty">{t("warRoom.noActiveRun")}</p>
           )}
+        </div>
 
-          {thinking[0] && (
-            <div className="war-room-thinking">
-              <p className="war-room-section-subtitle">{t("warRoom.thinking")}</p>
-              <p className="war-room-thinking-name">{thinking[0].name}</p>
-              <p className="war-room-thinking-task">
-                {thinking[0].currentTask ?? t("warRoom.thinkingGeneric")}
-              </p>
-            </div>
-          )}
-
-          <div className="war-room-legend">
-            <p className="war-room-section-subtitle">{t("warRoom.legend")}</p>
-            <ul>
-              <li>
-                <span className="war-room-dot" data-status="thinking" />
-                {t("warRoom.status.thinking")}
-              </li>
-              <li>
-                <span className="war-room-dot" data-status="queued" />
-                {t("warRoom.status.queued")}
-              </li>
-              <li>
-                <span className="war-room-dot" data-status="idle" />
-                {t("warRoom.status.idle")}
-              </li>
-            </ul>
+        {thinking[0] && (
+          <div className="war-room-thinking war-room-briefing-col">
+            <p className="war-room-section-subtitle">{t("warRoom.thinking")}</p>
+            <p className="war-room-thinking-name">{thinking[0].name}</p>
+            <p className="war-room-thinking-task">
+              {thinking[0].currentTask ?? t("warRoom.thinkingGeneric")}
+            </p>
           </div>
-        </aside>
-      </div>
+        )}
+
+        <div className="war-room-legend war-room-briefing-col">
+          <p className="war-room-section-subtitle">{t("warRoom.legend")}</p>
+          <ul>
+            <li>
+              <span className="war-room-dot" data-status="thinking" />
+              {t("warRoom.status.thinking")}
+            </li>
+            <li>
+              <span className="war-room-dot" data-status="queued" />
+              {t("warRoom.status.queued")}
+            </li>
+            <li>
+              <span className="war-room-dot" data-status="idle" />
+              {t("warRoom.status.idle")}
+            </li>
+          </ul>
+        </div>
+      </aside>
 
       <section className="war-room-radar war-room-radar-bottom">
         <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>

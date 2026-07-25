@@ -321,13 +321,13 @@ html[data-theme="letter"] .war-room {
 
 .war-room-main {
   display: grid;
-  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(220px, 240px);
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
   gap: 1rem;
-  align-items: start;
-  margin-bottom: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .war-room-main {
     grid-template-columns: 1fr;
   }
@@ -339,9 +339,38 @@ html[data-theme="letter"] .war-room {
   .war-room-main .war-room-coordinator-inline {
     order: 2;
   }
+}
 
-  .war-room-main .war-room-details {
-    order: 3;
+.war-room-briefing-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.war-room-briefing-bar .war-room-section-subtitle {
+  margin-top: 0;
+}
+
+.war-room-briefing-bar .war-room-briefing {
+  margin-bottom: 0;
+}
+
+.war-room-briefing-bar .war-room-legend ul {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .war-room-briefing-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .war-room-briefing-bar .war-room-legend ul {
+    flex-direction: column;
+    gap: 0.4rem;
   }
 }
 
@@ -452,12 +481,20 @@ html[data-theme="letter"] .war-room {
 
 .war-room-table {
   position: relative;
-  aspect-ratio: 1 / 1;
-  min-height: 460px;
+  width: 100%;
+  min-height: 540px;
+  height: 100%;
   border-radius: 16px;
   border: 1px solid var(--war-room-accent-border);
   background: var(--war-room-table-bg);
   overflow: visible;
+}
+
+@media (min-width: 901px) {
+  .war-room-table {
+    aspect-ratio: 5 / 4;
+    min-height: 560px;
+  }
 }
 
 .war-room-table-backdrop {
@@ -470,31 +507,31 @@ html[data-theme="letter"] .war-room {
 
 .war-room-table-stage {
   position: absolute;
-  inset: 7% 5% 11% 5%;
+  inset: 4% 3% 5% 3%;
 }
 
 .war-room-table[data-density="cozy"] .war-room-seat-avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.war-room-table[data-density="cozy"] .war-room-seat-name {
+  font-size: 0.68rem;
+  max-width: 7.5rem;
+}
+
+.war-room-table[data-density="compact"] .war-room-seat-avatar {
   width: 56px;
   height: 56px;
 }
 
-.war-room-table[data-density="cozy"] .war-room-seat-name {
-  font-size: 0.65rem;
-  max-width: 7rem;
-}
-
-.war-room-table[data-density="compact"] .war-room-seat-avatar {
-  width: 48px;
-  height: 48px;
-}
-
 .war-room-table[data-density="compact"] .war-room-seat-emoji {
-  font-size: 1.2rem;
+  font-size: 1.35rem;
 }
 
 .war-room-table[data-density="compact"] .war-room-seat-name {
-  font-size: 0.6rem;
-  max-width: 6.5rem;
+  font-size: 0.62rem;
+  max-width: 7rem;
 }
 
 .war-room-table[data-density="compact"] .war-room-seat-task {
@@ -517,7 +554,7 @@ html[data-theme="letter"] .war-room {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 70%;
+  width: 82%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border: 1px dashed var(--war-room-table-ring);
@@ -550,9 +587,9 @@ html[data-theme="letter"] .war-room {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 38%;
-  max-width: 200px;
-  padding: 1rem;
+  width: 32%;
+  max-width: 168px;
+  padding: 0.85rem;
   text-align: center;
   border-radius: 999px;
   background: var(--war-room-core-bg);
@@ -650,8 +687,8 @@ html[data-theme="letter"] .war-room {
 }
 
 .war-room-seat-avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 999px;
   display: flex;
   align-items: center;
@@ -897,6 +934,8 @@ html[data-theme="letter"] .war-room {
   border-radius: 12px;
   padding: 1rem;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .war-room-coordinator-inline .war-room-coordinator-subtitle {
@@ -906,14 +945,19 @@ html[data-theme="letter"] .war-room {
 
 .war-room-coordinator-inline .war-room-coordinator-panel {
   padding: 0.65rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .war-room-coordinator-inline .war-room-coordinator-panel .office-chat {
-  min-height: 360px;
+  min-height: 100%;
+  height: 100%;
 }
 
 .war-room-coordinator-inline .war-room-coordinator-panel .office-chat-messages {
-  max-height: 280px;
+  max-height: min(420px, 52vh);
 }
 
 .war-room-coordinator-subtitle {

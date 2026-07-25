@@ -61,8 +61,26 @@ function buildChatContextBlock(usage: Awaited<ReturnType<typeof getTenantMonthly
 
 function buildScopeBlock(
   productId: string | undefined,
-  products: Array<{ id: string; name: string }>,
+  orgUnitId: string | undefined,
+  products: Array<{ id: string; name: string; orgUnitId?: string | null }>,
+  orgUnits: Array<{ id: string; name: string }>,
 ): string {
+  if (orgUnitId) {
+    const org = orgUnits.find((u) => u.id === orgUnitId);
+    const orgName = org?.name ?? orgUnitId;
+    const lines = [
+      "## Alcance del encargo",
+      "- Modo: departamento virtual",
+      `- Departamento: **${orgName}**`,
+      "- Usa agentes y tokens del department en propuestas y entregables.",
+    ];
+    if (productId) {
+      const product = products.find((p) => p.id === productId);
+      lines.push(`- Work item: **${product?.name ?? productId}**`);
+    }
+    return lines.join("\n");
+  }
+
   if (productId) {
     const product = products.find((p) => p.id === productId);
     const name = product?.name ?? productId;
@@ -183,6 +201,7 @@ export async function chatWithCoordinator(
   input: {
     messages: CoordinatorChatMessage[];
     productId?: string;
+    orgUnitId?: string;
     serviceId?: string;
     requestPlan?: boolean;
   },
@@ -191,11 +210,16 @@ export async function chatWithCoordinator(
     throw new Error("At least one message is required");
   }
 
-  const [systemBase, usage, llmConfig, products] = await Promise.all([
+  const [systemBase, usage, llmConfig, products, orgUnits] = await Promise.all([
     loadCoordinatorSystemPrompt(tenantId),
     getTenantMonthlyUsage(tenantId),
     prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
     listTenantProducts(tenantId),
+    prisma.orgUnit.findMany({
+      where: { tenantId, isActive: true },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const tenantLlm = tenantLlmFromRecord(llmConfig);
@@ -212,7 +236,7 @@ export async function chatWithCoordinator(
     "",
     buildChatContextBlock(usage),
     "",
-    buildScopeBlock(input.productId, products),
+    buildScopeBlock(input.productId, input.orgUnitId, products, orgUnits),
     "",
     "## Modo conversación",
     "Responde en español salvo que el fundador escriba en otro idioma.",
@@ -251,6 +275,7 @@ export async function chatWithCoordinator(
       try {
         plan = await planOfficeTask(tenantId, matchHint || taskBrief, {
           productId: input.productId,
+          orgUnitId: input.orgUnitId,
           serviceId: input.serviceId,
         });
         if (plan) {

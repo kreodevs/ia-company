@@ -8,6 +8,8 @@ export const warRoom = {
   title: "War room — {{name}}",
   subtitle:
     "Vista táctica de cada agente asignado a este producto. La sala se actualiza en tiempo real mientras hay un run en curso.",
+  departmentLink: "Dept: {{name}} →",
+  artifactsLink: "Ver artefactos del department →",
   liveRun: "En vivo: {{workflow}}",
   onDuty: "De turno: {{count}}",
   viewCode: "Ver código →",

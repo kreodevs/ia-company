@@ -8,6 +8,8 @@ export const WORKFLOW_NAMES = {
   RESEARCH_DRILLDOWN: "research-drilldown",
   SEO_REVIEW: "seo-review",
   MARKETING_SPRINT: "marketing-sprint",
+  CONTENT_SPRINT: "content-sprint",
+  CAMPAIGN_LAUNCH: "campaign-launch",
   PRODUCT_INTAKE: "product-intake",
 } as const;
 

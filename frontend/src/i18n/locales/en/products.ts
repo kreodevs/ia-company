@@ -46,6 +46,7 @@ export const products = {
     status: "Status",
     viewLastRun: "Last run",
     warRoom: "War room",
+    orgUnitBadge: "Dept: {{name}}",
     code: "Code",
     settings: "Settings",
     memory: "Product memory",

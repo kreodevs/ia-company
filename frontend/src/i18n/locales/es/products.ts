@@ -47,6 +47,7 @@ export const products = {
     status: "Estado",
     viewLastRun: "Última ejecución",
     warRoom: "War room",
+    orgUnitBadge: "Dept: {{name}}",
     code: "Código",
     settings: "Configuración",
     memory: "Memoria del producto",

@@ -1,6 +1,6 @@
 import type { ArtifactType } from "@prisma/client";
 import { prisma } from "./prisma.js";
-import { createArtifact } from "./artifact.js";
+import { createArtifact, serializeArtifact } from "./artifact.js";
 import { PLATFORM_BUSINESS_TEMPLATES } from "./business-templates.js";
 import type { BusinessTemplateDefinition } from "./org-os-types.js";
 
@@ -39,7 +39,7 @@ async function resolveArtifactType(
   return DEFAULT_AGENT_ARTIFACT[agentName] ?? "other";
 }
 
-function artifactTitle(agentName: string, workflowName: string, stepOrder?: number): string {
+export function artifactTitle(agentName: string, workflowName: string, stepOrder?: number): string {
   const suffix = stepOrder != null ? ` · step ${stepOrder}` : "";
   return `${agentName} — ${workflowName}${suffix}`;
 }
@@ -58,13 +58,25 @@ export async function persistHandoffAsArtifact(input: {
   if (!content) return null;
 
   const type = await resolveArtifactType(input.tenantId, input.orgUnitId, input.agentName);
+  const title = artifactTitle(input.agentName, input.workflowName, input.stepOrder);
+
+  const existing = await prisma.artifact.findFirst({
+    where: {
+      tenantId: input.tenantId,
+      orgUnitId: input.orgUnitId,
+      runId: input.runId,
+      createdByAgent: input.agentName,
+      title,
+    },
+  });
+  if (existing) return serializeArtifact(existing);
 
   return createArtifact(input.tenantId, {
     orgUnitId: input.orgUnitId,
     productId: input.productId,
     runId: input.runId,
     type,
-    title: artifactTitle(input.agentName, input.workflowName, input.stepOrder),
+    title,
     body: {
       content,
       workflowName: input.workflowName,

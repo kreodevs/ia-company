@@ -14,9 +14,10 @@ Tactical live view for one product: agent seats, radar, runs, OpenCode history, 
 
 ## Layout (top → bottom)
 
-1. **Main row** — coordinator chat · tactical agent table · briefing (`war-room-main`, three columns)
-2. **Radar** — pipeline ideas in a horizontal grid (`war-room-radar-bottom`)
-3. OpenCode history + recent runs
+1. **Main row** — coordinator chat + tactical agent table (`war-room-main`, two columns)
+2. **Briefing bar** — run status, thinking agent, legend (`war-room-briefing-bar`, full width below)
+3. **Radar** — pipeline ideas in a horizontal grid (`war-room-radar-bottom`)
+4. OpenCode history + recent runs
 
 ## Theming
 

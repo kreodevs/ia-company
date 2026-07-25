@@ -7,6 +7,12 @@ import { launchProductWork } from "./product-work-launcher.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 import { serializeTenantProductForClient } from "./product-serializer.js";
 
+function cyclePresetForMarketing(orgSlug: string): "content-sprint" | "campaign-launch" {
+  let h = 0;
+  for (let i = 0; i < orgSlug.length; i++) h = (h * 31 + orgSlug.charCodeAt(i)) >>> 0;
+  return h % 2 === 0 ? "content-sprint" : "campaign-launch";
+}
+
 export async function listOrgUnitProducts(tenantId: string, orgUnitId: string) {
   const rows = await prisma.tenantProduct.findMany({
     where: { tenantId, orgUnitId, phase: { not: "archived" } },
@@ -48,6 +54,18 @@ export async function launchOrgUnitWork(
     }
     const result = await launchProductWork(tenantId, productId, {
       presetId: input.presetId,
+      task,
+      mergeConsensus: true,
+      setFocus: true,
+      orgContext: orgMemory,
+    });
+    return { ...result, productId };
+  }
+
+  if (orgCtx.orgUnitType === "marketing_agency" && productId) {
+    const presetId = cyclePresetForMarketing(orgCtx.orgUnitSlug);
+    const result = await launchProductWork(tenantId, productId, {
+      presetId,
       task,
       mergeConsensus: true,
       setFocus: true,

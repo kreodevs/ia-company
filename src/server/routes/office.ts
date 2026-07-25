@@ -106,19 +106,21 @@ export async function officeRoutes(app: FastifyInstance) {
     Body: {
       messages?: Array<{ role: "user" | "assistant"; content: string }>;
       productId?: string;
+      orgUnitId?: string;
       serviceId?: string;
       requestPlan?: boolean;
     };
   }>("/office/chat", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { messages, productId, serviceId, requestPlan } = request.body ?? {};
+      const { messages, productId, orgUnitId, serviceId, requestPlan } = request.body ?? {};
       if (!messages?.length) {
         return reply.status(400).send({ error: "messages is required" });
       }
       return chatWithCoordinator(tenantId, {
         messages,
         productId,
+        orgUnitId,
         serviceId,
         requestPlan,
       });

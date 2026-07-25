@@ -38,6 +38,18 @@ export const PRODUCT_WORK_PRESETS: ProductWorkPreset[] = [
     agentCount: 3,
   },
   {
+    id: "content-sprint",
+    workflowName: WORKFLOW_NAMES.CONTENT_SPRINT,
+    category: "marketing",
+    agentCount: 3,
+  },
+  {
+    id: "campaign-launch",
+    workflowName: WORKFLOW_NAMES.CAMPAIGN_LAUNCH,
+    category: "marketing",
+    agentCount: 4,
+  },
+  {
     id: "product-launch",
     workflowName: WORKFLOW_NAMES.PRODUCT_LAUNCH,
     category: "launch",
