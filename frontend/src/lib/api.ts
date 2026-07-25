@@ -212,6 +212,21 @@ export type GoNoGoDecision = "pending" | "go" | "no_go";
 
 export type ProductIntakeStatus = "pending" | "running" | "completed" | "failed" | "skipped";
 
+export interface ProductProfileVersion {
+  id: string;
+  runId: string | null;
+  createdAt: string;
+  profile: Record<string, unknown>;
+  markdown: string;
+}
+
+export interface ProductIntakeDocument {
+  productName: string;
+  intakeStatus: ProductIntakeStatus | null;
+  intakeRunId: string | null;
+  versions: ProductProfileVersion[];
+}
+
 export type WorkItemKind = "product" | "client" | "campaign" | "project";
 
 export interface DeskItemDto {
@@ -1386,6 +1401,8 @@ export const api = {
       request<{ runId: string; workflowName: string }>(`/products/${id}/intake`, {
         method: "POST",
       }),
+    intakeDocument: (id: string) =>
+      request<ProductIntakeDocument>(`/products/${id}/intake`),
     launchOptions: (id: string) => request<ProductLaunchOptions>(`/products/${id}/launch-options`),
     launch: (
       id: string,

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parseGitHubRepoUrl } from "../src/lib/github-repo.js";
-import { parseProductProfile, buildProductProfilePromptSection } from "../src/lib/product-profile.js";
+import { parseProductProfile, buildProductProfilePromptSection, productProfileToMarkdown } from "../src/lib/product-profile.js";
 
 describe("parseGitHubRepoUrl", () => {
   it("parses https github urls", () => {
@@ -50,5 +50,18 @@ describe("parseProductProfile", () => {
     assert.match(section, /Product profile/);
     assert.match(section, /Test product/);
     assert.match(section, /Ship MVP/);
+  });
+
+  it("renders intake markdown preview", () => {
+    const profile = parseProductProfile({
+      summary: "AI memory product",
+      valueProposition: "Remember everything",
+      nextAction: "Launch beta",
+    });
+    assert.ok(profile);
+    const md = productProfileToMarkdown("Alebrije MemorIA", profile!);
+    assert.match(md, /Alebrije MemorIA — Product intake/);
+    assert.match(md, /AI memory product/);
+    assert.match(md, /Launch beta/);
   });
 });

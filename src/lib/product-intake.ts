@@ -191,7 +191,7 @@ export async function finalizeProductIntake(
     return null;
   }
 
-  await saveProductProfile(product.id, product.slug, profile);
+  await saveProductProfile(product.id, product.slug, profile, { runId });
 
   const consensus = await ensureProductConsensus(product.id);
   const intakeSection = [

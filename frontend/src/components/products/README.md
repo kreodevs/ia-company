@@ -3,6 +3,7 @@
 | Component | Role |
 |-----------|------|
 | `ProductRevenueSettingsPanel` | Stripe + waitlist webhooks per product |
+| `ProductIntakePreviewPanel` | Intake profile markdown preview + version history sidebar |
 | `ProductIntegrationsPanel` | TheForge project ID, support RAG MCP slug, auto-dispatch specs |
 | `README.md` | This file |
 

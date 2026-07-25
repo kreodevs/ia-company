@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { api, type TenantProduct } from "../lib/api";
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
@@ -17,6 +17,7 @@ import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
 import ProductRevenueSettingsPanel from "../components/products/ProductRevenueSettingsPanel";
 import ProductIntegrationsPanel from "../components/products/ProductIntegrationsPanel";
+import ProductIntakePreviewPanel from "../components/products/ProductIntakePreviewPanel";
 import Select from "../components/ui/Select";
 import type { OrgUnit } from "../lib/org-types";
 
@@ -171,7 +172,6 @@ export default function ProductSettingsPage() {
     );
   }
 
-  const intakeStatus = product.intakeStatus ?? "skipped";
   const tabs = [
     { id: "general", label: t("products.settings.tabs.general") },
     { id: "intake", label: t("products.settings.tabs.intake") },
@@ -181,7 +181,7 @@ export default function ProductSettingsPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className={`mx-auto space-y-6 ${activeTab === "intake" ? "max-w-6xl" : "max-w-4xl"}`}>
       <PageHeader
         eyebrow={
           <Breadcrumbs
@@ -303,53 +303,11 @@ export default function ProductSettingsPage() {
       )}
 
       {activeTab === "intake" && (
-        <Panel title={t("products.settings.intakeTitle")} subtitle={t("products.settings.intakeSubtitle")}>
-          <dl className="mb-4 grid gap-3 sm:grid-cols-2">
-            <div>
-              <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                {t("products.settings.intakeStatusLabel")}
-              </dt>
-              <dd className="mt-0.5 font-medium">{t(`products.settings.intakeStatus.${intakeStatus}`)}</dd>
-            </div>
-            {product.githubDefaultBranch && (
-              <div>
-                <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                  {t("products.settings.defaultBranch")}
-                </dt>
-                <dd className="mt-0.5 font-mono text-sm">{product.githubDefaultBranch}</dd>
-              </div>
-            )}
-          </dl>
-          {product.intakeRunId && (
-            <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">
-              {t("products.settings.lastIntakeRun")}{" "}
-              <Link
-                to={`/office/encargos/${product.intakeRunId}`}
-                className="text-[var(--color-primary)] hover:underline"
-              >
-                {product.intakeRunId.slice(0, 8)}…
-              </Link>
-            </p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => void rerunIntake()} disabled={intakeBusy}>
-              <RefreshCw className={`h-4 w-4 ${intakeBusy ? "animate-spin" : ""}`} aria-hidden />
-              {intakeBusy ? t("products.settings.intakeRunning") : t("products.settings.rerunIntake")}
-            </Button>
-            {!githubRepoUrl.trim() && (
-              <p className="w-full text-xs text-[var(--foreground-muted)]">
-                {t("products.settings.intakeNeedsGithub")}{" "}
-                <button
-                  type="button"
-                  className="text-[var(--color-primary)] hover:underline"
-                  onClick={() => setTab("general")}
-                >
-                  {t("products.settings.tabs.general")} →
-                </button>
-              </p>
-            )}
-          </div>
-        </Panel>
+        <ProductIntakePreviewPanel
+          product={product}
+          intakeBusy={intakeBusy}
+          onRerunIntake={rerunIntake}
+        />
       )}
 
       {activeTab === "revenue" && (

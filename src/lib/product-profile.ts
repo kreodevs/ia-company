@@ -9,6 +9,23 @@ import type { SharedMemory } from "../types/index.js";
 
 export const PRODUCT_PROFILE_FILE = "product-profile.json";
 
+const MAX_PROFILE_HISTORY = 24;
+
+export interface ProductProfileVersion {
+  id: string;
+  runId: string | null;
+  createdAt: string;
+  profile: ProductProfile;
+  markdown: string;
+}
+
+export interface ProductIntakeDocument {
+  productName: string;
+  intakeStatus: import("@prisma/client").ProductIntakeStatus | null;
+  intakeRunId: string | null;
+  versions: ProductProfileVersion[];
+}
+
 export interface ProductProfile {
   summary: string;
   valueProposition: string;
@@ -108,6 +125,113 @@ export function buildProductProfilePromptSection(profile: ProductProfile | null)
   return lines.join("\n");
 }
 
+export function productProfileToMarkdown(productName: string, profile: ProductProfile): string {
+  const lines = [
+    `# ${productName} — Product intake`,
+    "",
+    profile.summary,
+    "",
+    "## Value proposition",
+    profile.valueProposition || "—",
+    "",
+    "## Problem",
+    profile.problemStatement || "—",
+    "",
+    "## Target audience",
+    profile.targetAudience || "—",
+    "",
+    "## Business model",
+    profile.businessModel || "—",
+    "",
+    "## Monetization",
+    profile.monetizationHypothesis || "—",
+  ];
+  if (profile.competitors.length) {
+    lines.push("", "## Competitors", ...profile.competitors.map((c) => `- ${c}`));
+  }
+  if (profile.techStack.length) {
+    lines.push("", "## Tech stack", ...profile.techStack.map((t) => `- ${t}`));
+  }
+  if (profile.githubFullName) {
+    lines.push("", "## GitHub", profile.githubFullName);
+  }
+  if (profile.sources?.length) {
+    lines.push("", "## Sources", ...profile.sources.map((s) => `- ${s}`));
+  }
+  lines.push("", "## Next action", profile.nextAction || "—");
+  return lines.join("\n");
+}
+
+function parseProfileVersion(value: unknown, productName: string): ProductProfileVersion | null {
+  if (!value || typeof value !== "object") return null;
+  const o = value as Record<string, unknown>;
+  const profile = parseProductProfile(o.profile);
+  if (!profile) return null;
+  const id = typeof o.id === "string" && o.id.trim() ? o.id : null;
+  if (!id) return null;
+  const createdAt =
+    typeof o.createdAt === "string" && o.createdAt.trim()
+      ? o.createdAt
+      : profile.updatedAt ?? new Date().toISOString();
+  const markdown =
+    typeof o.markdown === "string" && o.markdown.trim()
+      ? o.markdown
+      : productProfileToMarkdown(productName, profile);
+  return {
+    id,
+    runId: typeof o.runId === "string" ? o.runId : null,
+    createdAt,
+    profile,
+    markdown,
+  };
+}
+
+function readProfileHistory(metadata: unknown, productName: string): ProductProfileVersion[] {
+  if (!metadata || typeof metadata !== "object") return [];
+  const meta = metadata as Record<string, unknown>;
+  if (!Array.isArray(meta.profileHistory)) return [];
+  return meta.profileHistory
+    .map((row) => parseProfileVersion(row, productName))
+    .filter((row): row is ProductProfileVersion => row !== null);
+}
+
+export async function getProductIntakeDocument(productId: string): Promise<ProductIntakeDocument | null> {
+  const product = await prisma.tenantProduct.findUnique({
+    where: { id: productId },
+    select: { name: true, metadata: true, intakeStatus: true, intakeRunId: true },
+  });
+  if (!product) return null;
+
+  let versions = readProfileHistory(product.metadata, product.name);
+  if (versions.length === 0) {
+    const current = parseProductProfile(
+      product.metadata && typeof product.metadata === "object"
+        ? (product.metadata as Record<string, unknown>).profile
+        : null,
+    );
+    if (current) {
+      versions = [
+        {
+          id: "current",
+          runId: product.intakeRunId,
+          createdAt: current.updatedAt ?? new Date().toISOString(),
+          profile: current,
+          markdown: productProfileToMarkdown(product.name, current),
+        },
+      ];
+    }
+  }
+
+  versions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  return {
+    productName: product.name,
+    intakeStatus: product.intakeStatus,
+    intakeRunId: product.intakeRunId,
+    versions,
+  };
+}
+
 export async function loadProductProfile(productId: string): Promise<ProductProfile | null> {
   const product = await prisma.tenantProduct.findUnique({
     where: { id: productId },
@@ -122,10 +246,11 @@ export async function saveProductProfile(
   productId: string,
   productSlug: string,
   profile: ProductProfile,
+  options?: { runId?: string | null },
 ): Promise<void> {
   const product = await prisma.tenantProduct.findUnique({
     where: { id: productId },
-    select: { metadata: true, description: true, phase: true },
+    select: { metadata: true, description: true, phase: true, name: true },
   });
   if (!product) throw new Error("Product not found");
 
@@ -133,6 +258,18 @@ export async function saveProductProfile(
     product.metadata && typeof product.metadata === "object"
       ? (product.metadata as Record<string, unknown>)
       : {};
+
+  const stampedProfile = { ...profile, updatedAt: new Date().toISOString() };
+  const version: ProductProfileVersion = {
+    id: crypto.randomUUID(),
+    runId: options?.runId ?? null,
+    createdAt: stampedProfile.updatedAt!,
+    profile: stampedProfile,
+    markdown: productProfileToMarkdown(product.name, stampedProfile),
+  };
+
+  const history = readProfileHistory(existingMeta, product.name);
+  history.unshift(version);
 
   const nextDescription = product.description?.trim()
     ? product.description
@@ -145,12 +282,19 @@ export async function saveProductProfile(
       ...(profile.suggestedPhase ? { phase: profile.suggestedPhase } : {}),
       metadata: {
         ...existingMeta,
-        profile: { ...profile, updatedAt: new Date().toISOString() },
-      } as Prisma.InputJsonValue,
+        profile: stampedProfile,
+        profileHistory: history.slice(0, MAX_PROFILE_HISTORY).map((v) => ({
+          id: v.id,
+          runId: v.runId,
+          createdAt: v.createdAt,
+          profile: v.profile,
+          markdown: v.markdown,
+        })),
+      } as unknown as Prisma.InputJsonValue,
     },
   });
 
-  await syncProductProfileFile(productSlug, profile);
+  await syncProductProfileFile(productSlug, stampedProfile);
 }
 
 export async function syncProductProfileFile(

@@ -167,6 +167,13 @@ export const products = {
       failed: "Fallido",
       skipped: "Sin intake",
     },
+    intakePreviewTitle: "Vista previa del perfil",
+    intakePreviewLoading: "Cargando documento de intake…",
+    intakePreviewEmpty: "Aún no hay perfil de intake. Ejecuta el workflow para generarlo.",
+    intakePreviewPending: "Intake en curso — el documento aparecerá al completarse.",
+    intakeVersionsTitle: "Versiones",
+    intakeVersionLatest: "Última versión",
+    intakeVersionLabel: "{{date}}",
     revenue: {
       title: "Revenue y Stripe",
       subtitle: "Registra ingresos del producto y conecta webhooks de Stripe para actualizaciones automáticas.",

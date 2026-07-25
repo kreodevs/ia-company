@@ -476,6 +476,30 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Params: { id: string } }>("/products/:id/intake", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+        select: { id: true, name: true, intakeStatus: true, intakeRunId: true },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const { getProductIntakeDocument } = await import("../../lib/product-profile.js");
+      const doc = await getProductIntakeDocument(product.id);
+      return (
+        doc ?? {
+          productName: product.name,
+          intakeStatus: product.intakeStatus,
+          intakeRunId: product.intakeRunId,
+          versions: [],
+        }
+      );
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/opencode/settings", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
