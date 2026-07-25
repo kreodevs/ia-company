@@ -12,6 +12,12 @@ Tactical live view for one product: agent seats, radar, runs, OpenCode history, 
 - `/war-room/:productId` — product-scoped war room (primary)
 - `/war-room` — product picker when no id
 
+## Layout (top → bottom)
+
+1. **Main row** — coordinator chat · tactical agent table · briefing (`war-room-main`, three columns)
+2. **Radar** — pipeline ideas in a horizontal grid (`war-room-radar-bottom`)
+3. OpenCode history + recent runs
+
 ## Theming
 
 Theme-aware via CSS variables in `src/styles/war-room.css`:

@@ -420,47 +420,26 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         />
       </section>
 
-      <section className="war-room-coordinator" aria-labelledby="war-room-coordinator-title">
-        <h2 id="war-room-coordinator-title" className="war-room-section-title">
-          {t("warRoom.coordinator.title")}
-        </h2>
-        <p className="war-room-coordinator-subtitle">
-          {t("warRoom.coordinator.subtitle", { name: data.product.name })}
-        </p>
-        <div className="war-room-coordinator-panel">
-          <CoordinatorChat
-            productId={data.product.id}
-            welcomeMessageKey="warRoom.coordinator.welcome"
-            onExecuted={(runId) => {
-              flashNote(t("warRoom.runStarted"));
-              refreshScheduler.current.schedule(800);
-              window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
-              void api.runs.get(runId).catch(() => undefined);
-            }}
-          />
-        </div>
-      </section>
-
-      <div className="war-room-grid">
-        <aside className="war-room-radar">
-          <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>
-          {data.pipeline.length === 0 ? (
-            <p className="war-room-empty">{t("warRoom.radarEmpty")}</p>
-          ) : (
-            <ul className="war-room-radar-list">
-              {data.pipeline.map((idea, i) => (
-                <li key={idea.id} className="war-room-radar-item">
-                  <span className="war-room-radar-blip" data-rank={i % 4} aria-hidden />
-                  <div className="war-room-radar-body">
-                    <p className="war-room-radar-title">{idea.title}</p>
-                    <p className="war-room-radar-meta">
-                      {t("warRoom.radarScore", { score: idea.interestScore.toFixed(1) })}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+      <div className="war-room-main">
+        <aside className="war-room-coordinator war-room-coordinator-inline" aria-labelledby="war-room-coordinator-title">
+          <h2 id="war-room-coordinator-title" className="war-room-section-title">
+            {t("warRoom.coordinator.title")}
+          </h2>
+          <p className="war-room-coordinator-subtitle">
+            {t("warRoom.coordinator.subtitle", { name: data.product.name })}
+          </p>
+          <div className="war-room-coordinator-panel">
+            <CoordinatorChat
+              productId={data.product.id}
+              welcomeMessageKey="warRoom.coordinator.welcome"
+              onExecuted={(runId) => {
+                flashNote(t("warRoom.runStarted"));
+                refreshScheduler.current.schedule(800);
+                window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
+                void api.runs.get(runId).catch(() => undefined);
+              }}
+            />
+          </div>
         </aside>
 
         <section
@@ -543,6 +522,27 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           </div>
         </aside>
       </div>
+
+      <section className="war-room-radar war-room-radar-bottom">
+        <h2 className="war-room-section-title">{t("warRoom.radar")}</h2>
+        {data.pipeline.length === 0 ? (
+          <p className="war-room-empty">{t("warRoom.radarEmpty")}</p>
+        ) : (
+          <ul className="war-room-radar-list war-room-radar-list-horizontal">
+            {data.pipeline.map((idea, i) => (
+              <li key={idea.id} className="war-room-radar-item">
+                <span className="war-room-radar-blip" data-rank={i % 4} aria-hidden />
+                <div className="war-room-radar-body">
+                  <p className="war-room-radar-title">{idea.title}</p>
+                  <p className="war-room-radar-meta">
+                    {t("warRoom.radarScore", { score: idea.interestScore.toFixed(1) })}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <OpencodeHistoryPanel productId={productId} />
 
