@@ -29,6 +29,14 @@ export interface AgentReuseSuggestion {
   reason: string;
 }
 
+export interface McpGrantProposal {
+  serverId: string;
+  serverSlug: string;
+  serverName: string;
+  toolNames: string[] | null;
+  reason: string;
+}
+
 export interface AgentStudioProposal {
   brief: string;
   reuse?: AgentReuseSuggestion;
@@ -40,5 +48,6 @@ export interface AgentStudioProposal {
   };
   existingSkillNames: string[];
   newSkills: NewSkillDraft[];
+  mcpGrants?: McpGrantProposal[];
   mungerReview?: StudioMungerReview;
 }

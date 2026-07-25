@@ -6,12 +6,18 @@ import {
   SKILL_FEW_SHOT_EXAMPLES,
 } from "./catalog-studio-fewshots.js";
 import {
+  buildTenantMcpCatalogSection,
+  loadPlatformAgentStyleExamples,
+  listTenantMcpServerSummaries,
+  matchMcpServersFromBrief,
+} from "./catalog-studio-context.js";
+import {
   CATALOG_STUDIO_MAX_TOKENS_MUNGER,
   CATALOG_STUDIO_MAX_TOKENS_PROPOSE,
   assertCatalogStudioProposeRateLimit,
   generateCatalogJson,
 } from "./catalog-studio-llm.js";
-import type { AgentStudioProposal, NewSkillDraft, StudioMungerReview } from "./catalog-studio-types.js";
+import type { AgentStudioProposal, McpGrantProposal, NewSkillDraft, StudioMungerReview } from "./catalog-studio-types.js";
 import type { SuggestedAgentDef } from "./org-os-types.js";
 import {
   ensureTenantAgents,
@@ -22,6 +28,7 @@ import {
   listTenantSkillsForCatalog,
   slugifyCatalogName,
 } from "./tenant-catalog.js";
+import { grantAgentMcpServerAccess } from "./mcp-registry.js";
 
 function parseNewSkillDrafts(raw: unknown): NewSkillDraft[] {
   if (!Array.isArray(raw)) return [];
@@ -50,6 +57,48 @@ function parseAgentDef(raw: unknown): SuggestedAgentDef | undefined {
     ? o.skillNames.filter((s): s is string => typeof s === "string").map(slugifyCatalogName)
     : [];
   return { name, role, systemPrompt, skillNames };
+}
+
+function parseMcpGrantProposals(
+  raw: unknown,
+  servers: Array<{ id: string; slug: string; name: string; toolNames: string[] }>,
+): McpGrantProposal[] {
+  if (!Array.isArray(raw)) return [];
+  const out: McpGrantProposal[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const o = item as Record<string, unknown>;
+    const serverSlug =
+      typeof o.serverSlug === "string"
+        ? slugifyCatalogName(o.serverSlug)
+        : typeof o.serverId === "string"
+          ? ""
+          : "";
+    const server =
+      servers.find((row) => row.id === o.serverId) ??
+      servers.find((row) => row.slug === serverSlug);
+    if (!server) continue;
+
+    let toolNames: string[] | null = null;
+    if (Array.isArray(o.toolNames)) {
+      const filtered = o.toolNames
+        .filter((name): name is string => typeof name === "string")
+        .filter((name) => server.toolNames.includes(name));
+      toolNames = filtered.length > 0 ? filtered : null;
+    }
+
+    out.push({
+      serverId: server.id,
+      serverSlug: server.slug,
+      serverName: server.name,
+      toolNames,
+      reason:
+        typeof o.reason === "string" && o.reason.trim()
+          ? o.reason.trim()
+          : `Grant access to ${server.name}`,
+    });
+  }
+  return out;
 }
 
 export async function reviewAgentProposalWithMunger(
@@ -117,10 +166,16 @@ export async function proposeAgentWithLlm(
   }
 
   await assertCatalogStudioProposeRateLimit(tenantId);
-  const [agents, skills] = await Promise.all([
+  const [agents, skills, mcpServers, platformExamples, mcpCatalog] = await Promise.all([
     listTenantAgentsForCatalog(tenantId),
     listTenantSkillsForCatalog(tenantId),
+    listTenantMcpServerSummaries(tenantId),
+    loadPlatformAgentStyleExamples(),
+    buildTenantMcpCatalogSection(tenantId),
   ]);
+
+  const briefMcpHints = matchMcpServersFromBrief(trimmed, mcpServers);
+  const hintedServers = mcpServers.filter((server) => briefMcpHints.includes(server.id));
 
   let orgHint = "";
   if (options.orgUnitId) {
@@ -139,18 +194,28 @@ export async function proposeAgentWithLlm(
       ...CATALOG_STUDIO_LLM_RULES,
       "Task: propose ONE agent for the tenant catalog.",
       "Prefer reuse of existing tenant agent when fit ≥80%.",
+      "When the brief mentions MCP servers or external tools, READ the MCP catalog below and design the agent around concrete tool names and workflows.",
+      "systemPrompt MUST follow platform agent style: markdown sections ## Rol, ## Persona, ## Principios (or domain equivalent), ## Flujo operativo, ## Formato de salida, JSON handoff when in workflows.",
+      "systemPrompt length: substantial (400–1200 words) — not a one-liner.",
+      "Always link tenant-mcp-tools when the agent uses MCP; add domain-specific newSkills for tool sequences (e.g. theforge-project-intake).",
+      "mcpGrants: servers this agent needs at runtime — use serverSlug from catalog; toolNames = subset or omit/null for all enabled tools.",
       "existingSkillNames: skills already in tenant to link (must match names exactly).",
       "newSkills: ONLY skills that do NOT exist yet — user must approve each before creation.",
       'JSON reuse: { "reuse": { "existingAgentName": "kebab", "reason": "..." } }',
-      'JSON new: { "agent": { "name", "role", "systemPrompt", "skillNames": [] }, "existingSkillNames": [], "newSkills": [{ "name", "description", "promptContent" }] }',
+      'JSON new: { "agent": { "name", "role", "systemPrompt", "skillNames": [] }, "existingSkillNames": [], "newSkills": [{ "name", "description", "promptContent" }], "mcpGrants": [{ "serverSlug", "toolNames": ["tool_a"] | null, "reason": "..." }] }',
       "Never return reuse and agent together.",
     ].join("\n"),
     [
       `Brief: ${trimmed}`,
       orgHint,
+      hintedServers.length > 0
+        ? `Brief likely targets MCP server(s): ${hintedServers.map((s) => s.slug).join(", ")}`
+        : "",
+      mcpCatalog,
       `Existing agents: ${agents.map((a) => `${a.name} (${a.role})`).join("; ") || "(none)"}`,
       `Existing skills: ${skills.map((s) => s.name).join(", ") || "(none)"}`,
-      `Agent examples:\n${JSON.stringify(AGENT_FEW_SHOT_EXAMPLES)}`,
+      `Platform agent style examples (match structure and depth):\n${JSON.stringify(platformExamples)}`,
+      `Compact tenant template examples:\n${JSON.stringify(AGENT_FEW_SHOT_EXAMPLES)}`,
       `Skill examples:\n${JSON.stringify(SKILL_FEW_SHOT_EXAMPLES)}`,
     ].join("\n\n"),
     CATALOG_STUDIO_MAX_TOKENS_PROPOSE,
@@ -160,6 +225,7 @@ export async function proposeAgentWithLlm(
     brief: trimmed,
     existingSkillNames: [],
     newSkills: [],
+    mcpGrants: [],
   };
 
   if (parsed?.reuse && typeof parsed.reuse === "object") {
@@ -190,6 +256,40 @@ export async function proposeAgentWithLlm(
     proposal.newSkills = parseNewSkillDrafts(parsed?.newSkills).filter(
       (draft) => !skills.some((s) => s.name === draft.name),
     );
+
+    proposal.mcpGrants = parseMcpGrantProposals(parsed?.mcpGrants, mcpServers);
+
+    if (
+      proposal.mcpGrants.length === 0 &&
+      hintedServers.length > 0 &&
+      proposal.agent
+    ) {
+      proposal.mcpGrants = hintedServers.map((server) => ({
+        serverId: server.id,
+        serverSlug: server.slug,
+        serverName: server.name,
+        toolNames: null,
+        reason: `Brief references ${server.name} MCP integration.`,
+      }));
+    }
+
+    if (proposal.mcpGrants.length > 0 && proposal.agent) {
+      const hasMcpSkill = [
+        ...proposal.existingSkillNames,
+        ...(proposal.agent.skillNames ?? []),
+        ...proposal.newSkills.map((skill) => skill.name),
+      ].includes("tenant-mcp-tools");
+      if (!hasMcpSkill) {
+        proposal.existingSkillNames = [
+          ...new Set([...proposal.existingSkillNames, "tenant-mcp-tools"]),
+        ].filter((name) => skills.some((skill) => skill.name === name));
+        if (!proposal.existingSkillNames.includes("tenant-mcp-tools")) {
+          proposal.agent.skillNames = [
+            ...new Set([...(proposal.agent.skillNames ?? []), "tenant-mcp-tools"]),
+          ];
+        }
+      }
+    }
   }
 
   if (!proposal.reuse && !proposal.agent) {
@@ -254,6 +354,7 @@ export async function applyAgentProposal(
     include: { skills: { include: { skill: true } } },
   });
 
+  const created = !agent;
   if (!agent) {
     await ensureTenantAgents(tenantId, [proposal.agent]);
     agent = await prisma.agent.findFirst({
@@ -281,5 +382,22 @@ export async function applyAgentProposal(
     await linkAgentNameToOrgUnit(tenantId, orgUnitId, agent.name);
   }
 
-  return { agent, created: true, reused: false, skillsCreated };
+  const mcpGrantsApplied: string[] = [];
+  if (proposal.mcpGrants?.length && agent) {
+    for (const grant of proposal.mcpGrants) {
+      await grantAgentMcpServerAccess(
+        tenantId,
+        agent.id,
+        grant.serverId,
+        grant.toolNames,
+      );
+      mcpGrantsApplied.push(grant.serverSlug);
+    }
+    agent = await prisma.agent.findFirst({
+      where: { id: agent.id },
+      include: { skills: { include: { skill: true } } },
+    });
+  }
+
+  return { agent, created, reused: false, skillsCreated, mcpGrantsApplied };
 }

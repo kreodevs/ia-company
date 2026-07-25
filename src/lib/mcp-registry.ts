@@ -208,6 +208,33 @@ export async function updateTenantMcpServer(
   return getTenantMcpServer(tenantId, serverId);
 }
 
+export async function grantAgentMcpServerAccess(
+  tenantId: string,
+  agentId: string,
+  serverId: string,
+  allowedToolNames?: string[] | null,
+): Promise<void> {
+  const server = await getTenantMcpServer(tenantId, serverId);
+  if (!server) throw new Error("MCP server not found");
+
+  const agent = await prisma.agent.findFirst({
+    where: { id: agentId, tenantId },
+    select: { id: true },
+  });
+  if (!agent) throw new Error("Agent not found for MCP grant");
+
+  const payload =
+    allowedToolNames && allowedToolNames.length > 0
+      ? JSON.stringify([...new Set(allowedToolNames)])
+      : null;
+
+  await prisma.agentMcpGrant.upsert({
+    where: { agentId_serverId: { agentId, serverId } },
+    create: { agentId, serverId, allowedToolNames: payload },
+    update: { allowedToolNames: payload },
+  });
+}
+
 export async function deleteTenantMcpServer(tenantId: string, serverId: string) {
   const existing = await getTenantMcpServer(tenantId, serverId);
   if (!existing) throw new Error("MCP server not found");

@@ -177,6 +177,33 @@ export default function CatalogStudioAgentPanel({
                   {t("catalogStudio.existingSkills")}: {proposal.existingSkillNames.join(", ")}
                 </p>
               )}
+              {proposal.mcpGrants && proposal.mcpGrants.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-sm font-medium">{t("catalogStudio.mcpGrantsTitle")}</p>
+                  <ul className="space-y-2 text-sm">
+                    {proposal.mcpGrants.map((grant) => (
+                      <li
+                        key={grant.serverId}
+                        className="rounded-md border border-[var(--color-border)] p-3"
+                      >
+                        <p>
+                          <strong>{grant.serverName}</strong> ({grant.serverSlug})
+                        </p>
+                        <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                          {grant.reason}
+                        </p>
+                        <p className="mt-1 text-xs">
+                          {grant.toolNames?.length
+                            ? t("catalogStudio.mcpToolsSubset", {
+                                tools: grant.toolNames.join(", "),
+                              })
+                            : t("catalogStudio.mcpToolsAll")}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <label className="mt-4 flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"

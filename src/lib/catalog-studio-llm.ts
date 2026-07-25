@@ -4,7 +4,7 @@ import { getPlatformSettingsSync } from "./platform-settings.js";
 import { prisma } from "./prisma.js";
 import { resolveEffectiveModel, tenantLlmFromRecord } from "./tenant-llm.js";
 
-export const CATALOG_STUDIO_MAX_TOKENS_PROPOSE = Number(process.env.CATALOG_STUDIO_MAX_TOKENS_PROPOSE ?? 900);
+export const CATALOG_STUDIO_MAX_TOKENS_PROPOSE = Number(process.env.CATALOG_STUDIO_MAX_TOKENS_PROPOSE ?? 2800);
 export const CATALOG_STUDIO_MAX_TOKENS_MUNGER = Number(process.env.CATALOG_STUDIO_MAX_TOKENS_MUNGER ?? 500);
 export const CATALOG_STUDIO_PROPOSE_MAX_PER_HOUR = Number(
   process.env.CATALOG_STUDIO_PROPOSE_MAX_PER_HOUR ?? 30,

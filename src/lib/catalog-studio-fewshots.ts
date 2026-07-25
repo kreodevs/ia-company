@@ -27,7 +27,7 @@ export const CATALOG_STUDIO_LLM_RULES = [
   "Prefer REUSE over CREATE — match existing tenant catalog entries by name/role when fit is ≥80%.",
   "Agent and skill names: lowercase kebab-case (e.g. copy-manager, seo-audit).",
   "Agents are tenant-scoped only — never reference platform-global IDs.",
-  "systemPrompt: persona + deliverable + JSON handoff when in workflows.",
+  "systemPrompt: full markdown persona doc (## Rol, ## Persona, ## Principios, ## Flujo operativo, ## Formato de salida) + JSON handoff when in workflows.",
   "skill promptContent: capability + output format + constraints.",
   "Respond ONLY with valid JSON (no prose outside JSON).",
 ];
