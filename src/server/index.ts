@@ -20,7 +20,7 @@ import { opsRoutes } from "./routes/ops.js";
 import { productRoutes } from "./routes/products.js";
 import { runRoutes } from "./routes/runs.js";
 import { opencodeRoutes } from "./routes/opencode.js";
-import { scheduleRoutes } from "./routes/schedules.js";
+import { scheduleRoutes, tenantSchedulingSettingsRoutes } from "./routes/schedules.js";
 import { skillRoutes } from "./routes/skills.js";
 import { tenantSettingsRoutes } from "./routes/tenant-settings.js";
 import { tenantMcpRoutes } from "./routes/tenant-mcp.js";
@@ -77,6 +77,7 @@ async function buildServer() {
     await api.register(officeRoutes);
     await api.register(decisionRoutes);
     await api.register(scheduleRoutes);
+    await api.register(tenantSchedulingSettingsRoutes);
     await api.register(agentRoutes);
     await api.register(skillRoutes);
     await api.register(workflowRoutes);

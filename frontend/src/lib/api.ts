@@ -723,7 +723,22 @@ export interface AutonomousSchedule {
   enabled: boolean;
   nextRunAt: string | null;
   lastRunAt: string | null;
+  lastSkipReason?: string | null;
+  lastSkippedAt?: string | null;
+  tenantTimezone?: string;
+  conditionsMet?: boolean;
+  currentSkipReason?: string | null;
   createdAt: string;
+}
+
+export interface SchedulesListResponse {
+  timezone: string;
+  schedules: AutonomousSchedule[];
+}
+
+export interface TenantSchedulingSettings {
+  tenantId: string;
+  timezone: string;
 }
 
 export interface OrchestrationPresetSummary {
@@ -1168,10 +1183,10 @@ export const api = {
       request<TenantConsensus>("/consensus", { method: "PUT", body: JSON.stringify(body) }),
   },
   schedules: {
-    list: () => request<AutonomousSchedule[]>("/schedules"),
+    list: () => request<SchedulesListResponse>("/schedules"),
     presets: () => request<OrchestrationPresetSummary[]>("/schedules/presets"),
     applyPreset: (presetId: string) =>
-      request<AutonomousSchedule[]>("/schedules/apply-preset", {
+      request<SchedulesListResponse>("/schedules/apply-preset", {
         method: "POST",
         body: JSON.stringify({ presetId }),
       }),
@@ -1478,6 +1493,12 @@ export const api = {
     testSmtp: () =>
       request<{ ok: boolean; message: string }>("/tenant/settings/integrations/smtp/test", {
         method: "POST",
+      }),
+    getScheduling: () => request<TenantSchedulingSettings>("/tenant/settings/scheduling"),
+    updateScheduling: (body: { timezone: string }) =>
+      request<TenantSchedulingSettings>("/tenant/settings/scheduling", {
+        method: "PUT",
+        body: JSON.stringify(body),
       }),
   },
   tenantMcp: {

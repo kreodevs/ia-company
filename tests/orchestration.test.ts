@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { computeNextRunAt, normalizeIntervalSec } from "../src/lib/schedule-timing.js";
+import { computeNextRunAt, cronMatches, normalizeIntervalSec } from "../src/lib/schedule-timing.js";
 import {
   conditionsAreEmpty,
   evaluateScheduleConditions,
@@ -19,12 +19,27 @@ test("computeNextRunAt uses interval when cron is absent", () => {
   assert.equal(next.toISOString(), "2026-07-22T13:00:00.000Z");
 });
 
-test("computeNextRunAt finds next Saturday 9:00 for weekly discovery cron", () => {
+test("computeNextRunAt finds next Saturday 9:00 for weekly discovery cron in UTC", () => {
   const from = new Date("2026-07-22T12:00:00.000Z"); // Wednesday
-  const next = computeNextRunAt({ from, cronExpr: "0 9 * * 6" });
-  assert.equal(next.getDay(), 6);
-  assert.equal(next.getHours(), 9);
-  assert.equal(next.getMinutes(), 0);
+  const next = computeNextRunAt({ from, cronExpr: "0 9 * * 6", timeZone: "UTC" });
+  assert.equal(next.toISOString(), "2026-07-25T09:00:00.000Z");
+});
+
+test("computeNextRunAt finds next Saturday 9:00 in America/Mexico_City", () => {
+  const from = new Date("2026-07-22T12:00:00.000Z");
+  const next = computeNextRunAt({
+    from,
+    cronExpr: "0 9 * * 6",
+    timeZone: "America/Mexico_City",
+  });
+  // Saturday 9:00 CDMX (UTC-6) = 15:00 UTC
+  assert.equal(next.toISOString(), "2026-07-25T15:00:00.000Z");
+});
+
+test("cronMatches respects tenant timezone", () => {
+  const instant = new Date("2026-07-25T15:00:00.000Z");
+  assert.equal(cronMatches(instant, "0 9 * * 6", { timeZone: "America/Mexico_City" }), true);
+  assert.equal(cronMatches(instant, "0 9 * * 6", { timeZone: "UTC" }), false);
 });
 
 test("evaluateScheduleConditions respects pipeline and phase gates", () => {

@@ -19,6 +19,21 @@ const CRON_PRESETS = [
   { labelKey: "settings.orchestration.cron.daily9", value: "0 9 * * *" },
 ] as const;
 
+const SCHEDULE_TIMEZONE_OPTIONS = [
+  "America/Mexico_City",
+  "America/Bogota",
+  "America/Lima",
+  "America/Santiago",
+  "America/Buenos_Aires",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "Europe/Madrid",
+  "Europe/London",
+  "UTC",
+] as const;
+
 type TimingMode = "interval" | "cron";
 
 interface RuleDraft {
@@ -33,6 +48,47 @@ interface RuleDraft {
 }
 
 const EMPTY_CONDITIONS: ScheduleConditions = {};
+
+function formatScheduleInstant(
+  iso: string | null | undefined,
+  timeZone: string,
+  locale?: string,
+): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function translateSkipReason(
+  reason: string | null | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string | null {
+  if (!reason) return null;
+  const keyByReason: Record<string, string> = {
+    "Pipeline is not empty": "settings.orchestration.skipReasons.pipelineNotEmpty",
+    "Pipeline has no ideas": "settings.orchestration.skipReasons.pipelineHasNoIdeas",
+    "No building/launching product": "settings.orchestration.skipReasons.noBuildingProduct",
+    "No growing product": "settings.orchestration.skipReasons.noGrowingProduct",
+    "No pending idea to evaluate": "settings.orchestration.skipReasons.noPendingIdea",
+    "Human decisions pending": "settings.orchestration.skipReasons.pendingDecisions",
+    "Department has no linked work items": "settings.orchestration.skipReasons.noOrgUnitWork",
+    "Active run in progress": "settings.orchestration.skipReasons.activeRun",
+    "Could not start run": "settings.orchestration.skipReasons.couldNotStart",
+    "Conditions not met": "settings.orchestration.skipReasons.conditionsNotMet",
+  };
+  if (keyByReason[reason]) return t(keyByReason[reason]);
+  if (reason.startsWith("Company phase is ")) {
+    return t("settings.orchestration.skipReasons.phaseMismatch", {
+      phase: reason.replace("Company phase is ", ""),
+    });
+  }
+  return reason;
+}
 
 function workflowLabel(name: string | undefined, t: (key: string, options?: Record<string, unknown>) => string) {
   if (!name) return t("settings.orchestration.dynamicWorkflow");
@@ -82,19 +138,24 @@ function conditionsSummary(
 export interface OrchestrationPlanPanelProps {
   schedules: AutonomousSchedule[];
   workflows: Workflow[];
+  timezone: string;
+  onTimezoneChange: (timezone: string) => void;
   onRefresh: () => void | Promise<void>;
 }
 
 export default function OrchestrationPlanPanel({
   schedules,
   workflows,
+  timezone,
+  onTimezoneChange,
   onRefresh,
 }: OrchestrationPlanPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [presets, setPresets] = useState<OrchestrationPresetSummary[]>([]);
   const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [savingTimezone, setSavingTimezone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<RuleDraft>>>({});
   const [newRule, setNewRule] = useState<RuleDraft>({
@@ -275,12 +336,58 @@ export default function OrchestrationPlanPanel({
     }));
   };
 
+  const timezoneOptions = useMemo(() => {
+    const values = new Set<string>([...SCHEDULE_TIMEZONE_OPTIONS, timezone]);
+    try {
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (browserTz) values.add(browserTz);
+    } catch {
+      // ignore
+    }
+    return [...values].sort((a, b) => a.localeCompare(b));
+  }, [timezone]);
+
+  const saveTimezone = async (nextTimezone: string) => {
+    setSavingTimezone(true);
+    setError(null);
+    try {
+      const updated = await api.tenantSettings.updateScheduling({ timezone: nextTimezone });
+      onTimezoneChange(updated.timezone);
+      await onRefresh();
+    } catch (err) {
+      setError(translateApiError(err, t, "common.saveFailed"));
+    } finally {
+      setSavingTimezone(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="space-y-3">
         <div>
           <h2 className="text-lg font-semibold">{t("settings.orchestration.title")}</h2>
           <p className="text-sm text-[var(--color-muted-foreground)]">{t("settings.orchestration.subtitle")}</p>
+        </div>
+
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">{t("settings.orchestration.timezoneLabel")}</span>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("settings.orchestration.timezoneHint")}
+            </p>
+            <select
+              value={timezone}
+              disabled={savingTimezone}
+              onChange={(e) => void saveTimezone(e.target.value)}
+              className="mt-2 w-full max-w-md rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            >
+              {timezoneOptions.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
@@ -341,6 +448,54 @@ export default function OrchestrationPlanPanel({
                         {t("settings.orchestration.conditionsLabel")}:{" "}
                         {conditionsSummary(schedule.conditions, t, orgUnitNameById.get(schedule.conditions?.orgUnitId ?? ""))}
                       </p>
+                      <dl className="mt-2 space-y-1 text-xs text-[var(--color-muted-foreground)]">
+                        <div>
+                          <dt className="inline font-medium">{t("settings.orchestration.nextRunLabel")}: </dt>
+                          <dd className="inline">
+                            {schedule.enabled && schedule.nextRunAt
+                              ? formatScheduleInstant(schedule.nextRunAt, timezone, i18n.language) ??
+                                schedule.nextRunAt
+                              : t("settings.orchestration.notScheduled")}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="inline font-medium">{t("settings.orchestration.lastRunLabel")}: </dt>
+                          <dd className="inline">
+                            {schedule.lastRunAt
+                              ? formatScheduleInstant(schedule.lastRunAt, timezone, i18n.language) ??
+                                schedule.lastRunAt
+                              : t("settings.orchestration.neverRun")}
+                          </dd>
+                        </div>
+                        {!schedule.conditionsMet && schedule.currentSkipReason ? (
+                          <div className="text-[var(--color-warning,orange)]">
+                            <dt className="inline font-medium">{t("settings.orchestration.wouldSkipNow")}: </dt>
+                            <dd className="inline">
+                              {translateSkipReason(schedule.currentSkipReason, t)}
+                            </dd>
+                          </div>
+                        ) : null}
+                        {schedule.lastSkipReason ? (
+                          <div>
+                            <dt className="inline font-medium">{t("settings.orchestration.lastSkipLabel")}: </dt>
+                            <dd className="inline">
+                              {translateSkipReason(schedule.lastSkipReason, t)}
+                              {schedule.lastSkippedAt
+                                ? ` (${formatScheduleInstant(schedule.lastSkippedAt, timezone, i18n.language) ?? schedule.lastSkippedAt})`
+                                : ""}
+                            </dd>
+                          </div>
+                        ) : null}
+                      </dl>
+                      {schedule.cronExpr ? (
+                        <p className="mt-1 text-[10px] uppercase tracking-wide text-[var(--color-muted-foreground)]">
+                          {t("settings.orchestration.cronUsesTimezone", { timezone })}
+                        </p>
+                      ) : schedule.intervalSec >= 604800 ? (
+                        <p className="mt-1 text-[10px] text-[var(--color-warning,orange)]">
+                          {t("settings.orchestration.intervalNotWeeklyHint")}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button

@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import type { AutonomousSchedule, OrchestrationMode, ScheduleKind } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { computeNextRunAt } from "./schedule-timing.js";
+import { getTenantScheduleTimezone } from "./tenant-schedule-settings.js";
 import {
   evaluateScheduleConditions,
   loadScheduleConditionContext,
@@ -34,13 +35,23 @@ export function orchestrationModeFromScheduleKind(kind: ScheduleKind): Orchestra
 
 export function resolveNextRunAt(
   schedule: Pick<AutonomousSchedule, "intervalSec" | "cronExpr" | "enabled">,
+  options?: { timeZone?: string },
 ): Date | null {
   if (!schedule.enabled) return null;
   return computeNextRunAt({
     from: new Date(),
     intervalSec: schedule.intervalSec,
     cronExpr: schedule.cronExpr,
+    timeZone: options?.timeZone,
   });
+}
+
+export async function resolveNextRunAtForTenant(
+  tenantId: string,
+  schedule: Pick<AutonomousSchedule, "intervalSec" | "cronExpr" | "enabled">,
+): Promise<Date | null> {
+  const timeZone = await getTenantScheduleTimezone(tenantId);
+  return resolveNextRunAt(schedule, { timeZone });
 }
 
 export async function ensureDefaultOrchestrationPlan(tenantId: string) {
@@ -90,7 +101,7 @@ async function migrateLegacySchedules(schedules: AutonomousSchedule[]) {
       updates.orchestrationMode = expectedMode;
     }
     if (!schedule.nextRunAt && schedule.enabled) {
-      updates.nextRunAt = resolveNextRunAt(schedule);
+      updates.nextRunAt = await resolveNextRunAtForTenant(schedule.tenantId, schedule);
     }
 
     if (Object.keys(updates).length > 0) {
@@ -111,6 +122,7 @@ export async function applyOrchestrationPreset(
   }
 
   const preset = ORCHESTRATION_PRESETS[presetId];
+  const timeZone = await getTenantScheduleTimezone(tenantId);
   await prisma.autonomousSchedule.deleteMany({ where: { tenantId } });
 
   const created: AutonomousSchedule[] = [];
@@ -126,8 +138,10 @@ export async function applyOrchestrationPreset(
     const scheduleKind = scheduleKindFromMode(rule.orchestrationMode);
     const nextRunAt = rule.enabled
       ? computeNextRunAt({
+          from: new Date(),
           intervalSec: rule.intervalSec ?? 1800,
           cronExpr: rule.cronExpr ?? null,
+          timeZone,
         })
       : null;
 
@@ -231,7 +245,10 @@ export async function previewOrchestrationPlan(
     where: { tenantId, enabled: true },
     orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
   });
-  const context = await loadScheduleConditionContext(tenantId);
+  const [context, timeZone] = await Promise.all([
+    loadScheduleConditionContext(tenantId),
+    getTenantScheduleTimezone(tenantId),
+  ]);
   const now = new Date();
   const until = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
   const entries: OrchestrationPreviewEntry[] = [];
@@ -260,6 +277,7 @@ export async function previewOrchestrationPlan(
           cronExpr: schedule.cronExpr,
           from: schedule.nextRunAt && schedule.nextRunAt > now ? schedule.nextRunAt : now,
           until,
+          timeZone,
         }),
       );
     } else if (schedule.nextRunAt && schedule.nextRunAt <= until) {
@@ -269,10 +287,11 @@ export async function previewOrchestrationPlan(
           : computeNextRunAt({
               from: now,
               intervalSec: schedule.intervalSec,
+              timeZone,
             });
       while (cursor <= until && runTimes.length < 20) {
         runTimes.push(new Date(cursor.getTime()));
-        cursor = computeNextRunAt({ from: cursor, intervalSec: schedule.intervalSec });
+        cursor = computeNextRunAt({ from: cursor, intervalSec: schedule.intervalSec, timeZone });
       }
     }
 
@@ -296,11 +315,16 @@ function computeCronPreviewTimes(options: {
   cronExpr: string;
   from: Date;
   until: Date;
+  timeZone?: string;
 }): Date[] {
   const results: Date[] = [];
   let cursor = new Date(options.from.getTime());
   while (cursor <= options.until && results.length < 20) {
-    const next = computeNextRunAt({ from: cursor, cronExpr: options.cronExpr });
+    const next = computeNextRunAt({
+      from: cursor,
+      cronExpr: options.cronExpr,
+      timeZone: options.timeZone,
+    });
     if (next <= cursor) break;
     results.push(next);
     cursor = new Date(next.getTime() + 60_000);
@@ -319,33 +343,74 @@ export async function tickOrchestrationSchedules(now = new Date()): Promise<void
   });
 
   const tenantIds = [...new Set(due.map((schedule) => schedule.tenantId))];
+  const timezoneByTenant = new Map<string, string>();
+  await Promise.all(
+    tenantIds.map(async (tenantId) => {
+      timezoneByTenant.set(tenantId, await getTenantScheduleTimezone(tenantId));
+    }),
+  );
 
   for (const tenantId of tenantIds) {
+    const timeZone = timezoneByTenant.get(tenantId) ?? "UTC";
+
     if (await tenantHasActiveRun(tenantId)) {
+      const tenantSchedules = due
+        .filter((schedule) => schedule.tenantId === tenantId)
+        .sort((a, b) => b.priority - a.priority || a.createdAt.getTime() - b.createdAt.getTime());
+
+      await Promise.all(
+        tenantSchedules.map((schedule) =>
+          prisma.autonomousSchedule.update({
+            where: { id: schedule.id },
+            data: {
+              lastSkipReason: "Active run in progress",
+              lastSkippedAt: now,
+              nextRunAt: computeNextRunAt({
+                from: now,
+                intervalSec: schedule.intervalSec,
+                cronExpr: schedule.cronExpr,
+                timeZone,
+              }),
+            },
+          }),
+        ),
+      );
       continue;
     }
 
     const picked = await pickDueScheduleForTenant(tenantId, due);
-    if (!picked) continue;
+    const tenantSchedules = due
+      .filter((schedule) => schedule.tenantId === tenantId)
+      .sort((a, b) => b.priority - a.priority || a.createdAt.getTime() - b.createdAt.getTime());
 
-    const { schedule, skipped } = picked;
-    const conditions = parseScheduleConditions(schedule.conditions);
-    const context = await loadScheduleConditionContext(tenantId);
-    const evaluation = evaluateScheduleConditions(conditions, context);
-
-    if (!evaluation.met) {
-      await prisma.autonomousSchedule.update({
-        where: { id: schedule.id },
-        data: {
-          nextRunAt: computeNextRunAt({
-            from: now,
-            intervalSec: schedule.intervalSec,
-            cronExpr: schedule.cronExpr,
-          }),
-        },
-      });
+    if (!picked) {
+      const context = await loadScheduleConditionContext(tenantId);
+      await Promise.all(
+        tenantSchedules.map(async (schedule) => {
+          const evaluation = evaluateScheduleConditions(
+            parseScheduleConditions(schedule.conditions),
+            context,
+          );
+          if (evaluation.met) return;
+          await prisma.autonomousSchedule.update({
+            where: { id: schedule.id },
+            data: {
+              lastSkipReason: evaluation.reason ?? "Conditions not met",
+              lastSkippedAt: now,
+              nextRunAt: computeNextRunAt({
+                from: now,
+                intervalSec: schedule.intervalSec,
+                cronExpr: schedule.cronExpr,
+                timeZone,
+              }),
+            },
+          });
+        }),
+      );
       continue;
     }
+
+    const { schedule, skipped } = picked;
 
     try {
       const { assertTenantCanExecute } = await import("./usage-limits.js");
@@ -356,10 +421,13 @@ export async function tickOrchestrationSchedules(now = new Date()): Promise<void
         await prisma.autonomousSchedule.update({
           where: { id: schedule.id },
           data: {
+            lastSkipReason: "Could not start run",
+            lastSkippedAt: now,
             nextRunAt: computeNextRunAt({
               from: now,
               intervalSec: schedule.intervalSec,
               cronExpr: schedule.cronExpr,
+              timeZone,
             }),
           },
         });
@@ -370,10 +438,13 @@ export async function tickOrchestrationSchedules(now = new Date()): Promise<void
         where: { id: schedule.id },
         data: {
           lastRunAt: now,
+          lastSkipReason: null,
+          lastSkippedAt: null,
           nextRunAt: computeNextRunAt({
             from: now,
             intervalSec: schedule.intervalSec,
             cronExpr: schedule.cronExpr,
+            timeZone,
           }),
         },
       });
@@ -388,10 +459,13 @@ export async function tickOrchestrationSchedules(now = new Date()): Promise<void
         await prisma.autonomousSchedule.update({
           where: { id: skippedSchedule.id },
           data: {
+            lastSkipReason: item.reason,
+            lastSkippedAt: now,
             nextRunAt: computeNextRunAt({
               from: now,
               intervalSec: skippedSchedule.intervalSec,
               cronExpr: skippedSchedule.cronExpr,
+              timeZone,
             }),
           },
         });

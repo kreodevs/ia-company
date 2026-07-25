@@ -198,6 +198,31 @@ export const settings = {
       monday9: "Mondays at 9:00",
       daily9: "Daily at 9:00",
     },
+    timezoneLabel: "Tenant timezone",
+    timezoneHint:
+      "Cron expressions (e.g. Saturdays at 9:00) are evaluated in this timezone. The worker stores UTC internally.",
+    nextRunLabel: "Next run",
+    lastRunLabel: "Last run",
+    lastSkipLabel: "Last skip",
+    wouldSkipNow: "Would skip now",
+    notScheduled: "—",
+    neverRun: "Never",
+    cronUsesTimezone: "Cron in {{timezone}}",
+    intervalNotWeeklyHint:
+      "Interval mode is not “every Saturday” — it runs every N days from creation or last run. Use cron for fixed weekdays.",
+    skipReasons: {
+      pipelineNotEmpty: "Pipeline is not empty",
+      pipelineHasNoIdeas: "Pipeline has no ideas",
+      noBuildingProduct: "No building/launching product",
+      noGrowingProduct: "No growing product",
+      noPendingIdea: "No pending idea to evaluate",
+      pendingDecisions: "Human decisions pending",
+      noOrgUnitWork: "Department has no linked work items",
+      activeRun: "Active run in progress",
+      couldNotStart: "Could not start run",
+      conditionsNotMet: "Conditions not met",
+      phaseMismatch: "Company phase: {{phase}}",
+    },
     presets: {
       onDemand: {
         label: "On demand (default)",

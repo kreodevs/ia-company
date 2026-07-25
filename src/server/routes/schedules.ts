@@ -7,16 +7,17 @@ import {
   applyOrchestrationPreset,
   ensureDefaultOrchestrationPlan,
   executeScheduleRule,
-  resolveNextRunAt,
+  resolveNextRunAtForTenant,
   scheduleKindFromMode,
 } from "../../lib/orchestration-plan.js";
 import { computeNextRunAt, normalizeIntervalSec } from "../../lib/schedule-timing.js";
 import { ORCHESTRATION_PRESETS, isOrchestrationPresetId } from "../../lib/orchestration-presets.js";
+import { enrichSchedulesForTenant, enrichScheduleForTenant } from "../../lib/schedule-enrichment.js";
+import {
+  getTenantScheduleTimezone,
+  updateTenantScheduleTimezone,
+} from "../../lib/tenant-schedule-settings.js";
 import type { ScheduleConditions } from "../../types/orchestration.js";
-
-function serializeSchedule<T extends Record<string, unknown>>(schedule: T) {
-  return schedule;
-}
 
 export async function scheduleRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -26,7 +27,9 @@ export async function scheduleRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const schedules = await ensureDefaultOrchestrationPlan(tenantId);
-      return schedules;
+      const timezone = await getTenantScheduleTimezone(tenantId);
+      const enriched = await enrichSchedulesForTenant(tenantId, schedules);
+      return { timezone, schedules: enriched };
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -54,7 +57,9 @@ export async function scheduleRoutes(app: FastifyInstance) {
       }
       const schedules = await applyOrchestrationPreset(tenantId, presetId);
       await logAudit(request, "schedule.apply_preset", { presetId, count: schedules.length });
-      return reply.status(201).send(schedules);
+      const timezone = await getTenantScheduleTimezone(tenantId);
+      const enriched = await enrichSchedulesForTenant(tenantId, schedules);
+      return reply.status(201).send({ timezone, schedules: enriched });
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -111,6 +116,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         }
       }
 
+      const timeZone = await getTenantScheduleTimezone(tenantId);
       const schedule = await prisma.autonomousSchedule.create({
         data: {
           tenantId,
@@ -123,12 +129,14 @@ export async function scheduleRoutes(app: FastifyInstance) {
           priority,
           conditions: (conditions ?? undefined) as Prisma.InputJsonValue | undefined,
           enabled,
-          nextRunAt: enabled ? computeNextRunAt({ intervalSec, cronExpr }) : null,
+          nextRunAt: enabled
+            ? computeNextRunAt({ from: new Date(), intervalSec, cronExpr, timeZone })
+            : null,
         },
       });
 
       await logAudit(request, "schedule.create", { scheduleId: schedule.id, name, orchestrationMode });
-      return reply.status(201).send(schedule);
+      return reply.status(201).send(await enrichScheduleForTenant(tenantId, schedule));
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -166,6 +174,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
       } = request.body;
 
       const data: Prisma.AutonomousScheduleUpdateInput = {};
+      const timeZone = await getTenantScheduleTimezone(tenantId);
 
       if (name !== undefined) data.name = name;
       if (intervalSec !== undefined) data.intervalSec = normalizeIntervalSec(intervalSec);
@@ -195,15 +204,19 @@ export async function scheduleRoutes(app: FastifyInstance) {
         data.enabled = enabled;
         data.nextRunAt = enabled
           ? computeNextRunAt({
+              from: new Date(),
               intervalSec: nextIntervalSec,
               cronExpr: nextCronExpr,
+              timeZone,
             })
           : null;
       } else if (intervalSec !== undefined || cronExpr !== undefined) {
         data.nextRunAt = existing.enabled
           ? computeNextRunAt({
+              from: new Date(),
               intervalSec: nextIntervalSec,
               cronExpr: nextCronExpr,
+              timeZone,
             })
           : null;
       }
@@ -212,7 +225,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         where: { id: request.params.id },
         data,
       });
-      return serializeSchedule(schedule);
+      return enrichScheduleForTenant(tenantId, schedule);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -257,12 +270,42 @@ export async function scheduleRoutes(app: FastifyInstance) {
         where: { id: schedule.id },
         data: {
           lastRunAt: new Date(),
-          nextRunAt: schedule.enabled ? resolveNextRunAt(schedule) : null,
+          lastSkipReason: null,
+          lastSkippedAt: null,
+          nextRunAt: schedule.enabled ? await resolveNextRunAtForTenant(tenantId, schedule) : null,
         },
       });
 
       await logAudit(request, "schedule.run_now", { scheduleId: schedule.id, runId });
       return reply.status(202).send({ runId, status: "PENDING" });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+}
+
+export async function tenantSchedulingSettingsRoutes(app: FastifyInstance) {
+  app.addHook("preHandler", app.authenticate);
+  app.addHook("preHandler", app.requireTenantContext);
+  app.addHook("preHandler", app.requireTenantAdmin);
+
+  app.get("/tenant/settings/scheduling", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const timezone = await getTenantScheduleTimezone(tenantId);
+      return { tenantId, timezone };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{ Body: { timezone: string } }>("/tenant/settings/scheduling", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { timezone } = request.body;
+      const updated = await updateTenantScheduleTimezone(tenantId, timezone);
+      await logAudit(request, "tenant.scheduling.update", { timezone: updated });
+      return { tenantId, timezone: updated };
     } catch (err) {
       return handleRouteError(reply, err);
     }

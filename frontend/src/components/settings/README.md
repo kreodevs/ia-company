@@ -2,7 +2,7 @@
 
 | Component | Purpose |
 |-----------|---------|
-| `OrchestrationPlanPanel.tsx` | Tenant operations plan: presets (`on_demand`, `discovery_only`, `light_exploration`), fixed rules, cron/interval timing, conditions. Default is on-demand (no rules). Dynamic orchestrator mode remains available as an advanced option. |
+| `OrchestrationPlanPanel.tsx` | Tenant operations plan: presets (`on_demand`, `discovery_only`, `light_exploration`), fixed rules, cron/interval timing, conditions, **tenant timezone** (cron evaluated locally), **next/last run**, and skip diagnostics. Default is on-demand (no rules). Dynamic orchestrator mode remains available as an advanced option. |
 | `TenantSmtpSection.tsx` | Tenant SMTP for agent outbound email: host, credentials, allowlist, daily quota, test connection. Used in Settings → Integrations. |
 | `TenantMcpSettingsPanel.tsx` | MCP server registry: stdio commands, env secrets, tool sync, agent grants, read-only guardrails. Used in Settings → MCP servers. |
 

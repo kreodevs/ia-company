@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const [limits, setLimits] = useState<Partial<TenantUsageLimits>>({});
   const [usage, setUsage] = useState<TenantMonthlyUsage | null>(null);
   const [schedules, setSchedules] = useState<AutonomousSchedule[]>([]);
+  const [scheduleTimezone, setScheduleTimezone] = useState("UTC");
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingLlm, setSavingLlm] = useState(false);
@@ -56,7 +57,7 @@ export default function SettingsPage() {
 
   const load = async () => {
     setLoading(true);
-    const [llmConfig, opencodeConfig, integrationsConfig, notif, limitConfig, usageData, scheduleList, workflowList] =
+    const [llmConfig, opencodeConfig, integrationsConfig, notif, limitConfig, usageData, scheduleResponse, workflowList] =
       await Promise.all([
         api.tenantSettings.getLlm(),
         api.tenantSettings.getOpencode(),
@@ -75,7 +76,8 @@ export default function SettingsPage() {
     setNotifications(notif);
     setLimits(limitConfig);
     setUsage(usageData);
-    setSchedules(scheduleList);
+    setSchedules(scheduleResponse.schedules);
+    setScheduleTimezone(scheduleResponse.timezone);
     setWorkflows(workflowList);
     setLoading(false);
   };
@@ -651,7 +653,13 @@ export default function SettingsPage() {
       )}
 
       {activeTab === "schedules" && (
-        <OrchestrationPlanPanel schedules={schedules} workflows={workflows} onRefresh={load} />
+        <OrchestrationPlanPanel
+          schedules={schedules}
+          workflows={workflows}
+          timezone={scheduleTimezone}
+          onTimezoneChange={setScheduleTimezone}
+          onRefresh={load}
+        />
       )}
     </div>
   );
