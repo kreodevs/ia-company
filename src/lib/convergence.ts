@@ -33,6 +33,11 @@ import {
   asStringArray,
   enrichSharedMemoryFromAgentOutputs,
 } from "./structured-memory.js";
+import {
+  buildStuckPivotNextAction,
+  isStuckPivotNextAction,
+  unwrapStuckNextAction,
+} from "./stuck-action.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 
 function parseGoNoGo(value: unknown): GoNoGoDecision | null {
@@ -183,10 +188,12 @@ export async function processConvergenceAfterRun(
 
   const consensus = await prisma.tenantConsensus.findUnique({ where: { tenantId } });
   const cycle = await ensureTenantCycleState(tenantId);
-  const nextAction = asString(companyMemory.nextAction) ?? consensus?.nextAction ?? null;
+  const rawNextAction = asString(companyMemory.nextAction) ?? consensus?.nextAction ?? null;
+  const nextAction = rawNextAction ? unwrapStuckNextAction(rawNextAction) : null;
+  const lastCompared = cycle.lastNextAction ? unwrapStuckNextAction(cycle.lastNextAction) : null;
 
   let stuckCounter = cycle.stuckCounter;
-  if (nextAction && cycle.lastNextAction === nextAction) {
+  if (nextAction && lastCompared === nextAction) {
     stuckCounter += 1;
   } else {
     stuckCounter = 0;
@@ -295,10 +302,10 @@ export async function processConvergenceAfterRun(
     await updateCompanyPhase(tenantId, "growing");
   }
 
-  if (stuckCounter >= 2 && nextAction) {
+  if (stuckCounter >= 2 && nextAction && !isStuckPivotNextAction(rawNextAction ?? "")) {
     const stuckMemory: SharedMemory = {
       ...enriched,
-      nextAction: `STUCK on "${nextAction}" — pivot: ship smallest vertical slice today`,
+      nextAction: buildStuckPivotNextAction(nextAction),
     };
     await persistCompanyConsensusFromRun(tenantId, stuckMemory);
     stuckCounter = 0;

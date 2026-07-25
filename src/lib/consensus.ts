@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { prisma } from "./prisma.js";
 import { ensureTenantWorkspace } from "./tenant-workspace.js";
 import type { SharedMemory } from "../types/index.js";
+import { sanitizeLoadedNextAction } from "./stuck-action.js";
 
 export const CONSENSUS_FILE_NAME = "consensus.md";
 
@@ -58,10 +59,11 @@ export function mergeConsensusIntoMemory(
   consensus: { content: string; nextAction: string | null } | null,
   override: SharedMemory = {},
 ): SharedMemory {
-  const nextAction =
+  const rawNext =
     (typeof override.nextAction === "string" ? override.nextAction : undefined) ??
     consensus?.nextAction ??
     "Execute autonomous cycle";
+  const nextAction = sanitizeLoadedNextAction(rawNext);
 
   return {
     ...override,
@@ -116,10 +118,11 @@ export async function persistCompanyConsensusFromRun(
     existing?.content ?? DEFAULT_TENANT_CONSENSUS_CONTENT(tenant?.name ?? "Tenant");
 
   const content = buildCompanyConsensusContentAfterRun(baseContent, memory);
-  const nextAction =
+  const rawNext =
     typeof memory.nextAction === "string" && memory.nextAction.trim()
       ? memory.nextAction.trim()
       : existing?.nextAction;
+  const nextAction = rawNext ? sanitizeLoadedNextAction(rawNext) : existing?.nextAction;
 
   await prisma.tenantConsensus.upsert({
     where: { tenantId },

@@ -4,9 +4,19 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { ensureProductWorkspace } from "./product-workspace.js";
 import { collectJsonObjects, asString, asStringArray } from "./structured-memory.js";
+import { isStuckPivotNextAction, unwrapStuckNextAction } from "./stuck-action.js";
 import type { SharedMemory } from "../types/index.js";
 
 export const PRODUCT_CONSENSUS_FILE_NAME = "consensus.md";
+
+function normalizeProductNextAction(nextAction: string | null | undefined): string | null {
+  if (!nextAction?.trim()) return null;
+  const trimmed = nextAction.trim();
+  if (isStuckPivotNextAction(trimmed)) {
+    return unwrapStuckNextAction(trimmed);
+  }
+  return trimmed;
+}
 
 export interface ConsensusVeto {
   by: string;
@@ -192,8 +202,15 @@ export async function appendProductHandoff(
   input: AppendHandoffInput,
 ): Promise<{ revisionId: string; cycleNumber: number }> {
   const consensus = await ensureProductConsensus(input.productId);
-  const newContent = buildProductContentFromRevision(consensus.content, input);
-  const revisionContent = buildHandoffRevisionContent(input);
+  const normalizedNextAction = normalizeProductNextAction(input.nextAction ?? null);
+  const newContent = buildProductContentFromRevision(consensus.content, {
+    ...input,
+    nextAction: normalizedNextAction ?? undefined,
+  });
+  const revisionContent = buildHandoffRevisionContent({
+    ...input,
+    nextAction: normalizedNextAction ?? undefined,
+  });
 
   const updated = await prisma.$transaction(async (tx) => {
     const revision = await tx.productConsensusRevision.create({
@@ -204,7 +221,7 @@ export async function appendProductHandoff(
         agentName: input.agentName,
         stepOrder: input.stepOrder,
         content: revisionContent,
-        nextAction: input.nextAction ?? null,
+        nextAction: normalizedNextAction,
         decisions: (input.decisions ?? []) as unknown as Prisma.InputJsonValue,
         openQuestions: (input.openQuestions ?? []) as unknown as Prisma.InputJsonValue,
         veto: (input.veto ?? null) as unknown as Prisma.InputJsonValue,
@@ -214,7 +231,7 @@ export async function appendProductHandoff(
       where: { productId: consensus.productId },
       data: {
         content: newContent,
-        nextAction: input.nextAction ?? consensus.nextAction,
+        nextAction: normalizedNextAction ?? consensus.nextAction,
         cycleNumber: { increment: 1 },
       },
     });
@@ -224,7 +241,7 @@ export async function appendProductHandoff(
   await syncProductConsensusFileToWorkspace(
     input.productSlug,
     newContent,
-    input.nextAction ?? consensus.nextAction,
+    normalizedNextAction ?? consensus.nextAction,
   );
 
   return { revisionId: updated.id, cycleNumber: consensus.cycleNumber + 1 };
@@ -367,7 +384,8 @@ export async function loadProductConsensusInitialMemory(
   override: SharedMemory = {},
 ): Promise<SharedMemory> {
   const consensus = await prisma.productConsensus.findUnique({ where: { productId } });
-  const nextAction = consensus?.nextAction ?? "Execute autonomous cycle";
+  const rawNext = consensus?.nextAction ?? "Execute autonomous cycle";
+  const nextAction = normalizeProductNextAction(rawNext) ?? "Execute autonomous cycle";
   return {
     ...override,
     consensus: override.consensus ?? consensus?.content,
