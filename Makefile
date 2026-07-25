@@ -5,7 +5,7 @@ ENGINE ?= claude
 
 # === Quick Start ===
 
-start: ## Start the auto-loop in foreground
+start: ## [DEPRECATED] Legacy CLI loop — use npm run dev + npm run worker
 	./scripts/core/auto-loop.sh
 
 start-awake: ## Start loop and prevent macOS sleep while running
@@ -29,7 +29,7 @@ else
 	@exit 1
 endif
 
-stop: ## Stop the loop gracefully
+stop: ## [DEPRECATED] Stop legacy CLI loop
 	./scripts/core/stop-loop.sh
 
 # === Monitoring ===

@@ -91,26 +91,11 @@ export async function scheduleRoutes(app: FastifyInstance) {
         orchestrationModeInput ??
         (scheduleKind === "meta" ? "meta_dynamic" : "fixed");
 
-      if (orchestrationMode === "meta_dynamic" && scheduleKind === "meta") {
-        const existing = await prisma.autonomousSchedule.findFirst({
-          where: { tenantId, orchestrationMode: "meta_dynamic" },
+      if (orchestrationMode === "meta_dynamic") {
+        return reply.status(400).send({
+          error:
+            "Dynamic meta orchestrator schedules are deprecated. Use the Office for on-demand work or fixed workflow rules.",
         });
-        if (existing) {
-          const updated = await prisma.autonomousSchedule.update({
-            where: { id: existing.id },
-            data: {
-              name,
-              intervalSec: normalizeIntervalSec(intervalSec),
-              cronExpr,
-              enabled,
-              priority,
-              conditions: (conditions ?? undefined) as Prisma.InputJsonValue | undefined,
-              nextRunAt: enabled ? computeNextRunAt({ intervalSec, cronExpr }) : null,
-            },
-          });
-          await logAudit(request, "schedule.create", { scheduleId: updated.id, name, orchestrationMode });
-          return reply.status(201).send(updated);
-        }
       }
 
       if (orchestrationMode === "fixed" && !workflowId) {
@@ -192,11 +177,14 @@ export async function scheduleRoutes(app: FastifyInstance) {
       }
       if (workflowId !== undefined) data.workflowId = workflowId;
       if (orchestrationMode !== undefined) {
+        if (orchestrationMode === "meta_dynamic") {
+          return reply.status(400).send({
+            error:
+              "Dynamic meta orchestrator schedules are deprecated. Use the Office for on-demand work or fixed workflow rules.",
+          });
+        }
         data.orchestrationMode = orchestrationMode;
         data.scheduleKind = scheduleKindFromMode(orchestrationMode);
-        if (orchestrationMode === "meta_dynamic") {
-          data.workflowId = null;
-        }
       }
 
       const nextIntervalSec =

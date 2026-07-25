@@ -1,24 +1,23 @@
 # Platform CLI scripts
 
-Bridge between the original bash `auto-loop.sh` workflow and the v2 HTTP API.
+Bridge between external cron/systemd and the v2 HTTP API.
 
 ## `cycle.sh`
 
-Run a single autonomous cycle (consensus load → execute → consensus sync):
+Run a single cycle (consensus load → execute workflow → consensus sync):
 
 ```bash
 chmod +x scripts/platform/cycle.sh
 
 export API_URL=http://localhost:3001/api
-# Meta mode (default) — dynamic multi-product orchestrator
-./scripts/platform/cycle.sh my-org owner@example.com 'password'
-
 # Fixed workflow by UUID
 ./scripts/platform/cycle.sh my-org owner@example.com 'password' <workflow-uuid>
 ```
 
-Use with cron or systemd instead of `auto-loop.sh` when running the multi-tenant platform.
+Use with cron or systemd when you want HTTP-triggered runs instead of the worker scheduler.
 
 ## Worker scheduler
 
-For continuous operation, enable **Settings → Autonomous company (meta schedule)** or create schedules via API — the worker process runs them automatically. See `/ops` for portfolio status.
+For continuous operation, run `npm run worker` and configure **Settings → Orchestration** with fixed workflow rules. On-demand work goes through **Office** (`/office`). See `/ops` for portfolio status.
+
+Legacy `auto-loop.sh` is archived — see [`archive/legacy-cli/README.md`](../../archive/legacy-cli/README.md).

@@ -64,22 +64,16 @@ async function migrateObsoleteOrchestrationPlan(
   tenantId: string,
   schedules: AutonomousSchedule[],
 ) {
-  const legacyMeta = schedules.filter(isLegacyMetaSchedule);
-  if (legacyMeta.length === 0) return;
+  const metaDynamic = schedules.filter((schedule) => schedule.orchestrationMode === "meta_dynamic");
+  if (metaDynamic.length === 0) return;
 
-  const nonLegacy = schedules.filter((schedule) => !isLegacyMetaSchedule(schedule));
+  await prisma.autonomousSchedule.deleteMany({
+    where: { tenantId, orchestrationMode: "meta_dynamic" },
+  });
 
-  if (nonLegacy.length === 0) {
+  const remaining = schedules.filter((schedule) => schedule.orchestrationMode !== "meta_dynamic");
+  if (remaining.length === 0) {
     await applyOrchestrationPreset(tenantId, "on_demand");
-    return;
-  }
-
-  for (const schedule of legacyMeta) {
-    if (!schedule.enabled) continue;
-    await prisma.autonomousSchedule.update({
-      where: { id: schedule.id },
-      data: { enabled: false, nextRunAt: null },
-    });
   }
 }
 
