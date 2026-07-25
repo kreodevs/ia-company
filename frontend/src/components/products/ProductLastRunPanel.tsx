@@ -137,6 +137,7 @@ export default function ProductLastRunPanel({
                 <th className="px-3 py-2">{t("consensus.lastRun.colAgent")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colOutput")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colHandoff")}</th>
+                <th className="px-3 py-2">{t("consensus.lastRun.colDocs")}</th>
                 <th className="px-3 py-2">{t("consensus.lastRun.colTokens")}</th>
               </tr>
             </thead>
@@ -190,6 +191,24 @@ export default function ProductLastRunPanel({
                       {step.hasStructuredHandoff
                         ? t("consensus.lastRun.handoffJson")
                         : t("consensus.lastRun.handoffMissing")}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs">
+                      <span
+                        className={
+                          step.deliverableStatus === "saved_to_disk"
+                            ? "text-emerald-400"
+                            : step.deliverableStatus === "handoff_only"
+                              ? "text-amber-300"
+                              : "font-semibold text-[var(--color-destructive)]"
+                        }
+                      >
+                        {t(`consensus.lastRun.deliverableStatus.${step.deliverableStatus}`)}
+                      </span>
+                      {step.savedDeliverablePath && (
+                        <p className="mt-1 font-mono text-[10px] text-[var(--color-muted-foreground)]">
+                          {step.savedDeliverablePath}
+                        </p>
+                      )}
                     </td>
                     <td className="px-3 py-2 align-top text-xs text-[var(--color-muted-foreground)]">
                       {step.tokensUsed != null ? step.tokensUsed.toLocaleString() : "—"}

@@ -4,7 +4,8 @@ Tactical live view for one product: agent seats, radar, runs, OpenCode history, 
 
 | File | Role |
 |------|------|
-| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode panel, Munger veto banner, **CoordinatorChat**) for one `productId` |
+| `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode panel, Munger veto banner, **deliverable health banner**, **CoordinatorChat**) for one `productId` |
+| `DeliverableHealthBanner.tsx` | Warns when last run has missing docs / weak handoff; links to consensus trace and agent docs |
 
 ## Routes
 

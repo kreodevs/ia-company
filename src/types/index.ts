@@ -29,6 +29,10 @@ export interface SharedMemory {
     output: string;
     timestamp: string;
     stepOrder?: number;
+    /** Agent used write_file under docs/ during the step. */
+    wroteDocs?: boolean;
+    /** Engine already persisted a fallback deliverable for this step. */
+    savedDeliverablePath?: string;
   }>;
 }
 
@@ -106,6 +110,8 @@ export interface StepResult {
   usage: LLMUsage;
   toolCalls: number;
   delegated?: boolean;
+  wroteDocs?: boolean;
+  savedDeliverablePath?: string;
 }
 
 export interface CreateAgentInput {

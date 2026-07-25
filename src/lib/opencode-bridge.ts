@@ -10,6 +10,22 @@ import type { SharedMemory } from "../types/index.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 import { emitRunEvent } from "../core/engine.js";
 import { logSystemAudit } from "./audit.js";
+import { resolveProductWorkspaceRoot } from "./product-workspace.js";
+import {
+  persistOpencodeDiffManifest,
+  persistOpencodeSummaryDoc,
+} from "./opencode-workspace-sync.js";
+import {
+  resolveResumeAfterFullstackStepOrder,
+} from "./opencode-workflow.js";
+
+export function isTransientOpencodePollError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return (
+    /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|fetch failed|network|socket hang up/i.test(message) ||
+    /OpenCode GET .* failed \((502|503|504|429)\)/i.test(message)
+  );
+}
 
 export interface StartDelegationInput {
   tenantId: string;
@@ -155,7 +171,7 @@ export async function startOpencodeDelegation(input: StartDelegationInput): Prom
       opencodeSessionId: session.id,
       status: "RUNNING",
       promptSummary: fullBrief.slice(0, 4000),
-      resumeFromStepOrder: input.resumeFromStepOrder ?? 3,
+      resumeFromStepOrder: resolveResumeAfterFullstackStepOrder([], input.resumeFromStepOrder),
       startedAt: new Date(),
     },
   });
@@ -193,6 +209,63 @@ export async function startOpencodeDelegation(input: StartDelegationInput): Prom
   return delegation.id;
 }
 
+export async function degradeRunToLocalImplementation(input: {
+  runId: string;
+  tenantId: string;
+  workflowId: string;
+  workflowName: string;
+  sharedMemory: SharedMemory;
+  productSlug?: string;
+  resumeFromStepOrder: number;
+  reason: string;
+  delegationId?: string;
+}): Promise<void> {
+  if (input.delegationId) {
+    await prisma.opencodeDelegation.update({
+      where: { id: input.delegationId },
+      data: {
+        status: "FAILED",
+        errorMessage: input.reason,
+        completedAt: new Date(),
+      },
+    });
+  }
+
+  const sharedMemory = {
+    ...input.sharedMemory,
+    _implementationMode: "local",
+    opencodeDegraded: true,
+    opencodeDegradeReason: input.reason,
+  } as SharedMemory;
+
+  await prisma.executionRun.update({
+    where: { id: input.runId },
+    data: {
+      status: "PENDING",
+      errorMessage: `OpenCode unavailable — continuing locally: ${input.reason}`,
+      sharedMemory: sharedMemory as object,
+    },
+  });
+
+  await appendDelegationLog(input.runId, "warn", "OpenCode failed — degrading to local implementation", {
+    error: input.reason,
+  });
+
+  const { enqueueWorkflowRun } = await import("../worker/queue.js");
+  await enqueueWorkflowRun({
+    runId: input.runId,
+    workflowId: input.workflowId,
+    tenantId: input.tenantId,
+    initialMemory: sharedMemory,
+    mergeConsensus: false,
+    syncConsensus: true,
+    productSlug: input.productSlug,
+    workflowName: input.workflowName,
+    resumeFromStepOrder: input.resumeFromStepOrder,
+    forceLocalImplementation: true,
+  });
+}
+
 export async function pollOpencodeDelegation(delegationId: string): Promise<"continue" | "done" | "failed"> {
   const delegation = await prisma.opencodeDelegation.findUnique({
     where: { id: delegationId },
@@ -221,12 +294,26 @@ export async function pollOpencodeDelegation(delegationId: string): Promise<"con
   }
 
   const client = createOpencodeClientForTenant(config);
-  const approved = await client.autoApprovePendingPermissions(delegation.opencodeSessionId);
+  let approved = 0;
+  let statuses: Record<string, string> = {};
+
+  try {
+    approved = await client.autoApprovePendingPermissions(delegation.opencodeSessionId);
+    statuses = await client.getSessionStatuses();
+  } catch (err) {
+    if (isTransientOpencodePollError(err)) {
+      await appendDelegationLog(delegation.runId, "warn", "Transient OpenCode poll error — will retry", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return "continue";
+    }
+    await failDelegation(delegation.id, delegation.runId, err instanceof Error ? err.message : String(err));
+    return "failed";
+  }
+
   if (approved > 0) {
     await appendDelegationLog(delegation.runId, "info", `Auto-approved ${approved} OpenCode permission(s)`);
   }
-
-  const statuses = await client.getSessionStatuses();
 
   if (client.isSessionRunning(statuses, delegation.opencodeSessionId)) {
     return "continue";
@@ -236,7 +323,18 @@ export async function pollOpencodeDelegation(delegationId: string): Promise<"con
     return "continue";
   }
 
-  await finalizeOpencodeDelegation(delegation.id);
+  try {
+    await finalizeOpencodeDelegation(delegation.id);
+  } catch (err) {
+    if (isTransientOpencodePollError(err)) {
+      await appendDelegationLog(delegation.runId, "warn", "Transient OpenCode finalize error — will retry", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return "continue";
+    }
+    await failDelegation(delegation.id, delegation.runId, err instanceof Error ? err.message : String(err));
+    return "failed";
+  }
   return "done";
 }
 
@@ -279,12 +377,44 @@ export async function finalizeOpencodeDelegation(delegationId: string): Promise<
     summary ||
     (diffCount > 0 ? `OpenCode completed with ${diffCount} file change(s).` : "OpenCode session finished.");
 
+  const runMemory = delegation.run.sharedMemory as SharedMemory;
+  const productSlug =
+    typeof runMemory.focusProductSlug === "string" ? runMemory.focusProductSlug : undefined;
+
+  let opencodeManifestPath: string | null = null;
+  let opencodeSummaryDocPath: string | null = null;
+  if (productSlug) {
+    const workspaceRoot = resolveProductWorkspaceRoot(productSlug);
+    try {
+      opencodeManifestPath = await persistOpencodeDiffManifest({
+        workspaceRoot,
+        runId: delegation.runId,
+        delegationId: delegation.id,
+        sessionId: delegation.opencodeSessionId,
+        diff,
+        summary: resultSummary,
+      });
+      opencodeSummaryDocPath = await persistOpencodeSummaryDoc({
+        workspaceRoot,
+        runId: delegation.runId,
+        summary: resultSummary,
+        diff,
+      });
+    } catch (err) {
+      await appendDelegationLog(delegation.runId, "warn", "Could not sync OpenCode diff to workspace", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
   const sharedMemory = {
-    ...(delegation.run.sharedMemory as SharedMemory),
+    ...runMemory,
     opencodeSessionId: delegation.opencodeSessionId,
     opencodeResultSummary: resultSummary,
     opencodeDiffCount: diffCount,
     opencodeDiff: diff,
+    ...(opencodeManifestPath ? { opencodeManifestPath } : {}),
+    ...(opencodeSummaryDocPath ? { opencodeSummaryDocPath } : {}),
   } as SharedMemory;
 
   await prisma.opencodeDelegation.update({
@@ -361,48 +491,19 @@ async function failDelegation(
   const degrade = options?.degradeToLocal !== false;
 
   if (degrade && delegation.run.tenantId) {
-    await prisma.opencodeDelegation.update({
-      where: { id: delegationId },
-      data: {
-        status: "FAILED",
-        errorMessage: message,
-        completedAt: new Date(),
-      },
-    });
-
-    const sharedMemory = {
-      ...(delegation.run.sharedMemory as SharedMemory),
-      _implementationMode: "local",
-      opencodeDegraded: true,
-      opencodeDegradeReason: message,
-    } as SharedMemory;
-
-    await prisma.executionRun.update({
-      where: { id: runId },
-      data: {
-        status: "PENDING",
-        errorMessage: `OpenCode unavailable — continuing locally: ${message}`,
-        sharedMemory: sharedMemory as object,
-      },
-    });
-
-    await appendDelegationLog(runId, "warn", "OpenCode failed — degrading to local implementation", {
-      error: message,
-    });
-
-    const { enqueueWorkflowRun } = await import("../worker/queue.js");
-    await enqueueWorkflowRun({
+    const sharedMemory = delegation.run.sharedMemory as SharedMemory;
+    const productSlug =
+      typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined;
+    await degradeRunToLocalImplementation({
       runId,
-      workflowId: delegation.run.workflowId,
       tenantId: delegation.run.tenantId,
-      initialMemory: sharedMemory,
-      mergeConsensus: false,
-      syncConsensus: true,
-      productSlug:
-        typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined,
+      workflowId: delegation.run.workflowId,
       workflowName: delegation.run.workflow.name,
-      resumeFromStepOrder: delegation.resumeFromStepOrder,
-      forceLocalImplementation: true,
+      sharedMemory,
+      productSlug,
+      resumeFromStepOrder: Math.max(delegation.resumeFromStepOrder - 1, 1),
+      reason: message,
+      delegationId,
     });
     return;
   }
@@ -511,10 +612,14 @@ export async function appendDelegationLog(
 export function shouldUseOpencodeForWorkflow(
   workflowName: string,
   forceLocalImplementation?: boolean,
-  hasFullstackStep = workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT,
+  hasFullstackStep = workflowHasFullstackStepByName(workflowName),
 ): boolean {
   if (forceLocalImplementation) return false;
   return hasFullstackStep;
+}
+
+function workflowHasFullstackStepByName(workflowName: string): boolean {
+  return workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT;
 }
 
 export async function prepareOpencodeImplementationGate(input: {

@@ -59,4 +59,11 @@ export const warRoom = {
     queued: "queued",
     thinking: "thinking",
   },
+  deliverables: {
+    title: "Deliverable health",
+    weakSteps: "{{count}} of {{total}} steps without files on disk",
+    viewTrace: "Last run trace →",
+    openRun: "Open run logs",
+    agentDocs: "{{count}} agent docs",
+  },
 } as const;

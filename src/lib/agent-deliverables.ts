@@ -25,6 +25,13 @@ export function agentWroteDocsInStep<TOOLS extends ToolSet>(
   return false;
 }
 
+export function shouldSkipHandoffDocPersist(entry: {
+  wroteDocs?: boolean;
+  savedDeliverablePath?: string;
+}): boolean {
+  return entry.wroteDocs === true || Boolean(entry.savedDeliverablePath?.trim());
+}
+
 function extractMessageText(content: unknown): string {
   if (typeof content === "string") return content;
   if (!Array.isArray(content)) return "";
@@ -144,6 +151,8 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
   output: string;
   response: GenerateTextResult<TOOLS, unknown>;
 }): Promise<string | null> {
+  if (agentWroteDocsInStep(input.response)) return null;
+
   return persistHandoffAsAgentDoc({
     workspaceRoot: input.workspaceRoot,
     agentName: input.agentName,

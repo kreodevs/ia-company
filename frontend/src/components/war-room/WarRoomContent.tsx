@@ -9,6 +9,7 @@ import ProductActionsMenu from "../ui/ProductActionsMenu";
 import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
+import DeliverableHealthBanner from "./DeliverableHealthBanner";
 
 const ROLE_EMOJI: Record<string, string> = {
   "coordinator-chief": "🎩",
@@ -273,6 +274,12 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
           <p className="mt-1">{activeRunVeto.replace(/^VETO:\s*/, "")}</p>
         </div>
       )}
+
+      <DeliverableHealthBanner
+        trace={data.lastRunTrace}
+        productId={productId}
+        activeRunStatus={data.activeRun?.status ?? null}
+      />
 
       {(data.activeRun?.status === "DELEGATED" || data.activeRun?.status === "AWAITING_USER") && (
         <div className="mb-4">

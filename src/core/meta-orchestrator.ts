@@ -33,6 +33,24 @@ async function findTenantWorkflowByName(tenantId: string, name: string) {
   });
 }
 
+/** Round-robin focus across eligible products using cycle number. */
+export function pickRotatingFocusProduct(
+  products: TenantProduct[],
+  cycleNumber: number,
+): TenantProduct | null {
+  const eligible = products
+    .filter(
+      (p) =>
+        p.phase === "building" ||
+        p.phase === "launching" ||
+        (p.phase === "growing" && p.revenueUsd <= 0),
+    )
+    .sort((a, b) => a.slug.localeCompare(b.slug));
+
+  if (eligible.length === 0) return null;
+  return eligible[((cycleNumber - 1) % eligible.length + eligible.length) % eligible.length] ?? eligible[0];
+}
+
 function phaseDefaultWorkflow(phase: CompanyPhase, hasBuilding: boolean): string {
   if (phase === "exploring") return WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY;
   if (phase === "validating") return WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION;
@@ -62,11 +80,19 @@ export async function resolveMetaOrchestratorDecision(
   const growingProducts = products.filter((p) => p.phase === "growing");
   const pendingIdea = pendingProposals > 0 ? null : findIdeaToEvaluate(ideas, products);
 
+  const rotatableProducts =
+    buildingProducts.length > 0
+      ? buildingProducts
+      : growingProducts.filter((p) => p.revenueUsd <= 0);
+
   let focusProduct: TenantProduct | null =
-    products.find((p) => p.id === cycle.focusProductId) ??
-    buildingProducts[0] ??
-    growingProducts[0] ??
-    null;
+    rotatableProducts.length > 1
+      ? pickRotatingFocusProduct(rotatableProducts, cycle.cycleNumber)
+      : (rotatableProducts[0] ??
+        products.find((p) => p.id === cycle.focusProductId) ??
+        buildingProducts[0] ??
+        growingProducts[0] ??
+        null);
 
   let workflowName: string;
   let reason: string;
@@ -79,12 +105,19 @@ export async function resolveMetaOrchestratorDecision(
       focusProduct.phase === "launching"
         ? WORKFLOW_NAMES.PRODUCT_LAUNCH
         : WORKFLOW_NAMES.FEATURE_DEVELOPMENT;
-    reason = `Build product ${focusProduct.slug}`;
+    const rotationHint =
+      rotatableProducts.length > 1
+        ? ` (rotation ${rotatableProducts.findIndex((p) => p.id === focusProduct!.id) + 1}/${rotatableProducts.length})`
+        : "";
+    reason = `Build product ${focusProduct.slug}${rotationHint}`;
   } else if (growingProducts.length > 0 && focusProduct && focusProduct.revenueUsd <= 0) {
     workflowName = WORKFLOW_NAMES.PRICING_MONETIZATION;
     reason = `Product ${focusProduct.slug} has no recorded revenue — pricing review`;
   } else if (growingProducts.length > 0 && ideas.length === 0) {
-    focusProduct = growingProducts[0];
+    focusProduct =
+      growingProducts.length > 1
+        ? pickRotatingFocusProduct(growingProducts, cycle.cycleNumber)
+        : growingProducts[0];
     workflowName =
       cycle.cycleNumber % 2 === 0
         ? WORKFLOW_NAMES.PRICING_MONETIZATION

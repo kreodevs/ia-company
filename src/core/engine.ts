@@ -2,6 +2,7 @@ import { generateText } from "ai";
 import type { ExecutionStatus, LogLevel } from "@prisma/client";
 import { processConvergenceAfterRun } from "../lib/convergence.js";
 import {
+  agentWroteDocsInStep,
   collectAgentStepOutput,
   collectToolStepArtifacts,
   persistAgentDeliverableIfMissing,
@@ -37,6 +38,12 @@ import {
   buildProductProfilePromptSection,
   parseProductProfile,
 } from "../lib/product-profile.js";
+import {
+  FULLSTACK_AGENT_NAME,
+  resolveFullstackStepOrder,
+  shouldUseReadonlyToolsAfterOpencode,
+  workflowHasFullstackStep,
+} from "../lib/opencode-workflow.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -50,6 +57,7 @@ interface TenantExecutionContext {
   githubToken?: string;
   implementationMode?: "local" | "opencode";
   afterOpencodeDelegation?: boolean;
+  fullstackStepOrder?: number | null;
 }
 
 export class WorkflowExecutor {
@@ -176,6 +184,7 @@ export class WorkflowExecutor {
       tenantCtx.productId = input.productId;
       tenantCtx.implementationMode = implementationMode;
       tenantCtx.afterOpencodeDelegation = input.afterOpencodeDelegation;
+      tenantCtx.fullstackStepOrder = resolveFullstackStepOrder(orderedSteps);
 
       let totalTokens = 0;
       let totalCostUsd = 0;
@@ -237,6 +246,10 @@ export class WorkflowExecutor {
           step.agent.name,
           result.output,
           step.stepOrder,
+          {
+            wroteDocs: result.wroteDocs,
+            savedDeliverablePath: result.savedDeliverablePath,
+          },
         );
 
         const veto = extractMungerVeto(step.agent.name, result.output);
@@ -292,7 +305,7 @@ export class WorkflowExecutor {
 
         if (
           tenantCtx.implementationMode === "opencode" &&
-          step.agent.name === "fullstack-dhh" &&
+          step.agent.name === FULLSTACK_AGENT_NAME &&
           !input.afterOpencodeDelegation
         ) {
           const runAfterStep = await prisma.executionRun.findUnique({
@@ -309,23 +322,46 @@ export class WorkflowExecutor {
           }
 
           if (!result.delegated) {
-            const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+            const { startOpencodeDelegation, degradeRunToLocalImplementation } = await import(
+              "../lib/opencode-bridge.js"
+            );
             if (input.tenantId) {
-              await startOpencodeDelegation({
-                tenantId: input.tenantId,
-                runId,
-                brief: result.output,
-                sharedMemory,
-                productSlug: input.productSlug,
-                productId: input.productId,
-                resumeFromStepOrder: step.stepOrder + 1,
-              });
-              await prisma.executionRun.update({
-                where: { id: runId },
-                data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
-              });
-              emitEvent("done", { status: "DELEGATED" });
-              return;
+              try {
+                await startOpencodeDelegation({
+                  tenantId: input.tenantId,
+                  runId,
+                  brief: result.output,
+                  sharedMemory,
+                  productSlug: input.productSlug,
+                  productId: input.productId,
+                  resumeFromStepOrder: step.stepOrder + 1,
+                });
+                await prisma.executionRun.update({
+                  where: { id: runId },
+                  data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+                });
+                emitEvent("done", { status: "DELEGATED" });
+                return;
+              } catch (err) {
+                const reason = err instanceof Error ? err.message : String(err);
+                await this.appendLog(runId, "warn", "OpenCode delegation failed — degrading to local", {
+                  stepId: step.id,
+                  agentId: step.agent.id,
+                  payload: { error: reason },
+                });
+                await degradeRunToLocalImplementation({
+                  runId,
+                  tenantId: input.tenantId,
+                  workflowId: workflow.id,
+                  workflowName,
+                  sharedMemory,
+                  productSlug: input.productSlug,
+                  resumeFromStepOrder: step.stepOrder,
+                  reason,
+                });
+                emitEvent("done", { status: "PENDING", degraded: true });
+                return;
+              }
             }
           }
         }
@@ -587,8 +623,10 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     }
 
     const totalTokens = promptTokens + completionTokens;
+    const wroteDocs = agentWroteDocsInStep(response);
+    let savedDeliverablePath: string | undefined;
 
-    if (tenantCtx.productSlug && output.trim()) {
+    if (tenantCtx.productSlug && output.trim() && !wroteDocs) {
       const savedPath = await persistAgentDeliverableIfMissing({
         workspaceRoot: tenantCtx.workspaceRoot,
         agentName: agent.name,
@@ -598,6 +636,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
         response,
       });
       if (savedPath) {
+        savedDeliverablePath = savedPath;
         await this.appendLog(runId, "info", `Saved agent deliverable: ${savedPath}`, {
           agentId: agent.id,
           payload: { path: savedPath },
@@ -620,6 +659,8 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
       },
       toolCalls: response.steps?.length ?? 0,
       delegated,
+      wroteDocs,
+      savedDeliverablePath,
     };
   }
 
@@ -629,10 +670,13 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     stepOrder?: number,
   ): "full" | "readonly" | "opencode_delegate" {
     if (tenantCtx.implementationMode === "opencode") {
-      if (agentName === "fullstack-dhh" && !tenantCtx.afterOpencodeDelegation) {
+      if (agentName === FULLSTACK_AGENT_NAME && !tenantCtx.afterOpencodeDelegation) {
         return "opencode_delegate";
       }
-      if (tenantCtx.afterOpencodeDelegation && stepOrder != null && stepOrder >= 3) {
+      if (
+        tenantCtx.afterOpencodeDelegation &&
+        shouldUseReadonlyToolsAfterOpencode(stepOrder, tenantCtx.fullstackStepOrder ?? null)
+      ) {
         return "readonly";
       }
     }
@@ -951,6 +995,7 @@ function mergeStepOutput(
   agentName: string,
   output: string,
   stepOrder?: number,
+  deliverableMeta?: { wroteDocs?: boolean; savedDeliverablePath?: string },
 ): SharedMemory {
   const history = memory._history ?? [];
   const next: SharedMemory = {
@@ -963,6 +1008,10 @@ function mergeStepOutput(
         output,
         timestamp: new Date().toISOString(),
         ...(stepOrder != null ? { stepOrder } : {}),
+        ...(deliverableMeta?.wroteDocs ? { wroteDocs: true } : {}),
+        ...(deliverableMeta?.savedDeliverablePath
+          ? { savedDeliverablePath: deliverableMeta.savedDeliverablePath }
+          : {}),
       },
     ],
     lastOutput: output,
@@ -974,10 +1023,6 @@ function mergeStepOutput(
   }
 
   return next;
-}
-
-function workflowHasFullstackStep(workflow: WorkflowGraph): boolean {
-  return workflow.steps.some((step) => step.agent.name === "fullstack-dhh");
 }
 
 export function topologicalSort(workflow: WorkflowGraph) {

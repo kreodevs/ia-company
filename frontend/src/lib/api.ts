@@ -227,8 +227,20 @@ export interface TenantProduct {
   githubDefaultBranch?: string | null;
   intakeStatus?: ProductIntakeStatus | null;
   intakeRunId?: string | null;
+  stripeWebhookConfigured?: boolean;
+  revenueLastSyncedAt?: string | null;
+  revenueSource?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProductRevenueSettings {
+  productId: string;
+  revenueUsd: number;
+  stripeWebhookConfigured: boolean;
+  revenueLastSyncedAt: string | null;
+  revenueSource: string | null;
+  webhookUrl: string;
 }
 
 export interface TenantIntegrationsConfig {
@@ -406,6 +418,9 @@ export interface ProductLastRunStepTrace {
   outputChars: number;
   memoryKeyChars: number;
   hasStructuredHandoff: boolean;
+  wroteDocs: boolean;
+  savedDeliverablePath: string | null;
+  deliverableStatus: "saved_to_disk" | "handoff_only" | "missing";
   outputPreview: string;
   output: string;
   tokensUsed: number | null;
@@ -448,6 +463,7 @@ export interface ProductTeam {
   recentRuns: TeamRecentRun[];
   team: TeamAgent[];
   pipeline: Array<{ id: string; title: string; interestScore: number }>;
+  lastRunTrace: ProductLastRunTrace | null;
 }
 
 export interface OpencodeActiveInfo {
@@ -528,6 +544,9 @@ export interface OpsNextRun {
   workflowName: string;
   productSlug: string | null;
   reason: string;
+  canExecute: boolean;
+  blockedCode: "ACTIVE_RUN" | "PENDING_DECISIONS" | null;
+  blockedMessage: string | null;
 }
 
 export type OfficeMode = "on_demand" | "scheduled" | "autonomous";
@@ -1161,12 +1180,15 @@ export const api = {
         goNoGo?: GoNoGoDecision;
         revenueUsd?: number;
         githubRepoUrl?: string | null;
+        stripeWebhookSecret?: string | null;
       },
     ) =>
       request<TenantProduct>(`/products/${id}`, {
         method: "PUT",
         body: JSON.stringify(body),
       }),
+    revenueSettings: (id: string) =>
+      request<ProductRevenueSettings>(`/products/${id}/revenue-settings`),
     pipelineDecision: (id: string, decision: GoNoGoDecision) =>
       request<PipelineIdea>(`/products/pipeline/${id}`, {
         method: "PUT",

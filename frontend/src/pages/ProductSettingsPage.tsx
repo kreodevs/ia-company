@@ -14,6 +14,7 @@ import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
+import ProductRevenueSettingsPanel from "../components/products/ProductRevenueSettingsPanel";
 
 function productPhaseLabel(
   phase: TenantProduct["phase"],
@@ -239,6 +240,8 @@ export default function ProductSettingsPage() {
           )}
         </div>
       </Panel>
+
+      <ProductRevenueSettingsPanel productId={productId} onSaved={() => void load()} />
 
       <div id="opencode">
         <ProductOpencodeSettingsPanel productId={productId} />

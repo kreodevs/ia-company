@@ -88,6 +88,7 @@ export default function OpsPage() {
       .filter((schedule) => schedule.enabled)
       .sort((a, b) => b.priority - a.priority)[0] ?? null;
   const nextWorkflowLabel = nextRun ? workflowLabel(nextRun.workflowName, t) : null;
+  const launchBlocked = nextRun?.canExecute === false;
   const totalRevenue = portfolio.stats.totalRevenueUsd;
   const buildingCount = portfolio.stats.building + portfolio.stats.growing;
   const pendingOpportunities = portfolio.pipeline.length;
@@ -104,7 +105,7 @@ export default function OpsPage() {
         subtitle={t("ops.subtitle")}
         actions={
           primarySchedule ? (
-            <Button onClick={() => void runMetaNow()} disabled={runningMeta}>
+            <Button onClick={() => void runMetaNow()} disabled={runningMeta || launchBlocked}>
               {runningMeta ? t("common.starting") : t("ops.runScheduledNow")}
             </Button>
           ) : (
@@ -154,6 +155,25 @@ export default function OpsPage() {
           trend={portfolio.pendingDecisions > 0 ? "down" : "up"}
         />
       </section>
+
+      {launchBlocked && nextRun?.blockedMessage && (
+        <Panel tone="warn">
+          <p className="font-semibold">{t("ops.launchBlocked.title")}</p>
+          <p className="mt-1 text-sm">{nextRun.blockedMessage}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {nextRun.blockedCode === "PENDING_DECISIONS" && (
+              <Link to="/decisions">
+                <Button>{t("ops.reviewDecisions")}</Button>
+              </Link>
+            )}
+            {nextRun.blockedCode === "ACTIVE_RUN" && (
+              <Link to="/runs">
+                <Button variant="secondary">{t("ops.launchBlocked.viewRuns")}</Button>
+              </Link>
+            )}
+          </div>
+        </Panel>
+      )}
 
       {portfolio.pendingDecisions > 0 && (
         <Panel tone="warn">
@@ -219,7 +239,8 @@ export default function OpsPage() {
         <OpsFlowStepper companyPhase={portfolio.companyPhase} />
         {nextRun?.reason ? (
           <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
-            {t("ops.status.nextReason")} {nextRun.reason}
+            {launchBlocked ? t("ops.status.nextReasonBlocked") : t("ops.status.nextReason")}{" "}
+            {nextRun.reason}
           </p>
         ) : null}
         {portfolio.nextAction ? (

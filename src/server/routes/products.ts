@@ -28,6 +28,10 @@ import {
 import { getActiveOpencodeByProduct, getLatestCompletedDelegationForProduct, listProductOpencodeHistory } from "../../lib/opencode-history.js";
 import { normalizeOpencodeDiff } from "../../lib/opencode-diff.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import {
+  buildStripeWebhookUrl,
+  serializeTenantProductForClient,
+} from "../../lib/product-serializer.js";
 
 export async function productRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -36,7 +40,8 @@ export async function productRoutes(app: FastifyInstance) {
   app.get("/products", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      return listTenantProducts(tenantId);
+      const products = await listTenantProducts(tenantId);
+      return products.map(serializeTenantProductForClient);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -193,7 +198,29 @@ export async function productRoutes(app: FastifyInstance) {
       } else {
         await logAudit(request, "product.update", { productId: product.id });
       }
-      return product;
+      return serializeTenantProductForClient(product);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/products/:id/revenue-settings", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+
+      const serialized = serializeTenantProductForClient(product);
+      return {
+        productId: product.id,
+        revenueUsd: product.revenueUsd,
+        stripeWebhookConfigured: serialized.stripeWebhookConfigured,
+        revenueLastSyncedAt: serialized.revenueLastSyncedAt,
+        revenueSource: serialized.revenueSource,
+        webhookUrl: buildStripeWebhookUrl(product.id),
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -644,7 +671,7 @@ export async function productRoutes(app: FastifyInstance) {
       });
       if (!product) return reply.status(404).send({ error: "Product not found" });
 
-      const [agents, ideas, lastLinkedRun] = await Promise.all([
+      const [agents, ideas, lastLinkedRun, lastRunTrace] = await Promise.all([
         prisma.agent.findMany({
           where: { tenantId, isActive: true },
           orderBy: { name: "asc" },
@@ -671,6 +698,9 @@ export async function productRoutes(app: FastifyInstance) {
               },
             })
           : Promise.resolve(null),
+        import("../../lib/product-last-run.js").then(({ getProductLastRunTrace }) =>
+          getProductLastRunTrace(tenantId, product.id),
+        ),
       ]);
 
       const recentRunsQuery = await prisma.executionRun.findMany({
@@ -849,6 +879,7 @@ export async function productRoutes(app: FastifyInstance) {
           title: i.title,
           interestScore: i.interestScore,
         })),
+        lastRunTrace,
       };
     } catch (err) {
       return handleRouteError(reply, err);

@@ -249,6 +249,11 @@ export function createAgentTools(ctx: ToolExecutionContext) {
       }
 
       const { startOpencodeDelegation } = await import("../lib/opencode-bridge.js");
+
+      if (ctx.resumeFromStepOrder == null) {
+        throw new Error("resumeFromStepOrder is required to delegate implementation");
+      }
+
       const delegationId = await startOpencodeDelegation({
         tenantId: ctx.tenantId,
         runId: ctx.runId,
@@ -256,7 +261,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         sharedMemory: ctx.sharedMemory ?? {},
         productSlug: ctx.productSlug,
         productId: ctx.productId,
-        resumeFromStepOrder: ctx.resumeFromStepOrder ?? 3,
+        resumeFromStepOrder: ctx.resumeFromStepOrder,
       });
 
       ctx.onDelegationStarted?.();

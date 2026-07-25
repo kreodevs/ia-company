@@ -120,6 +120,16 @@ function extractStripeAmountUsd(object: Record<string, unknown>): number {
   return cents > 0 ? Math.round((cents / 100) * 100) / 100 : 0;
 }
 
+export function buildStripeTestSignature(
+  payload: Buffer,
+  secret: string,
+  timestamp = Math.floor(Date.now() / 1000),
+): string {
+  const signedPayload = `${timestamp}.${payload.toString("utf8")}`;
+  const v1 = createHmac("sha256", secret).update(signedPayload).digest("hex");
+  return `t=${timestamp},v1=${v1}`;
+}
+
 function parseStripeEvent(
   payload: Buffer,
   signature: string | undefined,

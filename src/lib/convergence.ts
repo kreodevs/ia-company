@@ -7,7 +7,7 @@ import {
   createDecisionProposal,
 } from "./decision-proposals.js";
 import { appendProductHandoff, extractHandoffFromAgentOutput } from "./product-consensus.js";
-import { persistHandoffAsAgentDoc } from "./agent-deliverables.js";
+import { persistHandoffAsAgentDoc, shouldSkipHandoffDocPersist } from "./agent-deliverables.js";
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import {
   addPipelineIdeas,
@@ -146,7 +146,7 @@ export async function processConvergenceAfterRun(
           ...handoff,
         });
         const docBody = handoff.content.trim() || stepOutput.trim();
-        if (docBody) {
+        if (docBody && !shouldSkipHandoffDocPersist(h)) {
           await persistHandoffAsAgentDoc({
             workspaceRoot: resolveProductWorkspaceRoot(product.slug),
             agentName: h.agentName,

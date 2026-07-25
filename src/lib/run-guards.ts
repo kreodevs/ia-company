@@ -56,3 +56,26 @@ export async function canExecuteMetaScheduleRun(
   }
   return { ok: true };
 }
+
+const BLOCK_MESSAGES: Record<RunGuardCode, string> = {
+  ACTIVE_RUN:
+    "A workflow is already running. Wait for it to finish or cancel it before the meta cycle can continue.",
+  PENDING_DECISIONS:
+    "Human GO/NO-GO decisions are pending. Review them at /decisions before launching new work.",
+};
+
+export function runGuardMessage(code: RunGuardCode): string {
+  return BLOCK_MESSAGES[code];
+}
+
+export async function describeRunLaunchBlock(
+  tenantId: string,
+): Promise<{ canExecute: true } | { canExecute: false; code: RunGuardCode; message: string }> {
+  const guard = await canExecuteMetaScheduleRun(tenantId);
+  if (guard.ok) return { canExecute: true };
+  return {
+    canExecute: false,
+    code: guard.reason,
+    message: runGuardMessage(guard.reason),
+  };
+}
