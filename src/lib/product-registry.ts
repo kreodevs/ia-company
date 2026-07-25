@@ -210,18 +210,34 @@ export async function listPipelineIdeas(tenantId: string) {
 export async function addPipelineIdeas(
   tenantId: string,
   ideas: Array<{ title: string; description?: string; interestScore?: number }>,
-) {
-  const existing = await prisma.pipelineIdea.count({ where: { tenantId } });
+): Promise<Awaited<ReturnType<typeof prisma.pipelineIdea.create>>[]> {
+  const [products, existing] = await Promise.all([
+    listTenantProducts(tenantId),
+    prisma.pipelineIdea.findMany({
+      where: { tenantId, goNoGo: { in: ["pending", "go"] } },
+      select: { title: true },
+    }),
+  ]);
+
+  const { filterNewPipelineIdeas } = await import("./pipeline-utils.js");
+  const novel = filterNewPipelineIdeas(
+    ideas,
+    existing.map((row) => row.title),
+    products,
+  );
+  if (novel.length === 0) return [];
+
+  const rankBase = await prisma.pipelineIdea.count({ where: { tenantId } });
   const created = [];
-  for (let i = 0; i < ideas.length; i++) {
-    const idea = ideas[i];
+  for (let i = 0; i < novel.length; i++) {
+    const idea = novel[i];
     created.push(
       await prisma.pipelineIdea.create({
         data: {
           tenantId,
-          title: idea.title,
+          title: idea.title.trim(),
           description: idea.description,
-          rank: existing + i,
+          rank: rankBase + i,
           interestScore: idea.interestScore ?? 0,
         },
       }),

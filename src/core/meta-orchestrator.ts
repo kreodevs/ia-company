@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma.js";
 import { mergeConsensusIntoMemory } from "../lib/consensus.js";
 import { loadProductConsensusInitialMemory } from "../lib/product-consensus.js";
 import { convergencePromptSection } from "../lib/convergence.js";
-import { findIdeaToEvaluate } from "../lib/pipeline-utils.js";
+import { findIdeaToEvaluate, filterActionablePipelineIdeas } from "../lib/pipeline-utils.js";
 import {
   countBuildingProducts,
   ensureDefaultProducts,
@@ -108,6 +108,7 @@ export async function resolveMetaOrchestratorDecision(
   const buildingProducts = products.filter((p) => p.phase === "building" || p.phase === "launching");
   const growingProducts = products.filter((p) => p.phase === "growing");
   const pendingIdea = pendingProposals > 0 ? null : findIdeaToEvaluate(ideas, products);
+  const actionableIdeas = filterActionablePipelineIdeas(ideas, products);
 
   const rotatableProducts =
     buildingProducts.length > 0
@@ -171,7 +172,7 @@ export async function resolveMetaOrchestratorDecision(
         ? WORKFLOW_NAMES.CONTENT_SPRINT
         : WORKFLOW_NAMES.CAMPAIGN_LAUNCH;
     reason = `Org-linked work item ${focusProduct?.slug ?? "unknown"} — department marketing cycle`;
-  } else if (ideas.length === 0 || cycle.phase === "exploring") {
+  } else if (actionableIdeas.length === 0) {
     workflowName = WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY;
     reason = "Discover new product opportunities (multi-product pipeline)";
     focusProduct = null;

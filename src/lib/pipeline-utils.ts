@@ -5,6 +5,42 @@ export function ideaSlugFromTitle(title: string): string {
   return slugifyProductName(title);
 }
 
+/** Stable key for deduplicating pipeline ideas (slug-first, else normalized title). */
+export function normalizePipelineIdeaKey(title: string): string {
+  const trimmed = title.trim();
+  if (!trimmed) return "";
+  const slug = slugifyProductName(trimmed);
+  if (slug) return slug;
+  return trimmed.toLowerCase().replace(/\s+/g, " ");
+}
+
+export function filterNewPipelineIdeas(
+  incoming: Array<{ title: string; description?: string; interestScore?: number }>,
+  existingTitles: string[],
+  products: TenantProduct[],
+): Array<{ title: string; description?: string; interestScore?: number }> {
+  const seen = new Set<string>();
+
+  for (const title of existingTitles) {
+    const key = normalizePipelineIdeaKey(title);
+    if (key) seen.add(key);
+  }
+  for (const product of products) {
+    seen.add(normalizePipelineIdeaKey(product.name));
+    if (product.slug) seen.add(product.slug);
+  }
+
+  const out: typeof incoming = [];
+  for (const idea of incoming) {
+    const key = normalizePipelineIdeaKey(idea.title);
+    if (!key || seen.has(key)) continue;
+    if (findProductForIdea(idea, products)) continue;
+    seen.add(key);
+    out.push(idea);
+  }
+  return out;
+}
+
 export function findProductForIdea(
   idea: Pick<PipelineIdea, "title">,
   products: TenantProduct[],

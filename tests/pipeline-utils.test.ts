@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   filterActionablePipelineIdeas,
+  filterNewPipelineIdeas,
   findIdeaToEvaluate,
   findProductForIdea,
+  normalizePipelineIdeaKey,
 } from "../src/lib/pipeline-utils.js";
 
 describe("pipeline utils", () => {
@@ -60,5 +62,35 @@ describe("pipeline utils", () => {
     const approved = { ...ideas[1], goNoGo: "go" as const };
     const pick = findIdeaToEvaluate([ideas[0], approved], products);
     assert.equal(pick?.id, approved.id);
+  });
+
+  it("normalizes idea titles for deduplication", () => {
+    assert.equal(normalizePipelineIdeaKey("ClientSync Flow"), "clientsync-flow");
+    assert.equal(normalizePipelineIdeaKey("  DevMemory CLI  "), "devmemory-cli");
+  });
+
+  it("filters duplicate pipeline ideas before insert", () => {
+    const incoming = [
+      { title: "ClientSync Flow", interestScore: 1 },
+      { title: "clientsync flow", interestScore: 0.5 },
+      { title: "WebhookPulse", interestScore: 1 },
+    ];
+    const filtered = filterNewPipelineIdeas(
+      incoming,
+      ["DevMemory CLI"],
+      products,
+    );
+    assert.equal(filtered.length, 2);
+    assert.equal(filtered[0].title, "ClientSync Flow");
+    assert.equal(filtered[1].title, "WebhookPulse");
+  });
+
+  it("skips ideas that already match a registered product", () => {
+    const filtered = filterNewPipelineIdeas(
+      [{ title: "RouterAI Smart Proxy" }],
+      [],
+      products,
+    );
+    assert.equal(filtered.length, 0);
   });
 });
