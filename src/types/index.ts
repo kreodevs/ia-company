@@ -37,7 +37,7 @@ export interface SharedMemory {
 }
 
 export interface ExecutionEvent {
-  type: "status" | "log" | "step_start" | "step_complete" | "error" | "done";
+  type: "status" | "log" | "step_start" | "step_complete" | "error" | "done" | "veto";
   runId: string;
   timestamp: string;
   data: Record<string, unknown>;

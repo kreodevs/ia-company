@@ -115,9 +115,9 @@ export async function resolveMetaOrchestratorDecision(
     reason = `Product ${focusProduct.slug} has no recorded revenue — pricing review`;
   } else if (growingProducts.length > 0 && ideas.length === 0) {
     focusProduct =
-      growingProducts.length > 1
+      (growingProducts.length > 1
         ? pickRotatingFocusProduct(growingProducts, cycle.cycleNumber)
-        : growingProducts[0];
+        : growingProducts[0]) ?? growingProducts[0];
     workflowName =
       cycle.cycleNumber % 2 === 0
         ? WORKFLOW_NAMES.PRICING_MONETIZATION

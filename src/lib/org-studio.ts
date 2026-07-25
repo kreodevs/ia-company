@@ -47,7 +47,7 @@ export async function listBusinessTemplates() {
       name: r.name,
       description: r.description,
       orgUnitType: r.orgUnitType,
-      artifactTypes: (r.definition as BusinessTemplateDefinition).artifactTypes ?? [],
+      artifactTypes: (r.definition as unknown as BusinessTemplateDefinition).artifactTypes ?? [],
     }));
   }
 
@@ -101,7 +101,7 @@ function buildProposalFromTemplate(
   },
   input: { name?: string; description?: string },
 ): OrgStudioProposal {
-  const def = tpl.definition as BusinessTemplateDefinition;
+  const def = tpl.definition as unknown as BusinessTemplateDefinition;
   const suggestedName = input.name?.trim() || tpl.name;
   const suggestedSlug = slugifyOrgName(suggestedName);
 

@@ -36,7 +36,6 @@ export async function recordProductRevenue(input: {
   });
   if (!product) throw new Error("Product not found");
 
-  const meta = parseProductMetadata(product.metadata);
   const revenueUsd = input.cumulative
     ? input.amountUsd
     : Math.round((product.revenueUsd + input.amountUsd) * 100) / 100;
