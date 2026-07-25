@@ -129,14 +129,14 @@ flowchart TB
 
 ---
 
-### GAP-006 — Legacy CLI no integrado
+### GAP-006 — Legacy CLI no integrado ✅ (archivado)
 
-**Severidad:** Crítica (coherencia del repo)  
-**Causa:** `scripts/core/auto-loop.sh` apunta a `memories/consensus.md` y CLI; plataforma usa BD + worker.
+**Severidad:** Crítica (coherencia del repo) — **resuelto en v2**  
+**Causa:** `scripts/core/auto-loop.sh` apuntaba a `memories/consensus.md` y CLI; plataforma usa BD + worker.
 
-**Fix propuesto:** Deprecar formalmente o crear bridge CLI ↔ API.
+**Fix aplicado:** Loop movido a `archive/legacy-cli/`; stubs deprecación en `scripts/core/`; README/CLAUDE.md Office-first; meta orchestrator UX retirado.
 
-**Archivos:** `scripts/core/auto-loop.sh`, `INDEX.md`, `README.md`
+**Archivos:** `archive/legacy-cli/`, `scripts/core/*.sh`, `README.md`, `CLAUDE.md`
 
 ---
 

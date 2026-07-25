@@ -22,7 +22,6 @@ type TimingMode = "interval" | "cron";
 
 interface RuleDraft {
   name: string;
-  orchestrationMode: "fixed" | "meta_dynamic";
   workflowId: string;
   timingMode: TimingMode;
   intervalSec: number;
@@ -71,27 +70,6 @@ function conditionsSummary(
   return parts.length > 0 ? parts.join(" · ") : t("settings.orchestration.conditions.none");
 }
 
-function DynamicModeInfo({ t }: { t: (key: string, options?: Record<string, unknown>) => string }) {
-  return (
-    <div className="md:col-span-2 space-y-2 rounded-lg border border-dashed border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 p-3 text-sm">
-      <p className="font-medium text-[var(--color-foreground)]">{t("settings.orchestration.dynamicModeTitle")}</p>
-      <p className="text-[var(--color-muted-foreground)]">{t("settings.orchestration.dynamicModeHint")}</p>
-      <ul className="list-disc space-y-1 pl-5 text-xs text-[var(--color-muted-foreground)]">
-        <li>{t("settings.orchestration.dynamicPick.discovery")}</li>
-        <li>{t("settings.orchestration.dynamicPick.evaluation")}</li>
-        <li>{t("settings.orchestration.dynamicPick.build")}</li>
-        <li>{t("settings.orchestration.dynamicPick.growth")}</li>
-      </ul>
-      <p className="text-xs text-[var(--color-muted-foreground)]">
-        {t("settings.orchestration.dynamicPreviewHint")}{" "}
-        <Link to="/ops" className="text-[var(--color-primary)] hover:underline">
-          {t("ops.title")}
-        </Link>
-      </p>
-    </div>
-  );
-}
-
 export interface OrchestrationPlanPanelProps {
   schedules: AutonomousSchedule[];
   workflows: Workflow[];
@@ -111,7 +89,6 @@ export default function OrchestrationPlanPanel({
   const [drafts, setDrafts] = useState<Record<string, Partial<RuleDraft>>>({});
   const [newRule, setNewRule] = useState<RuleDraft>({
     name: "",
-    orchestrationMode: "fixed",
     workflowId: workflows[0]?.id ?? "",
     timingMode: "interval",
     intervalSec: 604800,
@@ -164,11 +141,7 @@ export default function OrchestrationPlanPanel({
     try {
       await api.schedules.update(schedule.id, {
         name: draft.name ?? schedule.name,
-        orchestrationMode: draft.orchestrationMode ?? schedule.orchestrationMode,
-        workflowId:
-          (draft.orchestrationMode ?? schedule.orchestrationMode) === "fixed"
-            ? draft.workflowId ?? schedule.workflowId
-            : null,
+        workflowId: draft.workflowId ?? schedule.workflowId,
         priority: draft.priority ?? schedule.priority,
         enabled: draft.enabled ?? schedule.enabled,
         intervalSec: draft.timingMode === "interval" ? draft.intervalSec ?? schedule.intervalSec : schedule.intervalSec,
@@ -198,8 +171,8 @@ export default function OrchestrationPlanPanel({
     try {
       await api.schedules.create({
         name: newRule.name.trim(),
-        orchestrationMode: newRule.orchestrationMode,
-        workflowId: newRule.orchestrationMode === "fixed" ? newRule.workflowId : undefined,
+        orchestrationMode: "fixed",
+        workflowId: newRule.workflowId,
         intervalSec: newRule.timingMode === "interval" ? newRule.intervalSec : 604800,
         cronExpr: newRule.timingMode === "cron" ? newRule.cronExpr : null,
         priority: newRule.priority,
@@ -208,7 +181,6 @@ export default function OrchestrationPlanPanel({
       });
       setNewRule({
         name: "",
-        orchestrationMode: "fixed",
         workflowId: workflows[0]?.id ?? "",
         timingMode: "interval",
         intervalSec: 604800,
@@ -269,7 +241,6 @@ export default function OrchestrationPlanPanel({
     const draft = drafts[schedule.id];
     return {
       name: draft?.name ?? schedule.name,
-      orchestrationMode: draft?.orchestrationMode ?? schedule.orchestrationMode,
       workflowId: draft?.workflowId ?? schedule.workflowId ?? workflows[0]?.id ?? "",
       timingMode: draft?.timingMode ?? (schedule.cronExpr ? "cron" : "interval"),
       intervalSec: draft?.intervalSec ?? schedule.intervalSec,
@@ -326,7 +297,7 @@ export default function OrchestrationPlanPanel({
           <ul className="space-y-4">
             {sortedSchedules.map((schedule) => {
               const draft = getDraft(schedule);
-              const isDynamic = draft.orchestrationMode === "meta_dynamic";
+              const isLegacyMeta = schedule.orchestrationMode === "meta_dynamic";
               const workflowName = draft.workflowId ? workflowNameById.get(draft.workflowId) : undefined;
               const isBusy = busyId === schedule.id;
 
@@ -339,7 +310,7 @@ export default function OrchestrationPlanPanel({
                     <div>
                       <p className="font-medium">{schedule.name}</p>
                       <p className="text-sm text-[var(--color-muted-foreground)]">
-                        {isDynamic
+                        {isLegacyMeta
                           ? t("settings.orchestration.dynamicDescription")
                           : t("settings.orchestration.fixedDescription", {
                               workflow: workflowLabel(workflowName, t),
@@ -390,22 +361,7 @@ export default function OrchestrationPlanPanel({
                         className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
                       />
                     </label>
-                    <label className="block space-y-1 text-sm">
-                      <span>{t("settings.orchestration.modeLabel")}</span>
-                      <select
-                        value={draft.orchestrationMode}
-                        onChange={(e) =>
-                          patchDraft(schedule.id, {
-                            orchestrationMode: e.target.value as "fixed" | "meta_dynamic",
-                          })
-                        }
-                        className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                      >
-                        <option value="fixed">{t("settings.orchestration.modeFixed")}</option>
-                        <option value="meta_dynamic">{t("settings.orchestration.modeDynamic")}</option>
-                      </select>
-                    </label>
-                    {!isDynamic ? (
+                    {!isLegacyMeta ? (
                       <label className="block space-y-1 text-sm">
                         <span>{t("settings.orchestration.workflowLabel")}</span>
                         <select
@@ -421,7 +377,12 @@ export default function OrchestrationPlanPanel({
                         </select>
                       </label>
                     ) : (
-                      <DynamicModeInfo t={t} />
+                      <p className="md:col-span-2 text-sm text-[var(--color-muted-foreground)]">
+                        {t("settings.orchestration.dynamicModeHint")}{" "}
+                        <Link to="/office" className="text-[var(--color-primary)] hover:underline">
+                          {t("office.title")}
+                        </Link>
+                      </p>
                     )}
                     <label className="block space-y-1 text-sm">
                       <span>{t("settings.orchestration.priorityLabel", { value: "" }).replace(/\s*$/, "")}</span>
@@ -532,32 +493,16 @@ export default function OrchestrationPlanPanel({
             className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
           />
           <select
-            value={newRule.orchestrationMode}
-            onChange={(e) =>
-              setNewRule({ ...newRule, orchestrationMode: e.target.value as "fixed" | "meta_dynamic" })
-            }
+            value={newRule.workflowId}
+            onChange={(e) => setNewRule({ ...newRule, workflowId: e.target.value })}
             className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
           >
-            <option value="fixed">{t("settings.orchestration.modeFixed")}</option>
-            <option value="meta_dynamic">{t("settings.orchestration.modeDynamic")}</option>
+            {workflows.map((workflow) => (
+              <option key={workflow.id} value={workflow.id}>
+                {workflowLabel(workflow.name, t)}
+              </option>
+            ))}
           </select>
-          {newRule.orchestrationMode === "fixed" ? (
-            <select
-              value={newRule.workflowId}
-              onChange={(e) => setNewRule({ ...newRule, workflowId: e.target.value })}
-              className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-            >
-              {workflows.map((workflow) => (
-                <option key={workflow.id} value={workflow.id}>
-                  {workflowLabel(workflow.name, t)}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <div className="md:col-span-2">
-              <DynamicModeInfo t={t} />
-            </div>
-          )}
           <select
             value={newRule.timingMode}
             onChange={(e) => setNewRule({ ...newRule, timingMode: e.target.value as TimingMode })}

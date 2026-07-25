@@ -619,14 +619,8 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     if (memory?.currentAgentId) busyAgentIds.add(memory.currentAgentId);
   }
 
-  const autonomyEnabled = schedules.some((s) => s.orchestrationMode === "meta_dynamic" && s.enabled);
-  const scheduledOnly =
-    schedules.some((s) => s.enabled) && !autonomyEnabled;
-  const mode: OfficeDashboard["mode"] = autonomyEnabled
-    ? "autonomous"
-    : scheduledOnly
-      ? "scheduled"
-      : "on_demand";
+  const scheduledOnly = schedules.some((s) => s.enabled);
+  const mode: OfficeDashboard["mode"] = scheduledOnly ? "scheduled" : "on_demand";
 
   const activity: OfficeActivityItem[] = [];
 

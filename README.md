@@ -2,12 +2,9 @@
 
 # Auto Company
 
-**A fully autonomous AI company running 24/7** <a href="README-ZH.md"><img alt="[中文说明]" src="https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
+**A multi-tenant AI company platform** — Office-first coordination, workflow engine, and optional schedules. <a href="README-ZH.md"><img alt="[中文说明]" src="https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
 
-Powered by **Agentic Workflows**, this project orchestrates 14 **Autonomous AI Agents**, each modeled after world-class experts in their domain.
-They ideate products, make decisions, write code, deploy, and market - without human intervention.
-
-Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@openai/codex) on macOS + Windows/WSL, with a local dashboard on both hosts.
+Inspired by the original **Auto Company** CLI concept: 14 expert AI agents orchestrated to find demand, build products, and ship. The **v2 platform** replaces the bash loop with PostgreSQL, a React UI, and the **Office** coordinator.
 
 [![macOS](https://img.shields.io/badge/Platform-macOS-blue?logo=apple&logoColor=white)](#dependencies)
 [![Windows WSL](https://img.shields.io/badge/Platform-Windows%20WSL-blue?logo=windows&logoColor=white)](#windows-wsl-quick-start)
@@ -52,7 +49,7 @@ First visit: `/setup` → create superadmin → `/admin` → create tenant → i
 
 Production: see [`docker-compose.yml`](docker-compose.yml), [`.env.production.example`](.env.production.example), and [`docs/platform.md`](docs/platform.md).
 
-The sections below document the **original CLI/daemon workflow** (macOS/WSL) that this platform is inspired by.
+> **Legacy CLI (archived):** The original `auto-loop.sh` + `memories/consensus.md` workflow is preserved under [`archive/legacy-cli/`](archive/legacy-cli/README.md). Use the platform above for new deployments. The sections below document that historical workflow for reference.
 
 ---
 

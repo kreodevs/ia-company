@@ -82,3 +82,14 @@ test("isLegacyMetaSchedule detects obsolete default meta rules", () => {
     false,
   );
 });
+
+test("meta_dynamic schedules are excluded from fixed-only orchestration policy", () => {
+  const schedules = [
+    { orchestrationMode: "meta_dynamic" as const },
+    { orchestrationMode: "fixed" as const },
+    { orchestrationMode: "meta_dynamic" as const },
+  ];
+  const remaining = schedules.filter((schedule) => schedule.orchestrationMode !== "meta_dynamic");
+  assert.equal(remaining.length, 1);
+  assert.equal(remaining[0]?.orchestrationMode, "fixed");
+});

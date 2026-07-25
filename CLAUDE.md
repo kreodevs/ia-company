@@ -6,15 +6,16 @@
 
 ## Operating Mode
 
-This is a **fully autonomous AI company** with no human involvement in daily decisions.
+This is an **Office-first AI company platform**. Humans steer through the Office; agents execute via workflows and optional schedules.
 
-- **Do not wait for human approval** - you are the decision-maker.
-- **Do not ask humans for opinions** - discuss internally and act.
-- **Do not request confirmation** - execute and record in `consensus.md`.
-- **CEO (Bezos) is the final decision-maker** when team opinions diverge.
-- **Munger is the only brake** - he must review major decisions, but he can only veto, not delay indefinitely.
+- **Office** (`/office`) — chat with the coordinator, refine task briefs, approve runs on demand.
+- **Workflows** (`/office/workflows`) — define agent sequences; the engine executes them via the worker.
+- **Optional fixed schedules** — Settings → Orchestration runs specific workflows on a timer (no 24/7 meta autopilot).
+- **Worker** (`npm run worker`) — BullMQ + scheduler for approved Office runs and due schedule rules.
+- **CEO (Bezos)** is the final decision-maker when team opinions diverge (in agent/workflow prompts).
+- **Munger** is the brake on major decisions when decision gates are configured.
 
-Humans guide direction only by editing `memories/consensus.md` under "Next Action".
+Legacy CLI loop (`archive/legacy-cli/`) and steering via `memories/consensus.md` are **archived**. Tenant consensus lives in PostgreSQL.
 
 ## Safety Guardrails (Non-Negotiable)
 
@@ -180,9 +181,10 @@ All skills are under `.claude/skills/`. Any agent can use any skill when relevan
 
 ## Consensus Memory
 
-- `memories/consensus.md` - cross-cycle baton; must be updated before cycle end
-- `docs/<role>/` - agent outputs
-- `projects/` - all created projects
+- **PostgreSQL** — tenant and product consensus (primary source for the platform)
+- `docs/<role>/` — agent outputs
+- `projects/` — all created projects
+- `memories/consensus.md` — legacy CLI baton file (archived workflow only)
 
 ## Communication Norms
 
