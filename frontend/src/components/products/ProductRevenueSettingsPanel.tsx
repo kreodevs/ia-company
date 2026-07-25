@@ -99,7 +99,7 @@ export default function ProductRevenueSettingsPanel({
 
   if (loading) {
     return (
-      <Panel title={t("products.settings.revenue.title")}>
+      <Panel title={t("products.settings.revenue.title")} subtitle={t("products.settings.revenue.subtitle")}>
         <p className="text-sm text-[var(--color-muted-foreground)]">{t("common.loading")}</p>
       </Panel>
     );
@@ -108,10 +108,7 @@ export default function ProductRevenueSettingsPanel({
   if (!settings) return null;
 
   return (
-    <Panel
-      title={t("products.settings.revenue.title")}
-      subtitle={t("products.settings.revenue.subtitle")}
-    >
+    <Panel title={t("products.settings.revenue.title")} subtitle={t("products.settings.revenue.subtitle")}>
       <div className="space-y-4">
         <Input
           label={t("products.settings.revenue.revenueLabel")}

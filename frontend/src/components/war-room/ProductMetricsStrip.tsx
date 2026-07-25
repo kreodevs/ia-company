@@ -63,7 +63,7 @@ export default function ProductMetricsStrip({ metrics, productId }: ProductMetri
       </div>
 
       <p className="product-metrics__link">
-        <Link to={`/products/${productId}/settings#revenue`}>{t("warRoom.metrics.configure")}</Link>
+        <Link to={`/products/${productId}/settings?tab=revenue`}>{t("warRoom.metrics.configure")}</Link>
       </p>
     </section>
   );

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api, type ProductOpencodeSettings } from "../../lib/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import Panel from "../ui/Panel";
 
 export interface ProductOpencodeSettingsPanelProps {
   productId: string;
@@ -50,65 +51,58 @@ export default function ProductOpencodeSettingsPanel({ productId }: ProductOpenc
 
   if (loading) {
     return (
-      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm text-[var(--color-muted-foreground)]">
-        {t("common.loading")}
-      </section>
+      <Panel title={t("opencode.productSettings.title")} subtitle={t("opencode.productSettings.subtitle")}>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t("common.loading")}</p>
+      </Panel>
     );
   }
 
   if (!settings) return null;
 
   return (
-    <section className="space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-      <div>
-        <h2 className="text-base font-semibold">{t("opencode.productSettings.title")}</h2>
-        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-          {t("opencode.productSettings.subtitle")}
-        </p>
-      </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        <Input
-          label={t("opencode.settings.defaultAgent")}
-          value={defaultAgent}
-          onChange={(e) => setDefaultAgent(e.target.value)}
-          placeholder={settings.tenantDefaults.defaultAgent ?? t("opencode.productSettings.inheritTenant")}
-          disabled={saving}
-        />
-        <Input
-          label={t("opencode.settings.defaultModel")}
-          value={defaultModel}
-          onChange={(e) => setDefaultModel(e.target.value)}
-          placeholder={settings.tenantDefaults.defaultModel ?? t("opencode.productSettings.inheritTenant")}
-          disabled={saving}
-        />
-        <div className="md:col-span-2">
+    <Panel title={t("opencode.productSettings.title")} subtitle={t("opencode.productSettings.subtitle")}>
+      <div className="space-y-4">
+        <div className="grid gap-3 md:grid-cols-2">
           <Input
-            label={t("opencode.settings.projectPath")}
-            value={projectPath}
-            onChange={(e) => setProjectPath(e.target.value)}
-            placeholder={
-              settings.tenantDefaults.projectPath ??
-              settings.suggestedProjectPath
-            }
+            label={t("opencode.settings.defaultAgent")}
+            value={defaultAgent}
+            onChange={(e) => setDefaultAgent(e.target.value)}
+            placeholder={settings.tenantDefaults.defaultAgent ?? t("opencode.productSettings.inheritTenant")}
             disabled={saving}
           />
-          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            {t("opencode.productSettings.effectiveHint", {
-              agent: settings.effectiveDefaults.defaultAgent ?? "—",
-              model: settings.effectiveDefaults.defaultModel ?? "—",
-              path: settings.effectiveDefaults.projectPath ?? settings.suggestedProjectPath,
-            })}
-          </p>
+          <Input
+            label={t("opencode.settings.defaultModel")}
+            value={defaultModel}
+            onChange={(e) => setDefaultModel(e.target.value)}
+            placeholder={settings.tenantDefaults.defaultModel ?? t("opencode.productSettings.inheritTenant")}
+            disabled={saving}
+          />
+          <div className="md:col-span-2">
+            <Input
+              label={t("opencode.settings.projectPath")}
+              value={projectPath}
+              onChange={(e) => setProjectPath(e.target.value)}
+              placeholder={settings.tenantDefaults.projectPath ?? settings.suggestedProjectPath}
+              disabled={saving}
+            />
+            <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+              {t("opencode.productSettings.effectiveHint", {
+                agent: settings.effectiveDefaults.defaultAgent ?? "—",
+                model: settings.effectiveDefaults.defaultModel ?? "—",
+                path: settings.effectiveDefaults.projectPath ?? settings.suggestedProjectPath,
+              })}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={() => void save()} disabled={saving}>
+            {saving ? t("common.saving") : t("opencode.productSettings.save")}
+          </Button>
+          {saved && (
+            <span className="text-xs text-[var(--color-accent)]">{t("opencode.productSettings.saved")}</span>
+          )}
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={() => void save()} disabled={saving}>
-          {saving ? t("common.saving") : t("opencode.productSettings.save")}
-        </Button>
-        {saved && (
-          <span className="text-xs text-[var(--color-accent)]">{t("opencode.productSettings.saved")}</span>
-        )}
-      </div>
-    </section>
+    </Panel>
   );
 }

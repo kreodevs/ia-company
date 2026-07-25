@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ExternalLink, RefreshCw, Settings2 } from "lucide-react";
+import { ExternalLink, RefreshCw } from "lucide-react";
 import { api, type TenantProduct } from "../lib/api";
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
@@ -12,11 +12,28 @@ import Panel from "../components/ui/Panel";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import TabsBar from "../components/ui/TabsBar";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ProductOpencodeSettingsPanel from "../components/opencode/ProductOpencodeSettingsPanel";
 import ProductRevenueSettingsPanel from "../components/products/ProductRevenueSettingsPanel";
 import Select from "../components/ui/Select";
 import type { OrgUnit } from "../lib/org-types";
+
+const VALID_TABS = ["general", "intake", "revenue", "opencode"] as const;
+type ProductSettingsTab = (typeof VALID_TABS)[number];
+
+function parseSettingsTab(searchParams: URLSearchParams): ProductSettingsTab {
+  const fromQuery = searchParams.get("tab");
+  if (fromQuery && VALID_TABS.includes(fromQuery as ProductSettingsTab)) {
+    return fromQuery as ProductSettingsTab;
+  }
+  const hash =
+    typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
+  if (hash && VALID_TABS.includes(hash as ProductSettingsTab)) {
+    return hash as ProductSettingsTab;
+  }
+  return "general";
+}
 
 function productPhaseLabel(
   phase: TenantProduct["phase"],
@@ -30,6 +47,10 @@ export default function ProductSettingsPage() {
   const navigate = useNavigate();
   const params = useParams<{ productId: string }>();
   const productId = params.productId;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<ProductSettingsTab>(() =>
+    parseSettingsTab(searchParams),
+  );
 
   const [product, setProduct] = useState<TenantProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +63,23 @@ export default function ProductSettingsPage() {
   const [orgUnitId, setOrgUnitId] = useState("");
   const [workItemKind, setWorkItemKind] = useState("product");
   const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
+
+  const setTab = (next: ProductSettingsTab) => {
+    setActiveTab(next);
+    setSearchParams(next === "general" ? {} : { tab: next }, { replace: true });
+  };
+
+  useEffect(() => {
+    const tab = parseSettingsTab(searchParams);
+    setActiveTab(tab);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash && VALID_TABS.includes(hash as ProductSettingsTab) && !searchParams.get("tab")) {
+      setSearchParams({ tab: hash }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const load = useCallback(async () => {
     if (!productId) return;
@@ -123,7 +161,7 @@ export default function ProductSettingsPage() {
   if (loading) return <PageLoading message={t("products.settings.loading")} />;
   if (!productId || !product) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="mx-auto max-w-4xl space-y-4">
         <p className="text-sm text-[var(--color-muted-foreground)]">{t("products.settings.notFound")}</p>
         <Link to="/products?tab=active" className="text-[var(--color-primary)] hover:underline">
           {t("products.title")}
@@ -133,9 +171,15 @@ export default function ProductSettingsPage() {
   }
 
   const intakeStatus = product.intakeStatus ?? "skipped";
+  const tabs = [
+    { id: "general", label: t("products.settings.tabs.general") },
+    { id: "intake", label: t("products.settings.tabs.intake") },
+    { id: "revenue", label: t("products.settings.tabs.revenue") },
+    { id: "opencode", label: t("products.settings.tabs.opencode") },
+  ];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <PageHeader
         eyebrow={
           <Breadcrumbs
@@ -167,138 +211,146 @@ export default function ProductSettingsPage() {
         }
       />
 
-      <Panel title={t("products.settings.generalTitle")} subtitle={t("products.settings.generalSubtitle")}>
-        <div className="space-y-4">
-          <Input
-            label={t("products.add.nameLabel")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={saving}
-          />
-          <Input
-            label={t("products.add.descriptionLabel")}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder={t("products.add.descriptionPlaceholder")}
-            disabled={saving}
-          />
-          <div>
+      <TabsBar tabs={tabs} activeId={activeTab} onChange={(id) => setTab(id as ProductSettingsTab)} />
+
+      {activeTab === "general" && (
+        <Panel title={t("products.settings.generalTitle")} subtitle={t("products.settings.generalSubtitle")}>
+          <div className="space-y-4">
             <Input
-              label={t("products.add.githubUrlLabel")}
-              value={githubRepoUrl}
-              onChange={(e) => setGithubRepoUrl(e.target.value)}
-              placeholder="https://github.com/org/repo"
+              label={t("products.add.nameLabel")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               disabled={saving}
             />
-            <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-              {t("products.add.githubUrlHint")}{" "}
-              <Link to="/settings?tab=integrations" className="text-[var(--color-primary)] hover:underline">
-                {t("products.settings.integrationsLink")}
-              </Link>
-            </p>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
-              {t("products.settings.orgUnitLabel")}
-            </label>
-            <Select
-              value={orgUnitId}
-              onChange={setOrgUnitId}
-              ariaLabel={t("products.settings.orgUnitLabel")}
-              options={[
-                { value: "", label: t("products.settings.orgUnitNone") },
-                ...orgUnits.map((u) => ({ value: u.id, label: u.name })),
-              ]}
+            <Input
+              label={t("products.add.descriptionLabel")}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t("products.add.descriptionPlaceholder")}
+              disabled={saving}
             />
-            <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-              {t("products.settings.orgUnitHint")}
+            <div>
+              <Input
+                label={t("products.add.githubUrlLabel")}
+                value={githubRepoUrl}
+                onChange={(e) => setGithubRepoUrl(e.target.value)}
+                placeholder="https://github.com/org/repo"
+                disabled={saving}
+              />
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.add.githubUrlHint")}{" "}
+                <Link to="/settings?tab=integrations" className="text-[var(--color-primary)] hover:underline">
+                  {t("products.settings.integrationsLink")}
+                </Link>
+              </p>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+                {t("products.settings.orgUnitLabel")}
+              </label>
+              <Select
+                value={orgUnitId}
+                onChange={setOrgUnitId}
+                ariaLabel={t("products.settings.orgUnitLabel")}
+                options={[
+                  { value: "", label: t("products.settings.orgUnitNone") },
+                  ...orgUnits.map((u) => ({ value: u.id, label: u.name })),
+                ]}
+              />
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.orgUnitHint")}
+              </p>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+                {t("products.settings.workItemKindLabel")}
+              </label>
+              <Select
+                value={workItemKind}
+                onChange={setWorkItemKind}
+                ariaLabel={t("products.settings.workItemKindLabel")}
+                options={[
+                  { value: "product", label: t("products.settings.workItemKind.product") },
+                  { value: "client", label: t("products.settings.workItemKind.client") },
+                  { value: "campaign", label: t("products.settings.workItemKind.campaign") },
+                  { value: "project", label: t("products.settings.workItemKind.project") },
+                ]}
+              />
+            </div>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("products.settings.slugReadonly", { slug: product.slug, path: `projects/${product.slug}/` })}
             </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button onClick={() => void save()} disabled={saving || !dirty || !name.trim()}>
+                {saving ? t("common.saving") : t("common.save")}
+              </Button>
+              {!dirty && (
+                <span className="text-xs text-[var(--color-muted-foreground)]">
+                  {t("products.settings.noChanges")}
+                </span>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
-              {t("products.settings.workItemKindLabel")}
-            </label>
-            <Select
-              value={workItemKind}
-              onChange={setWorkItemKind}
-              ariaLabel={t("products.settings.workItemKindLabel")}
-              options={[
-                { value: "product", label: t("products.settings.workItemKind.product") },
-                { value: "client", label: t("products.settings.workItemKind.client") },
-                { value: "campaign", label: t("products.settings.workItemKind.campaign") },
-                { value: "project", label: t("products.settings.workItemKind.project") },
-              ]}
-            />
-          </div>
-          <p className="text-xs text-[var(--color-muted-foreground)]">
-            {t("products.settings.slugReadonly", { slug: product.slug, path: `projects/${product.slug}/` })}
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button onClick={() => void save()} disabled={saving || !dirty || !name.trim()}>
-              {saving ? t("common.saving") : t("common.save")}
-            </Button>
-            {!dirty && (
-              <span className="text-xs text-[var(--color-muted-foreground)]">
-                {t("products.settings.noChanges")}
-              </span>
-            )}
-          </div>
-        </div>
-      </Panel>
+        </Panel>
+      )}
 
-      <Panel title={t("products.settings.intakeTitle")} subtitle={t("products.settings.intakeSubtitle")}>
-        <dl className="mb-4 grid gap-3 sm:grid-cols-2">
-          <div>
-            <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-              {t("products.settings.intakeStatusLabel")}
-            </dt>
-            <dd className="mt-0.5 font-medium">{t(`products.settings.intakeStatus.${intakeStatus}`)}</dd>
-          </div>
-          {product.githubDefaultBranch && (
+      {activeTab === "intake" && (
+        <Panel title={t("products.settings.intakeTitle")} subtitle={t("products.settings.intakeSubtitle")}>
+          <dl className="mb-4 grid gap-3 sm:grid-cols-2">
             <div>
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                {t("products.settings.defaultBranch")}
+                {t("products.settings.intakeStatusLabel")}
               </dt>
-              <dd className="mt-0.5 font-mono text-sm">{product.githubDefaultBranch}</dd>
+              <dd className="mt-0.5 font-medium">{t(`products.settings.intakeStatus.${intakeStatus}`)}</dd>
             </div>
-          )}
-        </dl>
-        {product.intakeRunId && (
-          <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">
-            {t("products.settings.lastIntakeRun")}{" "}
-            <Link
-              to={`/office/encargos/${product.intakeRunId}`}
-              className="text-[var(--color-primary)] hover:underline"
-            >
-              {product.intakeRunId.slice(0, 8)}…
-            </Link>
-          </p>
-        )}
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => void rerunIntake()}
-            disabled={intakeBusy}
-          >
-            <RefreshCw className={`h-4 w-4 ${intakeBusy ? "animate-spin" : ""}`} aria-hidden />
-            {intakeBusy ? t("products.settings.intakeRunning") : t("products.settings.rerunIntake")}
-          </Button>
-          {!githubRepoUrl.trim() && (
-            <p className="w-full text-xs text-[var(--foreground-muted)]">
-              {t("products.settings.intakeNeedsGithub")}
+            {product.githubDefaultBranch && (
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+                  {t("products.settings.defaultBranch")}
+                </dt>
+                <dd className="mt-0.5 font-mono text-sm">{product.githubDefaultBranch}</dd>
+              </div>
+            )}
+          </dl>
+          {product.intakeRunId && (
+            <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">
+              {t("products.settings.lastIntakeRun")}{" "}
+              <Link
+                to={`/office/encargos/${product.intakeRunId}`}
+                className="text-[var(--color-primary)] hover:underline"
+              >
+                {product.intakeRunId.slice(0, 8)}…
+              </Link>
             </p>
           )}
-        </div>
-      </Panel>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => void rerunIntake()} disabled={intakeBusy}>
+              <RefreshCw className={`h-4 w-4 ${intakeBusy ? "animate-spin" : ""}`} aria-hidden />
+              {intakeBusy ? t("products.settings.intakeRunning") : t("products.settings.rerunIntake")}
+            </Button>
+            {!githubRepoUrl.trim() && (
+              <p className="w-full text-xs text-[var(--foreground-muted)]">
+                {t("products.settings.intakeNeedsGithub")}{" "}
+                <button
+                  type="button"
+                  className="text-[var(--color-primary)] hover:underline"
+                  onClick={() => setTab("general")}
+                >
+                  {t("products.settings.tabs.general")} →
+                </button>
+              </p>
+            )}
+          </div>
+        </Panel>
+      )}
 
-      <ProductRevenueSettingsPanel productId={productId} onSaved={() => void load()} />
+      {activeTab === "revenue" && (
+        <ProductRevenueSettingsPanel productId={productId} onSaved={() => void load()} />
+      )}
 
-      <div id="opencode">
-        <ProductOpencodeSettingsPanel productId={productId} />
-      </div>
+      {activeTab === "opencode" && <ProductOpencodeSettingsPanel productId={productId} />}
 
       <p className="text-xs text-[var(--color-muted-foreground)]">
-        <Settings2 className="mr-1 inline h-3.5 w-3.5" aria-hidden />
         {t("products.settings.debugHint")}{" "}
         <Link
           to={`/debug/products/${productId}/consensus`}

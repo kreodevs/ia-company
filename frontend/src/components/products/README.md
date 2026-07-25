@@ -5,7 +5,18 @@
 | `ProductRevenueSettingsPanel.tsx` | Revenue USD, Stripe webhook secret, webhook URL copy — used in `/products/:id/settings` |
 | `ProductActionsMenu.tsx` | Pause, archive, NO-GO, delete actions on product cards |
 
-## Revenue / Stripe
+## Product settings (`ProductSettingsPage`)
+
+Tabbed layout (`?tab=general|intake|revenue|opencode`) — same `TabsBar` pattern as tenant Settings and Products list.
+
+| Tab | Content |
+|-----|---------|
+| General | Name, description, GitHub, department, work item type |
+| Intake | Profile status, re-run product-intake workflow |
+| Revenue | `ProductRevenueSettingsPanel` — Stripe + waitlist |
+| OpenCode | Per-product agent/model/path overrides |
+
+Legacy hash links (`#revenue`) redirect to `?tab=revenue`.
 
 Configure per product under **Settings → Revenue & Stripe**:
 
