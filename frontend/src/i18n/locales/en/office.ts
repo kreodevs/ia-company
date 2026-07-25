@@ -238,8 +238,16 @@ export const office = {
     docKind: {
       revision: "Report",
       step: "Step output",
-      file: "File",
+      file: "Full report",
     },
+    nextStepTitle: "Next step",
+    nextActionLabel: "Suggested action",
+    recommended: "Team recommendation: {{decision}}",
+    decisionResolved: "This decision was already resolved. See history on Decisions.",
+    noDecisionHint:
+      "No GO/NO-GO proposal is linked to this job. The idea may not have been in the pipeline when evaluation finished.",
+    openDecisions: "Open decisions inbox",
+    fullReportNote: "Full agent markdown report.",
     phase: {
       all: "All",
       queued: "Queued",

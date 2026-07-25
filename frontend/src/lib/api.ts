@@ -759,10 +759,22 @@ export interface OfficeEncargoDocument {
   stepOrder: number;
 }
 
+export interface OfficeEncargoDecisionProposal {
+  id: string;
+  status: DecisionStatus;
+  recommended: GoNoGoDecision;
+  rationale: string;
+  ideaTitle: string;
+  pivotPrompt: string | null;
+  evidence: DecisionProposalEvidence[];
+}
+
 export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   finalReport: string;
   finalReportKind: "summary" | "agent" | "none";
   documents: OfficeEncargoDocument[];
+  nextAction: string | null;
+  decisionProposal: OfficeEncargoDecisionProposal | null;
   debugHref: string;
   warRoomHref: string | null;
 }

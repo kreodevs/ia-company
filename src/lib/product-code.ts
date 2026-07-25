@@ -160,30 +160,7 @@ export function isBinaryPath(path: string): boolean {
 }
 
 export async function readProductFile(productSlug: string, relativePath: string): Promise<ProductFile> {
-  const root = resolveProductWorkspaceRoot(productSlug);
-  const abs = safeJoin(root, relativePath);
-  let stat: Stats;
-  try {
-    stat = await fs.stat(abs);
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error("File not found");
-    }
-    throw err;
-  }
-  if (!stat.isFile()) throw new Error("Not a file");
-  const binary = isBinaryPath(relativePath);
-  const truncated = stat.size > MAX_FILE_BYTES;
-  const content = binary
-    ? ""
-    : await fs.readFile(abs, { encoding: truncated ? "utf-8" : "utf-8" });
-  return {
-    path: relativePath,
-    content: truncated ? content.slice(0, MAX_FILE_BYTES) : content,
-    size: stat.size,
-    truncated,
-    binary,
-  };
+  return readWorkspaceFile(resolveProductWorkspaceRoot(productSlug), relativePath);
 }
 
 function isDocFile(name: string): boolean {
@@ -232,10 +209,9 @@ async function collectDocsUnderDir(
   }
 }
 
-/** Lists markdown deliverables under projects/{slug}/docs/{role}/ */
-export async function listProductAgentDocs(productSlug: string): Promise<ProductAgentDocsIndex> {
-  const root = resolveProductWorkspaceRoot(productSlug);
-  const docsRoot = join(root, "docs");
+/** Lists markdown deliverables under `{workspaceRoot}/docs/{role}/` */
+export async function listWorkspaceAgentDocs(workspaceRoot: string): Promise<ProductAgentDocsIndex> {
+  const docsRoot = join(workspaceRoot, "docs");
   const roles: ProductAgentDocsIndex["roles"] = [];
   let total = 0;
 
@@ -249,7 +225,7 @@ export async function listProductAgentDocs(productSlug: string): Promise<Product
   for (const entry of roleEntries.sort((a, b) => a.name.localeCompare(b.name))) {
     if (!entry.isDirectory() || entry.name.startsWith(".")) continue;
     const docs: ProductAgentDocFile[] = [];
-    await collectDocsUnderDir(root, entry.name, join(docsRoot, entry.name), 0, docs);
+    await collectDocsUnderDir(workspaceRoot, entry.name, join(docsRoot, entry.name), 0, docs);
     if (docs.length === 0) continue;
     docs.sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt));
     roles.push({ role: entry.name, docs });
@@ -257,6 +233,40 @@ export async function listProductAgentDocs(productSlug: string): Promise<Product
   }
 
   return { roles, total };
+}
+
+/** Lists markdown deliverables under projects/{slug}/docs/{role}/ */
+export async function listProductAgentDocs(productSlug: string): Promise<ProductAgentDocsIndex> {
+  return listWorkspaceAgentDocs(resolveProductWorkspaceRoot(productSlug));
+}
+
+export async function readWorkspaceFile(
+  workspaceRoot: string,
+  relativePath: string,
+): Promise<ProductFile> {
+  const abs = safeJoin(workspaceRoot, relativePath);
+  let stat: Stats;
+  try {
+    stat = await fs.stat(abs);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error("File not found");
+    }
+    throw err;
+  }
+  if (!stat.isFile()) throw new Error("Not a file");
+  const binary = isBinaryPath(relativePath);
+  const truncated = stat.size > MAX_FILE_BYTES;
+  const content = binary
+    ? ""
+    : await fs.readFile(abs, { encoding: truncated ? "utf-8" : "utf-8" });
+  return {
+    path: relativePath,
+    content: truncated ? content.slice(0, MAX_FILE_BYTES) : content,
+    size: stat.size,
+    truncated,
+    binary,
+  };
 }
 
 export async function ensureProductRepoNotInitialized(productSlug: string): Promise<boolean> {

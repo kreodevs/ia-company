@@ -1,8 +1,14 @@
-import type { ExecutionRun, ExecutionStatus } from "@prisma/client";
+import type { DecisionStatus, ExecutionRun, ExecutionStatus, GoNoGoDecision } from "@prisma/client";
 import { extractHandoffFromAgentOutput } from "./product-consensus.js";
-import { listProductAgentDocs, readProductFile } from "./product-code.js";
+import {
+  listWorkspaceAgentDocs,
+  readWorkspaceFile,
+} from "./product-code.js";
+import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import { prisma } from "./prisma.js";
+import { resolveTenantWorkspaceRoot } from "./tenant-workspace.js";
 import type { SharedMemory } from "../types/index.js";
+import type { ProposalEvidence } from "./decision-proposals.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -35,10 +41,22 @@ export interface OfficeEncargoDocument {
   stepOrder: number;
 }
 
+export interface OfficeEncargoDecisionProposal {
+  id: string;
+  status: DecisionStatus;
+  recommended: GoNoGoDecision;
+  rationale: string;
+  ideaTitle: string;
+  pivotPrompt: string | null;
+  evidence: ProposalEvidence[];
+}
+
 export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   finalReport: string;
   finalReportKind: "summary" | "agent" | "none";
   documents: OfficeEncargoDocument[];
+  nextAction: string | null;
+  decisionProposal: OfficeEncargoDecisionProposal | null;
   debugHref: string;
   warRoomHref: string | null;
 }
@@ -56,6 +74,44 @@ function toPhase(status: ExecutionStatus): OfficeEncargoPhase {
 function readMemoryString(memory: SharedMemory, key: string): string | null {
   const value = memory[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function extractNextAction(memory: SharedMemory): string | null {
+  const fromMemory = readMemoryString(memory, "nextAction");
+  if (fromMemory) return fromMemory;
+  const closure = memory._runClosure as { nextAction?: string } | undefined;
+  if (typeof closure?.nextAction === "string" && closure.nextAction.trim()) {
+    return closure.nextAction.trim();
+  }
+  return null;
+}
+
+function resolveRunWorkspaceRoot(
+  tenantId: string,
+  tenantSlug: string | null | undefined,
+  productSlug: string | null,
+): string {
+  if (productSlug) return resolveProductWorkspaceRoot(productSlug);
+  return resolveTenantWorkspaceRoot(tenantId, tenantSlug);
+}
+
+function agentNameForDocRole(role: string, teamAgents: string[]): string {
+  const exact = teamAgents.find((a) => a === role);
+  if (exact) return exact;
+  const prefixed = teamAgents.find((a) => a.startsWith(`${role}-`));
+  if (prefixed) return prefixed;
+  return role;
+}
+
+export function resolveStepMarkdown(raw: string, agentName: string, stepOrder: number): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  const handoff = extractHandoffFromAgentOutput(raw, agentName, stepOrder);
+  const handoffText = handoff.content.trim();
+  if (handoffText.length < 400 && trimmed.length > handoffText.length + 80) {
+    return trimmed;
+  }
+  return handoffText || trimmed;
 }
 
 function extractRequest(memory: SharedMemory): string {
@@ -130,7 +186,7 @@ export function resolveFinalReport(
 
 async function countDocumentsForRun(
   run: ExecutionRun & { workflow: { name: string } },
-  productSlug: string | null,
+  workspaceRoot: string | null,
   productConsensusId: string | null,
 ): Promise<number> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
@@ -144,8 +200,8 @@ async function countDocumentsForRun(
   }
 
   let fileCount = 0;
-  if (productSlug && run.completedAt) {
-    const docs = await listProductAgentDocs(productSlug);
+  if (workspaceRoot && run.completedAt) {
+    const docs = await listWorkspaceAgentDocs(workspaceRoot);
     const start = (run.startedAt ?? run.createdAt).getTime();
     const end = run.completedAt.getTime() + 5 * 60_000;
     for (const role of docs.roles) {
@@ -156,20 +212,27 @@ async function countDocumentsForRun(
     }
   }
 
-  return Math.max(historyLen, revisionCount, fileCount);
+  const savedPaths = (Array.isArray(memory._history) ? memory._history : []).filter(
+    (h) => typeof h.savedDeliverablePath === "string" && h.savedDeliverablePath.trim(),
+  ).length;
+
+  return Math.max(historyLen, revisionCount, fileCount, savedPaths);
 }
 
 async function mapRunToSummary(
   run: ExecutionRun & { workflow: { name: string } },
   products: Array<{ id: string; slug: string; name: string }>,
   productConsensusByProductId: Map<string, string>,
+  tenantId: string,
+  tenantSlug: string | null | undefined,
 ): Promise<OfficeEncargoSummary> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
   const product = resolveProductFromMemory(memory, products);
   const teamAgents = extractTeamAgents(memory);
   const consensusId = product ? productConsensusByProductId.get(product.id) : undefined;
-  const documentCount = await countDocumentsForRun(run, product?.slug ?? null, consensusId ?? null);
+  const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenantSlug, product?.slug ?? null);
+  const documentCount = await countDocumentsForRun(run, workspaceRoot, consensusId ?? null);
 
   const phase = toPhase(run.status);
   const hasRunSummary = Boolean(readMemoryString(memory, "runSummary"));
@@ -201,7 +264,7 @@ export async function listOfficeEncargos(
 ): Promise<{ items: OfficeEncargoSummary[] }> {
   const limit = Math.min(100, Math.max(1, options.limit ?? 50));
 
-  const [runs, products, consensusRows] = await Promise.all([
+  const [runs, products, consensusRows, tenant] = await Promise.all([
     prisma.executionRun.findMany({
       where: { tenantId },
       orderBy: { createdAt: "desc" },
@@ -216,12 +279,15 @@ export async function listOfficeEncargos(
       where: { tenantId },
       select: { id: true, productId: true },
     }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
   ]);
 
   const consensusByProductId = new Map(consensusRows.map((c) => [c.productId, c.id]));
 
   let items = await Promise.all(
-    runs.map((run) => mapRunToSummary(run, products, consensusByProductId)),
+    runs.map((run) =>
+      mapRunToSummary(run, products, consensusByProductId, tenantId, tenant?.slug),
+    ),
   );
 
   if (options.phase) {
@@ -233,13 +299,16 @@ export async function listOfficeEncargos(
 
 async function loadRunDocuments(
   run: ExecutionRun & { workflow: { name: string } },
-  product: { id: string; slug: string; name: string } | null,
+  workspaceRoot: string,
   consensusId: string | null,
+  teamAgents: string[],
 ): Promise<OfficeEncargoDocument[]> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const documents: OfficeEncargoDocument[] = [];
   const seen = new Set<string>();
   const revisionKeys = new Set<string>();
+  const loadedPaths = new Set<string>();
+  const agentsWithFile = new Set<string>();
 
   const push = (doc: OfficeEncargoDocument) => {
     const agentStepKey = `${doc.agentName}:${doc.stepOrder}`;
@@ -247,6 +316,10 @@ async function loadRunDocuments(
     if (seen.has(contentKey)) return;
     seen.add(contentKey);
     documents.push(doc);
+    if (doc.kind === "file") {
+      agentsWithFile.add(doc.agentName);
+      if (doc.path) loadedPaths.add(doc.path);
+    }
   };
 
   if (consensusId) {
@@ -272,24 +345,48 @@ async function loadRunDocuments(
   for (let i = 0; i < history.length; i++) {
     const step = history[i]!;
     const raw = typeof step.output === "string" ? step.output : "";
-    if (!raw.trim()) continue;
     const stepOrder = step.stepOrder ?? i + 1;
     if (revisionKeys.has(`${step.agentName}:${stepOrder}`)) continue;
 
-    const handoff = extractHandoffFromAgentOutput(raw, step.agentName, stepOrder);
-    if (!handoff.content.trim()) continue;
+    const savedPath =
+      typeof step.savedDeliverablePath === "string" ? step.savedDeliverablePath.trim() : "";
+    if (savedPath) {
+      try {
+        const file = await readWorkspaceFile(workspaceRoot, savedPath);
+        if (file.content.trim()) {
+          push({
+            id: `file-${savedPath}`,
+            kind: "file",
+            agentName: step.agentName,
+            title: savedPath.split("/").pop() ?? savedPath,
+            markdown: file.content,
+            path: savedPath,
+            stepOrder,
+          });
+          continue;
+        }
+      } catch {
+        // fall through to step output
+      }
+    }
+
+    if (!raw.trim()) continue;
+    if (agentsWithFile.has(step.agentName)) continue;
+
+    const markdown = resolveStepMarkdown(raw, step.agentName, stepOrder);
+    if (!markdown) continue;
     push({
       id: `step-${step.stepId ?? i}`,
       kind: "step",
       agentName: step.agentName,
       title: step.agentName.replace(/-/g, " "),
-      markdown: handoff.content.trim(),
+      markdown,
       stepOrder,
     });
   }
 
-  if (product?.slug && run.completedAt && revisionKeys.size === 0) {
-    const docsIndex = await listProductAgentDocs(product.slug);
+  if (run.completedAt) {
+    const docsIndex = await listWorkspaceAgentDocs(workspaceRoot);
     const start = (run.startedAt ?? run.createdAt).getTime();
     const end = run.completedAt.getTime() + 5 * 60_000;
 
@@ -298,14 +395,16 @@ async function loadRunDocuments(
         const modified = new Date(doc.modifiedAt).getTime();
         if (modified < start || modified > end) continue;
         if (!DOC_EXTENSIONS.has(doc.name.slice(doc.name.lastIndexOf(".")).toLowerCase())) continue;
+        if (loadedPaths.has(doc.path)) continue;
 
         try {
-          const file = await readProductFile(product.slug, doc.path);
+          const file = await readWorkspaceFile(workspaceRoot, doc.path);
           if (!file.content.trim()) continue;
+          const agentName = agentNameForDocRole(role.role, teamAgents);
           push({
             id: `file-${doc.path}`,
             kind: "file",
-            agentName: role.role,
+            agentName,
             title: doc.name,
             markdown: file.content,
             path: doc.path,
@@ -333,22 +432,38 @@ export async function getOfficeEncargoDetail(
   });
   if (!run) return null;
 
-  const products = await prisma.tenantProduct.findMany({
-    where: { tenantId },
-    select: { id: true, slug: true, name: true },
-  });
-  const consensusRows = await prisma.productConsensus.findMany({
-    where: { product: { tenantId } },
-    select: { id: true, productId: true },
-  });
+  const [products, consensusRows, tenant, proposalRow] = await Promise.all([
+    prisma.tenantProduct.findMany({
+      where: { tenantId },
+      select: { id: true, slug: true, name: true },
+    }),
+    prisma.productConsensus.findMany({
+      where: { product: { tenantId } },
+      select: { id: true, productId: true },
+    }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
+    prisma.decisionProposal.findFirst({
+      where: { tenantId, runId: run.id },
+      orderBy: { createdAt: "desc" },
+      include: { idea: true },
+    }),
+  ]);
   const consensusByProductId = new Map(consensusRows.map((c) => [c.productId, c.id]));
 
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const product = resolveProductFromMemory(memory, products);
   const consensusId = product ? (consensusByProductId.get(product.id) ?? null) : null;
+  const teamAgents = extractTeamAgents(memory);
+  const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenant?.slug, product?.slug ?? null);
 
-  const summary = await mapRunToSummary(run, products, consensusByProductId);
-  const documents = await loadRunDocuments(run, product, consensusId);
+  const summary = await mapRunToSummary(
+    run,
+    products,
+    consensusByProductId,
+    tenantId,
+    tenant?.slug,
+  );
+  const documents = await loadRunDocuments(run, workspaceRoot, consensusId, teamAgents);
 
   const revisions = documents
     .filter((d) => d.kind === "revision")
@@ -361,6 +476,18 @@ export async function getOfficeEncargoDetail(
       ? "agent"
       : "none";
 
+  const decisionProposal: OfficeEncargoDecisionProposal | null = proposalRow
+    ? {
+        id: proposalRow.id,
+        status: proposalRow.status,
+        recommended: proposalRow.recommended,
+        rationale: proposalRow.rationale,
+        ideaTitle: proposalRow.idea.title,
+        pivotPrompt: proposalRow.pivotPrompt,
+        evidence: (proposalRow.evidence as ProposalEvidence[] | null) ?? [],
+      }
+    : null;
+
   return {
     ...summary,
     documentCount: documents.length,
@@ -368,6 +495,8 @@ export async function getOfficeEncargoDetail(
     finalReport,
     finalReportKind,
     documents,
+    nextAction: extractNextAction(memory),
+    decisionProposal,
     debugHref: `/debug/runs/${run.id}`,
     warRoomHref: product ? `/war-room/${product.id}` : null,
   };

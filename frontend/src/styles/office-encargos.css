@@ -418,6 +418,102 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   font-style: italic;
 }
 
+.office-encargo-next-panel {
+  margin-bottom: 1rem;
+}
+
+.office-encargo-next-panel .office-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.office-encargo-next-action {
+  margin-bottom: 1rem;
+}
+
+.office-encargo-next-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--office-muted);
+}
+
+.office-encargo-next-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--office-text);
+}
+
+.office-encargo-decision {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--office-border);
+  border-radius: 0.65rem;
+  background: var(--office-surface, var(--color-surface));
+}
+
+.office-encargo-decision-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.office-encargo-decision-idea {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.office-encargo-decision-rec {
+  font-size: 0.78rem;
+  color: var(--office-muted);
+}
+
+.office-encargo-decision-rationale {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.office-encargo-decision-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.office-encargo-decision-pivot {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.office-encargo-decision-resolved,
+.office-encargo-next-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--office-muted);
+}
+
+.office-encargo-decisions-link {
+  margin-top: 0.85rem;
+}
+
+.office-encargo-doc-path {
+  margin: 0 0 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--office-muted);
+  word-break: break-all;
+}
+
 .office-rich-markdown {
   --tw-prose-body: var(--office-prose-body);
   --tw-prose-headings: var(--office-prose-heading);

@@ -238,8 +238,16 @@ export const office = {
     docKind: {
       revision: "Informe",
       step: "Entrega del paso",
-      file: "Archivo",
+      file: "Informe completo",
     },
+    nextStepTitle: "Próximo paso",
+    nextActionLabel: "Acción sugerida",
+    recommended: "Recomendación del equipo: {{decision}}",
+    decisionResolved: "Esta decisión ya fue resuelta. Revisa el historial en Decisiones.",
+    noDecisionHint:
+      "No hay propuesta GO/NO-GO vinculada a este encargo. Puede que la idea no estuviera en el pipeline cuando terminó la evaluación.",
+    openDecisions: "Ver bandeja de decisiones",
+    fullReportNote: "Informe markdown completo del agente.",
     phase: {
       all: "Todos",
       queued: "En cola",
