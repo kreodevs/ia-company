@@ -16,13 +16,13 @@ const ARTICLE_META: Record<
   { title: string; description: string; content: string }
 > = {
   es: {
-    title: "Guía completa",
-    description: "Oficina bajo demanda, productos con GitHub, war room, encargos y programación opcional.",
+    title: "Manual de usuario",
+    description: "Cómo operar tu oficina virtual: encargos, departamentos, agentes, habilidades y flujos.",
     content: tutorialMdEs,
   },
   en: {
-    title: "Complete guide",
-    description: "On-demand Office, GitHub products, war room, jobs, and optional scheduling.",
+    title: "User manual",
+    description: "How to run your virtual office: jobs, departments, agents, skills, and workflows.",
     content: tutorialMdEn,
   },
 };

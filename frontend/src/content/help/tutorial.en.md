@@ -1,470 +1,439 @@
-# Auto-Company Platform guide
+# User manual — Your virtual office with AI agents
 
-> **Auto-Company** is a multi-tenant platform with an **on-demand Office**: you commission work through a coordinator and a team of AI agents; they research, decide, implement, and document in real products under `projects/`. Automatic scheduling is **optional**.
+Welcome. This guide explains **how to run your virtual company**: request work, create departments, build agent teams, connect products, and collect deliverables. No programming or infrastructure knowledge required.
 
 ---
 
-## What you can do with the app
+## Quick start (Office)
 
-This is your **getting-started tutorial**. It reflects the current Office-first product model.
+If you just logged in, start here. You can complete your **first job in five minutes**.
 
-### In one sentence
+### Step 1 — Open the Office
 
-Manage **products and opportunities** with specialized agents (CEO, CTO, product, code, growth…) sharing memory (*consensus*), working in per-product workspaces, launched **from the Office** when you decide.
+After sign-in, open **Home** in the sidebar (your **Office**). You will see the **Coordinator** chat — your single entry point to the whole agent team.
 
-### Main flow: the Office
+### Step 2 — Say what you need
 
-1. Go to **`/office`** — tenant home after login.
-2. Chat with the **coordinator** or pick a **quick service** (discovery, evaluation, build…).
-3. Review the **team plan** (agents, estimated cost, scope) and click **Approve & run**.
-4. Follow progress in **War room** (`/war-room/:productId`) live.
-5. When done, the **job** appears under **`/office/encargos`** with final report and team documents.
+Write in plain language, as you would to a project lead:
 
-> **No automatic cycles by default.** The operations plan starts in *on-demand* mode (0 rules). Enable presets under **Settings → Schedules** only if you want weekly discovery or other partial autopilot.
+- *“Research whether a invoicing SaaS for freelancers in Mexico makes sense”*
+- *“Draft three LinkedIn posts for our product launch”*
+- *“Review competitor X’s pricing proposal”*
 
-### If you are a superadmin (platform)
+You can also use **Quick services**: ready-made templates (discovery, idea validation, feature sprint…) that you can edit before launching.
 
-| Step | Where | Outcome |
-|------|-------|---------|
-| 1 | `/admin/settings` | Shared LLM (OpenRouter or TokenLab), email, rate limits |
-| 2 | `/admin` | Create **tenants** and clone global templates |
-| 3 | `/admin/templates` | Edit master **agents, skills, workflows** |
-| 4 | Header selector | **Impersonate** a tenant and try the Office |
+### Step 3 — Choose scope (optional)
 
-### If you are a tenant user
+Before approving, you can set:
 
-| Step | Where | Outcome |
-|------|-------|---------|
-| 1 | `/office` | Commission work via coordinator |
-| 2 | `/products` | Register products (GitHub or new), pipeline, focus |
-| 3 | `/war-room/:id` | Live tactical view + coordinator chat |
-| 4 | `/office/encargos` | Job history and reports |
-| 5 | `/debug/runs` | Technical logs, tokens, cost |
-| 6 | `/settings` | Integrations, OpenCode, limits, schedules |
+- **General exploration** — no specific product; ideal for new ideas.
+- **A product** — the team uses that product’s context.
+- **A department** — the team uses that department’s agents, style, and deliverable pipeline (e.g. Marketing or Product Studio).
 
-### Express tutorial (15 minutes)
+### Step 4 — Review and approve
 
-1. **Log in** with your organization slug at `/login`.
-2. Open **Office** → ask the coordinator *“Explore 3 micro-SaaS ideas”* or use the discovery service.
-3. Approve the plan → watch the run in **War room**.
-4. Go to **Products** → register an existing repo (GitHub URL + optional *product-intake*) or create a new one.
-5. On the product: **Consensus**, **Code**, and **OpenCode** (agent/model/path per product).
-6. Review the finished job under **My jobs**.
-7. (Optional) **Settings → Schedules** → *Discovery only* preset for Saturday autopilot.
+The Coordinator proposes a **team plan**: which agents join, what they will deliver, estimated time and cost. If it looks good, click **Approve and run**. Nothing runs until you authorize it.
 
-### What each main area does
+### Step 5 — Follow progress and collect results
 
-| Area | Purpose |
-|------|---------|
-| **Office** | Conversational coordinator, quick services, ROI, monthly spend |
-| **My jobs** | Commissioned work inbox with final report |
-| **Products** | Portfolio, idea pipeline, GitHub registration, focus |
-| **War room** | Per-product tactical table: live agents, docs, coordinator |
-| **Debug office** | Runs, consensus, ops, decisions, AI catalog (workflows/agents/skills) |
-| **Settings** | Tenant LLM, global OpenCode, GitHub, notifications, limits, schedules |
-| **Help** | This guide |
+- While running: open **War room** for live status.
+- When done: go to **My jobs** for the summary and documents.
 
-### Usage modes
-
-| Mode | When | How |
-|------|------|-----|
-| **On demand** (default) | Daily use, full control | Office → approve plan → war room |
-| **Fixed schedule** | Weekly discovery, Monday review | Settings → Schedules → preset or rule |
-| **Technical debug** | Tune agents, SSE logs | `/debug/*` |
-
-> **Tip:** Complete one manual Office job before enabling schedules.
+> **Remember:** by default everything is **on demand**. Nothing runs until you request and approve it.
 
 ---
 
 ## Table of contents
 
-1. [What you can do with the app](#what-you-can-do-with-the-app)
-2. [Getting started](#getting-started)
-3. [Roles and access](#roles-and-access)
-4. [Application map](#application-map)
-5. [The on-demand Office](#the-on-demand-office)
-6. [Products and portfolio](#products-and-portfolio)
-7. [War room and jobs](#war-room-and-jobs)
-8. [Agents, skills, and workflows](#agents-skills-and-workflows)
-9. [Runs](#runs)
-10. [Consensus and memory](#consensus-and-memory)
-11. [Operations and scheduling](#operations-and-scheduling)
-12. [Tenant settings](#tenant-settings)
-13. [OpenCode and integrations](#opencode-and-integrations)
-14. [Platform administration](#platform-administration)
-15. [Deploy and worker](#deploy-and-worker)
-16. [Troubleshooting](#troubleshooting)
+1. [Quick start (Office)](#quick-start-office)
+2. [What your virtual office is](#what-your-virtual-office-is)
+3. [How to ask agents for work](#how-to-ask-agents-for-work)
+4. [My jobs: receiving results](#my-jobs-receiving-results)
+5. [War room: follow work live](#war-room-follow-work-live)
+6. [Products and opportunities](#products-and-opportunities)
+7. [Virtual departments](#virtual-departments)
+8. [Create and configure agents](#create-and-configure-agents)
+9. [Skills](#skills)
+10. [Workflows](#workflows)
+11. [Connect departments, products, and teams](#connect-departments-products-and-teams)
+12. [Memory and consensus](#memory-and-consensus)
+13. [Automatic schedules (optional)](#automatic-schedules-optional)
+14. [Decisions that need your OK](#decisions-that-need-your-ok)
+15. [Organization settings](#organization-settings)
+16. [Human team and permissions](#human-team-and-permissions)
+17. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
-## Getting started
+## What your virtual office is
 
-### Local install (development)
+Imagine a company where each “employee” is an AI specialist: strategy, product, design, code, marketing, finance, quality… They share context and work under a **Coordinator** who assembles the team based on what you ask.
 
-```bash
-cp .env.example .env
-npm install
-npx prisma migrate dev
-npm run db:seed
+You **commission**, **approve**, and **decide**. Agents **research, write, design, and execute** within the limits you configure.
 
-# Terminal 1 — API
-npm run dev
+### Main pieces
 
-# Terminal 2 — Worker (queue + optional scheduler)
-npm run worker
+| Piece | What it’s for |
+|-------|----------------|
+| **Office (Home)** | Ask the Coordinator and launch jobs |
+| **My jobs** | Inbox of finished work with reports and documents |
+| **War room** | Live tactical view while the team works |
+| **Products** | Portfolio of ideas and real products to operate on |
+| **Departments** | Specialized virtual teams (marketing, product studio, etc.) |
+| **Workflows** | Reusable agent sequences |
+| **Agents & Skills** | Specialist catalog and their capabilities |
+| **Consensus** | Shared company and product memory |
 
-# Terminal 3 — Frontend
-npm run dev:frontend
-```
+### Three ways to work
 
-Open **http://localhost:5173**. After tenant login you land on **`/office`**.
-
-### First UI steps
-
-| Step | Route | Action |
-|------|-------|--------|
-| 1 | `/setup` | Create **superadmin** (first time only) |
-| 2 | `/admin` | Create tenant and clone templates |
-| 3 | Header | Impersonate tenant |
-| 4 | `/settings?tab=integrations` | **GitHub** token (private repos + intake) |
-| 5 | `/office` | First coordinator job |
+| Mode | When to use it |
+|------|----------------|
+| **On demand** | Daily use. You ask, review the plan, approve. *(Default)* |
+| **Scheduled tasks** | You want certain tasks on a fixed calendar (e.g. market scan every Saturday) |
+| **Autonomous mode** | Continuous cycle with less intervention. Enable only after you know the manual flow |
 
 ---
 
-## Roles and access
+## How to ask agents for work
 
-### Superadmin (platform)
+### Talk to the Coordinator
 
-- Access `/admin`, global templates, platform settings.
-- **Impersonate** tenants from the header selector.
-- Without impersonation, tenant routes redirect to `/admin`.
+The Coordinator is your **chief of staff**: understands your request, picks specialists, estimates effort, and shows a plan before anyone starts.
 
-### Tenant user
+**Tips for good requests:**
 
-- Login: **slug** + email + password.
-- Default landing: **`/office`**.
-
-### Tenant roles
-
-| Role | Permissions |
-|------|-------------|
-| **owner / admin** | Settings, team, limits, schedules |
-| **member** | Office, products, war room, debug (read/execute) |
-
----
-
-## Application map
-
-### Office (human flow)
-
-| Route | Description |
-|-------|-------------|
-| `/` · `/office` | Coordinator, services, activity, ROI |
-| `/office/encargos` | Job inbox |
-| `/office/encargos/:runId` | Final report + team documents |
-| `/products` | Portfolio, pipeline, add product |
-| `/war-room/:productId` | Per-product war room |
-| `/debug/products/:id/consensus` | Product memory (debug) |
-| `/products/:id/code` | Workspace + per-product OpenCode |
-| `/settings` | Tenant configuration |
-| `/help` | Help center |
-
-### Debug office (technical)
-
-| Route | Description |
-|-------|-------------|
-| `/debug/runs` · `/debug/runs/:id` | Runs and SSE logs |
-| `/debug/consensus` | Tenant consensus |
-| `/debug/ops` | KPIs and active schedules |
-| `/debug/decisions` | Go/no-go proposals |
-| `/office/workflows` · `/office/workflows/:id` | React Flow visual editor (Office) |
-| `/debug/agents` · `/debug/skills` | AI catalog |
-| `/debug/team` | Tenant users (admin) |
-
-### Platform (superadmin)
-
-| Route | Description |
-|-------|-------------|
-| `/admin` | Dashboard and tenants |
-| `/admin/settings` | LLM, email, rate limits |
-| `/admin/templates` | Global templates |
-
----
-
-## The on-demand Office
-
-### Coordinator
-
-Chat at **`/office`** with tenant context and optional **product scope**. Proposes:
-
-- Agent team and work order
-- Estimated cost and monthly spend bar in sidebar
-- Direct link to war room on execute
+- Be **specific** about the outcome (*“3 LinkedIn posts”* beats *“do marketing”*).
+- Name **audience, market, or product** when relevant.
+- State **deliverable format** (report, copy, design, code, deck).
+- Mention constraints (brand tone, deadlines, competitors to avoid) up front.
 
 ### Quick services
 
-Predefined shortcuts (discovery, evaluation, etc.) that skip small talk and produce an approvable plan.
+Shortcuts with pre-built prompts: market discovery, idea evaluation, feature sprint, launch review… Pick one, tweak the text if needed, then follow the same approval flow.
 
-### Notifications
+### Choose scope before running
 
-Header bell → alert when a job completes or fails. Mobile panel respects safe area.
-
-### Monthly spend
-
-Sidebar widget with progress vs tenant limits.
-
----
-
-## Products and portfolio
-
-Each product lives in **`projects/{slug}/`** with phase, revenue, focus, and its own workspace.
-
-### Add product
-
-At **`/products` → Add product**:
-
-| Mode | Use |
-|------|-----|
-| **Register existing** | GitHub URL, optional clone, `product-intake` workflow for profile |
-| **Create new** | Empty bootstrap in `projects/{slug}/` |
-
-**Requirement:** GitHub token under **Settings → Integrations** for private repos and API enrichment.
-
-### Pipeline and decisions
-
-- Discovery ideas → pipeline on Products
-- Manual **GO / NO-GO** or evaluation workflow
-- Agent proposals → **`/debug/decisions`**
-
-### Focus
-
-One **focused** product prioritizes development and product-scoped jobs.
-
-### Product profile
-
-After intake: `product-profile.json`, metadata, and product consensus feed agent prompts on focused runs.
-
----
-
-## War room and jobs
-
-### War room (`/war-room/:productId`)
-
-- Tactical view while a workflow runs
-- Launcher: workflows and single agents per product
-- Documents under `docs/{role}/`
-
-### Jobs (`/office/encargos`)
-
-- List of Office-commissioned work
-- Detail: full-width **final report** + per-agent document sidebar
-- Rich markdown (GFM, Mermaid, charts)
-
-### Run ↔ job relationship
-
-During execution → war room. When complete → human job with readable report (light/dark themes).
-
----
-
-## Agents, skills, and workflows
-
-### Agents (`/debug/agents`)
-
-Expert persona: system prompt, model, temperature, linked skills.
-
-### Skills (`/debug/skills`)
-
-Reusable knowledge blocks injected into prompts.
-
-### Workflows (`/office/workflows`)
-
-Visual graph: agent order, shared memory, manual execute from editor.
-
-### Standard workflows (templates)
-
-| Name | Purpose |
-|------|---------|
-| `opportunity-discovery` | Ideas → pipeline |
-| `new-product-evaluation` | Evaluation → GO/NO-GO |
-| `product-intake` | Product profile from GitHub |
-| `feature-development` | Workspace implementation |
-| `product-launch` | Launch |
-| `pricing-and-monetization` | Pricing |
-| `weekly-review` | Operational review |
-
----
-
-## Runs
-
-Each run (`/debug/runs/:id`) includes:
-
-- Status: `PENDING` → `RUNNING` → `COMPLETED` / `FAILED` / `CANCELLED`
-- **Shared memory** across steps
-- **SSE logs** in real time
-- Tokens and estimated cost
-
-### Agent tools
-
-| Tool | Function |
-|------|---------|
-| `read_file` / `write_file` / `list_dir` | Product workspace files |
-| `shell` | Commands (configurable timeout) |
-| `git_*` | Git in project |
-| `npm_run` | npm scripts |
-| `wrangler_deploy` | Cloudflare deploy |
-
----
-
-## Consensus and memory
-
-### Tenant consensus (`/debug/consensus`)
-
-Shared markdown: decisions, company phase, human **Next Action**.
-
-### Product consensus (`/debug/products/:id/consensus`)
-
-Technical memory, revisions, and agent reports — **Debug office** only. In the human office use **Jobs (Encargos)** for deliverables.
-
-### Structured fields (shared memory)
-
-| Field | Effect |
+| Scope | Effect |
 |-------|--------|
-| `topIdeas[]` | Pipeline ideas |
-| `goNoGo` | GO / NO-GO |
-| `productSlug` | Portfolio registration |
-| `revenueUsd` | *Growing* phase |
+| General exploration | Team researches without anchoring to a product |
+| Specific product | Deliverables use that product’s memory, code, and context |
+| Department | That department’s agents and rules apply; artifacts go to its gallery |
+
+### Approve or adjust
+
+When you see the Coordinator’s proposal, check:
+
+- Are the agents the right fit?
+- Does the deliverable match what you asked?
+- Do estimated cost and time feel reasonable?
+
+If something is off, chat again to **adjust the plan** before approving.
 
 ---
 
-## Operations and scheduling
+## My jobs: receiving results
 
-### Ops view (`/debug/ops`)
+**My jobs** is your outbox. Each row is work you commissioned that finished (or failed).
 
-KPIs, phase, portfolio summary, active schedules, 7-day preview.
+Inside each job:
 
-### Operations plan (Settings → Schedules)
+- **Summary** — what the team did and main conclusions.
+- **Documents** — reports, copy, designs, or other generated files.
 
-| Preset | Rules |
-|--------|-------|
-| **On demand** (default) | 0 — control from Office |
-| **Discovery only** | Weekly Saturday discovery when pipeline empty |
-| **Light exploration** | Discovery + evaluation + Monday review |
-
-**Fixed** workflow rules; dynamic orchestrator (meta) remains an advanced option when adding rules manually — **not the recommended flow**.
-
-### Worker
-
-The **`worker`** container processes the queue and evaluates schedules every ~60 s. Without it, schedules do not fire (Office still works).
+Use this view to **archive, share with your human team, or commission follow-up** in the Office (*“Based on the last report, draft the landing page”*).
 
 ---
 
-## Tenant settings
+## War room: follow work live
 
-Tabs at **`/settings`**:
+The **War room** is a product’s operations room. It shows:
 
-| Tab | Content |
-|-----|---------|
-| **General** | Discovery interests |
-| **LLM** | Model override, cost cap/run (provider via superadmin) |
-| **OpenCode** | URL, credentials, *enabled* **globally** |
-| **Integrations** | GitHub token, tenant SMTP for agent email |
-| **MCP servers** | Register stdio MCP servers, agent grants, tool sync |
-| **Notifications** | Webhook, Slack, email, in-app |
-| **Limits** | Monthly runs/tokens/cost |
-| **Schedules** | Operations plan and rules |
+- **Tactical table** — which agent is active, waiting, or done.
+- **Embedded Coordinator** — commission extra work without leaving the room.
+- **Pipeline radar** — overall product status.
+- **Recent runs** — quick history.
+- **Department artifacts** — if the product is linked to a department.
+
+Open War room from **Products** (product button) or from **Activity** while a job is running.
 
 ---
 
-## OpenCode and integrations
+## Products and opportunities
 
-### GitHub (tenant)
+In **Products** you manage your portfolio in two tabs:
 
-**Settings → Integrations** — PAT with `repo` scope for clone, README, languages, and `product-intake`.
+### Opportunities
 
-**SMTP (same tab)** — Host, credentials, allowlist, and daily cap so agents can use the `send_email` tool. Only allowlisted addresses receive mail; every send is audited.
+Ideas from discovery or added manually. For each you can:
 
-**Settings → MCP servers** — Register stdio MCP commands, sync tools, and grant specific agents. Read-only mode blocks mutating tool names by default; each server has a per-run call budget.
+- **Evaluate** — team analyzes viability and proposes GO or NO-GO.
+- **Reject** — discard without creating a product.
+- **Promote to active product** — if evaluation is positive.
 
-### OpenCode
+### Active products
 
-| Level | What you configure |
-|-------|-------------------|
-| **Tenant** | Base URL, username, password, enable/disable, auto-approve |
-| **Product** (`/products/:id/code`) | Default agent, model, project path |
+Real products you operate day to day. From each product you reach:
 
-Delegation uses **per-product** config when implementing code.
+- **War room** — live operations.
+- **Settings** — product data, GitHub link, linked department, OpenCode (code delegation).
+- **Memory** — product-specific consensus.
 
----
+### Add a product
 
-## Platform administration
+**Register an existing repository** (GitHub URL) or **create a new workspace** for the team to start fresh.
 
-### Create tenant
+### Focus a product
 
-Name, slug, owner, **clone templates**.
-
-### Templates (`/admin/templates`)
-
-Master agents, skills, workflows. **Sync to tenants** to propagate changes.
-
-### Platform settings
-
-| Setting | Use |
-|---------|-----|
-| LLM provider + key | OpenRouter or TokenLab (one active) |
-| Public URL | Email and CORS |
-| Resend | Transactional email |
-| Rate limits | Auth and execute |
-| Scheduler tick | Worker frequency |
-
-> Platform GitHub token (if any) is separate from the **per-tenant** token in Integrations.
+Mark a product as **focused** so Office and War room prefer it by default.
 
 ---
 
-## Deploy and worker
+## Virtual departments
 
-Docker Compose stack (Dokploy-ready): `postgres`, `redis`, `api`, `worker`, `web`.
+A **department** is a virtual business unit: marketing agency, product studio, content team, etc. Each department has:
 
-Checklist:
+- **Its own agents** (or AI-suggested ones at creation).
+- **Configuration** — form for brand, tone, channels, etc.
+- **design.md** — visual and style guide, generated or edited.
+- **Artifact gallery** — copy, posts, designs, reports from the team.
+- **Work items** — linked client, campaign, or project slots.
 
-- [x] Migrations on deploy — automatic via api entrypoint (`RUN_MIGRATIONS` default true)
-- [ ] `worker` healthy (schedules + queue)
-- [ ] LLM configured at `/admin/settings`
-- [ ] Tenant GitHub token if using private intake
-- [ ] Operations plan: *on demand* unless you want partial autopilot
+### Create a department with Org Studio
 
----
+1. Go to **Departments** → **Open Org Studio**.
+2. **Step 1** — Pick a template (marketing, product studio, custom…), name and mission.
+3. Click **Generate proposal**. AI suggests agents, config, and a design.md preview.
+4. **Step 2** — Review the proposal. **Munger** (risk control) may **VETO** if it finds fatal flaws; adjust mission or template.
+5. Optional: check **Create linked work item** to open a product/client slot at the same time.
+6. Click **Create department**.
 
-## Troubleshooting
+### Run an existing department
 
-### Cannot clone a private repo
+On the department page:
 
-- GitHub token under tenant **Settings → Integrations**
-- Test connection on the same tab
-
-### Scheduling never runs
-
-- Is **worker** running?
-- Any **enabled** rules under Schedules? (default: none)
-- Monthly limit reached?
-
-### Runs fail on LLM
-
-- Superadmin → `/admin/settings`: active provider + API key
-- Check `maxCostUsdPerRun` under Settings → LLM
-
-### OpenCode does not delegate
-
-- OpenCode enabled under Settings → OpenCode (global)
-- Agent/model/path set on **product Code** page
-
-### Job markdown low contrast
-
-- Use **Stripe HDS Light**, **Paperclip Warm**, or **Slash** theme; reports use `--office-*` tokens
-
-### Stuck on same Next Action
-
-**Convergence** engine pivots after repeated cycles — edit consensus manually if needed.
+- **Configuration** — save brand, goals, channel changes.
+- **design.md** — view or sync the style guide.
+- **Gallery** — review deliverables; filter, change status (draft, approved, published).
+- **Launch department work** — write a brief and pick a linked product; the department team runs on that context.
 
 ---
 
-> **Next step:** impersonate your tenant → **`/office`** → commission discovery → follow in **War room** → read the report under **My jobs**.
+## Create and configure agents
+
+**Agents** are your virtual specialists. Each has persona, AI model, temperature, and linked **skills**.
+
+### Where to manage them
+
+Sidebar **Debug office** → **AI catalog** → **Agents**.
+
+*(If you don’t see this section, your role may be member-only; ask an admin to create or adjust agents.)*
+
+### Create an agent
+
+1. Click **New agent**.
+2. Set **name** and **persona** (how they think and speak: strategist, writer, devops…).
+3. Choose **model** and **temperature** (more creative vs. more precise).
+4. Assign **skills** that extend what they can do (research, SEO, code review…).
+5. Save.
+
+### When to create new agents
+
+- You need a role no one in the catalog covers.
+- You want a variant with different tone (e.g. “Formal B2B copy” vs. “Startup casual copy”).
+- A department needs dedicated specialists.
+
+Agents created here can be used in **Workflows**, **Coordinator** jobs, and **departments**.
+
+---
+
+## Skills
+
+**Skills** are reusable capabilities: deep research, SEO audit, financial modeling, landing design… An agent can have several skills; a skill can attach to several agents.
+
+### Where to manage them
+
+**Debug office** → **AI catalog** → **Skills**.
+
+### Create a skill
+
+1. **New** → clear name (*“Onboarding UX audit”*).
+2. Describe **when to use it** and **what it should deliver**.
+3. Save and **attach it to agents** that need it.
+
+### Good practices
+
+- Name for outcomes, not internal tools.
+- One skill = one recognizable type of work.
+- Avoid near-duplicates; refine the description instead.
+
+---
+
+## Workflows
+
+A **workflow** is an **ordered chain of agents**: e.g. Research → CEO → Product → Code → QA.
+
+### Where to create them
+
+**Workflows** under **Your office** in the sidebar.
+
+### Create a workflow
+
+1. **New workflow** → name and description.
+2. Open the **visual editor** and drag agent nodes.
+3. Connect execution order.
+4. **Save**.
+
+### Use a workflow
+
+- The **Coordinator** may pick workflows for complex jobs.
+- You can **run a workflow directly** from the editor with a task seed (starting text).
+- In **Schedules**, a rule can trigger a specific workflow on a date.
+
+Think of workflows as **playbooks**: processes you want to repeat with the same team.
+
+---
+
+## Connect departments, products, and teams
+
+How the pieces fit:
+
+```
+You (Office)
+    ↓ job + scope
+Coordinator → picks agents / workflow / department
+    ↓
+Product (context, memory, code)
+    ↔ linked to → Department (agents, design.md, artifacts)
+    ↓
+War room (tracking) → My jobs (deliverables)
+```
+
+### Link product ↔ department
+
+1. Open **Product settings**.
+2. **Department** section → choose the department.
+3. Save.
+
+From then on:
+
+- Jobs scoped to that department use its team and style.
+- Run **artifacts** may appear in the **department gallery**.
+- From the department you can **launch runs** choosing that product as work item.
+
+### Work items in a department
+
+A department can have **multiple work items** (clients, campaigns, projects). Each usually maps to a **linked product**. Create them on the department page or when creating the department in Org Studio.
+
+### Agents ↔ Workflows ↔ Departments
+
+| You want… | Do this |
+|-----------|---------|
+| Agents only for Marketing | Create or assign them when building the dept. in Org Studio |
+| Same process every time | Define a **Workflow** and use it in jobs or schedules |
+| Unified brand deliverables | Configure the dept. + **design.md** + copy/design skills on agents |
+
+---
+
+## Memory and consensus
+
+Agents need **shared context** so they don’t contradict each other.
+
+### Company memory
+
+In **Consensus** (debug menu) you edit the global document: mission, principles, priority markets, strategic decisions. The whole team reads it when planning.
+
+### Product memory
+
+Each product has **its own memory**: positioning, agreed pricing, feature decisions, discovery learnings.
+
+**Tip:** after an important job, ask the Coordinator to **summarize decisions into consensus** or update product memory yourself.
+
+---
+
+## Automatic schedules (optional)
+
+By default **there is no automation**: you command. For recurring tasks:
+
+1. Go to **Settings** → **Schedules** tab.
+2. Review the **Operations plan**. The **On demand** preset has no rules (recommended at first).
+3. For a light automatic pilot, pick a preset like **Discovery only** or create a **fixed rule**: which workflow or task, how often, and conditions.
+
+You can also preview the calendar under **Ops** (debug menu).
+
+> Master manual jobs from the Office first. Add schedules when you know exactly what should repeat on its own.
+
+---
+
+## Decisions that need your OK
+
+Under **Decisions** (debug menu) you see proposals the team cannot close alone: launch product, change pricing, strategic pivot…
+
+Each card summarizes the proposal. You mark **GO** or **NO-GO**. Until you respond, the related cycle may pause.
+
+---
+
+## Organization settings
+
+In **Settings** (admins) you tune the work environment:
+
+| Tab | What you configure (plain language) |
+|-----|-------------------------------------|
+| **General** | Organization name and basics |
+| **LLM** | AI provider and default models |
+| **OpenCode** | External coding agent (if used) |
+| **Integrations** | GitHub, email, etc. |
+| **Notifications** | Alerts when a job finishes or fails |
+| **Limits** | Monthly AI spend cap |
+| **Schedules** | Operations plan and automatic rules |
+
+**Members** without admin role use Office and products; they don’t need this daily.
+
+---
+
+## Human team and permissions
+
+Under **Team** you invite real people to your organization.
+
+| Role | What they can do |
+|------|------------------|
+| **Owner / Admin** | Settings, agents, workflows, schedules, invite users |
+| **Member** | Office, jobs, products, war room, departments (per policy) |
+
+Share this manual with new members so they can commission work from day one.
+
+---
+
+## Frequently asked questions
+
+### Do agents run things without my permission?
+
+Not in **on demand** mode. You always see a plan and click **Approve and run**. Automatic schedules are opt-in.
+
+### What’s the difference between Office and War room?
+
+- **Office** — request and plan work (any scope).
+- **War room** — follow one **specific product** live and commission from there.
+
+### Do I need a department to start?
+
+No. You can operate with **Office + Products** only. Departments help when you want specialized teams with brand, artifacts, and dedicated agents.
+
+### What are Munger and VETO?
+
+A **risk review** before creating a department. If the proposal has fatal flaws (incoherent market, impossible mission…), creation is blocked until you adjust.
+
+### Where do I see AI spend?
+
+On the **Office** (month KPIs) and **Settings → Limits**. Each job shows estimated cost before approval.
+
+### What if a job fails?
+
+Open **My jobs** or **Runs** (technical view), read the error message, adjust the brief, and commission again. If it persists, check spend limits and model settings with your admin.
+
+### Can I reuse the same workflow for different clients?
+
+Yes. Create **work items** or **products** per client, link them to the same **department**, and run the same **workflow** or quick service with only the brief changed.
+
+---
+
+*Something unclear? Return to **Quick start** or ask the Coordinator in the Office: “Explain how to create a marketing department” — it will walk you through the app step by step.*

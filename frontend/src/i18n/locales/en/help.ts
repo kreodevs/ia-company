@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Help",
   title: "Help center",
-  subtitle: "Updated guide: on-demand Office, products, war room, and technical debug routes.",
+  subtitle: "User manual for your virtual office: jobs, departments, agents, and workflows.",
   articles: "Articles",
   articlesHeading: "Articles",
   sections: "In this article",
@@ -16,7 +16,7 @@ export const help = {
   quickSettings: "Settings",
   article: {
     slug: "guia-completa",
-    title: "Complete guide",
-    description: "Office, GitHub products, jobs, OpenCode, and optional scheduling.",
+    title: "User manual",
+    description: "Ask agents for work, create departments, agents, skills, and connect teams.",
   },
 } as const;
