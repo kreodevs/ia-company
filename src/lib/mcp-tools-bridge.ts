@@ -18,10 +18,12 @@ class McpCallBudget {
   }
 }
 
+const MAX_MCP_TOOLS_PER_AGENT = 24;
+
 function jsonSchemaToZod(schema: Record<string, unknown>): z.ZodObject<z.ZodRawShape> {
   const props = schema.properties as Record<string, Record<string, unknown>> | undefined;
   if (!props || typeof props !== "object") {
-    return z.object({}).passthrough();
+    return z.object({});
   }
 
   const required = new Set(
@@ -31,18 +33,18 @@ function jsonSchemaToZod(schema: Record<string, unknown>): z.ZodObject<z.ZodRawS
 
   for (const [key, prop] of Object.entries(props)) {
     const desc = typeof prop.description === "string" ? prop.description : key;
-    let field: z.ZodTypeAny = z.any().describe(desc);
+    let field: z.ZodTypeAny = z.string().describe(desc);
     if (prop.type === "string") field = z.string().describe(desc);
     else if (prop.type === "number" || prop.type === "integer") field = z.number().describe(desc);
     else if (prop.type === "boolean") field = z.boolean().describe(desc);
-    else if (prop.type === "array") field = z.array(z.any()).describe(desc);
-    else if (prop.type === "object") field = z.record(z.any()).describe(desc);
+    else if (prop.type === "array") field = z.array(z.string()).describe(desc);
+    else if (prop.type === "object") field = z.object({}).describe(desc);
 
     if (!required.has(key)) field = field.optional();
     shape[key] = field;
   }
 
-  return z.object(shape).passthrough();
+  return z.object(shape);
 }
 
 function mcpToolKey(serverSlug: string, toolName: string): string {
@@ -55,7 +57,10 @@ export async function buildMcpToolsForAgent(
 ): Promise<Record<string, unknown>> {
   if (!ctx.tenantId || !ctx.agentId || ctx.toolMode === "readonly") return {};
 
-  const defs = await loadAgentMcpToolDefinitions(ctx.tenantId, ctx.agentId);
+  const defs = (await loadAgentMcpToolDefinitions(ctx.tenantId, ctx.agentId)).slice(
+    0,
+    MAX_MCP_TOOLS_PER_AGENT,
+  );
   if (defs.length === 0) return {};
 
   const limits = new Map<string, number>();
@@ -71,7 +76,7 @@ export async function buildMcpToolsForAgent(
     try {
       schema = jsonSchemaToZod(JSON.parse(def.inputSchemaJson) as Record<string, unknown>);
     } catch {
-      schema = z.object({}).passthrough();
+      schema = z.object({});
     }
 
     const toolKey = mcpToolKey(def.serverSlug, def.toolName);

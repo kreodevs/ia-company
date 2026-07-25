@@ -30,5 +30,6 @@ export const runs = {
     stepStart: "Iniciando {{agentName}}",
     stepComplete: "Completado {{agentName}} ({{tokensUsed}} tokens)",
     done: "Finalizado — {{status}}",
+    logPayload: "Detalle",
   },
 } as const;

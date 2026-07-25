@@ -3,6 +3,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FileText, History, Target, Building2, Layers } from "lucide-react";
 import { api, type PipelineIdea, type TenantConsensus, type TenantProduct } from "../lib/api";
+import { translateApiError } from "../lib/translate-error";
+import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Input from "../components/ui/Input";
@@ -32,6 +34,7 @@ export default function ConsensusPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const initialScope: Scope =
     (searchParams.get("scope") as Scope | null) ?? "company";
@@ -102,6 +105,22 @@ export default function ConsensusPage() {
       setRecord(updated);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const clearConsensus = async () => {
+    if (!window.confirm(t("consensus.clearConsensusConfirmCompany"))) return;
+    setClearing(true);
+    try {
+      const updated = await api.consensus.clear();
+      setRecord(updated);
+      setContent(updated.content);
+      setNextAction(updated.nextAction ?? "");
+      toast.success(t("consensus.clearConsensusDone"));
+    } catch (err) {
+      toast.error(translateApiError(err, t, "consensus.clearConsensusFailed"));
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -222,13 +241,23 @@ export default function ConsensusPage() {
           }
           subtitle={t("consensus.companyHelp", { defaultValue: "Company-level memory: phase, pipeline and next action." })}
           actions={
-            <Button
-              onClick={() => void save()}
-              disabled={saving || !dirty}
-              size="sm"
-            >
-              {saving ? t("common.saving") : t("consensus.saveConsensus")}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="destructive"
+                onClick={() => void clearConsensus()}
+                disabled={clearing || saving}
+                size="sm"
+              >
+                {clearing ? t("common.loading") : t("consensus.clearConsensus")}
+              </Button>
+              <Button
+                onClick={() => void save()}
+                disabled={saving || !dirty || clearing}
+                size="sm"
+              >
+                {saving ? t("common.saving") : t("consensus.saveConsensus")}
+              </Button>
+            </div>
           }
           stickyHeader
           hover

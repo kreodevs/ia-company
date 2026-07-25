@@ -562,6 +562,24 @@ export async function productRoutes(app: FastifyInstance) {
     },
   );
 
+  app.post<{ Params: { id: string } }>("/products/:id/consensus/clear", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+      const { clearProductConsensus, getProductConsensus } = await import(
+        "../../lib/product-consensus.js"
+      );
+      await clearProductConsensus(product.id, product.slug, product.name);
+      await logAudit(request, "product.consensus.clear", { productId: product.id });
+      return getProductConsensus(product.id);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/last-run", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);

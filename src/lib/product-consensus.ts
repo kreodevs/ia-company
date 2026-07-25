@@ -247,6 +247,27 @@ export async function appendProductHandoff(
   return { revisionId: updated.id, cycleNumber: consensus.cycleNumber + 1 };
 }
 
+export async function clearProductConsensus(
+  productId: string,
+  productSlug: string,
+  productName: string,
+): Promise<{ content: string; nextAction: string }> {
+  const content = DEFAULT_PRODUCT_CONSENSUS_CONTENT(productName);
+  const nextAction = "Define the next cycle focus.";
+  const consensus = await ensureProductConsensus(productId);
+
+  await prisma.$transaction([
+    prisma.productConsensusRevision.deleteMany({ where: { productId: consensus.id } }),
+    prisma.productConsensus.update({
+      where: { id: consensus.id },
+      data: { content, nextAction, cycleNumber: 0 },
+    }),
+  ]);
+
+  await syncProductConsensusFileToWorkspace(productSlug, content, nextAction);
+  return { content, nextAction };
+}
+
 export async function updateProductConsensusContent(
   productId: string,
   productSlug: string,

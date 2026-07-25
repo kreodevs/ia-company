@@ -8,6 +8,13 @@ export const consensus = {
   nextActionPlaceholder: "¿En qué debe centrarse el próximo ciclo?",
   document: "Documento",
   saveConsensus: "Guardar consensus",
+  clearConsensus: "Limpiar consenso",
+  clearConsensusConfirmProduct:
+    "¿Resetear el documento de consenso y borrar todas las revisiones de este producto? No se puede deshacer.",
+  clearConsensusConfirmCompany:
+    "¿Resetear la memoria de la compañía al documento inicial? No se puede deshacer.",
+  clearConsensusDone: "Consenso reiniciado",
+  clearConsensusFailed: "No se pudo limpiar el consenso",
   lastUpdated: "Última actualización {{date}}",
   noChangesToSave: "Sin cambios para guardar.",
   companyHelp:

@@ -91,6 +91,19 @@ export function findApiCallError(err: unknown): APICallError | null {
   let current: unknown = err;
   while (current) {
     if (current instanceof APICallError) return current;
+    if (current && typeof current === "object") {
+      const record = current as Record<string, unknown>;
+      if (typeof record.responseBody === "string" && typeof record.statusCode === "number") {
+        return new APICallError({
+          message: typeof record.message === "string" ? record.message : "Provider returned error",
+          url: typeof record.url === "string" ? record.url : "",
+          requestBodyValues: {},
+          statusCode: record.statusCode,
+          responseHeaders: {},
+          responseBody: record.responseBody,
+        });
+      }
+    }
     if (current instanceof Error && current.cause) {
       current = current.cause;
       continue;

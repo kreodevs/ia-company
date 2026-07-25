@@ -15,6 +15,8 @@ import ProductAgentDocsPanel from "../components/products/ProductAgentDocsPanel"
 import ProductLastRunPanel from "../components/products/ProductLastRunPanel";
 import MarkdownPreview from "../components/ui/MarkdownPreview";
 import EmptyState from "../components/ui/EmptyState";
+import { toast } from "../components/molecules/Sonner";
+import { translateApiError } from "../lib/translate-error";
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleString();
@@ -46,6 +48,7 @@ export default function ProductConsensusPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [lastRunTrace, setLastRunTrace] = useState<ProductLastRunTrace | null>(null);
   const [lastRunLoading, setLastRunLoading] = useState(true);
 
@@ -91,6 +94,24 @@ export default function ProductConsensusPage() {
       setRecord(updated);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const clearConsensus = async () => {
+    if (!productId) return;
+    if (!window.confirm(t("consensus.clearConsensusConfirmProduct"))) return;
+    setClearing(true);
+    try {
+      const updated = await api.products.consensus.clear(productId);
+      setRecord(updated);
+      setContent(updated.content);
+      setNextAction(updated.nextAction ?? "");
+      setRevisions([]);
+      toast.success(t("consensus.clearConsensusDone"));
+    } catch (err) {
+      toast.error(translateApiError(err, t, "consensus.clearConsensusFailed"));
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -291,13 +312,23 @@ export default function ProductConsensusPage() {
               "This is the product-scoped memory. Edits replace the document; per-step agent handoffs are recorded in the Revisions tab.",
           })}
           actions={
-            <Button
-              onClick={() => void save()}
-              disabled={saving || !dirty}
-              size="sm"
-            >
-              {saving ? t("common.saving") : t("consensus.saveConsensus")}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="destructive"
+                onClick={() => void clearConsensus()}
+                disabled={clearing || saving}
+                size="sm"
+              >
+                {clearing ? t("common.loading") : t("consensus.clearConsensus")}
+              </Button>
+              <Button
+                onClick={() => void save()}
+                disabled={saving || !dirty || clearing}
+                size="sm"
+              >
+                {saving ? t("common.saving") : t("consensus.saveConsensus")}
+              </Button>
+            </div>
           }
           stickyHeader
           hover

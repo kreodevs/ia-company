@@ -16,6 +16,25 @@ interface StreamEvent {
   timestamp?: string;
 }
 
+function formatLogPayload(payload: unknown): string | null {
+  if (payload == null) return null;
+  if (typeof payload === "string") return payload;
+  try {
+    return JSON.stringify(payload, null, 2);
+  } catch {
+    return String(payload);
+  }
+}
+
+function logMessage(data: Record<string, unknown>): string | undefined {
+  if (typeof data.message === "string") return data.message;
+  return undefined;
+}
+
+function logPayload(data: Record<string, unknown>): string | null {
+  return formatLogPayload(data.payload);
+}
+
 export default function RunDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
@@ -120,43 +139,55 @@ export default function RunDetailPage() {
         <Card>
           <h2 className="mb-3 font-semibold">{t("runs.detail.liveLog")}</h2>
           <div ref={logRef} className="max-h-96 space-y-2 overflow-y-auto font-mono text-xs">
-            {events.map((ev, i) => (
+            {events.map((ev, i) => {
+              const data = ev.data as Record<string, unknown>;
+              const message = logMessage(data);
+              const payload = logPayload(data);
+              return (
               <div key={i} className="rounded border border-[var(--color-border)] bg-[var(--color-background)] p-2">
                 <span className="text-[var(--color-primary)]">[{ev.type}]</span>{" "}
                 {ev.type === "step_start" && (
                   <span>
                     {t("runs.detail.stepStart", {
-                      agentName: (ev.data as { agentName?: string }).agentName,
+                      agentName: (data as { agentName?: string }).agentName,
                     })}
                   </span>
                 )}
                 {ev.type === "step_complete" && (
                   <span>
                     {t("runs.detail.stepComplete", {
-                      agentName: (ev.data as { agentName?: string }).agentName,
-                      tokensUsed: (ev.data as { tokensUsed?: number }).tokensUsed,
+                      agentName: (data as { agentName?: string }).agentName,
+                      tokensUsed: (data as { tokensUsed?: number }).tokensUsed,
                     })}
                   </span>
                 )}
-                {ev.type === "log" && (
-                  <span>{(ev.data as { message?: string }).message}</span>
-                )}
-                {ev.type === "error" && (
-                  <span className="text-[var(--color-destructive)]">
-                    {(ev.data as { message?: string }).message}
-                  </span>
+                {(ev.type === "log" || ev.type === "error") && (
+                  <div className="space-y-1">
+                    {message && (
+                      <span className={ev.type === "error" ? "text-[var(--color-destructive)]" : undefined}>
+                        {message}
+                      </span>
+                    )}
+                    {payload && (
+                      <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded bg-[var(--color-muted)]/40 p-2 text-[10px] text-[var(--color-muted-foreground)]">
+                        {t("runs.detail.logPayload")}:{"\n"}
+                        {payload}
+                      </pre>
+                    )}
+                  </div>
                 )}
                 {ev.type === "done" && (
                   <span className="text-[var(--color-accent)]">
                     {t("runs.detail.done", {
-                      status: t(`status.${(ev.data as { status?: string }).status ?? ""}`, {
-                        defaultValue: (ev.data as { status?: string }).status,
+                      status: t(`status.${(data as { status?: string }).status ?? ""}`, {
+                        defaultValue: (data as { status?: string }).status,
                       }),
                     })}
                   </span>
                 )}
               </div>
-            ))}
+            );
+            })}
           </div>
         </Card>
       </div>

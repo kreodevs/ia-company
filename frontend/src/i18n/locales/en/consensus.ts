@@ -8,6 +8,13 @@ export const consensus = {
   nextActionPlaceholder: "What should the next cycle focus on?",
   document: "Document",
   saveConsensus: "Save consensus",
+  clearConsensus: "Clear consensus",
+  clearConsensusConfirmProduct:
+    "Reset this product's consensus document and delete all revisions? This cannot be undone.",
+  clearConsensusConfirmCompany:
+    "Reset company memory to the initial document? This cannot be undone.",
+  clearConsensusDone: "Consensus reset",
+  clearConsensusFailed: "Could not clear consensus",
   lastUpdated: "Last updated {{date}}",
   noChangesToSave: "No changes to save.",
   companyHelp:

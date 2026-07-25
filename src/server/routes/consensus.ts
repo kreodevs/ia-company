@@ -46,4 +46,16 @@ export async function consensusRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.post("/consensus/clear", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { clearTenantConsensus } = await import("../../lib/consensus.js");
+      const cleared = await clearTenantConsensus(tenantId);
+      await logAudit(request, "consensus.clear", {});
+      return cleared;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 }

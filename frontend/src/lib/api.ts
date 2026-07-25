@@ -1191,6 +1191,7 @@ export const api = {
     get: () => request<TenantConsensus>("/consensus"),
     update: (body: { content: string; nextAction?: string }) =>
       request<TenantConsensus>("/consensus", { method: "PUT", body: JSON.stringify(body) }),
+    clear: () => request<TenantConsensus>("/consensus/clear", { method: "POST" }),
   },
   schedules: {
     list: () => request<SchedulesListResponse>("/schedules"),
@@ -1319,6 +1320,8 @@ export const api = {
         request<ProductConsensusRevision[]>(
           `/products/${id}/consensus/revisions?limit=${limit}`,
         ),
+      clear: (id: string) =>
+        request<ProductConsensus>(`/products/${id}/consensus/clear`, { method: "POST" }),
     },
     agentDocs: (id: string) => request<ProductAgentDocsIndex>(`/products/${id}/agent-docs`),
     lastRun: (id: string) => request<ProductLastRunTrace>(`/products/${id}/last-run`),

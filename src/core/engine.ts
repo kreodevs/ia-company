@@ -28,7 +28,7 @@ import type {
 } from "../types/index.js";
 import { createLanguageModel, estimateCostUsd, findApiCallError, formatLlmProviderError } from "./providers.js";
 import { prepareSharedMemoryForPrompt } from "../lib/prompt-memory.js";
-import { createAgentToolsWithIntegrations } from "./tools.js";
+import { createAgentTools, createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
 import { WORKFLOW_NAMES } from "../lib/workflow-names.js";
 import {
@@ -573,7 +573,7 @@ export class WorkflowExecutor {
       productId = product?.id;
     }
 
-    const tools = await createAgentToolsWithIntegrations({
+    const toolContext = {
       workspaceRoot: tenantCtx.workspaceRoot,
       shellTimeoutMs: this.shellTimeoutMs,
       runId,
@@ -584,38 +584,52 @@ export class WorkflowExecutor {
       agentId: agent.id,
       toolMode,
       sharedMemory,
-      onLog: (message, payload) => {
+      onLog: (message: string, payload?: Record<string, unknown>) => {
         void this.appendLog(runId, "debug", message, { agentId: agent.id, payload });
       },
       onDelegationStarted: () => {
         delegated = true;
       },
       resumeFromStepOrder: stepOrder != null ? stepOrder + 1 : undefined,
-    });
+    };
 
-    let response;
-    try {
-      response = await generateText({
+    const baseTools = createAgentTools(toolContext);
+    const tools = await createAgentToolsWithIntegrations(toolContext);
+    const mcpToolCount = Object.keys(tools).length - Object.keys(baseTools).length;
+
+    const callLlm = (activeTools: typeof tools) =>
+      generateText({
         model,
         temperature: agent.temperature,
         system: systemPrompt,
         prompt: userPrompt,
-        tools: tools as unknown as NonNullable<Parameters<typeof generateText>[0]["tools"]>,
+        tools: activeTools as unknown as NonNullable<Parameters<typeof generateText>[0]["tools"]>,
         maxSteps: 10,
       });
-    } catch (err) {
-      const apiErr = findApiCallError(err);
-      if (apiErr?.responseBody) {
-        await this.appendLog(runId, "error", "LLM provider response body", {
-          agentId: agent.id,
-          payload: {
-            statusCode: apiErr.statusCode,
-            body: apiErr.responseBody.slice(0, 2_000),
-          },
-        });
+
+    const runWithOptionalMcpFallback = async () => {
+      try {
+        return await callLlm(tools);
+      } catch (err) {
+        const apiErr = findApiCallError(err);
+        if (apiErr?.statusCode === 400 && mcpToolCount > 0) {
+          await this.appendLog(runId, "warn", "LLM HTTP 400 with MCP tools — retrying without MCP", {
+            agentId: agent.id,
+            payload: { mcpToolCount, statusCode: apiErr.statusCode },
+          });
+          try {
+            return await callLlm(baseTools);
+          } catch (retryErr) {
+            await this.logAndThrowLlmError(runId, agent.id, retryErr, providerConfig);
+            throw new Error("LLM call failed");
+          }
+        }
+        await this.logAndThrowLlmError(runId, agent.id, err, providerConfig);
+        throw new Error("LLM call failed");
       }
-      throw new Error(formatLlmProviderError(err, providerConfig));
-    }
+    };
+
+    const response = await runWithOptionalMcpFallback();
 
     let output = collectAgentStepOutput(response);
     let promptTokens = response.usage?.promptTokens ?? 0;
@@ -794,6 +808,26 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     });
   }
 
+  private async logAndThrowLlmError(
+    runId: string,
+    agentId: string,
+    err: unknown,
+    providerConfig: { provider: string; model: string },
+  ): Promise<never> {
+    const apiErr = findApiCallError(err);
+    if (apiErr?.responseBody) {
+      const bodySnippet = apiErr.responseBody.slice(0, 2_000);
+      await this.appendLog(runId, "error", "LLM provider response body", {
+        agentId,
+        payload: {
+          statusCode: apiErr.statusCode,
+          body: bodySnippet,
+        },
+      });
+    }
+    throw new Error(formatLlmProviderError(err, providerConfig));
+  }
+
   private async appendLog(
     runId: string,
     level: LogLevel,
@@ -816,6 +850,19 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
         tokensUsed: extra?.tokensUsed,
         costUsd: extra?.costUsd,
         payload: extra?.payload as object | undefined,
+      },
+    });
+
+    emitRunEvent({
+      type: level === "error" ? "error" : "log",
+      runId,
+      timestamp: new Date().toISOString(),
+      data: {
+        level,
+        message,
+        stepId: extra?.stepId,
+        agentId: extra?.agentId,
+        payload: extra?.payload,
       },
     });
   }

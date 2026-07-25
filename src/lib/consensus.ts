@@ -105,6 +105,28 @@ export async function loadConsensusInitialMemory(
   return mergeConsensusIntoMemory(consensus, override);
 }
 
+export async function clearTenantConsensus(tenantId: string): Promise<{
+  tenantId: string;
+  content: string;
+  nextAction: string | null;
+}> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { name: true },
+  });
+  const content = DEFAULT_TENANT_CONSENSUS_CONTENT(tenant?.name ?? "Tenant");
+  const nextAction = "Define the next cycle focus.";
+
+  const record = await prisma.tenantConsensus.upsert({
+    where: { tenantId },
+    update: { content, nextAction },
+    create: { tenantId, content, nextAction },
+  });
+
+  await syncTenantConsensusToWorkspace(tenantId);
+  return record;
+}
+
 export async function persistCompanyConsensusFromRun(
   tenantId: string,
   memory: SharedMemory,
