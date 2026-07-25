@@ -1,4 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { APICallError } from "@ai-sdk/provider";
 import type { LanguageModel } from "ai";
 import type { AgentProvider } from "@prisma/client";
 import type { ProviderConfig } from "../types/index.js";
@@ -101,9 +102,41 @@ export function formatLlmProviderError(
     if (msg && !parts.includes(msg)) parts.push(msg);
   }
 
+  if (err instanceof APICallError) {
+    if (err.statusCode) parts.push(`HTTP ${err.statusCode}`);
+    const providerDetail = extractProviderResponseDetail(err.responseBody);
+    if (providerDetail && !parts.includes(providerDetail)) parts.push(providerDetail);
+  } else if (
+    err &&
+    typeof err === "object" &&
+    "responseBody" in err &&
+    typeof (err as { responseBody?: unknown }).responseBody === "string"
+  ) {
+    const providerDetail = extractProviderResponseDetail(
+      (err as { responseBody: string }).responseBody,
+    );
+    if (providerDetail && !parts.includes(providerDetail)) parts.push(providerDetail);
+  }
+
   const combined = parts.join(" — ");
-  if (/provider returned error|failed to fetch|401|403|404|429|invalid model/i.test(combined)) {
+  if (/provider returned error|failed to fetch|401|403|404|429|invalid model|insufficient credits|user not found/i.test(combined)) {
     return `LLM ${config.provider}/${config.model} error: ${combined}. Check Admin → Platform settings (API key, base URL) and that the model id is valid on the provider.`;
   }
   return combined;
+}
+
+function extractProviderResponseDetail(responseBody: string | undefined): string | null {
+  if (!responseBody?.trim()) return null;
+  try {
+    const parsed = JSON.parse(responseBody) as {
+      error?: { message?: string; code?: number | string; metadata?: { raw?: string } };
+      message?: string;
+    };
+    const nested = parsed.error?.message ?? parsed.message;
+    if (nested?.trim()) return nested.trim();
+  } catch {
+    // fall through to raw body
+  }
+  const trimmed = responseBody.trim();
+  return trimmed.length > 240 ? `${trimmed.slice(0, 240)}…` : trimmed;
 }
