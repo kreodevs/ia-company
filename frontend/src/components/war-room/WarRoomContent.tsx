@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
@@ -60,6 +61,23 @@ const TEAM_REFRESH_MIN_MS = 2500;
 /** Keep active agent states visible long enough to read the war-room table. */
 const AGENT_STATUS_HOLD_MS = 2800;
 const STEP_EVENT_REFRESH_MS = 2800;
+const COORDINATOR_COLLAPSED_KEY = "war-room-coordinator-collapsed";
+
+function readCoordinatorCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COORDINATOR_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeCoordinatorCollapsed(collapsed: boolean): void {
+  try {
+    localStorage.setItem(COORDINATOR_COLLAPSED_KEY, collapsed ? "1" : "0");
+  } catch {
+    // ignore quota / private mode
+  }
+}
 
 function statusPriority(status: TeamAgentStatus): number {
   if (status === "thinking") return 3;
@@ -212,7 +230,16 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [liveNote, setLiveNote] = useState<string | null>(null);
+  const [coordinatorCollapsed, setCoordinatorCollapsed] = useState(readCoordinatorCollapsed);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const toggleCoordinatorCollapsed = useCallback(() => {
+    setCoordinatorCollapsed((prev) => {
+      const next = !prev;
+      writeCoordinatorCollapsed(next);
+      return next;
+    });
+  }, []);
 
   const flashNote = useCallback((note: string) => {
     setLiveNote(note);
@@ -435,27 +462,61 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         />
       </section>
 
-      <div className="war-room-main">
-        <aside className="war-room-coordinator war-room-coordinator-inline" aria-labelledby="war-room-coordinator-title">
-          <h2 id="war-room-coordinator-title" className="war-room-section-title">
-            {t("warRoom.coordinator.title")}
-          </h2>
-          <p className="war-room-coordinator-subtitle">
-            {t("warRoom.coordinator.subtitle", { name: data.product.name })}
-          </p>
-          <div className="war-room-coordinator-panel">
-            <CoordinatorChat
-              productId={data.product.id}
-              orgUnitId={data.orgUnit?.id}
-              welcomeMessageKey="warRoom.coordinator.welcome"
-              onExecuted={(runId) => {
-                flashNote(t("warRoom.runStarted"));
-                refreshScheduler.current.schedule(800);
-                window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
-                void api.runs.get(runId).catch(() => undefined);
-              }}
-            />
-          </div>
+      <div
+        className={`war-room-main${coordinatorCollapsed ? " war-room-main--coordinator-collapsed" : ""}`}
+      >
+        <aside
+          className={`war-room-coordinator war-room-coordinator-inline${coordinatorCollapsed ? " is-collapsed" : ""}`}
+          aria-labelledby="war-room-coordinator-title"
+        >
+          {coordinatorCollapsed ? (
+            <button
+              type="button"
+              className="war-room-coordinator-expand"
+              onClick={toggleCoordinatorCollapsed}
+              aria-label={t("warRoom.coordinator.expand")}
+              aria-expanded={false}
+              aria-controls="war-room-coordinator-panel"
+            >
+              <MessageSquare className="h-4 w-4" aria-hidden />
+              <ChevronRight className="h-4 w-4" aria-hidden />
+              <span className="war-room-coordinator-expand-label">{t("warRoom.coordinator.title")}</span>
+            </button>
+          ) : (
+            <>
+              <div className="war-room-coordinator-header">
+                <h2 id="war-room-coordinator-title" className="war-room-section-title">
+                  {t("warRoom.coordinator.title")}
+                </h2>
+                <button
+                  type="button"
+                  className="war-room-coordinator-collapse"
+                  onClick={toggleCoordinatorCollapsed}
+                  aria-label={t("warRoom.coordinator.collapse")}
+                  aria-expanded
+                  aria-controls="war-room-coordinator-panel"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+              <p className="war-room-coordinator-subtitle">
+                {t("warRoom.coordinator.subtitle", { name: data.product.name })}
+              </p>
+              <div id="war-room-coordinator-panel" className="war-room-coordinator-panel">
+                <CoordinatorChat
+                  productId={data.product.id}
+                  orgUnitId={data.orgUnit?.id}
+                  welcomeMessageKey="warRoom.coordinator.welcome"
+                  onExecuted={(runId) => {
+                    flashNote(t("warRoom.runStarted"));
+                    refreshScheduler.current.schedule(800);
+                    window.setTimeout(() => refreshScheduler.current.schedule(800), 3000);
+                    void api.runs.get(runId).catch(() => undefined);
+                  }}
+                />
+              </div>
+            </>
+          )}
         </aside>
 
         <section
@@ -465,9 +526,9 @@ export default function WarRoomContent({ productId, watchRunId }: WarRoomContent
         >
           <div className="war-room-table-backdrop" aria-hidden>
             <div className="war-room-table-grid" />
-            <div className="war-room-table-ring" />
           </div>
           <div className="war-room-table-stage">
+            <div className="war-room-table-ring" aria-hidden />
             <div className="war-room-core">
               <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
               <p className="war-room-core-name">

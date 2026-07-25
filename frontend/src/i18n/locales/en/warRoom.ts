@@ -30,6 +30,8 @@ export const warRoom = {
   runStarted: "Run launched — follow progress here in the war room.",
   coordinator: {
     title: "Coordinator",
+    collapse: "Hide coordinator",
+    expand: "Show coordinator",
     subtitle:
       "Describe what you need for {{name}}. The coordinator proposes team and plan; you approve before anything runs.",
     welcome:

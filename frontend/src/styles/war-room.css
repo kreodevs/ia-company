@@ -327,8 +327,16 @@ html[data-theme="letter"] .war-room {
   margin-bottom: 1rem;
 }
 
+.war-room-main--coordinator-collapsed {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 @media (max-width: 900px) {
   .war-room-main {
+    grid-template-columns: 1fr;
+  }
+
+  .war-room-main--coordinator-collapsed {
     grid-template-columns: 1fr;
   }
 
@@ -338,6 +346,10 @@ html[data-theme="letter"] .war-room {
 
   .war-room-main .war-room-coordinator-inline {
     order: 2;
+  }
+
+  .war-room-main--coordinator-collapsed .war-room-coordinator-inline.is-collapsed {
+    order: 0;
   }
 }
 
@@ -488,6 +500,7 @@ html[data-theme="letter"] .war-room {
   border: 1px solid var(--war-room-accent-border);
   background: var(--war-room-table-bg);
   overflow: visible;
+  container-type: size;
 }
 
 @media (min-width: 901px) {
@@ -507,7 +520,11 @@ html[data-theme="letter"] .war-room {
 
 .war-room-table-stage {
   position: absolute;
-  inset: 4% 3% 5% 3%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(94cqw, 91cqh);
+  aspect-ratio: 1 / 1;
 }
 
 .war-room-table[data-density="cozy"] .war-room-seat-avatar {
@@ -554,12 +571,13 @@ html[data-theme="letter"] .war-room {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 82%;
+  width: 88%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border: 1px dashed var(--war-room-table-ring);
   border-radius: 999px;
   animation: war-room-rotate 60s linear infinite;
+  pointer-events: none;
 }
 
 .war-room-table-ring::before,
@@ -936,6 +954,78 @@ html[data-theme="letter"] .war-room {
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+.war-room-coordinator-inline.is-collapsed {
+  width: 2.75rem;
+  padding: 0.5rem 0.35rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.war-room-coordinator-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.war-room-coordinator-header .war-room-section-title {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.war-room-coordinator-collapse,
+.war-room-coordinator-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  border: 1px solid var(--war-room-border);
+  border-radius: 8px;
+  background: var(--war-room-panel-item-bg);
+  color: var(--war-room-fg-muted);
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.war-room-coordinator-collapse {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.war-room-coordinator-expand {
+  flex-direction: column;
+  width: 100%;
+  padding: 0.65rem 0.25rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.war-room-coordinator-expand-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--war-room-accent);
+}
+
+.war-room-coordinator-collapse:hover,
+.war-room-coordinator-expand:hover {
+  border-color: var(--war-room-accent-border);
+  color: var(--war-room-accent);
+  background: var(--war-room-accent-soft);
+}
+
+.war-room-coordinator-collapse:focus-visible,
+.war-room-coordinator-expand:focus-visible {
+  outline: 2px solid var(--war-room-accent);
+  outline-offset: 2px;
 }
 
 .war-room-coordinator-inline .war-room-coordinator-subtitle {

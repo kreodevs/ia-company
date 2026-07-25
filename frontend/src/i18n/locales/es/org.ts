@@ -20,6 +20,7 @@ export const org = {
   artifactStatus: "Estado",
   artifactAgent: "Agente",
   artifactPreview: "Vista previa",
+  artifactSearchPlaceholder: "Buscar artefactos…",
   viewDetail: "Ver",
   hideDetail: "Ocultar",
   linkedProduct: "Producto vinculado",

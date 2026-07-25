@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Artifact } from "../../lib/org-types";
 import Badge from "../ui/Badge";
-import StatusBadge from "../ui/StatusBadge";
-import Select from "../ui/Select";
 import Button from "../ui/Button";
+import Select from "../ui/Select";
+import { DataTable, type DataTableColumn } from "../organisms/DataTable";
 
 const TYPE_LABEL: Record<string, string> = {
   copy: "Copy",
@@ -39,12 +39,6 @@ export default function ArtifactGallery({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  if (artifacts.length === 0) {
-    return <p className="text-sm text-[var(--color-muted-foreground)]">{t("org.noArtifacts")}</p>;
-  }
-
-  const selected = artifacts.find((a) => a.id === selectedId) ?? null;
-
   const handleStatus = async (artifactId: string, status: string) => {
     if (!onStatusChange) return;
     setBusyId(artifactId);
@@ -55,64 +49,109 @@ export default function ArtifactGallery({
     }
   };
 
+  const tableRows = useMemo(
+    () =>
+      artifacts.map((a) => ({
+        ...a,
+        typeLabel: TYPE_LABEL[a.type] ?? a.type,
+        preview:
+          a.previewText ?? artifactBodyText(a.body).slice(0, 120),
+      })),
+    [artifacts],
+  );
+
+  const columns: DataTableColumn[] = useMemo(
+    () => [
+      {
+        field: "title",
+        header: t("org.artifactTitle"),
+        sortable: true,
+        filterable: true,
+      },
+      {
+        field: "typeLabel",
+        header: t("org.artifactType"),
+        sortable: true,
+        body: (row: (typeof tableRows)[0]) => (
+          <Badge>{row.typeLabel}</Badge>
+        ),
+      },
+      {
+        field: "status",
+        header: t("org.artifactStatus"),
+        sortable: true,
+        body: (row: (typeof tableRows)[0]) =>
+          onStatusChange ? (
+            <Select
+              size="sm"
+              value={row.status}
+              ariaLabel={t("org.artifactStatus")}
+              options={STATUS_OPTIONS}
+              onChange={(status) => void handleStatus(row.id, status)}
+              className="max-w-[140px]"
+            />
+          ) : (
+            <span className="text-xs">{row.status}</span>
+          ),
+      },
+      {
+        field: "createdByAgent",
+        header: t("org.artifactAgent"),
+        body: (row: (typeof tableRows)[0]) => (
+          <span className="text-xs text-[var(--color-muted-foreground)]">
+            {row.createdByAgent ?? "—"}
+          </span>
+        ),
+      },
+      {
+        field: "preview",
+        header: t("org.artifactPreview"),
+        body: (row: (typeof tableRows)[0]) => (
+          <span className="line-clamp-2 text-xs text-[var(--color-muted-foreground)]">
+            {row.preview}
+          </span>
+        ),
+      },
+      {
+        field: "actions",
+        header: "",
+        sortable: false,
+        width: "120px",
+        body: (row: (typeof tableRows)[0]) => (
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={busyId === row.id}
+            onClick={() => setSelectedId(row.id === selectedId ? null : row.id)}
+          >
+            {selectedId === row.id ? t("org.hideDetail") : t("org.viewDetail")}
+          </Button>
+        ),
+      },
+    ],
+    [busyId, onStatusChange, selectedId, t],
+  );
+
+  if (artifacts.length === 0) {
+    return <p className="text-sm text-[var(--color-muted-foreground)]">{t("org.noArtifacts")}</p>;
+  }
+
+  const selected = artifacts.find((a) => a.id === selectedId) ?? null;
+
   return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-[var(--color-border)] bg-[var(--color-background)] text-xs uppercase text-[var(--color-muted-foreground)]">
-            <tr>
-              <th className="px-3 py-2">{t("org.artifactTitle")}</th>
-              <th className="px-3 py-2">{t("org.artifactType")}</th>
-              <th className="px-3 py-2">{t("org.artifactStatus")}</th>
-              <th className="px-3 py-2">{t("org.artifactAgent")}</th>
-              <th className="px-3 py-2">{t("org.artifactPreview")}</th>
-              <th className="px-3 py-2" />
-            </tr>
-          </thead>
-          <tbody>
-            {artifacts.map((a) => (
-              <tr key={a.id} className="border-b border-[var(--color-border)] last:border-0">
-                <td className="px-3 py-2 font-medium">{a.title}</td>
-                <td className="px-3 py-2">
-                  <Badge>{TYPE_LABEL[a.type] ?? a.type}</Badge>
-                </td>
-                <td className="px-3 py-2">
-                  {onStatusChange ? (
-                    <Select
-                      size="sm"
-                      value={a.status}
-                      ariaLabel={t("org.artifactStatus")}
-                      options={STATUS_OPTIONS}
-                      onChange={(status) => void handleStatus(a.id, status)}
-                      className="max-w-[140px]"
-                    />
-                  ) : (
-                    <StatusBadge status={a.status} label={a.status} />
-                  )}
-                </td>
-                <td className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                  {a.createdByAgent ?? "—"}
-                </td>
-                <td className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                  <span className="line-clamp-2">
-                    {a.previewText ?? artifactBodyText(a.body).slice(0, 120)}
-                  </span>
-                </td>
-                <td className="px-3 py-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={busyId === a.id}
-                    onClick={() => setSelectedId(a.id === selectedId ? null : a.id)}
-                  >
-                    {selectedId === a.id ? t("org.hideDetail") : t("org.viewDetail")}
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="kreo-org space-y-4">
+      <DataTable
+        columns={columns}
+        data={tableRows}
+        dense
+        globalFilterEnabled
+        globalFilterPlaceholder={t("org.artifactSearchPlaceholder", {
+          defaultValue: "Search artifacts…",
+        })}
+        emptyMessage={t("org.noArtifacts")}
+        paginator={artifacts.length > 10}
+        rows={10}
+      />
 
       {selected && (
         <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-4">

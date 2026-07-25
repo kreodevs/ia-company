@@ -48,7 +48,8 @@ Products/clients remain under `projects/{slug}/` with optional `orgUnitId` link.
 - **Auto work item:** `createLinkedWorkItem` bootstraps product/client slot linked to department.
 - **workItemKind routing:** `org-work-item.ts` maps presets/workflows for meta-orchestrator and org launcher.
 - **War room:** `OrgArtifactsPanel` shows recent department artifacts in-place.
-- **SchemaDynamicForm:** native `color` field (Kreo DynamicForm pull deferred — MCP unavailable).
+- **SchemaDynamicForm:** Kreo `DynamicForm` via adapter (`schema-to-kreo.ts`).
+- **ArtifactGallery:** Kreo `DataTable` (PrimeReact headless + Kreo tokens).
 
 ### Phase 5 (feat/org-os)
 
@@ -62,4 +63,4 @@ Products/clients remain under `projects/{slug}/` with optional `orgUnitId` link.
 
 - **Reversible:** feature lives on branch `feat/org-os`; existing tenants ignore `OrgUnit` until created.
 - **Migration:** additive columns on `TenantProduct`; new tables only.
-- **Future:** pull Kreo `DynamicForm` + `DataTable` when MCP bootstrap succeeds.
+- **Kreo DEV pull:** `frontend/src/components/{atoms,molecules,organisms}/` + `kreo-vars.css`; deps via `get_dependencies_for_components`.

@@ -8,6 +8,7 @@
 @import "./styles/office-theme.css";
 @import "./styles/office-encargos.css";
 @import "./styles/war-room.css";
+@import "./styles/kreo-vars.css";
 
 @theme inline {
   --color-vault-ink: var(--color-vault-ink);

@@ -1,0 +1,78 @@
+/* Kreo MDX Editor theme — companion to MarkdownEditorWysiwyg */
+
+.kreo-mdx-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  overflow: hidden;
+}
+
+.kreo-mdx-editor__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--background-secondary);
+}
+
+.kreo-mdx-editor__toolbar button,
+.kreo-mdx-editor__toolbar [role="combobox"] {
+  color: var(--foreground-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.kreo-mdx-editor__toolbar button:hover,
+.kreo-mdx-editor__toolbar [role="combobox"]:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.kreo-mdx-editor .mdxeditor-root-contenteditable,
+.kreo-mdx-editor .cm-editor {
+  min-height: var(--kreo-mdx-min-height, 320px);
+  background: var(--input);
+  color: var(--foreground);
+}
+
+.kreo-mdx-editor .mdxeditor-root-contenteditable {
+  padding: var(--spacing-md);
+}
+
+.kreo-mdx-editor--readonly {
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.kreo-mdx-editor.dark-theme {
+  --mdx-editor-font-family: var(--font-sans);
+}
+
+.kreo-mdx-editor a {
+  color: var(--primary);
+}
+
+.kreo-mdx-editor blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: var(--spacing-md);
+  color: var(--foreground-muted);
+}
+
+.kreo-mdx-editor pre,
+.kreo-mdx-editor code {
+  font-family: var(--font-mono);
+}
+
+.kreo-mdx-editor table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.kreo-mdx-editor th,
+.kreo-mdx-editor td {
+  border: 1px solid var(--border);
+  padding: var(--spacing-sm);
+}
