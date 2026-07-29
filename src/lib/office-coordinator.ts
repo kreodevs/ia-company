@@ -12,6 +12,13 @@ import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { listTenantProducts } from "./product-registry.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 import { selectOfficeAgentsWithLlm } from "./office-coordinator-llm.js";
+import {
+  extractGitHubUrlFromText,
+  fetchGitHubRepoContext,
+  formatGitHubContextForAgents,
+} from "./github-repo.js";
+import { resolveTenantGithubToken } from "./tenant-integrations.js";
+import { buildOfficeDepartmentRooms, type OfficeDepartmentRoom } from "./office-departments.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -105,6 +112,7 @@ export interface OfficeDashboard {
   roi: OfficeRoiProduct[];
   agents: Array<{ id: string; name: string; role: string; status: "idle" | "busy" }>;
   services: OfficeServiceTemplate[];
+  departments: OfficeDepartmentRoom[];
 }
 
 const COST_PER_AGENT = { min: 0.12, max: 0.45 };
@@ -221,6 +229,18 @@ export const OFFICE_SERVICES: OfficeServiceTemplate[] = [
     costPerAgentUsd: 0.15,
     minutesPerAgent: 5,
   },
+  {
+    id: "repo-analysis",
+    category: "build",
+    emoji: "📦",
+    labelKey: "office.serviceTemplates.repoAnalysis.label",
+    descKey: "office.serviceTemplates.repoAnalysis.desc",
+    examplePromptKey: "office.serviceTemplates.repoAnalysis.example",
+    agentNames: ["cto-vogels", "fullstack-dhh", "qa-bach"],
+    deliverableKey: "office.deliverables.repoReport",
+    costPerAgentUsd: 0.28,
+    minutesPerAgent: 10,
+  },
 ];
 
 interface MatchRule {
@@ -303,6 +323,18 @@ const MATCH_RULES: MatchRule[] = [
       "qa-bach": "office.reasons.quality",
     },
   },
+  {
+    patterns: [
+      /repositori|repo\b|github\.com|gitlab|codebase|c[oó]digo.?fuente|analiz.*repo|escane.*repo|audit.*code/i,
+    ],
+    serviceId: "repo-analysis",
+    coordinatorNoteKey: "office.notes.repoAnalysis",
+    agentReasons: {
+      "cto-vogels": "office.reasons.architecture",
+      "fullstack-dhh": "office.reasons.implementation",
+      "qa-bach": "office.reasons.quality",
+    },
+  },
 ];
 
 function estimateCost(agentCount: number): { min: number; max: number } {
@@ -330,6 +362,33 @@ function planIdFor(request: string): string {
   let h = 0;
   for (let i = 0; i < request.length; i++) h = (h * 31 + request.charCodeAt(i)) >>> 0;
   return `plan-${h.toString(36)}-${Date.now().toString(36)}`;
+}
+
+async function enrichOfficeTaskWithGitHubContext(
+  tenantId: string,
+  task: string,
+  serviceId?: string | null,
+): Promise<string> {
+  const repoUrl = extractGitHubUrlFromText(task);
+  if (!repoUrl && serviceId !== "repo-analysis") return task;
+
+  const targetUrl = repoUrl;
+  if (!targetUrl) {
+    return `${task}\n\n[Include a GitHub repository URL in your request for a richer analysis.]`;
+  }
+
+  const token = await resolveTenantGithubToken(tenantId);
+  if (!token) {
+    return `${task}\n\n[GitHub token not configured — add one in Settings → Integrations for private repos and richer metadata.]`;
+  }
+
+  try {
+    const ctx = await fetchGitHubRepoContext(token, targetUrl);
+    return `${task}\n\n---\n${formatGitHubContextForAgents(ctx)}\n---\nAnalyze the repository using this context. Produce architecture notes, code quality findings, and prioritized recommendations.`;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return `${task}\n\n[GitHub context fetch failed: ${msg}]`;
+  }
 }
 
 export async function planOfficeTask(
@@ -515,7 +574,11 @@ export async function executeOfficeTask(
     orgUnitId: input.orgUnitId,
   });
 
-  const task = input.request.trim();
+  const task = await enrichOfficeTaskWithGitHubContext(
+    tenantId,
+    input.request.trim(),
+    input.serviceId ?? plan.serviceId,
+  );
   const productId = input.productId || plan.productId || undefined;
   const orgCtx = input.orgUnitId ? await loadOrgUnitContext(tenantId, input.orgUnitId) : null;
   const orgMemory = orgCtx ? orgContextToInitialMemory(orgCtx) : {};
@@ -669,7 +732,6 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     prisma.executionRun.findMany({
       where: { tenantId, status: { in: activeStatuses } },
       orderBy: { createdAt: "desc" },
-      take: 5,
       include: { workflow: { select: { name: true } } },
     }),
     prisma.executionRun.findMany({
@@ -785,6 +847,15 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
   const totalInvestedUsd = roi.reduce((s, p) => s + p.investedUsd, 0);
   const totalRevenueUsd = roi.reduce((s, p) => s + p.revenueUsd, 0);
 
+  const agentStatuses = agents.map((a) => ({
+    id: a.id,
+    name: a.name,
+    role: a.role,
+    status: busyAgentIds.has(a.id) ? ("busy" as const) : ("idle" as const),
+  }));
+
+  const departments = await buildOfficeDepartmentRooms(tenantId, agentStatuses);
+
   return {
     mode,
     autonomyEnabled,
@@ -799,12 +870,8 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     },
     activity: activity.slice(0, 12),
     roi: roi.sort((a, b) => b.investedUsd - a.investedUsd).slice(0, 6),
-    agents: agents.map((a) => ({
-      id: a.id,
-      name: a.name,
-      role: a.role,
-      status: busyAgentIds.has(a.id) ? "busy" : "idle",
-    })),
+    agents: agentStatuses,
     services: OFFICE_SERVICES,
+    departments,
   };
 }

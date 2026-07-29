@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { parseGitHubRepoUrl } from "../src/lib/github-repo.js";
+import { parseGitHubRepoUrl, extractGitHubUrlFromText } from "../src/lib/github-repo.js";
 import { parseProductProfile, buildProductProfilePromptSection, productProfileToMarkdown } from "../src/lib/product-profile.js";
 
 describe("parseGitHubRepoUrl", () => {
@@ -21,6 +21,24 @@ describe("parseGitHubRepoUrl", () => {
   it("rejects invalid urls", () => {
     assert.equal(parseGitHubRepoUrl("https://gitlab.com/org/repo"), null);
     assert.equal(parseGitHubRepoUrl(""), null);
+  });
+});
+
+describe("extractGitHubUrlFromText", () => {
+  it("extracts https github url from free text", () => {
+    const url = extractGitHubUrlFromText(
+      "Analiza https://github.com/acme/app y dime la deuda técnica",
+    );
+    assert.equal(url, "https://github.com/acme/app");
+  });
+
+  it("extracts ssh github url from free text", () => {
+    const url = extractGitHubUrlFromText("Repo: git@github.com:org/my-app.git");
+    assert.equal(url, "git@github.com:org/my-app.git");
+  });
+
+  it("returns null when no github url", () => {
+    assert.equal(extractGitHubUrlFromText("analiza mi código local"), null);
   });
 });
 

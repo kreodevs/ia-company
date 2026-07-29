@@ -12,6 +12,7 @@ import {
   getOfficeDashboard,
   planOfficeTask,
 } from "../../lib/office-coordinator.js";
+import { listOfficeArchive } from "../../lib/office-archive.js";
 import {
   createTenantNotification,
   listTenantNotifications,
@@ -59,6 +60,38 @@ export async function officeRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       return getOfficeDashboard(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{
+    Querystring: {
+      departmentSlug?: string;
+      orgUnitId?: string;
+      productId?: string;
+      agentName?: string;
+      source?: string;
+      q?: string;
+      limit?: string;
+    };
+  }>("/office/archive", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { departmentSlug, orgUnitId, productId, agentName, source, q, limit } =
+        request.query;
+      const validSources = ["encargo", "encargo_summary", "workspace", "artifact"] as const;
+      return listOfficeArchive(tenantId, {
+        departmentSlug,
+        orgUnitId,
+        productId,
+        agentName,
+        source: validSources.includes(source as (typeof validSources)[number])
+          ? (source as (typeof validSources)[number])
+          : undefined,
+        q,
+        limit: limit ? Number(limit) : undefined,
+      });
     } catch (err) {
       return handleRouteError(reply, err);
     }

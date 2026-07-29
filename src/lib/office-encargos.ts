@@ -297,7 +297,7 @@ export async function listOfficeEncargos(
   return { items };
 }
 
-async function loadRunDocuments(
+export async function loadRunDocuments(
   run: ExecutionRun & { workflow: { name: string } },
   workspaceRoot: string,
   consensusId: string | null,

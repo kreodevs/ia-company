@@ -184,3 +184,16 @@ export function formatGitHubContextForAgents(ctx: GitHubRepoContext): string {
 
   return sections.join("\n");
 }
+
+/** First GitHub repo URL found in free text (Office coordinator tasks, chat). */
+export function extractGitHubUrlFromText(text: string): string | null {
+  const candidates = [
+    ...text.matchAll(/https?:\/\/(?:www\.)?github\.com\/[\w.-]+\/[\w.-]+(?:\/[^\s)]*)?/gi),
+    ...text.matchAll(/git@github\.com:[\w.-]+\/[\w.-]+(?:\.git)?/gi),
+  ];
+  for (const match of candidates) {
+    const cleaned = match[0]!.replace(/[.,;:!?)]+$/, "");
+    if (parseGitHubRepoUrl(cleaned)) return cleaned;
+  }
+  return null;
+}

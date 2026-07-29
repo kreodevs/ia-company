@@ -805,6 +805,58 @@ export interface OfficeDashboard {
   roi: OfficeRoiProduct[];
   agents: Array<{ id: string; name: string; role: string; status: "idle" | "busy" }>;
   services: OfficeServiceTemplate[];
+  departments: OfficeDepartmentRoom[];
+}
+
+export interface OfficeDepartmentRoom {
+  id: string;
+  slug: string;
+  kind: "virtual" | "org_unit";
+  labelKey: string | null;
+  name: string | null;
+  descKey: string | null;
+  description: string | null;
+  emoji: string;
+  accent: "strategy" | "product" | "engineering" | "business" | "custom";
+  agentNames: string[];
+  status: "idle" | "busy";
+  busyAgentCount: number;
+  activeRunCount: number;
+  activeEncargoHref: string | null;
+  href: string;
+}
+
+export type OfficeArchiveSource = "encargo" | "encargo_summary" | "workspace" | "artifact";
+
+export interface OfficeArchiveItem {
+  id: string;
+  source: OfficeArchiveSource;
+  title: string;
+  agentName: string | null;
+  departmentSlug: string | null;
+  orgUnitId: string | null;
+  orgUnitName: string | null;
+  productId: string | null;
+  productName: string | null;
+  productSlug: string | null;
+  runId: string | null;
+  encargoTitle: string | null;
+  path: string | null;
+  preview: string;
+  markdown: string;
+  timestamp: string;
+  encargoHref: string | null;
+}
+
+export interface OfficeArchiveResponse {
+  items: OfficeArchiveItem[];
+  total: number;
+  filters: {
+    departments: Array<{ slug: string; labelKey: string }>;
+    products: Array<{ id: string; name: string; slug: string }>;
+    orgUnits: Array<{ id: string; name: string }>;
+    agents: string[];
+  };
 }
 
 export interface TenantLlmConfig {
@@ -1559,6 +1611,26 @@ export const api = {
       return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
     },
     encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
+    archive: (params?: {
+      departmentSlug?: string;
+      orgUnitId?: string;
+      productId?: string;
+      agentName?: string;
+      source?: OfficeArchiveSource;
+      q?: string;
+      limit?: number;
+    }) => {
+      const q = new URLSearchParams();
+      if (params?.departmentSlug) q.set("departmentSlug", params.departmentSlug);
+      if (params?.orgUnitId) q.set("orgUnitId", params.orgUnitId);
+      if (params?.productId) q.set("productId", params.productId);
+      if (params?.agentName) q.set("agentName", params.agentName);
+      if (params?.source) q.set("source", params.source);
+      if (params?.q) q.set("q", params.q);
+      if (params?.limit) q.set("limit", String(params.limit));
+      const qs = q.toString();
+      return request<OfficeArchiveResponse>(`/office/archive${qs ? `?${qs}` : ""}`);
+    },
     chat: (body: {
       messages: CoordinatorChatMessage[];
       productId?: string;

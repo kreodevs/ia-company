@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type TenantProduct } from "../lib/api";
+import { api, type OfficeArchiveItem, type TenantProduct } from "../lib/api";
 import type { Artifact, OrgUnit } from "../lib/org-types";
-import PageHeader from "../components/ui/PageHeader";
-import Panel from "../components/ui/Panel";
 import PageLoading from "../components/ui/PageLoading";
+import DepartmentRoomView from "../components/office/DepartmentRoomView";
 import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
 import ArtifactGallery from "../components/org/ArtifactGallery";
 import Button from "../components/ui/Button";
@@ -21,6 +20,7 @@ export default function OrgUnitDetailPage() {
   const [unit, setUnit] = useState<OrgUnit | null>(null);
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [linkedProducts, setLinkedProducts] = useState<TenantProduct[]>([]);
+  const [archiveItems, setArchiveItems] = useState<OfficeArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [launchTask, setLaunchTask] = useState("");
@@ -30,25 +30,55 @@ export default function OrgUnitDetailPage() {
   const [newWorkItemKind, setNewWorkItemKind] = useState("client");
   const [creatingWorkItem, setCreatingWorkItem] = useState(false);
 
-  const load = async () => {
+  const [departmentMeta, setDepartmentMeta] = useState<{
+    status: "idle" | "busy";
+    agentNames: string[];
+    agents: Array<{ id: string; name: string; status: "idle" | "busy" }>;
+    activeEncargoHref: string | null;
+  } | null>(null);
+
+  const load = useCallback(async () => {
     if (!id) return;
-    const [u, arts, products] = await Promise.all([
+    const [u, arts, products, dashboard, archive] = await Promise.all([
       api.orgUnits.get(id),
       api.orgUnits.artifacts(id),
       api.orgUnits.products(id),
+      api.office.dashboard(),
+      api.office.archive({ orgUnitId: id, limit: 8 }),
     ]);
     setUnit(u);
     setArtifacts(arts);
     setLinkedProducts(products);
-    if (products.length && !launchProductId) {
-      setLaunchProductId(products[0]!.id);
-    }
-  };
+    setArchiveItems(archive.items);
+
+    const room = dashboard.departments.find((d) => d.id === id && d.kind === "org_unit");
+    setDepartmentMeta({
+      status: room?.status ?? "idle",
+      agentNames: room?.agentNames ?? [],
+      agents: dashboard.agents.filter((a) => (room?.agentNames ?? []).includes(a.name)),
+      activeEncargoHref: room?.activeEncargoHref ?? null,
+    });
+
+    setLaunchProductId((prev) => prev || products[0]?.id || "");
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
     load().finally(() => setLoading(false));
-  }, [id]);
+  }, [id, load]);
+
+  useEffect(() => {
+    if (!departmentMeta || departmentMeta.status !== "busy") return;
+    const timer = window.setInterval(() => void load(), 8000);
+    return () => window.clearInterval(timer);
+  }, [departmentMeta?.status, load]);
+
+  const subtitle = useMemo(() => {
+    if (!unit) return "";
+    const parts = [unit.type.replace(/_/g, " ")];
+    if (unit.description?.trim()) parts.push(unit.description.trim());
+    return parts.join(" · ");
+  }, [unit]);
 
   const addWorkItem = async () => {
     if (!id || !newWorkItemName.trim()) return;
@@ -86,36 +116,78 @@ export default function OrgUnitDetailPage() {
   };
 
   if (loading) return <PageLoading message={t("org.loading")} />;
-  if (!unit) {
+  if (!unit || !departmentMeta) {
     return (
-      <div className="p-6">
+      <div className="office-dept-page p-4">
         <p>{t("org.notFound")}</p>
-        <Link to="/org-units" className="text-[var(--color-primary)] hover:underline">
-          ← {t("org.title")}
+        <Link to="/office" className="office-link-btn">
+          ← {t("office.floor.backToFloor")}
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
-      <PageHeader
-        title={unit.name}
-        subtitle={`${unit.type} · ${unit.workspacePath}`}
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Link to={`/ai-team?tab=create-agent&orgUnitId=${unit.id}`}>
-              <Button variant="secondary">{t("org.createAgentForDept")}</Button>
-            </Link>
-            <Link to="/org-units">
-              <Button variant="secondary">{t("org.back")}</Button>
-            </Link>
-          </div>
-        }
-      />
-
-      <Panel title={t("org.launchTitle")} subtitle={t("org.launchSubtitle")} bodySize="sm">
-        <div className="space-y-3">
+    <DepartmentRoomView
+      backHref="/office"
+      backLabel={t("office.floor.backToFloor")}
+      title={unit.name}
+      subtitle={subtitle}
+      emoji="🏢"
+      status={departmentMeta.status}
+      agentNames={departmentMeta.agentNames}
+      agents={departmentMeta.agents}
+      activeEncargoHref={departmentMeta.activeEncargoHref}
+      requestWorkHref={`/office?orgUnitId=${unit.id}#office-coordinator-chat`}
+      headerActions={
+        <>
+          <Link to={`/ai-team?tab=create-agent&orgUnitId=${unit.id}`}>
+            <Button variant="secondary" size="sm">
+              {t("org.createAgentForDept")}
+            </Button>
+          </Link>
+          <Link to="/org-units">
+            <Button variant="secondary" size="sm">
+              {t("org.manageList")}
+            </Button>
+          </Link>
+        </>
+      }
+      sidebarFooter={
+        <>
+          <h2 className="office-panel-title" style={{ marginTop: "1.25rem" }}>
+            {t("office.floor.recentDocs")}
+          </h2>
+          {archiveItems.length === 0 ? (
+            <p className="office-empty">{t("org.noArtifacts")}</p>
+          ) : (
+            <ul className="office-activity-list">
+              {archiveItems.slice(0, 6).map((item) => (
+                <li key={item.id}>
+                  <Link to="/office/archive" className="office-activity-item">
+                    <p className="office-activity-title">{item.title}</p>
+                    <p className="office-activity-meta">
+                      {t(`office.archive.source.${item.source}`)}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link
+            to={`/office/archive?orgUnitId=${unit.id}`}
+            className="office-roi-link"
+            style={{ display: "inline-block", marginTop: "0.65rem" }}
+          >
+            {t("office.floor.viewArchive")} →
+          </Link>
+        </>
+      }
+    >
+      <section className="office-dept-extra-panel">
+        <h2 className="office-panel-title">{t("org.launchTitle")}</h2>
+        <p className="office-dept-extra-desc">{t("org.launchSubtitle")}</p>
+        <div className="office-dept-extra-form">
           <Input
             label={t("org.launchTaskLabel")}
             value={launchTask}
@@ -145,25 +217,28 @@ export default function OrgUnitDetailPage() {
             {launching ? t("org.launching") : t("org.launchCta")}
           </Button>
         </div>
-      </Panel>
+      </section>
 
-      {linkedProducts.length > 0 && (
-        <Panel title={t("org.linkedProductsTitle")} bodySize="sm">
-          <ul className="space-y-1 text-sm">
+      {linkedProducts.length > 0 ? (
+        <section className="office-dept-extra-panel">
+          <h2 className="office-panel-title">{t("org.linkedProductsTitle")}</h2>
+          <ul className="office-dept-linked-list">
             {linkedProducts.map((p) => (
               <li key={p.id}>
-                <Link to={`/products/${p.id}/settings`} className="text-[var(--color-primary)] hover:underline">
+                <Link to={`/products/${p.id}/settings`} className="office-link-inline">
                   {p.name}
                 </Link>
-                <span className="ml-2 text-xs text-[var(--color-muted-foreground)]">({p.workItemKind ?? "product"})</span>
+                <span className="office-dept-linked-kind">({p.workItemKind ?? "product"})</span>
               </li>
             ))}
           </ul>
-        </Panel>
-      )}
+        </section>
+      ) : null}
 
-      <Panel title={t("org.addWorkItemTitle")} subtitle={t("org.addWorkItemSubtitle")} bodySize="sm">
-        <div className="grid gap-3 md:grid-cols-2">
+      <section className="office-dept-extra-panel">
+        <h2 className="office-panel-title">{t("org.addWorkItemTitle")}</h2>
+        <p className="office-dept-extra-desc">{t("org.addWorkItemSubtitle")}</p>
+        <div className="office-dept-extra-form office-dept-extra-form-grid">
           <Input
             label={t("org.addWorkItemName")}
             value={newWorkItemName}
@@ -187,17 +262,17 @@ export default function OrgUnitDetailPage() {
               ariaLabel={t("org.studio.workItemKindLabel")}
             />
           </div>
+          <Button
+            onClick={() => void addWorkItem()}
+            disabled={creatingWorkItem || !newWorkItemName.trim()}
+          >
+            {creatingWorkItem ? t("org.addWorkItemCreating") : t("org.addWorkItemCta")}
+          </Button>
         </div>
-        <Button
-          className="mt-3"
-          onClick={() => void addWorkItem()}
-          disabled={creatingWorkItem || !newWorkItemName.trim()}
-        >
-          {creatingWorkItem ? t("org.addWorkItemCreating") : t("org.addWorkItemCta")}
-        </Button>
-      </Panel>
+      </section>
 
-      <Panel title={t("org.configTitle")} bodySize="sm">
+      <section className="office-dept-extra-panel">
+        <h2 className="office-panel-title">{t("org.configTitle")}</h2>
         {unit.configSchema?.sections?.length || unit.configSchema?.fields?.length ? (
           <SchemaDynamicForm
             schema={unit.configSchema}
@@ -215,17 +290,17 @@ export default function OrgUnitDetailPage() {
             }}
           />
         ) : (
-          <p className="text-sm text-[var(--color-muted-foreground)]">{t("org.noConfigSchema")}</p>
+          <p className="office-empty">{t("org.noConfigSchema")}</p>
         )}
-      </Panel>
+      </section>
 
-      <Panel title={t("org.designTitle")} bodySize="sm">
-        <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-md bg-[var(--color-background)] p-3 text-xs">
-          {unit.designMd ?? t("org.noDesignMd")}
-        </pre>
-      </Panel>
+      <section className="office-dept-extra-panel">
+        <h2 className="office-panel-title">{t("org.designTitle")}</h2>
+        <pre className="office-dept-design-preview">{unit.designMd ?? t("org.noDesignMd")}</pre>
+      </section>
 
-      <Panel title={t("org.artifactsTitle")} bodySize="sm">
+      <section className="office-dept-extra-panel">
+        <h2 className="office-panel-title">{t("org.artifactsTitle")}</h2>
         <ArtifactGallery
           artifacts={artifacts}
           onStatusChange={async (artifactId, status) => {
@@ -233,7 +308,7 @@ export default function OrgUnitDetailPage() {
             await load();
           }}
         />
-      </Panel>
-    </div>
+      </section>
+    </DepartmentRoomView>
   );
 }

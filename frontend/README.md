@@ -32,7 +32,10 @@ Two login modes at `/login`:
 |-------|-----------|---------|
 | `/agents` | `AgentsPage` | CRUD editor for agent personas, models, temperature, skills |
 | `/skills` | `SkillsPage` | CRUD editor for tenant skill prompts |
-| `/office/workflows` | `WorkflowsPage` | List workflows + create new empty workflow (Office nav) |
+| `/office` | `OfficePage` | Oficina — planta virtual, coordinador, servicios rápidos |
+| `/office/departments/:slug` | `OfficeDepartmentPage` | Sala de departamento virtual (estrategia, ingeniería, …) |
+| `/office/archive` | `OfficeArchivePage` | Hub documental — encargos, workspace, artefactos |
+| `/office/encargos` | `OfficeEncargosPage` | Inbox de encargos |
 | `/office/workflows/:id` | `WorkflowEditorPage` | React Flow canvas — drag agents, connect nodes, save & execute |
 | `/runs` | `RunsPage` | Historical execution runs with token/cost metrics |
 | `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |

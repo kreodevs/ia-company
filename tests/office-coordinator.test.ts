@@ -6,7 +6,7 @@ describe("office-coordinator", () => {
   it("exports service catalog with unique ids", () => {
     const ids = OFFICE_SERVICES.map((s) => s.id);
     assert.equal(new Set(ids).size, ids.length);
-    assert.ok(ids.length >= 6);
+    assert.ok(ids.length >= 9);
   });
 
   it("each service has agents and deliverable key", () => {

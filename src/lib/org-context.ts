@@ -27,6 +27,23 @@ function suggestedAgentsFromTemplate(
   return bundled?.definition.suggestedAgents.map((a) => a.name) ?? [];
 }
 
+export function suggestedAgentsFromOrgRecord(org: {
+  type: string;
+  config: unknown;
+  template: { definition: unknown } | null;
+}): string[] {
+  const config = (org.config as Record<string, unknown>) ?? {};
+  const linkedFromConfig = Array.isArray(config.linkedAgentNames)
+    ? config.linkedAgentNames.filter((n): n is string => typeof n === "string")
+    : [];
+
+  const fromTemplate = org.template?.definition
+    ? suggestedAgentsFromTemplate(org.template.definition, org.type)
+    : suggestedAgentsFromTemplate(null, org.type);
+
+  return [...new Set([...fromTemplate, ...linkedFromConfig])];
+}
+
 export async function loadOrgUnitContext(
   tenantId: string,
   orgUnitId: string,
@@ -38,15 +55,7 @@ export async function loadOrgUnitContext(
   if (!org) return null;
 
   const config = (org.config as Record<string, unknown>) ?? {};
-  const linkedFromConfig = Array.isArray(config.linkedAgentNames)
-    ? config.linkedAgentNames.filter((n): n is string => typeof n === "string")
-    : [];
-
-  const fromTemplate = org.template?.definition
-    ? suggestedAgentsFromTemplate(org.template.definition, org.type)
-    : suggestedAgentsFromTemplate(null, org.type);
-
-  const suggestedAgentNames = [...new Set([...fromTemplate, ...linkedFromConfig])];
+  const suggestedAgentNames = suggestedAgentsFromOrgRecord(org);
 
   return {
     orgUnitId: org.id,

@@ -11,6 +11,8 @@ import { useDocumentLang } from "./hooks/useDocumentLang";
 import AiTeamHubPage from "./pages/ai-team/AiTeamHubPage";
 import HelpPage from "./pages/HelpPage";
 import OfficePage from "./pages/OfficePage";
+import OfficeDepartmentPage from "./pages/OfficeDepartmentPage";
+import OfficeArchivePage from "./pages/OfficeArchivePage";
 import OfficeEncargosPage from "./pages/OfficeEncargosPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
 import OpsPage from "./pages/OpsPage";
@@ -88,6 +90,8 @@ function AppShell() {
             <Route element={<RequireTenantAccess />}>
               <Route index element={<OfficePage />} />
               <Route path="office" element={<OfficePage />} />
+              <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
+              <Route path="office/archive" element={<OfficeArchivePage />} />
               <Route path="office/encargos" element={<OfficeEncargosPage />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />

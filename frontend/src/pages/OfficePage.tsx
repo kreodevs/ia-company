@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   api,
   type OfficeDashboard,
   type OfficeServiceTemplate,
 } from "../lib/api";
 import CoordinatorChat from "../components/office/CoordinatorChat";
+import OfficeFloorPlan from "../components/office/OfficeFloorPlan";
 import OfficeOnboardingPanel, {
   dismissOfficeOnboarding,
   shouldShowOfficeOnboarding,
@@ -15,33 +16,9 @@ import { NotificationPermissionPrompt } from "../components/office/NotificationB
 import PageLoading from "../components/ui/PageLoading";
 import KpiCard from "../components/ui/KpiCard";
 
-const AGENT_EMOJI: Record<string, string> = {
-  "coordinator-chief": "🎩",
-  "ceo-bezos": "👔",
-  "cto-vogels": "🛠️",
-  "cfo-campbell": "💰",
-  "critic-munger": "🧐",
-  "research-thompson": "🔍",
-  "product-norman": "🧭",
-  "interaction-cooper": "🎯",
-  "ui-duarte": "🎨",
-  "fullstack-dhh": "💻",
-  "qa-bach": "🧪",
-  "devops-hightower": "🚀",
-  "marketing-godin": "📣",
-  "operations-pg": "📈",
-  "sales-ross": "💼",
-};
-
-function avatarGradient(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const hue = h % 360;
-  return `radial-gradient(circle at 30% 25%, hsl(${hue} 90% 70%) 0%, hsl(${hue} 70% 45%) 55%, hsl(${(hue + 25) % 360} 80% 30%) 100%)`;
-}
-
 export default function OfficePage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [dashboard, setDashboard] = useState<OfficeDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [orgUnitId, setOrgUnitId] = useState<string>("");
@@ -65,6 +42,11 @@ export default function OfficePage() {
       .catch(() => undefined)
       .finally(() => setLoading(false));
   }, [refresh]);
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("orgUnitId");
+    if (fromUrl) setOrgUnitId(fromUrl);
+  }, [searchParams]);
 
   useEffect(() => {
     if (dashboard) {
@@ -120,6 +102,9 @@ export default function OfficePage() {
           </div>
           <Link to="/office/encargos" className="office-link-btn">
             {t("nav.encargos")}
+          </Link>
+          <Link to="/office/archive" className="office-link-btn">
+            {t("office.archive.title")}
           </Link>
         </div>
       </header>
@@ -180,6 +165,11 @@ export default function OfficePage() {
         />
       </section>
 
+      <OfficeFloorPlan
+        departments={dashboard.departments ?? []}
+        agents={dashboard.agents}
+      />
+
       <div className="office-grid">
         <aside className="office-panel">
           <h2 className="office-panel-title">{t("office.activity.title")}</h2>
@@ -225,22 +215,6 @@ export default function OfficePage() {
             </ul>
           )}
 
-          <h2 className="office-panel-title" style={{ marginTop: "1.25rem" }}>
-            {t("office.agents.title")}
-          </h2>
-          <div className="office-roster">
-            {dashboard.agents.slice(0, 14).map((agent) => (
-              <span
-                key={agent.id}
-                className="office-roster-dot"
-                data-status={agent.status}
-                title={`${agent.name} — ${agent.status === "busy" ? t("office.agents.busy") : t("office.agents.idle")}`}
-                style={{ background: avatarGradient(agent.name) }}
-              >
-                {AGENT_EMOJI[agent.name] ?? "🧑‍💼"}
-              </span>
-            ))}
-          </div>
           <Link to="/ai-team" className="office-roi-link">
             {t("office.agents.viewAll")}
           </Link>
