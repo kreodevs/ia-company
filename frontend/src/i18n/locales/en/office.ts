@@ -99,8 +99,9 @@ export const office = {
     idleMeta: "{{total}} specialists available",
     backToFloor: "Floor plan",
     meetingRoom: "Meeting room",
-    specialists: "Department specialists",
     requestWork: "Request work",
+    coordinatorWelcome:
+      "I'm the coordinator for this department. Pick general scope or a product above, tell me what you need, and I'll assemble the team and plan.",
     deptNotFound: "Department not found.",
     noSpecialists: "No specialists assigned yet.",
     recentDocs: "Recent documents",

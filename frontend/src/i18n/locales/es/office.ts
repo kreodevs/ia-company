@@ -99,8 +99,9 @@ export const office = {
     idleMeta: "{{total}} especialistas disponibles",
     backToFloor: "Planta",
     meetingRoom: "Sala de juntas",
-    specialists: "Especialistas del departamento",
     requestWork: "Pedir encargo",
+    coordinatorWelcome:
+      "Soy el coordinador de este departamento. Elige alcance general o un producto arriba, cuéntame qué necesitas y preparo el equipo y el plan.",
     deptNotFound: "Departamento no encontrado.",
     noSpecialists: "Sin especialistas asignados aún.",
     recentDocs: "Documentos recientes",

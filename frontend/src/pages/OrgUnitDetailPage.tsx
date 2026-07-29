@@ -138,7 +138,8 @@ export default function OrgUnitDetailPage() {
       agentNames={departmentMeta.agentNames}
       agents={departmentMeta.agents}
       activeEncargoHref={departmentMeta.activeEncargoHref}
-      requestWorkHref={`/office?orgUnitId=${unit.id}#office-coordinator-chat`}
+      orgUnitId={unit.id}
+      linkedProductIds={linkedProducts.map((product) => product.id)}
       headerActions={
         <>
           <Link to={`/ai-team?tab=create-agent&orgUnitId=${unit.id}`}>

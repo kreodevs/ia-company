@@ -45,6 +45,28 @@ export const warRoom = {
   viewReports: "Ver informes →",
   selectProduct: "Producto",
   focused: "en foco",
+  general: {
+    title: "War room — Vista general",
+    subtitle:
+      "Panorama de todos los productos y agentes. Elige un producto arriba para entrar a su sala táctica.",
+    allProducts: "Vista general (todos)",
+    backToGeneral: "← War room general",
+    portfolioCore: "Portafolio",
+    coreRunning: "{{count}} flujo(s) activo(s)",
+    productsTitle: "Productos activos",
+    openWarRoom: "Abrir war room →",
+    activeEncargos: "{{count}} encargo(s) en curso",
+    noActiveEncargos: "No hay encargos en curso.",
+    activeRunsPill: "{{count}} run(s) activo(s)",
+    noProduct: "Sin producto",
+    recentActivity: "Actividad reciente",
+    coordinator: {
+      subtitle:
+        "Describe qué necesitas a nivel empresa. El coordinador propone equipo y plan; tú apruebas antes de ejecutar.",
+      welcome:
+        "Soy el coordinador de la oficina. Cuéntame qué quieres lograr — nuevo producto, revisión semanal, análisis de mercado… y preparo el equipo y el plan.",
+    },
+  },
   manageProducts: "Gestionar productos →",
   noProductsTitle: "Aún no hay productos activos",
   noProductsHint: "Aprueba y evalúa una oportunidad en Productos para abrir el war room táctico.",

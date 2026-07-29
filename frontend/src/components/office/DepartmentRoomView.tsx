@@ -1,7 +1,12 @@
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { api, type TenantProduct } from "../../lib/api";
 import { AGENT_EMOJI, agentRoleLabelKey, avatarGradient } from "../../lib/office-visual";
+import CoordinatorChat from "./CoordinatorChat";
+import Select from "../ui/Select";
+
+export const DEPARTMENT_SCOPE_GENERAL = "__general__";
 
 export interface DepartmentRoomAgent {
   id: string;
@@ -19,7 +24,8 @@ export interface DepartmentRoomViewProps {
   agentNames: string[];
   agents: DepartmentRoomAgent[];
   activeEncargoHref?: string | null;
-  requestWorkHref?: string;
+  orgUnitId?: string;
+  linkedProductIds?: string[];
   headerActions?: ReactNode;
   sidebarFooter?: ReactNode;
   children?: ReactNode;
@@ -43,12 +49,63 @@ export default function DepartmentRoomView({
   agentNames,
   agents,
   activeEncargoHref,
-  requestWorkHref = "/office#office-coordinator-chat",
+  orgUnitId,
+  linkedProductIds,
   headerActions,
   sidebarFooter,
   children,
 }: DepartmentRoomViewProps) {
   const { t } = useTranslation();
+  const [products, setProducts] = useState<TenantProduct[]>([]);
+  const [focusProductId, setFocusProductId] = useState<string | null>(null);
+  const [productScope, setProductScope] = useState(DEPARTMENT_SCOPE_GENERAL);
+
+  useEffect(() => {
+    api.products
+      .overview()
+      .then((overview) => {
+        setProducts(overview.products);
+        setFocusProductId(overview.focusProduct?.id ?? null);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const scopeProducts = useMemo(() => {
+    if (!linkedProductIds?.length) return products;
+    const linked = new Set(linkedProductIds);
+    return products.filter((product) => linked.has(product.id));
+  }, [products, linkedProductIds]);
+
+  const selectedProduct = useMemo(
+    () => scopeProducts.find((product) => product.id === productScope) ?? null,
+    [scopeProducts, productScope],
+  );
+
+  const scopeHint =
+    productScope === DEPARTMENT_SCOPE_GENERAL
+      ? t("office.task.scopeCompanyHint")
+      : selectedProduct
+        ? t("office.task.scopeProductHint", { name: selectedProduct.name })
+        : orgUnitId
+          ? t("office.task.scopeOrgHint", { name: title })
+          : null;
+
+  const scopeOptions = useMemo(
+    () => [
+      {
+        value: DEPARTMENT_SCOPE_GENERAL,
+        label: t("office.task.scopeCompany"),
+      },
+      ...scopeProducts.map((product) => ({
+        value: product.id,
+        label:
+          product.id === focusProductId
+            ? `${product.name} (${t("warRoom.focused")})`
+            : product.name,
+      })),
+    ],
+    [scopeProducts, focusProductId, t],
+  );
 
   const seats = agentNames.map((name) => {
     const agent = agents.find((a) => a.name === name);
@@ -79,6 +136,22 @@ export default function DepartmentRoomView({
           {headerActions ? <div className="office-dept-header-actions">{headerActions}</div> : null}
         </div>
       </header>
+
+      <div className="office-dept-scope-bar">
+        <label htmlFor="office-dept-scope" className="office-dept-scope-label">
+          {t("office.task.scope")}
+        </label>
+        <Select
+          id="office-dept-scope"
+          value={productScope}
+          onChange={setProductScope}
+          options={scopeOptions}
+          ariaLabel={t("office.task.scope")}
+          className="office-dept-scope-select"
+          size="sm"
+        />
+        {scopeHint ? <p className="office-dept-scope-hint">{scopeHint}</p> : null}
+      </div>
 
       <div className="office-dept-grid">
         <section className="office-dept-war-room">
@@ -117,43 +190,19 @@ export default function DepartmentRoomView({
             <Link to={activeEncargoHref} className="office-link-btn office-dept-encargo-link">
               {t("office.floor.viewEncargo")} →
             </Link>
-          ) : (
-            <Link to={requestWorkHref} className="office-link-btn office-dept-encargo-link">
-              {t("office.floor.requestWork")} →
-            </Link>
-          )}
+          ) : null}
         </section>
 
-        <aside className="office-dept-sidebar">
-          <h2 className="office-panel-title">{t("office.floor.specialists")}</h2>
-          {agentNames.length === 0 ? (
-            <p className="office-empty">{t("office.floor.noSpecialists")}</p>
-          ) : (
-            <ul className="office-dept-specialist-list">
-              {agentNames.map((name) => {
-                const agent = agents.find((a) => a.name === name);
-                return (
-                  <li key={name} className="office-dept-specialist-item">
-                    <span
-                      className="office-dept-specialist-avatar"
-                      style={{ background: avatarGradient(name) }}
-                      aria-hidden
-                    >
-                      {AGENT_EMOJI[name] ?? "🧑‍💼"}
-                    </span>
-                    <div>
-                      <p className="office-dept-specialist-name">
-                        {t(agentRoleLabelKey(name) as "office.roles.research")}
-                      </p>
-                      <p className="office-dept-specialist-meta">
-                        {agent?.status === "busy" ? t("office.agents.busy") : t("office.agents.idle")}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+        <aside className="office-dept-sidebar office-dept-sidebar-chat">
+          <h2 className="office-panel-title">{t("office.chat.coordinatorName")}</h2>
+          <div className="office-dept-coordinator-panel">
+            <CoordinatorChat
+              key={`${orgUnitId ?? "virtual"}-${productScope}`}
+              productId={productScope === DEPARTMENT_SCOPE_GENERAL ? undefined : productScope}
+              orgUnitId={orgUnitId}
+              welcomeMessageKey="office.floor.coordinatorWelcome"
+            />
+          </div>
           {sidebarFooter}
         </aside>
       </div>

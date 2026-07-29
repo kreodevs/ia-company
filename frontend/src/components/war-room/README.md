@@ -3,6 +3,10 @@
 | File | Role |
 |------|------|
 | `WarRoomContent.tsx` | Full war room (KPIs, agent table, radar, runs, OpenCode panel, Munger veto banner, **deliverable health banner**, **CoordinatorChat**) for one `productId` |
+| `WarRoomGeneralContent.tsx` | Company-wide war room at `/war-room` — same shell (KPIs, coordinator, tactical table, briefing, product cards) |
+| `WarRoomProductToolbar.tsx` | Shared product selector with **Vista general** option and back link |
+| `WarRoomAgentSeat.tsx` | Agent seat on the tactical ring (shared by product + general views) |
+| `war-room-shared.ts` | Visual helpers (emoji map, circle layout, time formatting) |
 | `WarRoomRunSelector.tsx` | Chip tabs to pick which **active run/flow** to watch (up to ~5 simultaneous) |
 | `ProductHealthPanel.tsx` | Operational health strip: deliverables X/Y, consensus KB, MCP usage, last run diagnosis |
 | `ProductMetricsStrip.tsx` | Live revenue (Stripe) and waitlist signup counts with link to settings |
@@ -10,8 +14,8 @@
 
 ## Routes
 
-- `/war-room/:productId` — product-scoped war room (primary)
-- `/war-room` — product picker when no id
+- `/war-room` — **general** portfolio war room (all products, all agents)
+- `/war-room/:productId` — product-scoped tactical war room
 - `?run=<runId>` — watch a specific active flow (updates agent table + briefing)
 
 ## Layout

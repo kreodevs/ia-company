@@ -198,14 +198,32 @@ html[data-theme="letter"] .war-room {
   flex: 1;
 }
 
+.war-room-toolbar-back,
 .war-room-toolbar-link {
-  margin-left: auto;
   font-size: 0.75rem;
   color: var(--color-primary);
   text-decoration: none;
 }
 
+.war-room-toolbar-link {
+  margin-left: auto;
+}
+
+.war-room-toolbar-back:hover,
 .war-room-toolbar-link:hover {
+  text-decoration: underline;
+}
+
+.war-room-product-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--war-room-accent);
+  text-decoration: none;
+}
+
+.war-room-product-link:hover {
   text-decoration: underline;
 }
 

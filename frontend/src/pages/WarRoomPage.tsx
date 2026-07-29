@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TenantProduct } from "../lib/api";
 import WarRoomContent from "../components/war-room/WarRoomContent";
+import WarRoomGeneralContent from "../components/war-room/WarRoomGeneralContent";
+import WarRoomProductToolbar from "../components/war-room/WarRoomProductToolbar";
+import { WAR_ROOM_GENERAL_VALUE } from "../components/war-room/war-room-shared";
 import PageLoading from "../components/ui/PageLoading";
-import Select from "../components/ui/Select";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 
@@ -29,14 +31,6 @@ export default function WarRoomPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const defaultProductId = focusProductId ?? products[0]?.id ?? null;
-
-  useEffect(() => {
-    if (loading || productId || !defaultProductId) return;
-    const runSuffix = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
-    navigate(`/war-room/${defaultProductId}${runSuffix}`, { replace: true });
-  }, [loading, productId, defaultProductId, navigate, watchRunId]);
-
   const handleWatchRunChange = (runId: string | null) => {
     if (runId) {
       setSearchParams({ run: runId }, { replace: true });
@@ -47,17 +41,13 @@ export default function WarRoomPage() {
 
   const runQuery = watchRunId ? `?run=${encodeURIComponent(watchRunId)}` : "";
 
-  const selectOptions = useMemo(
-    () =>
-      products.map((product) => ({
-        value: product.id,
-        label:
-          product.id === focusProductId
-            ? `${product.name} (${t("warRoom.focused")})`
-            : product.name,
-      })),
-    [products, focusProductId, t],
-  );
+  const handleProductSelect = (value: string) => {
+    if (value === WAR_ROOM_GENERAL_VALUE) {
+      navigate(`/war-room${runQuery}`);
+      return;
+    }
+    navigate(`/war-room/${value}${runQuery}`);
+  };
 
   if (loading) {
     return <PageLoading message={t("warRoom.loading")} />;
@@ -79,39 +69,30 @@ export default function WarRoomPage() {
     );
   }
 
-  const selectedId = productId ?? defaultProductId;
-  if (!selectedId) {
-    return <PageLoading message={t("warRoom.loading")} />;
-  }
-
   if (productId && !products.some((product) => product.id === productId)) {
     return <Navigate to="/war-room" replace />;
   }
 
+  const selectedValue = productId ?? WAR_ROOM_GENERAL_VALUE;
+
   return (
     <div className="war-room-page">
-      <div className="war-room-toolbar">
-        <label htmlFor="war-room-product" className="war-room-toolbar-label">
-          {t("warRoom.selectProduct")}
-        </label>
-        <Select
-          id="war-room-product"
-          value={selectedId}
-          onChange={(id) => navigate(`/war-room/${id}${runQuery}`)}
-          options={selectOptions}
-          ariaLabel={t("warRoom.selectProduct")}
-          className="war-room-toolbar-select"
-          size="sm"
-        />
-        <Link to="/products" className="war-room-toolbar-link">
-          {t("warRoom.manageProducts")}
-        </Link>
-      </div>
-      <WarRoomContent
-        productId={selectedId}
-        watchRunId={watchRunId}
-        onWatchRunChange={handleWatchRunChange}
+      <WarRoomProductToolbar
+        products={products}
+        focusProductId={focusProductId}
+        selectedValue={selectedValue}
+        onSelect={handleProductSelect}
+        runQuery={runQuery}
       />
+      {productId ? (
+        <WarRoomContent
+          productId={productId}
+          watchRunId={watchRunId}
+          onWatchRunChange={handleWatchRunChange}
+        />
+      ) : (
+        <WarRoomGeneralContent products={products} watchRunId={watchRunId} />
+      )}
     </div>
   );
 }

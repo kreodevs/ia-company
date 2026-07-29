@@ -14,51 +14,9 @@ import DeliverableHealthBanner from "./DeliverableHealthBanner";
 import ProductHealthPanel from "./ProductHealthPanel";
 import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
+import WarRoomAgentSeat from "./WarRoomAgentSeat";
 import WarRoomRunSelector from "./WarRoomRunSelector";
-
-const ROLE_EMOJI: Record<string, string> = {
-  "coordinator-chief": "🎩",
-  "ceo-bezos": "👔",
-  "cto-vogels": "🛠️",
-  "cfo-campbell": "💰",
-  "critic-munger": "🧐",
-  "research-thompson": "🔍",
-  "product-norman": "🧭",
-  "interaction-cooper": "🎯",
-  "ui-duarte": "🎨",
-  "fullstack-dhh": "💻",
-  "qa-bach": "🧪",
-  "devops-hightower": "🚀",
-  "marketing-godin": "📣",
-  "operations-pg": "📈",
-  "sales-ross": "💼",
-};
-
-function avatarGradient(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const hue = h % 360;
-  return `radial-gradient(circle at 30% 25%, hsl(${hue} 90% 70%) 0%, hsl(${hue} 70% 45%) 55%, hsl(${(hue + 25) % 360} 80% 30%) 100%)`;
-}
-
-function statusRingColor(s: TeamAgentStatus): string {
-  if (s === "thinking") return "rgba(96, 165, 250, 0.85)";
-  if (s === "queued") return "rgba(251, 191, 36, 0.85)";
-  return "rgba(148, 163, 184, 0.45)";
-}
-
-function positionOnCircle(index: number, total: number, radiusPct: number): { x: number; y: number } {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  return {
-    x: 50 + Math.cos(angle) * radiusPct,
-    y: 50 + Math.sin(angle) * radiusPct,
-  };
-}
-
-function shortTime(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+import { shortTime } from "./war-room-shared";
 
 const TEAM_REFRESH_MIN_MS = 2500;
 /** Keep active agent states visible long enough to read the war-room table. */
@@ -86,14 +44,6 @@ function statusPriority(status: TeamAgentStatus): number {
   if (status === "thinking") return 3;
   if (status === "queued") return 2;
   return 1;
-}
-
-function seatRadiusPct(total: number): number {
-  if (total <= 4) return 40;
-  if (total <= 8) return 42;
-  if (total <= 12) return 44;
-  if (total <= 16) return 42;
-  return 40;
 }
 
 function useHeldAgentTeam(team: TeamAgent[]): TeamAgent[] {
@@ -614,7 +564,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
                 )}
               </div>
               {displayTeam.map((agent, i) => (
-                <AgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
+                <WarRoomAgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
               ))}
             </div>
           </section>
@@ -726,50 +676,5 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
         </ol>
       </section>
     </div>
-  );
-}
-
-function AgentSeat({ agent, index, total }: { agent: TeamAgent; index: number; total: number }) {
-  const { t } = useTranslation();
-  const radiusPct = seatRadiusPct(total);
-  const { x, y } = positionOnCircle(index, total, radiusPct);
-  const emoji = ROLE_EMOJI[agent.name] ?? "🧑‍💼";
-  const ringColor = statusRingColor(agent.status);
-
-  return (
-    <div
-      className={`war-room-seat war-room-seat-${agent.status}`}
-      data-testid={`seat-${agent.name}`}
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        ["--ring" as string]: ringColor,
-      }}
-      title={`${agent.name} — ${agent.role} (${t(`warRoom.status.${agent.status}`)})`}
-    >
-      <span className="war-room-seat-pill" aria-hidden>
-        {agent.status === "thinking" && <ThinkingDots />}
-        {agent.status === "queued" && <span className="war-room-seat-clock">⏳</span>}
-      </span>
-      <div className="war-room-seat-avatar" style={{ background: avatarGradient(agent.name) }}>
-        <span className="war-room-seat-emoji" aria-hidden>
-          {emoji}
-        </span>
-      </div>
-      <p className="war-room-seat-name">{agent.name.replace(/-/g, " ")}</p>
-      {agent.status === "thinking" && agent.currentTask && (
-        <p className="war-room-seat-task">{agent.currentTask}</p>
-      )}
-    </div>
-  );
-}
-
-function ThinkingDots() {
-  return (
-    <span className="war-room-typing" aria-hidden>
-      <span />
-      <span />
-      <span />
-    </span>
   );
 }

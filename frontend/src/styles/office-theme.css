@@ -1534,6 +1534,72 @@ button.office-room-card {
   line-height: 1.45;
 }
 
+.office-dept-scope-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.office-dept-scope-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+}
+
+.office-dept-scope-select {
+  min-width: 12rem;
+  max-width: 20rem;
+}
+
+.office-dept-scope-hint {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #94a3b8;
+}
+
+@media (min-width: 768px) {
+  .office-dept-scope-hint {
+    flex: 1 1 auto;
+    margin-left: 0.25rem;
+  }
+}
+
+.office-dept-sidebar-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.office-dept-coordinator-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 0.75rem;
+}
+
+.office-dept-coordinator-panel .office-chat {
+  min-height: 360px;
+}
+
+.office-dept-coordinator-panel .office-chat-messages {
+  max-height: 280px;
+}
+
+.office-dept-coordinator-panel .office-chat-actions {
+  flex-wrap: wrap;
+}
+
 .office-dept-grid {
   display: grid;
   grid-template-columns: 1fr minmax(240px, 320px);
