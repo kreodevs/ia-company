@@ -104,6 +104,7 @@ export const admin = {
       httpRefererHint: "Required by OpenRouter on every request. Use this app's public URL (e.g. your production domain).",
       customSection: "Custom (OpenAI-compatible)",
       replicateSection: "Replicate",
+      replicateSummary: "Image, audio, and predictions",
       replicateHint: "Image, audio, and some LLM models via predictions. Agents with provider Replicate use this API key.",
       modelPlaceholder: "Search models…",
       modelsLoading: "Loading models…",

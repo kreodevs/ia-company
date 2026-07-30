@@ -14,6 +14,7 @@ UI built with **Kreo registry components** styled via the **Paperclip Dark Warm*
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
 | Shared widgets | `ModelAutocomplete.tsx` | Model picker (OpenRouter / TokenLab / Replicate); admin or tenant catalog |
 | Shared widgets | `AgentModelFields.tsx` | Per-agent LLM config: provider (inherit or explicit), model kind, model ID |
+| Shared widgets | `LlmProviderCredentialPanel.tsx` | Collapsible provider credential block on platform LLM settings (configured = collapsed + summary) |
 | Shared widgets | `ThemeSwitcher.tsx` | Stripe HDS Light / Paperclip Warm / Slash theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |

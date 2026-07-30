@@ -4,6 +4,10 @@ import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import ModelAutocomplete from "../components/ModelAutocomplete";
+import LlmProviderCredentialPanel, {
+  hostFromUrl,
+  isApiKeyConfigured,
+} from "../components/LlmProviderCredentialPanel";
 import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
@@ -233,20 +237,12 @@ export default function PlatformSettingsPage() {
             </p>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.tokenlabSection")}
-                </h3>
-                <span
-                  className={`text-xs ${settings.tokenlabApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
-                >
-                  {settings.tokenlabApiKey
-                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                </span>
-              </div>
+          <div className="grid gap-3 lg:grid-cols-2">
+            <LlmProviderCredentialPanel
+              title={t("admin.platformSettings.defaultLlm.tokenlabSection")}
+              configured={isApiKeyConfigured(settings.tokenlabApiKey)}
+              summaryDetail={hostFromUrl(settings.tokenlabBaseUrl)}
+            >
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -266,21 +262,16 @@ export default function PlatformSettingsPage() {
                   onChange={(e) => setSettings({ ...settings, tokenlabBaseUrl: e.target.value })}
                 />
               </label>
-            </div>
+            </LlmProviderCredentialPanel>
 
-            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.openrouterSection")}
-                </h3>
-                <span
-                  className={`text-xs ${settings.openrouterApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
-                >
-                  {settings.openrouterApiKey
-                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                </span>
-              </div>
+            <LlmProviderCredentialPanel
+              title={t("admin.platformSettings.defaultLlm.openrouterSection")}
+              configured={isApiKeyConfigured(settings.openrouterApiKey)}
+              summaryDetail={
+                hostFromUrl(settings.openrouterBaseUrl) ??
+                hostFromUrl(settings.openrouterReferer)
+              }
+            >
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -308,21 +299,13 @@ export default function PlatformSettingsPage() {
                   onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
                 />
               </label>
-            </div>
+            </LlmProviderCredentialPanel>
 
-            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.customSection")}
-                </h3>
-                <span
-                  className={`text-xs ${settings.customApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
-                >
-                  {settings.customApiKey
-                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                </span>
-              </div>
+            <LlmProviderCredentialPanel
+              title={t("admin.platformSettings.defaultLlm.customSection")}
+              configured={isApiKeyConfigured(settings.customApiKey)}
+              summaryDetail={hostFromUrl(settings.customBaseUrl)}
+            >
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -343,24 +326,14 @@ export default function PlatformSettingsPage() {
                   onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
                 />
               </label>
-            </div>
+            </LlmProviderCredentialPanel>
 
-            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.replicateSection")}
-                </h3>
-                <span
-                  className={`text-xs ${settings.replicateApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
-                >
-                  {settings.replicateApiKey
-                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                </span>
-              </div>
-              <p className="text-xs text-[var(--color-muted-foreground)]">
-                {t("admin.platformSettings.defaultLlm.replicateHint")}
-              </p>
+            <LlmProviderCredentialPanel
+              title={t("admin.platformSettings.defaultLlm.replicateSection")}
+              configured={isApiKeyConfigured(settings.replicateApiKey)}
+              summaryDetail={t("admin.platformSettings.defaultLlm.replicateSummary")}
+              hint={t("admin.platformSettings.defaultLlm.replicateHint")}
+            >
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -372,7 +345,7 @@ export default function PlatformSettingsPage() {
                   onChange={(e) => setSettings({ ...settings, replicateApiKey: e.target.value })}
                 />
               </label>
-            </div>
+            </LlmProviderCredentialPanel>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">
