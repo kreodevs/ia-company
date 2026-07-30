@@ -1485,7 +1485,7 @@ button.office-room-card {
 .office-dept-extra-desc {
   margin: 0.25rem 0 0.85rem;
   font-size: 0.82rem;
-  color: var(--office-muted, #94a3b8);
+  color: #cbd5e1;
 }
 
 .office-dept-extra-form {
@@ -1551,7 +1551,7 @@ button.office-room-card {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
 .office-dept-scope-select {
@@ -1851,6 +1851,18 @@ button.office-room-card {
 .office-dept-staff-link-select {
   min-width: 14rem;
   flex: 1;
+}
+
+.office-dept-staff-link-select button,
+.office-dept-staff-link-select [role="combobox"] {
+  min-height: 2.25rem;
+  border-color: rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.65);
+}
+
+.office-dept-staff-link-select svg {
+  color: #e2e8f0;
+  opacity: 1;
 }
 
 .office-dept-staff-link-error {

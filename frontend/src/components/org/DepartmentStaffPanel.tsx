@@ -197,8 +197,8 @@ export default function DepartmentStaffPanel({
                     id="link-existing-agent"
                     value={linkAgentName}
                     onChange={setLinkAgentName}
+                    placeholder={t("org.staff.linkExistingPlaceholder")}
                     options={[
-                      { value: "", label: t("org.staff.linkExistingPlaceholder") },
                       ...roster.availableAgents.map((agent) => ({
                         value: agent.name,
                         label:

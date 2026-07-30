@@ -22,6 +22,7 @@ interface SelectProps {
   className?: string;
   id?: string;
   size?: "sm" | "md";
+  placeholder?: string;
 }
 
 export default function Select({
@@ -32,6 +33,7 @@ export default function Select({
   className,
   id,
   size = "md",
+  placeholder,
 }: SelectProps) {
   return (
     <KreoSelect value={value} onValueChange={onChange}>
@@ -40,11 +42,11 @@ export default function Select({
         aria-label={ariaLabel}
         className={cn(size === "sm" && "h-8 text-xs", className)}
       >
-        <SelectValue />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+          <SelectItem key={option.value || "__empty__"} value={option.value} disabled={option.disabled}>
             {option.label}
           </SelectItem>
         ))}
