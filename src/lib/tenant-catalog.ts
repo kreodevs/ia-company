@@ -169,3 +169,33 @@ export async function linkAgentNameToOrgUnit(
     },
   });
 }
+
+export async function unlinkAgentNameFromOrgUnit(
+  tenantId: string,
+  orgUnitId: string,
+  agentName: string,
+): Promise<void> {
+  const org = await prisma.orgUnit.findFirst({
+    where: { id: orgUnitId, tenantId },
+    select: { id: true, config: true },
+  });
+  if (!org) throw new Error("Org unit not found");
+
+  const config = (org.config as Record<string, unknown>) ?? {};
+  const linked = Array.isArray(config.linkedAgentNames)
+    ? config.linkedAgentNames.filter((n): n is string => typeof n === "string").map(slugifyCatalogName)
+    : [];
+  const name = slugifyCatalogName(agentName);
+  const next = linked.filter((entry) => entry !== name);
+  if (next.length === linked.length) return;
+
+  await prisma.orgUnit.update({
+    where: { id: org.id },
+    data: {
+      config: {
+        ...config,
+        linkedAgentNames: next,
+      },
+    },
+  });
+}

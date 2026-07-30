@@ -44,6 +44,7 @@ export default function DepartmentStaffPanel({
   const [assistantKey, setAssistantKey] = useState(0);
   const [linkAgentName, setLinkAgentName] = useState("");
   const [linking, setLinking] = useState(false);
+  const [unlinkingName, setUnlinkingName] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
 
   const members = roster.members;
@@ -68,6 +69,20 @@ export default function DepartmentStaffPanel({
       setLinkError(err instanceof Error ? err.message : String(err));
     } finally {
       setLinking(false);
+    }
+  };
+
+  const unlinkMember = async (agentName: string) => {
+    if (!confirm(t("org.staff.unlinkConfirm", { name: agentName }))) return;
+    setUnlinkingName(agentName);
+    setLinkError(null);
+    try {
+      await api.orgUnits.unlinkStaffAgent(orgUnitId, agentName);
+      onRefresh?.();
+    } catch (err) {
+      setLinkError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setUnlinkingName(null);
     }
   };
 
@@ -119,6 +134,16 @@ export default function DepartmentStaffPanel({
                     </Button>
                   </>
                 )}
+                {seat.source === "added" ? (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={unlinkingName === seat.name}
+                    onClick={() => void unlinkMember(seat.name)}
+                  >
+                    {unlinkingName === seat.name ? t("org.staff.unlinking") : t("org.staff.unlink")}
+                  </Button>
+                ) : null}
               </div>
             </li>
           ))}

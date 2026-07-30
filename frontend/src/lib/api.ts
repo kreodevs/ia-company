@@ -1855,7 +1855,21 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ agentName }),
       }),
-    update: (id: string, body: { config?: Record<string, unknown>; designMd?: string }) =>
+    unlinkStaffAgent: (id: string, agentName: string) =>
+      request<import("./org-types").OrgUnitStaffRoster>(`/org-units/${id}/staff/unlink`, {
+        method: "POST",
+        body: JSON.stringify({ agentName }),
+      }),
+    update: (
+      id: string,
+      body: {
+        name?: string;
+        description?: string | null;
+        config?: Record<string, unknown>;
+        designMd?: string;
+        isActive?: boolean;
+      },
+    ) =>
       request<import("./org-types").OrgUnit>(`/org-units/${id}`, {
         method: "PUT",
         body: JSON.stringify(body),

@@ -168,9 +168,12 @@ export default function PlatformSettingsPage() {
           <p className="text-sm text-[var(--color-muted-foreground)]">
             {t("admin.platformSettings.defaultLlm.subtitle")}
           </p>
+          <p className="rounded-lg border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/5 px-3 py-2 text-sm text-[var(--color-foreground)]">
+            {t("admin.platformSettings.defaultLlm.perAgentHint")}
+          </p>
           <div className="grid gap-4 sm:grid-cols-3">
             <label className="block text-sm">
-              <span>{t("common.provider")}</span>
+              <span>{t("admin.platformSettings.defaultLlm.defaultProviderLabel")}</span>
               <select
                 className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
                 value={settings.defaultProvider}
@@ -221,11 +224,29 @@ export default function PlatformSettingsPage() {
             </label>
           </div>
 
+          <div className="space-y-2 border-t border-[var(--color-border)] pt-4">
+            <h3 className="text-sm font-semibold">
+              {t("admin.platformSettings.defaultLlm.providersRegistryTitle")}
+            </h3>
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              {t("admin.platformSettings.defaultLlm.providersRegistryHint")}
+            </p>
+          </div>
+
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <h3 className="text-sm font-medium">
-                {t("admin.platformSettings.defaultLlm.tokenlabSection")}
-              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-medium">
+                  {t("admin.platformSettings.defaultLlm.tokenlabSection")}
+                </h3>
+                <span
+                  className={`text-xs ${settings.tokenlabApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+                >
+                  {settings.tokenlabApiKey
+                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
+                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
+                </span>
+              </div>
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -248,9 +269,18 @@ export default function PlatformSettingsPage() {
             </div>
 
             <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <h3 className="text-sm font-medium">
-                {t("admin.platformSettings.defaultLlm.openrouterSection")}
-              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-medium">
+                  {t("admin.platformSettings.defaultLlm.openrouterSection")}
+                </h3>
+                <span
+                  className={`text-xs ${settings.openrouterApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+                >
+                  {settings.openrouterApiKey
+                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
+                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
+                </span>
+              </div>
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -281,9 +311,18 @@ export default function PlatformSettingsPage() {
             </div>
 
             <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <h3 className="text-sm font-medium">
-                {t("admin.platformSettings.defaultLlm.customSection")}
-              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-medium">
+                  {t("admin.platformSettings.defaultLlm.customSection")}
+                </h3>
+                <span
+                  className={`text-xs ${settings.customApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+                >
+                  {settings.customApiKey
+                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
+                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
+                </span>
+              </div>
               <label className="block space-y-1 text-sm">
                 <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
                 <input
@@ -307,9 +346,18 @@ export default function PlatformSettingsPage() {
             </div>
 
             <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-              <h3 className="text-sm font-medium">
-                {t("admin.platformSettings.defaultLlm.replicateSection")}
-              </h3>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-medium">
+                  {t("admin.platformSettings.defaultLlm.replicateSection")}
+                </h3>
+                <span
+                  className={`text-xs ${settings.replicateApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
+                >
+                  {settings.replicateApiKey
+                    ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
+                    : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
+                </span>
+              </div>
               <p className="text-xs text-[var(--color-muted-foreground)]">
                 {t("admin.platformSettings.defaultLlm.replicateHint")}
               </p>

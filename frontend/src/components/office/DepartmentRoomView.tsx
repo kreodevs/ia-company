@@ -29,6 +29,8 @@ export interface DepartmentRoomViewProps {
   orgUnitId?: string;
   linkedProductIds?: string[];
   headerActions?: ReactNode;
+  navigation?: ReactNode;
+  showMeetingRoom?: boolean;
   sidebarFooter?: ReactNode;
   children?: ReactNode;
 }
@@ -54,6 +56,8 @@ export default function DepartmentRoomView({
   orgUnitId,
   linkedProductIds,
   headerActions,
+  navigation,
+  showMeetingRoom = true,
   sidebarFooter,
   children,
 }: DepartmentRoomViewProps) {
@@ -143,6 +147,10 @@ export default function DepartmentRoomView({
         </div>
       </header>
 
+      {navigation}
+
+      {showMeetingRoom ? (
+        <>
       <div className="office-dept-scope-bar">
         <label htmlFor="office-dept-scope" className="office-dept-scope-label">
           {t("office.task.scope")}
@@ -223,6 +231,8 @@ export default function DepartmentRoomView({
           {sidebarFooter}
         </aside>
       </div>
+        </>
+      ) : null}
 
       {children ? <div className="office-dept-extras">{children}</div> : null}
     </div>

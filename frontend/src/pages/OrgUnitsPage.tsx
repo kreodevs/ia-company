@@ -59,15 +59,25 @@ export default function OrgUnitsPage() {
                 <p className="mb-3 text-sm text-[var(--color-muted-foreground)]">
                   {unit.description ?? t("org.noDescription")}
                 </p>
-                <p className="mb-3 font-mono text-[10px] text-[var(--color-muted-foreground)]">
+                <p className="mb-4 font-mono text-[10px] text-[var(--color-muted-foreground)]">
                   {unit.workspacePath}
                 </p>
-                <Link
-                  to={`/org-units/${unit.id}`}
-                  className="text-sm font-medium text-[var(--color-primary)] hover:underline"
-                >
-                  {t("org.openDepartment")} →
-                </Link>
+                <div className="flex flex-wrap gap-2">
+                  <Link to={`/org-units/${unit.id}?tab=staff`}>
+                    <Button size="sm">{t("org.manageStaff")}</Button>
+                  </Link>
+                  <Link to={`/org-units/${unit.id}?tab=settings`}>
+                    <Button size="sm" variant="secondary">
+                      {t("org.editDepartment")}
+                    </Button>
+                  </Link>
+                  <Link
+                    to={`/org-units/${unit.id}?tab=room`}
+                    className="inline-flex items-center self-center px-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+                  >
+                    {t("org.openDepartment")} →
+                  </Link>
+                </div>
               </Panel>
             </li>
           ))}

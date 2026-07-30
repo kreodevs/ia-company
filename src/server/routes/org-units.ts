@@ -4,7 +4,7 @@ import { prisma } from "../../lib/prisma.js";
 import { listArtifacts, createArtifact, updateArtifactStatus } from "../../lib/artifact.js";
 import { getOrgUnit, listOrgUnits, createOrgUnit, updateOrgUnit } from "../../lib/org-unit.js";
 import { getOrgUnitStaffRoster } from "../../lib/org-context.js";
-import { linkAgentNameToOrgUnit } from "../../lib/tenant-catalog.js";
+import { linkAgentNameToOrgUnit, unlinkAgentNameFromOrgUnit } from "../../lib/tenant-catalog.js";
 import { launchOrgUnitWork, listOrgUnitProducts } from "../../lib/org-launcher.js";
 import { createOrgWorkItem } from "../../lib/org-work-items.js";
 import {
@@ -109,6 +109,27 @@ export async function orgUnitRoutes(app: FastifyInstance) {
         await logAudit(request, "org_unit.staff.link", {
           orgUnitId: request.params.id,
           agentName: agent.name,
+        });
+        return getOrgUnitStaffRoster(tenantId, request.params.id);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string }; Body: { agentName?: string } }>(
+    "/org-units/:id/staff/unlink",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const agentName = request.body?.agentName?.trim();
+        if (!agentName) return reply.status(400).send({ error: "agentName is required" });
+        const unit = await getOrgUnit(tenantId, request.params.id);
+        if (!unit) return reply.status(404).send({ error: "Org unit not found" });
+        await unlinkAgentNameFromOrgUnit(tenantId, request.params.id, agentName);
+        await logAudit(request, "org_unit.staff.unlink", {
+          orgUnitId: request.params.id,
+          agentName,
         });
         return getOrgUnitStaffRoster(tenantId, request.params.id);
       } catch (err) {
