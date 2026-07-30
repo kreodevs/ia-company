@@ -22,6 +22,12 @@ export const org = {
     staff: "Personal",
     settings: "Configuración",
   },
+  settingsTabs: {
+    profile: "Datos",
+    operations: "Operaciones",
+    config: "Perfil operativo",
+    assets: "Diseño y artefactos",
+  },
   notFound: "Departamento no encontrado.",
   configTitle: "Configuración",
   designTitle: "design.md",
@@ -102,10 +108,24 @@ export const org = {
     missing: "Por crear",
     addedRole: "añadido",
     createWithAi: "Crear con IA",
-    linkExisting: "Vincular agente existente",
-    linkExistingPlaceholder: "Elegir agente de Equipo IA…",
-    linkCta: "Vincular al departamento",
-    linking: "Vinculando…",
+    hireTabs: {
+      create: "Crear nuevo",
+      incorporate: "Incorporar existente",
+    },
+    createTitle: "Asistente de contratación",
+    createHint:
+      "Describe un puesto nuevo o deja que la IA lo proponga. Cada agente creado se suma al departamento automáticamente.",
+    incorporateTitle: "Incorporar agente de Equipo IA",
+    incorporateHint:
+      "Elige un agente que ya exista en tu tenant. Puede estar en otro departamento — quedará también en este sin duplicarlo.",
+    incorporateEmpty:
+      "No hay agentes fuera de esta plantilla. Crea uno nuevo o revisa Equipo IA.",
+    linkExisting: "Agente",
+    linkExistingPlaceholder: "Elegir agente…",
+    linkExistingOption: "{{role}} ({{name}})",
+    linkExistingOptionWithDept: "{{role}} ({{name}}) · en {{departments}}",
+    linkCta: "Incorporar al departamento",
+    linking: "Incorporando…",
     assistantTitle: "Asistente de contratación",
     assistantHint:
       "Describe un puesto nuevo o deja que la IA lo proponga. Cada agente creado se suma al departamento automáticamente.",

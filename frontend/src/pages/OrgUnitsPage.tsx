@@ -66,7 +66,7 @@ export default function OrgUnitsPage() {
                   <Link to={`/org-units/${unit.id}?tab=staff`}>
                     <Button size="sm">{t("org.manageStaff")}</Button>
                   </Link>
-                  <Link to={`/org-units/${unit.id}?tab=settings`}>
+                  <Link to={`/org-units/${unit.id}?tab=settings&section=profile`}>
                     <Button size="sm" variant="secondary">
                       {t("org.editDepartment")}
                     </Button>

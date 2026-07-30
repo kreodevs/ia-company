@@ -1703,6 +1703,42 @@ button.office-room-card {
   border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
+.office-dept-settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.office-dept-settings-tabs {
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.office-dept-settings-body {
+  padding: 1rem;
+}
+
+.office-dept-settings-section {
+  max-width: 42rem;
+}
+
+.office-dept-settings-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.office-dept-settings-stack .office-dept-settings-section {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.office-dept-settings-stack .office-dept-settings-section:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 .office-dept-staff-panel {
   display: flex;
   flex-direction: column;
@@ -1759,8 +1795,32 @@ button.office-room-card {
 }
 
 .office-dept-staff-assistant {
-  padding-top: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.office-dept-staff-hire {
   border-top: 1px solid rgba(148, 163, 184, 0.14);
+  padding-top: 0.75rem;
+}
+
+.office-dept-staff-hire-body {
+  padding-top: 0.85rem;
+}
+
+.office-dept-staff-link-row-panel {
+  border-top: none;
+  padding: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.office-dept-staff-link-row-panel .office-dept-staff-link-select {
+  width: 100%;
+  max-width: none;
+}
+
+.office-dept-staff-incorporate .office-dept-staff-link-row-panel {
+  margin-top: 0.5rem;
 }
 
 .office-dept-staff-assistant-title {

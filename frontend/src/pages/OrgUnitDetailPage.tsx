@@ -6,14 +6,11 @@ import type { Artifact, OrgUnit, OrgUnitStaffRoster } from "../lib/org-types";
 import PageLoading from "../components/ui/PageLoading";
 import DepartmentRoomView from "../components/office/DepartmentRoomView";
 import DepartmentStaffPanel from "../components/org/DepartmentStaffPanel";
-import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
-import ArtifactGallery from "../components/org/ArtifactGallery";
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
-import Select from "../components/ui/Select";
+import DepartmentSettingsPanel from "../components/org/DepartmentSettingsPanel";
 import TabsBar from "../components/ui/TabsBar";
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
+import Button from "../components/ui/Button";
 
 type DeptTab = "room" | "staff" | "settings";
 
@@ -36,7 +33,6 @@ export default function OrgUnitDetailPage() {
   const [linkedProducts, setLinkedProducts] = useState<TenantProduct[]>([]);
   const [archiveItems, setArchiveItems] = useState<OfficeArchiveItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [launchTask, setLaunchTask] = useState("");
   const [launchProductId, setLaunchProductId] = useState("");
@@ -266,159 +262,31 @@ export default function OrgUnitDetailPage() {
       ) : null}
 
       {activeTab === "settings" ? (
-        <>
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.profileTitle")}</h2>
-            <p className="office-dept-extra-desc">{t("org.profileSubtitle")}</p>
-            <div className="office-dept-extra-form office-dept-extra-form-grid">
-              <Input
-                label={t("common.name")}
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                disabled={savingProfile}
-              />
-              <Input
-                label={t("common.description")}
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                disabled={savingProfile}
-              />
-              <Button
-                onClick={() => void saveProfile()}
-                disabled={savingProfile || !editName.trim()}
-              >
-                {savingProfile ? t("common.saving") : t("org.saveProfile")}
-              </Button>
-            </div>
-          </section>
-
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.launchTitle")}</h2>
-            <p className="office-dept-extra-desc">{t("org.launchSubtitle")}</p>
-            <div className="office-dept-extra-form">
-              <Input
-                label={t("org.launchTaskLabel")}
-                value={launchTask}
-                onChange={(e) => setLaunchTask(e.target.value)}
-                placeholder={t("org.launchTaskPlaceholder")}
-                disabled={launching}
-              />
-              {linkedProducts.length > 0 ? (
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
-                    {t("org.launchProductLabel")}
-                  </label>
-                  <Select
-                    value={launchProductId}
-                    onChange={setLaunchProductId}
-                    options={linkedProducts.map((p) => ({ value: p.id, label: p.name }))}
-                    ariaLabel={t("org.launchProductLabel")}
-                  />
-                </div>
-              ) : (
-                <p className="text-xs text-[var(--foreground-muted)]">{t("org.launchNeedsProduct")}</p>
-              )}
-              <Button
-                onClick={() => void launchWork()}
-                disabled={launching || !launchTask.trim() || linkedProducts.length === 0}
-              >
-                {launching ? t("org.launching") : t("org.launchCta")}
-              </Button>
-            </div>
-          </section>
-
-          {linkedProducts.length > 0 ? (
-            <section className="office-dept-extra-panel">
-              <h2 className="office-panel-title">{t("org.linkedProductsTitle")}</h2>
-              <ul className="office-dept-linked-list">
-                {linkedProducts.map((p) => (
-                  <li key={p.id}>
-                    <Link to={`/products/${p.id}/settings`} className="office-link-inline">
-                      {p.name}
-                    </Link>
-                    <span className="office-dept-linked-kind">({p.workItemKind ?? "product"})</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.addWorkItemTitle")}</h2>
-            <p className="office-dept-extra-desc">{t("org.addWorkItemSubtitle")}</p>
-            <div className="office-dept-extra-form office-dept-extra-form-grid">
-              <Input
-                label={t("org.addWorkItemName")}
-                value={newWorkItemName}
-                onChange={(e) => setNewWorkItemName(e.target.value)}
-                placeholder={t("org.addWorkItemNamePlaceholder")}
-                disabled={creatingWorkItem}
-              />
-              <div>
-                <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
-                  {t("org.studio.workItemKindLabel")}
-                </label>
-                <Select
-                  value={newWorkItemKind}
-                  onChange={setNewWorkItemKind}
-                  options={[
-                    { value: "product", label: t("products.settings.workItemKind.product") },
-                    { value: "client", label: t("products.settings.workItemKind.client") },
-                    { value: "campaign", label: t("products.settings.workItemKind.campaign") },
-                    { value: "project", label: t("products.settings.workItemKind.project") },
-                  ]}
-                  ariaLabel={t("org.studio.workItemKindLabel")}
-                />
-              </div>
-              <Button
-                onClick={() => void addWorkItem()}
-                disabled={creatingWorkItem || !newWorkItemName.trim()}
-              >
-                {creatingWorkItem ? t("org.addWorkItemCreating") : t("org.addWorkItemCta")}
-              </Button>
-            </div>
-          </section>
-
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.configTitle")}</h2>
-            {unit.configSchema?.sections?.length || unit.configSchema?.fields?.length ? (
-              <SchemaDynamicForm
-                schema={unit.configSchema}
-                initialValues={unit.config as Record<string, unknown>}
-                submitting={saving}
-                submitText={t("org.saveConfig")}
-                onSubmit={async (values) => {
-                  setSaving(true);
-                  try {
-                    const updated = await api.orgUnits.update(unit.id, { config: values });
-                    setUnit(updated);
-                    toast.success(t("org.configSaved"));
-                  } finally {
-                    setSaving(false);
-                  }
-                }}
-              />
-            ) : (
-              <p className="office-empty">{t("org.noConfigSchema")}</p>
-            )}
-          </section>
-
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.designTitle")}</h2>
-            <pre className="office-dept-design-preview">{unit.designMd ?? t("org.noDesignMd")}</pre>
-          </section>
-
-          <section className="office-dept-extra-panel">
-            <h2 className="office-panel-title">{t("org.artifactsTitle")}</h2>
-            <ArtifactGallery
-              artifacts={artifacts}
-              onStatusChange={async (artifactId, status) => {
-                await api.orgUnits.updateArtifactStatus(artifactId, status);
-                await load();
-              }}
-            />
-          </section>
-        </>
+        <DepartmentSettingsPanel
+          unit={unit}
+          linkedProducts={linkedProducts}
+          artifacts={artifacts}
+          editName={editName}
+          editDescription={editDescription}
+          savingProfile={savingProfile}
+          launchTask={launchTask}
+          launchProductId={launchProductId}
+          launching={launching}
+          newWorkItemName={newWorkItemName}
+          newWorkItemKind={newWorkItemKind}
+          creatingWorkItem={creatingWorkItem}
+          onEditNameChange={setEditName}
+          onEditDescriptionChange={setEditDescription}
+          onLaunchTaskChange={setLaunchTask}
+          onLaunchProductIdChange={setLaunchProductId}
+          onNewWorkItemNameChange={setNewWorkItemName}
+          onNewWorkItemKindChange={setNewWorkItemKind}
+          onSaveProfile={saveProfile}
+          onLaunchWork={launchWork}
+          onAddWorkItem={addWorkItem}
+          onUnitUpdated={setUnit}
+          onRefresh={load}
+        />
       ) : null}
     </DepartmentRoomView>
   );

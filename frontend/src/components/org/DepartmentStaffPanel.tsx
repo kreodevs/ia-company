@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { agentDisplayLabel, humanizeAgentSlug } from "../../lib/office-visual";
 import { api } from "../../lib/api";
@@ -6,7 +7,11 @@ import type { OrgUnitStaffRoster } from "../../lib/org-types";
 import Badge from "../ui/Badge";
 import Button from "../ui/Button";
 import Select from "../ui/Select";
+import TabsBar from "../ui/TabsBar";
 import CatalogStudioAgentPanel from "../catalog-studio/CatalogStudioAgentPanel";
+
+type HireMode = "create" | "incorporate";
+const VALID_HIRE_MODES: HireMode[] = ["create", "incorporate"];
 
 interface DepartmentStaffPanelProps {
   orgUnitId: string;
@@ -40,6 +45,31 @@ export default function DepartmentStaffPanel({
   onRefresh,
 }: DepartmentStaffPanelProps) {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const hireParam = searchParams.get("hire") as HireMode | null;
+  const hireMode: HireMode =
+    hireParam && VALID_HIRE_MODES.includes(hireParam) ? hireParam : "create";
+
+  const setHireMode = (mode: HireMode) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("tab", "staff");
+        next.set("hire", mode);
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  const hireTabs = useMemo(
+    () => [
+      { id: "create", label: t("org.staff.hireTabs.create") },
+      { id: "incorporate", label: t("org.staff.hireTabs.incorporate") },
+    ],
+    [t],
+  );
+
   const [brief, setBrief] = useState("");
   const [assistantKey, setAssistantKey] = useState(0);
   const [linkAgentName, setLinkAgentName] = useState("");
@@ -150,64 +180,92 @@ export default function DepartmentStaffPanel({
         </ul>
       )}
 
-      {roster.availableAgents.length > 0 ? (
-        <div className="office-dept-staff-link-row">
-          <label htmlFor="link-existing-agent" className="office-dept-scope-label">
-            {t("org.staff.linkExisting")}
-          </label>
-          <Select
-            id="link-existing-agent"
-            value={linkAgentName}
-            onChange={setLinkAgentName}
-            options={[
-              { value: "", label: t("org.staff.linkExistingPlaceholder") },
-              ...roster.availableAgents.map((agent) => ({
-                value: agent.name,
-                label: `${agent.role || humanizeAgentSlug(agent.name)} (${agent.name})`,
-              })),
-            ]}
-            ariaLabel={t("org.staff.linkExisting")}
-            className="office-dept-staff-link-select"
-            size="sm"
-          />
-          <Button size="sm" disabled={!linkAgentName || linking} onClick={() => void linkExisting()}>
-            {linking ? t("org.staff.linking") : t("org.staff.linkCta")}
-          </Button>
-          {linkError ? <p className="office-dept-staff-link-error">{linkError}</p> : null}
-        </div>
-      ) : null}
+      <div className="office-dept-staff-hire">
+        <TabsBar tabs={hireTabs} activeId={hireMode} onChange={(next) => setHireMode(next as HireMode)} />
 
-      <div className="office-dept-staff-assistant">
-        <h3 className="office-dept-staff-assistant-title">{t("org.staff.assistantTitle")}</h3>
-        <p className="office-dept-extra-desc">{t("org.staff.assistantHint")}</p>
-        <div className="office-dept-staff-assistant-actions">
-          {missing.length > 0 ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => openAssistant(buildGapBrief(orgUnitName, missing))}
-            >
-              {t("org.staff.suggestMissing")}
-            </Button>
-          ) : null}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => openAssistant(buildExpandBrief(orgUnitName, orgUnitType))}
-          >
-            {t("org.staff.addNewRole")}
-          </Button>
+        <div className="office-dept-staff-hire-body">
+          {hireMode === "incorporate" ? (
+            <div className="office-dept-staff-incorporate">
+              <h3 className="office-dept-staff-assistant-title">{t("org.staff.incorporateTitle")}</h3>
+              <p className="office-dept-extra-desc">{t("org.staff.incorporateHint")}</p>
+              {roster.availableAgents.length > 0 ? (
+                <div className="office-dept-staff-link-row office-dept-staff-link-row-panel">
+                  <label htmlFor="link-existing-agent" className="office-dept-scope-label">
+                    {t("org.staff.linkExisting")}
+                  </label>
+                  <Select
+                    id="link-existing-agent"
+                    value={linkAgentName}
+                    onChange={setLinkAgentName}
+                    options={[
+                      { value: "", label: t("org.staff.linkExistingPlaceholder") },
+                      ...roster.availableAgents.map((agent) => ({
+                        value: agent.name,
+                        label:
+                          agent.otherDepartments.length > 0
+                            ? t("org.staff.linkExistingOptionWithDept", {
+                                role: agent.role || humanizeAgentSlug(agent.name),
+                                name: agent.name,
+                                departments: agent.otherDepartments.join(", "),
+                              })
+                            : t("org.staff.linkExistingOption", {
+                                role: agent.role || humanizeAgentSlug(agent.name),
+                                name: agent.name,
+                              }),
+                      })),
+                    ]}
+                    ariaLabel={t("org.staff.linkExisting")}
+                    className="office-dept-staff-link-select"
+                    size="sm"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={!linkAgentName || linking}
+                    onClick={() => void linkExisting()}
+                  >
+                    {linking ? t("org.staff.linking") : t("org.staff.linkCta")}
+                  </Button>
+                  {linkError ? <p className="office-dept-staff-link-error">{linkError}</p> : null}
+                </div>
+              ) : (
+                <p className="office-empty">{t("org.staff.incorporateEmpty")}</p>
+              )}
+            </div>
+          ) : (
+            <div className="office-dept-staff-assistant">
+              <h3 className="office-dept-staff-assistant-title">{t("org.staff.createTitle")}</h3>
+              <p className="office-dept-extra-desc">{t("org.staff.createHint")}</p>
+              <div className="office-dept-staff-assistant-actions">
+                {missing.length > 0 ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => openAssistant(buildGapBrief(orgUnitName, missing))}
+                  >
+                    {t("org.staff.suggestMissing")}
+                  </Button>
+                ) : null}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => openAssistant(buildExpandBrief(orgUnitName, orgUnitType))}
+                >
+                  {t("org.staff.addNewRole")}
+                </Button>
+              </div>
+              <CatalogStudioAgentPanel
+                key={assistantKey}
+                embedded
+                initialBrief={brief}
+                initialOrgUnitId={orgUnitId}
+                onApplied={() => {
+                  onRefresh?.();
+                  setBrief("");
+                }}
+              />
+            </div>
+          )}
         </div>
-        <CatalogStudioAgentPanel
-          key={assistantKey}
-          embedded
-          initialBrief={brief}
-          initialOrgUnitId={orgUnitId}
-          onApplied={() => {
-            onRefresh?.();
-            setBrief("");
-          }}
-        />
       </div>
     </section>
   );

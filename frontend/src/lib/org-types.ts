@@ -111,5 +111,10 @@ export interface OrgUnitStaffRoster {
   orgUnitId: string;
   templateRoleCount: number;
   members: OrgUnitStaffMember[];
-  availableAgents: Array<{ id: string; name: string; role: string }>;
+  availableAgents: Array<{
+    id: string;
+    name: string;
+    role: string;
+    otherDepartments: string[];
+  }>;
 }

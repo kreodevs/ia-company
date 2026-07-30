@@ -70,7 +70,12 @@ export interface OrgUnitStaffRoster {
   orgUnitId: string;
   templateRoleCount: number;
   members: OrgUnitStaffMember[];
-  availableAgents: Array<{ id: string; name: string; role: string }>;
+  availableAgents: Array<{
+    id: string;
+    name: string;
+    role: string;
+    otherDepartments: string[];
+  }>;
 }
 
 export async function getOrgUnitStaffRoster(
@@ -93,6 +98,16 @@ export async function getOrgUnitStaffRoster(
   });
   const agentByName = new Map(agents.map((agent) => [agent.name, agent]));
 
+  const peerOrgUnits = await prisma.orgUnit.findMany({
+    where: { tenantId, id: { not: orgUnitId } },
+    include: { template: true },
+  });
+
+  const otherDepartmentsForAgent = (agentName: string): string[] =>
+    peerOrgUnits
+      .filter((peer) => resolveOrgUnitAgentBreakdown(peer).allNames.includes(agentName))
+      .map((peer) => peer.name);
+
   const rosterNames = new Set(allNames);
   const members: OrgUnitStaffMember[] = allNames.map((name) => ({
     name,
@@ -108,7 +123,12 @@ export async function getOrgUnitStaffRoster(
     members,
     availableAgents: agents
       .filter((agent) => !rosterNames.has(agent.name))
-      .map((agent) => ({ id: agent.id, name: agent.name, role: agent.role })),
+      .map((agent) => ({
+        id: agent.id,
+        name: agent.name,
+        role: agent.role,
+        otherDepartments: otherDepartmentsForAgent(agent.name),
+      })),
   };
 }
 

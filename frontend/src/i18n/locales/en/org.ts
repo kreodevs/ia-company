@@ -22,6 +22,12 @@ export const org = {
     staff: "Staff",
     settings: "Settings",
   },
+  settingsTabs: {
+    profile: "Details",
+    operations: "Operations",
+    config: "Operating profile",
+    assets: "Design & artifacts",
+  },
   notFound: "Department not found.",
   configTitle: "Configuration",
   designTitle: "design.md",
@@ -102,10 +108,24 @@ export const org = {
     missing: "Missing",
     addedRole: "added",
     createWithAi: "Create with AI",
-    linkExisting: "Link existing agent",
-    linkExistingPlaceholder: "Pick an agent from AI Team…",
-    linkCta: "Link to department",
-    linking: "Linking…",
+    hireTabs: {
+      create: "Create new",
+      incorporate: "Add existing",
+    },
+    createTitle: "Hiring assistant",
+    createHint:
+      "Describe a new role or let AI propose one. Each created agent is added to this department automatically.",
+    incorporateTitle: "Add agent from AI Team",
+    incorporateHint:
+      "Pick an agent that already exists in your tenant. They may belong to another department — they will also join this one without being duplicated.",
+    incorporateEmpty:
+      "No agents outside this roster. Create a new one or check AI Team.",
+    linkExisting: "Agent",
+    linkExistingPlaceholder: "Choose agent…",
+    linkExistingOption: "{{role}} ({{name}})",
+    linkExistingOptionWithDept: "{{role}} ({{name}}) · in {{departments}}",
+    linkCta: "Add to department",
+    linking: "Adding…",
     assistantTitle: "Hiring assistant",
     assistantHint:
       "Describe a new role or let AI propose one. Each created agent is added to the department automatically.",
