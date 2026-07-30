@@ -134,6 +134,9 @@
   --foreground-subtle: var(--subdued-heading);
   --accent: var(--stripe-indigo);
   --accent-foreground: var(--surface-white);
+  --select-highlight-bg: rgba(83, 58, 253, 0.14);
+  --select-highlight-fg: var(--deep-navy);
+  --select-chevron: #334155;
   --card: var(--surface-white);
   --card-foreground: var(--deep-navy);
   --card-border: var(--quiet-surface);

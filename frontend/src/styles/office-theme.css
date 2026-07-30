@@ -1123,14 +1123,14 @@ html[data-theme="letter"] .office-service-btn[data-active="true"] {
 /* Stripe HDS Light — department meeting room */
 html[data-theme="letter"] .office-dept-page {
   --office-dept-panel-bg: var(--surface-white);
-  --office-dept-panel-border: var(--quiet-surface);
-  --office-dept-label: var(--subdued-heading);
-  --office-dept-muted: var(--slate-body);
-  --office-dept-table-ring: rgba(83, 58, 253, 0.16);
-  --office-dept-table-glow: rgba(83, 58, 253, 0.07);
-  --office-dept-core-border: rgba(83, 58, 253, 0.22);
-  --office-dept-core-bg: rgba(83, 58, 253, 0.06);
-  --office-dept-seat-border: rgba(83, 58, 253, 0.18);
+  --office-dept-panel-border: #d5dee8;
+  --office-dept-label: var(--deep-navy);
+  --office-dept-muted: #425466;
+  --office-dept-table-ring: rgba(83, 58, 253, 0.22);
+  --office-dept-table-glow: rgba(83, 58, 253, 0.09);
+  --office-dept-core-border: rgba(83, 58, 253, 0.28);
+  --office-dept-core-bg: rgba(83, 58, 253, 0.08);
+  --office-dept-seat-border: rgba(83, 58, 253, 0.22);
 }
 
 html[data-theme="letter"] .office-dept-back {
@@ -1163,13 +1163,42 @@ html[data-theme="letter"] .office-dept-settings-tabs {
 }
 
 html[data-theme="letter"] .office-dept-scope-bar {
-  background: rgba(83, 58, 253, 0.04);
-  border-color: rgba(83, 58, 253, 0.15);
+  background: rgba(83, 58, 253, 0.07);
+  border-color: rgba(83, 58, 253, 0.24);
+}
+
+html[data-theme="letter"] .office-dept-scope-label {
+  color: var(--deep-navy);
+  font-weight: 700;
+}
+
+html[data-theme="letter"] .office-dept-scope-hint {
+  color: #425466;
+}
+
+html[data-theme="letter"] .office-dept-scope-select button,
+html[data-theme="letter"] .office-dept-scope-select [role="combobox"] {
+  border-color: rgba(83, 58, 253, 0.3);
+  background: var(--surface-white);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.06);
+  color: var(--deep-navy);
+}
+
+html[data-theme="letter"] .office-dept-scope-select svg {
+  color: #334155;
+  opacity: 1;
+}
+
+html[data-theme="letter"] .office-dept-war-room .office-panel-title,
+html[data-theme="letter"] .office-dept-sidebar .office-panel-title {
+  color: var(--deep-navy);
+  font-weight: 700;
 }
 
 html[data-theme="letter"] .office-dept-war-room,
 html[data-theme="letter"] .office-dept-sidebar {
   box-shadow: var(--shadow-md-subtle);
+  border-color: #d5dee8;
 }
 
 html[data-theme="letter"] .office-dept-seat-name {
