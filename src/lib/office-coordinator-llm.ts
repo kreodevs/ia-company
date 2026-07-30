@@ -15,12 +15,13 @@ export async function selectOfficeAgentsWithLlm(
   tenantId: string,
   request: string,
   catalog: Array<{ name: string; role: string }>,
-  options: { preferredNames?: string[]; maxAgents?: number } = {},
+  options: { preferredNames?: string[]; maxAgents?: number; departmentRoster?: string[] } = {},
 ): Promise<OfficeAgentPick | null> {
   if (request.trim().length < 8 || catalog.length === 0) return null;
 
   const maxAgents = options.maxAgents ?? 5;
   const preferred = options.preferredNames ?? [];
+  const roster = options.departmentRoster ?? [];
 
   try {
     const parsed = await generateCatalogJson(
@@ -29,10 +30,15 @@ export async function selectOfficeAgentsWithLlm(
         ...CATALOG_STUDIO_LLM_RULES,
         "Task: pick agents from the TENANT catalog for an office task.",
         "Use ONLY agent names from the catalog when they exist.",
+        roster.length
+          ? `DEPARTMENT ROSTER (mandatory when provided): ${roster.join(", ")}. Pick ONLY from this roster unless the task clearly requires a missing role.`
+          : "",
         "missingRoles: roles needed but absent from catalog (kebab-case name + brief to create).",
         `Return ONLY JSON: { "agentNames": ["kebab-name"], "missingRoles": [{ "name", "suggestedBrief" }], "summary": "one line" }`,
         `Pick at most ${maxAgents} agents.`,
-      ].join("\n"),
+      ]
+        .filter(Boolean)
+        .join("\n"),
       [
         `Task: ${request}`,
         preferred.length ? `Preferred dept agents: ${preferred.join(", ")}` : "",

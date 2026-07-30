@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type OfficeArchiveItem, type TenantProduct } from "../lib/api";
-import type { Artifact, OrgUnit } from "../lib/org-types";
+import type { Artifact, OrgUnit, OrgUnitStaffRoster } from "../lib/org-types";
 import PageLoading from "../components/ui/PageLoading";
 import DepartmentRoomView from "../components/office/DepartmentRoomView";
+import DepartmentStaffPanel from "../components/org/DepartmentStaffPanel";
 import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
 import ArtifactGallery from "../components/org/ArtifactGallery";
 import Button from "../components/ui/Button";
@@ -30,32 +31,52 @@ export default function OrgUnitDetailPage() {
   const [newWorkItemKind, setNewWorkItemKind] = useState("client");
   const [creatingWorkItem, setCreatingWorkItem] = useState(false);
 
+  const [staffRoster, setStaffRoster] = useState<OrgUnitStaffRoster | null>(null);
+
   const [departmentMeta, setDepartmentMeta] = useState<{
     status: "idle" | "busy";
     agentNames: string[];
-    agents: Array<{ id: string; name: string; status: "idle" | "busy" }>;
+    agents: Array<{
+      id: string;
+      name: string;
+      role: string | null;
+      status: "idle" | "busy";
+      provisioned: boolean;
+    }>;
     activeEncargoHref: string | null;
   } | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
-    const [u, arts, products, dashboard, archive] = await Promise.all([
+    const [u, arts, products, dashboard, archive, staff] = await Promise.all([
       api.orgUnits.get(id),
       api.orgUnits.artifacts(id),
       api.orgUnits.products(id),
       api.office.dashboard(),
       api.office.archive({ orgUnitId: id, limit: 8 }),
+      api.orgUnits.staff(id),
     ]);
     setUnit(u);
     setArtifacts(arts);
     setLinkedProducts(products);
     setArchiveItems(archive.items);
+    setStaffRoster(staff);
 
     const room = dashboard.departments.find((d) => d.id === id && d.kind === "org_unit");
+    const agentsByName = new Map(dashboard.agents.map((agent) => [agent.name, agent]));
     setDepartmentMeta({
       status: room?.status ?? "idle",
-      agentNames: room?.agentNames ?? [],
-      agents: dashboard.agents.filter((a) => (room?.agentNames ?? []).includes(a.name)),
+      agentNames: staff.members.map((member) => member.name),
+      agents: staff.members.map((member) => {
+        const live = agentsByName.get(member.name);
+        return {
+          id: member.agentId ?? member.name,
+          name: member.name,
+          role: member.role,
+          status: live?.status ?? "idle",
+          provisioned: member.provisioned,
+        };
+      }),
       activeEncargoHref: room?.activeEncargoHref ?? null,
     });
 
@@ -116,7 +137,7 @@ export default function OrgUnitDetailPage() {
   };
 
   if (loading) return <PageLoading message={t("org.loading")} />;
-  if (!unit || !departmentMeta) {
+  if (!unit || !departmentMeta || !staffRoster) {
     return (
       <div className="office-dept-page p-4">
         <p>{t("org.notFound")}</p>
@@ -185,6 +206,13 @@ export default function OrgUnitDetailPage() {
         </>
       }
     >
+      <DepartmentStaffPanel
+        orgUnitId={unit.id}
+        orgUnitName={unit.name}
+        orgUnitType={unit.type}
+        roster={staffRoster}
+        onRefresh={() => void load()}
+      />
       <section className="office-dept-extra-panel">
         <h2 className="office-panel-title">{t("org.launchTitle")}</h2>
         <p className="office-dept-extra-desc">{t("org.launchSubtitle")}</p>

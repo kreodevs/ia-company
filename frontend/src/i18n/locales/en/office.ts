@@ -101,9 +101,11 @@ export const office = {
     meetingRoom: "Meeting room",
     requestWork: "Request work",
     coordinatorWelcome:
-      "I'm the coordinator for this department. Pick general scope or a product above, tell me what you need, and I'll assemble the team and plan.",
+      "I'm the coordinator for this department. Pick general scope or a product above; I propose only this department's agents (not generic platform roles).",
     deptNotFound: "Department not found.",
     noSpecialists: "No specialists assigned yet.",
+    rosterHint: "{{active}} of {{total}} roles active in AI Team — create missing ones in Org Studio or AI Team.",
+    agentPending: "Pending creation",
     recentDocs: "Recent documents",
     viewArchive: "View full archive",
   },
@@ -169,6 +171,10 @@ export const office = {
     marketing: "Marketing",
     operations: "Operations",
     sales: "Sales",
+    copyManager: "Copy Manager",
+    communityManager: "Community Manager",
+    designLead: "Design Lead",
+    marketingStrategist: "Marketing Strategist",
     specialist: "Specialist",
   },
   notes: {

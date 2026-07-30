@@ -12,12 +12,14 @@ interface CatalogStudioAgentPanelProps {
   onApplied?: () => void;
   initialBrief?: string;
   initialOrgUnitId?: string;
+  embedded?: boolean;
 }
 
 export default function CatalogStudioAgentPanel({
   onApplied,
   initialBrief = "",
   initialOrgUnitId = "",
+  embedded = false,
 }: CatalogStudioAgentPanelProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -106,9 +108,14 @@ export default function CatalogStudioAgentPanel({
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <Panel title={t("catalogStudio.tabs.createAgent")} bodySize="sm">
+    <div className={embedded ? "space-y-4" : "mx-auto max-w-3xl space-y-6"}>
+      <Panel title={embedded ? undefined : t("catalogStudio.tabs.createAgent")} bodySize="sm">
         <div className="space-y-4">
+          {embedded ? (
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+              {t("catalogStudio.tabs.createAgent")}
+            </p>
+          ) : null}
           <div>
             <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
               {t("catalogStudio.briefLabel")}
@@ -120,7 +127,7 @@ export default function CatalogStudioAgentPanel({
               placeholder={t("catalogStudio.briefPlaceholderAgent")}
             />
           </div>
-          {orgUnits.length > 0 && (
+          {orgUnits.length > 0 && !embedded && (
             <div>
               <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
                 {t("catalogStudio.orgUnitLabel")}
@@ -142,6 +149,11 @@ export default function CatalogStudioAgentPanel({
               </p>
             </div>
           )}
+          {embedded && initialOrgUnitId ? (
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {t("catalogStudio.linkedToOrg")}
+            </p>
+          ) : null}
           <p className="text-xs text-[var(--color-muted-foreground)]">{t("catalogStudio.humanApprovalHint")}</p>
           <Button onClick={() => void runPropose()} disabled={proposing || brief.trim().length < 8}>
             {proposing ? t("catalogStudio.proposing") : t("catalogStudio.propose")}

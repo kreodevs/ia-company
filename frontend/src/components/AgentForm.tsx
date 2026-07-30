@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type Agent, type Skill } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import AgentModelFields from "./AgentModelFields";
 
 interface AgentFormProps {
   agent: Agent | null;
@@ -10,12 +11,16 @@ interface AgentFormProps {
   onCancel: () => void;
 }
 
+type ProviderChoice = "inherit" | NonNullable<Agent["provider"]>;
+
 function agentToForm(agent: Agent | null) {
   return {
     name: agent?.name ?? "",
     role: agent?.role ?? "",
     systemPrompt: agent?.systemPrompt ?? "",
-    model: agent?.model ?? "claude-3-5-sonnet-20241022",
+    provider: (agent?.provider ?? "inherit") as ProviderChoice,
+    model: agent?.model ?? "",
+    modelKind: agent?.modelKind ?? "chat",
     temperature: agent?.temperature ?? 0.7,
     isActive: agent?.isActive ?? true,
     skillIds: agent?.skills.map((s) => s.skill.id) ?? [],
@@ -36,6 +41,15 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
     setError(null);
     setInfo(null);
   }, [agent]);
+
+  const payload = useMemo(
+    () => ({
+      ...form,
+      provider: form.provider === "inherit" ? null : form.provider,
+      model: form.model.trim() ? form.model.trim() : null,
+    }),
+    [form],
+  );
 
   const improveWithAi = async () => {
     const brief =
@@ -86,9 +100,9 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
       setError(null);
       try {
         if (agent) {
-          await api.agents.update(agent.id, { ...form, provider: agent.provider });
+          await api.agents.update(agent.id, payload);
         } else {
-          await api.agents.create({ ...form, provider: "tokenlab" });
+          await api.agents.create(payload);
         }
         onSave();
       } catch (err) {
@@ -97,7 +111,7 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
         setSaving(false);
       }
     },
-    [agent, form, onSave, t],
+    [agent, onSave, payload, t],
   );
 
   return (
@@ -159,39 +173,39 @@ export default function AgentForm({ agent, skills, onSave, onCancel }: AgentForm
             required
           />
         </label>
-        <label className="block text-sm md:col-span-2">
-          <span className="text-[var(--color-muted-foreground)]">{t("workflows.agents.platformLlmHint")}</span>
-        </label>
-        <label className="block text-sm">
-          {t("common.model")}
-          <input
-            className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-            value={form.model}
-            onChange={(e) => setForm({ ...form, model: e.target.value })}
-          />
-        </label>
-        <label className="block text-sm md:col-span-2">
-          {t("common.temperature", { value: form.temperature })}
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            className="mt-2 w-full"
-            value={form.temperature}
-            onChange={(e) => setForm({ ...form, temperature: parseFloat(e.target.value) })}
-          />
-        </label>
-        <label className="flex items-center gap-2 text-sm md:col-span-2">
-          <input
-            type="checkbox"
-            checked={form.isActive}
-            onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-            className="h-4 w-4"
-          />
-          {t("common.active")}
-        </label>
       </div>
+
+      <AgentModelFields
+        provider={form.provider}
+        model={form.model}
+        modelKind={form.modelKind}
+        onProviderChange={(provider) => setForm({ ...form, provider })}
+        onModelChange={(model) => setForm({ ...form, model })}
+        onModelKindChange={(modelKind) => setForm({ ...form, modelKind })}
+      />
+
+      <label className="block text-sm">
+        {t("common.temperature", { value: form.temperature })}
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.05}
+          className="mt-2 w-full"
+          value={form.temperature}
+          onChange={(e) => setForm({ ...form, temperature: parseFloat(e.target.value) })}
+        />
+      </label>
+
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={form.isActive}
+          onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+          className="h-4 w-4"
+        />
+        {t("common.active")}
+      </label>
 
       <label className="block text-sm">
         {t("common.systemPrompt")}

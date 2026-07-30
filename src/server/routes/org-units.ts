@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import type { ArtifactStatus, ArtifactType } from "@prisma/client";
+import { prisma } from "../../lib/prisma.js";
 import { listArtifacts, createArtifact, updateArtifactStatus } from "../../lib/artifact.js";
-import { listOrgUnits, getOrgUnit, createOrgUnit, updateOrgUnit } from "../../lib/org-unit.js";
+import { getOrgUnit, listOrgUnits, createOrgUnit, updateOrgUnit } from "../../lib/org-unit.js";
+import { getOrgUnitStaffRoster } from "../../lib/org-context.js";
+import { linkAgentNameToOrgUnit } from "../../lib/tenant-catalog.js";
 import { launchOrgUnitWork, listOrgUnitProducts } from "../../lib/org-launcher.js";
 import { createOrgWorkItem } from "../../lib/org-work-items.js";
 import {
@@ -76,6 +79,43 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get<{ Params: { id: string } }>("/org-units/:id/staff", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const roster = await getOrgUnitStaffRoster(tenantId, request.params.id);
+      if (!roster) return reply.status(404).send({ error: "Org unit not found" });
+      return roster;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string }; Body: { agentName?: string } }>(
+    "/org-units/:id/staff/link",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const agentName = request.body?.agentName?.trim();
+        if (!agentName) return reply.status(400).send({ error: "agentName is required" });
+        const unit = await getOrgUnit(tenantId, request.params.id);
+        if (!unit) return reply.status(404).send({ error: "Org unit not found" });
+        const agent = await prisma.agent.findFirst({
+          where: { tenantId, name: agentName, isActive: true },
+          select: { id: true, name: true },
+        });
+        if (!agent) return reply.status(404).send({ error: "Agent not found" });
+        await linkAgentNameToOrgUnit(tenantId, request.params.id, agent.name);
+        await logAudit(request, "org_unit.staff.link", {
+          orgUnitId: request.params.id,
+          agentName: agent.name,
+        });
+        return getOrgUnitStaffRoster(tenantId, request.params.id);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 
   app.get<{ Params: { id: string } }>("/org-units/:id/products", async (request, reply) => {
     try {

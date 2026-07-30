@@ -58,7 +58,16 @@ export default function OfficeDepartmentPage() {
       emoji={department.emoji}
       status={department.status}
       agentNames={department.agentNames}
-      agents={dashboard.agents.filter((a) => department.agentNames.includes(a.name))}
+      agents={department.agentNames.map((name) => {
+        const found = dashboard.agents.find((agent) => agent.name === name);
+        return {
+          id: found?.id ?? name,
+          name,
+          role: found?.role ?? null,
+          status: found?.status ?? "idle",
+          provisioned: Boolean(found),
+        };
+      })}
       activeEncargoHref={department.activeEncargoHref}
       sidebarFooter={
         <>

@@ -78,4 +78,26 @@ export const org = {
   warRoomNoArtifacts: "No department artifacts yet — open",
   warRoomArtifactsTitle: "{{name}} — recent artifacts",
   viewAllArtifacts: "View all",
+  staff: {
+    title: "Department roster",
+    subtitle:
+      "The starter template is only a baseline — add as many roles as you need.",
+    templateNote:
+      "Starter template: {{count}} roles · {{added}} added later (no limit)",
+    rosterCount: "{{active}} / {{total}} active",
+    emptyRoster: "No roles yet — use the assistant to hire the first one.",
+    active: "Active",
+    missing: "Missing",
+    addedRole: "added",
+    createWithAi: "Create with AI",
+    linkExisting: "Link existing agent",
+    linkExistingPlaceholder: "Pick an agent from AI Team…",
+    linkCta: "Link to department",
+    linking: "Linking…",
+    assistantTitle: "Hiring assistant",
+    assistantHint:
+      "Describe a new role or let AI propose one. Each created agent is added to the department automatically.",
+    suggestMissing: "What role am I missing?",
+    addNewRole: "Add new role",
+  },
 } as const;

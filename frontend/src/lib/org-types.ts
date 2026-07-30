@@ -98,3 +98,18 @@ export interface OrgStudioProposal {
   };
   missingSkills?: Array<{ name: string; description: string; promptContent: string }>;
 }
+
+export interface OrgUnitStaffMember {
+  name: string;
+  role: string | null;
+  provisioned: boolean;
+  agentId: string | null;
+  source: "template" | "added";
+}
+
+export interface OrgUnitStaffRoster {
+  orgUnitId: string;
+  templateRoleCount: number;
+  members: OrgUnitStaffMember[];
+  availableAgents: Array<{ id: string; name: string; role: string }>;
+}

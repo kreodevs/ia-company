@@ -10,7 +10,8 @@ import {
 import { launchProductWork } from "./product-work-launcher.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { listTenantProducts } from "./product-registry.js";
-import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
+import { loadOrgUnitContext, orgContextToInitialMemory, selectOrgAgentsForTask } from "./org-context.js";
+import { launchOrgUnitWork } from "./org-launcher.js";
 import { selectOfficeAgentsWithLlm } from "./office-coordinator-llm.js";
 import {
   extractGitHubUrlFromText,
@@ -416,6 +417,11 @@ export async function planOfficeTask(
   if (options.orgUnitId) {
     scopedProducts = products.filter((p) => p.orgUnitId === options.orgUnitId);
   }
+
+  const orgAgentCatalog = orgCtx?.suggestedAgentNames.length
+    ? agents.filter((agent) => orgCtx.suggestedAgentNames.includes(agent.name))
+    : agents;
+
   let service: OfficeServiceTemplate | undefined;
 
   if (options.serviceId) {
@@ -437,15 +443,16 @@ export async function planOfficeTask(
   let selectedAgents: OfficeTaskAgent[] = [];
   let summaryOverride: string | undefined;
 
-  const useLlmPlan = process.env.OFFICE_PLAN_USE_LLM !== "false" && agents.length > 0;
+  const useLlmPlan = process.env.OFFICE_PLAN_USE_LLM !== "false" && orgAgentCatalog.length > 0;
   if (useLlmPlan) {
     const llmPick = await selectOfficeAgentsWithLlm(
       tenantId,
       trimmed,
-      agents.map((a) => ({ name: a.name, role: a.role })),
+      orgAgentCatalog.map((a) => ({ name: a.name, role: a.role })),
       {
         preferredNames: orgCtx?.suggestedAgentNames,
         maxAgents: 5,
+        departmentRoster: orgCtx?.suggestedAgentNames,
       },
     );
     if (llmPick) {
@@ -465,7 +472,10 @@ export async function planOfficeTask(
   }
 
   if (selectedAgents.length === 0) {
-    for (const name of service.agentNames) {
+    const fallbackAgentNames = orgCtx?.suggestedAgentNames.length
+      ? orgCtx.suggestedAgentNames
+      : service.agentNames;
+    for (const name of fallbackAgentNames) {
       const agent = agentByName.get(name);
       if (!agent) {
         if (!missingAgentRoles.some((m) => m.name === name)) {
@@ -482,6 +492,25 @@ export async function planOfficeTask(
         role: agent.role,
         reasonKey: agentReasons[name] ?? "office.reasons.contributes",
       });
+    }
+  }
+
+  if (orgCtx?.suggestedAgentNames.length && orgAgentCatalog.length > 0) {
+    const usesOnlyOrgAgents = selectedAgents.every((agent) =>
+      orgCtx.suggestedAgentNames.includes(agent.name),
+    );
+    if (!usesOnlyOrgAgents) {
+      selectedAgents = selectOrgAgentsForTask(
+        orgAgentCatalog,
+        trimmed,
+        orgCtx.orgUnitType,
+        4,
+      ).map((agent) => ({
+        id: agent.id,
+        name: agent.name,
+        role: agent.role,
+        reasonKey: agentReasons[agent.name] ?? "office.reasons.contributes",
+      }));
     }
   }
 
@@ -526,7 +555,7 @@ export async function planOfficeTask(
     ? (scopedProducts.find((p) => p.id === options.productId) ??
         products.find((p) => p.id === options.productId) ??
         null)
-    : (scopedProducts[0] ?? null);
+    : null;
 
   const agentCount = selectedAgents.length;
   const mode: OfficeTaskPlan["mode"] =
@@ -579,8 +608,17 @@ export async function executeOfficeTask(
     input.request.trim(),
     input.serviceId ?? plan.serviceId,
   );
-  const productId = input.productId || plan.productId || undefined;
   const orgCtx = input.orgUnitId ? await loadOrgUnitContext(tenantId, input.orgUnitId) : null;
+
+  if (orgCtx && !input.workflowId && !input.agentIds?.length) {
+    return launchOrgUnitWork(tenantId, input.orgUnitId!, {
+      task,
+      productId: input.productId,
+      presetId: input.presetId ?? plan.presetId ?? undefined,
+    });
+  }
+
+  const productId = input.productId ?? plan.productId ?? undefined;
   const orgMemory = orgCtx ? orgContextToInitialMemory(orgCtx) : {};
   const withOrgMemory = (mem: Record<string, unknown>) => ({ ...mem, ...orgMemory });
 

@@ -2,13 +2,14 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type LlmModelOption, type PlatformSettings } from "../lib/api";
 
-type Provider = Extract<PlatformSettings["defaultProvider"], "openrouter" | "tokenlab">;
+type Provider = Extract<PlatformSettings["defaultProvider"], "openrouter" | "tokenlab" | "replicate">;
 
 interface ModelAutocompleteProps {
   provider: Provider;
   value: string;
   onChange: (modelId: string) => void;
   className?: string;
+  catalog?: "admin" | "tenant";
 }
 
 function formatPrice(value: number | null, locale: string): string {
@@ -26,6 +27,7 @@ export default function ModelAutocomplete({
   value,
   onChange,
   className = "",
+  catalog = "admin",
 }: ModelAutocompleteProps) {
   const { t, i18n } = useTranslation();
   const listId = useId();
@@ -46,8 +48,12 @@ export default function ModelAutocomplete({
     setError(null);
     setModels([]);
 
-    void api.admin.platformSettings
-      .listModels(provider)
+    const loader =
+      catalog === "tenant"
+        ? api.llm.listModels(provider)
+        : api.admin.platformSettings.listModels(provider);
+
+    void loader
       .then((res) => {
         if (!cancelled) setModels(res.models);
       })
@@ -63,7 +69,7 @@ export default function ModelAutocomplete({
     return () => {
       cancelled = true;
     };
-  }, [provider, t]);
+  }, [provider, catalog, t]);
 
   useEffect(() => {
     const onPointerDown = (event: MouseEvent) => {
@@ -82,7 +88,8 @@ export default function ModelAutocomplete({
       .filter(
         (m) =>
           m.id.toLowerCase().includes(q) ||
-          m.name.toLowerCase().includes(q),
+          m.name.toLowerCase().includes(q) ||
+          (m.description?.toLowerCase().includes(q) ?? false),
       )
       .slice(0, 40);
   }, [models, query]);
@@ -123,13 +130,17 @@ export default function ModelAutocomplete({
         }}
       />
 
-      {selected ? (
+      {selected && provider !== "replicate" ? (
         <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
           {t("admin.platformSettings.defaultLlm.modelPricing", {
             input: formatPrice(selected.inputPer1MTokens, i18n.language),
             output: formatPrice(selected.outputPer1MTokens, i18n.language),
           })}
         </p>
+      ) : null}
+
+      {selected?.description ? (
+        <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">{selected.description}</p>
       ) : null}
 
       {loading ? (
@@ -158,12 +169,9 @@ export default function ModelAutocomplete({
                 {model.name !== model.id ? (
                   <span className="text-xs text-[var(--color-muted-foreground)]">{model.name}</span>
                 ) : null}
-                <span className="text-xs text-[var(--color-muted-foreground)]">
-                  {t("admin.platformSettings.defaultLlm.modelPricing", {
-                    input: formatPrice(model.inputPer1MTokens, i18n.language),
-                    output: formatPrice(model.outputPer1MTokens, i18n.language),
-                  })}
-                </span>
+                {model.description ? (
+                  <span className="text-xs text-[var(--color-muted-foreground)]">{model.description}</span>
+                ) : null}
               </button>
             </li>
           ))}

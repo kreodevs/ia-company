@@ -84,7 +84,7 @@ export const admin = {
     defaultLlm: {
       title: "Shared LLM (all tenants)",
       subtitle:
-        "Choose OpenRouter or TokenLab. Only the active provider is used at runtime; configure that provider's API key.",
+        "Defaults when an agent inherits configuration. Register credentials for all providers; each agent picks its own.",
       temperature: "Temperature",
       tokenlabSection: "TokenLab / LemonData",
       openrouterSection: "OpenRouter",
@@ -97,6 +97,8 @@ export const admin = {
       httpReferer: "HTTP-Referer (site URL)",
       httpRefererHint: "Required by OpenRouter on every request. Use this app's public URL (e.g. your production domain).",
       customSection: "Custom (OpenAI-compatible)",
+      replicateSection: "Replicate",
+      replicateHint: "Image, audio, and some LLM models via predictions. Agents with provider Replicate use this API key.",
       modelPlaceholder: "Search models…",
       modelsLoading: "Loading models…",
       modelsLoadFailed: "Could not load provider models.",

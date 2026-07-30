@@ -1682,8 +1682,117 @@ button.office-room-card {
   color: var(--office-muted, #94a3b8);
 }
 
+.office-dept-roster-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-dept-seat-avatar[data-pending="true"] {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
 .office-dept-encargo-link {
   display: inline-flex;
+}
+
+.office-dept-staff-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.office-dept-staff-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.office-dept-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.office-dept-staff-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.office-dept-staff-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.office-dept-staff-slug {
+  margin: 0.15rem 0 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.68rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-dept-staff-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.office-dept-staff-assistant {
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.office-dept-staff-assistant-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.office-dept-staff-assistant-actions {
+  margin: 0.75rem 0;
+}
+
+.office-dept-staff-template-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-dept-staff-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.office-dept-staff-link-select {
+  min-width: 14rem;
+  flex: 1;
+}
+
+.office-dept-staff-link-error {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-destructive, #f87171);
 }
 
 .office-dept-specialist-list {

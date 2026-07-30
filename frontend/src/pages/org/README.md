@@ -11,6 +11,7 @@ Custom departments opened from the **office floor plan** (`/office`) use the sam
 Each department room includes:
 - **Scope select** — general exploration or a specific product before launching work
 - **Coordinator chat** — replaces the old specialists list; propose team + approve encargos in-room
+- **Plantilla del departamento** — roster of roles + **Asistente de contratación** (Agent Studio embedded) to create missing agents with skills and MCP tools
 
 **Product link:** Product settings → Department + work item type (`client`, `campaign`, …).
 

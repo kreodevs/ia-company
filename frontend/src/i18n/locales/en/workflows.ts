@@ -40,7 +40,19 @@ export const workflows = {
     editAgent: "Edit Agent",
     newAgentForm: "New Agent",
     platformLlmHint:
-      "The LLM provider is set by the superadmin in Platform settings. All agents use that shared provider.",
+      "Each agent can use its own provider and model, or inherit tenant/platform defaults.",
+    llmHint:
+      "Set provider, model kind, and model ID. Leave provider/model empty to inherit. Replicate works best for image and audio.",
+    inheritProvider: "Inherit (tenant / platform)",
+    inheritModel: "inherited",
+    inheritModelPlaceholder: "Empty = inherit from tenant or platform",
+    customModelPlaceholder: "Model ID on the provider",
+    modelKind: "Model kind",
+    modelKindChat: "Chat / text",
+    modelKindImage: "Image generation",
+    modelKindAudio: "Audio generation",
+    replicateKindHint: "Image and audio work best with Replicate — select it as the provider.",
+    effectiveLlmPreview: "Will run with: {{provider}} / {{model}} ({{kind}})",
     deleteConfirm: 'Delete agent "{{name}}"?',
   },
   skills: {

@@ -1,15 +1,19 @@
-# Org OS components
-
-Kreo-compatible UI for departments (Org Units).
+# Org components
 
 | Component | Role |
 |-----------|------|
-| `SchemaDynamicForm.tsx` | Adapter: org `configSchema` → Kreo `DynamicForm` (`@/components/organisms/DynamicForm`). |
-| `ArtifactGallery.tsx` | Kreo `DataTable` gallery with status workflow and detail panel. |
+| `DepartmentStaffPanel` | Full department roster (template + added roles, no cap) + link existing agents + embedded Agent Studio hiring assistant |
+| `OrgArtifactsPanel` | Compact war-room panel for recent department artifacts |
+| `ArtifactGallery` | Full artifact browser with filters |
+| `SchemaDynamicForm` | Org unit config editor from JSON schema |
 
-Kreo `DataTable` (TanStack Table) and `Calendar` (react-day-picker) pulled from Kreo registry — headless, no PrimeReact.
-| `OrgArtifactsPanel.tsx` | Compact war-room panel: recent department artifacts with link to full gallery. |
+## Department staffing
 
-**Phase 5:** Munger preview on propose; multi work items; orchestration scoped by department; war room passes org context to coordinator.
+Inside `/org-units/:id` (department room), **Plantilla del departamento** shows all roles — starter template plus any you add later (no limit).
 
-See [ADR-org-os](../../../docs/cto/ADR-org-os.md).
+- **¿Qué puesto me falta?** — auto-brief from gap analysis on missing template roles
+- **Añadir nuevo puesto** — propose roles beyond the starter template
+- **Crear con IA** per missing role — pre-filled brief for Agent Studio
+- **Vincular agente existente** — attach an agent from Equipo IA to this department
+
+API: `GET /org-units/:id/staff`, `POST /org-units/:id/staff/link`, `POST /catalog-studio/agents/propose|apply` with `orgUnitId`.

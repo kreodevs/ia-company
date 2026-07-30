@@ -1,8 +1,25 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
-import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
-import type { CreateAgentInput, UpdateAgentInput } from "../../types/index.js";
+import type { AgentModelKind, AgentProvider, CreateAgentInput, UpdateAgentInput } from "../../types/index.js";
+
+function normalizeOptionalModel(value: string | null | undefined): string | null {
+  if (value == null) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeAgentLlmFields(body: {
+  provider?: AgentProvider | null;
+  model?: string | null;
+  modelKind?: AgentModelKind;
+}) {
+  return {
+    provider: body.provider ?? null,
+    model: normalizeOptionalModel(body.model),
+    modelKind: body.modelKind ?? undefined,
+  };
+}
 
 export async function agentRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -38,20 +55,13 @@ export async function agentRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateAgentInput }>("/agents", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const {
-        skillIds,
-        tenantId: _ignored,
-        provider: _provider,
-        model: _model,
-        ...data
-      } = request.body;
-      const platform = getPlatformSettingsSync();
+      const { skillIds, tenantId: _ignored, provider, model, modelKind, ...data } = request.body;
+      const llmFields = normalizeAgentLlmFields({ provider, model, modelKind });
 
       const agent = await prisma.agent.create({
         data: {
           ...data,
-          model: platform.defaultModel,
-          provider: platform.defaultProvider,
+          ...llmFields,
           tenantId,
           skills: skillIds?.length
             ? { create: skillIds.map((skillId) => ({ skillId })) }
@@ -71,14 +81,7 @@ export async function agentRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const {
-          skillIds,
-          tenantId: _ignored,
-          provider: _provider,
-          model: _model,
-          ...data
-        } = request.body;
-        const platform = getPlatformSettingsSync();
+        const { skillIds, tenantId: _ignored, provider, model, modelKind, ...data } = request.body;
 
         const existing = await prisma.agent.findFirst({
           where: { id: request.params.id, tenantId },
@@ -97,17 +100,43 @@ export async function agentRoutes(app: FastifyInstance) {
           }
         }
 
+        const llmFields =
+          provider !== undefined || model !== undefined || modelKind !== undefined
+            ? normalizeAgentLlmFields({
+                provider: provider !== undefined ? provider : existing.provider,
+                model: model !== undefined ? model : existing.model,
+                modelKind: modelKind !== undefined ? modelKind : existing.modelKind,
+              })
+            : {};
+
         const agent = await prisma.agent.update({
           where: { id: request.params.id },
           data: {
             ...data,
-            model: platform.defaultModel,
-            provider: platform.defaultProvider,
+            ...llmFields,
           },
           include: { skills: { include: { skill: true } } },
         });
 
         return agent;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Querystring: { provider?: AgentProvider; q?: string } }>(
+    "/llm/model-catalog",
+    async (request, reply) => {
+      try {
+        requireImpersonatedTenant(request);
+        const provider = request.query.provider;
+        if (!provider) {
+          return reply.status(400).send({ error: 'Query parameter "provider" is required.' });
+        }
+        const { listProviderModels } = await import("../../lib/provider-models.js");
+        const models = await listProviderModels(provider, request.query.q);
+        return { provider, models };
       } catch (err) {
         return handleRouteError(reply, err);
       }

@@ -6,6 +6,7 @@ import {
   collectAgentStepOutput,
   collectToolStepArtifacts,
   persistAgentDeliverableIfMissing,
+  persistHandoffAsAgentDoc,
 } from "../lib/agent-deliverables.js";
 import { prisma } from "../lib/prisma.js";
 import { ensureProductWorkspace } from "../lib/product-workspace.js";
@@ -15,7 +16,7 @@ import {
   syncTenantPortfolioManifest,
   agentDocsPath,
 } from "../lib/workspace-layout.js";
-import { resolveAgentProviderConfig, resolveEffectiveModel, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
+import { resolveAgentProviderConfig, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
   AgentWithSkills,
   ExecuteWorkflowInput,
@@ -26,7 +27,16 @@ import type {
   StepResult,
   WorkflowGraph,
 } from "../types/index.js";
-import { createLanguageModel, estimateCostUsd, findApiCallError, formatLlmProviderError } from "./providers.js";
+import {
+  createLanguageModel,
+  estimateCostUsd,
+  findApiCallError,
+  formatLlmProviderError,
+  isMediaModelConfig,
+  isReplicateChatConfig,
+  providerConfigFromResolved,
+} from "./providers.js";
+import { runReplicateStep } from "./replicate.js";
 import { prepareSharedMemoryForPrompt } from "../lib/prompt-memory.js";
 import { createAgentTools, createAgentToolsWithIntegrations } from "./tools.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
@@ -117,17 +127,20 @@ export class WorkflowExecutor {
       emitEvent("status", { status: "RUNNING", workflowId, workflowName: workflow.name });
 
       const platform = getPlatformSettingsSync();
-      const effectiveModel = resolveEffectiveModel(
-        workflow.steps[0]?.agent.model ?? "",
-        tenantCtx.llm,
-        platform,
-      );
+      const firstAgent = workflow.steps[0]?.agent;
+      const firstResolved = firstAgent
+        ? resolveAgentProviderConfig(firstAgent, tenantCtx.llm, platform)
+        : null;
       await this.appendLog(runId, "info", "Resolved LLM configuration for run", {
-        payload: {
-          provider: platform.defaultProvider,
-          model: effectiveModel.model,
-          modelSource: effectiveModel.source,
-        },
+        payload: firstResolved
+          ? {
+              provider: firstResolved.provider,
+              model: firstResolved.model,
+              modelKind: firstResolved.modelKind,
+              providerSource: firstResolved.providerSource,
+              modelSource: firstResolved.modelSource,
+            }
+          : { note: "no agents in workflow" },
       });
 
       const orderedSteps = topologicalSort(workflow);
@@ -611,13 +624,32 @@ export class WorkflowExecutor {
     const userPrompt = compileUserPrompt(prepareSharedMemoryForPrompt(sharedMemory), inputConfig);
 
     const providerConfig = resolveAgentProviderConfig(agent, tenantCtx.llm);
+    const providerRuntime = providerConfigFromResolved(providerConfig);
 
-    await this.appendLog(runId, "info", `Using LLM ${providerConfig.provider} / ${providerConfig.model}`, {
+    await this.appendLog(runId, "info", `Using LLM ${providerConfig.provider} / ${providerConfig.model} (${providerConfig.modelKind})`, {
       agentId: agent.id,
-      payload: { agentName: agent.name, toolMode },
+      payload: {
+        agentName: agent.name,
+        toolMode,
+        providerSource: providerConfig.providerSource,
+        modelSource: providerConfig.modelSource,
+      },
     });
 
-    const model = createLanguageModel(providerConfig);
+    if (isMediaModelConfig(providerRuntime) || isReplicateChatConfig(providerRuntime)) {
+      return this.executeReplicateStep(
+        runId,
+        agent,
+        systemPrompt,
+        userPrompt,
+        providerConfig,
+        tenantCtx,
+        workflowName,
+        sharedMemory,
+      );
+    }
+
+    const model = createLanguageModel(providerRuntime);
 
     let productId = tenantCtx.productId;
     if (!productId && tenantCtx.tenantId && tenantCtx.productSlug) {
@@ -777,6 +809,78 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     };
   }
 
+  private async executeReplicateStep(
+    runId: string,
+    agent: AgentWithSkills,
+    systemPrompt: string,
+    userPrompt: string,
+    providerConfig: ReturnType<typeof resolveAgentProviderConfig>,
+    tenantCtx: TenantExecutionContext,
+    workflowName: string | undefined,
+    _sharedMemory: SharedMemory,
+  ): Promise<StepResult> {
+    try {
+      const result = await runReplicateStep(providerConfig, systemPrompt, userPrompt);
+      const output = result.text.trim();
+      const promptTokens = result.promptTokens;
+      const completionTokens = result.completionTokens;
+      const totalTokens = promptTokens + completionTokens;
+
+      let savedDeliverablePath: string | undefined;
+      if (tenantCtx.productSlug && output) {
+        const savedPath = await persistHandoffAsAgentDoc({
+          workspaceRoot: tenantCtx.workspaceRoot,
+          agentName: agent.name,
+          workflowName: workflowName ?? "workflow",
+          runId,
+          content: output,
+        });
+        if (savedPath) {
+          savedDeliverablePath = savedPath;
+          await this.appendLog(runId, "info", `Saved agent deliverable: ${savedPath}`, {
+            agentId: agent.id,
+            payload: { path: savedPath },
+          });
+        }
+      }
+
+      if (providerConfig.modelKind !== "chat") {
+        await this.appendLog(runId, "info", "Replicate media model completed (no tool loop)", {
+          agentId: agent.id,
+          payload: { modelKind: providerConfig.modelKind },
+        });
+      }
+
+      return {
+        output,
+        usage: {
+          promptTokens,
+          completionTokens,
+          totalTokens,
+          estimatedCostUsd: estimateCostUsd(
+            providerConfig.provider,
+            providerConfig.model,
+            promptTokens,
+            completionTokens,
+          ),
+        },
+        toolCalls: 0,
+        delegated: false,
+        wroteDocs: false,
+        savedDeliverablePath,
+        mcpToolCalls: 0,
+        mcpFallbackUsed: false,
+      };
+    } catch (err) {
+      await this.logAndThrowLlmError(runId, agent.id, err, {
+        provider: providerConfig.provider,
+        model: providerConfig.model,
+        modelKind: providerConfig.modelKind,
+      });
+      throw new Error("Replicate step failed");
+    }
+  }
+
   private resolveToolMode(
     agentName: string,
     tenantCtx: TenantExecutionContext,
@@ -880,7 +984,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     runId: string,
     agentId: string,
     err: unknown,
-    providerConfig: { provider: string; model: string },
+    providerConfig: { provider: string; model: string; modelKind?: import("@prisma/client").AgentModelKind },
   ): Promise<never> {
     const apiErr = findApiCallError(err);
     if (apiErr?.responseBody) {
@@ -954,7 +1058,8 @@ function mapWorkflowToGraph(workflow: {
       role: string;
       systemPrompt: string;
       provider: AgentWithSkills["provider"];
-      model: string;
+      model: string | null;
+      modelKind: AgentWithSkills["modelKind"];
       temperature: number;
       skills: Array<{ skill: { id: string; name: string; description: string; promptContent: string } }>;
     };
@@ -986,6 +1091,7 @@ function mapWorkflowToGraph(workflow: {
         systemPrompt: step.agent.systemPrompt,
         provider: step.agent.provider,
         model: step.agent.model,
+        modelKind: step.agent.modelKind,
         temperature: step.agent.temperature,
         skills: step.agent.skills.map((as) => ({
           id: as.skill.id,

@@ -38,6 +38,7 @@ export interface ResolvedPlatformSettings {
     tokenlab: { apiKey: string; baseURL: string };
     openrouter: { apiKey: string; baseURL: string };
     custom: { apiKey: string; baseURL: string };
+    replicate: { apiKey: string; baseURL: string };
   };
   resendApiKey: string;
   githubApiKey: string;
@@ -48,11 +49,17 @@ export interface ResolvedPlatformSettings {
 
 export type PlatformSettingsPublic = Omit<
   PlatformSettings,
-  "tokenlabApiKey" | "openrouterApiKey" | "customApiKey" | "resendApiKey" | "githubApiKey"
+  | "tokenlabApiKey"
+  | "openrouterApiKey"
+  | "customApiKey"
+  | "replicateApiKey"
+  | "resendApiKey"
+  | "githubApiKey"
 > & {
   tokenlabApiKey: string | null;
   openrouterApiKey: string | null;
   customApiKey: string | null;
+  replicateApiKey: string | null;
   resendApiKey: string | null;
   githubApiKey: string | null;
 };
@@ -108,6 +115,11 @@ function envFallbackImport(): Partial<PlatformSettings> {
   if (process.env.CUSTOM_API_KEY) {
     data.customApiKey = encryptSecret(process.env.CUSTOM_API_KEY);
   }
+  if (process.env.REPLICATE_API_TOKEN || process.env.REPLICATE_API_KEY) {
+    data.replicateApiKey = encryptSecret(
+      process.env.REPLICATE_API_TOKEN ?? process.env.REPLICATE_API_KEY!,
+    );
+  }
   if (process.env.RESEND_API_KEY) {
     data.resendApiKey = encryptSecret(process.env.RESEND_API_KEY);
   }
@@ -155,6 +167,10 @@ function resolveSettings(row: PlatformSettings | null): ResolvedPlatformSettings
         apiKey: decryptSecret(row?.customApiKey) ?? "",
         baseURL: row?.customBaseUrl ?? PLATFORM_SETTINGS_DEFAULTS.customBaseUrl,
       },
+      replicate: {
+        apiKey: decryptSecret(row?.replicateApiKey) ?? "",
+        baseURL: "https://api.replicate.com/v1",
+      },
     },
   };
 }
@@ -199,6 +215,7 @@ export function toPublicPlatformSettings(row: PlatformSettings): PlatformSetting
     tokenlabApiKey: maskSecret(row.tokenlabApiKey),
     openrouterApiKey: maskSecret(row.openrouterApiKey),
     customApiKey: maskSecret(row.customApiKey),
+    replicateApiKey: maskSecret(row.replicateApiKey),
     resendApiKey: maskSecret(row.resendApiKey),
     githubApiKey: maskSecret(row.githubApiKey),
   };
@@ -216,6 +233,7 @@ export type PlatformSettingsUpdateInput = {
   openrouterReferer?: string;
   customApiKey?: string;
   customBaseUrl?: string;
+  replicateApiKey?: string;
   resendApiKey?: string;
   githubApiKey?: string;
   emailFrom?: string;
@@ -267,6 +285,7 @@ export async function updatePlatformSettings(
       tokenlabApiKey: mergeSecretField(input.tokenlabApiKey, existing.tokenlabApiKey),
       openrouterApiKey: mergeSecretField(input.openrouterApiKey, existing.openrouterApiKey),
       customApiKey: mergeSecretField(input.customApiKey, existing.customApiKey),
+      replicateApiKey: mergeSecretField(input.replicateApiKey, existing.replicateApiKey),
       resendApiKey: mergeSecretField(input.resendApiKey, existing.resendApiKey),
       githubApiKey: mergeSecretField(input.githubApiKey, existing.githubApiKey),
     },
@@ -288,14 +307,8 @@ export async function updatePlatformSettings(
 }
 
 export async function syncAgentsToPlatformLlmSettings(
-  settings?: Pick<ResolvedPlatformSettings, "defaultProvider" | "defaultModel">,
+  _settings?: Pick<ResolvedPlatformSettings, "defaultProvider" | "defaultModel">,
 ): Promise<number> {
-  const resolved = settings ?? (await warmPlatformSettingsCache());
-  const result = await prisma.agent.updateMany({
-    data: {
-      provider: resolved.defaultProvider,
-      model: resolved.defaultModel,
-    },
-  });
-  return result.count;
+  // Agents with null provider/model inherit platform defaults at runtime — no DB sync needed.
+  return 0;
 }

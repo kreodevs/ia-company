@@ -1,12 +1,12 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { generateText } from "ai";
-import { createLanguageModel } from "../core/providers.js";
+import { createLanguageModel, providerConfigFromResolved } from "../core/providers.js";
 import { extractHandoffFromAgentOutput } from "./product-consensus.js";
 import { ensureProductWorkspace } from "./product-workspace.js";
-import { getPlatformSettingsSync } from "./platform-settings.js";
 import { prisma } from "./prisma.js";
-import { resolveEffectiveModel, type TenantLlmOverrides } from "./tenant-llm.js";
+import { resolveChatLlmConfig } from "./tenant-llm.js";
+import type { TenantLlmOverrides } from "./tenant-llm.js";
 import type { SharedMemory } from "../types/index.js";
 
 const SUMMARY_MAX_SOURCE_CHARS = 12_000;
@@ -104,13 +104,8 @@ export async function generateAndPersistRunSummary(input: {
     readMemoryString(input.sharedMemory, "nextAction") ??
     "";
 
-  const platform = getPlatformSettingsSync();
-  const { model } = resolveEffectiveModel("", input.tenantLlm, platform);
-  const languageModel = createLanguageModel({
-    provider: platform.defaultProvider,
-    model,
-    temperature: 0.3,
-  });
+  const resolved = resolveChatLlmConfig(input.tenantLlm, { temperature: 0.3 });
+  const languageModel = createLanguageModel(providerConfigFromResolved(resolved));
 
   const result = await generateText({
     model: languageModel,

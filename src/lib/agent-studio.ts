@@ -19,6 +19,7 @@ import {
 } from "./catalog-studio-llm.js";
 import type { AgentStudioProposal, McpGrantProposal, NewSkillDraft, StudioMungerReview } from "./catalog-studio-types.js";
 import type { SuggestedAgentDef } from "./org-os-types.js";
+import { loadOrgUnitContext } from "./org-context.js";
 import {
   ensureTenantAgents,
   ensureTenantSkill,
@@ -179,12 +180,26 @@ export async function proposeAgentWithLlm(
 
   let orgHint = "";
   if (options.orgUnitId) {
-    const org = await prisma.orgUnit.findFirst({
-      where: { id: options.orgUnitId, tenantId },
-      select: { name: true, designMd: true, config: true },
-    });
-    if (org) {
-      orgHint = `Department: ${org.name}. design.md excerpt: ${(org.designMd ?? "").slice(0, 400)}`;
+    const orgCtx = await loadOrgUnitContext(tenantId, options.orgUnitId);
+    if (orgCtx) {
+      const provisioned = agents
+        .filter((agent) => orgCtx.suggestedAgentNames.includes(agent.name))
+        .map((agent) => `${agent.name} (${agent.role})`);
+      const missing = orgCtx.suggestedAgentNames.filter(
+        (name) => !agents.some((agent) => agent.name === name),
+      );
+      orgHint = [
+        `Department: ${orgCtx.orgUnitName} (${orgCtx.orgUnitType}).`,
+        `Template roster: ${orgCtx.suggestedAgentNames.join(", ") || "(none)"}.`,
+        `Already in AI Team: ${provisioned.join("; ") || "(none)"}.`,
+        `Missing roles to hire: ${missing.join(", ") || "(none)"}.`,
+        `design.md excerpt: ${(orgCtx.orgUnitDesignMd ?? "").slice(0, 400)}`,
+        missing.length
+          ? "Prioritize proposing the highest-impact MISSING role from the template roster."
+          : "The department can grow beyond the starter template — propose additional roles when asked.",
+      ]
+        .filter(Boolean)
+        .join(" ");
     }
   }
 

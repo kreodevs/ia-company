@@ -2,11 +2,11 @@ import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { generateText, type LanguageModel } from "ai";
 import { prisma } from "./prisma.js";
-import { createLanguageModel, estimateCostUsd } from "../core/providers.js";
-import { getPlatformSettingsSync } from "./platform-settings.js";
-import { resolveEffectiveModel, tenantLlmFromRecord } from "./tenant-llm.js";
+import { createLanguageModel, estimateCostUsd, providerConfigFromResolved } from "../core/providers.js";
+import { resolveChatLlmConfig, tenantLlmFromRecord } from "./tenant-llm.js";
 import { getTenantMonthlyUsage } from "./usage-limits.js";
 import { planOfficeTask, type OfficeTaskPlan } from "./office-coordinator.js";
+import { loadOrgUnitContext } from "./org-context.js";
 import { listTenantProducts } from "./product-registry.js";
 
 const REPO_ROOT =
@@ -59,25 +59,53 @@ function buildChatContextBlock(usage: Awaited<ReturnType<typeof getTenantMonthly
   ].join("\n");
 }
 
-function buildScopeBlock(
+async function buildScopeBlock(
+  tenantId: string,
   productId: string | undefined,
   orgUnitId: string | undefined,
   products: Array<{ id: string; name: string; orgUnitId?: string | null }>,
-  orgUnits: Array<{ id: string; name: string }>,
-): string {
+): Promise<string> {
   if (orgUnitId) {
-    const org = orgUnits.find((u) => u.id === orgUnitId);
-    const orgName = org?.name ?? orgUnitId;
+    const orgCtx = await loadOrgUnitContext(tenantId, orgUnitId);
+    const orgName = orgCtx?.orgUnitName ?? orgUnitId;
     const lines = [
       "## Alcance del encargo",
-      "- Modo: departamento virtual",
+      "- Modo: **sala de juntas de departamento**",
       `- Departamento: **${orgName}**`,
-      "- Usa agentes y tokens del department en propuestas y entregables.",
     ];
+
+    if (orgCtx?.orgUnitType === "marketing_agency") {
+      lines.push(
+        "- Tipo: agencia de marketing digital (copy, community/social, diseño, estrategia).",
+      );
+    } else if (orgCtx?.orgUnitType) {
+      lines.push(`- Tipo de departamento: ${orgCtx.orgUnitType.replace(/_/g, " ")}`);
+    }
+
+    if (orgCtx?.suggestedAgentNames.length) {
+      lines.push(
+        `- Roster del departamento (${orgCtx.suggestedAgentNames.length} roles, ampliable sin límite): ${orgCtx.suggestedAgentNames.map((n) => `\`${n}\``).join(", ")}`,
+      );
+      lines.push(
+        "- **No propongas agentes genéricos de plataforma** (p. ej. marketing-godin, research-thompson) si el departamento ya tiene especialistas propios.",
+      );
+    }
+
+    if (orgCtx?.orgUnitDesignMd) {
+      const snippet = orgCtx.orgUnitDesignMd.trim().slice(0, 400);
+      lines.push("- Voz y entregables del department (design.md):", snippet);
+    }
+
     if (productId) {
       const product = products.find((p) => p.id === productId);
-      lines.push(`- Work item: **${product?.name ?? productId}**`);
+      lines.push(`- Work item / producto seleccionado: **${product?.name ?? productId}**`);
+      lines.push("- Contextualiza entregables a este work item.");
+    } else {
+      lines.push(
+        "- **Sin producto seleccionado** en el selector de alcance: no asumas Alebrije MemorIA ni otro producto salvo que el fundador lo pida explícitamente.",
+      );
     }
+
     return lines.join("\n");
   }
 
@@ -210,33 +238,25 @@ export async function chatWithCoordinator(
     throw new Error("At least one message is required");
   }
 
-  const [systemBase, usage, llmConfig, products, orgUnits] = await Promise.all([
+  const [systemBase, usage, llmConfig, products] = await Promise.all([
     loadCoordinatorSystemPrompt(tenantId),
     getTenantMonthlyUsage(tenantId),
     prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
     listTenantProducts(tenantId),
-    prisma.orgUnit.findMany({
-      where: { tenantId, isActive: true },
-      select: { id: true, name: true },
-      orderBy: { name: "asc" },
-    }),
   ]);
 
+  const scopeBlock = await buildScopeBlock(tenantId, input.productId, input.orgUnitId, products);
+
   const tenantLlm = tenantLlmFromRecord(llmConfig);
-  const platform = getPlatformSettingsSync();
-  const { model } = resolveEffectiveModel("inherit", tenantLlm);
-  const languageModel = createLanguageModel({
-    provider: platform.defaultProvider,
-    model,
-    temperature: 0.65,
-  });
+  const resolved = resolveChatLlmConfig(tenantLlm, { temperature: 0.65 });
+  const languageModel = createLanguageModel(providerConfigFromResolved(resolved));
 
   const system = [
     systemBase,
     "",
     buildChatContextBlock(usage),
     "",
-    buildScopeBlock(input.productId, input.orgUnitId, products, orgUnits),
+    scopeBlock,
     "",
     "## Modo conversación",
     "Responde en español salvo que el fundador escriba en otro idioma.",
@@ -259,7 +279,7 @@ export async function chatWithCoordinator(
   const promptTokens = response.usage?.promptTokens ?? 0;
   const completionTokens = response.usage?.completionTokens ?? 0;
   const tokensUsed = promptTokens + completionTokens;
-  const costUsd = estimateCostUsd(platform.defaultProvider, model, promptTokens, completionTokens);
+  const costUsd = estimateCostUsd(resolved.provider, resolved.model, promptTokens, completionTokens);
 
   let plan: OfficeTaskPlan | null = null;
   const allMessages: CoordinatorChatMessage[] = [

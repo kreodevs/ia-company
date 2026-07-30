@@ -1,14 +1,17 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { APICallError } from "@ai-sdk/provider";
+import type { AgentModelKind, AgentProvider } from "@prisma/client";
 import type { LanguageModel } from "ai";
-import type { AgentProvider } from "@prisma/client";
 import type { ProviderConfig } from "../types/index.js";
 import { getPlatformSettingsSync } from "../lib/platform-settings.js";
+import type { ResolvedAgentLlmConfig } from "../lib/tenant-llm.js";
+import { isMediaModelKind } from "../lib/tenant-llm.js";
 
 export interface ProviderEnvConfig {
   tokenlab: { apiKey: string; baseURL: string };
   openrouter: { apiKey: string; baseURL: string };
   custom: { apiKey: string; baseURL: string };
+  replicate: { apiKey: string; baseURL: string };
 }
 
 export function getProviderEnvConfig(): ProviderEnvConfig {
@@ -29,7 +32,25 @@ function resolveCredentials(config: ProviderConfig): { apiKey: string; baseURL: 
   };
 }
 
+export function isMediaModelConfig(
+  config: Pick<ProviderConfig, "provider" | "modelKind">,
+): boolean {
+  return config.provider === "replicate" && Boolean(config.modelKind && isMediaModelKind(config.modelKind));
+}
+
+export function isReplicateChatConfig(
+  config: Pick<ProviderConfig, "provider" | "modelKind">,
+): boolean {
+  return config.provider === "replicate" && (!config.modelKind || config.modelKind === "chat");
+}
+
 export function createLanguageModel(config: ProviderConfig): LanguageModel {
+  if (config.provider === "replicate") {
+    throw new Error(
+      'Replicate agents use runReplicateStep() — chat/media models are not OpenAI-compatible.',
+    );
+  }
+
   const { apiKey, baseURL } = resolveCredentials(config);
 
   if (!apiKey) {
@@ -61,13 +82,21 @@ export function createLanguageModel(config: ProviderConfig): LanguageModel {
   return client(config.model);
 }
 
+export function providerConfigFromResolved(resolved: ResolvedAgentLlmConfig): ProviderConfig {
+  return {
+    provider: resolved.provider,
+    model: resolved.model,
+    temperature: resolved.temperature,
+    modelKind: resolved.modelKind,
+  };
+}
+
 export function estimateCostUsd(
   _provider: AgentProvider,
   model: string,
   promptTokens: number,
   completionTokens: number,
 ): number {
-  // Rough defaults — override via cost table in production
   const rates: Record<string, { input: number; output: number }> = {
     "claude-3-5-sonnet-20241022": { input: 3 / 1_000_000, output: 15 / 1_000_000 },
     "gpt-4o-mini": { input: 0.15 / 1_000_000, output: 0.6 / 1_000_000 },
@@ -83,8 +112,18 @@ export function providerDisplayName(provider: AgentProvider): string {
     tokenlab: "TokenLab / LemonData",
     openrouter: "OpenRouter",
     custom: "Custom (OpenAI-compatible)",
+    replicate: "Replicate",
   };
   return names[provider];
+}
+
+export function modelKindDisplayName(kind: AgentModelKind): string {
+  const names: Record<AgentModelKind, string> = {
+    chat: "Chat / text",
+    image: "Image generation",
+    audio: "Audio generation",
+  };
+  return names[kind];
 }
 
 export function findApiCallError(err: unknown): APICallError | null {
@@ -115,7 +154,7 @@ export function findApiCallError(err: unknown): APICallError | null {
 
 export function formatLlmProviderError(
   err: unknown,
-  config: { provider: string; model: string },
+  config: { provider: string; model: string; modelKind?: AgentModelKind },
 ): string {
   if (!(err instanceof Error)) return String(err);
 
@@ -135,9 +174,10 @@ export function formatLlmProviderError(
     if (providerDetail && !parts.includes(providerDetail)) parts.push(providerDetail);
   }
 
+  const kindHint = config.modelKind && config.modelKind !== "chat" ? ` (${config.modelKind})` : "";
   const combined = parts.join(" — ");
-  if (/provider returned error|failed to fetch|401|403|404|429|400|invalid model|insufficient credits|user not found/i.test(combined)) {
-    return `LLM ${config.provider}/${config.model} error: ${combined}. Check Admin → Platform settings (API key, base URL) and that the model id is valid on the provider.`;
+  if (/provider returned error|failed to fetch|401|403|404|429|400|invalid model|insufficient credits|user not found|replicate/i.test(combined)) {
+    return `LLM ${config.provider}/${config.model}${kindHint} error: ${combined}. Check Admin → Platform settings (API key, base URL) and that the model id is valid on the provider.`;
   }
   return combined;
 }

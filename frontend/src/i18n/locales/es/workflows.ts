@@ -39,7 +39,20 @@ export const workflows = {
     selectAgent: "Seleccionar agente",
     editAgent: "Editar agente",
     newAgentForm: "Nuevo agente",
-    platformLlmHint: "El proveedor LLM lo define el superadmin en Configuración de plataforma. Todos los agentes usan ese proveedor compartido.",
+    platformLlmHint:
+      "Cada agente puede usar su propio proveedor y modelo, o heredar los defaults del tenant/plataforma.",
+    llmHint:
+      "Configura proveedor, tipo de modelo y ID. Deja proveedor/modelo vacíos para heredar. Replicate es ideal para imagen y audio.",
+    inheritProvider: "Heredar (tenant / plataforma)",
+    inheritModel: "heredado",
+    inheritModelPlaceholder: "Vacío = heredar del tenant o plataforma",
+    customModelPlaceholder: "ID del modelo en el proveedor",
+    modelKind: "Tipo de modelo",
+    modelKindChat: "Chat / texto",
+    modelKindImage: "Generación de imagen",
+    modelKindAudio: "Generación de audio",
+    replicateKindHint: "Imagen y audio funcionan mejor con Replicate — selecciónalo como proveedor.",
+    effectiveLlmPreview: "Se ejecutará con: {{provider}} / {{model}} ({{kind}})",
     deleteConfirm: '¿Eliminar el agente "{{name}}"?',
   },
   skills: {

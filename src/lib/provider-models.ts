@@ -1,5 +1,6 @@
 import type { AgentProvider } from "@prisma/client";
 import { getPlatformSettings } from "./platform-settings.js";
+import { listReplicateModels } from "../core/replicate.js";
 
 export interface LlmModelOption {
   id: string;
@@ -7,6 +8,7 @@ export interface LlmModelOption {
   inputPer1MTokens: number | null;
   outputPer1MTokens: number | null;
   currency: "USD";
+  description?: string | null;
 }
 
 type CacheEntry = { expiresAt: number; models: LlmModelOption[] };
@@ -35,7 +37,8 @@ function filterModels(models: LlmModelOption[], q: string | undefined): LlmModel
   return models.filter(
     (m) =>
       m.id.toLowerCase().includes(query) ||
-      m.name.toLowerCase().includes(query),
+      m.name.toLowerCase().includes(query) ||
+      (m.description?.toLowerCase().includes(query) ?? false),
   );
 }
 
@@ -152,18 +155,35 @@ async function fetchTokenlabModels(): Promise<LlmModelOption[]> {
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
-async function getCachedModels(provider: "openrouter" | "tokenlab"): Promise<LlmModelOption[]> {
+async function fetchReplicateModels(query?: string): Promise<LlmModelOption[]> {
+  const models = await listReplicateModels(query);
+  return models.map((model) => ({
+    id: model.id,
+    name: model.name,
+    description: model.description,
+    inputPer1MTokens: null,
+    outputPer1MTokens: null,
+    currency: "USD" as const,
+  }));
+}
+
+async function getCachedModels(provider: "openrouter" | "tokenlab" | "replicate"): Promise<LlmModelOption[]> {
   const now = Date.now();
   const hit = cache.get(provider);
   if (hit && hit.expiresAt > now) return hit.models;
 
   const models =
-    provider === "openrouter" ? await fetchOpenRouterModels() : await fetchTokenlabModels();
+    provider === "openrouter"
+      ? await fetchOpenRouterModels()
+      : provider === "tokenlab"
+        ? await fetchTokenlabModels()
+        : await fetchReplicateModels();
+
   cache.set(provider, { models, expiresAt: now + CACHE_TTL_MS });
   return models;
 }
 
-export function invalidateProviderModelsCache(provider?: "openrouter" | "tokenlab"): void {
+export function invalidateProviderModelsCache(provider?: AgentProvider): void {
   if (provider) cache.delete(provider);
   else cache.clear();
 }
@@ -174,6 +194,9 @@ export async function listProviderModels(
 ): Promise<LlmModelOption[]> {
   if (provider === "custom") {
     return [];
+  }
+  if (provider === "replicate") {
+    return filterModels(await fetchReplicateModels(query), query);
   }
   if (provider !== "openrouter" && provider !== "tokenlab") {
     throw new Error(`Unsupported provider "${provider}" for model catalog.`);

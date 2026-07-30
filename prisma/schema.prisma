@@ -85,18 +85,26 @@ enum AgentProvider {
   tokenlab
   openrouter
   custom
+  replicate
+}
+
+enum AgentModelKind {
+  chat
+  image
+  audio
 }
 
 model Agent {
-  id               String        @id @default(cuid())
+  id               String          @id @default(cuid())
   tenantId         String?
   platformSourceId String?
   name             String
   role             String
-  systemPrompt     String        @db.Text
-  provider         AgentProvider @default(tokenlab)
-  model            String        @default("claude-3-5-sonnet-20241022")
-  temperature      Float         @default(0.7)
+  systemPrompt     String          @db.Text
+  provider         AgentProvider?
+  model            String?
+  modelKind        AgentModelKind  @default(chat)
+  temperature      Float           @default(0.7)
   contractInputs   Json          @default("[]")
   contractOutputs  Json          @default("[]")
   isActive         Boolean       @default(true)
@@ -987,6 +995,7 @@ model PlatformSettings {
   openrouterReferer   String        @default("https://auto-company.local")
   customApiKey        String?       @db.Text
   customBaseUrl       String        @default("")
+  replicateApiKey     String?       @db.Text
   resendApiKey        String?       @db.Text
   githubApiKey        String?       @db.Text
   emailFrom           String        @default("onboarding@resend.dev")

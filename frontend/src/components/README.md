@@ -12,7 +12,8 @@ UI built with **Kreo registry components** styled via the **Paperclip Dark Warm*
 | War room | `war-room/` | `WarRoomContent` — tactical agent table on `/war-room/:productId` |
 | Office | `office/` | `OfficeSpendWidget` — sidebar spend bar; main UI in `OfficePage` |
 | App wrappers | `ui/` | Stable imports for pages (`import Button from "../components/ui/Button"`) |
-| Shared widgets | `ModelAutocomplete.tsx` | Platform default model picker (OpenRouter / TokenLab); uses semantic `--color-*` tokens for both themes |
+| Shared widgets | `ModelAutocomplete.tsx` | Model picker (OpenRouter / TokenLab / Replicate); admin or tenant catalog |
+| Shared widgets | `AgentModelFields.tsx` | Per-agent LLM config: provider (inherit or explicit), model kind, model ID |
 | Shared widgets | `ThemeSwitcher.tsx` | Stripe HDS Light / Paperclip Warm / Slash theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content |
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |

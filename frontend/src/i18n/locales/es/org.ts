@@ -78,4 +78,26 @@ export const org = {
   warRoomNoArtifacts: "Aún no hay artefactos del departamento — abrir",
   warRoomArtifactsTitle: "{{name}} — artefactos recientes",
   viewAllArtifacts: "Ver todos",
+  staff: {
+    title: "Plantilla del departamento",
+    subtitle:
+      "La plantilla inicial es solo un punto de partida — puedes añadir todos los puestos que necesites.",
+    templateNote:
+      "Plantilla inicial: {{count}} roles · {{added}} añadidos después (sin límite)",
+    rosterCount: "{{active}} / {{total}} activos",
+    emptyRoster: "Sin roles aún — usa el asistente para contratar el primero.",
+    active: "Activo",
+    missing: "Por crear",
+    addedRole: "añadido",
+    createWithAi: "Crear con IA",
+    linkExisting: "Vincular agente existente",
+    linkExistingPlaceholder: "Elegir agente de Equipo IA…",
+    linkCta: "Vincular al departamento",
+    linking: "Vinculando…",
+    assistantTitle: "Asistente de contratación",
+    assistantHint:
+      "Describe un puesto nuevo o deja que la IA lo proponga. Cada agente creado se suma al departamento automáticamente.",
+    suggestMissing: "¿Qué puesto me falta?",
+    addNewRole: "Añadir nuevo puesto",
+  },
 } as const;

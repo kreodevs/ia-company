@@ -40,6 +40,7 @@ export const common = {
   tokenlabLemonData: "TokenLab / LemonData",
   openrouter: "OpenRouter",
   custom: "Custom",
+  replicate: "Replicate",
   platformDefault: "Platform default",
   merge: "Merge",
   update: "Update",

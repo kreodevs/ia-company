@@ -1,11 +1,12 @@
-import type { AgentProvider, ExecutionStatus, LogLevel } from "@prisma/client";
+import type { AgentProvider, ExecutionStatus, LogLevel, AgentModelKind } from "@prisma/client";
 
-export type { AgentProvider, ExecutionStatus, LogLevel };
+export type { AgentProvider, ExecutionStatus, LogLevel, AgentModelKind };
 
 export interface ProviderConfig {
   provider: AgentProvider;
   model: string;
   temperature: number;
+  modelKind?: AgentModelKind;
   apiKey?: string;
   baseURL?: string;
 }
@@ -48,8 +49,9 @@ export interface AgentWithSkills {
   name: string;
   role: string;
   systemPrompt: string;
-  provider: AgentProvider;
-  model: string;
+  provider: AgentProvider | null;
+  model: string | null;
+  modelKind: AgentModelKind;
   temperature: number;
   skills: Array<{
     id: string;
@@ -120,8 +122,9 @@ export interface CreateAgentInput {
   name: string;
   role: string;
   systemPrompt: string;
-  provider?: AgentProvider;
-  model?: string;
+  provider?: AgentProvider | null;
+  model?: string | null;
+  modelKind?: AgentModelKind;
   temperature?: number;
   skillIds?: string[];
   tenantId?: string;

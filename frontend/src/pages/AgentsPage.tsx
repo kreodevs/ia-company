@@ -104,7 +104,8 @@ export default function AgentsPage({ embedded = false }: { embedded?: boolean })
                 >
                   <div className="font-medium">{agent.name}</div>
                   <div className="mt-0.5 text-xs text-[var(--color-muted-foreground)]">
-                    {agent.role} · {agent.model} · {agent.provider}
+                    {agent.role} · {agent.model ?? t("workflows.agents.inheritModel")} ·{" "}
+                    {agent.provider ?? t("workflows.agents.inheritProvider")} · {agent.modelKind}
                   </div>
                 </button>
               </li>

@@ -27,21 +27,140 @@ function suggestedAgentsFromTemplate(
   return bundled?.definition.suggestedAgents.map((a) => a.name) ?? [];
 }
 
-export function suggestedAgentsFromOrgRecord(org: {
+export function resolveOrgUnitAgentBreakdown(org: {
   type: string;
   config: unknown;
   template: { definition: unknown } | null;
-}): string[] {
+}): { templateNames: string[]; linkedNames: string[]; allNames: string[] } {
   const config = (org.config as Record<string, unknown>) ?? {};
   const linkedFromConfig = Array.isArray(config.linkedAgentNames)
     ? config.linkedAgentNames.filter((n): n is string => typeof n === "string")
     : [];
 
-  const fromTemplate = org.template?.definition
+  const templateNames = org.template?.definition
     ? suggestedAgentsFromTemplate(org.template.definition, org.type)
     : suggestedAgentsFromTemplate(null, org.type);
 
-  return [...new Set([...fromTemplate, ...linkedFromConfig])];
+  const linkedNames = linkedFromConfig.filter((name) => !templateNames.includes(name));
+
+  return {
+    templateNames,
+    linkedNames,
+    allNames: [...new Set([...templateNames, ...linkedFromConfig])],
+  };
+}
+
+export function suggestedAgentsFromOrgRecord(org: {
+  type: string;
+  config: unknown;
+  template: { definition: unknown } | null;
+}): string[] {
+  return resolveOrgUnitAgentBreakdown(org).allNames;
+}
+
+export interface OrgUnitStaffMember {
+  name: string;
+  role: string | null;
+  provisioned: boolean;
+  agentId: string | null;
+  source: "template" | "added";
+}
+
+export interface OrgUnitStaffRoster {
+  orgUnitId: string;
+  templateRoleCount: number;
+  members: OrgUnitStaffMember[];
+  availableAgents: Array<{ id: string; name: string; role: string }>;
+}
+
+export async function getOrgUnitStaffRoster(
+  tenantId: string,
+  orgUnitId: string,
+): Promise<OrgUnitStaffRoster | null> {
+  const org = await prisma.orgUnit.findFirst({
+    where: { id: orgUnitId, tenantId },
+    include: { template: true },
+  });
+  if (!org) return null;
+
+  const { templateNames, allNames } = resolveOrgUnitAgentBreakdown(org);
+  const templateSet = new Set(templateNames);
+
+  const agents = await prisma.agent.findMany({
+    where: { tenantId, isActive: true },
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  });
+  const agentByName = new Map(agents.map((agent) => [agent.name, agent]));
+
+  const rosterNames = new Set(allNames);
+  const members: OrgUnitStaffMember[] = allNames.map((name) => ({
+    name,
+    role: agentByName.get(name)?.role ?? null,
+    provisioned: agentByName.has(name),
+    agentId: agentByName.get(name)?.id ?? null,
+    source: templateSet.has(name) ? "template" : "added",
+  }));
+
+  return {
+    orgUnitId: org.id,
+    templateRoleCount: templateNames.length,
+    members,
+    availableAgents: agents
+      .filter((agent) => !rosterNames.has(agent.name))
+      .map((agent) => ({ id: agent.id, name: agent.name, role: agent.role })),
+  };
+}
+
+export function selectOrgAgentsForTask(
+  agents: Array<{ id: string; name: string; role: string }>,
+  request: string,
+  orgUnitType: string,
+  maxAgents = 4,
+): Array<{ id: string; name: string; role: string }> {
+  if (agents.length === 0) return [];
+  const text = request.toLowerCase();
+
+  const scoreAgent = (name: string, role: string): number => {
+    const n = name.toLowerCase();
+    const r = role.toLowerCase();
+    let score = 0;
+
+    if (/social|redes|instagram|tiktok|linkedin|lanzamiento|launch|community|calendario|hashtag/.test(text)) {
+      if (n.includes("community") || r.includes("community")) score += 4;
+      if (n.includes("copy") || r.includes("copy")) score += 2;
+      if (n.includes("marketing-strategist") || r.includes("strategist")) score += 2;
+    }
+    if (/estrateg|strategy|posicion|positioning|marca|brand/.test(text)) {
+      if (n.includes("marketing-strategist") || r.includes("strategist")) score += 4;
+      if (n.includes("copy") || r.includes("copy")) score += 1;
+    }
+    if (/diseño|design|visual|creativ|brief/.test(text)) {
+      if (n.includes("design") || r.includes("design")) score += 4;
+    }
+    if (/copy|texto|contenido|content|caption|post/.test(text)) {
+      if (n.includes("copy") || r.includes("copy")) score += 4;
+    }
+
+    if (orgUnitType === "marketing_agency" && score === 0) {
+      if (n.includes("community")) score += 2;
+      if (n.includes("marketing-strategist")) score += 2;
+      if (n.includes("copy")) score += 1;
+    }
+
+    return score;
+  };
+
+  const ranked = [...agents].sort(
+    (a, b) => scoreAgent(b.name, b.role) - scoreAgent(a.name, a.role),
+  );
+  const matched = ranked.filter((agent) => scoreAgent(agent.name, agent.role) > 0);
+  if (matched.length >= 2) return matched.slice(0, maxAgents);
+  if (matched.length === 1) {
+    const rest = ranked.filter((agent) => agent.id !== matched[0]!.id);
+    return [matched[0]!, ...rest.slice(0, maxAgents - 1)];
+  }
+  return ranked.slice(0, maxAgents);
 }
 
 export async function loadOrgUnitContext(

@@ -1,6 +1,7 @@
 import { generateText, jsonSchema, tool } from "ai";
-import { createLanguageModel, findApiCallError, formatLlmProviderError } from "../core/providers.js";
+import { createLanguageModel, findApiCallError, formatLlmProviderError, providerConfigFromResolved } from "../core/providers.js";
 import { getPlatformSettings } from "./platform-settings.js";
+import { resolveChatLlmConfig } from "./tenant-llm.js";
 import {
   buildMcpToolKey,
   parseMcpInputSchemaJson,
@@ -59,13 +60,8 @@ export async function validateMcpToolsWithPlatformLlm(
   defs: McpToolDefinitionLike[],
 ): Promise<McpLlmValidationResult> {
   const settings = await getPlatformSettings();
-  const providerConfig = {
-    provider: settings.defaultProvider,
-    model: settings.defaultModel,
-    temperature: settings.defaultTemperature,
-    apiKey: undefined,
-    baseURL: undefined,
-  };
+  const resolved = resolveChatLlmConfig(null, { temperature: settings.defaultTemperature });
+  const providerConfig = providerConfigFromResolved(resolved);
 
   const { tools, skippedTools } = buildProbeToolsFromDefinitions(defs);
   const toolCount = Object.keys(tools).length;
@@ -73,8 +69,8 @@ export async function validateMcpToolsWithPlatformLlm(
   if (toolCount === 0) {
     return {
       ok: false,
-      provider: settings.defaultProvider,
-      model: settings.defaultModel,
+      provider: resolved.provider,
+      model: resolved.model,
       toolCount: 0,
       error: "No LLM-compatible MCP tools to validate",
       skippedTools,
@@ -93,8 +89,8 @@ export async function validateMcpToolsWithPlatformLlm(
 
     return {
       ok: true,
-      provider: settings.defaultProvider,
-      model: settings.defaultModel,
+      provider: resolved.provider,
+      model: resolved.model,
       toolCount,
       skippedTools: skippedTools.length > 0 ? skippedTools : undefined,
     };
@@ -102,8 +98,8 @@ export async function validateMcpToolsWithPlatformLlm(
     const apiErr = findApiCallError(err);
     return {
       ok: false,
-      provider: settings.defaultProvider,
-      model: settings.defaultModel,
+      provider: resolved.provider,
+      model: resolved.model,
       toolCount,
       error: formatLlmProviderError(err, providerConfig),
       statusCode: apiErr?.statusCode ?? null,

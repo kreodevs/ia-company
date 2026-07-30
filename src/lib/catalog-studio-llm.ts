@@ -1,8 +1,7 @@
 import { generateText } from "ai";
-import { createLanguageModel } from "../core/providers.js";
-import { getPlatformSettingsSync } from "./platform-settings.js";
+import { createLanguageModel, providerConfigFromResolved } from "../core/providers.js";
 import { prisma } from "./prisma.js";
-import { resolveEffectiveModel, tenantLlmFromRecord } from "./tenant-llm.js";
+import { resolveChatLlmConfig, tenantLlmFromRecord } from "./tenant-llm.js";
 
 export const CATALOG_STUDIO_MAX_TOKENS_PROPOSE = Number(process.env.CATALOG_STUDIO_MAX_TOKENS_PROPOSE ?? 2800);
 export const CATALOG_STUDIO_MAX_TOKENS_MUNGER = Number(process.env.CATALOG_STUDIO_MAX_TOKENS_MUNGER ?? 500);
@@ -23,14 +22,9 @@ export function parseJsonFromLlm(text: string): Record<string, unknown> | null {
 
 export async function tenantLanguageModel(tenantId: string, temperature = 0.45) {
   const llmConfig = await prisma.tenantLlmConfig.findUnique({ where: { tenantId } });
-  const platform = getPlatformSettingsSync();
   const tenantLlm = tenantLlmFromRecord(llmConfig);
-  const { model } = resolveEffectiveModel("inherit", tenantLlm);
-  return createLanguageModel({
-    provider: platform.defaultProvider,
-    model,
-    temperature,
-  });
+  const resolved = resolveChatLlmConfig(tenantLlm, { temperature });
+  return createLanguageModel(providerConfigFromResolved(resolved));
 }
 
 export async function assertCatalogStudioProposeRateLimit(tenantId: string): Promise<void> {

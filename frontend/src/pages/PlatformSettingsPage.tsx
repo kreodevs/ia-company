@@ -184,11 +184,14 @@ export default function PlatformSettingsPage() {
                 <option value="tokenlab">{t("common.tokenlabLemonData")}</option>
                 <option value="openrouter">{t("common.openrouter")}</option>
                 <option value="custom">{t("common.custom")}</option>
+                <option value="replicate">{t("common.replicate")}</option>
               </select>
             </label>
             <label className="block text-sm sm:col-span-2">
               <span>{t("settings.llm.defaultModel")}</span>
-              {settings.defaultProvider === "openrouter" || settings.defaultProvider === "tokenlab" ? (
+              {settings.defaultProvider === "openrouter" ||
+              settings.defaultProvider === "tokenlab" ||
+              settings.defaultProvider === "replicate" ? (
                 <ModelAutocomplete
                   provider={settings.defaultProvider}
                   value={settings.defaultModel}
@@ -219,121 +222,109 @@ export default function PlatformSettingsPage() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            {settings.defaultProvider === "tokenlab" && (
-              <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.tokenlabSection")}
-                </h3>
-                <label className="block space-y-1 text-sm">
-                  <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
-                  <input
-                    type="password"
-                    autoComplete="off"
-                    placeholder={t("common.apiKeyPlaceholder")}
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                    value={settings.tokenlabApiKey ?? ""}
-                    onChange={(e) => setSettings({ ...settings, tokenlabApiKey: e.target.value })}
-                  />
-                  <span
-                    className={`text-xs ${settings.tokenlabApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-destructive)]"}`}
-                  >
-                    {settings.tokenlabApiKey
-                      ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                      : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                  </span>
-                  <span className="block text-xs text-[var(--color-muted-foreground)]">
-                    {t("admin.platformSettings.defaultLlm.apiKeyHint")}
-                  </span>
-                </label>
-                <label className="block space-y-1 text-sm">
-                  <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
-                  <input
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                    value={settings.tokenlabBaseUrl}
-                    onChange={(e) => setSettings({ ...settings, tokenlabBaseUrl: e.target.value })}
-                  />
-                </label>
-              </div>
-            )}
-            {settings.defaultProvider === "openrouter" && (
-              <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.openrouterSection")}
-                </h3>
-                <label className="block space-y-1 text-sm">
-                  <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
-                  <input
-                    type="password"
-                    autoComplete="off"
-                    placeholder={t("common.apiKeyPlaceholder")}
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                    value={settings.openrouterApiKey ?? ""}
-                    onChange={(e) => setSettings({ ...settings, openrouterApiKey: e.target.value })}
-                  />
-                  <span
-                    className={`text-xs ${settings.openrouterApiKey ? "text-[var(--color-accent)]" : "text-[var(--color-destructive)]"}`}
-                  >
-                    {settings.openrouterApiKey
-                      ? t("admin.platformSettings.defaultLlm.apiKeyConfigured")
-                      : t("admin.platformSettings.defaultLlm.apiKeyMissing")}
-                  </span>
-                  <span className="block text-xs text-[var(--color-muted-foreground)]">
-                    {t("admin.platformSettings.defaultLlm.apiKeyHint")}
-                  </span>
-                </label>
-                <label className="block space-y-1 text-sm">
-                  <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
-                  <input
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-sm"
-                    value={settings.openrouterBaseUrl}
-                    onChange={(e) => setSettings({ ...settings, openrouterBaseUrl: e.target.value })}
-                  />
-                  <span className="text-xs text-[var(--color-muted-foreground)]">
-                    {t("admin.platformSettings.defaultLlm.baseUrlHint")}
-                  </span>
-                </label>
-                <label className="block space-y-1 text-sm">
-                  <span>{t("admin.platformSettings.defaultLlm.httpReferer")}</span>
-                  <input
-                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-sm"
-                    value={settings.openrouterReferer}
-                    onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
-                  />
-                  <span className="text-xs text-[var(--color-muted-foreground)]">
-                    {t("admin.platformSettings.defaultLlm.httpRefererHint")}
-                  </span>
-                </label>
-              </div>
-            )}
-            {settings.defaultProvider === "custom" && (
-              <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4 lg:col-span-2">
-                <h3 className="text-sm font-medium">
-                  {t("admin.platformSettings.defaultLlm.customSection")}
-                </h3>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block space-y-1 text-sm">
-                    <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
-                    <input
-                      type="password"
-                      autoComplete="off"
-                      placeholder={t("common.apiKeyPlaceholder")}
-                      className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                      value={settings.customApiKey ?? ""}
-                      onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
-                    />
-                  </label>
-                  <label className="block space-y-1 text-sm">
-                    <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
-                    <input
-                      className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                      placeholder={t("common.baseUrl")}
-                      value={settings.customBaseUrl}
-                      onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
-                    />
-                  </label>
-                </div>
-              </div>
-            )}
+            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">
+                {t("admin.platformSettings.defaultLlm.tokenlabSection")}
+              </h3>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
+                <input
+                  type="password"
+                  autoComplete="off"
+                  placeholder={t("common.apiKeyPlaceholder")}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  value={settings.tokenlabApiKey ?? ""}
+                  onChange={(e) => setSettings({ ...settings, tokenlabApiKey: e.target.value })}
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  value={settings.tokenlabBaseUrl}
+                  onChange={(e) => setSettings({ ...settings, tokenlabBaseUrl: e.target.value })}
+                />
+              </label>
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">
+                {t("admin.platformSettings.defaultLlm.openrouterSection")}
+              </h3>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
+                <input
+                  type="password"
+                  autoComplete="off"
+                  placeholder={t("common.apiKeyPlaceholder")}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  value={settings.openrouterApiKey ?? ""}
+                  onChange={(e) => setSettings({ ...settings, openrouterApiKey: e.target.value })}
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-sm"
+                  value={settings.openrouterBaseUrl}
+                  onChange={(e) => setSettings({ ...settings, openrouterBaseUrl: e.target.value })}
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.httpReferer")}</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-sm"
+                  value={settings.openrouterReferer}
+                  onChange={(e) => setSettings({ ...settings, openrouterReferer: e.target.value })}
+                />
+              </label>
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">
+                {t("admin.platformSettings.defaultLlm.customSection")}
+              </h3>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
+                <input
+                  type="password"
+                  autoComplete="off"
+                  placeholder={t("common.apiKeyPlaceholder")}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  value={settings.customApiKey ?? ""}
+                  onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
+                />
+              </label>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.baseUrl")}</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  placeholder={t("common.baseUrl")}
+                  value={settings.customBaseUrl}
+                  onChange={(e) => setSettings({ ...settings, customBaseUrl: e.target.value })}
+                />
+              </label>
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+              <h3 className="text-sm font-medium">
+                {t("admin.platformSettings.defaultLlm.replicateSection")}
+              </h3>
+              <p className="text-xs text-[var(--color-muted-foreground)]">
+                {t("admin.platformSettings.defaultLlm.replicateHint")}
+              </p>
+              <label className="block space-y-1 text-sm">
+                <span>{t("admin.platformSettings.defaultLlm.apiKey")}</span>
+                <input
+                  type="password"
+                  autoComplete="off"
+                  placeholder={t("common.apiKeyPlaceholder")}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+                  value={settings.replicateApiKey ?? ""}
+                  onChange={(e) => setSettings({ ...settings, replicateApiKey: e.target.value })}
+                />
+              </label>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">

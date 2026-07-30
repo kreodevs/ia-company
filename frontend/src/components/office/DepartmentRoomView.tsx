@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TenantProduct } from "../../lib/api";
-import { AGENT_EMOJI, agentRoleLabelKey, avatarGradient } from "../../lib/office-visual";
+import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import CoordinatorChat from "./CoordinatorChat";
 import Select from "../ui/Select";
 
@@ -11,7 +11,9 @@ export const DEPARTMENT_SCOPE_GENERAL = "__general__";
 export interface DepartmentRoomAgent {
   id: string;
   name: string;
+  role?: string | null;
   status: "idle" | "busy";
+  provisioned?: boolean;
 }
 
 export interface DepartmentRoomViewProps {
@@ -112,9 +114,13 @@ export default function DepartmentRoomView({
     return {
       id: agent?.id ?? name,
       name,
+      role: agent?.role ?? null,
       status: agent?.status ?? ("idle" as const),
+      provisioned: agent?.provisioned ?? Boolean(agent?.id && agent.id !== name),
     };
   });
+
+  const provisionedCount = seats.filter((seat) => seat.provisioned).length;
 
   return (
     <div className="office-dept-page">
@@ -156,6 +162,14 @@ export default function DepartmentRoomView({
       <div className="office-dept-grid">
         <section className="office-dept-war-room">
           <h2 className="office-panel-title">{t("office.floor.meetingRoom")}</h2>
+          {agentNames.length > 0 && provisionedCount < agentNames.length ? (
+            <p className="office-dept-roster-hint">
+              {t("office.floor.rosterHint", {
+                active: provisionedCount,
+                total: agentNames.length,
+              })}
+            </p>
+          ) : null}
           {seats.length === 0 ? (
             <p className="office-empty">{t("office.floor.noSpecialists")}</p>
           ) : (
@@ -172,14 +186,17 @@ export default function DepartmentRoomView({
                     <div
                       className="office-dept-seat-avatar"
                       style={{ background: avatarGradient(agent.name) }}
+                      data-pending={!agent.provisioned ? "true" : undefined}
                     >
                       <span aria-hidden>{AGENT_EMOJI[agent.name] ?? "🧑‍💼"}</span>
                     </div>
-                    <p className="office-dept-seat-name">
-                      {t(agentRoleLabelKey(agent.name) as "office.roles.research")}
-                    </p>
+                    <p className="office-dept-seat-name">{agentDisplayLabel(agent, t)}</p>
                     <p className="office-dept-seat-status">
-                      {agent.status === "busy" ? t("office.agents.busy") : t("office.agents.idle")}
+                      {!agent.provisioned
+                        ? t("office.floor.agentPending")
+                        : agent.status === "busy"
+                          ? t("office.agents.busy")
+                          : t("office.agents.idle")}
                     </p>
                   </div>
                 );

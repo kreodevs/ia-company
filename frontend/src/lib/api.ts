@@ -91,8 +91,9 @@ export interface Agent {
   name: string;
   role: string;
   systemPrompt: string;
-  provider: "tokenlab" | "openrouter" | "custom";
-  model: string;
+  provider: "tokenlab" | "openrouter" | "custom" | "replicate" | null;
+  model: string | null;
+  modelKind: "chat" | "image" | "audio";
   temperature: number;
   isActive: boolean;
   skills: Array<{ skill: Skill }>;
@@ -1102,12 +1103,13 @@ export interface LlmModelOption {
   inputPer1MTokens: number | null;
   outputPer1MTokens: number | null;
   currency: "USD";
+  description?: string | null;
 }
 
 export interface PlatformSettings {
   id: string;
   publicUrl: string;
-  defaultProvider: "tokenlab" | "openrouter" | "custom";
+  defaultProvider: "tokenlab" | "openrouter" | "custom" | "replicate";
   defaultModel: string;
   defaultTemperature: number;
   tokenlabApiKey: string | null;
@@ -1117,6 +1119,7 @@ export interface PlatformSettings {
   openrouterReferer: string;
   customApiKey: string | null;
   customBaseUrl: string;
+  replicateApiKey: string | null;
   resendApiKey: string | null;
   githubApiKey: string | null;
   emailFrom: string;
@@ -1200,7 +1203,7 @@ export const api = {
           method: "PUT",
           body: JSON.stringify(body),
         }),
-      listModels: (provider: "openrouter" | "tokenlab", q?: string) => {
+      listModels: (provider: "openrouter" | "tokenlab" | "replicate", q?: string) => {
         const qs = new URLSearchParams({ provider });
         if (q?.trim()) qs.set("q", q.trim());
         return request<{ provider: typeof provider; models: LlmModelOption[] }>(
@@ -1311,6 +1314,13 @@ export const api = {
     update: (id: string, body: Partial<Agent> & { skillIds?: string[] }) =>
       request<Agent>(`/agents/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     delete: (id: string) => request<void>(`/agents/${id}`, { method: "DELETE" }),
+  },
+  llm: {
+    listModels: (provider: NonNullable<Agent["provider"]>, q?: string) => {
+      const qs = new URLSearchParams({ provider });
+      if (q?.trim()) qs.set("q", q.trim());
+      return request<{ provider: string; models: LlmModelOption[] }>(`/llm/model-catalog?${qs.toString()}`);
+    },
   },
   skills: {
     list: () => request<Skill[]>("/skills"),
@@ -1838,6 +1848,13 @@ export const api = {
   orgUnits: {
     list: () => request<import("./org-types").OrgUnit[]>("/org-units"),
     get: (id: string) => request<import("./org-types").OrgUnit>(`/org-units/${id}`),
+    staff: (id: string) =>
+      request<import("./org-types").OrgUnitStaffRoster>(`/org-units/${id}/staff`),
+    linkStaffAgent: (id: string, agentName: string) =>
+      request<import("./org-types").OrgUnitStaffRoster>(`/org-units/${id}/staff/link`, {
+        method: "POST",
+        body: JSON.stringify({ agentName }),
+      }),
     update: (id: string, body: { config?: Record<string, unknown>; designMd?: string }) =>
       request<import("./org-types").OrgUnit>(`/org-units/${id}`, {
         method: "PUT",

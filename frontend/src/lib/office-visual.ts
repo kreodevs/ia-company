@@ -16,6 +16,10 @@ export const AGENT_EMOJI: Record<string, string> = {
   "marketing-godin": "📣",
   "operations-pg": "📈",
   "sales-ross": "💼",
+  "copy-manager": "✍️",
+  "community-manager": "📱",
+  "design-lead": "🎨",
+  "marketing-strategist": "📊",
 };
 
 export function avatarGradient(name: string): string {
@@ -42,7 +46,29 @@ export const AGENT_ROLE_LABEL_KEYS: Record<string, string> = {
   "marketing-godin": "office.roles.marketing",
   "operations-pg": "office.roles.operations",
   "sales-ross": "office.roles.sales",
+  "copy-manager": "office.roles.copyManager",
+  "community-manager": "office.roles.communityManager",
+  "design-lead": "office.roles.designLead",
+  "marketing-strategist": "office.roles.marketingStrategist",
 };
+
+export function humanizeAgentSlug(name: string): string {
+  return name
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function agentDisplayLabel(
+  agent: { name: string; role?: string | null },
+  translate: (key: string) => string,
+): string {
+  if (agent.role?.trim()) return agent.role.trim();
+  const key = agentRoleLabelKey(agent.name);
+  if (key !== "office.roles.specialist") return translate(key);
+  return humanizeAgentSlug(agent.name);
+}
 
 export function agentRoleLabelKey(agentName: string): string {
   return AGENT_ROLE_LABEL_KEYS[agentName] ?? "office.roles.specialist";

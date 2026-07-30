@@ -42,9 +42,13 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const provider = request.query.provider;
-        if (provider !== "openrouter" && provider !== "tokenlab") {
+        if (
+          provider !== "openrouter" &&
+          provider !== "tokenlab" &&
+          provider !== "replicate"
+        ) {
           return reply.status(400).send({
-            error: 'Query parameter "provider" must be "openrouter" or "tokenlab".',
+            error: 'Query parameter "provider" must be "openrouter", "tokenlab", or "replicate".',
           });
         }
         const models = await listProviderModels(provider, request.query.q);
@@ -72,6 +76,7 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
           tokenlab: Boolean(settings.providers.tokenlab.apiKey),
           openrouter: Boolean(settings.providers.openrouter.apiKey),
           custom: Boolean(settings.providers.custom.apiKey),
+          replicate: Boolean(settings.providers.replicate.apiKey),
           resend: Boolean(settings.resendApiKey),
           github: Boolean(settings.githubApiKey),
         },
@@ -86,17 +91,34 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
     try {
       const { generateText, tool } = await import("ai");
       const { z } = await import("zod");
-      const { createLanguageModel, findApiCallError, formatLlmProviderError } = await import(
-        "../../core/providers.js"
-      );
+      const { createLanguageModel, findApiCallError, formatLlmProviderError, providerConfigFromResolved } =
+        await import("../../core/providers.js");
+      const { runReplicateChat } = await import("../../core/replicate.js");
+      const { resolveChatLlmConfig, resolvePlatformLlmConfig } = await import("../../lib/tenant-llm.js");
       const settings = await getPlatformSettings();
-      const providerConfig = {
-        provider: settings.defaultProvider,
-        model: settings.defaultModel,
-        temperature: settings.defaultTemperature,
-        apiKey: undefined,
-        baseURL: undefined,
-      };
+      const platformResolved = resolvePlatformLlmConfig(null, { temperature: settings.defaultTemperature });
+
+      if (platformResolved.provider === "replicate") {
+        try {
+          const result = await runReplicateChat(platformResolved, "Reply with exactly: LLM OK", "Test");
+          return {
+            ok: true,
+            provider: platformResolved.provider,
+            model: platformResolved.model,
+            text: result.text.slice(0, 200),
+          };
+        } catch (err) {
+          return reply.status(502).send({
+            ok: false,
+            provider: platformResolved.provider,
+            model: platformResolved.model,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
+      }
+
+      const resolved = resolveChatLlmConfig(null, { temperature: settings.defaultTemperature });
+      const providerConfig = providerConfigFromResolved(resolved);
       const model = createLanguageModel(providerConfig);
 
       try {
@@ -114,16 +136,16 @@ export async function platformSettingsRoutes(app: FastifyInstance) {
         });
         return {
           ok: true,
-          provider: settings.defaultProvider,
-          model: settings.defaultModel,
+          provider: resolved.provider,
+          model: resolved.model,
           text: result.text.slice(0, 200),
         };
       } catch (err) {
         const apiErr = findApiCallError(err);
         return reply.status(502).send({
           ok: false,
-          provider: settings.defaultProvider,
-          model: settings.defaultModel,
+          provider: resolved.provider,
+          model: resolved.model,
           error: formatLlmProviderError(err, providerConfig),
           statusCode: apiErr?.statusCode ?? null,
           responseBody: apiErr?.responseBody?.slice(0, 2_000) ?? null,
