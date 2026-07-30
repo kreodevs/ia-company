@@ -1120,6 +1120,96 @@ html[data-theme="letter"] .office-service-btn[data-active="true"] {
   color: var(--deep-navy);
 }
 
+/* Stripe HDS Light — department meeting room */
+html[data-theme="letter"] .office-dept-page {
+  --office-dept-panel-bg: var(--surface-white);
+  --office-dept-panel-border: var(--quiet-surface);
+  --office-dept-label: var(--subdued-heading);
+  --office-dept-muted: var(--slate-body);
+  --office-dept-table-ring: rgba(83, 58, 253, 0.16);
+  --office-dept-table-glow: rgba(83, 58, 253, 0.07);
+  --office-dept-core-border: rgba(83, 58, 253, 0.22);
+  --office-dept-core-bg: rgba(83, 58, 253, 0.06);
+  --office-dept-seat-border: rgba(83, 58, 253, 0.18);
+}
+
+html[data-theme="letter"] .office-dept-back {
+  color: var(--stripe-indigo);
+}
+
+html[data-theme="letter"] .office-dept-subtitle {
+  color: var(--slate-body);
+}
+
+html[data-theme="letter"] .office-dept-status-pill {
+  border-color: rgba(83, 58, 253, 0.25);
+  background: rgba(83, 58, 253, 0.06);
+  color: #4228e0;
+}
+
+html[data-theme="letter"] .office-dept-status-pill[data-status="busy"] {
+  border-color: rgba(255, 97, 24, 0.35);
+  background: rgba(255, 97, 24, 0.08);
+  color: #c2410c;
+}
+
+html[data-theme="letter"] .office-dept-tabs-wrap,
+html[data-theme="letter"] .office-dept-settings-tabs {
+  border-bottom-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-dept-settings-tabs {
+  background: var(--pale-background);
+}
+
+html[data-theme="letter"] .office-dept-scope-bar {
+  background: rgba(83, 58, 253, 0.04);
+  border-color: rgba(83, 58, 253, 0.15);
+}
+
+html[data-theme="letter"] .office-dept-war-room,
+html[data-theme="letter"] .office-dept-sidebar {
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-dept-seat-name {
+  color: var(--deep-navy);
+}
+
+html[data-theme="letter"] .office-dept-seat-busy .office-dept-seat-avatar {
+  border-color: rgba(83, 58, 253, 0.55);
+  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+}
+
+html[data-theme="letter"] .office-dept-extra-panel,
+html[data-theme="letter"] .office-dept-staff-item {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-dept-staff-link-select button,
+html[data-theme="letter"] .office-dept-staff-link-select [role="combobox"] {
+  border-color: var(--input-border);
+  background: var(--input);
+}
+
+html[data-theme="letter"] .office-dept-staff-link-select svg {
+  color: var(--foreground-muted);
+}
+
+html[data-theme="letter"] .office-chat-header {
+  border-bottom-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-roi-link {
+  color: var(--stripe-indigo);
+}
+
+html[data-theme="letter"] .office-empty {
+  color: var(--slate-body);
+}
+
 /* ── Floor plan (virtual office) ── */
 
 .office-floor {
@@ -1395,6 +1485,15 @@ button.office-room-card {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0.25rem 0 1.5rem;
+  --office-dept-panel-bg: rgba(15, 23, 42, 0.35);
+  --office-dept-panel-border: rgba(148, 163, 184, 0.18);
+  --office-dept-label: #cbd5e1;
+  --office-dept-muted: #94a3b8;
+  --office-dept-table-ring: rgba(148, 163, 184, 0.2);
+  --office-dept-table-glow: rgba(56, 189, 248, 0.06);
+  --office-dept-core-border: rgba(56, 189, 248, 0.25);
+  --office-dept-core-bg: rgba(14, 165, 233, 0.08);
+  --office-dept-seat-border: rgba(148, 163, 184, 0.35);
 }
 
 .office-dept-header {
@@ -1478,14 +1577,14 @@ button.office-room-card {
 .office-dept-extra-panel {
   padding: 1rem 1.15rem;
   border-radius: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--office-dept-panel-border);
+  background: var(--office-dept-panel-bg);
 }
 
 .office-dept-extra-desc {
   margin: 0.25rem 0 0.85rem;
   font-size: 0.82rem;
-  color: #cbd5e1;
+  color: var(--office-dept-muted);
 }
 
 .office-dept-extra-form {
@@ -1542,8 +1641,8 @@ button.office-room-card {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--office-dept-panel-border);
+  background: var(--office-dept-panel-bg);
 }
 
 .office-dept-scope-label {
@@ -1551,7 +1650,7 @@ button.office-room-card {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #cbd5e1;
+  color: var(--office-dept-label);
 }
 
 .office-dept-scope-select {
@@ -1564,7 +1663,7 @@ button.office-room-card {
   margin: 0;
   font-size: 0.78rem;
   line-height: 1.45;
-  color: #94a3b8;
+  color: var(--office-dept-muted);
 }
 
 @media (min-width: 768px) {
@@ -1616,8 +1715,8 @@ button.office-room-card {
 .office-dept-sidebar {
   padding: 1rem 1.15rem;
   border-radius: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--office-dept-panel-border);
+  background: var(--office-dept-panel-bg);
 }
 
 .office-dept-table {
@@ -1626,8 +1725,12 @@ button.office-room-card {
   max-height: 420px;
   margin: 0.75rem 0 1rem;
   border-radius: 999px;
-  border: 1px dashed rgba(148, 163, 184, 0.2);
-  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.06) 0%, transparent 65%);
+  border: 1px dashed var(--office-dept-table-ring);
+  background: radial-gradient(
+    circle at center,
+    var(--office-dept-table-glow) 0%,
+    transparent 65%
+  );
 }
 
 .office-dept-table-core {
@@ -1638,8 +1741,8 @@ button.office-room-card {
   height: 3.5rem;
   transform: translate(-50%, -50%);
   border-radius: 999px;
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid var(--office-dept-core-border);
+  background: var(--office-dept-core-bg);
 }
 
 .office-dept-seat {
@@ -1661,7 +1764,7 @@ button.office-room-card {
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
-  border: 2px solid rgba(148, 163, 184, 0.35);
+  border: 2px solid var(--office-dept-seat-border);
 }
 
 .office-dept-seat-busy .office-dept-seat-avatar {
@@ -1674,19 +1777,20 @@ button.office-room-card {
   font-size: 0.62rem;
   font-weight: 600;
   line-height: 1.2;
+  color: var(--foreground, #f8fafc);
 }
 
 .office-dept-seat-status {
   margin: 0;
   font-size: 0.58rem;
-  color: var(--office-muted, #94a3b8);
+  color: var(--office-dept-muted);
 }
 
 .office-dept-roster-hint {
   margin: 0 0 0.75rem;
   font-size: 0.78rem;
   line-height: 1.45;
-  color: var(--office-muted, #94a3b8);
+  color: var(--office-dept-muted);
 }
 
 .office-dept-seat-avatar[data-pending="true"] {
@@ -1700,7 +1804,7 @@ button.office-room-card {
 
 .office-dept-tabs-wrap {
   padding: 0 1rem 0.75rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid var(--office-dept-panel-border);
 }
 
 .office-dept-settings-panel {
@@ -1711,8 +1815,8 @@ button.office-room-card {
 
 .office-dept-settings-tabs {
   padding: 0 1rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(15, 23, 42, 0.2);
+  border-bottom: 1px solid var(--office-dept-panel-border);
+  background: color-mix(in srgb, var(--office-dept-panel-bg) 80%, transparent);
 }
 
 .office-dept-settings-body {
@@ -1770,8 +1874,8 @@ button.office-room-card {
   gap: 0.75rem;
   padding: 0.75rem 0.85rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--office-dept-panel-border);
+  background: var(--office-dept-panel-bg);
 }
 
 .office-dept-staff-name {
