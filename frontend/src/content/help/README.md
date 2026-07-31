@@ -10,7 +10,7 @@ Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and desc
 
 | Slug | ES title | Topic |
 |------|----------|-------|
-| `guia-completa` | Manual de usuario | Overview (legacy full tutorial) |
+| `guia-completa` | Manual de usuario | Hub: inicio rápido + mapa + FAQ (no duplica guías) |
 | `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room |
 | `guia-productos` | Productos | Lifecycle, product consensus |
 | `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
@@ -42,7 +42,7 @@ We use **react-markdown + remark-gfm + mermaid** for help articles:
 
 Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-sections.ts`).
 
-**Mobile / iPad (< 1024px):** Help icon (book) in the top bar next to notifications; full article list stacks above content on `HelpPage`. Desktop: sidebar link under **General → Ayuda**.
+**Mobile / iPad (< 1024px):** Help icon (book) in the top bar next to notifications. On `HelpPage`, **Artículos** and **En este artículo** are collapsible toggles (collapsed by default); document content renders first. Desktop: always-expanded sidebar.
 
 ## Scope
 

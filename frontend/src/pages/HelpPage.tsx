@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Building2, Package, Settings } from "lucide-react";
+import { Building2, ChevronDown, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
@@ -16,6 +16,45 @@ import {
   resolveSectionContent,
   type HelpDocSection,
 } from "../lib/markdown-sections";
+import { cn } from "../lib/utils";
+
+function HelpNavToggle({
+  label,
+  hint,
+  open,
+  onToggle,
+  controlsId,
+}: {
+  label: string;
+  hint?: string;
+  open: boolean;
+  onToggle: () => void;
+  controlsId: string;
+}) {
+  return (
+    <button
+      type="button"
+      id={`${controlsId}-toggle`}
+      aria-expanded={open}
+      aria-controls={controlsId}
+      onClick={onToggle}
+      className="interactive flex w-full items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2.5 text-left lg:hidden"
+    >
+      <ChevronDown
+        className={cn("h-4 w-4 shrink-0 text-[var(--color-muted-foreground)] transition", !open && "-rotate-90")}
+        aria-hidden
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+          {label}
+        </span>
+        {hint && !open ? (
+          <span className="mt-0.5 block truncate text-sm font-medium text-[var(--color-foreground)]">{hint}</span>
+        ) : null}
+      </span>
+    </button>
+  );
+}
 
 function HelpSidebarLink({
   slug,
@@ -85,12 +124,15 @@ export default function HelpPage() {
   const [activeSectionId, setActiveSectionId] = useState<string>(() =>
     parsed ? getDefaultSectionId(parsed) : HELP_INTRO_SECTION_ID,
   );
+  const [articlesOpen, setArticlesOpen] = useState(false);
+  const [sectionsOpen, setSectionsOpen] = useState(false);
 
   const tocSection = parsed ? getTocSection(parsed.sections) : undefined;
   const tutorialSection = parsed ? getTutorialSection(parsed.sections) : undefined;
 
   const selectSection = (sectionId: string) => {
     setActiveSectionId(sectionId);
+    setSectionsOpen(false);
     window.history.replaceState(null, "", `${window.location.pathname}#${sectionId}`);
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -115,6 +157,11 @@ export default function HelpPage() {
       setActiveSectionId(normalized);
     }
   }, [parsed, article?.content]);
+
+  useEffect(() => {
+    setArticlesOpen(false);
+    setSectionsOpen(false);
+  }, [article?.slug]);
 
   if (!article || !parsed) {
     return <Navigate to={`/help/${defaultHelpSlug}`} replace />;
@@ -162,25 +209,52 @@ export default function HelpPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
-        <aside className="space-y-2 lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:max-h-[calc(100dvh-var(--header-height)-2rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
-          <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-            {t("help.articles")}
-          </p>
-          {articles.map((item) => (
-            <HelpSidebarLink
-              key={item.slug}
-              slug={item.slug}
-              title={item.title}
-              description={item.description}
-              active={item.slug === article.slug}
-            />
-          ))}
-
-          <div className="pt-4">
-            <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-              {t("help.sections")}
+        <aside className="order-2 space-y-3 lg:order-none lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:max-h-[calc(100dvh-var(--header-height)-2rem)] lg:space-y-2 lg:self-start lg:overflow-y-auto lg:pr-1">
+          <HelpNavToggle
+            label={t("help.articles")}
+            hint={article.title}
+            open={articlesOpen}
+            onToggle={() => setArticlesOpen((open) => !open)}
+            controlsId="help-articles-nav"
+          />
+          <div
+            id="help-articles-nav"
+            className={cn("space-y-2", articlesOpen ? "block" : "hidden lg:block")}
+            role="region"
+            aria-labelledby="help-articles-nav-toggle"
+          >
+            <p className="hidden px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)] lg:block">
+              {t("help.articles")}
             </p>
-            <nav className="mt-2 space-y-0.5" aria-label={t("help.sections")}>
+            {articles.map((item) => (
+              <HelpSidebarLink
+                key={item.slug}
+                slug={item.slug}
+                title={item.title}
+                description={item.description}
+                active={item.slug === article.slug}
+              />
+            ))}
+          </div>
+
+          <div className="pt-1 lg:pt-4">
+            <HelpNavToggle
+              label={t("help.sections")}
+              hint={activeTitle}
+              open={sectionsOpen}
+              onToggle={() => setSectionsOpen((open) => !open)}
+              controlsId="help-sections-nav"
+            />
+            <nav
+              id="help-sections-nav"
+              className={cn("mt-2 space-y-0.5", sectionsOpen ? "block" : "hidden lg:block")}
+              aria-label={t("help.sections")}
+              role="region"
+              aria-labelledby="help-sections-nav-toggle"
+            >
+              <p className="mb-2 hidden px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)] lg:block">
+                {t("help.sections")}
+              </p>
               {parsed.intro && !tutorialSection ? (
                 <HelpSectionLink
                   id={HELP_INTRO_SECTION_ID}
@@ -212,7 +286,7 @@ export default function HelpPage() {
 
         <div
           ref={contentRef}
-          className="min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8"
+          className="order-1 min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8 lg:order-none"
         >
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
             <h2 className="text-lg font-semibold">{activeTitle}</h2>

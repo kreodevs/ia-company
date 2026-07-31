@@ -37,7 +37,7 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-completa",
     title: "Manual de usuario",
-    description: "Visión general: oficina, productos, departamentos, agentes y flujos.",
+    description: "Inicio rápido, mapa de la plataforma y enlaces a guías por tema.",
     contentEs: tutorialMdEs,
     contentEn: tutorialMdEn,
   },
@@ -95,7 +95,7 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
 const EN_TITLES: Record<string, { title: string; description: string }> = {
   "guia-completa": {
     title: "User manual",
-    description: "Overview: office, products, departments, agents, and workflows.",
+    description: "Quick start, platform map, and links to topic guides.",
   },
   "guia-oficina": {
     title: "Office and jobs",

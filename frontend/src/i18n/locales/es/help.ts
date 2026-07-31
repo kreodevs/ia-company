@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Ayuda",
   title: "Centro de ayuda",
-  subtitle: "Manual de usuario para operar tu oficina virtual: encargos, departamentos, agentes y flujos.",
+  subtitle: "Inicio rápido, guías por tema y referencia de handoffs para operar tu oficina virtual.",
   articles: "Artículos",
   articlesHeading: "Artículos",
   sections: "En este artículo",
