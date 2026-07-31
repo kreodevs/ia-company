@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Sparkles } from "lucide-react";
 import { api, type Workflow } from "../lib/api";
 import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
+import WorkflowAiStudioModal from "../components/workflows/WorkflowAiStudioModal";
 import { formatWorkflowTitle } from "../lib/workflow-display";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
@@ -20,6 +22,7 @@ export default function WorkflowsPage() {
   const [deletingWorkflowId, setDeletingWorkflowId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [search, setSearch] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
 
   const load = () => api.workflows.list().then(setWorkflows);
 
@@ -104,6 +107,16 @@ export default function WorkflowsPage() {
               />
             </div>
             <Button
+              variant="secondary"
+              onClick={() => setAiOpen(true)}
+              fullWidthMobile
+              className="sm:mb-0.5"
+              aria-label={t("workflows.ai.open")}
+            >
+              <Sparkles className="mr-1.5 h-4 w-4" aria-hidden />
+              {t("workflows.ai.open")}
+            </Button>
+            <Button
               disabled={creating || !name.trim()}
               onClick={() => void createWorkflow()}
               fullWidthMobile
@@ -114,6 +127,12 @@ export default function WorkflowsPage() {
           </div>
         </div>
       </Card>
+
+      <WorkflowAiStudioModal
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        onApplied={() => void load()}
+      />
 
       {filteredWorkflows.length === 0 ? (
         <EmptyState

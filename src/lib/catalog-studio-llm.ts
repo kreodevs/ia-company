@@ -32,7 +32,7 @@ export async function assertCatalogStudioProposeRateLimit(tenantId: string): Pro
   const count = await prisma.auditLog.count({
     where: {
       tenantId,
-      action: { in: ["catalog_studio.skill.propose", "catalog_studio.agent.propose"] },
+      action: { in: ["catalog_studio.skill.propose", "catalog_studio.agent.propose", "catalog_studio.workflow.propose"] },
       createdAt: { gte: since },
     },
   });

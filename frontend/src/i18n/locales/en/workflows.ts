@@ -13,6 +13,28 @@ export const workflows = {
     emptySearchSubtitle: "Try another search term or clear the filter.",
     deleteConfirm: 'Delete workflow "{{name}}"?',
   },
+  ai: {
+    open: "Create with AI",
+    title: "Design flow with AI",
+    subtitle:
+      "Describe the workflow goal. AI reviews your agents and skills, finds gaps, and proposes a complete named flow.",
+    briefLabel: "What should this flow achieve?",
+    briefPlaceholder:
+      "E.g. agent that creates video tutorials by browsing the web, reading repo code, extracting functionality, and generating a TTS script explaining usage…",
+    propose: "Generate proposal",
+    proposing: "Designing flow…",
+    submitAnswers: "Submit answers",
+    apply: "Create flow & open editor",
+    applying: "Creating…",
+    clarifyTitle: "I need a bit more context",
+    gapsTitle: "Coverage analysis",
+    missingAgents: "Roles without an agent",
+    missingSkills: "Capabilities without a skill",
+    newAgentsTitle: "New agents to create (check those you approve)",
+    newSkillsTitle: "New skills to create (check those you approve)",
+    approvalHint:
+      "Only checked agents and skills will be created. Then the proposed flow is saved with its steps.",
+  },
   editor: {
     loading: "Loading workflow…",
     loadSyncConsensus: "Load & sync tenant consensus",

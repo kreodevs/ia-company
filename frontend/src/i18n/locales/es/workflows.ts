@@ -13,6 +13,28 @@ export const workflows = {
     emptySearchSubtitle: "Prueba otro término de búsqueda o limpia el filtro.",
     deleteConfirm: '¿Eliminar el workflow "{{name}}"?',
   },
+  ai: {
+    open: "Crear con IA",
+    title: "Diseñar flujo con IA",
+    subtitle:
+      "Describe el objetivo del flujo. La IA revisará tus agentes y skills, detectará huecos y propondrá el workflow completo con nombre.",
+    briefLabel: "¿Qué debe lograr este flujo?",
+    briefPlaceholder:
+      "Ej.: agente que crea tutoriales en video accediendo al web, leyendo el código del repo, extrayendo funcionalidad y generando guión TTS explicando el uso…",
+    propose: "Generar propuesta",
+    proposing: "Diseñando flujo…",
+    submitAnswers: "Enviar respuestas",
+    apply: "Crear flujo y abrir editor",
+    applying: "Creando…",
+    clarifyTitle: "Necesito un poco más de contexto",
+    gapsTitle: "Análisis de cobertura",
+    missingAgents: "Roles sin agente",
+    missingSkills: "Capacidades sin skill",
+    newAgentsTitle: "Agentes nuevos a crear (marca los que apruebas)",
+    newSkillsTitle: "Skills nuevas a crear (marca las que apruebas)",
+    approvalHint:
+      "Se crearán solo los agentes y skills marcados. Luego se crea el flujo con los pasos propuestos.",
+  },
   editor: {
     loading: "Cargando workflow…",
     loadSyncConsensus: "Cargar y sincronizar consensus del tenant",

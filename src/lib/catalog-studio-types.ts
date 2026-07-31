@@ -72,3 +72,39 @@ export interface ApplyAgentStudioInput {
   /** When set, agent name is appended to org unit config.linkedAgentNames. */
   orgUnitId?: string;
 }
+
+export interface WorkflowStepProposal {
+  agentName: string;
+  label?: string;
+}
+
+export interface WorkflowGapAnalysis {
+  missingAgents: string[];
+  missingSkills: string[];
+  notes: string;
+}
+
+export interface WorkflowDraftProposal {
+  name: string;
+  description: string;
+  steps: WorkflowStepProposal[];
+}
+
+export interface WorkflowStudioProposal {
+  brief: string;
+  needsClarification?: boolean;
+  questions?: string[];
+  workflow?: WorkflowDraftProposal;
+  existingAgentNames?: string[];
+  gaps?: WorkflowGapAnalysis;
+  newAgents?: import("./org-os-types.js").SuggestedAgentDef[];
+  newSkills?: NewSkillDraft[];
+  mungerReview?: StudioMungerReview;
+}
+
+export interface ApplyWorkflowStudioInput {
+  proposal: WorkflowStudioProposal;
+  approved: boolean;
+  approvedNewAgentNames?: string[];
+  approvedNewSkillNames?: string[];
+}

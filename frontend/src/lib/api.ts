@@ -1969,5 +1969,26 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
+    workflows: {
+      propose: (body: { brief: string; answers?: Record<string, string> }) =>
+        request<import("./catalog-studio-types").WorkflowStudioProposal>(
+          "/catalog-studio/workflows/propose",
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+      apply: (body: {
+        proposal: import("./catalog-studio-types").WorkflowStudioProposal;
+        approved: boolean;
+        approvedNewAgentNames?: string[];
+        approvedNewSkillNames?: string[];
+      }) =>
+        request<{
+          workflow: Workflow;
+          skillsCreated: string[];
+          agentsCreated: string[];
+        }>("/catalog-studio/workflows/apply", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+    },
   },
 };

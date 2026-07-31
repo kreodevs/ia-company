@@ -23,6 +23,25 @@ export const AGENT_FEW_SHOT_EXAMPLES = MARKETING_AGENCY_TEMPLATE.suggestedAgents
   skillNames: a.skillNames ?? [],
 }));
 
+export const WORKFLOW_FEW_SHOT_EXAMPLES = [
+  {
+    name: "video-tutorial-pipeline",
+    description:
+      "Research codebase and UX → write script → produce TTS narration for product tutorials.",
+    steps: [
+      { agentName: "research-thompson", label: "Map product surface" },
+      { agentName: "product-norman", label: "User flows & affordances" },
+      { agentName: "copy-manager", label: "Tutorial script" },
+      { agentName: "devops-hightower", label: "TTS / asset handoff" },
+    ],
+  },
+  {
+    name: "seo-review",
+    description: "Marketing reviews landing SEO and conversion copy.",
+    steps: [{ agentName: "marketing-godin", label: "SEO & copy audit" }],
+  },
+];
+
 export const CATALOG_STUDIO_LLM_RULES = [
   "Prefer REUSE over CREATE — match existing tenant catalog entries by name/role when fit is ≥80%.",
   "Agent and skill names: lowercase kebab-case (e.g. copy-manager, seo-audit).",
