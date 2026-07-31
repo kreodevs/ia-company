@@ -6,7 +6,10 @@ import { resolve } from "node:path";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { "@": resolve(__dirname, "./src") },
+    alias: {
+      "@": resolve(__dirname, "./src"),
+      "@platform": resolve(__dirname, "../src/lib"),
+    },
   },
   server: {
     port: 5173,

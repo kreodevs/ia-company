@@ -9,6 +9,7 @@ import { prisma } from "./prisma.js";
 import { resolveTenantWorkspaceRoot } from "./tenant-workspace.js";
 import type { SharedMemory } from "../types/index.js";
 import type { ProposalEvidence } from "./decision-proposals.js";
+import { extractReferencedDocPaths } from "./referenced-doc-path.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -383,6 +384,31 @@ export async function loadRunDocuments(
       markdown,
       stepOrder,
     });
+  }
+
+  for (let i = 0; i < history.length; i++) {
+    const step = history[i]!;
+    const raw = typeof step.output === "string" ? step.output : "";
+    if (!raw.trim()) continue;
+    const stepOrder = step.stepOrder ?? i + 1;
+    for (const refPath of extractReferencedDocPaths(raw)) {
+      if (loadedPaths.has(refPath)) continue;
+      try {
+        const file = await readWorkspaceFile(workspaceRoot, refPath);
+        if (!file.content.trim()) continue;
+        push({
+          id: `file-${refPath}`,
+          kind: "file",
+          agentName: step.agentName,
+          title: refPath.split("/").pop() ?? refPath,
+          markdown: file.content,
+          path: refPath,
+          stepOrder,
+        });
+      } catch {
+        // skip unreadable referenced paths
+      }
+    }
   }
 
   if (run.completedAt) {

@@ -18,8 +18,9 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@platform/*": ["../src/lib/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../src/lib/referenced-doc-path.ts", "../src/lib/decision-evidence.ts"]
 }
