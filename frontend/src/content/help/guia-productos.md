@@ -11,6 +11,7 @@ Registrar productos, vincular departamentos y usar la memoria por producto.
 3. [Memoria y consenso del producto](#memoria-y-consenso-del-producto)
 4. [Escritorio y war room](#escritorio-y-war-room)
 5. [Lanzar trabajo sobre un producto](#lanzar-trabajo-sobre-un-producto)
+6. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -56,8 +57,8 @@ Cada producto mantiene **memoria propia**: positioning, pricing, decisiones de f
 
 | Vista | Ruta | Qué contiene |
 |-------|------|--------------|
-| Consenso del producto | Depuración → Consenso → selector de producto, o Configuración del producto → enlace | Documento vivo + pestaña **Revisiones** (un handoff por paso de agente) |
-| Consenso global tenant | Depuración → Consenso (`/debug/consensus`) | Estrategia de compañía, pipeline de ideas, next action de ciclo |
+| Consenso del producto | `/debug/products/:productId/consensus` (también enlace desde Configuración del producto) | Documento vivo + pestaña **Revisiones** (un handoff por paso de agente) |
+| Consenso global tenant | `/debug/consensus` (Oficina de depuración → Consenso) | Estrategia de compañía, pipeline de ideas, next action de ciclo |
 
 La pestaña **Revisiones** lista `consensusUpdate`, decisiones, preguntas abiertas y vetos por paso. El documento principal acumula ciclos con timestamp.
 
@@ -86,3 +87,20 @@ Tras un encargo importante, pide al Coordinador que resuma decisiones o edita la
 - **Flujos** → ejecutar desde el editor con consenso tenant o semilla que nombre el slug.
 
 El worker carga el consenso del producto en memoria compartida antes del primer agente cuando el encargo está vinculado a ese producto.
+
+---
+
+## Preguntas frecuentes
+
+### ¿Cuál es la diferencia entre fases `evaluating` y `building`?
+
+- **`evaluating`** — idea en pipeline; suele requerir workflow `new-product-evaluation` y decisión humana GO/NO-GO.
+- **`building`** — GO aprobado; código y docs viven en `projects/{slug}/`.
+
+### ¿Puedo tener varios productos en build a la vez?
+
+Sí, con límite de plataforma (máx. **2** productos en `building`/`launching` por tenant — ver código `MAX_BUILDING_PRODUCTS`).
+
+### ¿Dónde apruebo una idea del pipeline?
+
+**Decisiones** (`/decisions`) o el detalle del encargo en **Mis encargos**. Ver [/help/guia-flujos](/help/guia-flujos#decisiones-go--no-go).

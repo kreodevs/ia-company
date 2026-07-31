@@ -10,6 +10,7 @@ Playbooks de agentes en cadena y reglas opcionales en timer.
 2. [Crear y ejecutar](#crear-y-ejecutar)
 3. [Programaciones (opcional)](#programaciones-opcional)
 4. [Decisiones GO / NO-GO](#decisiones-go--no-go)
+5. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -51,34 +52,47 @@ Desde la **Oficina**, el Coordinador puede elegir un flujo en encargos complejos
 
 ## Programaciones (opcional)
 
-Ruta: **Configuración → Programaciones** (`/settings?tab=schedules`) — panel **Plan de operaciones**.
+Ruta: **Configuración → Programaciones** (`/settings?tab=schedules`) — panel **Plan de operaciones** (solo admin tenant).
 
-El flujo principal sigue siendo la Oficina bajo demanda. Aquí defines reglas opcionales:
+El flujo principal sigue siendo la **Oficina bajo demanda**. Aquí aplicas presets o creas reglas con **workflow fijo** únicamente.
 
-| Preset | Comportamiento |
-|--------|----------------|
-| **Bajo demanda** | Sin reglas — recomendado al empezar |
-| **Solo discovery** | Discovery semanal (sábado 9:00) si pipeline vacío |
-| **Exploración ligera** | Discovery + evaluación periódica + revisión semanal (sin meta-orchestrator) |
-| **Regla personalizada** | Modo **Workflow fijo** o **Orquestador dinámico** (avanzado) |
+### Presets disponibles
 
-Modos de regla:
+| Preset (ID) | Reglas | Comportamiento |
+|-------------|--------|----------------|
+| **Bajo demanda** (`on_demand`) | 0 | Elimina reglas activas — recomendado al empezar |
+| **Solo discovery** (`discovery_only`) | 1 | `opportunity-discovery` los sábados 9:00 si pipeline vacío y sin decisiones pendientes |
+| **Exploración ligera** (`light_exploration`) | 3 | Discovery semanal + evaluación cada ~3 días si hay idea pendiente + revisión semanal los lunes |
 
-- **Workflow fijo** — un flujo concreto + intervalo/cron + condiciones (pipeline vacío, producto en building, sin decisiones pendientes…).
-- **Orquestador dinámico** — en cada tick el meta-orchestrator elige workflow según fase y portfolio (**modo avanzado**, no recomendado para empezar).
+Todos los presets actuales usan **`orchestrationMode: fixed`**. No incluyen orquestador dinámico.
+
+### Regla personalizada (workflow fijo)
+
+En la sección **Añadir regla** del mismo panel:
+
+1. Nombre de la regla.
+2. **Flujo** — elige un workflow del tenant (obligatorio).
+3. **Periodicidad** — intervalo (1 h – 7 días en UI) o expresión cron (p. ej. sábado 9:00).
+4. **Prioridad** — desempate cuando varias reglas coinciden (mayor número gana).
+5. **Condiciones** (opcional) — pipeline vacío/con ideas, idea pendiente, producto en build/launch, producto growing, sin decisiones GO/NO-GO, alcance por departamento.
+
+Al guardar, la API crea la regla siempre en modo **fixed**. No hay selector de «Orquestador dinámico» en la UI actual.
+
+> **Legacy / deprecado:** reglas con `orchestrationMode === meta_dynamic` («Orquestador dinámico») pueden existir en tenants antiguos. El meta-orchestrator elegía el workflow en cada tick. **No se pueden crear ni convertir reglas Meta nuevas** — la API responde `400`. Pausa o elimina reglas legacy desde **[Operaciones](/help/guia-operaciones)**. El banner «Próximo paso meta» en `/ops` sigue informando sin necesidad de reglas Meta.
 
 ```mermaid
 sequenceDiagram
+  participant U as Operador
+  participant CFG as Configuración → Programaciones
   participant S as Scheduler (worker)
   participant W as Motor de ejecución
-  participant A as Agentes
-  S->>W: Regla due
-  W->>A: Ejecuta flujo + consenso cargado
-  A->>W: Handoffs por paso
-  W->>W: Consenso producto + cierre de run
+  U->>CFG: Preset o regla fixed
+  S->>W: Regla due + condiciones OK
+  W->>W: Ejecuta workflow fijo + consenso
+  Note over U,W: Supervisión en /ops — ver guía Operaciones
 ```
 
-Revisa próximas ejecuciones, KPIs y motivos de skip en **Depuración → Operaciones** (`/ops`) — ver **[Operaciones](/help/guia-operaciones)**.
+Revisa KPIs, próximas ejecuciones y motivos de skip en **Oficina de depuración → Operaciones** (`/ops` o `/debug/ops`) — **[Operaciones](/help/guia-operaciones)**.
 
 ---
 
@@ -108,3 +122,26 @@ Aprueba, rechaza o pivot en:
 Hasta que apruebes, el producto no avanza a fase `building` automáticamente por este camino.
 
 Los handoffs JSON por paso (`consensusUpdate`, `nextAction`) son **independientes** de estas decisiones de portfolio.
+
+---
+
+## Preguntas frecuentes
+
+### ¿Puedo crear una regla «Orquestador dinámico»?
+
+No. Solo **workflow fijo**. Las reglas Meta legacy se gestionan (pausa/cancelar) en Operaciones; no se reactivan como Meta nuevas.
+
+### ¿Las programaciones sustituyen aprobar en la Oficina?
+
+No para encargos manuales. Las reglas activas encolan workflows **sin** tarjeta del Coordinador. Los encargos de Oficina siguen requiriendo **Aprobar y ejecutar**.
+
+### ¿Dónde veo si el discovery semanal se ejecutará?
+
+Panel **Próximos 7 días** en **[Operaciones](/help/guia-operaciones)** — no en el editor de flujos.
+
+### ¿Ejecutar desde el editor vs. Oficina?
+
+| Origen | Dónde aparece el run |
+|--------|---------------------|
+| Editor de flujos → Ejecutar | **Ejecuciones** (`/debug/runs`) |
+| Oficina → Aprobar encargo | **Mis encargos** + War room si hay producto |

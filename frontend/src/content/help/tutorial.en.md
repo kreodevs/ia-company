@@ -10,9 +10,9 @@ If you just logged in, start here. In **five minutes** you can complete your fir
 
 ### Step 1 — Open the Office
 
-After login, open **Home** in the sidebar (`/office`). You will see the **Coordinator** chat, month KPIs, the department floor plan, and **Quick services**.
+After **tenant** login, the app sends you to **Operations** (`/ops`). Open **Home** in the sidebar (`/office`) for the **Coordinator** chat, month KPIs, the department floor plan, and **Quick services**.
 
-The mode pill (on demand / scheduled / autonomous) reflects whether schedule rules or the meta-orchestrator are active.
+The mode pill on the Office shows **On demand**, **Scheduled tasks**, or **Autonomous mode** depending on active rules and any legacy Meta rules (`meta_dynamic`).
 
 ### Step 2 — Say what you need
 
@@ -99,12 +99,12 @@ flowchart TB
 
 | Topic | Where in the app | Related guide |
 |-------|------------------|---------------|
-| Company memory | Debug → Consensus (`/debug/consensus`) | [Products](/help/guia-productos) |
-| Per-product memory | Debug → Consensus (product scope) or Product settings → consensus link | [Products](/help/guia-productos) |
-| GO/NO-GO decisions | Debug → Decisions (`/decisions`) or inside the job detail | [Workflows](/help/guia-flujos) |
-| Operations / meta-orchestrator | Debug → Operations (`/ops`) | [Operations](/help/guia-operaciones) |
+| Company memory | Debug office → Consensus (`/debug/consensus`) | [Products](/help/guia-productos) |
+| Per-product memory | Consensus (`/debug/products/:id/consensus`) or Product settings → link | [Products](/help/guia-productos) |
+| GO/NO-GO decisions | Debug office → Decisions (`/decisions`) or job detail | [Workflows](/help/guia-flujos) |
+| Operations / meta-orchestrator | Debug office → Operations (`/ops`) | [Operations](/help/guia-operaciones) |
 | LLM settings, limits, schedules | Settings tabs (tenant admin) | [Workflows](/help/guia-flujos) |
-| Human team and roles | Debug → Team (admin) | — |
+| Human team and roles | Debug office → Team (admin) | — |
 
 ---
 

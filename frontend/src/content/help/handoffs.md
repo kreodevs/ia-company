@@ -203,13 +203,17 @@ Tras un run con producto, la traza del último run clasifica **cada paso**:
 | `handoff_only` | Hay output / JSON pero sin archivos en workspace |
 | `missing` | Sin output útil |
 
-Diagnósticos agregados del run (p. ej. `partial_handoff`, `no_docs_and_weak_handoff`, `munger_veto`):
+Diagnósticos agregados del run (códigos internos en `buildProductLastRunDiagnosis`):
 
 | Diagnóstico | Significado |
 |-------------|-------------|
-| `partial_handoff` | Algunos pasos con JSON estructurado, otros no |
-| `no_docs_and_weak_handoff` | Sin docs ni JSON estructurado |
+| `ok` | Pasos con output; handoffs estructurados coherentes |
+| `partial_handoff` | Algunos pasos con JSON estructurado (`consensusUpdate`/`nextAction`), otros solo texto |
+| `no_docs_and_weak_handoff` | Sin archivos en workspace ni JSON estructurado en los pasos |
+| `no_docs_on_disk` | Hay handoff JSON pero ningún doc persistido |
 | `munger_veto` | Run cancelado por veto |
+| `run_failed` / `run_in_progress` | Fallo o aún en curso |
+| `empty_agent_output` | Pasos sin output útil |
 
 **Dónde verlo:** War room → **Salud de entregables**; Consenso del producto → panel del último run. **Mis encargos** muestra informes y documentos, no estos códigos de estado por paso.
 

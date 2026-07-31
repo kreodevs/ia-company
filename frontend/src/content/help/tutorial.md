@@ -10,9 +10,9 @@ Si acabas de entrar, empieza aquí. En **cinco minutos** puedes completar tu pri
 
 ### Paso 1 — Entra a la Oficina
 
-Tras iniciar sesión, abre **Inicio** en el menú lateral (`/office`). Verás el chat del **Coordinador**, KPIs del mes, el plano de departamentos y **Servicios rápidos**.
+Tras iniciar sesión como **tenant**, la app te lleva a **Operaciones** (`/ops`). Abre **Inicio** en el menú lateral (`/office`) para el chat del **Coordinador**, KPIs del mes, el plano de departamentos y **Servicios rápidos**.
 
-El indicador de modo (bajo demanda / programado / autónomo) refleja si tienes reglas de programación o meta-orchestrator activos.
+El indicador de modo en la Oficina muestra **Bajo demanda**, **Tareas programadas** o **Modo autónomo** según reglas activas y si queda alguna regla Meta legacy (`meta_dynamic`).
 
 ### Paso 2 — Di qué necesitas
 
@@ -99,12 +99,12 @@ flowchart TB
 
 | Tema | Dónde en la app | Guía relacionada |
 |------|-----------------|------------------|
-| Memoria de compañía | Depuración → Consenso (`/debug/consensus`) | [Productos](/help/guia-productos) |
-| Memoria por producto | Depuración → Consenso (selector de producto) o Configuración del producto → enlace a consenso | [Productos](/help/guia-productos) |
-| Decisiones GO/NO-GO | Depuración → Decisiones (`/decisions`) o dentro del encargo | [Flujos](/help/guia-flujos) |
-| Operaciones / meta-orchestrator | Depuración → Operaciones (`/ops`) | [Operaciones](/help/guia-operaciones) |
+| Memoria de compañía | Oficina de depuración → Consenso (`/debug/consensus`) | [Productos](/help/guia-productos) |
+| Memoria por producto | Consenso (`/debug/products/:id/consensus`) o Configuración del producto → enlace | [Productos](/help/guia-productos) |
+| Decisiones GO/NO-GO | Oficina de depuración → Decisiones (`/decisions`) o detalle del encargo | [Flujos](/help/guia-flujos) |
+| Operaciones / meta-orchestrator | Oficina de depuración → Operaciones (`/ops`) | [Operaciones](/help/guia-operaciones) |
 | Configuración LLM, límites, programaciones | Configuración → pestañas (admin tenant) | [Flujos](/help/guia-flujos) |
-| Equipo humano y roles | Depuración → Equipo (admin) | — |
+| Equipo humano y roles | Oficina de depuración → Equipo (admin) | — |
 
 ---
 

@@ -11,6 +11,7 @@ Register products, link departments, and use per-product memory.
 3. [Product memory and consensus](#product-memory-and-consensus)
 4. [Desk and war room](#desk-and-war-room)
 5. [Launch work on a product](#launch-work-on-a-product)
+6. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
@@ -56,8 +57,8 @@ Each product keeps **its own memory**: positioning, pricing, feature decisions, 
 
 | View | Route | Contents |
 |------|-------|----------|
-| Product consensus | Debug → Consensus → product scope, or Product settings → link | Live document + **Revisions** tab (one handoff per agent step) |
-| Tenant-wide consensus | Debug → Consensus (`/debug/consensus`) | Company strategy, idea pipeline, cycle next action |
+| Product consensus | `/debug/products/:productId/consensus` (also linked from Product settings) | Live document + **Revisions** tab (one handoff per agent step) |
+| Tenant-wide consensus | `/debug/consensus` (Debug office → Consensus) | Company strategy, idea pipeline, cycle next action |
 
 The **Revisions** tab lists `consensusUpdate`, decisions, open questions, and vetoes per step. The main document accumulates cycles with timestamps.
 
@@ -86,3 +87,20 @@ After an important job, ask the Coordinator to summarize decisions or edit memor
 - **Workflows** → run from the editor with tenant consensus or a seed naming the slug.
 
 The worker loads product consensus into shared memory before the first agent when the job is linked to that product.
+
+---
+
+## Frequently asked questions
+
+### What is the difference between `evaluating` and `building`?
+
+- **`evaluating`** — idea in the pipeline; usually needs `new-product-evaluation` and a human GO/NO-GO decision.
+- **`building`** — GO approved; code and docs live under `projects/{slug}/`.
+
+### Can I have multiple products in build at once?
+
+Yes, up to the platform limit (**2** products in `building`/`launching` per tenant — see `MAX_BUILDING_PRODUCTS` in code).
+
+### Where do I approve a pipeline idea?
+
+**Decisions** (`/decisions`) or the job detail under **My jobs**. See [/help/guia-flujos](/help/guia-flujos#go--no-go-decisions).

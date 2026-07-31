@@ -24,9 +24,11 @@ Default route: `/help` → `/help/guia-completa`.
 
 ## Navigation notes (for authors)
 
-- **Debug section** (sidebar): Runs, Consensus, Ops, Decisions — tenant operators with admin see Settings here too.
-- **Product consensus** is not under Product → main nav; use Debug → Consensus (product scope) or Product settings link.
+- **Debug office section** (sidebar `nav.sectionDebugOffice`): Runs, Consensus, Ops, Decisions — tenant admins also see Team and Settings here.
+- **Product consensus** route: `/debug/products/:productId/consensus` (not under Products in main nav).
+- **Tenant login** redirects to `/ops`; Office home is `/office` (sidebar **Inicio** / **Home**).
 - **Decisions** also at `/decisions` (alias of debug route).
+- **Schedule rules:** only `fixed` workflow — API rejects new `meta_dynamic` (400). Legacy Meta rules may still display in Ops.
 
 ## Mermaid in preview
 

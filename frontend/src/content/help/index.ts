@@ -74,7 +74,7 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-flujos",
     title: "Flujos y programaciones",
-    description: "Canvas de workflows, presets de programación y decisiones GO/NO-GO.",
+    description: "Canvas de workflows, presets fixed-only, decisiones GO/NO-GO (sin Meta nuevo).",
     contentEs: guiaFlujosEs,
     contentEn: guiaFlujosEn,
   },
@@ -124,7 +124,7 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   },
   "guia-flujos": {
     title: "Workflows and schedules",
-    description: "Workflow canvas, schedule presets, and GO/NO-GO decisions.",
+    description: "Workflow canvas, fixed-only schedule presets, GO/NO-GO (no new Meta rules).",
   },
   "guia-operaciones": {
     title: "Operations",

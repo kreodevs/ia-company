@@ -11,6 +11,7 @@ Crear departamentos con Org Studio, `design.md`, tokens y galería de artefactos
 3. [design.md y tokens](#designmd-y-tokens)
 4. [Galería de artefactos](#galería-de-artefactos)
 5. [Plantillas de negocio](#plantillas-de-negocio)
+6. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -27,7 +28,7 @@ Esta guía cubre los **Org Units**. Para pedir trabajo con contexto de dept., us
 
 ## Org Studio
 
-Ruta: **Departamentos** → **Abrir Org Studio** (`/org-studio`).
+Ruta: **Departamentos** (`/org-units`) → botón **Abrir Org Studio** (`/org-studio`). También accesible desde el plano de la Oficina («Crear en Org Studio»).
 
 ```mermaid
 flowchart TD
@@ -100,3 +101,15 @@ La plantilla **Marketing agency** sugiere agentes como `copy-manager`, `communit
 Al aplicar la plantilla, aprueba cada agente/skill nuevo que aún no exista en tu tenant (Catalog Studio o checkboxes en Org Studio).
 
 Desde `/org-units/:id` puedes **lanzar trabajo del departamento** con tarea libre + producto vinculado opcional.
+
+---
+
+## Preguntas frecuentes
+
+### ¿Las salas del plano (Strategy, Engineering…) son Org Units?
+
+No. Son **salas virtuales** de agentes de plataforma. Los Org Units reales se crean en Org Studio y aparecen en **Departamentos**.
+
+### ¿Puedo editar design.md sin Org Studio?
+
+Sí — ficha del departamento → **Configuración** → *Design & artifacts*. Los cambios se sincronizan al workspace `projects/_org/{slug}/`.

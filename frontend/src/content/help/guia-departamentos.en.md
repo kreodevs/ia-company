@@ -11,6 +11,7 @@ Create departments with Org Studio, `design.md`, tokens, and the artifact galler
 3. [design.md and tokens](#designmd-and-tokens)
 4. [Artifact gallery](#artifact-gallery)
 5. [Business templates](#business-templates)
+6. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
@@ -27,7 +28,7 @@ This guide covers **Org Units**. To request work with dept. context, use the Off
 
 ## Org Studio
 
-Route: **Departments** → **Open Org Studio** (`/org-studio`).
+Route: **Departments** (`/org-units`) → **Open Org Studio** (`/org-studio`). Also linked from the Office floor plan (“Create in Org Studio”).
 
 ```mermaid
 flowchart TD
@@ -100,3 +101,15 @@ The **Marketing agency** template suggests agents like `copy-manager`, `communit
 When applying the template, approve each new agent/skill your tenant does not have yet (Catalog Studio or Org Studio checkboxes).
 
 From `/org-units/:id` you can **launch department work** with a free-form task + optional linked product.
+
+---
+
+## Frequently asked questions
+
+### Are floor plan rooms (Strategy, Engineering…) Org Units?
+
+No. They are **virtual rooms** for platform agents. Real Org Units are created in Org Studio and listed under **Departments**.
+
+### Can I edit design.md without Org Studio?
+
+Yes — department page → **Settings** → *Design & artifacts*. Changes sync to `projects/_org/{slug}/`.

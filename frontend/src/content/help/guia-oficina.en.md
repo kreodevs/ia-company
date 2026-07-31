@@ -12,6 +12,7 @@ How to request work, approve runs, and collect results from the **Office**.
 4. [War room](#war-room)
 5. [Office archive](#office-archive)
 6. [Quick services](#quick-services)
+7. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
@@ -114,13 +115,40 @@ Indexed workspace deliverables: filter by department, product, agent, or source.
 
 ## Quick services
 
-Templates in the Office right panel:
+Templates in the Office right panel (internal IDs → workflow):
 
-| ID | Typical flow | Deliverable |
-|----|--------------|-------------|
-| market-scan | opportunity-discovery | Market report |
-| idea-validation | new-product-evaluation | GO/NO-GO recommendation |
-| feature-sprint | feature-development | Code + docs |
-| *(others)* | Per template | See UI description |
+| ID | Workflow | Typical deliverable |
+|----|----------|---------------------|
+| `market-scan` | `opportunity-discovery` | Market report |
+| `idea-validation` | `new-product-evaluation` | GO/NO-GO recommendation |
+| `feature-sprint` | `feature-development` | Feature + docs |
+| `product-launch` | `product-launch` | Launch pack |
+| `pricing-review` | `pricing-and-monetization` | Pricing model |
+| `marketing-sprint` | `marketing-sprint` | Marketing plan |
+| `weekly-review` | `weekly-review` | Ops report |
+| `seo-audit` | `seo-review` | SEO report |
+| `repo-analysis` | Ad hoc team (no preset) | Repo report |
 
-Choosing a template seeds the chat. Edit the brief, request a plan, and approve. Some presets **require a registered product** — the UI will tell you if one is missing.
+Choosing a template seeds the chat. Edit the brief, click **Plan team**, then **Approve and run**. Some presets **require a registered product** — the UI will tell you if one is missing.
+
+> Workflows and schedules detail: [/help/guia-flujos](/help/guia-flujos).
+
+---
+
+## Frequently asked questions
+
+### Are My jobs and editor runs the same thing?
+
+Not exactly. Jobs approved from the Office live under **My jobs** (`/office/encargos`). Runs started only from the workflow editor appear under **Runs** (`/debug/runs`).
+
+### What does the Office mode pill mean?
+
+| Mode (UI) | Meaning |
+|-----------|---------|
+| On demand | No active rules — everything needs your approval |
+| Scheduled tasks | Active fixed schedule rules (timers) |
+| Autonomous mode | At least one **legacy** Meta rule remains — review in Operations |
+
+### Where do I audit JSON handoffs?
+
+**War room → Deliverable health** or product consensus → **Revisions**. See [/help/handoffs](/help/handoffs).

@@ -67,9 +67,9 @@ For workflow playbooks and schedule presets, see **[Workflows and schedules](/he
 
 | Route | Notes |
 |-------|-------|
-| **Debug → Operations** | Sidebar entry (also `/debug/ops`) |
-| `/ops` | Direct alias; the app may redirect here after login |
-| Links from **Products** or **Settings → Operations plan** | Contextual shortcuts |
+| **Debug office → Operations** | Sidebar entry (also `/debug/ops`) |
+| `/ops` | Direct alias; **tenant login** redirects here after sign-in |
+| Links from **Products** or **Settings → Schedules** | Contextual shortcuts |
 
 > Operations is a **tenant operator** view. No CLI required; the background worker is handled by your deployed platform.
 

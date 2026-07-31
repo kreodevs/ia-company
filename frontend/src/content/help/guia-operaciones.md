@@ -67,9 +67,9 @@ Para definir flujos (playbooks) y presets de programación, consulta **[Flujos y
 
 | Ruta | Notas |
 |------|-------|
-| **Depuración → Operaciones** | Entrada en la barra lateral (también `/debug/ops`) |
-| `/ops` | Alias directo; tras iniciar sesión la app puede redirigirte aquí |
-| Enlace desde **Productos** o **Configuración → Plan de operaciones** | Atajos contextuales |
+| **Oficina de depuración → Operaciones** | Entrada en la barra lateral (también `/debug/ops`) |
+| `/ops` | Alias directo; **login tenant** redirige aquí tras iniciar sesión |
+| Enlace desde **Productos** o **Configuración → Programaciones** | Atajos contextuales |
 
 > Operaciones es una vista de **operador tenant**. No requiere consola ni comandos; el worker en segundo plano es responsabilidad de la plataforma desplegada.
 

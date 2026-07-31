@@ -12,6 +12,7 @@ Cómo pedir trabajo, aprobar ejecuciones y recoger resultados desde la **Oficina
 4. [War room](#war-room)
 5. [Archivo de la Oficina](#archivo-de-la-oficina)
 6. [Servicios rápidos](#servicios-rápidos)
+7. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -114,13 +115,40 @@ Ruta: **Archivo** (`/office/archive`) — enlace en la cabecera de la Oficina.
 
 ## Servicios rápidos
 
-Plantillas en el panel derecho de la Oficina:
+Plantillas en el panel derecho de la Oficina (IDs internos → workflow):
 
-| ID | Flujo típico | Entregable |
-|----|--------------|------------|
-| market-scan | opportunity-discovery | Informe de mercado |
-| idea-validation | new-product-evaluation | Recomendación GO/NO-GO |
-| feature-sprint | feature-development | Código + docs |
-| *(otros)* | Según plantilla | Ver descripción en UI |
+| ID | Workflow | Entregable típico |
+|----|----------|-------------------|
+| `market-scan` | `opportunity-discovery` | Informe de mercado |
+| `idea-validation` | `new-product-evaluation` | Recomendación GO/NO-GO |
+| `feature-sprint` | `feature-development` | Feature + docs |
+| `product-launch` | `product-launch` | Paquete de lanzamiento |
+| `pricing-review` | `pricing-and-monetization` | Modelo de precios |
+| `marketing-sprint` | `marketing-sprint` | Plan de marketing |
+| `weekly-review` | `weekly-review` | Informe operativo |
+| `seo-audit` | `seo-review` | Informe SEO |
+| `repo-analysis` | Equipo ad hoc (sin preset) | Informe de repo |
 
-Al elegir una plantilla se precarga el chat. Edita el brief, pide plan y aprueba. Algunos presets **requieren producto** registrado — la UI te avisará si falta.
+Al elegir una plantilla se precarga el chat. Edita el brief, pulsa **Planificar equipo** y **Aprobar y ejecutar**. Algunos presets **requieren producto** registrado — la UI te avisará si falta.
+
+> Detalle de flujos y programaciones: [/help/guia-flujos](/help/guia-flujos).
+
+---
+
+## Preguntas frecuentes
+
+### ¿Mis encargos y las ejecuciones del editor son lo mismo?
+
+No del todo. Encargos aprobados desde la Oficina viven en **Mis encargos** (`/office/encargos`). Runs lanzados solo desde el editor de flujos aparecen en **Ejecuciones** (`/debug/runs`).
+
+### ¿Qué significa el modo en la cabecera de la Oficina?
+
+| Modo (UI) | Significado |
+|-----------|-------------|
+| Bajo demanda | Sin reglas activas — todo requiere tu aprobación |
+| Tareas programadas | Hay reglas fixed activas (timers) |
+| Modo autónomo | Queda al menos una regla Meta **legacy** — revisa en Operaciones |
+
+### ¿Dónde audito handoffs JSON?
+
+**War room → Salud de entregables** o consenso del producto → **Revisiones**. Ver [/help/handoffs](/help/handoffs).

@@ -10,6 +10,7 @@ Catálogo de agentes, skills reutilizables y Catalog Studio.
 2. [Habilidades (skills)](#habilidades-skills)
 3. [Catalog Studio](#catalog-studio)
 4. [Relación con flujos y departamentos](#relación-con-flujos-y-departamentos)
+5. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -17,12 +18,12 @@ Catálogo de agentes, skills reutilizables y Catalog Studio.
 
 Ruta: **Equipo IA** (`/ai-team`).
 
-| Pestaña | Función |
-|---------|---------|
-| **Agentes** | Lista + edición inline; botón **Nuevo agente** (formulario manual); en móvil, selector desplegable |
-| **Habilidades** | Skills del tenant |
-| **Crear agente** | Catalog Studio con IA |
-| **Crear habilidad** | Catalog Studio con IA |
+| Pestaña (UI) | Query `?tab=` | Función |
+|--------------|---------------|---------|
+| **Agentes** | *(default)* | Lista + edición inline; botón **Nuevo agente** (formulario manual); en móvil, selector desplegable |
+| **Habilidades** | `skills` | Skills del tenant |
+| **Crear agente** | `create-agent` | Catalog Studio con IA (+ `brief`, `orgUnitId` opcionales en URL) |
+| **Crear habilidad** | `create-skill` | Catalog Studio con IA |
 
 Los agentes son **especialistas reutilizables**: modelo, temperatura, proveedor LLM (según config de plataforma), skills asociadas, system prompt.
 
@@ -73,3 +74,20 @@ Munger también interviene en **Org Studio** con la misma lógica de veto.
 | Falta un rol en encargo | Coordinador enlaza a `/ai-team?tab=create-agent&brief=…` |
 
 Los agentes de plataforma (`ceo-bezos`, `research-thompson`, …) se clonan al tenant bajo demanda cuando un flujo o servicio los necesita.
+
+---
+
+## Preguntas frecuentes
+
+### ¿Catalog Studio y «Nuevo agente» manual?
+
+- **Crear agente** (Catalog Studio) — IA propone borrador + Munger; ideal para roles nuevos.
+- **Agentes → Nuevo agente** — formulario manual; pega system prompt completo sin propuesta IA.
+
+### ¿Qué pasa si Munger emite VETO?
+
+No puedes **Aprobar y aplicar** hasta ajustar la propuesta. Misma lógica en Org Studio.
+
+### Enlaces desde encargos con rol faltante
+
+El Coordinador puede abrir `/ai-team?tab=create-agent&brief=…` con el brief precargado.

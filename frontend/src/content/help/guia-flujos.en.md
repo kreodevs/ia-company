@@ -10,6 +10,7 @@ Agent playbooks in sequence and optional timer rules.
 2. [Create and run](#create-and-run)
 3. [Schedules (optional)](#schedules-optional)
 4. [GO / NO-GO decisions](#go--no-go-decisions)
+5. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
@@ -51,34 +52,47 @@ From the **Office**, the Coordinator may pick a workflow for complex jobs or qui
 
 ## Schedules (optional)
 
-Route: **Settings → Schedules** (`/settings?tab=schedules`) — **Operations plan** panel.
+Route: **Settings → Schedules** (`/settings?tab=schedules`) — **Operations plan** panel (tenant admin only).
 
-The primary flow remains on-demand Office work. Here you define optional rules:
+The primary flow remains **on-demand Office** work. Apply presets or create **fixed workflow** rules only.
 
-| Preset | Behavior |
-|--------|----------|
-| **On demand** | No rules — recommended to start |
-| **Discovery only** | Weekly discovery (Saturday 9:00) when pipeline is empty |
-| **Light exploration** | Discovery + periodic evaluation + weekly review (no meta-orchestrator) |
-| **Custom rule** | **Fixed workflow** or **Dynamic orchestrator** (advanced) |
+### Available presets
 
-Rule modes:
+| Preset (ID) | Rules | Behavior |
+|-------------|-------|----------|
+| **On demand** (`on_demand`) | 0 | Clears active rules — recommended to start |
+| **Discovery only** (`discovery_only`) | 1 | `opportunity-discovery` Saturdays 9:00 when pipeline is empty and no pending decisions |
+| **Light exploration** (`light_exploration`) | 3 | Weekly discovery + evaluation ~every 3 days when an idea is pending + weekly review Mondays |
 
-- **Fixed workflow** — specific workflow + interval/cron + conditions (empty pipeline, building product, no pending decisions…).
-- **Dynamic orchestrator** — each tick the meta-orchestrator picks a workflow from phase and portfolio (**advanced**, not recommended to start).
+All current presets use **`orchestrationMode: fixed`**. They do not include a dynamic orchestrator.
+
+### Custom rule (fixed workflow)
+
+In the **Add rule** section of the same panel:
+
+1. Rule name.
+2. **Workflow** — pick a tenant workflow (required).
+3. **Timing** — interval (1 h – 7 days in UI) or cron (e.g. Saturday 9:00).
+4. **Priority** — tie-break when several rules are due (higher number wins).
+5. **Conditions** (optional) — empty pipeline / has ideas, pending idea, building/launch product, growing product, no GO/NO-GO decisions, department scope.
+
+On save, the API always creates a **fixed** rule. There is no “Dynamic orchestrator” selector in the current UI.
+
+> **Legacy / deprecated:** rules with `orchestrationMode === meta_dynamic` (“Dynamic orchestrator”) may still exist on older tenants. The meta-orchestrator picked the workflow each tick. **New Meta rules cannot be created or converted** — the API returns `400`. Pause or delete legacy rules from **[Operations](/help/guia-operaciones)**. The “Next meta step” banner on `/ops` still works without Meta rules.
 
 ```mermaid
 sequenceDiagram
+  participant U as Operator
+  participant CFG as Settings → Schedules
   participant S as Scheduler (worker)
   participant W as Execution engine
-  participant A as Agents
-  S->>W: Rule due
-  W->>A: Run workflow + loaded consensus
-  A->>W: Handoffs per step
-  W->>W: Product consensus + run closure
+  U->>CFG: Preset or fixed rule
+  S->>W: Due rule + conditions OK
+  W->>W: Run fixed workflow + consensus
+  Note over U,W: Monitor at /ops — see Operations guide
 ```
 
-Review upcoming runs, KPIs, and skip reasons under **Debug → Operations** (`/ops`) — see **[Operations](/help/guia-operaciones)**.
+Review KPIs, upcoming runs, and skip reasons under **Debug office → Operations** (`/ops` or `/debug/ops`) — **[Operations](/help/guia-operaciones)**.
 
 ---
 
@@ -108,3 +122,26 @@ Approve, reject, or pivot in:
 Until you approve, the product does not automatically advance to `building` through this path.
 
 Per-step JSON handoffs (`consensusUpdate`, `nextAction`) are **separate** from these portfolio decisions.
+
+---
+
+## Frequently asked questions
+
+### Can I create a “Dynamic orchestrator” rule?
+
+No. **Fixed workflow** only. Legacy Meta rules are managed (pause/delete) in Operations; you cannot recreate them as Meta.
+
+### Do schedules replace Office approval?
+
+Not for manual jobs. Active rules enqueue workflows **without** a Coordinator proposal card. Office jobs still require **Approve and run**.
+
+### Where do I see if weekly discovery will fire?
+
+The **Next 7 days** panel in **[Operations](/help/guia-operaciones)** — not in the workflow editor.
+
+### Run from editor vs. Office?
+
+| Source | Where the run appears |
+|--------|----------------------|
+| Workflow editor → Run | **Runs** (`/debug/runs`) |
+| Office → Approve job | **My jobs** + War room when a product is in scope |

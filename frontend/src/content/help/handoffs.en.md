@@ -203,13 +203,17 @@ After a product-scoped run, the last-run trace classifies **each step**:
 | `handoff_only` | Output / JSON but no workspace files |
 | `missing` | No useful output |
 
-Aggregate run diagnoses (e.g. `partial_handoff`, `no_docs_and_weak_handoff`, `munger_veto`):
+Aggregate run diagnoses (internal codes from `buildProductLastRunDiagnosis`):
 
 | Diagnosis | Meaning |
 |-----------|---------|
-| `partial_handoff` | Some steps with structured JSON, some without |
-| `no_docs_and_weak_handoff` | No docs and no structured JSON |
+| `ok` | Steps with output; coherent structured handoffs |
+| `partial_handoff` | Some steps with structured JSON (`consensusUpdate`/`nextAction`), others text-only |
+| `no_docs_and_weak_handoff` | No workspace files and no structured JSON on steps |
+| `no_docs_on_disk` | Structured JSON present but no persisted docs |
 | `munger_veto` | Run cancelled by veto |
+| `run_failed` / `run_in_progress` | Failed or still running |
+| `empty_agent_output` | Steps with no useful output |
 
 **Where to see it:** War room → **Deliverable health**; Product consensus → last run panel. **My jobs** shows reports and documents, not these per-step status codes.
 

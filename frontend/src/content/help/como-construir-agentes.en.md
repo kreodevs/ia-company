@@ -186,3 +186,5 @@ Optional: technical JSON annex *inside* the brief markdown
 5. Attach to a department in Org Studio or use in a workflow / Office job.
 
 Agents run only when they exist in the tenant catalog and are referenced by the Coordinator, a workflow, or a department.
+
+> Handoff reference: [/help/handoffs](/help/handoffs). Departments and `design.md`: [/help/guia-departamentos](/help/guia-departamentos).

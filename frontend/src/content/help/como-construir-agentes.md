@@ -186,3 +186,5 @@ Opcional: incluir un anexo JSON técnico *dentro* del markdown del brief
 5. Incorpora al departamento en Org Studio o úsalo en un flujo / encargo de Oficina.
 
 Los agentes solo ejecutan en runs cuando están en el catálogo del tenant y referenciados por el Coordinador, un flujo o un departamento.
+
+> Referencia de handoffs: [/help/handoffs](/help/handoffs). Departamentos y `design.md`: [/help/guia-departamentos](/help/guia-departamentos).
