@@ -1,16 +1,12 @@
-import { readFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
 import { generateText, type LanguageModel } from "ai";
 import { prisma } from "./prisma.js";
 import { createLanguageModel, estimateCostUsd, providerConfigFromResolved } from "../core/providers.js";
 import { resolveChatLlmConfig, tenantLlmFromRecord } from "./tenant-llm.js";
-import { getTenantMonthlyUsage } from "./usage-limits.js";
 import { planOfficeTask, type OfficeTaskPlan } from "./office-coordinator.js";
-import { loadOrgUnitContext } from "./org-context.js";
-import { listTenantProducts } from "./product-registry.js";
-
-const REPO_ROOT =
-  process.env.NODE_ENV === "production" ? process.cwd() : resolve(import.meta.dirname, "../..");
+import {
+  buildCoordinatorSystemPrompt,
+  type CoordinatorChatScope,
+} from "./coordinator-chat-context.js";
 
 export interface CoordinatorChatMessage {
   role: "user" | "assistant";
@@ -22,110 +18,6 @@ export interface CoordinatorChatResponse {
   plan: OfficeTaskPlan | null;
   tokensUsed: number;
   costUsd: number;
-}
-
-async function loadCoordinatorSystemPrompt(tenantId: string): Promise<string> {
-  const tenantAgent = await prisma.agent.findFirst({
-    where: { tenantId, name: "coordinator-chief", isActive: true },
-    select: { systemPrompt: true },
-  });
-  if (tenantAgent?.systemPrompt) return tenantAgent.systemPrompt;
-
-  const platformAgent = await prisma.agent.findFirst({
-    where: { tenantId: null, name: "coordinator-chief" },
-    select: { systemPrompt: true },
-  });
-  if (platformAgent?.systemPrompt) return platformAgent.systemPrompt;
-
-  try {
-    const raw = await readFile(join(REPO_ROOT, "claude/agents/coordinator-chief.md"), "utf-8");
-    const body = raw.replace(/^---[\s\S]*?---\r?\n/, "").trim();
-    return body;
-  } catch {
-    return "Eres el Coordinador de la oficina virtual Auto-Company.";
-  }
-}
-
-function buildChatContextBlock(usage: Awaited<ReturnType<typeof getTenantMonthlyUsage>>): string {
-  const limit = usage.limits.maxCostUsdPerMonth;
-  const spendLine = limit
-    ? `$${usage.totalCostUsd.toFixed(2)} de $${limit.toFixed(0)} este mes`
-    : `$${usage.totalCostUsd.toFixed(2)} este mes`;
-  return [
-    "## Contexto actual",
-    `- Gasto: ${spendLine}`,
-    `- Ejecuciones del mes: ${usage.runs}`,
-    `- Modo: bajo demanda (nada corre sin aprobación del fundador)`,
-  ].join("\n");
-}
-
-async function buildScopeBlock(
-  tenantId: string,
-  productId: string | undefined,
-  orgUnitId: string | undefined,
-  products: Array<{ id: string; name: string; orgUnitId?: string | null }>,
-): Promise<string> {
-  if (orgUnitId) {
-    const orgCtx = await loadOrgUnitContext(tenantId, orgUnitId);
-    const orgName = orgCtx?.orgUnitName ?? orgUnitId;
-    const lines = [
-      "## Alcance del encargo",
-      "- Modo: **sala de juntas de departamento**",
-      `- Departamento: **${orgName}**`,
-    ];
-
-    if (orgCtx?.orgUnitType === "marketing_agency") {
-      lines.push(
-        "- Tipo: agencia de marketing digital (copy, community/social, diseño, estrategia).",
-      );
-    } else if (orgCtx?.orgUnitType) {
-      lines.push(`- Tipo de departamento: ${orgCtx.orgUnitType.replace(/_/g, " ")}`);
-    }
-
-    if (orgCtx?.suggestedAgentNames.length) {
-      lines.push(
-        `- Roster del departamento (${orgCtx.suggestedAgentNames.length} roles, ampliable sin límite): ${orgCtx.suggestedAgentNames.map((n) => `\`${n}\``).join(", ")}`,
-      );
-      lines.push(
-        "- **No propongas agentes genéricos de plataforma** (p. ej. marketing-godin, research-thompson) si el departamento ya tiene especialistas propios.",
-      );
-    }
-
-    if (orgCtx?.orgUnitDesignMd) {
-      const snippet = orgCtx.orgUnitDesignMd.trim().slice(0, 400);
-      lines.push("- Voz y entregables del department (design.md):", snippet);
-    }
-
-    if (productId) {
-      const product = products.find((p) => p.id === productId);
-      lines.push(`- Work item / producto seleccionado: **${product?.name ?? productId}**`);
-      lines.push("- Contextualiza entregables a este work item.");
-    } else {
-      lines.push(
-        "- **Sin producto seleccionado** en el selector de alcance: no asumas Alebrije MemorIA ni otro producto salvo que el fundador lo pida explícitamente.",
-      );
-    }
-
-    return lines.join("\n");
-  }
-
-  if (productId) {
-    const product = products.find((p) => p.id === productId);
-    const name = product?.name ?? productId;
-    return [
-      "## Alcance del encargo",
-      "- Modo: producto específico",
-      `- Producto focal: **${name}**`,
-      "- Contextualiza propuestas y entregables a este producto.",
-    ].join("\n");
-  }
-
-  return [
-    "## Alcance del encargo",
-    "- Modo: exploración general (nivel empresa, sin producto focal)",
-    "- No asumas un producto concreto ni lo incluyas en el plan salvo que el fundador lo pida.",
-    "- Si la tarea podría aplicar a un producto concreto, **pregunta** si quiere alcance general o ligado a un producto antes de proponer equipo.",
-  ].join("\n");
 }
 
 /** Last user line — used only for service keyword matching. */
@@ -226,11 +118,8 @@ function shouldAttachPlan(
 
 export async function chatWithCoordinator(
   tenantId: string,
-  input: {
+  input: CoordinatorChatScope & {
     messages: CoordinatorChatMessage[];
-    productId?: string;
-    orgUnitId?: string;
-    serviceId?: string;
     requestPlan?: boolean;
   },
 ): Promise<CoordinatorChatResponse> {
@@ -238,32 +127,21 @@ export async function chatWithCoordinator(
     throw new Error("At least one message is required");
   }
 
-  const [systemBase, usage, llmConfig, products] = await Promise.all([
-    loadCoordinatorSystemPrompt(tenantId),
-    getTenantMonthlyUsage(tenantId),
-    prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
-    listTenantProducts(tenantId),
-  ]);
+  const scope: CoordinatorChatScope = {
+    productId: input.productId,
+    orgUnitId: input.orgUnitId,
+    serviceId: input.serviceId,
+    requestPlan: input.requestPlan,
+  };
 
-  const scopeBlock = await buildScopeBlock(tenantId, input.productId, input.orgUnitId, products);
+  const [system, llmConfig] = await Promise.all([
+    buildCoordinatorSystemPrompt(tenantId, scope),
+    prisma.tenantLlmConfig.findUnique({ where: { tenantId } }),
+  ]);
 
   const tenantLlm = tenantLlmFromRecord(llmConfig);
   const resolved = resolveChatLlmConfig(tenantLlm, { temperature: 0.65 });
   const languageModel = createLanguageModel(providerConfigFromResolved(resolved));
-
-  const system = [
-    systemBase,
-    "",
-    buildChatContextBlock(usage),
-    "",
-    scopeBlock,
-    "",
-    "## Modo conversación",
-    "Responde en español salvo que el fundador escriba en otro idioma.",
-    "Sé breve (2–4 párrafos máximo). Haz preguntas aclaratorias si falta contexto.",
-    "Cuando tengas suficiente información para proponer un equipo, describe quién participa, coste estimado, tiempo y entregable.",
-    "Nunca digas que ya ejecutaste algo — solo propones; el fundador aprueba en la UI.",
-  ].join("\n");
 
   const response = await generateText({
     model: languageModel,

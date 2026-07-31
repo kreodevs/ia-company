@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import {
   chatWithCoordinator,
 } from "../../lib/coordinator-chat.js";
+import { handleCoordinatorChatStream } from "../../lib/coordinator-chat-stream.js";
+import { pipeWebResponseToFastify } from "../lib/sse-response.js";
 import {
   encargoHumanHref,
   getOfficeEncargoDetail,
@@ -157,6 +159,16 @@ export async function officeRoutes(app: FastifyInstance) {
         serviceId,
         requestPlan,
       });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post("/office/chat/stream", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const webResponse = await handleCoordinatorChatStream(tenantId, request.body);
+      await pipeWebResponseToFastify(reply, webResponse);
     } catch (err) {
       return handleRouteError(reply, err);
     }

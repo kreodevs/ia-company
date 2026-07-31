@@ -280,6 +280,10 @@ export const office = {
     placeholder: "Describe qué necesitas…",
     send: "Enviar",
     requestPlan: "Proponer equipo",
+    clarifyingTitle: "Necesito un poco más de contexto",
+    approveProposalTitle: "¿Apruebas esta propuesta de equipo?",
+    approveProposal: "Aprobar propuesta",
+    rejectProposal: "Rechazar",
   },
   onboarding: {
     title: "Primeros pasos en tu oficina",

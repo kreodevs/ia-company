@@ -803,6 +803,54 @@ html[data-theme="paperclip"] .office-chat-input {
   margin: 0.35rem 0 0;
 }
 
+.office-chat-clarify,
+.office-chat-approval {
+  margin: 0.5rem 0 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.35);
+  font-size: 0.85rem;
+}
+
+.office-chat-clarify-title,
+.office-chat-approval-title {
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+
+.office-chat-clarify-summary,
+.office-chat-approval-rationale {
+  margin: 0 0 0.5rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.office-chat-clarify-list {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.office-chat-clarify-list li + li {
+  margin-top: 0.35rem;
+}
+
+.office-chat-approval-brief {
+  margin: 0 0 0.65rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  background: rgba(2, 6, 23, 0.45);
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.office-chat-approval-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 .office-proposal-compact {
   margin-top: 0.5rem;
   padding-top: 0.65rem;

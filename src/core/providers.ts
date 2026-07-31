@@ -18,6 +18,45 @@ export function getProviderEnvConfig(): ProviderEnvConfig {
   return getPlatformSettingsSync().providers;
 }
 
+export function resolveOpenAiCompatibleCredentials(config: ProviderConfig): {
+  apiKey: string;
+  baseURL: string;
+  defaultHeaders?: Record<string, string>;
+} {
+  if (config.provider === "replicate") {
+    throw new Error(
+      'Replicate agents use runReplicateStep() — chat/media models are not OpenAI-compatible.',
+    );
+  }
+
+  const { apiKey, baseURL } = resolveCredentials(config);
+
+  if (!apiKey) {
+    throw new Error(
+      `Missing API key for provider "${config.provider}". Configure it in Admin → Platform settings.`,
+    );
+  }
+
+  if (!baseURL) {
+    throw new Error(
+      `Missing base URL for provider "${config.provider}". Configure it in Admin → Platform settings.`,
+    );
+  }
+
+  return {
+    apiKey,
+    baseURL,
+    ...(config.provider === "openrouter"
+      ? {
+          defaultHeaders: {
+            "HTTP-Referer": getPlatformSettingsSync().openrouterReferer,
+            "X-Title": "Auto-Company Platform",
+          },
+        }
+      : {}),
+  };
+}
+
 function resolveCredentials(config: ProviderConfig): { apiKey: string; baseURL: string } {
   const env = getProviderEnvConfig();
 
