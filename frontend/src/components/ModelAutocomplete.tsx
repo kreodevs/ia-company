@@ -155,7 +155,7 @@ export default function ModelAutocomplete({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-none"
+          className="absolute z-20 mt-1 max-h-[min(18rem,50dvh)] w-full overflow-y-auto overscroll-contain touch-pan-y rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-none"
         >
           {filtered.map((model) => (
             <li key={model.id} role="option" aria-selected={model.id === value}>

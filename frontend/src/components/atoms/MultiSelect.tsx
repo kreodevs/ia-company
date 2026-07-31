@@ -143,7 +143,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
             align="start"
             sideOffset={4}
             className={cn(
-              "z-[var(--z-dropdown)] w-[var(--radix-popover-trigger-width)] min-w-[200px]",
+              "z-[var(--z-dropdown)] flex w-[var(--radix-popover-trigger-width)] min-w-[200px] flex-col",
+              "max-h-(--radix-popover-content-available-height) origin-(--radix-popover-content-transform-origin)",
               "overflow-hidden rounded-[var(--radius)]",
               "border border-[var(--border)]",
               "bg-[var(--popover)]",
@@ -185,7 +186,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectInputP
               </div>
             </div>
 
-            <div className="max-h-60 overflow-auto py-[var(--spacing-xs)]">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y py-[var(--spacing-xs)]">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => {
                   const checked = isSelected(option.value);
