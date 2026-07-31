@@ -6,16 +6,11 @@ import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
 import {
-  HELP_INTRO_SECTION_ID,
-  getDefaultSectionId,
-  getTocSection,
-  getTutorialSection,
-  isValidSectionId,
-  normalizeSectionHash,
-  parseHelpDocument,
-  resolveSectionContent,
-  type HelpDocSection,
-} from "../lib/markdown-sections";
+  extractDocumentHeadings,
+  scrollToHeading,
+  slugifyHeading,
+  type DocumentHeading,
+} from "../lib/markdown-slug";
 import { cn } from "../lib/utils";
 
 function HelpNavToggle({
@@ -85,30 +80,35 @@ function HelpSidebarLink({
 function HelpSectionLink({
   id,
   title,
-  level,
   active,
   onSelect,
 }: {
   id: string;
   title: string;
-  level: number;
   active: boolean;
   onSelect: (id: string) => void;
 }) {
   return (
     <button
       type="button"
-      aria-current={active ? "page" : undefined}
+      aria-current={active ? "location" : undefined}
       onClick={() => onSelect(id)}
       className={`interactive w-full rounded-lg px-3 py-2 text-left text-sm transition ${
         active
           ? "bg-[var(--color-primary)]/15 font-medium text-[var(--color-primary)]"
           : "hover:bg-[var(--color-muted)]/50"
-      } ${level === 3 ? "pl-5 text-[var(--color-muted-foreground)]" : ""}`}
+      }`}
     >
       {title}
     </button>
   );
+}
+
+function resolveHeadingHash(hash: string, headings: DocumentHeading[]): string | null {
+  const id = hash.replace(/^#/, "");
+  if (!id) return null;
+  if (headings.some((heading) => heading.id === id)) return id;
+  return headings.find((heading) => slugifyHeading(heading.title) === id)?.id ?? null;
 }
 
 export default function HelpPage() {
@@ -122,62 +122,68 @@ export default function HelpPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const articles = getHelpArticles(i18n.language);
   const article = getHelpArticle(slug, i18n.language);
-  const parsed = useMemo(
-    () => (article ? parseHelpDocument(article.content) : null),
-    [article],
+  const sectionHeadings = useMemo(
+    () => extractDocumentHeadings(article?.content ?? "").filter((heading) => heading.level === 2),
+    [article?.content],
   );
-  const [activeSectionId, setActiveSectionId] = useState<string>(() =>
-    parsed ? getDefaultSectionId(parsed) : HELP_INTRO_SECTION_ID,
-  );
+  const [activeSectionId, setActiveSectionId] = useState<string>("");
   const [articlesOpen, setArticlesOpen] = useState(true);
   const [sectionsOpen, setSectionsOpen] = useState(false);
 
-  const tocSection = parsed ? getTocSection(parsed.sections) : undefined;
-  const tutorialSection = parsed ? getTutorialSection(parsed.sections) : undefined;
+  const activeSectionTitle =
+    sectionHeadings.find((heading) => heading.id === activeSectionId)?.title ?? article?.title ?? "";
 
-  const selectSection = (sectionId: string) => {
+  const scrollToSection = (sectionId: string) => {
     setActiveSectionId(sectionId);
     setSectionsOpen(false);
-    window.history.replaceState(null, "", `${window.location.pathname}#${sectionId}`);
-    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const handleSectionLink = (hashId: string) => {
-    if (!parsed) return;
-    const normalized = normalizeSectionHash(`#${hashId}`, parsed.sections) ?? hashId;
-    if (isValidSectionId(parsed, normalized)) {
-      selectSection(normalized);
-    }
+    scrollToHeading(sectionId);
   };
 
   useEffect(() => {
-    if (!parsed) return;
+    if (!article) return;
     const hash = window.location.hash;
     if (!hash) {
-      setActiveSectionId(getDefaultSectionId(parsed));
+      setActiveSectionId(sectionHeadings[0]?.id ?? "");
       return;
     }
-    const normalized = normalizeSectionHash(hash, parsed.sections);
-    if (normalized && isValidSectionId(parsed, normalized)) {
-      setActiveSectionId(normalized);
+    const resolved = resolveHeadingHash(hash, sectionHeadings);
+    if (resolved) {
+      setActiveSectionId(resolved);
+      requestAnimationFrame(() => scrollToHeading(resolved));
     }
-  }, [parsed, article?.content]);
+  }, [article?.slug, article?.content, sectionHeadings]);
 
   useEffect(() => {
     setSectionsOpen(false);
-  }, [article?.slug]);
+    setActiveSectionId(sectionHeadings[0]?.id ?? "");
+  }, [article?.slug, sectionHeadings]);
 
-  if (!article || !parsed) {
+  useEffect(() => {
+    if (sectionHeadings.length === 0) return;
+
+    const elements = sectionHeadings
+      .map((heading) => document.getElementById(heading.id))
+      .filter((element): element is HTMLElement => element != null);
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const top = visible[0]?.target.id;
+        if (top) setActiveSectionId(top);
+      },
+      { rootMargin: "-15% 0px -70% 0px", threshold: 0 },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [sectionHeadings, article?.slug]);
+
+  if (!article) {
     return <Navigate to={`/help/${defaultHelpSlug}`} replace />;
   }
-
-  const activeContent = resolveSectionContent(parsed, activeSectionId);
-  const activeTitle =
-    activeSectionId === HELP_INTRO_SECTION_ID
-      ? t("help.introduction")
-      : parsed.sections.find((section) => section.id === activeSectionId)?.title ?? t("help.title");
-
-  const sidebarSections: HelpDocSection[] = parsed.sections;
 
   return (
     <div className="space-y-6">
@@ -270,75 +276,44 @@ export default function HelpPage() {
             ))}
           </div>
 
-          <div className="pt-1 lg:pt-4">
-            <HelpNavToggle
-              label={t("help.sections")}
-              hint={activeTitle}
-              open={sectionsOpen}
-              onToggle={() => setSectionsOpen((open) => !open)}
-              controlsId="help-sections-nav"
-            />
-            <nav
-              id="help-sections-nav"
-              className={cn("mt-2 space-y-0.5", sectionsOpen ? "block" : "hidden lg:block")}
-              aria-label={t("help.sections")}
-              role="region"
-              aria-labelledby="help-sections-nav-toggle"
-            >
-              <p className="mb-2 hidden px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)] lg:block">
-                {t("help.sections")}
-              </p>
-              {parsed.intro && !tutorialSection ? (
-                <HelpSectionLink
-                  id={HELP_INTRO_SECTION_ID}
-                  title={t("help.introduction")}
-                  level={2}
-                  active={activeSectionId === HELP_INTRO_SECTION_ID}
-                  onSelect={selectSection}
-                />
-              ) : null}
-              {sidebarSections.map((section) => (
-                <HelpSectionLink
-                  key={section.id}
-                  id={section.id}
-                  title={
-                    tocSection?.id === section.id
-                      ? t("help.tableOfContents")
-                      : tutorialSection?.id === section.id
-                        ? t("help.tutorialStart")
-                        : section.title
-                  }
-                  level={section.level}
-                  active={activeSectionId === section.id}
-                  onSelect={selectSection}
-                />
-              ))}
-            </nav>
-          </div>
+          {sectionHeadings.length > 0 ? (
+            <div className="pt-1 lg:pt-4">
+              <HelpNavToggle
+                label={t("help.sections")}
+                hint={activeSectionTitle}
+                open={sectionsOpen}
+                onToggle={() => setSectionsOpen((open) => !open)}
+                controlsId="help-sections-nav"
+              />
+              <nav
+                id="help-sections-nav"
+                className={cn("mt-2 space-y-0.5", sectionsOpen ? "block" : "hidden lg:block")}
+                aria-label={t("help.sections")}
+                role="region"
+                aria-labelledby="help-sections-nav-toggle"
+              >
+                <p className="mb-2 hidden px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)] lg:block">
+                  {t("help.sections")}
+                </p>
+                {sectionHeadings.map((heading) => (
+                  <HelpSectionLink
+                    key={heading.id}
+                    id={heading.id}
+                    title={heading.title}
+                    active={activeSectionId === heading.id}
+                    onSelect={scrollToSection}
+                  />
+                ))}
+              </nav>
+            </div>
+          ) : null}
         </aside>
 
         <div
           ref={contentRef}
           className="order-1 min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8 lg:order-none"
         >
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
-            <h2 className="text-lg font-semibold">{activeTitle}</h2>
-            {activeSectionId !== getDefaultSectionId(parsed) && (
-              <button
-                type="button"
-                onClick={() => selectSection(getDefaultSectionId(parsed))}
-                className="interactive text-sm text-[var(--color-primary)] hover:underline"
-              >
-                ← {t("help.backToTutorial")}
-              </button>
-            )}
-          </div>
-
-          <MarkdownDoc
-            key={activeSectionId}
-            content={activeContent}
-            onSectionLink={handleSectionLink}
-          />
+          <MarkdownDoc content={article.content} onSectionLink={scrollToHeading} />
         </div>
       </div>
     </div>

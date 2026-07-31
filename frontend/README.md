@@ -42,7 +42,7 @@ Two login modes at `/login`:
 | `/consensus` | `ConsensusPage` | Edit tenant consensus memory (`memories/consensus.md` equivalent) |
 | `/ops` | `OpsPage` | Multi-product portfolio, pipeline queue, meta-orchestrator preview |
 | `/settings` | `SettingsPage` | Tenant LLM keys + meta/fixed autonomous schedules (admin only) |
-| `/help` | `HelpPage` | Centro de ayuda — guía Oficina bajo demanda (markdown por secciones) |
+| `/help` | `HelpPage` | Centro de ayuda — una guía completa por tema, scroll continuo con anclas |
 | `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Superadmin — React Flow editor for global workflow templates |
 
 Superadmin `/admin` includes an **audit log** table (`GET /api/admin/audit-logs`).
@@ -68,7 +68,7 @@ Touch targets use `min-h-11` (44px) on primary controls; forms stack vertically 
 - `WorkflowCanvas` — React Flow graph editor with save to API
 - `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/office/workflows` and admin `/admin/templates`)
 | `MarkdownDoc` — renders help articles (GFM + Mermaid via `react-markdown`); used per-section in Help |
-| Help sections | `lib/markdown-sections.ts` splits tutorials by `##` / `###`; sidebar switches visible section container |
+| Help TOC | `lib/markdown-slug.ts` `extractDocumentHeadings` — sidebar anchor links; full markdown rendered in one scroll |
 
 ## Help content
 

@@ -29,7 +29,7 @@ Old micro-article URLs redirect in `HelpPage` via `HELP_SLUG_REDIRECTS`:
 | `como-construir-agentes` | `guia-equipo-ia#cómo-construir-agentes` |
 | `handoffs` | `guia-equipo-ia#handoffs-y-flujo` |
 
-Within each guide, `##` / `###` headings become the **En este artículo** sidebar sections.
+Within each guide, `##` headings become anchor links in **En este artículo** (scroll within one full document — not separate pages per section).
 
 ## Navigation notes (for authors)
 
