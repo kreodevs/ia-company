@@ -52,6 +52,25 @@ export const AGENT_ROLE_LABEL_KEYS: Record<string, string> = {
   "marketing-strategist": "office.roles.marketingStrategist",
 };
 
+/** Persona display names for platform agents (chips, evidence viewer). */
+export const AGENT_PERSONA_NAMES: Record<string, string> = {
+  "coordinator-chief": "Coordinator",
+  "ceo-bezos": "Jeff Bezos",
+  "cto-vogels": "Werner Vogels",
+  "cfo-campbell": "Patrick Campbell",
+  "critic-munger": "Charlie Munger",
+  "research-thompson": "Ben Thompson",
+  "product-norman": "Don Norman",
+  "interaction-cooper": "Alan Cooper",
+  "ui-duarte": "Matias Duarte",
+  "fullstack-dhh": "DHH",
+  "qa-bach": "James Bach",
+  "devops-hightower": "Kelsey Hightower",
+  "marketing-godin": "Seth Godin",
+  "operations-pg": "Paul Graham",
+  "sales-ross": "Aaron Ross",
+};
+
 export function humanizeAgentSlug(name: string): string {
   return name
     .split("-")

@@ -1693,6 +1693,8 @@ export const api = {
   decisions: {
     list: () => request<DecisionProposal[]>("/decisions"),
     get: (id: string) => request<DecisionProposal>(`/decisions/${id}`),
+    documents: (id: string) =>
+      request<{ documents: OfficeEncargoDocument[] }>(`/decisions/${id}/documents`),
     approve: (id: string, body?: { actorEmail?: string }) =>
       request<DecisionProposal>(`/decisions/${id}/approve`, {
         method: "POST",

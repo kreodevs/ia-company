@@ -11,6 +11,7 @@ import Panel from "../components/ui/Panel";
 import KpiCard from "../components/ui/KpiCard";
 import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
+import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 
 function statusLabel(t: (k: string) => string, s: DecisionStatus): string {
   const key = `decisions.status.${s}`;
@@ -191,21 +192,11 @@ export default function DecisionsPage() {
                   </div>
 
                   {p.evidence.length > 0 && (
-                    <details className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-background)]">
-                      <summary className="cursor-pointer px-3 py-2 text-xs font-semibold text-[var(--color-muted-foreground)]">
-                        {t("decisions.evidence", { count: p.evidence.length })}
-                      </summary>
-                      <ul className="space-y-3 px-3 pb-3">
-                        {p.evidence.map((e, i) => (
-                          <li key={i} className="rounded bg-[var(--color-surface)] p-3">
-                            <p className="text-xs font-semibold">{e.agent}</p>
-                            <p className="mt-1 whitespace-pre-wrap text-xs text-[var(--color-muted-foreground)]">
-                              {e.summary}
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
+                    <DecisionEvidencePanel
+                      proposalId={p.id}
+                      runId={p.runId}
+                      evidence={p.evidence}
+                    />
                   )}
 
                   {pivotFor === p.id ? (

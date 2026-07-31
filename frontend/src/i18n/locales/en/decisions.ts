@@ -12,6 +12,11 @@ export const decisions = {
   historyHeading: "History ({{count}})",
   rationale: "Rationale",
   evidence: "Evidence ({{count}})",
+  evidenceAuthors: "Team reports ({{count}})",
+  viewDocument: "View {{name}}'s report",
+  documentLoading: "Loading reports…",
+  documentUnavailable:
+    "Full document unavailable — showing excerpt stored on the proposal.",
   approve: "Approve {{decision}}",
   reject: "Reject",
   pivotMore: "Drill down",

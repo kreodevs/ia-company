@@ -14,6 +14,7 @@ import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import StatusPill from "../components/ui/StatusPill";
+import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 
 type DetailTab = "final" | "documents";
 
@@ -213,6 +214,15 @@ export default function OfficeEncargoDetailPage() {
                 </span>
               </div>
               <p className="office-encargo-decision-rationale">{decision.rationale}</p>
+
+              {decision.evidence.length > 0 ? (
+                <DecisionEvidencePanel
+                  proposalId={decision.id}
+                  runId={runId}
+                  evidence={decision.evidence}
+                  documents={detail.documents}
+                />
+              ) : null}
 
               {decisionPending ? (
                 pivotOpen ? (

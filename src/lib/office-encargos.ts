@@ -422,6 +422,43 @@ export async function loadRunDocuments(
 
 const DOC_EXTENSIONS = new Set([".md", ".markdown", ".mdx"]);
 
+async function loadDocumentsForRun(
+  run: ExecutionRun & { workflow: { name: string } },
+  tenantId: string,
+): Promise<OfficeEncargoDocument[]> {
+  const [products, consensusRows, tenant] = await Promise.all([
+    prisma.tenantProduct.findMany({
+      where: { tenantId },
+      select: { id: true, slug: true, name: true },
+    }),
+    prisma.productConsensus.findMany({
+      where: { product: { tenantId } },
+      select: { id: true, productId: true },
+    }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
+  ]);
+  const consensusByProductId = new Map(consensusRows.map((c) => [c.productId, c.id]));
+  const memory = (run.sharedMemory ?? {}) as SharedMemory;
+  const product = resolveProductFromMemory(memory, products);
+  const consensusId = product ? (consensusByProductId.get(product.id) ?? null) : null;
+  const teamAgents = extractTeamAgents(memory);
+  const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenant?.slug, product?.slug ?? null);
+  return loadRunDocuments(run, workspaceRoot, consensusId, teamAgents);
+}
+
+/** Full agent markdown outputs for a run (e.g. decision evidence viewer). */
+export async function loadDecisionRunDocuments(
+  tenantId: string,
+  runId: string,
+): Promise<OfficeEncargoDocument[]> {
+  const run = await prisma.executionRun.findFirst({
+    where: { id: runId, tenantId },
+    include: { workflow: { select: { name: true } } },
+  });
+  if (!run) return [];
+  return loadDocumentsForRun(run, tenantId);
+}
+
 export async function getOfficeEncargoDetail(
   tenantId: string,
   runId: string,
@@ -452,9 +489,6 @@ export async function getOfficeEncargoDetail(
 
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const product = resolveProductFromMemory(memory, products);
-  const consensusId = product ? (consensusByProductId.get(product.id) ?? null) : null;
-  const teamAgents = extractTeamAgents(memory);
-  const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenant?.slug, product?.slug ?? null);
 
   const summary = await mapRunToSummary(
     run,
@@ -463,7 +497,7 @@ export async function getOfficeEncargoDetail(
     tenantId,
     tenant?.slug,
   );
-  const documents = await loadRunDocuments(run, workspaceRoot, consensusId, teamAgents);
+  const documents = await loadDocumentsForRun(run, tenantId);
 
   const revisions = documents
     .filter((d) => d.kind === "revision")

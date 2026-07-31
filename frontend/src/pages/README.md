@@ -34,7 +34,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, workflows, w
 | `/debug/products/:id/consensus` | `ProductConsensusPage` | Memoria técnica del producto (solo depuración) |
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
-| `/decisions` | `DecisionsPage` | Propuestas go/no-go de agentes |
+| `/decisions` | `DecisionsPage` | Propuestas go/no-go; chips por agente abren el informe completo |
 | `/consensus` | `ConsensusPage` | Consenso del tenant |
 | `/settings` | `SettingsPage` | LLM, **OpenCode**, notificaciones, límites, programaciones |
 | `/team` | `TenantUsersPage` |

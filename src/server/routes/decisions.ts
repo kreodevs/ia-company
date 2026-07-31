@@ -16,6 +16,7 @@ import { ensureTenantCycleState, listTenantProducts } from "../../lib/product-re
 import { getTenantInterestCategories } from "../../lib/tenant-interests.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
+import { loadDecisionRunDocuments } from "../../lib/office-encargos.js";
 
 export async function decisionRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -36,6 +37,19 @@ export async function decisionRoutes(app: FastifyInstance) {
       const proposal = await getDecisionProposal(request.params.id, tenantId);
       if (!proposal) return reply.status(404).send({ error: "Proposal not found" });
       return proposal;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/decisions/:id/documents", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const proposal = await getDecisionProposal(request.params.id, tenantId);
+      if (!proposal) return reply.status(404).send({ error: "Proposal not found" });
+      if (!proposal.runId) return { documents: [] };
+      const documents = await loadDecisionRunDocuments(tenantId, proposal.runId);
+      return { documents };
     } catch (err) {
       return handleRouteError(reply, err);
     }
