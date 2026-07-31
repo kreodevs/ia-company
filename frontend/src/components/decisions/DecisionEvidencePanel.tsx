@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { FileText } from "lucide-react";
+import { FileText, X } from "lucide-react";
 import {
   api,
   type DecisionProposalEvidence,
@@ -8,7 +9,6 @@ import {
 } from "../../lib/api";
 import { buildEvidenceChipItems } from "../../lib/decision-evidence";
 import { avatarGradient } from "../../lib/office-visual";
-import { Dialog } from "../molecules/Dialog";
 import RichMarkdownView from "../ui/RichMarkdownView";
 
 export interface DecisionEvidencePanelProps {
@@ -73,25 +73,32 @@ export default function DecisionEvidencePanel({
     [evidence, documents, t],
   );
 
+  const closeDoc = useCallback(() => setOpenDoc(null), []);
+
+  useEffect(() => {
+    if (!openDoc) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeDoc();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [openDoc, closeDoc]);
+
   if (evidence.length === 0) return null;
 
   const openChip = (chip: (typeof chips)[number]) => {
-    if (chip.document?.markdown) {
-      setOpenDoc({
-        title: chip.document.title,
-        markdown: chip.document.markdown,
-        displayName: chip.displayName,
-        roleLabel: chip.roleLabel,
-        partial: false,
-      });
-      return;
-    }
+    const markdown = chip.document?.markdown?.trim() || chip.summary.trim();
     setOpenDoc({
-      title: chip.displayName,
-      markdown: chip.summary,
+      title: chip.document?.title?.trim() || chip.displayName,
+      markdown,
       displayName: chip.displayName,
       roleLabel: chip.roleLabel,
-      partial: true,
+      partial: !chip.document?.markdown?.trim(),
     });
   };
 
@@ -112,7 +119,7 @@ export default function DecisionEvidencePanel({
               <button
                 key={chip.agent}
                 type="button"
-                className="office-agent-chip interactive text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+                className="office-agent-chip cursor-pointer text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
                 onClick={() => openChip(chip)}
                 aria-label={t("decisions.viewDocument", { name: chip.displayName })}
               >
@@ -135,27 +142,52 @@ export default function DecisionEvidencePanel({
         )}
       </div>
 
-      <Dialog
-        visible={openDoc !== null}
-        onHide={() => setOpenDoc(null)}
-        size="full"
-        title={openDoc?.title ?? ""}
-        description={
-          openDoc
-            ? `${openDoc.displayName} · ${openDoc.roleLabel}`
-            : undefined
-        }
-        className="max-h-[90vh] flex flex-col"
-      >
-        {openDoc?.partial ? (
-          <p className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
-            {t("decisions.documentUnavailable")}
-          </p>
-        ) : null}
-        <div className="max-h-[calc(90vh-8rem)] overflow-y-auto pr-1">
-          <RichMarkdownView value={openDoc?.markdown ?? ""} />
-        </div>
-      </Dialog>
+      {openDoc &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[var(--z-modal)] flex flex-col bg-[var(--background)]/95 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`decision-doc-title-${proposalId}`}
+          >
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--color-border)] px-4 py-3 sm:px-6">
+              <div className="min-w-0">
+                <h2
+                  id={`decision-doc-title-${proposalId}`}
+                  className="truncate text-lg font-semibold text-[var(--foreground)]"
+                >
+                  {openDoc.title}
+                </h2>
+                <p className="mt-0.5 text-sm text-[var(--color-muted-foreground)]">
+                  {openDoc.displayName} · {openDoc.roleLabel}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+                onClick={closeDoc}
+                aria-label={t("common.close", { defaultValue: "Cerrar" })}
+              >
+                <X className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+              {openDoc.partial ? (
+                <p className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
+                  {t("decisions.documentUnavailable")}
+                </p>
+              ) : null}
+              <RichMarkdownView
+                value={openDoc.markdown}
+                emptyMessage={t("decisions.documentEmpty", {
+                  defaultValue: "No hay contenido disponible para este informe.",
+                })}
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

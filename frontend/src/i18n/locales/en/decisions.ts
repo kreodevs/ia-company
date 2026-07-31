@@ -17,6 +17,7 @@ export const decisions = {
   documentLoading: "Loading reports…",
   documentUnavailable:
     "Full document unavailable — showing excerpt stored on the proposal.",
+  documentEmpty: "No content available for this report.",
   approve: "Approve {{decision}}",
   reject: "Reject",
   pivotMore: "Drill down",
