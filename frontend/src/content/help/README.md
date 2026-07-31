@@ -42,6 +42,8 @@ We use **react-markdown + remark-gfm + mermaid** for help articles:
 
 Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-sections.ts`).
 
+**Mobile / iPad (< 1024px):** Help icon (book) in the top bar next to notifications; full article list stacks above content on `HelpPage`. Desktop: sidebar link under **General → Ayuda**.
+
 ## Scope
 
 Non-technical **operator** documentation only — no Docker, worker, or API setup.

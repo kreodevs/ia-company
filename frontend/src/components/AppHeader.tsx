@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import NotificationBell from "./office/NotificationBell";
@@ -6,6 +8,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeSwitcher from "./ThemeSwitcher";
 import TenantImpersonationSelect from "./TenantImpersonationSelect";
 import Button from "./ui/Button";
+import { defaultHelpSlug } from "../content/help";
 import { cn } from "../lib/utils";
 
 interface AppHeaderProps {
@@ -19,9 +22,11 @@ export default function AppHeader({
   mobileSidebarOpen,
   onMobileSidebarToggle,
 }: AppHeaderProps) {
-  const { logout, activeTenant } = useAuth();
+  const { logout, activeTenant, authenticated } = useAuth();
   const { t } = useTranslation();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const helpActive = location.pathname.startsWith("/help");
 
   useEffect(() => {
     const syncScrollState = () => {
@@ -82,6 +87,20 @@ export default function AppHeader({
               <ThemeSwitcher />
               <LanguageSwitcher />
             </div>
+            {authenticated ? (
+              <Link
+                to={`/help/${defaultHelpSlug}`}
+                className={cn(
+                  "interactive inline-flex lg:hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-[var(--color-muted-foreground)] transition hover:bg-[var(--color-muted)]/50 hover:text-[var(--color-foreground)]",
+                  helpActive &&
+                    "border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
+                )}
+                aria-label={t("nav.help")}
+                aria-current={helpActive ? "page" : undefined}
+              >
+                <BookOpen className="h-5 w-5" aria-hidden />
+              </Link>
+            ) : null}
             {activeTenant ? <NotificationBell enabled /> : null}
             <Button variant="secondary" onClick={() => void logout()} className="hidden sm:inline-flex shrink-0">
               {t("common.logout")}
