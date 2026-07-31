@@ -145,45 +145,53 @@ export default function DecisionEvidencePanel({
       {openDoc &&
         createPortal(
           <div
-            className="fixed inset-0 z-[var(--z-modal)] flex flex-col bg-[var(--background)]/95 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={`decision-doc-title-${proposalId}`}
+            className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center bg-black/40 backdrop-blur-sm"
+            role="presentation"
+            onClick={closeDoc}
           >
-            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--color-border)] px-4 py-3 sm:px-6">
-              <div className="min-w-0">
-                <h2
-                  id={`decision-doc-title-${proposalId}`}
-                  className="truncate text-lg font-semibold text-[var(--foreground)]"
+            <div
+              className="flex w-[85%] flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--background)] shadow-xl"
+              style={{ marginTop: 50, marginBottom: 50, maxHeight: "calc(100vh - 100px)" }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`decision-doc-title-${proposalId}`}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--color-border)] px-4 py-3 sm:px-6">
+                <div className="min-w-0">
+                  <h2
+                    id={`decision-doc-title-${proposalId}`}
+                    className="truncate text-lg font-semibold text-[var(--foreground)]"
+                  >
+                    {openDoc.title}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-[var(--color-muted-foreground)]">
+                    {openDoc.displayName} · {openDoc.roleLabel}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+                  onClick={closeDoc}
+                  aria-label={t("common.close", { defaultValue: "Cerrar" })}
                 >
-                  {openDoc.title}
-                </h2>
-                <p className="mt-0.5 text-sm text-[var(--color-muted-foreground)]">
-                  {openDoc.displayName} · {openDoc.roleLabel}
-                </p>
+                  <X className="h-5 w-5" aria-hidden />
+                </button>
               </div>
-              <button
-                type="button"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
-                onClick={closeDoc}
-                aria-label={t("common.close", { defaultValue: "Cerrar" })}
-              >
-                <X className="h-5 w-5" aria-hidden />
-              </button>
-            </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
-              {openDoc.partial ? (
-                <p className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
-                  {t("decisions.documentUnavailable")}
-                </p>
-              ) : null}
-              <RichMarkdownView
-                value={openDoc.markdown}
-                emptyMessage={t("decisions.documentEmpty", {
-                  defaultValue: "No hay contenido disponible para este informe.",
-                })}
-              />
+              <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                {openDoc.partial ? (
+                  <p className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
+                    {t("decisions.documentUnavailable")}
+                  </p>
+                ) : null}
+                <RichMarkdownView
+                  value={openDoc.markdown}
+                  emptyMessage={t("decisions.documentEmpty", {
+                    defaultValue: "No hay contenido disponible para este informe.",
+                  })}
+                />
+              </div>
             </div>
           </div>,
           document.body,

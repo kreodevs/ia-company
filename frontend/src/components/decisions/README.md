@@ -2,7 +2,7 @@
 
 ## `DecisionEvidencePanel`
 
-Renders clickable agent chips (name + role) for Go/No-Go proposals. Each chip opens a modal with the **full markdown document** from the linked workflow run.
+Renders clickable agent chips (name + role) for Go/No-Go proposals. Each chip opens a modal with the **full markdown document** from the linked workflow run. The modal uses **85% viewport width**, **50px top/bottom margin**, and scrolls the document body inside a fixed header.
 
 **Props**
 
