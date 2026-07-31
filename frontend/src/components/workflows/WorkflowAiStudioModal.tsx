@@ -147,7 +147,7 @@ export default function WorkflowAiStudioModal({
         </div>
       }
     >
-      <div className="space-y-4 overflow-y-auto px-1 pb-2">
+      <div className="space-y-4 px-1 pb-2">
         <div>
           <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
             {t("workflows.ai.briefLabel")}

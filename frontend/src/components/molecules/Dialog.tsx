@@ -57,11 +57,11 @@ export const Dialog = forwardRef<HTMLDivElement, DialogInputProps>(
             {...props}
           >
             {header ? (
-              <div className="flex items-start justify-between gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-b border-[var(--border)]">
+              <div className="flex shrink-0 items-start justify-between gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-b border-[var(--border)]">
                 {header}
               </div>
             ) : (
-              <div className="flex items-start justify-between gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-b border-[var(--border)]">
+              <div className="flex shrink-0 items-start justify-between gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-b border-[var(--border)]">
                 <div className="flex-1 min-w-0">
                   {title && (
                     <DialogPrimitive.Title className="text-lg font-semibold text-[var(--foreground)]">
@@ -85,10 +85,12 @@ export const Dialog = forwardRef<HTMLDivElement, DialogInputProps>(
               </div>
             )}
 
-            <div className="px-[var(--spacing-lg)] py-[var(--spacing-md)]">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[var(--spacing-lg)] py-[var(--spacing-md)]">
+              {children}
+            </div>
 
             {footer && (
-              <div className="flex items-center justify-end gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-t border-[var(--border)] bg-[var(--secondary)]/50">
+              <div className="flex shrink-0 items-center justify-end gap-[var(--spacing-md)] px-[var(--spacing-lg)] py-[var(--spacing-md)] border-t border-[var(--border)] bg-[var(--secondary)]/50">
                 {footer}
               </div>
             )}
