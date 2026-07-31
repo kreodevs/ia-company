@@ -840,7 +840,7 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       title: "decisions",
       subtitle: String(pendingDecisions),
       timestamp: new Date().toISOString(),
-      href: "/decisions",
+      href: "/office/pendientes",
       status: "pending_review",
     });
   }

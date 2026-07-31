@@ -18,6 +18,16 @@ import { handleRouteError, requireImpersonatedTenant } from "../lib/request-cont
 import { WORKFLOW_NAMES } from "../../lib/workflow-names.js";
 import { loadDecisionRunDocuments } from "../../lib/office-encargos.js";
 
+function resolveDecisionActor(
+  request: { session: { email?: string } | null },
+  bodyEmail?: string,
+): string | undefined {
+  const fromBody = bodyEmail?.trim();
+  if (fromBody) return fromBody;
+  const fromSession = request.session?.email?.trim();
+  return fromSession || undefined;
+}
+
 export async function decisionRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
   app.addHook("preHandler", app.requireTenantContext);
@@ -60,7 +70,7 @@ export async function decisionRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const actor = request.body?.actorEmail;
+        const actor = resolveDecisionActor(request, request.body?.actorEmail);
         const proposal = await getDecisionProposal(request.params.id, tenantId);
         if (!proposal) return reply.status(404).send({ error: "Proposal not found" });
         if (proposal.status !== "pending_review" && proposal.status !== "drilling") {
@@ -80,7 +90,7 @@ export async function decisionRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const actor = request.body?.actorEmail;
+        const actor = resolveDecisionActor(request, request.body?.actorEmail);
         const proposal = await getDecisionProposal(request.params.id, tenantId);
         if (!proposal) return reply.status(404).send({ error: "Proposal not found" });
         if (proposal.status !== "pending_review" && proposal.status !== "drilling") {

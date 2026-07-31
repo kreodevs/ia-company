@@ -15,6 +15,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
+import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 
 type DetailTab = "final" | "documents";
 
@@ -35,6 +36,7 @@ function decisionStatusPill(status: OfficeEncargoDecisionProposal["status"]): st
 export default function OfficeEncargoDetailPage() {
   const { runId } = useParams<{ runId: string }>();
   const { t } = useTranslation();
+  const actorEmail = useDecisionActorEmail();
   const [detail, setDetail] = useState<OfficeEncargoDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<DetailTab>("final");
@@ -98,7 +100,9 @@ export default function OfficeEncargoDetailPage() {
 
   const submitPivot = async () => {
     if (!decision || !pivotText.trim()) return;
-    await runDecision(() => api.decisions.pivot(decision.id, { pivot: pivotText.trim() }));
+    await runDecision(() =>
+      api.decisions.pivot(decision.id, { pivot: pivotText.trim(), actorEmail }),
+    );
     setPivotOpen(false);
     setPivotText("");
   };
@@ -259,7 +263,9 @@ export default function OfficeEncargoDetailPage() {
                       size="sm"
                       disabled={decisionBusy}
                       onClick={() =>
-                        void runDecision(() => api.decisions.approve(decision.id))
+                        void runDecision(() =>
+                          api.decisions.approve(decision.id, { actorEmail }),
+                        )
                       }
                     >
                       <Check className="mr-1 h-3.5 w-3.5" aria-hidden />
@@ -284,7 +290,9 @@ export default function OfficeEncargoDetailPage() {
                       size="sm"
                       disabled={decisionBusy}
                       onClick={() =>
-                        void runDecision(() => api.decisions.reject(decision.id))
+                        void runDecision(() =>
+                          api.decisions.reject(decision.id, { actorEmail }),
+                        )
                       }
                     >
                       <X className="mr-1 h-3.5 w-3.5" aria-hidden />
@@ -302,7 +310,7 @@ export default function OfficeEncargoDetailPage() {
             <p className="office-encargo-next-hint">{t("office.encargos.noDecisionHint")}</p>
           ) : null}
 
-          <Link to="/decisions" className="office-link-btn office-encargo-decisions-link">
+          <Link to="/office/pendientes" className="office-link-btn office-encargo-decisions-link">
             <ArrowRight className="h-4 w-4" aria-hidden />
             {t("office.encargos.openDecisions")}
           </Link>

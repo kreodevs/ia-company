@@ -14,11 +14,12 @@ Route-level screens for the Auto-Company frontend.
 
 ## Tenant workspace
 
-Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, workflows, war room, products, deptos, **Equipo IA**), **Oficina de depuración** (runs, ops…), **Administración** (settings, team). Default landing after login: `/office`.
+Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, encargos, workflows, war room, products, deptos, **Equipo IA**), **Oficina de depuración** (runs, ops…), **Administración** (settings, team). Default landing after login: `/office`.
 
 | Route | Page |
 |-------|------|
 | `/` · `/office` | `OfficePage` — coordinador en contexto general; opcionalmente filtra por departamento si hay org units |
+| `/office/pendientes` | `PendingDecisionsPage` — bandeja Go/No-Go con pestañas Por aprobar / Aprobadas / Rechazadas |
 | `/office/encargos` | `OfficeEncargosPage` |
 | `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
 | `/office/workflows` | `WorkflowsPage` |
@@ -34,7 +35,8 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, encargos, workflows, w
 | `/debug/products/:id/consensus` | `ProductConsensusPage` | Memoria técnica del producto (solo depuración) |
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
-| `/decisions` | `DecisionsPage` | Propuestas go/no-go; chips por agente abren el informe completo |
+| `/decisions` | redirect → `/office/pendientes` |
+| `/debug/decisions` | `DecisionsPage` | Vista debug con KPIs (depuración) |
 | `/consensus` | `ConsensusPage` | Consenso del tenant |
 | `/settings` | `SettingsPage` | LLM, **OpenCode**, notificaciones, límites, programaciones |
 | `/team` | `TenantUsersPage` |

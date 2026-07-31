@@ -14,6 +14,7 @@ export type NavItem = {
   labelKey: string;
   end?: boolean;
   children?: NavItem[];
+  badge?: number;
 };
 
 export type NavSection = {

@@ -13,6 +13,7 @@ import { org } from "./org";
 import { office } from "./office";
 import { opencode } from "./opencode";
 import { ops } from "./ops";
+import { pendientes } from "./pendientes";
 import { phase } from "./phase";
 import { productDesk } from "./productDesk";
 import { products } from "./products";
@@ -34,6 +35,7 @@ export const es = {
   runs,
   consensus,
   decisions,
+  pendientes,
   ops,
   opencode,
   products,

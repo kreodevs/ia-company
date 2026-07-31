@@ -166,7 +166,7 @@ export default function OpsPage() {
           <p className="mt-1 text-sm">{nextRun.blockedMessage}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {nextRun.blockedCode === "PENDING_DECISIONS" && (
-              <Link to="/decisions">
+              <Link to="/office/pendientes">
                 <Button>{t("ops.reviewDecisions")}</Button>
               </Link>
             )}
@@ -188,7 +188,7 @@ export default function OpsPage() {
                 {t("ops.pendingDecisionsMessage", { count: portfolio.pendingDecisions })}
               </p>
             </div>
-            <Link to="/decisions">
+            <Link to="/office/pendientes">
               <Button>
                 {t("ops.reviewDecisions")} <ChevronRight className="ml-1 h-3.5 w-3.5" />
               </Button>

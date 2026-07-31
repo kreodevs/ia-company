@@ -9,6 +9,7 @@ import {
   Crosshair,
   FileText,
   GitBranch,
+  Inbox,
   LayoutDashboard,
   Layers,
   Package,
@@ -29,6 +30,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeSwitcher from "./ThemeSwitcher";
 import OfficeSpendWidget from "./office/OfficeSpendWidget";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../lib/api";
 import {
   flattenNavItems,
   getStoredSidebarCollapsed,
@@ -52,6 +54,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/settings": Settings,
   "/office": Building2,
   "/office/encargos": ClipboardList,
+  "/office/pendientes": Inbox,
   "/products": Package,
   "/org-units": Network,
   "/org-studio": Network,
@@ -73,6 +76,7 @@ function SidebarNavLink({
   end = false,
   collapsed,
   nested = false,
+  badge,
   onNavigate,
 }: {
   to: string;
@@ -80,6 +84,7 @@ function SidebarNavLink({
   end?: boolean;
   collapsed: boolean;
   nested?: boolean;
+  badge?: number;
   onNavigate?: () => void;
 }) {
   const location = useLocation();
@@ -103,6 +108,11 @@ function SidebarNavLink({
     >
       <Icon className="sidebar-link-icon" aria-hidden />
       <span className={cn("sidebar-link-label", collapsed && "sr-only")}>{label}</span>
+      {!collapsed && badge != null && badge > 0 ? (
+        <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
     </Link>
   );
 }
@@ -207,6 +217,7 @@ function SidebarNavEntry({
       end={item.end}
       label={t(item.labelKey)}
       collapsed={collapsed}
+      badge={item.badge}
       onNavigate={onNavigate}
     />
   );
@@ -302,6 +313,27 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     document.documentElement.dataset.sidebarCollapsed = collapsed ? "true" : "false";
   }, [collapsed]);
 
+  const [pendingDecisions, setPendingDecisions] = useState(0);
+
+  useEffect(() => {
+    if (!showTenantNav) {
+      setPendingDecisions(0);
+      return;
+    }
+    let cancelled = false;
+    api.office
+      .dashboard()
+      .then((dashboard) => {
+        if (!cancelled) setPendingDecisions(dashboard.stats.pendingDecisions);
+      })
+      .catch(() => {
+        if (!cancelled) setPendingDecisions(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showTenantNav, activeTenant?.id]);
+
   const sections = useMemo(() => {
     const result: NavSection[] = [];
 
@@ -335,6 +367,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionOffice",
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
+          { to: "/office/pendientes", labelKey: "nav.pendientes", badge: pendingDecisions },
           { to: "/office/encargos", labelKey: "nav.encargos" },
           { to: "/office/workflows", labelKey: "nav.workflows" },
           { to: "/war-room", labelKey: "nav.warRoom" },
@@ -373,7 +406,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     }
 
     return result;
-  }, [authenticated, isTenantAdmin, showAdminNav, showTenantNav]);
+  }, [authenticated, isTenantAdmin, pendingDecisions, showAdminNav, showTenantNav]);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {

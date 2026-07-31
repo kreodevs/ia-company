@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Check, ChevronRight, GitBranch, History, ScrollText, Sparkles, X } from "lucide-react";
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
+import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
@@ -37,6 +38,7 @@ function statusToPill(status: DecisionStatus): string {
 
 export default function DecisionsPage() {
   const { t } = useTranslation();
+  const actorEmail = useDecisionActorEmail();
   const [proposals, setProposals] = useState<DecisionProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export default function DecisionsPage() {
 
   const submitPivot = async (id: string) => {
     if (!pivotText.trim()) return;
-    await act(id, () => api.decisions.pivot(id, { pivot: pivotText.trim() }));
+    await act(id, () => api.decisions.pivot(id, { pivot: pivotText.trim(), actorEmail }));
     setPivotFor(null);
     setPivotText("");
   };
@@ -231,7 +233,7 @@ export default function DecisionsPage() {
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       <Button
                         disabled={busy === p.id}
-                        onClick={() => void act(p.id, () => api.decisions.approve(p.id))}
+                        onClick={() => void act(p.id, () => api.decisions.approve(p.id, { actorEmail }))}
                         size="sm"
                       >
                         <Check className="mr-1 h-3.5 w-3.5" aria-hidden />
@@ -254,7 +256,7 @@ export default function DecisionsPage() {
                         variant="destructive"
                         size="sm"
                         disabled={busy === p.id}
-                        onClick={() => void act(p.id, () => api.decisions.reject(p.id))}
+                        onClick={() => void act(p.id, () => api.decisions.reject(p.id, { actorEmail }))}
                       >
                         <X className="mr-1 h-3.5 w-3.5" aria-hidden />
                         {t("decisions.reject")}
