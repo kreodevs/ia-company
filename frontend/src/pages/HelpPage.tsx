@@ -7,6 +7,7 @@ import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
 import {
   extractDocumentHeadings,
+  extractHashId,
   scrollToHeading,
   slugifyHeading,
   type DocumentHeading,
@@ -105,10 +106,10 @@ function HelpSectionLink({
 }
 
 function resolveHeadingHash(hash: string, headings: DocumentHeading[]): string | null {
-  const id = hash.replace(/^#/, "");
+  const id = extractHashId(hash.startsWith("#") ? hash : `#${hash}`);
   if (!id) return null;
   if (headings.some((heading) => heading.id === id)) return id;
-  return headings.find((heading) => slugifyHeading(heading.title) === id)?.id ?? null;
+  return headings.find((heading) => slugifyHeading(heading.title) === id)?.id ?? id;
 }
 
 export default function HelpPage() {
@@ -141,16 +142,20 @@ export default function HelpPage() {
 
   useEffect(() => {
     if (!article) return;
-    const hash = window.location.hash;
-    if (!hash) {
-      setActiveSectionId(sectionHeadings[0]?.id ?? "");
-      return;
-    }
-    const resolved = resolveHeadingHash(hash, sectionHeadings);
-    if (resolved) {
-      setActiveSectionId(resolved);
-      requestAnimationFrame(() => scrollToHeading(resolved));
-    }
+
+    const scrollFromHash = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+      const resolved = resolveHeadingHash(hash, sectionHeadings) ?? extractHashId(hash);
+      if (resolved) {
+        setActiveSectionId(resolved);
+        requestAnimationFrame(() => scrollToHeading(resolved));
+      }
+    };
+
+    scrollFromHash();
+    window.addEventListener("hashchange", scrollFromHash);
+    return () => window.removeEventListener("hashchange", scrollFromHash);
   }, [article?.slug, article?.content, sectionHeadings]);
 
   useEffect(() => {

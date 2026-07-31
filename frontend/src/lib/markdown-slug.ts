@@ -68,10 +68,55 @@ export function getTocHeadingId(lang: string): string {
 }
 
 export function scrollToHeading(id: string): boolean {
-  const el = document.getElementById(id);
+  const el = findHeadingElement(id);
   if (!el) return false;
 
   el.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.history.replaceState(null, "", `${window.location.pathname}#${id}`);
+  const resolvedId = el.id || id;
+  window.history.replaceState(null, "", `${window.location.pathname}#${resolvedId}`);
   return true;
+}
+
+/** Parse `#id` or `/path#id` into a decoded fragment id. */
+export function extractHashId(href: string): string | null {
+  const hashIndex = href.lastIndexOf("#");
+  if (hashIndex === -1) return null;
+  const fragment = href.slice(hashIndex + 1).trim();
+  if (!fragment) return null;
+  try {
+    return decodeURIComponent(fragment);
+  } catch {
+    return fragment;
+  }
+}
+
+export function isSamePageHashLink(href: string): boolean {
+  if (!href.includes("#")) return false;
+  if (href.startsWith("#")) return true;
+  try {
+    const url = new URL(href, window.location.origin);
+    return url.pathname === window.location.pathname;
+  } catch {
+    return false;
+  }
+}
+
+export function findHeadingElement(id: string): HTMLElement | null {
+  const decoded = extractHashId(`#${id}`) ?? id;
+
+  const byId = document.getElementById(decoded);
+  if (byId) return byId;
+
+  const normalizedTarget = slugifyHeading(decoded.replace(/-/g, " "));
+  const candidates = document.querySelectorAll<HTMLElement>(
+    "article.markdown-doc h1, article.markdown-doc h2, article.markdown-doc h3, article.markdown-doc h4",
+  );
+
+  for (const el of candidates) {
+    if (el.id === decoded) return el;
+    const textSlug = slugifyHeading(el.textContent ?? "");
+    if (textSlug === decoded || textSlug === normalizedTarget) return el;
+  }
+
+  return null;
 }

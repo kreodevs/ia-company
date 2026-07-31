@@ -5,7 +5,9 @@ import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 import {
   createHeadingSlugger,
+  extractHashId,
   getNodeText,
+  isSamePageHashLink,
   scrollToHeading,
 } from "../lib/markdown-slug";
 import MermaidDiagram from "./ui/MermaidDiagram";
@@ -46,7 +48,8 @@ export default function MarkdownDoc({
 
     const handleHashClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
       event.preventDefault();
-      const sectionId = href.slice(1);
+      const sectionId = extractHashId(href);
+      if (!sectionId) return;
       if (onSectionLink) {
         onSectionLink(sectionId);
         return;
@@ -92,7 +95,7 @@ export default function MarkdownDoc({
       ),
       em: ({ children }) => <em className="italic text-[var(--color-foreground)]/90">{children}</em>,
       a: ({ href, children }) => {
-        const isHash = href?.startsWith("#");
+        const isHash = href ? isSamePageHashLink(href) : false;
         const isExternal = href?.startsWith("http");
 
         return (
@@ -183,7 +186,8 @@ export default function MarkdownDoc({
     const hash = window.location.hash;
     if (!hash) return;
 
-    const id = hash.slice(1);
+    const id = extractHashId(hash);
+    if (!id) return;
     const timer = window.setTimeout(() => scrollToHeading(id), 0);
     return () => window.clearTimeout(timer);
   }, [content]);
