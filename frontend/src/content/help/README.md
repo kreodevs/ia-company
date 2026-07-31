@@ -4,32 +4,44 @@ User-facing manuals for the in-app **Ayuda / Help** section (`/help`).
 
 ## Languages
 
-| File | Locale | Route |
-|------|--------|-------|
-| `tutorial.md` | Spanish (`es`) | `/help/guia-completa` |
-| `tutorial.en.md` | English (`en`) | `/help/guia-completa` |
+Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and description switch via `getHelpArticles(lang)` in `index.ts`.
 
-Title and description come from `index.ts` and `i18n/locales/{es,en}/help.ts`. Body markdown switches with the header language selector.
+## Articles
 
-## Manual scope
-
-Non-technical **user manual** covering:
-
-- Office: commissioning work, Coordinator, quick services, approve and run
-- My jobs, War room, Products, Departments, Org Studio
-- Agents, skills, workflows, linking products and departments
-- **Equipo IA** hub and **Catalog Studio** (LLM propose → human approve → apply)
-- Consensus memory, optional schedules, GO/NO-GO decisions
-- Organization settings and human team roles
-
-No install, Docker, worker, or API documentation — operators only.
-
-## Adding an article
-
-1. Create `your-article.md` and `your-article.en.md` (GFM).
-2. Register in `ARTICLE_META` inside `index.ts` for both locales.
-3. Extend `getHelpArticles()` return array.
+| Slug | ES title | Topic |
+|------|----------|-------|
+| `guia-completa` | Manual de usuario | Overview (legacy full tutorial) |
+| `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room |
+| `guia-productos` | Productos | Lifecycle, product consensus |
+| `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
+| `guia-equipo-ia` | Equipo IA y habilidades | Agents, skills, Catalog Studio |
+| `guia-flujos` | Flujos y programaciones | Workflows, schedules, GO/NO-GO |
+| `como-construir-agentes` | ¿Cómo construir agentes? | System prompt + consensus handoff |
+| `handoffs` | Handoffs y flujo | All handoff types and pipeline effects |
 
 Default route: `/help` → `/help/guia-completa`.
 
-First `##` section (excluding “Tabla de contenidos”) opens by default as quick start. Sidebar renders each `##` / `###` as its own panel (`HelpPage` + `lib/markdown-sections.ts`).
+## Mermaid in preview
+
+Help sections render through `MarkdownDoc`, which supports fenced ` ```mermaid ` blocks (same stack as `RichMarkdownView` → `MermaidDiagram`).
+
+## Markdown stack vs TanStack Markdown
+
+We use **react-markdown + remark-gfm + mermaid** for help articles:
+
+- Static, versioned markdown in the repo — no streaming reparsing needed.
+- Mermaid and chart blocks already integrated elsewhere in the app.
+
+[TanStack Markdown](https://tanstack.com/markdown/latest) (alpha) targets parse-once AST + optional streaming AI output. It would add a dependency and migration cost without clear benefit for fixed help docs. Revisit if we stream agent documentation live into the UI.
+
+## Adding an article
+
+1. Create `your-article.md` and `your-article.en.md` (GFM + optional mermaid).
+2. Register in `HELP_ARTICLE_REGISTRY` inside `index.ts`.
+3. Add EN title/description to `EN_TITLES` if slug differs from ES copy.
+
+Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-sections.ts`).
+
+## Scope
+
+Non-technical **operator** documentation only — no Docker, worker, or API setup.

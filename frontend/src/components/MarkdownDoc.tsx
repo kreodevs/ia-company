@@ -8,6 +8,7 @@ import {
   getNodeText,
   scrollToHeading,
 } from "../lib/markdown-slug";
+import MermaidDiagram from "./ui/MermaidDiagram";
 
 function makeHeading(
   Tag: "h1" | "h2" | "h3" | "h4",
@@ -112,12 +113,21 @@ export default function MarkdownDoc({
         </blockquote>
       ),
       hr: () => <hr className="my-10 border-[var(--color-border)]" />,
-      code: ({ className: codeClassName, children }) => {
+      code: ({ className: codeClassName, children, ...props }) => {
+        const match = /language-(\w+)/.exec(codeClassName ?? "");
+        const lang = match?.[1]?.toLowerCase();
+        const text = String(children).replace(/\n$/, "");
+
+        if (lang === "mermaid") {
+          return <MermaidDiagram chart={text} className="my-4" />;
+        }
+
         const isBlock = codeClassName?.includes("language-");
         if (isBlock) {
           return (
             <code
               className={`block font-mono text-[13px] leading-relaxed text-[var(--color-foreground)] ${codeClassName ?? ""}`}
+              {...props}
             >
               {children}
             </code>
@@ -129,11 +139,25 @@ export default function MarkdownDoc({
           </code>
         );
       },
-      pre: ({ children }) => (
-        <pre className="mb-4 overflow-x-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4">
-          {children}
-        </pre>
-      ),
+      pre: ({ children, ...props }) => {
+        const child = Array.isArray(children) ? children[0] : children;
+        if (
+          child &&
+          typeof child === "object" &&
+          "props" in child &&
+          child.props?.className?.includes("language-mermaid")
+        ) {
+          return <>{children}</>;
+        }
+        return (
+          <pre
+            className="mb-4 overflow-x-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4"
+            {...props}
+          >
+            {children}
+          </pre>
+        );
+      },
       table: ({ children }) => (
         <div className="mb-6 overflow-x-auto rounded-xl border border-[var(--color-border)]">
           <table className="w-full min-w-[480px] border-collapse text-left text-sm">{children}</table>

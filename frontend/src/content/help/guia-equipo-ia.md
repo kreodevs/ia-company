@@ -1,0 +1,69 @@
+# Guía — Equipo IA y habilidades
+
+Catálogo de agentes, skills reutilizables y Catalog Studio.
+
+---
+
+## Tabla de contenidos
+
+1. [Equipo IA hub](#equipo-ia-hub)
+2. [Habilidades (skills)](#habilidades-skills)
+3. [Catalog Studio](#catalog-studio)
+4. [Relación con flujos y departamentos](#relación-con-flujos-y-departamentos)
+
+---
+
+## Equipo IA hub
+
+Ruta: **Tu oficina** → **Equipo IA** (`/ai-team`).
+
+| Pestaña | Función |
+|---------|---------|
+| **Agentes** | Lista + edición; en móvil, selector desplegable |
+| **Habilidades** | Skills del tenant |
+| **Crear agente** | Catalog Studio con IA |
+| **Crear habilidad** | Catalog Studio con IA |
+
+Los agentes son **especialistas reutilizables**: modelo, temperatura, proveedor LLM, skills asociadas.
+
+> Para construir prompts y handoffs correctos: artículo **¿Cómo construir agentes?**
+
+---
+
+## Habilidades (skills)
+
+Una skill = capacidad nombrada (SEO audit, pricing model, UX review…).
+
+```mermaid
+flowchart LR
+  S1[Skill A] --> AG1[Agente 1]
+  S1 --> AG2[Agente 2]
+  S2[Skill B] --> AG1
+```
+
+- **Reutiliza** antes de duplicar — Catalog Studio prioriza match ≥80%.
+- Nombre en kebab-case: `seo-content-strategist`.
+- Contenido: cuándo usarla + qué debe entregar + restricciones.
+
+---
+
+## Catalog Studio
+
+Flujo común (agente o skill):
+
+1. Escribes un **brief** en lenguaje natural.
+2. La IA propone **reutilizar** existente o **crear** borrador.
+3. **Munger** hace pre-mortem → puede emitir **VETO**.
+4. Marcas checkboxes de aprobación explícita.
+5. **Aprobar y aplicar** — nada se crea sin tu OK.
+
+---
+
+## Relación con flujos y departamentos
+
+| Necesitas… | Dónde |
+|------------|-------|
+| Rol nuevo en el catálogo | Equipo IA → Crear agente |
+| Mismo proceso repetible | Flujos (cadena ordenada) |
+| Equipo + marca unificada | Org Studio + design.md |
+| Falta un rol en encargo | Coordinador enlaza a Crear agente con brief precargado |

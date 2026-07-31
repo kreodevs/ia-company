@@ -67,16 +67,23 @@ Touch targets use `min-h-11` (44px) on primary controls; forms stack vertically 
 - `AgentForm` — agent configuration form with skill multi-select
 - `WorkflowCanvas` — React Flow graph editor with save to API
 - `WorkflowTemplateCard` — workflow list card with agent pipeline preview, search-friendly metadata, and explicit editor/delete actions (used on tenant `/office/workflows` and admin `/admin/templates`)
-| `MarkdownDoc` — renders help articles (GFM markdown via `react-markdown` + `remark-gfm`); used per-section in Help with in-doc link navigation |
+| `MarkdownDoc` — renders help articles (GFM + Mermaid via `react-markdown`); used per-section in Help |
 | Help sections | `lib/markdown-sections.ts` splits tutorials by `##` / `###`; sidebar switches visible section container |
 
 ## Help content
 
-Articles live under `src/content/help/`:
+Articles live under `src/content/help/` (see `README.md` there for TanStack Markdown evaluation).
 
-| File | Route | Description |
-|------|-------|-------------|
-| `tutorial.md` / `tutorial.en.md` | `/help/guia-completa` | Guía completa: Oficina, productos GitHub, war room, `/debug/*`, schedules opcionales |
+| Slug | Topic |
+|------|-------|
+| `guia-completa` | Full user manual (overview) |
+| `guia-oficina` | Office, jobs, war room |
+| `guia-productos` | Products and product consensus |
+| `guia-departamentos` | Org Studio, design.md, artifacts |
+| `guia-equipo-ia` | Agents, skills, Catalog Studio |
+| `guia-flujos` | Workflows and schedules |
+| `como-construir-agentes` | Building agents + correct JSON handoff |
+| `handoffs` | All handoff types and flow effects |
 
 Register new articles in `src/content/help/index.ts`.
 

@@ -427,6 +427,22 @@ Comparte este manual con nuevos miembros para que encarguen trabajo desde el pri
 
 ---
 
+## Guías especializadas
+
+Además de este manual, el centro de ayuda incluye artículos con diagramas Mermaid:
+
+| Guía | Ruta |
+|------|------|
+| Oficina y encargos | `/help/guia-oficina` |
+| Productos | `/help/guia-productos` |
+| Departamentos | `/help/guia-departamentos` |
+| Equipo IA y habilidades | `/help/guia-equipo-ia` |
+| Flujos y programaciones | `/help/guia-flujos` |
+| **¿Cómo construir agentes?** | `/help/como-construir-agentes` |
+| **Handoffs y flujo** | `/help/handoffs` |
+
+---
+
 ## Preguntas frecuentes
 
 ### ¿Los agentes ejecutan cosas sin mi permiso?

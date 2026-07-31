@@ -427,6 +427,22 @@ Share this manual with new members so they can commission work from day one.
 
 ---
 
+## Specialized guides
+
+Beyond this manual, the help center includes articles with Mermaid diagrams:
+
+| Guide | Route |
+|-------|-------|
+| Office and jobs | `/help/guia-oficina` |
+| Products | `/help/guia-productos` |
+| Departments | `/help/guia-departamentos` |
+| AI team and skills | `/help/guia-equipo-ia` |
+| Workflows and schedules | `/help/guia-flujos` |
+| **How to build agents** | `/help/como-construir-agentes` |
+| **Handoffs and flow** | `/help/handoffs` |
+
+---
+
 ## Frequently asked questions
 
 ### Do agents run things without my permission?
