@@ -109,6 +109,101 @@ function buildBriefWithAnswers(brief: string, answers?: Record<string, string>):
   return lines.length ? `${trimmed}\n\n--- Clarifications ---\n${lines.join("\n\n")}` : trimmed;
 }
 
+/** True when every gap item is addressed by agents/skills the proposal will create on apply. */
+export function plannedCatalogCoversGaps(proposal: WorkflowStudioProposal): boolean {
+  const gaps = proposal.gaps;
+  if (!gaps) return false;
+
+  const newSkillNames = new Set((proposal.newSkills ?? []).map((skill) => slugifyCatalogName(skill.name)));
+  const newAgentNames = new Set((proposal.newAgents ?? []).map((agent) => slugifyCatalogName(agent.name)));
+  const stepAgentNames = new Set(
+    (proposal.workflow?.steps ?? []).map((step) => slugifyCatalogName(step.agentName)),
+  );
+
+  const skillsCovered =
+    gaps.missingSkills.length === 0 ||
+    gaps.missingSkills.every((skill) => newSkillNames.has(slugifyCatalogName(skill)));
+
+  const agentsCovered =
+    gaps.missingAgents.length === 0 ||
+    gaps.missingAgents.every((agent) => {
+      const slug = slugifyCatalogName(agent);
+      return newAgentNames.has(slug) || stepAgentNames.has(slug);
+    }) ||
+    (newAgentNames.size > 0 &&
+      [...newAgentNames].some((name) => stepAgentNames.has(name)));
+
+  const hasPlannedAdditions = newSkillNames.size > 0 || newAgentNames.size > 0;
+
+  return hasPlannedAdditions && skillsCovered && agentsCovered;
+}
+
+function buildWorkflowMungerContext(proposal: WorkflowStudioProposal): string {
+  const sections = [`Brief:\n${proposal.brief}`];
+
+  if (proposal.workflow) {
+    sections.push(
+      `Workflow "${proposal.workflow.name}": ${proposal.workflow.description}`,
+      `Execution order:\n${proposal.workflow.steps
+        .map((step, index) => `${index + 1}. ${step.agentName}${step.label ? ` — ${step.label}` : ""}`)
+        .join("\n")}`,
+    );
+  }
+
+  if (proposal.existingAgentNames?.length) {
+    sections.push(`Reused tenant agents: ${proposal.existingAgentNames.join(", ")}`);
+  }
+
+  if (proposal.gaps) {
+    sections.push(`Gap analysis (already identified by designer):\n${JSON.stringify(proposal.gaps, null, 2)}`);
+  }
+
+  if (proposal.newAgents?.length) {
+    sections.push(
+      "New agents TO BE CREATED when the founder approves (before the workflow runs):\n" +
+        JSON.stringify(
+          proposal.newAgents.map((agent) => ({
+            name: agent.name,
+            role: agent.role,
+            skillNames: agent.skillNames ?? [],
+          })),
+          null,
+          2,
+        ),
+    );
+  }
+
+  if (proposal.newSkills?.length) {
+    sections.push(
+      "New skills TO BE CREATED when the founder approves (before the workflow runs):\n" +
+        JSON.stringify(
+          proposal.newSkills.map((skill) => ({ name: skill.name, description: skill.description })),
+          null,
+          2,
+        ),
+    );
+  }
+
+  return sections.join("\n\n");
+}
+
+function reconcileMungerWithPlannedCatalog(
+  proposal: WorkflowStudioProposal,
+  review: StudioMungerReview,
+): StudioMungerReview {
+  if (review.approved || !plannedCatalogCoversGaps(proposal)) return review;
+
+  return {
+    approved: true,
+    notes: [
+      review.notes,
+      "Los huecos del análisis de cobertura quedan cubiertos por los agentes/skills nuevos propuestos; el fundador los aprueba antes de crear el flujo.",
+    ]
+      .filter(Boolean)
+      .join("\n\n"),
+  };
+}
+
 async function listTenantWorkflowExamples(tenantId: string) {
   const rows = await prisma.workflow.findMany({
     where: { tenantId },
@@ -137,9 +232,9 @@ export async function reviewWorkflowProposalWithMunger(
   tenantId: string,
   proposal: WorkflowStudioProposal,
 ): Promise<StudioMungerReview> {
-  const target = proposal.workflow
-    ? `Workflow "${proposal.workflow.name}": ${proposal.workflow.steps.map((s) => s.agentName).join(" → ")}`
-    : "Clarification-only response";
+  if (!proposal.workflow) {
+    return { approved: true, notes: "Clarification-only — no workflow to review." };
+  }
 
   try {
     const parsed = await generateCatalogJson(
@@ -147,9 +242,12 @@ export async function reviewWorkflowProposalWithMunger(
       [
         `You are Charlie Munger (${MUNGER_AGENT_NAME}). Review a proposed agent workflow for a tenant AI company.`,
         'Respond ONLY with JSON: { "notes": "string", "veto": null | { "by": "critic-munger", "reason": "fatal flaw" } }',
-        "Veto for: incoherent sequence, missing deliverable, illegal scope, or agents that cannot plausibly complete the goal.",
+        "The proposal may include newAgents and newSkills that the founder approves and that are persisted BEFORE the workflow executes.",
+        "Skills (e.g. github-explorer, agent-browser) ARE execution capabilities — do not veto because the tenant catalog lacks them today if newSkills already proposes them.",
+        "Do NOT veto for missing agents/skills that gaps + newAgents + newSkills already address.",
+        "Veto only for: incoherent sequence, illegal scope, impossible deliverable, or fatal flaws that remain AFTER counting planned catalog additions.",
       ].join("\n"),
-      [`Brief: ${proposal.brief}`, target].join("\n"),
+      buildWorkflowMungerContext(proposal),
       CATALOG_STUDIO_MAX_TOKENS_MUNGER,
       0.3,
     );
@@ -165,11 +263,12 @@ export async function reviewWorkflowProposalWithMunger(
       typeof (vetoRaw as { reason?: string }).reason === "string" &&
       (vetoRaw as { reason: string }).reason.trim()
     ) {
-      return {
+      const vetoReview: StudioMungerReview = {
         approved: false,
         notes: typeof parsed.notes === "string" ? parsed.notes : "",
         veto: { by: MUNGER_AGENT_NAME, reason: (vetoRaw as { reason: string }).reason.trim() },
       };
+      return reconcileMungerWithPlannedCatalog(proposal, vetoReview);
     }
 
     return {
