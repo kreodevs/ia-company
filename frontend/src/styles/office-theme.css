@@ -1505,6 +1505,108 @@ button.office-room-card {
   color: #7dd3fc;
 }
 
+/* Light theme (Stripe HDS) — floor plan on pale surfaces, not dark slate slab */
+html[data-theme="letter"] .office-floor {
+  border: 1px solid var(--quiet-surface);
+  background: linear-gradient(
+    165deg,
+    var(--surface-white) 0%,
+    var(--pale-background) 58%,
+    rgba(83, 58, 253, 0.05) 100%
+  );
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-floor-subtitle,
+html[data-theme="letter"] .office-floor-custom-title,
+html[data-theme="letter"] .office-floor-custom-empty,
+html[data-theme="letter"] .office-room-desc,
+html[data-theme="letter"] .office-room-meta,
+html[data-theme="letter"] .office-reception-desc {
+  color: var(--slate-body);
+}
+
+html[data-theme="letter"] .office-floor-stat {
+  border-color: var(--quiet-surface);
+  color: var(--slate-body);
+  background: var(--surface-white);
+}
+
+html[data-theme="letter"] .office-floor-stat[data-active] {
+  border-color: rgba(83, 58, 253, 0.32);
+  color: var(--stripe-indigo);
+  background: rgba(83, 58, 253, 0.08);
+}
+
+html[data-theme="letter"] .office-reception-card {
+  border-color: rgba(180, 83, 9, 0.28);
+  background: linear-gradient(145deg, #fffefb 0%, #fef7eb 100%);
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-reception-card:hover {
+  border-color: rgba(180, 83, 9, 0.42);
+  box-shadow: var(--shadow-md-bottom);
+}
+
+html[data-theme="letter"] .office-reception-cta {
+  color: #b45309;
+}
+
+html[data-theme="letter"] .office-room-card {
+  border-color: var(--quiet-surface);
+  background: var(--surface-white);
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-room-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md-bottom);
+}
+
+html[data-theme="letter"] .office-room-active {
+  box-shadow: 0 0 0 1px rgba(83, 58, 253, 0.32);
+}
+
+html[data-theme="letter"] .office-room-strategy {
+  border-color: rgba(83, 58, 253, 0.2);
+}
+
+html[data-theme="letter"] .office-room-product {
+  border-color: rgba(127, 125, 252, 0.28);
+}
+
+html[data-theme="letter"] .office-room-engineering {
+  border-color: rgba(14, 165, 233, 0.28);
+}
+
+html[data-theme="letter"] .office-room-business {
+  border-color: rgba(229, 165, 54, 0.32);
+}
+
+html[data-theme="letter"] .office-room-custom {
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-room-status {
+  background: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-room-status[data-status="busy"] {
+  background: var(--stripe-indigo);
+  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.16);
+}
+
+html[data-theme="letter"] .office-room-agent-dot {
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .office-room-enter,
+html[data-theme="letter"] .office-room-active-link,
+html[data-theme="letter"] .office-link-inline {
+  color: var(--stripe-indigo);
+}
+
 /* Department room page */
 
 .office-dept-page {
