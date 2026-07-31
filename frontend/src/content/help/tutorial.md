@@ -70,11 +70,8 @@ Cada tema tiene su **guía propia** con diagramas y detalle. Ábrela desde **Art
 | **Oficina y encargos** | Coordinador, alcance, Mis encargos, War room, archivo | [/help/guia-oficina](/help/guia-oficina) |
 | **Productos** | Ciclo de vida, oportunidades, memoria por producto | [/help/guia-productos](/help/guia-productos) |
 | **Departamentos** | Org Studio, `design.md`, tokens, galería | [/help/guia-departamentos](/help/guia-departamentos) |
-| **Equipo IA y habilidades** | Agentes, skills, Catalog Studio | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
-| **Flujos y programaciones** | Playbooks, timers, GO/NO-GO de ciclo | [/help/guia-flujos](/help/guia-flujos) |
-| **Operaciones** | Panel `/ops`: KPIs, programaciones, preview 7 días | [/help/guia-operaciones](/help/guia-operaciones) |
-| **¿Cómo construir agentes?** | System prompt, carpetas `docs/`, handoff JSON | [/help/como-construir-agentes](/help/como-construir-agentes) |
-| **Handoffs y flujo** | Tipos de handoff y efecto en ejecución | [/help/handoffs](/help/handoffs) |
+| **Equipo IA y habilidades** | Agentes, skills, construcción de agentes y handoffs | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
+| **Flujos y programaciones** | Playbooks, programaciones, panel Operaciones y GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
 
 ### Cómo encaja todo
 
@@ -102,7 +99,7 @@ flowchart TB
 | Memoria de compañía | Oficina de depuración → Consenso (`/debug/consensus`) | [Productos](/help/guia-productos) |
 | Memoria por producto | Consenso (`/debug/products/:id/consensus`) o Configuración del producto → enlace | [Productos](/help/guia-productos) |
 | Decisiones GO/NO-GO | Oficina de depuración → Decisiones (`/decisions`) o detalle del encargo | [Flujos](/help/guia-flujos) |
-| Operaciones / meta-orchestrator | Oficina de depuración → Operaciones (`/ops`) | [Operaciones](/help/guia-operaciones) |
+| Operaciones / meta-orchestrator | Oficina de depuración → Operaciones (`/ops`) | [Flujos](/help/guia-flujos#operaciones-ops) |
 | Configuración LLM, límites, programaciones | Configuración → pestañas (admin tenant) | [Flujos](/help/guia-flujos) |
 | Equipo humano y roles | Oficina de depuración → Equipo (admin) | — |
 
@@ -137,7 +134,7 @@ Revisión de **riesgos** antes de aplicar propuestas en Catalog Studio u Org Stu
 
 ### ¿Cómo construyo un agente de marketing o diseño?
 
-Lee [/help/como-construir-agentes](/help/como-construir-agentes) y [/help/handoffs](/help/handoffs). No uses JSON inventado tipo `DesignHandoff` — la plataforma espera el handoff de **consenso**.
+Lee [/help/guia-equipo-ia#cómo-construir-agentes](/help/guia-equipo-ia#cómo-construir-agentes) y [/help/guia-equipo-ia#handoffs-y-flujo](/help/guia-equipo-ia#handoffs-y-flujo). No uses JSON inventado tipo `DesignHandoff` — la plataforma espera el handoff de **consenso**.
 
 ---
 

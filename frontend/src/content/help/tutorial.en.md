@@ -70,11 +70,8 @@ Each topic has its **own guide** with diagrams and detail. Open it from **Articl
 | **Office and jobs** | Coordinator, scope, My jobs, War room, archive | [/help/guia-oficina](/help/guia-oficina) |
 | **Products** | Lifecycle, opportunities, per-product memory | [/help/guia-productos](/help/guia-productos) |
 | **Departments** | Org Studio, `design.md`, tokens, gallery | [/help/guia-departamentos](/help/guia-departamentos) |
-| **AI team and skills** | Agents, skills, Catalog Studio | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
-| **Workflows and schedules** | Playbooks, timers, cycle GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
-| **Operations** | `/ops` panel: KPIs, schedules, 7-day preview | [/help/guia-operaciones](/help/guia-operaciones) |
-| **How to build agents** | System prompt, `docs/` folders, JSON handoff | [/help/como-construir-agentes](/help/como-construir-agentes) |
-| **Handoffs and flow** | Handoff types and execution effects | [/help/handoffs](/help/handoffs) |
+| **AI team and skills** | Agents, skills, building agents, and handoffs | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
+| **Workflows and schedules** | Playbooks, schedules, Operations panel, and GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
 
 ### How it fits together
 
@@ -102,7 +99,7 @@ flowchart TB
 | Company memory | Debug office → Consensus (`/debug/consensus`) | [Products](/help/guia-productos) |
 | Per-product memory | Consensus (`/debug/products/:id/consensus`) or Product settings → link | [Products](/help/guia-productos) |
 | GO/NO-GO decisions | Debug office → Decisions (`/decisions`) or job detail | [Workflows](/help/guia-flujos) |
-| Operations / meta-orchestrator | Debug office → Operations (`/ops`) | [Operations](/help/guia-operaciones) |
+| Operations / meta-orchestrator | Debug office → Operations (`/ops`) | [Workflows](/help/guia-flujos#operations-ops) |
 | LLM settings, limits, schedules | Settings tabs (tenant admin) | [Workflows](/help/guia-flujos) |
 | Human team and roles | Debug office → Team (admin) | — |
 
@@ -137,7 +134,7 @@ Check **My jobs** or **Debug → Runs**, read the error, adjust the brief, and r
 
 ### How do I build a marketing or design agent?
 
-Read [/help/como-construir-agentes](/help/como-construir-agentes) and [/help/handoffs](/help/handoffs). Do not use invented JSON like `DesignHandoff` — the platform expects **consensus** handoff.
+Read [/help/guia-equipo-ia#how-to-build-agents](/help/guia-equipo-ia#how-to-build-agents) and [/help/guia-equipo-ia#handoffs-and-flow](/help/guia-equipo-ia#handoffs-and-flow). Do not use invented JSON like `DesignHandoff` — the platform expects **consensus** handoff.
 
 ---
 

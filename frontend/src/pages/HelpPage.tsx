@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Building2, ChevronDown, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
-import { defaultHelpSlug, getHelpArticle, getHelpArticles } from "../content/help";
+import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
 import {
   HELP_INTRO_SECTION_ID,
   getDefaultSectionId,
@@ -114,6 +114,11 @@ function HelpSectionLink({
 export default function HelpPage() {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
+  const redirectTarget = resolveHelpSlugRedirect(slug, i18n.language);
+  if (redirectTarget) {
+    return <Navigate to={`/help/${redirectTarget}`} replace />;
+  }
+
   const contentRef = useRef<HTMLDivElement>(null);
   const articles = getHelpArticles(i18n.language);
   const article = getHelpArticle(slug, i18n.language);

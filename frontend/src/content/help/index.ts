@@ -11,12 +11,6 @@ import guiaEquipoIaEs from "./guia-equipo-ia.md?raw";
 import guiaEquipoIaEn from "./guia-equipo-ia.en.md?raw";
 import guiaFlujosEs from "./guia-flujos.md?raw";
 import guiaFlujosEn from "./guia-flujos.en.md?raw";
-import guiaOperacionesEs from "./guia-operaciones.md?raw";
-import guiaOperacionesEn from "./guia-operaciones.en.md?raw";
-import comoConstruirAgentesEs from "./como-construir-agentes.md?raw";
-import comoConstruirAgentesEn from "./como-construir-agentes.en.md?raw";
-import handoffsEs from "./handoffs.md?raw";
-import handoffsEn from "./handoffs.en.md?raw";
 
 export interface HelpArticle {
   slug: string;
@@ -26,6 +20,20 @@ export interface HelpArticle {
 }
 
 export const defaultHelpSlug = "guia-completa";
+
+/** Legacy slugs → current article + optional in-page section hash. */
+export const HELP_SLUG_REDIRECTS: Record<
+  string,
+  { slug: string; hashEs?: string; hashEn?: string }
+> = {
+  "guia-operaciones": { slug: "guia-flujos", hashEs: "operaciones-ops", hashEn: "operations-ops" },
+  "como-construir-agentes": {
+    slug: "guia-equipo-ia",
+    hashEs: "cómo-construir-agentes",
+    hashEn: "how-to-build-agents",
+  },
+  handoffs: { slug: "guia-equipo-ia", hashEs: "handoffs-y-flujo", hashEn: "handoffs-and-flow" },
+};
 
 interface HelpArticleMeta {
   slug: string;
@@ -67,37 +75,16 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-equipo-ia",
     title: "Equipo IA y habilidades",
-    description: "Catálogo de agentes, skills y Catalog Studio.",
+    description: "Agentes, skills, Catalog Studio, construcción de agentes y handoffs.",
     contentEs: guiaEquipoIaEs,
     contentEn: guiaEquipoIaEn,
   },
   {
     slug: "guia-flujos",
     title: "Flujos y programaciones",
-    description: "Canvas de workflows, presets fixed-only, decisiones GO/NO-GO (sin Meta nuevo).",
+    description: "Workflows, programaciones, panel Operaciones (/ops) y decisiones GO/NO-GO.",
     contentEs: guiaFlujosEs,
     contentEn: guiaFlujosEn,
-  },
-  {
-    slug: "guia-operaciones",
-    title: "Operaciones",
-    description: "Panel /ops: KPIs, programaciones, preview 7 días y motivos de skip.",
-    contentEs: guiaOperacionesEs,
-    contentEn: guiaOperacionesEn,
-  },
-  {
-    slug: "como-construir-agentes",
-    title: "¿Cómo construir agentes?",
-    description: "System prompt, entregables, carpetas docs/ y handoff JSON correcto.",
-    contentEs: comoConstruirAgentesEs,
-    contentEn: comoConstruirAgentesEn,
-  },
-  {
-    slug: "handoffs",
-    title: "Handoffs y flujo",
-    description: "Todos los tipos de handoff, dónde se guardan y efecto en la ejecución.",
-    contentEs: handoffsEs,
-    contentEn: handoffsEn,
   },
 ];
 
@@ -120,23 +107,11 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   },
   "guia-equipo-ia": {
     title: "AI team and skills",
-    description: "Agent catalog, skills, and Catalog Studio.",
+    description: "Agents, skills, Catalog Studio, building agents, and handoffs.",
   },
   "guia-flujos": {
     title: "Workflows and schedules",
-    description: "Workflow canvas, fixed-only schedule presets, GO/NO-GO (no new Meta rules).",
-  },
-  "guia-operaciones": {
-    title: "Operations",
-    description: "/ops panel: KPIs, schedules, 7-day preview, and skip reasons.",
-  },
-  "como-construir-agentes": {
-    title: "How to build agents",
-    description: "System prompt, deliverables, docs/ folders, and correct JSON handoff.",
-  },
-  handoffs: {
-    title: "Handoffs and flow",
-    description: "All handoff types, where they are stored, and execution effects.",
+    description: "Workflows, schedules, Operations panel (/ops), and GO/NO-GO decisions.",
   },
 };
 
@@ -175,4 +150,16 @@ export function getHelpArticle(
   const articles = getHelpArticles(lang);
   if (!slug) return articles.find((a) => a.slug === defaultHelpSlug);
   return articles.find((a) => a.slug === slug);
+}
+
+export function resolveHelpSlugRedirect(
+  slug: string | undefined,
+  lang: string = "es",
+): string | undefined {
+  if (!slug) return undefined;
+  const redirect = HELP_SLUG_REDIRECTS[slug];
+  if (!redirect) return undefined;
+  const locale = lang === "en" ? "en" : "es";
+  const hash = locale === "en" ? redirect.hashEn ?? redirect.hashEs : redirect.hashEs;
+  return hash ? `${redirect.slug}#${hash}` : redirect.slug;
 }

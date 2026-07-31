@@ -151,4 +151,4 @@ No del todo. Encargos aprobados desde la Oficina viven en **Mis encargos** (`/of
 
 ### ¿Dónde audito handoffs JSON?
 
-**War room → Salud de entregables** o consenso del producto → **Revisiones**. Ver [/help/handoffs](/help/handoffs).
+**War room → Salud de entregables** o consenso del producto → **Revisiones**. Ver [Handoffs y flujo](/help/guia-equipo-ia#handoffs-y-flujo).

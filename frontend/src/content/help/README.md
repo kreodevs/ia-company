@@ -6,21 +6,30 @@ User-facing manuals for the in-app **Ayuda / Help** section (`/help`).
 
 Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and description switch via `getHelpArticles(lang)` in `index.ts`.
 
-## Articles
+## Articles (one document per section)
 
 | Slug | ES title | Topic |
 |------|----------|-------|
-| `guia-completa` | Manual de usuario | Hub: inicio rápido + mapa + FAQ (no duplica guías) |
-| `guia-oficina` | Oficina y encargos | Coordinator, dept./product scope, jobs, war room, archive |
-| `guia-productos` | Productos | Phases, product consensus (`/debug/products/:id/consensus`), desk |
-| `guia-departamentos` | Departamentos | Virtual rooms vs Org Studio, design.md, gallery in Settings |
-| `guia-equipo-ia` | Equipo IA y habilidades | `/ai-team` tabs, Catalog Studio, manual New agent |
-| `guia-flujos` | Flujos y programaciones | `/office/workflows`, Settings → Schedules, GO/NO-GO |
-| `guia-operaciones` | Operaciones | `/ops` KPIs, scheduled activities, 7-day preview, skip reasons |
-| `como-construir-agentes` | ¿Cómo construir agentes? | System prompt + consensus JSON handoff |
-| `handoffs` | Handoffs y flujo | Parsed fields, disk/org artifacts, UI diagnosis codes |
+| `guia-completa` | Manual de usuario | Hub: inicio rápido + mapa + FAQ |
+| `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room, archive |
+| `guia-productos` | Productos | Phases, consensus, desk |
+| `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
+| `guia-equipo-ia` | Equipo IA y habilidades | Agents, skills, Catalog Studio, building agents, handoffs |
+| `guia-flujos` | Flujos y programaciones | Workflows, schedules, Operations `/ops`, GO/NO-GO |
 
 Default route: `/help` → `/help/guia-completa`.
+
+### Legacy slug redirects
+
+Old micro-article URLs redirect in `HelpPage` via `HELP_SLUG_REDIRECTS`:
+
+| Old slug | Redirects to |
+|----------|--------------|
+| `guia-operaciones` | `guia-flujos#operaciones-ops` |
+| `como-construir-agentes` | `guia-equipo-ia#cómo-construir-agentes` |
+| `handoffs` | `guia-equipo-ia#handoffs-y-flujo` |
+
+Within each guide, `##` / `###` headings become the **En este artículo** sidebar sections.
 
 ## Navigation notes (for authors)
 
@@ -43,17 +52,19 @@ We use **react-markdown + remark-gfm + mermaid** for help articles:
 
 [TanStack Markdown](https://tanstack.com/markdown/latest) (alpha) targets parse-once AST + optional streaming AI output. It would add a dependency and migration cost without clear benefit for fixed help docs. Revisit if we stream agent documentation live into the UI.
 
-## Adding an article
+## Adding content
 
-1. Create `your-article.md` and `your-article.en.md` (GFM + optional mermaid).
-2. Register in `HELP_ARTICLE_REGISTRY` inside `index.ts`.
-3. Add EN title/description to `EN_TITLES` if slug differs from ES copy.
+Prefer adding `##` sections to an existing guide rather than creating a new article. If a new top-level section is needed:
 
-Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-sections.ts`).
+1. Add `##` / `###` blocks to the relevant `guia-*.md` and `.en.md`.
+2. Update the guide's table of contents at the top.
+3. Register a new article only when it is a genuinely separate product area.
 
-**Mobile / tablet:** a horizontal **Guías por tema** chip strip (below quick links) lists every article without expanding the sidebar accordion. The sidebar list stays expanded by default on small screens.
+## Mobile UX
 
-**Mobile / iPad (< 1024px):** Help icon (book) in the top bar next to notifications. On `HelpPage`, **Artículos** and **En este artículo** are collapsible toggles (collapsed by default); document content renders first. Desktop: always-expanded sidebar.
+- **Guías por tema** chip strip (below quick links) lists all 6 guides on mobile/tablet.
+- **Artículos** sidebar stays expanded by default on small screens.
+- Help icon (book) in the top bar on viewports &lt; 1024px.
 
 ## Scope
 

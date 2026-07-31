@@ -151,4 +151,4 @@ Not exactly. Jobs approved from the Office live under **My jobs** (`/office/enca
 
 ### Where do I audit JSON handoffs?
 
-**War room → Deliverable health** or product consensus → **Revisions**. See [/help/handoffs](/help/handoffs).
+**War room → Deliverable health** or product consensus → **Revisions**. See [Handoffs and flow](/help/guia-equipo-ia#handoffs-and-flow).
