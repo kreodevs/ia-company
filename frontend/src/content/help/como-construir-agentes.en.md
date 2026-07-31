@@ -179,8 +179,10 @@ Optional: technical JSON annex *inside* the brief markdown
 
 ## Create the agent in the UI
 
-1. **AI team** → **Create agent** (Catalog Studio) or **New agent** (manual).
-2. Paste the full system prompt.
-3. Assign skills: `frontend-design`, `ui-ux-pro-max` for design-lead.
-4. Approve after Munger if applicable.
-5. Attach to department in Org Studio or use in a workflow.
+1. **AI team** → **Create agent** tab (Catalog Studio with Munger) **or** **Agents** tab → **New agent** (manual form).
+2. Paste the full system prompt with `## Role`, `## Persona`, etc.
+3. Assign skills in the form — e.g. `frontend-design`, `ui-ux-pro-max` for design-lead.
+4. In Catalog Studio: check approval boxes and pass Munger when applicable.
+5. Attach to a department in Org Studio or use in a workflow / Office job.
+
+Agents run only when they exist in the tenant catalog and are referenced by the Coordinator, a workflow, or a department.

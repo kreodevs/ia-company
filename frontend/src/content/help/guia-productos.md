@@ -9,7 +9,8 @@ Registrar productos, vincular departamentos y usar la memoria por producto.
 1. [Ciclo de vida](#ciclo-de-vida)
 2. [Vincular departamento](#vincular-departamento)
 3. [Memoria y consenso del producto](#memoria-y-consenso-del-producto)
-4. [Lanzar trabajo sobre un producto](#lanzar-trabajo-sobre-un-producto)
+4. [Escritorio y war room](#escritorio-y-war-room)
+5. [Lanzar trabajo sobre un producto](#lanzar-trabajo-sobre-un-producto)
 
 ---
 
@@ -17,30 +18,35 @@ Registrar productos, vincular departamentos y usar la memoria por producto.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> building: Registrar / GO
+  [*] --> queued: Registrar
+  queued --> evaluating: Evaluar idea
+  evaluating --> building: GO humano / bootstrap
   building --> launching: Listo para mercado
-  launching --> growing: Tracción
+  launching --> growing: Tracción / revenue
   growing --> paused: Pausar
   paused --> growing: Reanudar
   growing --> archived: Archivar
-  building --> archived: Cancelar
+  building --> archived: Cancelar (NO-GO)
 ```
 
-Cada producto tiene workspace bajo `projects/{slug}/` con su propio `consensus.md` y carpetas `docs/`.
+Cada producto tiene workspace bajo `projects/{slug}/` con su propio `consensus.md` (sincronizado desde la UI) y carpetas `docs/`.
+
+Desde **Productos** puedes registrar uno existente, crear workspace nuevo (bootstrap), importar carpetas detectadas, marcar foco, pausar o archivar.
 
 ---
 
 ## Vincular departamento
 
-1. Abre **Configuración del producto**.
-2. Sección **Departamento** → elige el departamento (p. ej. Marketing).
-3. Guarda.
+1. Abre **Productos** → el producto → **Configuración** (`/products/:id/settings`).
+2. Pestaña **General** → **Departamento** → elige el Org Unit (p. ej. agencia de marketing).
+3. Opcional: ajusta **Tipo de work item** (`product`, `client`, `campaign`, `project`).
+4. Guarda.
 
 Efecto:
 
-- Encargos con alcance «departamento» usan agentes y `design.md` de ese dept.
-- Los artefactos del run pueden aparecer en la **galería del departamento**.
-- Desde el departamento puedes lanzar runs con este producto como work item.
+- Runs con alcance de departamento usan agentes y `design.md` de ese Org Unit.
+- Los handoffs completados crean **artefactos en la galería** del departamento (si hay producto + dept. vinculados).
+- Desde la ficha del departamento puedes **lanzar trabajo** eligiendo producto vinculado.
 
 ---
 
@@ -50,8 +56,10 @@ Cada producto mantiene **memoria propia**: positioning, pricing, decisiones de f
 
 | Vista | Ruta | Qué contiene |
 |-------|------|--------------|
-| Consenso del producto | Producto → Consenso | Documento vivo + pestaña **Revisiones** (un handoff por paso) |
-| Consenso global tenant | Menú depuración → Consenso | Estrategia de compañía (separado del producto) |
+| Consenso del producto | Depuración → Consenso → selector de producto, o Configuración del producto → enlace | Documento vivo + pestaña **Revisiones** (un handoff por paso de agente) |
+| Consenso global tenant | Depuración → Consenso (`/debug/consensus`) | Estrategia de compañía, pipeline de ideas, next action de ciclo |
+
+La pestaña **Revisiones** lista `consensusUpdate`, decisiones, preguntas abiertas y vetos por paso. El documento principal acumula ciclos con timestamp.
 
 Tras un encargo importante, pide al Coordinador que resuma decisiones o edita la memoria tú mismo.
 
@@ -59,10 +67,22 @@ Tras un encargo importante, pide al Coordinador que resuma decisiones o edita la
 
 ---
 
+## Escritorio y war room
+
+| Vista | Ruta | Uso |
+|-------|------|-----|
+| **Escritorio** | `/products/:id/desk` | Kanban, roadmap, señales, playbooks por producto |
+| **War room** | `/war-room/:id` | Progreso en vivo, salud de entregables, chat |
+| **Código** | `/products/:id/code` | Explorador del workspace |
+| **Equipo** | `/products/:id/team` | Agentes activos en el producto |
+
+---
+
 ## Lanzar trabajo sobre un producto
 
-- **Oficina** → alcance «Un producto» al aprobar.
-- **Departamento** → «Lanzar trabajo del departamento» + producto vinculado.
-- **Flujos** → ejecutar con semilla que mencione el slug del producto.
+- **War room** o **sala de departamento** → selector de alcance «producto» + Coordinador.
+- **Oficina** → el Coordinador infiere producto del brief o pregunta; también puedes partir de un servicio rápido con producto en foco.
+- **Departamento** → «Lanzar trabajo» + producto vinculado (`/org-units/:id`).
+- **Flujos** → ejecutar desde el editor con consenso tenant o semilla que nombre el slug.
 
-El worker carga el consenso del producto en memoria compartida antes del primer agente.
+El worker carga el consenso del producto en memoria compartida antes del primer agente cuando el encargo está vinculado a ese producto.

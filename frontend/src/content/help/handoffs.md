@@ -1,6 +1,6 @@
 # Handoffs y flujo
 
-Referencia exclusiva de **todos los handoffs** en Auto-Company: qué son, dónde se guardan y cómo afectan la ejecución.
+Referencia de **todos los handoffs** en Auto-Company: qué son, dónde se guardan y cómo afectan la ejecución.
 
 ---
 
@@ -24,28 +24,28 @@ Referencia exclusiva de **todos los handoffs** en Auto-Company: qué son, dónde
 ```mermaid
 flowchart TB
   subgraph run [Run de workflow / encargo]
-    A1[Agente paso 1] --> H1[Output markdown + JSON]
-    A2[Agente paso 2] --> H2[Output markdown + JSON]
-    A3[Agente paso N] --> H3[Output markdown + JSON]
+    A1[Agente paso 1] --> H1[Markdown + JSON]
+    A2[Agente paso 2] --> H2[Markdown + JSON]
+    A3[Agente paso N] --> H3[Markdown + JSON]
   end
-  H1 --> P[parseConsensusHandoffFromOutput]
+  H1 --> P[Parser de consenso]
   H2 --> P
   H3 --> P
-  P --> R[Revisiones consenso producto]
+  P --> R[Revisiones — consenso producto]
   P --> NA[nextAction en memoria]
   H1 --> W{write_file?}
-  W -->|Sí| D[docs/role/]
-  W -->|No| AP[persistHandoffAsAgentDoc]
-  H1 --> OA[Artefacto org gallery]
+  W -->|Sí| D[docs/rol/]
+  W -->|No| AP[Auto-guardado opcional]
+  H1 --> OA[Galería departamento]
 ```
 
-Al **completar** un run con producto en scope, `processConvergenceAfterRun`:
+Al **completar** un run con producto en scope, el motor:
 
-1. Recorre `_history` del run.
-2. Extrae handoff JSON de cada paso.
-3. Append a consenso del producto (una revisión por paso).
-4. Opcionalmente persiste markdown en `docs/{rol}/`.
-5. Crea artefactos en galería del departamento si aplica.
+1. Recorre el historial de pasos del run.
+2. Extrae el bloque JSON de consenso de cada output.
+3. Añade **una revisión por paso** al consenso del producto.
+4. Persiste markdown en `docs/{rol}/` si el agente no usó `write_file`.
+5. Crea artefactos en galería del departamento cuando hay Org Unit vinculado.
 
 ---
 
@@ -63,28 +63,30 @@ Al **completar** un run con producto en scope, `processConvergenceAfterRun`:
 }
 ```
 
-### Campos parseados
+### Campos que la plataforma interpreta
 
-| Campo | Parser | Efecto en el flujo |
-|-------|--------|-------------------|
-| `consensusUpdate` | `product-consensus.ts` | Cuerpo de la revisión; visible en Producto → Consenso → Revisiones |
-| `nextAction` | Igual + `product-run-closure` | Próximo foco; detecta ciclos atascados si se repite |
-| `decisions` | Igual | Lista de decisiones en la revisión |
-| `openQuestions` | Igual | Pendientes explícitos |
-| `veto` | Igual + Munger gate | Si `by` + `reason` válidos → run puede detenerse |
+| Campo | Efecto |
+|-------|--------|
+| `consensusUpdate` | Cuerpo de la revisión; visible en Consenso del producto → **Revisiones** |
+| `nextAction` | Próximo foco; detección de ciclos atascados si se repite |
+| `decisions` | Lista de decisiones en la revisión |
+| `openQuestions` | Pendientes explícitos |
+| `veto` | Si `by` + `reason` válidos → puede detener el run o bloquear convergencia |
 
-Si **falta** el bloque JSON, el sistema usa el markdown fuera del fence como contenido (`stripConsensusJsonBlocks` fallback) — pierdes campos estructurados.
+El parser busca objetos JSON en el output (bloques fenced o embebidos) y toma el **primer objeto** con al menos uno de esos campos reconocidos.
+
+Si **falta** el bloque JSON, el sistema usa el markdown fuera de fences como contenido — pierdes campos estructurados.
 
 ### Cadena entre agentes
 
 ```mermaid
 sequenceDiagram
-  participant M as Memoria compartida
+  participant M as Memoria compartida del run
   participant A as Agente N
   participant C as Consenso producto
   M->>A: task + consenso previo
   A->>A: Produce brief + JSON
-  A->>C: appendProductHandoff
+  A->>C: Una revisión por paso
   C->>M: nextAction para N+1
 ```
 
@@ -94,39 +96,36 @@ El agente siguiente **lee** `consensus.md` del producto y el historial de revisi
 
 ## Entregables en disco (write_file)
 
-Segundo tipo de handoff: **archivo persistente** en el workspace.
+Segundo tipo de handoff: **archivo persistente** en el workspace del producto.
 
 | Mecanismo | Cuándo | Ruta |
 |-----------|--------|------|
-| Agente usa `write_file` | Herramienta explícita | `docs/{rol}/timestamp-workflow.md` |
-| Auto-persist | Sin write_file y sin doc previo | Misma convención vía `persistHandoffAsAgentDoc` |
+| Agente usa `write_file` | Herramienta explícita bajo `docs/` | `docs/{rol}/…` |
+| Auto-persist | Sin write_file en el paso | Misma convención al cerrar el run |
 
-`agentDocsPath(agentName)` mapea prefijo del nombre:
+Prefijos de agente → carpeta:
 
-- `research-*` → `docs/research/`
-- `ui-*` → `docs/ui/`
-- `marketing-*` → `docs/marketing/`
-- `design-lead` → `docs/` (prefijo `design` no mapeado)
+| Prefijo | Carpeta |
+|---------|---------|
+| `research-*` | `docs/research/` |
+| `ui-*` | `docs/ui/` |
+| `marketing-*` | `docs/marketing/` |
+| `fullstack-*` | `docs/fullstack/` |
+| *(otros prefijos de rol)* | `docs/{prefijo}/` o `docs/` fallback |
+| `design-lead` | `docs/` (prefijo `design` no mapeado) |
 
-**Efecto:** UI muestra `saved_to_disk` en último run; no se duplica persist si ya hubo write_file.
+**Efecto:** si el paso ya escribió con `write_file`, no se duplica el auto-guardado.
 
 ---
 
 ## Artefactos de departamento
 
-Tercer destino: **galería Org** (`persistOrgUnitHandoffsFromRun`).
+Tercer destino: **galería Org** del departamento vinculado al producto.
 
 - Tipo inferido por agente: `design-lead` → `design`, `copy-manager` → `copy`, etc.
 - Body = output completo del paso (markdown + JSON).
-- Visible en ficha del departamento → Galería.
-- Requiere run vinculado a producto + org unit.
-
-```mermaid
-flowchart LR
-  RUN[Run completado] --> ART[Artifact DB]
-  ART --> GAL[Galería dept.]
-  ART --> PRE[previewText 500 chars]
-```
+- Visible en departamento → Configuración → **Design & artifacts**.
+- Requiere producto con `orgUnitId` y run completado.
 
 ---
 
@@ -134,32 +133,32 @@ flowchart LR
 
 | Handoff / memoria | Scope | Dónde editas | Quién escribe |
 |-------------------|-------|--------------|---------------|
-| **Consenso producto** | Un producto | Producto → Consenso | Cada paso de agente (JSON) |
-| **Consenso tenant** | Toda la compañía | Depuración → Consenso | Ciclos autónomos / CEO |
-| **Shared memory run** | Un run | Interno worker | Engine entre pasos |
+| **Consenso producto** | Un producto | Depuración → Consenso (producto) | Cada paso de agente (JSON) |
+| **Consenso tenant** | Toda la compañía | Depuración → Consenso (`/debug/consensus`) | Último agente del ciclo autónomo / CEO |
+| **Memoria del run** | Un run | Interno (no editable) | Motor entre pasos |
 
-No mezcles: el handoff JSON de un paso de marketing **no** reemplaza el consenso global de la compañía.
+No mezcles: el handoff JSON de un paso de marketing **no** reemplaza el consenso global de la compañía. Tras runs con producto, el `nextAction` del producto **no** se filtra al consenso tenant.
 
 ---
 
 ## Handoffs de ciclo autónomo
 
-Reglas extra inyectadas en ciclos de compañía (`convergencePromptSection`):
+Reglas extra en ciclos de compañía (prompts de convergencia + memoria estructurada):
 
 | Ciclo | Campo JSON / memoria | Efecto |
 |-------|----------------------|--------|
 | 1 | `topIdeas[]` (3 títulos) | Alimenta pipeline de ideas |
-| 2 | `goNoGo`: `"GO"` / `"NO-GO"` | Bootstrap o descarta producto |
+| 2 | `goNoGo`: `"GO"` / `"NO-GO"` | Bootstrap o descarta producto (según workflow) |
 | 3+ | Artefactos reales obligatorios | No solo discusión |
-| Cualquiera | `revenueUsd`, `productSlug`, … | Enriquecimiento structured-memory |
+| Cualquiera | `revenueUsd`, `productSlug`, … | Enriquecimiento de memoria estructurada |
 
-Estos campos se extraen con `collectJsonObjects` / `structured-memory.ts`, además del handoff de consenso estándar.
+Estos campos se extraen además del handoff de consenso estándar.
 
 ---
 
 ## VETO de Munger
 
-Handoff especial — solo agentes de control (`critic-munger` o gate Munger en Catalog Studio):
+Handoff especial — agentes de control (`critic-munger`) o gate Munger en estudios:
 
 ```json
 {
@@ -172,9 +171,9 @@ Handoff especial — solo agentes de control (`critic-munger` o gate Munger en C
 
 **Efectos:**
 
-- Catalog Studio: bloquea **Aprobar y aplicar** si Munger veta la propuesta.
-- Run de workflow: `_stoppedByVeto` puede detener convergencia posterior.
-- Visible en revisión como **VETO** destacado.
+- **Catalog Studio / Org Studio:** bloquea **Aprobar y aplicar** si Munger no aprueba la propuesta.
+- **Run de workflow:** `_stoppedByVeto` puede cancelar convergencia; error `VETO:…` en el run.
+- Visible en revisión como **VETO** destacado y banner en War room.
 
 ---
 
@@ -185,7 +184,7 @@ Además del JSON de consenso, las plantillas sugieren **contenido** dentro de `c
 | Dept / agente | Contenido esperado en markdown |
 |---------------|-------------------------------|
 | Marketing / copy | Copy listo, CTAs, tono según design.md |
-| Marketing / community | Calendario + posts; hooks/hashtags pueden ir en markdown o bullets |
+| Marketing / community | Calendario + posts; hooks/hashtags en markdown |
 | Marketing / design-lead | Brief UX + tokens referenciados |
 | Product studio / fullstack | Notas de implementación, paths de código |
 | SEO / content | Briefs, keywords, estructura H1-H3 |
@@ -196,27 +195,33 @@ Ninguno sustituye el wrapper JSON de consenso.
 
 ## Estados de entregable en la UI
 
-Tras un run, `product-last-run.ts` clasifica:
+Tras un run con producto, la traza del último run clasifica **cada paso**:
 
 | Estado | Significado |
 |--------|-------------|
 | `saved_to_disk` | Al menos un paso usó write_file o doc persistido |
 | `handoff_only` | Hay output / JSON pero sin archivos en workspace |
 | `missing` | Sin output útil |
-| `no_docs_and_weak_handoff` | Sin docs ni JSON estructurado — entregables perdidos |
-| `partial_handoff` | Algunos pasos con JSON, otros no |
 
-Usa estos indicadores en **Mis encargos** y vista de producto para auditar calidad de handoffs.
+Diagnósticos agregados del run (p. ej. `partial_handoff`, `no_docs_and_weak_handoff`, `munger_veto`):
+
+| Diagnóstico | Significado |
+|-------------|-------------|
+| `partial_handoff` | Algunos pasos con JSON estructurado, otros no |
+| `no_docs_and_weak_handoff` | Sin docs ni JSON estructurado |
+| `munger_veto` | Run cancelado por veto |
+
+**Dónde verlo:** War room → **Salud de entregables**; Consenso del producto → panel del último run. **Mis encargos** muestra informes y documentos, no estos códigos de estado por paso.
 
 ---
 
 ## Qué NO es un handoff de plataforma
 
-Esquemas de IAs externas **no parseados**:
+Esquemas de IAs externas **no parseados** como consenso:
 
 - `DesignHandoff` / `schema.org`
 - JSON con `componentName`, `layout`, `children[]` como cierre único
-- Cualquier JSON sin `consensusUpdate` / `nextAction` / `veto` / `decisions`
+- Cualquier JSON sin campos de consenso reconocidos
 
 **Puedes** incluirlos como anexo dentro del markdown del brief — son documentación para humanos o `fullstack-dhh`, no memoria del motor.
 

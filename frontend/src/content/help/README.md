@@ -11,15 +11,22 @@ Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and desc
 | Slug | ES title | Topic |
 |------|----------|-------|
 | `guia-completa` | Manual de usuario | Hub: inicio rápido + mapa + FAQ (no duplica guías) |
-| `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room |
-| `guia-productos` | Productos | Lifecycle, product consensus |
-| `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
-| `guia-equipo-ia` | Equipo IA y habilidades | Agents, skills, Catalog Studio |
-| `guia-flujos` | Flujos y programaciones | Workflows, schedules, GO/NO-GO |
-| `como-construir-agentes` | ¿Cómo construir agentes? | System prompt + consensus handoff |
-| `handoffs` | Handoffs y flujo | All handoff types and pipeline effects |
+| `guia-oficina` | Oficina y encargos | Coordinator, dept./product scope, jobs, war room, archive |
+| `guia-productos` | Productos | Phases, product consensus (`/debug/products/:id/consensus`), desk |
+| `guia-departamentos` | Departamentos | Virtual rooms vs Org Studio, design.md, gallery in Settings |
+| `guia-equipo-ia` | Equipo IA y habilidades | `/ai-team` tabs, Catalog Studio, manual New agent |
+| `guia-flujos` | Flujos y programaciones | `/office/workflows`, Settings → Schedules, GO/NO-GO |
+| `guia-operaciones` | Operaciones | `/ops` KPIs, scheduled activities, 7-day preview, skip reasons |
+| `como-construir-agentes` | ¿Cómo construir agentes? | System prompt + consensus JSON handoff |
+| `handoffs` | Handoffs y flujo | Parsed fields, disk/org artifacts, UI diagnosis codes |
 
 Default route: `/help` → `/help/guia-completa`.
+
+## Navigation notes (for authors)
+
+- **Debug section** (sidebar): Runs, Consensus, Ops, Decisions — tenant operators with admin see Settings here too.
+- **Product consensus** is not under Product → main nav; use Debug → Consensus (product scope) or Product settings link.
+- **Decisions** also at `/decisions` (alias of debug route).
 
 ## Mermaid in preview
 
@@ -46,4 +53,14 @@ Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-s
 
 ## Scope
 
-Non-technical **operator** documentation only — no Docker, worker, or API setup.
+Non-technical **operator** documentation only — no Docker, worker CLI, or API setup. Code paths may be named sparingly when they clarify behavior (e.g. workflow slugs).
+
+## Verification
+
+When updating help, trace behavior in:
+
+- `frontend/src/App.tsx` (routes)
+- `frontend/src/components/AppSidebar.tsx` (nav)
+- `src/lib/product-consensus.ts`, `src/lib/convergence.ts` (handoffs)
+- `src/lib/office-coordinator.ts` (Office jobs)
+- `frontend/src/components/settings/OrchestrationPlanPanel.tsx` (schedules)

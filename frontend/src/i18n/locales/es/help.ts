@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Ayuda",
   title: "Centro de ayuda",
-  subtitle: "Inicio rápido, guías por tema y referencia de handoffs para operar tu oficina virtual.",
+  subtitle: "Inicio rápido, guías por tema (Oficina, productos, flujos, operaciones) y referencia de handoffs.",
   articles: "Artículos",
   articlesHeading: "Artículos",
   sections: "En este artículo",
@@ -17,6 +17,6 @@ export const help = {
   article: {
     slug: "guia-completa",
     title: "Manual de usuario",
-    description: "Pedir trabajo a agentes, crear departamentos, agentes, habilidades y conectar equipos.",
+    description: "Mapa de la plataforma y enlaces a guías por tema — empieza por la Oficina.",
   },
 } as const;

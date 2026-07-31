@@ -10,7 +10,8 @@ Cómo pedir trabajo, aprobar ejecuciones y recoger resultados desde la **Oficina
 2. [Coordinador y alcance](#coordinador-y-alcance)
 3. [Mis encargos](#mis-encargos)
 4. [War room](#war-room)
-5. [Servicios rápidos](#servicios-rápidos)
+5. [Archivo de la Oficina](#archivo-de-la-oficina)
+6. [Servicios rápidos](#servicios-rápidos)
 
 ---
 
@@ -24,13 +25,14 @@ flowchart LR
   C -->|No| B
   D --> E[War room en vivo]
   D --> F[Mis encargos]
-  F --> G[Documentos + handoffs]
+  F --> G[Informe + documentos]
 ```
 
 1. Escribes qué necesitas en **Inicio** (`/office`).
-2. El **Coordinador** propone equipo, entregables y estimación.
-3. Pulsas **Aprobar y ejecutar** — nada corre sin tu OK.
-4. Sigues el progreso en **War room** y recoges el resultado en **Mis encargos**.
+2. Pides **plan de equipo** (o el Coordinador lo propone al detectar intención clara).
+3. Revisas alcance, agentes, coste y entregable en la tarjeta de propuesta.
+4. Pulsas **Aprobar y ejecutar** — nada corre sin tu OK.
+5. La app abre **War room** (con producto si aplica). Recoges el resultado en **Mis encargos**.
 
 > Por defecto todo es **bajo demanda**. Las programaciones automáticas son opcionales (ver guía de Flujos).
 
@@ -38,15 +40,33 @@ flowchart LR
 
 ## Coordinador y alcance
 
-Antes de aprobar puedes acotar el contexto:
+### Oficina principal
 
-| Alcance | Cuándo usarlo |
-|---------|----------------|
-| **Exploración general** | Ideas nuevas sin producto concreto |
-| **Un producto** | Memoria, código y consenso de ese producto |
-| **Un departamento** | Agentes, `design.md` y artefactos del dept. |
+En `/office` puedes filtrar por **Departamento** (Org Unit). Eso carga contexto de `design.md`, agentes del dept. y pipeline de artefactos — no sustituye elegir un producto.
 
-El Coordinador elige agentes sueltos o un **flujo** predefinido según la complejidad del encargo.
+| Control | Efecto |
+|---------|--------|
+| **Departamento = cualquiera** | Agentes y flujos de la plataforma por defecto |
+| **Departamento concreto** | Contexto Org (design.md, agentes del dept.) y lanzamiento desde la sala del departamento |
+
+### Alcance de producto
+
+El selector **Exploración general / producto** aparece en:
+
+- **Salas de departamento** (`/org-units/:id`) — productos vinculados al dept.
+- **War room** (`/war-room/:productId`) — chat siempre contextualizado al producto
+
+En la propuesta del Coordinador, el campo **Alcance** muestra el producto detectado o «Exploración general». Puedes pasar `productId` explícito desde War room o una sala de departamento.
+
+El Coordinador elige agentes sueltos, un **equipo ad hoc** o un **flujo** predefinido según el servicio y la complejidad del encargo.
+
+### Modos de ejecución
+
+| Modo | Cuándo |
+|------|--------|
+| **single** | Un solo agente |
+| **team** | Varios agentes en secuencia ligera |
+| **workflow** | Flujo guardado (p. ej. discovery, feature development) |
 
 ---
 
@@ -54,28 +74,53 @@ El Coordinador elige agentes sueltos o un **flujo** predefinido según la comple
 
 Ruta: **Mis encargos** (`/office/encargos`).
 
-Cada encargo terminado incluye:
+Lista encargos con fases: en cola, en progreso, entregado, fallido, cancelado. Cada ficha incluye:
 
-- Resumen ejecutivo del run
-- Informes por agente (markdown)
-- Estado de entregables: guardados en disco, solo handoff en memoria, o faltantes
+- Resumen y estado del run
+- Producto vinculado (si aplica)
+- Enlace a **War room** si sigue en curso
+- **Informe final** y pestaña **Documentos** (markdown por agente)
+- Propuestas **GO/NO-GO** pendientes (workflow `new-product-evaluation`) con aprobar / rechazar / pivot
 
-Si un paso no dejó documento en `docs/{rol}/`, revisa la pestaña **Revisiones** del consenso del producto — ahí quedan los handoffs JSON parseados.
+Para auditar calidad de handoffs (JSON estructurado, archivos en disco), usa **War room → Salud de entregables** o **Consenso del producto → último run** — no la lista de encargos.
+
+Si un paso no dejó archivo en `docs/{rol}/`, revisa **Consenso del producto → Revisiones** — ahí quedan los handoffs JSON parseados.
 
 ---
 
 ## War room
 
-Vista táctica **mientras el equipo trabaja**:
+Ruta: **War room** (`/war-room` o `/war-room/:productId`).
+
+Vista táctica **mientras el equipo trabaja** sobre un producto:
 
 - Estado por agente y paso del flujo
 - Selector de run activo (si hay varios en paralelo)
-- Salida parcial cuando está disponible
+- KPIs, panel OpenCode, banner de veto Munger
+- **Salud de entregables** (diagnóstico del último run)
+- Chat del Coordinador contextualizado al producto
 
-Úsala para detectar bloqueos antes de que termine el encargo.
+Tras **Aprobar y ejecutar** desde la Oficina, la navegación te lleva aquí automáticamente cuando hay producto en scope.
+
+---
+
+## Archivo de la Oficina
+
+Ruta: **Archivo** (`/office/archive`) — enlace en la cabecera de la Oficina.
+
+Índice de entregables del workspace: filtra por departamento, producto, agente o fuente. Útil para recuperar informes sin abrir el repo.
 
 ---
 
 ## Servicios rápidos
 
-Plantillas listas en la Oficina (discovery, validación de idea, sprint de feature…). Puedes editar el brief antes de lanzar. Equivalente a un encargo con semilla de tarea predefinida.
+Plantillas en el panel derecho de la Oficina:
+
+| ID | Flujo típico | Entregable |
+|----|--------------|------------|
+| market-scan | opportunity-discovery | Informe de mercado |
+| idea-validation | new-product-evaluation | Recomendación GO/NO-GO |
+| feature-sprint | feature-development | Código + docs |
+| *(otros)* | Según plantilla | Ver descripción en UI |
+
+Al elegir una plantilla se precarga el chat. Edita el brief, pide plan y aprueba. Algunos presets **requieren producto** registrado — la UI te avisará si falta.

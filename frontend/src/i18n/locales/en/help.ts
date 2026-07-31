@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Help",
   title: "Help center",
-  subtitle: "Quick start, topic guides, and handoff reference for your virtual office.",
+  subtitle: "Quick start, topic guides (Office, products, workflows, operations), and handoff reference.",
   articles: "Articles",
   articlesHeading: "Articles",
   sections: "In this article",
@@ -17,6 +17,6 @@ export const help = {
   article: {
     slug: "guia-completa",
     title: "User manual",
-    description: "Ask agents for work, create departments, agents, skills, and connect teams.",
+    description: "Platform map and links to topic guides — start with the Office.",
   },
 } as const;

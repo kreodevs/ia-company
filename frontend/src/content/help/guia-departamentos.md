@@ -6,10 +6,22 @@ Crear departamentos con Org Studio, `design.md`, tokens y galería de artefactos
 
 ## Tabla de contenidos
 
-1. [Org Studio](#org-studio)
-2. [design.md y tokens](#designmd-y-tokens)
-3. [Galería de artefactos](#galería-de-artefactos)
-4. [Plantillas de negocio](#plantillas-de-negocio)
+1. [Dos tipos de «departamento»](#dos-tipos-de-departamento)
+2. [Org Studio](#org-studio)
+3. [design.md y tokens](#designmd-y-tokens)
+4. [Galería de artefactos](#galería-de-artefactos)
+5. [Plantillas de negocio](#plantillas-de-negocio)
+
+---
+
+## Dos tipos de «departamento»
+
+| Tipo | Dónde | Qué es |
+|------|-------|--------|
+| **Salas virtuales** | Plano de la Oficina (Strategy, Product, Engineering…) | Agrupación visual de agentes de plataforma — no tienen `design.md` propio |
+| **Org Units** | **Departamentos** (`/org-units`) creados en Org Studio | Departamentos reales con marca, agentes, work items y galería |
+
+Esta guía cubre los **Org Units**. Para pedir trabajo con contexto de dept., usa el selector en la Oficina o abre la sala del departamento.
 
 ---
 
@@ -19,48 +31,72 @@ Ruta: **Departamentos** → **Abrir Org Studio** (`/org-studio`).
 
 ```mermaid
 flowchart TD
-  A[Elige plantilla + misión] --> B[Generar propuesta]
-  B --> C[Revisar agentes sugeridos]
+  A[Plantilla + misión] --> B[Generar propuesta]
+  B --> C[Revisar agentes y skills faltantes]
   C --> D{Munger VETO?}
   D -->|Sí| A
-  D -->|No| E[Crear departamento]
-  E --> F[Sync design.md + tokens]
-  E --> G[Opcional: work item vinculado]
+  D -->|No| E[Aprobar skills nuevas]
+  E --> F[Crear departamento]
+  F --> G[Sync design.md + tokens]
+  F --> H[Opcional: work item inicial]
 ```
 
-Plantillas disponibles: marketing agency, product studio, sales & RevOps, customer success, SEO & content, finance & pricing, custom.
+Pasos en la UI:
+
+1. Elige plantilla, nombre y misión → **Generar propuesta**.
+2. Revisa agentes sugeridos, config y revisión Munger.
+3. Marca checkboxes de **skills nuevas** que apruebas crear.
+4. **Crear departamento** — redirige a `/org-units/:id`.
+
+Si Munger emite VETO, no puedes aplicar hasta ajustar la propuesta.
 
 ---
 
 ## design.md y tokens
 
-Cada departamento tiene:
+Cada Org Unit tiene:
 
 | Activo | Uso |
 |--------|-----|
-| **design.md** | Voz, colores, reglas de entregables — lo leen todos los agentes del dept. |
+| **design.md** | Voz, colores, reglas de entregables — lo leen los agentes del dept. |
 | **tokens** (JSON DTCG) | Colores, tipografía, spacing organizacionales |
-| **config** | Nicho, canales, cadencia, voz de marca |
+| **config** | Nicho, canales, cadencia, voz de marca (según plantilla) |
 
 Se sincroniza a `projects/_org/{slug}/design.md`. Los agentes de marketing/copy/diseño **deben referenciar** estos tokens, no inventar paletas en JSON paralelo.
+
+Edita perfil operativo y diseño en la ficha del departamento → pestaña **Configuración** → subsecciones *Operating profile* y *Design & artifacts*.
 
 ---
 
 ## Galería de artefactos
 
-En la ficha del departamento → **Galería**:
+Ruta: departamento → **Configuración** → **Design & artifacts** (componente `ArtifactGallery`).
 
-- Entregables tipados: `copy`, `design`, `social_post`, `report`, …
+- Entregables tipados: `copy`, `design`, `social_post`, `report`, `code`, …
 - Filtrar por estado: borrador, aprobado, publicado
-- Origen: handoffs de runs vinculados al producto/dept.
+- Origen: output de runs completados con producto vinculado al departamento
+
+La sala del departamento también muestra artefactos recientes en el panel lateral.
 
 ---
 
 ## Plantillas de negocio
 
-La plantilla **Marketing agency** incluye agentes sugeridos:
+Plantillas de plataforma (slug → nombre en UI):
 
-- `copy-manager`, `community-manager`, `design-lead`, `marketing-strategist`
-- Skills: content-strategy, frontend-design, community-led-growth, …
+| Slug | Nombre |
+|------|--------|
+| `marketing-agency` | Digital Marketing Agency |
+| `product-studio` | Product Studio (default) |
+| `sales-revops` | Sales & RevOps |
+| `customer-success` | Customer Success |
+| `seo-content-studio` | SEO & Content Studio |
+| `finance-pricing` | Finance & Pricing |
+| `customer-support` | Customer Support |
+| `custom-department` | Custom Department |
 
-Al aplicar la plantilla, aprueba cada agente y skill nuevo en Catalog Studio si tu tenant aún no los tiene.
+La plantilla **Marketing agency** sugiere agentes como `copy-manager`, `community-manager`, `design-lead`, `marketing-strategist` y skills de contenido/diseño.
+
+Al aplicar la plantilla, aprueba cada agente/skill nuevo que aún no exista en tu tenant (Catalog Studio o checkboxes en Org Studio).
+
+Desde `/org-units/:id` puedes **lanzar trabajo del departamento** con tarea libre + producto vinculado opcional.

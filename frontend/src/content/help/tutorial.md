@@ -10,7 +10,9 @@ Si acabas de entrar, empieza aquí. En **cinco minutos** puedes completar tu pri
 
 ### Paso 1 — Entra a la Oficina
 
-Tras iniciar sesión, abre **Inicio** en el menú lateral (es tu **Oficina**). Verás el chat del **Coordinador**, tu punto de contacto con todo el equipo de agentes.
+Tras iniciar sesión, abre **Inicio** en el menú lateral (`/office`). Verás el chat del **Coordinador**, KPIs del mes, el plano de departamentos y **Servicios rápidos**.
+
+El indicador de modo (bajo demanda / programado / autónomo) refleja si tienes reglas de programación o meta-orchestrator activos.
 
 ### Paso 2 — Di qué necesitas
 
@@ -20,24 +22,30 @@ Escribe en lenguaje natural, como hablarías con un jefe de proyectos:
 - *«Prepara tres posts de LinkedIn para el lanzamiento de nuestro producto»*
 - *«Revisa la propuesta de precios del competidor X»*
 
-También puedes usar **Servicios rápidos**: plantillas listas (discovery, validación de idea, sprint de feature…) que puedes editar antes de lanzar.
+También puedes usar **Servicios rápidos**: plantillas listas (discovery, validación de idea, sprint de feature…) que precargan el chat — edítalas antes de planificar.
 
-### Paso 3 — Elige el alcance (opcional)
+Pulsa **Planificar equipo** (o envía y pide plan) para que el Coordinador proponga equipo, entregables, tiempo y coste.
 
-| Alcance | Cuándo |
-|---------|--------|
-| **Exploración general** | Ideas nuevas sin producto concreto |
-| **Un producto** | Contexto, memoria y código de ese producto |
-| **Un departamento** | Agentes, `design.md` y entregables del dept. |
+### Paso 3 — Acota el contexto (opcional)
+
+| Dónde | Qué controlas |
+|-------|----------------|
+| **Oficina principal** | Selector **Departamento** — limita agentes, `design.md` y pipeline del dept. |
+| **Sala de un departamento** (`/org-units/:id`) o **War room** de un producto | Selector **Alcance** — exploración general vs. un producto concreto |
+| **Propuesta del Coordinador** | Muestra el alcance inferido (nombre del producto o «Exploración general») antes de aprobar |
+
+Si la tarea encaja con un producto pero no has elegido uno, el Coordinador puede **preguntarte** antes de proponer el plan.
 
 ### Paso 4 — Revisa y aprueba
 
-El Coordinador te propone **plan de equipo**, entregables, tiempo y coste. Pulsa **Aprobar y ejecutar** — nada corre sin tu OK.
+Pulsa **Aprobar y ejecutar** — nada corre sin tu OK. Si faltan roles en tu catálogo, verás enlaces para crearlos en **Equipo IA**.
 
 ### Paso 5 — Sigue y recoge
 
-- **War room** — progreso en vivo.
-- **Mis encargos** — resumen y documentos al terminar.
+Tras aprobar, la app te lleva a **War room** (con producto si aplica). También puedes usar:
+
+- **Mis encargos** (`/office/encargos`) — resumen, informe final y documentos por agente
+- **Archivo de la Oficina** (`/office/archive`) — entregables indexados por departamento/producto
 
 > Por defecto todo es **bajo demanda**. Las programaciones automáticas son opcionales (ver guía de Flujos).
 
@@ -45,8 +53,8 @@ El Coordinador te propone **plan de equipo**, entregables, tiempo y coste. Pulsa
 flowchart LR
   A[Tú — Oficina] --> B[Coordinador]
   B --> C[Aprobar]
-  C --> D[Equipo IA]
-  D --> E[Mis encargos]
+  C --> D[Worker ejecuta]
+  D --> E[War room / Mis encargos]
 ```
 
 ---
@@ -59,11 +67,12 @@ Cada tema tiene su **guía propia** con diagramas y detalle. Ábrela desde **Art
 
 | Tema | Qué encontrarás | Abrir |
 |------|-----------------|-------|
-| **Oficina y encargos** | Coordinador, alcance, Mis encargos, War room | [/help/guia-oficina](/help/guia-oficina) |
+| **Oficina y encargos** | Coordinador, alcance, Mis encargos, War room, archivo | [/help/guia-oficina](/help/guia-oficina) |
 | **Productos** | Ciclo de vida, oportunidades, memoria por producto | [/help/guia-productos](/help/guia-productos) |
 | **Departamentos** | Org Studio, `design.md`, tokens, galería | [/help/guia-departamentos](/help/guia-departamentos) |
 | **Equipo IA y habilidades** | Agentes, skills, Catalog Studio | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
 | **Flujos y programaciones** | Playbooks, timers, GO/NO-GO de ciclo | [/help/guia-flujos](/help/guia-flujos) |
+| **Operaciones** | Panel `/ops`: KPIs, programaciones, preview 7 días | [/help/guia-operaciones](/help/guia-operaciones) |
 | **¿Cómo construir agentes?** | System prompt, carpetas `docs/`, handoff JSON | [/help/como-construir-agentes](/help/como-construir-agentes) |
 | **Handoffs y flujo** | Tipos de handoff y efecto en ejecución | [/help/handoffs](/help/handoffs) |
 
@@ -76,7 +85,7 @@ flowchart TB
   end
   O --> C[Coordinador]
   C --> P[Producto]
-  C --> D[Departamento]
+  C --> D[Departamento Org]
   C --> F[Flujo de agentes]
   P <-->|vinculo| D
   P --> W[War room]
@@ -84,17 +93,18 @@ flowchart TB
   D --> G[Galería artefactos]
 ```
 
-**Regla práctica:** empieza con **Oficina + Productos**. Añade **departamentos** cuando necesites marca unificada y equipos dedicados. Usa **flujos** para procesos que repites.
+**Regla práctica:** empieza con **Oficina + Productos**. Añade **departamentos** (Org Studio) cuando necesites marca unificada y equipos dedicados. Usa **flujos** para procesos que repites.
 
 ### Temas transversales (resumen)
 
 | Tema | Dónde en la app | Guía relacionada |
 |------|-----------------|------------------|
-| Memoria de compañía | Depuración → Consenso | [Productos](/help/guia-productos) |
-| Memoria por producto | Producto → Consenso | [Productos](/help/guia-productos) |
-| Decisiones GO/NO-GO | Depuración → Decisiones | [Flujos](/help/guia-flujos) |
-| Configuración LLM, límites, integraciones | Configuración (admin) | — |
-| Equipo humano y roles | Equipo (admin) | — |
+| Memoria de compañía | Depuración → Consenso (`/debug/consensus`) | [Productos](/help/guia-productos) |
+| Memoria por producto | Depuración → Consenso (selector de producto) o Configuración del producto → enlace a consenso | [Productos](/help/guia-productos) |
+| Decisiones GO/NO-GO | Depuración → Decisiones (`/decisions`) o dentro del encargo | [Flujos](/help/guia-flujos) |
+| Operaciones / meta-orchestrator | Depuración → Operaciones (`/ops`) | [Operaciones](/help/guia-operaciones) |
+| Configuración LLM, límites, programaciones | Configuración → pestañas (admin tenant) | [Flujos](/help/guia-flujos) |
+| Equipo humano y roles | Depuración → Equipo (admin) | — |
 
 ---
 
@@ -102,28 +112,28 @@ flowchart TB
 
 ### ¿Los agentes ejecutan cosas sin mi permiso?
 
-No, en modo **bajo demanda**. Siempre ves un plan y pulsas **Aprobar y ejecutar**. Las programaciones automáticas son opt-in.
+No, en modo **bajo demanda**. Siempre ves un plan y pulsas **Aprobar y ejecutar**. Las programaciones automáticas son opt-in en **Configuración → Programaciones**.
 
 ### ¿Cuál es la diferencia entre Oficina y War room?
 
 - **Oficina** — pedir y planificar trabajo (cualquier alcance).
-- **War room** — seguir un **producto concreto** en vivo.
+- **War room** — seguir un **producto concreto** en vivo (agentes, runs, salud de entregables, chat contextualizado).
 
 ### ¿Necesito un departamento para empezar?
 
-No. Basta **Oficina + Productos**. Los departamentos ayudan con marca, artefactos y equipos especializados.
+No. Basta **Oficina + Productos**. Los departamentos creados en Org Studio ayudan con marca, artefactos y equipos especializados.
 
 ### ¿Qué es Munger y el VETO?
 
-Revisión de **riesgos** antes de crear departamentos o aplicar propuestas de Catalog Studio. Si hay fallo grave, debes ajustar antes de continuar.
+Revisión de **riesgos** antes de aplicar propuestas en Catalog Studio u Org Studio, o durante runs con `critic-munger`. Si hay fallo grave, debes ajustar antes de continuar (o el run puede detenerse).
 
 ### ¿Dónde veo cuánto gasté en IA?
 
-**Oficina** (KPIs del mes) y **Configuración → Límites**. Cada encargo muestra coste estimado antes de aprobar.
+**Oficina** (KPI «Gasto del mes») y **Configuración → Límites**. Cada encargo muestra coste estimado antes de aprobar.
 
 ### ¿Qué hago si un encargo falla?
 
-**Mis encargos** o **Ejecuciones**, lee el error, ajusta el brief y reintenta. Revisa límites y modelos con tu admin si persiste.
+**Mis encargos** o **Depuración → Ejecuciones**, lee el error, ajusta el brief y reintenta. Revisa límites y modelos con tu admin si persiste.
 
 ### ¿Cómo construyo un agente de marketing o diseño?
 

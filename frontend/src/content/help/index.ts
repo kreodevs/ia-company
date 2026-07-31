@@ -11,6 +11,8 @@ import guiaEquipoIaEs from "./guia-equipo-ia.md?raw";
 import guiaEquipoIaEn from "./guia-equipo-ia.en.md?raw";
 import guiaFlujosEs from "./guia-flujos.md?raw";
 import guiaFlujosEn from "./guia-flujos.en.md?raw";
+import guiaOperacionesEs from "./guia-operaciones.md?raw";
+import guiaOperacionesEn from "./guia-operaciones.en.md?raw";
 import comoConstruirAgentesEs from "./como-construir-agentes.md?raw";
 import comoConstruirAgentesEn from "./como-construir-agentes.en.md?raw";
 import handoffsEs from "./handoffs.md?raw";
@@ -44,21 +46,21 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-oficina",
     title: "Oficina y encargos",
-    description: "Coordinador, aprobar runs, Mis encargos y War room.",
+    description: "Coordinador, alcance dept./producto, Mis encargos, War room y archivo.",
     contentEs: guiaOficinaEs,
     contentEn: guiaOficinaEn,
   },
   {
     slug: "guia-productos",
     title: "Productos",
-    description: "Ciclo de vida, memoria por producto y vínculo con departamentos.",
+    description: "Fases queued→growing, consenso por producto, desk y vínculo Org Unit.",
     contentEs: guiaProductosEs,
     contentEn: guiaProductosEn,
   },
   {
     slug: "guia-departamentos",
     title: "Departamentos",
-    description: "Org Studio, design.md, tokens y galería de artefactos.",
+    description: "Salas virtuales vs Org Studio, design.md, tokens y galería.",
     contentEs: guiaDepartamentosEs,
     contentEn: guiaDepartamentosEn,
   },
@@ -72,9 +74,16 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-flujos",
     title: "Flujos y programaciones",
-    description: "Playbooks de agentes y reglas opcionales en timer.",
+    description: "Canvas de workflows, presets de programación y decisiones GO/NO-GO.",
     contentEs: guiaFlujosEs,
     contentEn: guiaFlujosEn,
+  },
+  {
+    slug: "guia-operaciones",
+    title: "Operaciones",
+    description: "Panel /ops: KPIs, programaciones, preview 7 días y motivos de skip.",
+    contentEs: guiaOperacionesEs,
+    contentEn: guiaOperacionesEn,
   },
   {
     slug: "como-construir-agentes",
@@ -99,15 +108,15 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   },
   "guia-oficina": {
     title: "Office and jobs",
-    description: "Coordinator, approve runs, My jobs, and War room.",
+    description: "Coordinator, dept./product scope, My jobs, War room, and archive.",
   },
   "guia-productos": {
     title: "Products",
-    description: "Lifecycle, per-product memory, and department linking.",
+    description: "Queued→growing phases, product consensus, desk, and Org Unit link.",
   },
   "guia-departamentos": {
     title: "Departments",
-    description: "Org Studio, design.md, tokens, and artifact gallery.",
+    description: "Virtual rooms vs Org Studio, design.md, tokens, and gallery.",
   },
   "guia-equipo-ia": {
     title: "AI team and skills",
@@ -115,7 +124,11 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   },
   "guia-flujos": {
     title: "Workflows and schedules",
-    description: "Agent playbooks and optional timer rules.",
+    description: "Workflow canvas, schedule presets, and GO/NO-GO decisions.",
+  },
+  "guia-operaciones": {
+    title: "Operations",
+    description: "/ops panel: KPIs, schedules, 7-day preview, and skip reasons.",
   },
   "como-construir-agentes": {
     title: "How to build agents",

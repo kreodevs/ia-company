@@ -1,6 +1,6 @@
 # Handoffs and flow
 
-Exclusive reference for **all handoffs** in Auto-Company: what they are, where they land, and how they affect execution.
+Reference for **all handoffs** in Auto-Company: what they are, where they land, and how they affect execution.
 
 ---
 
@@ -24,28 +24,28 @@ Exclusive reference for **all handoffs** in Auto-Company: what they are, where t
 ```mermaid
 flowchart TB
   subgraph run [Workflow / job run]
-    A1[Agent step 1] --> H1[Markdown output + JSON]
-    A2[Agent step 2] --> H2[Markdown output + JSON]
-    A3[Agent step N] --> H3[Markdown output + JSON]
+    A1[Agent step 1] --> H1[Markdown + JSON]
+    A2[Agent step 2] --> H2[Markdown + JSON]
+    A3[Agent step N] --> H3[Markdown + JSON]
   end
-  H1 --> P[parseConsensusHandoffFromOutput]
+  H1 --> P[Consensus parser]
   H2 --> P
   H3 --> P
-  P --> R[Product consensus revisions]
+  P --> R[Revisions — product consensus]
   P --> NA[nextAction in memory]
   H1 --> W{write_file?}
   W -->|Yes| D[docs/role/]
-  W -->|No| AP[persistHandoffAsAgentDoc]
-  H1 --> OA[Org gallery artifact]
+  W -->|No| AP[Optional auto-save]
+  H1 --> OA[Department gallery]
 ```
 
-When a run **completes** with a product in scope, `processConvergenceAfterRun`:
+When a run **completes** with a product in scope, the engine:
 
-1. Walks run `_history`.
-2. Extracts JSON handoff from each step.
-3. Appends to product consensus (one revision per step).
-4. Optionally persists markdown under `docs/{role}/`.
-5. Creates department gallery artifacts when applicable.
+1. Walks the run step history.
+2. Extracts the consensus JSON block from each output.
+3. Appends **one revision per step** to product consensus.
+4. Persists markdown under `docs/{role}/` if the agent did not use `write_file`.
+5. Creates department gallery artifacts when an Org Unit is linked.
 
 ---
 
@@ -63,15 +63,17 @@ When a run **completes** with a product in scope, `processConvergenceAfterRun`:
 }
 ```
 
-### Parsed fields
+### Fields the platform interprets
 
-| Field | Parser | Flow effect |
-|-------|--------|-------------|
-| `consensusUpdate` | `product-consensus.ts` | Revision body; visible under Product → Consensus → Revisions |
-| `nextAction` | Same + `product-run-closure` | Next focus; stuck-cycle detection if repeated |
-| `decisions` | Same | Decision list on the revision |
-| `openQuestions` | Same | Explicit open items |
-| `veto` | Same + Munger gate | Valid `by` + `reason` → run may stop |
+| Field | Effect |
+|-------|--------|
+| `consensusUpdate` | Revision body; visible under Product consensus → **Revisions** |
+| `nextAction` | Next focus; stuck-cycle detection if repeated |
+| `decisions` | Decision list on the revision |
+| `openQuestions` | Explicit open items |
+| `veto` | Valid `by` + `reason` → may stop the run or block convergence |
+
+The parser scans JSON objects in the output (fenced blocks or embedded) and takes the **first object** with at least one recognized field.
 
 If the JSON block is **missing**, the system uses markdown outside fences as content — you lose structured fields.
 
@@ -79,12 +81,12 @@ If the JSON block is **missing**, the system uses markdown outside fences as con
 
 ```mermaid
 sequenceDiagram
-  participant M as Shared memory
+  participant M as Run shared memory
   participant A as Agent N
   participant C as Product consensus
   M->>A: task + prior consensus
   A->>A: Produce brief + JSON
-  A->>C: appendProductHandoff
+  A->>C: One revision per step
   C->>M: nextAction for N+1
 ```
 
@@ -94,39 +96,36 @@ The next agent **reads** product `consensus.md` and revision history — not a c
 
 ## On-disk deliverables (write_file)
 
-Second handoff type: **persistent file** in the workspace.
+Second handoff type: **persistent file** in the product workspace.
 
 | Mechanism | When | Path |
 |-----------|------|------|
-| Agent uses `write_file` | Explicit tool | `docs/{role}/timestamp-workflow.md` |
-| Auto-persist | No write_file and no prior doc | Same via `persistHandoffAsAgentDoc` |
+| Agent uses `write_file` | Explicit tool under `docs/` | `docs/{role}/…` |
+| Auto-persist | No write_file on the step | Same convention at run close |
 
-`agentDocsPath(agentName)` maps name prefix:
+Agent prefix → folder:
 
-- `research-*` → `docs/research/`
-- `ui-*` → `docs/ui/`
-- `marketing-*` → `docs/marketing/`
-- `design-lead` → `docs/` (`design` prefix not mapped)
+| Prefix | Folder |
+|--------|--------|
+| `research-*` | `docs/research/` |
+| `ui-*` | `docs/ui/` |
+| `marketing-*` | `docs/marketing/` |
+| `fullstack-*` | `docs/fullstack/` |
+| *(other role prefixes)* | `docs/{prefix}/` or `docs/` fallback |
+| `design-lead` | `docs/` (`design` prefix not mapped) |
 
-**Effect:** UI shows `saved_to_disk` on last run; no duplicate persist if write_file already ran.
+**Effect:** if the step already wrote via `write_file`, auto-save is skipped (no duplicate).
 
 ---
 
 ## Department artifacts
 
-Third destination: **Org gallery** (`persistOrgUnitHandoffsFromRun`).
+Third destination: Org **gallery** for the department linked to the product.
 
 - Type inferred per agent: `design-lead` → `design`, `copy-manager` → `copy`, etc.
 - Body = full step output (markdown + JSON).
-- Visible on department page → Gallery.
-- Requires run linked to product + org unit.
-
-```mermaid
-flowchart LR
-  RUN[Completed run] --> ART[Artifact DB]
-  ART --> GAL[Dept gallery]
-  ART --> PRE[previewText 500 chars]
-```
+- Visible on department → Settings → **Design & artifacts**.
+- Requires product with `orgUnitId` and completed run.
 
 ---
 
@@ -134,32 +133,32 @@ flowchart LR
 
 | Handoff / memory | Scope | Where you edit | Written by |
 |------------------|-------|----------------|------------|
-| **Product consensus** | One product | Product → Consensus | Each agent step (JSON) |
-| **Tenant consensus** | Whole company | Debug → Consensus | Autonomous cycles / CEO |
-| **Run shared memory** | One run | Internal worker | Engine between steps |
+| **Product consensus** | One product | Debug → Consensus (product) | Each agent step (JSON) |
+| **Tenant consensus** | Whole company | Debug → Consensus (`/debug/consensus`) | Last agent of autonomous cycle / CEO |
+| **Run memory** | One run | Internal (not editable) | Engine between steps |
 
-Do not mix: a marketing step JSON handoff **does not** replace company-wide consensus.
+Do not mix: a marketing step JSON handoff **does not** replace company-wide consensus. After product-scoped runs, product `nextAction` **does not** leak into tenant consensus.
 
 ---
 
 ## Autonomous cycle handoffs
 
-Extra rules for company cycles (`convergencePromptSection`):
+Extra rules for company cycles (convergence prompts + structured memory):
 
 | Cycle | JSON / memory field | Effect |
 |-------|---------------------|--------|
 | 1 | `topIdeas[]` (3 titles) | Feeds idea pipeline |
-| 2 | `goNoGo`: `"GO"` / `"NO-GO"` | Bootstrap or drop product |
+| 2 | `goNoGo`: `"GO"` / `"NO-GO"` | Bootstrap or drop product (per workflow) |
 | 3+ | Real artifacts required | No discussion-only output |
-| Any | `revenueUsd`, `productSlug`, … | structured-memory enrichment |
+| Any | `revenueUsd`, `productSlug`, … | Structured memory enrichment |
 
-Extracted via `collectJsonObjects` / `structured-memory.ts`, in addition to standard consensus handoff.
+Extracted in addition to the standard consensus handoff.
 
 ---
 
 ## Munger VETO
 
-Special handoff — control agents only (`critic-munger` or Munger gate in Catalog Studio):
+Special handoff — control agents (`critic-munger`) or Munger gate in studios:
 
 ```json
 {
@@ -172,9 +171,9 @@ Special handoff — control agents only (`critic-munger` or Munger gate in Catal
 
 **Effects:**
 
-- Catalog Studio: blocks **Approve and apply** when Munger vetoes.
-- Workflow run: `_stoppedByVeto` may stop later convergence.
-- Shown on revision as highlighted **VETO**.
+- **Catalog Studio / Org Studio:** blocks **Approve and apply** when Munger rejects the proposal.
+- **Workflow run:** `_stoppedByVeto` may cancel convergence; run error `VETO:…`.
+- Shown on revision as highlighted **VETO** and War room banner.
 
 ---
 
@@ -185,7 +184,7 @@ Beyond consensus JSON, templates suggest **content** inside `consensusUpdate`:
 | Dept / agent | Expected markdown content |
 |--------------|---------------------------|
 | Marketing / copy | Ready copy, CTAs, tone per design.md |
-| Marketing / community | Calendar + posts; hooks/hashtags in markdown or bullets |
+| Marketing / community | Calendar + posts; hooks/hashtags in markdown |
 | Marketing / design-lead | UX brief + referenced tokens |
 | Product studio / fullstack | Implementation notes, code paths |
 | SEO / content | Briefs, keywords, H1-H3 structure |
@@ -196,27 +195,33 @@ None replace the consensus JSON wrapper.
 
 ## Deliverable status in the UI
 
-After a run, `product-last-run.ts` classifies:
+After a product-scoped run, the last-run trace classifies **each step**:
 
 | Status | Meaning |
 |--------|---------|
 | `saved_to_disk` | At least one step used write_file or persisted doc |
 | `handoff_only` | Output / JSON but no workspace files |
 | `missing` | No useful output |
-| `no_docs_and_weak_handoff` | No docs and no structured JSON — lost deliverables |
-| `partial_handoff` | Some steps with JSON, some without |
 
-Use these in **My jobs** and product view to audit handoff quality.
+Aggregate run diagnoses (e.g. `partial_handoff`, `no_docs_and_weak_handoff`, `munger_veto`):
+
+| Diagnosis | Meaning |
+|-----------|---------|
+| `partial_handoff` | Some steps with structured JSON, some without |
+| `no_docs_and_weak_handoff` | No docs and no structured JSON |
+| `munger_veto` | Run cancelled by veto |
+
+**Where to see it:** War room → **Deliverable health**; Product consensus → last run panel. **My jobs** shows reports and documents, not these per-step status codes.
 
 ---
 
 ## What is NOT a platform handoff
 
-External AI schemas **not parsed**:
+External AI schemas **not parsed** as consensus:
 
 - `DesignHandoff` / `schema.org`
 - JSON with `componentName`, `layout`, `children[]` as the only closing block
-- Any JSON without `consensusUpdate` / `nextAction` / `veto` / `decisions`
+- Any JSON without recognized consensus fields
 
 You **may** include them as an annex inside brief markdown — documentation for humans or `fullstack-dhh`, not engine memory.
 

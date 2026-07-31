@@ -15,16 +15,18 @@ Catálogo de agentes, skills reutilizables y Catalog Studio.
 
 ## Equipo IA hub
 
-Ruta: **Tu oficina** → **Equipo IA** (`/ai-team`).
+Ruta: **Equipo IA** (`/ai-team`).
 
 | Pestaña | Función |
 |---------|---------|
-| **Agentes** | Lista + edición; en móvil, selector desplegable |
+| **Agentes** | Lista + edición inline; botón **Nuevo agente** (formulario manual); en móvil, selector desplegable |
 | **Habilidades** | Skills del tenant |
 | **Crear agente** | Catalog Studio con IA |
 | **Crear habilidad** | Catalog Studio con IA |
 
-Los agentes son **especialistas reutilizables**: modelo, temperatura, proveedor LLM, skills asociadas.
+Los agentes son **especialistas reutilizables**: modelo, temperatura, proveedor LLM (según config de plataforma), skills asociadas, system prompt.
+
+Rutas legacy `/agents` y `/skills` redirigen aquí con la pestaña correcta.
 
 > Para construir prompts y handoffs correctos: artículo **¿Cómo construir agentes?**
 
@@ -41,7 +43,7 @@ flowchart LR
   S2[Skill B] --> AG1
 ```
 
-- **Reutiliza** antes de duplicar — Catalog Studio prioriza match ≥80%.
+- **Reutiliza** antes de duplicar — Catalog Studio prioriza reutilizar agente existente con fit ≥80%.
 - Nombre en kebab-case: `seo-content-strategist`.
 - Contenido: cuándo usarla + qué debe entregar + restricciones.
 
@@ -51,11 +53,13 @@ flowchart LR
 
 Flujo común (agente o skill):
 
-1. Escribes un **brief** en lenguaje natural.
-2. La IA propone **reutilizar** existente o **crear** borrador.
-3. **Munger** hace pre-mortem → puede emitir **VETO**.
-4. Marcas checkboxes de aprobación explícita.
-5. **Aprobar y aplicar** — nada se crea sin tu OK.
+1. Escribes un **brief** en lenguaje natural (opcional: departamento de contexto).
+2. La IA propone **reutilizar** existente o **crear** borrador (nombre, prompt, skills sugeridas).
+3. **Munger** hace pre-mortem → puede emitir **VETO** (bloquea Aprobar y aplicar).
+4. Marcas checkboxes de aprobación explícita (crear skills/agente nuevos).
+5. **Aprobar y aplicar** — nada se persiste sin tu OK.
+
+Munger también interviene en **Org Studio** con la misma lógica de veto.
 
 ---
 
@@ -63,7 +67,9 @@ Flujo común (agente o skill):
 
 | Necesitas… | Dónde |
 |------------|-------|
-| Rol nuevo en el catálogo | Equipo IA → Crear agente |
-| Mismo proceso repetible | Flujos (cadena ordenada) |
-| Equipo + marca unificada | Org Studio + design.md |
-| Falta un rol en encargo | Coordinador enlaza a Crear agente con brief precargado |
+| Rol nuevo en el catálogo | Equipo IA → Crear agente (o Nuevo agente manual) |
+| Mismo proceso repetible | Flujos (`/office/workflows`) — cadena ordenada |
+| Equipo + marca unificada | Org Studio + `design.md` |
+| Falta un rol en encargo | Coordinador enlaza a `/ai-team?tab=create-agent&brief=…` |
+
+Los agentes de plataforma (`ceo-bezos`, `research-thompson`, …) se clonan al tenant bajo demanda cuando un flujo o servicio los necesita.

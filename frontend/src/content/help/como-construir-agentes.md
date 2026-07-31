@@ -179,8 +179,10 @@ Opcional: incluir un anexo JSON técnico *dentro* del markdown del brief
 
 ## Crear el agente en la UI
 
-1. **Equipo IA** → **Crear agente** (Catalog Studio) o **Nuevo agente** (manual).
-2. Pega el system prompt completo.
-3. Asigna skills: `frontend-design`, `ui-ux-pro-max` para design-lead.
-4. Aprueba tras Munger si aplica.
-5. Incorpora al departamento en Org Studio o úsalo en un flujo.
+1. **Equipo IA** → pestaña **Crear agente** (Catalog Studio con Munger) **o** pestaña **Agentes** → **Nuevo agente** (formulario manual).
+2. Pega el system prompt completo con secciones `## Rol`, `## Persona`, etc.
+3. Asigna skills en el formulario: p. ej. `frontend-design`, `ui-ux-pro-max` para design-lead.
+4. En Catalog Studio: aprueba checkboxes y supera Munger si aplica.
+5. Incorpora al departamento en Org Studio o úsalo en un flujo / encargo de Oficina.
+
+Los agentes solo ejecutan en runs cuando están en el catálogo del tenant y referenciados por el Coordinador, un flujo o un departamento.
