@@ -111,7 +111,7 @@ export default function MarkdownDoc({
         );
       },
       blockquote: ({ children }) => (
-        <blockquote className="mb-4 border-l-4 border-[var(--color-primary)] bg-[var(--color-muted)]/40 py-2 pl-4 pr-3 italic text-[var(--color-foreground)]/90">
+        <blockquote className="help-back-to-toc mb-4 border-l-4 border-[var(--color-primary)] bg-[var(--color-muted)]/40 py-2 pl-4 pr-3 italic text-[var(--color-foreground)]/90 [&_a]:not-italic [&_a]:font-medium">
           {children}
         </blockquote>
       ),

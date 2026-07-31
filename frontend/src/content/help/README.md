@@ -31,6 +31,8 @@ Old micro-article URLs redirect in `HelpPage` via `HELP_SLUG_REDIRECTS`:
 
 Within each guide, `##` headings become anchor links in **En este artículo** (scroll within one full document — not separate pages per section).
 
+**Back to TOC:** `HelpPage` injects `[↑ Volver al índice](#tabla-de-contenidos)` at the end of every `##` section (except the TOC itself) via `lib/help-markdown.ts`. Guides must include a `## Tabla de contenidos` / `## Table of contents` block.
+
 ## Navigation notes (for authors)
 
 - **Debug office section** (sidebar `nav.sectionDebugOffice`): Runs, Consensus, Ops, Decisions — tenant admins also see Team and Settings here.

@@ -4,6 +4,14 @@ Welcome. This manual is your **entry point**: quick start, platform map, and lin
 
 ---
 
+## Table of contents
+
+1. [Quick start (Office)](#quick-start-office)
+2. [Platform map and guides](#platform-map-and-guides)
+3. [Frequently asked questions](#frequently-asked-questions)
+
+---
+
 ## Quick start (Office)
 
 If you just logged in, start here. In **five minutes** you can complete your first job.

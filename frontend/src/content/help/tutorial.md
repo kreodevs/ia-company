@@ -4,6 +4,14 @@ Bienvenido. Este manual es tu **punto de entrada**: inicio rápido, mapa de la p
 
 ---
 
+## Tabla de contenidos
+
+1. [Inicio rápido (Oficina)](#inicio-rápido-oficina)
+2. [Mapa de la plataforma y guías](#mapa-de-la-plataforma-y-guías)
+3. [Preguntas frecuentes](#preguntas-frecuentes)
+
+---
+
 ## Inicio rápido (Oficina)
 
 Si acabas de entrar, empieza aquí. En **cinco minutos** puedes completar tu primer encargo.

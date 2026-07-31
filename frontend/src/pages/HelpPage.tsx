@@ -5,9 +5,11 @@ import { Building2, ChevronDown, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
+import { injectHelpBackToTocLinks } from "../lib/help-markdown";
 import {
   extractDocumentHeadings,
   extractHashId,
+  getTocHeadingId,
   scrollToHeading,
   slugifyHeading,
   type DocumentHeading,
@@ -127,6 +129,14 @@ export default function HelpPage() {
     () => extractDocumentHeadings(article?.content ?? "").filter((heading) => heading.level === 2),
     [article?.content],
   );
+  const articleContent = useMemo(() => {
+    if (!article) return "";
+    return injectHelpBackToTocLinks(
+      article.content,
+      getTocHeadingId(i18n.language),
+      t("help.backToToc"),
+    );
+  }, [article, i18n.language, t]);
   const [activeSectionId, setActiveSectionId] = useState<string>("");
   const [articlesOpen, setArticlesOpen] = useState(true);
   const [sectionsOpen, setSectionsOpen] = useState(false);
@@ -318,7 +328,11 @@ export default function HelpPage() {
           ref={contentRef}
           className="order-1 min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8 lg:order-none"
         >
-          <MarkdownDoc content={article.content} onSectionLink={scrollToHeading} />
+          <MarkdownDoc
+            content={articleContent}
+            tocId={getTocHeadingId(i18n.language)}
+            onSectionLink={scrollToHeading}
+          />
         </div>
       </div>
     </div>
