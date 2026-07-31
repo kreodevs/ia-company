@@ -49,6 +49,8 @@ We use **react-markdown + remark-gfm + mermaid** for help articles:
 
 Sidebar: each `##` / `###` becomes a section panel (`HelpPage` + `lib/markdown-sections.ts`).
 
+**Mobile / tablet:** a horizontal **Guías por tema** chip strip (below quick links) lists every article without expanding the sidebar accordion. The sidebar list stays expanded by default on small screens.
+
 **Mobile / iPad (< 1024px):** Help icon (book) in the top bar next to notifications. On `HelpPage`, **Artículos** and **En este artículo** are collapsible toggles (collapsed by default); document content renders first. Desktop: always-expanded sidebar.
 
 ## Scope

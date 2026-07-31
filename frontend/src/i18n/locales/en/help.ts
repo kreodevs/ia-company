@@ -4,6 +4,8 @@ export const help = {
   subtitle: "Quick start, topic guides (Office, products, workflows, operations), and handoff reference.",
   articles: "Articles",
   articlesHeading: "Articles",
+  guidesByTopic: "Guides by topic",
+  articlesCollapsedHint: "{{current}} · {{count}} guides (tap to see all)",
   sections: "In this article",
   introduction: "Introduction",
   tutorialStart: "Quick start (Office)",

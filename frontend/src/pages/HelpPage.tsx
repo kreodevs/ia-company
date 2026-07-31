@@ -124,7 +124,7 @@ export default function HelpPage() {
   const [activeSectionId, setActiveSectionId] = useState<string>(() =>
     parsed ? getDefaultSectionId(parsed) : HELP_INTRO_SECTION_ID,
   );
-  const [articlesOpen, setArticlesOpen] = useState(false);
+  const [articlesOpen, setArticlesOpen] = useState(true);
   const [sectionsOpen, setSectionsOpen] = useState(false);
 
   const tocSection = parsed ? getTocSection(parsed.sections) : undefined;
@@ -159,7 +159,6 @@ export default function HelpPage() {
   }, [parsed, article?.content]);
 
   useEffect(() => {
-    setArticlesOpen(false);
     setSectionsOpen(false);
   }, [article?.slug]);
 
@@ -208,11 +207,40 @@ export default function HelpPage() {
         </div>
       </section>
 
+      <section className="lg:hidden" aria-label={t("help.articles")}>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+          {t("help.guidesByTopic")}
+        </p>
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 snap-x snap-mandatory">
+          {articles.map((item) => (
+            <Link
+              key={item.slug}
+              to={`/help/${item.slug}`}
+              className={cn(
+                "interactive snap-start shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition",
+                item.slug === article.slug
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                  : "border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] hover:border-[var(--color-muted-foreground)]/40",
+              )}
+            >
+              {item.title}
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
         <aside className="order-2 space-y-3 lg:order-none lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:max-h-[calc(100dvh-var(--header-height)-2rem)] lg:space-y-2 lg:self-start lg:overflow-y-auto lg:pr-1">
           <HelpNavToggle
             label={t("help.articles")}
-            hint={article.title}
+            hint={
+              articlesOpen
+                ? undefined
+                : t("help.articlesCollapsedHint", {
+                    current: article.title,
+                    count: articles.length,
+                  })
+            }
             open={articlesOpen}
             onToggle={() => setArticlesOpen((open) => !open)}
             controlsId="help-articles-nav"

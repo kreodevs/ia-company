@@ -4,6 +4,8 @@ export const help = {
   subtitle: "Inicio rápido, guías por tema (Oficina, productos, flujos, operaciones) y referencia de handoffs.",
   articles: "Artículos",
   articlesHeading: "Artículos",
+  guidesByTopic: "Guías por tema",
+  articlesCollapsedHint: "{{current}} · {{count}} guías (toca para ver todas)",
   sections: "En este artículo",
   introduction: "Introducción",
   tutorialStart: "Inicio rápido (Oficina)",
