@@ -14,15 +14,18 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
   const navigate = useNavigate();
   const [packs, setPacks] = useState<VerticalPackListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [applyingId, setApplyingId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
+    setLoadError(false);
     try {
       const { packs: next } = await api.products.verticalPacks();
       setPacks(next);
     } catch {
       setPacks([]);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,17 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
     );
   }
 
-  if (packs.length === 0) return null;
+  if (packs.length === 0) {
+    return (
+      <Panel title={t("products.verticalPacks.title")} subtitle={t("products.verticalPacks.subtitle")}>
+        <p className="text-sm text-[var(--color-muted-foreground)]">
+          {loadError
+            ? t("products.verticalPacks.loadFailed")
+            : t("products.verticalPacks.empty")}
+        </p>
+      </Panel>
+    );
+  }
 
   return (
     <Panel title={t("products.verticalPacks.title")} subtitle={t("products.verticalPacks.subtitle")}>

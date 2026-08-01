@@ -97,6 +97,8 @@ export const products = {
     meta: "{{workflows}} workflows · {{presets}} presets · projects/{{slug}}/",
     toastApplied: "{{name}} listo — workflows clonados y puesto en foco.",
     toastFailed: "No se pudo aplicar el vertical pack.",
+    loadFailed: "No se pudieron cargar los vertical packs del servidor.",
+    empty: "Aún no hay vertical packs registrados en este servidor.",
   },
   add: {
     title: "Añadir producto",

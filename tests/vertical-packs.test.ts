@@ -43,3 +43,17 @@ test("resolvePresetTask uses pack override after cache warm", async () => {
   assert.ok(task);
   assert.match(task!, /Bannerbear/i);
 });
+
+test("discoverVerticalPacks returns bundled snapog when projects dir is missing", async () => {
+  clearVerticalPackCache();
+  const previous = process.env.WORKSPACE_ROOT;
+  process.env.WORKSPACE_ROOT = `/tmp/ac-missing-projects-${Date.now()}`;
+  try {
+    const packs = await discoverVerticalPacks();
+    assert.ok(packs.some((p) => p.id === "snapog"));
+  } finally {
+    if (previous === undefined) delete process.env.WORKSPACE_ROOT;
+    else process.env.WORKSPACE_ROOT = previous;
+    clearVerticalPackCache();
+  }
+});

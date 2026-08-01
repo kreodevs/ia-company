@@ -15,6 +15,7 @@ import {
   type ProductWorkPreset,
 } from "./product-work-presets.js";
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
+import { BUNDLED_VERTICAL_PACKS } from "../data/vertical-packs/bundled.js";
 
 export interface VerticalPackPresetOverride {
   presetId: string;
@@ -149,32 +150,35 @@ function parsePackManifest(raw: unknown, filePath: string): VerticalPackManifest
 export async function discoverVerticalPacks(): Promise<VerticalPackManifest[]> {
   if (cachedPacks) return cachedPacks;
 
-  const base = projectsRoot();
-  let dirs: string[] = [];
-  try {
-    const entries = await readdir(base, { withFileTypes: true });
-    dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-  } catch {
-    cachedPacks = [];
-    return cachedPacks;
+  const byId = new Map<string, VerticalPackManifest>();
+  for (const pack of BUNDLED_VERTICAL_PACKS) {
+    byId.set(pack.id, pack);
   }
 
-  const packs: VerticalPackManifest[] = [];
-  for (const dir of dirs.sort()) {
-    const manifestPath = join(base, dir, "vertical-pack.json");
-    try {
-      const text = await readFile(manifestPath, "utf8");
-      const parsed = parsePackManifest(JSON.parse(text), manifestPath);
-      if (parsed) packs.push(parsed);
-    } catch (err) {
-      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-        console.warn(`[vertical-packs] Failed to read ${manifestPath}:`, err);
+  const base = projectsRoot();
+  try {
+    const entries = await readdir(base, { withFileTypes: true });
+    const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+    for (const dir of dirs.sort()) {
+      const manifestPath = join(base, dir, "vertical-pack.json");
+      try {
+        const text = await readFile(manifestPath, "utf8");
+        const parsed = parsePackManifest(JSON.parse(text), manifestPath);
+        if (parsed) byId.set(parsed.id, parsed);
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+          console.warn(`[vertical-packs] Failed to read ${manifestPath}:`, err);
+        }
       }
+    }
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.warn("[vertical-packs] projects scan failed:", err);
     }
   }
 
-  cachedPacks = packs;
-  return packs;
+  cachedPacks = Array.from(byId.values()).sort((a, b) => a.id.localeCompare(b.id));
+  return cachedPacks;
 }
 
 export function clearVerticalPackCache(): void {

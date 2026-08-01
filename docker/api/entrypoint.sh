@@ -37,5 +37,23 @@ if [ "$RUN_SEED" = "true" ]; then
   node dist/prisma/seed.js || echo "Seed completed or skipped"
 fi
 
+seed_workspace_packs() {
+  if [ ! -d /app/pack-seed/projects ]; then
+    return 0
+  fi
+  mkdir -p /app/projects
+  for src in /app/pack-seed/projects/*/; do
+    [ -d "$src" ] || continue
+    slug=$(basename "$src")
+    dest="/app/projects/$slug"
+    if [ ! -f "$dest/vertical-pack.json" ]; then
+      echo "Seeding workspace pack: $slug"
+      mkdir -p "$dest"
+      cp -R "${src}." "$dest/"
+    fi
+  done
+}
+seed_workspace_packs
+
 echo "Starting API on ${PORT:-3001}…"
 exec node dist/src/server/index.js
