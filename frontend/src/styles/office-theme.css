@@ -240,12 +240,19 @@ html[data-theme="paperclip"] .office-task-textarea:focus {
 
 .office-task-select {
   width: 100%;
-  border-radius: 0.6rem;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  background: rgba(2, 6, 23, 0.5);
-  color: inherit;
+  border-radius: var(--radius-inputs, 0.6rem);
+  border: 1px solid var(--office-border, var(--border));
+  background: var(--office-filter-bg, var(--input));
+  color: var(--office-text-emphasis, var(--foreground));
   padding: 0.45rem 0.6rem;
-  font-size: 0.85rem;
+  font-size: var(--text-body, 0.85rem);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.office-task-select:focus {
+  outline: none;
+  border-color: var(--office-accent-border-strong, var(--ring));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--office-accent, var(--primary)) 18%, transparent);
 }
 
 .office-scope-bar {
@@ -1166,6 +1173,15 @@ html[data-theme="letter"] .office-service-btn[data-active="true"] {
   border-color: rgba(83, 58, 253, 0.45);
   background: rgba(83, 58, 253, 0.1);
   color: var(--deep-navy);
+}
+
+html[data-theme="letter"] .office-archive-list-panel,
+html[data-theme="letter"] .office-archive-preview-panel {
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .office-archive-item[data-selected="true"] {
+  box-shadow: 0 0 0 1px rgba(83, 58, 253, 0.2);
 }
 
 /* Stripe HDS Light — department meeting room */
@@ -2203,9 +2219,10 @@ html[data-theme="letter"] .office-link-inline {
 .office-archive-page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--spacing-md, 1rem);
   max-width: 1400px;
   margin: 0 auto;
+  color: var(--office-text-emphasis, var(--foreground));
 }
 
 .office-archive-header {
@@ -2220,20 +2237,23 @@ html[data-theme="letter"] .office-link-inline {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;
+  color: var(--office-text-emphasis, var(--foreground));
+  letter-spacing: var(--tracking-section-heading, -0.01em);
 }
 
 .office-archive-subtitle {
   margin: 0.35rem 0 0;
-  color: var(--office-muted, #94a3b8);
-  font-size: 0.9rem;
+  color: var(--office-muted);
+  font-size: var(--text-body, 0.9rem);
+  line-height: var(--leading-body, 1.45);
   max-width: 40rem;
 }
 
 .office-archive-count {
   margin: 0;
   align-self: flex-end;
-  font-size: 0.78rem;
-  color: var(--office-muted, #94a3b8);
+  font-size: var(--text-caption, 0.78rem);
+  color: var(--office-muted-dim);
 }
 
 .office-archive-filters {
@@ -2263,10 +2283,11 @@ html[data-theme="letter"] .office-link-inline {
 
 .office-archive-list-panel,
 .office-archive-preview-panel {
-  border-radius: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(15, 23, 42, 0.35);
-  padding: 0.85rem;
+  border-radius: var(--radius-cards, 1rem);
+  border: 1px solid var(--office-border);
+  background: var(--office-surface);
+  padding: var(--spacing-md, 0.85rem);
+  box-shadow: var(--shadow-sm-bottom, none);
 }
 
 .office-archive-list {
@@ -2283,19 +2304,23 @@ html[data-theme="letter"] .office-link-inline {
 .office-archive-item {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 0.75rem;
-  background: rgba(15, 23, 42, 0.25);
+  border: 1px solid var(--office-border-subtle);
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--office-surface-deep);
   padding: 0.7rem 0.8rem;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .office-archive-item:hover,
 .office-archive-item[data-selected="true"] {
-  border-color: rgba(56, 189, 248, 0.4);
-  background: rgba(14, 165, 233, 0.08);
+  border-color: var(--office-accent-border-strong);
+  background: var(--office-accent-bg);
+}
+
+.office-archive-item[data-selected="true"] {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--office-accent) 25%, transparent);
 }
 
 .office-archive-item-head {
@@ -2306,24 +2331,24 @@ html[data-theme="letter"] .office-link-inline {
 }
 
 .office-archive-source {
-  font-size: 0.62rem;
+  font-size: var(--text-caption, 0.62rem);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #7dd3fc;
+  color: var(--office-source-encargo);
 }
 
 .office-archive-source[data-source="workspace"] {
-  color: #a5b4fc;
+  color: var(--office-source-workspace);
 }
 
 .office-archive-source[data-source="artifact"] {
-  color: #fcd34d;
+  color: var(--office-source-artifact);
 }
 
 .office-archive-time {
-  font-size: 0.62rem;
-  color: var(--office-muted, #94a3b8);
+  font-size: var(--text-caption, 0.62rem);
+  color: var(--office-muted-dim);
 }
 
 .office-archive-item-title {
@@ -2331,12 +2356,13 @@ html[data-theme="letter"] .office-link-inline {
   font-size: 0.86rem;
   font-weight: 600;
   line-height: 1.35;
+  color: var(--office-text-emphasis, inherit);
 }
 
 .office-archive-item-meta {
   margin: 0.2rem 0 0;
-  font-size: 0.68rem;
-  color: var(--office-muted, #94a3b8);
+  font-size: var(--text-caption, 0.68rem);
+  color: var(--office-muted);
   line-height: 1.35;
 }
 
@@ -2347,19 +2373,20 @@ html[data-theme="letter"] .office-link-inline {
   gap: 0.75rem;
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  border-bottom: 1px solid var(--office-border-subtle);
 }
 
 .office-archive-preview-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-body, 1rem);
   font-weight: 600;
+  color: var(--office-text-emphasis, var(--foreground));
 }
 
 .office-archive-preview-meta {
   margin: 0.25rem 0 0;
-  font-size: 0.72rem;
-  color: var(--office-muted, #94a3b8);
+  font-size: var(--text-caption, 0.72rem);
+  color: var(--office-muted);
 }
 
 .office-archive-preview-body {

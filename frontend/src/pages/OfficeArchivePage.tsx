@@ -266,7 +266,10 @@ export default function OfficeArchivePage() {
                 {workspaceLoading ? (
                   <p className="office-empty">{t("office.archive.loadingDoc")}</p>
                 ) : previewMarkdown ? (
-                  <RichMarkdownView value={previewMarkdown} />
+                  <RichMarkdownView
+                    value={previewMarkdown}
+                    className="border-[var(--office-border)] bg-[var(--office-surface-deep)]"
+                  />
                 ) : (
                   <p className="office-empty">{t("office.archive.noPreview")}</p>
                 )}

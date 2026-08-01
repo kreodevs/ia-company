@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Box, CheckCircle2, Loader2 } from "lucide-react";
-import { api, type VerticalPackListItem } from "../lib/api";
-import { translateApiError } from "../lib/translate-error";
-import { toast } from "./molecules/Sonner";
-import Button from "./ui/Button";
-import Panel from "./ui/Panel";
-import StatusPill from "./ui/StatusPill";
+import { api, type VerticalPackListItem } from "../../lib/api";
+import { translateApiError } from "../../lib/translate-error";
+import { toast } from "../molecules/Sonner";
+import Button from "../ui/Button";
+import Panel from "../ui/Panel";
+import StatusPill from "../ui/StatusPill";
 
 export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => void }) {
   const { t } = useTranslation();

@@ -1,4 +1,5 @@
-.office-page {
+.office-page,
+.office-archive-page {
   --office-accent: #38bdf8;
   --office-accent-hover: #7dd3fc;
   --office-accent-bg: rgba(56, 189, 248, 0.08);
@@ -19,13 +20,17 @@
   --office-filter-active-text: #7dd3fc;
   --office-btn-muted-bg: rgba(15, 23, 42, 0.5);
   --office-btn-muted-text: #94a3b8;
+  --office-source-encargo: #7dd3fc;
+  --office-source-workspace: #a5b4fc;
+  --office-source-artifact: #fcd34d;
   --office-prose-body: var(--foreground-muted, #cbd5e1);
   --office-prose-heading: var(--foreground, #f1f5f9);
   --office-prose-link: #7dd3fc;
   --office-prose-quote: #94a3b8;
 }
 
-html[data-theme="paperclip"] .office-page {
+html[data-theme="paperclip"] .office-page,
+html[data-theme="paperclip"] .office-archive-page {
   --office-accent: var(--manila);
   --office-accent-hover: #e8d4a8;
   --office-accent-bg: rgba(243, 230, 196, 0.08);
@@ -46,6 +51,9 @@ html[data-theme="paperclip"] .office-page {
   --office-filter-active-text: var(--manila);
   --office-btn-muted-bg: var(--dark-raised-surface);
   --office-btn-muted-text: var(--stone-muted);
+  --office-source-encargo: var(--manila);
+  --office-source-workspace: #d4c4a0;
+  --office-source-artifact: #e8b86d;
   --office-prose-body: var(--manila);
   --office-prose-heading: var(--manila);
   --office-prose-link: var(--manila);
@@ -56,31 +64,66 @@ html[data-theme="paperclip"] .office-encargo-card {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-html[data-theme="letter"] .office-page {
+html[data-theme="letter"] .office-page,
+html[data-theme="letter"] .office-archive-page {
   --office-accent: #533afd;
   --office-accent-hover: #4228e0;
   --office-accent-bg: rgba(83, 58, 253, 0.08);
   --office-accent-border: rgba(83, 58, 253, 0.28);
   --office-accent-border-strong: rgba(83, 58, 253, 0.45);
-  --office-surface: rgba(255, 255, 255, 0.95);
-  --office-surface-deep: #f8fafd;
+  --office-surface: var(--surface-white);
+  --office-surface-deep: var(--pale-background);
   --office-surface-card: linear-gradient(145deg, #ffffff 0%, #f8fafd 100%);
-  --office-border: #e5edf5;
+  --office-border: var(--quiet-surface);
   --office-border-subtle: rgba(229, 237, 245, 0.9);
-  --office-muted: #50617a;
-  --office-muted-dim: #64748d;
-  --office-text-emphasis: #061b31;
+  --office-muted: var(--slate-body);
+  --office-muted-dim: var(--subdued-heading);
+  --office-text-emphasis: var(--deep-navy);
   --office-text-on-accent: #4228e0;
-  --office-link: #533afd;
-  --office-filter-bg: #ffffff;
+  --office-link: var(--stripe-indigo);
+  --office-filter-bg: var(--surface-white);
   --office-filter-active-bg: rgba(83, 58, 253, 0.1);
   --office-filter-active-text: #4228e0;
-  --office-btn-muted-bg: #f8fafd;
-  --office-btn-muted-text: #50617a;
-  --office-prose-body: #50617a;
-  --office-prose-heading: #061b31;
-  --office-prose-link: #533afd;
-  --office-prose-quote: #64748d;
+  --office-btn-muted-bg: var(--pale-background);
+  --office-btn-muted-text: var(--slate-body);
+  --office-source-encargo: var(--stripe-indigo);
+  --office-source-workspace: var(--brand-lavender);
+  --office-source-artifact: var(--stripe-orange);
+  --office-prose-body: var(--slate-body);
+  --office-prose-heading: var(--deep-navy);
+  --office-prose-link: var(--stripe-indigo);
+  --office-prose-quote: var(--subdued-heading);
+}
+
+html[data-theme="slash"] .office-page,
+html[data-theme="slash"] .office-archive-page {
+  --office-accent: var(--color-copper);
+  --office-accent-hover: #e0a878;
+  --office-accent-bg: rgba(204, 145, 102, 0.1);
+  --office-accent-border: rgba(204, 145, 102, 0.35);
+  --office-accent-border-strong: rgba(204, 145, 102, 0.55);
+  --office-surface: rgba(28, 29, 34, 0.85);
+  --office-surface-deep: rgba(18, 19, 23, 0.9);
+  --office-surface-card: linear-gradient(145deg, var(--color-graphite) 0%, var(--color-carbon) 100%);
+  --office-border: rgba(119, 122, 136, 0.28);
+  --office-border-subtle: rgba(119, 122, 136, 0.18);
+  --office-muted: var(--color-fog);
+  --office-muted-dim: var(--color-steel);
+  --office-text-emphasis: var(--color-bone);
+  --office-text-on-accent: var(--color-obsidian);
+  --office-link: var(--color-copper);
+  --office-filter-bg: var(--color-graphite);
+  --office-filter-active-bg: rgba(204, 145, 102, 0.12);
+  --office-filter-active-text: var(--color-copper);
+  --office-btn-muted-bg: var(--color-carbon);
+  --office-btn-muted-text: var(--color-fog);
+  --office-source-encargo: var(--color-copper);
+  --office-source-workspace: var(--color-silver);
+  --office-source-artifact: #ae9357;
+  --office-prose-body: var(--color-mist);
+  --office-prose-heading: var(--color-bone);
+  --office-prose-link: var(--color-copper);
+  --office-prose-quote: var(--color-fog);
 }
 
 html[data-theme="letter"] .office-encargo-card {
@@ -563,7 +606,7 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 
 .office-rich-markdown th,
 .office-rich-markdown td {
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--office-border);
   padding: 0.35rem 0.5rem;
 }
 
