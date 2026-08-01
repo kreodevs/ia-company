@@ -4,6 +4,7 @@
 |--------|------|
 | `office-chat-config.ts` | Coordinator chat mode (`stream` \| `legacy`), endpoint path, localStorage override — **no `.env`** |
 | `coordinator-chat-stream.ts` | Parse TanStack AI message parts (plan, clarifications, approval) |
+| `workflow-task-override.ts` | Initial run task for workflow editor — AI Studio brief, skip STUCK consensus |
 
 Default mode is **`stream`** → `POST /office/chat/stream` with tools `ask_clarifying_questions` and `propose_office_task` (needs approval).
 

@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
+import {
+  consumeStoredWorkflowTask,
+  resolveWorkflowTaskOverride,
+} from "../lib/workflow-task-override";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
@@ -11,6 +15,7 @@ import Card from "../components/ui/Card";
 
 export default function WorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
@@ -20,6 +25,9 @@ export default function WorkflowEditorPage() {
   const [executing, setExecuting] = useState(false);
   const [useConsensus, setUseConsensus] = useState(true);
   const [taskOverride, setTaskOverride] = useState("");
+  const pendingNavTaskRef = useRef<string | undefined>(
+    (location.state as { taskOverride?: string } | null)?.taskOverride?.trim() || undefined,
+  );
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -31,12 +39,25 @@ export default function WorkflowEditorPage() {
     setWorkflow(wf);
     setAgents(ag);
     setConsensus(consensusDoc);
-    setTaskOverride(consensusDoc.nextAction ?? "");
+    setTaskOverride(
+      resolveWorkflowTaskOverride({
+        storedTask: consumeStoredWorkflowTask(id),
+        locationTask: pendingNavTaskRef.current,
+        consensusNextAction: consensusDoc.nextAction,
+        workflowDescription: wf.description,
+      }),
+    );
+    pendingNavTaskRef.current = undefined;
   }, [id]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!pendingNavTaskRef.current) return;
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, navigate]);
 
   const handleSave = async (steps: Workflow["steps"], edges: Workflow["edges"]) => {
     if (!workflow) return;

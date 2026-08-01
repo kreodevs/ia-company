@@ -5,6 +5,7 @@ import { api } from "../../lib/api";
 import type { WorkflowStudioProposal } from "../../lib/catalog-studio-types";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import { translateApiError } from "../../lib/translate-error";
+import { storeWorkflowTask } from "../../lib/workflow-task-override";
 import Button from "../ui/Button";
 import { Dialog } from "../molecules/Dialog";
 import MungerReviewPanel from "../catalog-studio/MungerReviewPanel";
@@ -86,7 +87,11 @@ export default function WorkflowAiStudioModal({
       onApplied?.();
       onClose();
       if (result.workflow?.id) {
-        await navigate(`/office/workflows/${result.workflow.id}`);
+        const task = proposal.brief.trim();
+        if (task) storeWorkflowTask(result.workflow.id, task);
+        await navigate(`/office/workflows/${result.workflow.id}`, {
+          state: task ? { taskOverride: task } : null,
+        });
       }
     } catch (err) {
       setError(translateApiError(err, t, "common.requestFailed"));
