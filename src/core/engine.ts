@@ -9,6 +9,7 @@ import {
   persistHandoffAsAgentDoc,
 } from "../lib/agent-deliverables.js";
 import { prisma } from "../lib/prisma.js";
+import { executionRunCreateData } from "../lib/run-scope.js";
 import { ensureProductWorkspace } from "../lib/product-workspace.js";
 import { ensureTenantWorkspace } from "../lib/tenant-workspace.js";
 import {
@@ -88,12 +89,12 @@ export class WorkflowExecutor {
     emit?: LogEmitter,
   ): Promise<string> {
     const run = await prisma.executionRun.create({
-      data: {
+      data: executionRunCreateData({
         workflowId,
         tenantId: input.tenantId,
-        status: "PENDING",
-        sharedMemory: (input.initialMemory ?? {}) as object,
-      },
+        sharedMemory: input.initialMemory ?? {},
+        productId: input.productId,
+      }),
     });
 
     await this.runExisting(run.id, workflowId, input, emit);
@@ -1399,12 +1400,12 @@ export async function executeWorkflowInBackground(
   };
 
   const run = await prisma.executionRun.create({
-    data: {
+    data: executionRunCreateData({
       workflowId,
       tenantId: input.tenantId,
-      status: "PENDING",
-      sharedMemory: (executionInput.initialMemory ?? {}) as object,
-    },
+      sharedMemory: executionInput.initialMemory ?? {},
+      productId: input.productId,
+    }),
   });
 
   if (input.productId) {

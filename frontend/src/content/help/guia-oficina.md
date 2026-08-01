@@ -43,7 +43,7 @@ flowchart LR
 
 ### Oficina principal
 
-En `/office` puedes filtrar por **Departamento** (Org Unit). Eso carga contexto de `design.md`, agentes del dept. y pipeline de artefactos — no sustituye elegir un producto.
+En `/office` puedes filtrar por **departamento**. Eso carga contexto de `design.md`, agentes del dept. y pipeline de artefactos — no sustituye elegir un producto.
 
 | Control | Efecto |
 |---------|--------|

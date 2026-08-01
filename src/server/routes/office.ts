@@ -26,7 +26,12 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from "../../lib/tenant-notifications.js";
-import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import {
+  createEncargoDelivery,
+  listEncargoDeliveries,
+  revokeEncargoDelivery,
+} from "../../lib/encargo-delivery.js";
+import { handleRouteError, requireImpersonatedTenant, requireSession } from "../lib/request-context.js";
 
 export async function officeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -64,6 +69,55 @@ export async function officeRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.get<{ Params: { runId: string } }>("/office/encargos/:runId/deliveries", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      return { items: await listEncargoDeliveries(tenantId, request.params.runId) };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { runId: string };
+    Body: {
+      label?: string;
+      expiresAt?: string | null;
+      includeFinalReport?: boolean;
+      documentIds?: string[];
+    };
+  }>("/office/encargos/:runId/deliveries", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const session = requireSession(request);
+      const delivery = await createEncargoDelivery(tenantId, request.params.runId, {
+        ...request.body,
+        createdByUserId: session.sub,
+      });
+      return reply.status(201).send(delivery);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.delete<{ Params: { runId: string; deliveryId: string } }>(
+    "/office/encargos/:runId/deliveries/:deliveryId",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const delivery = await revokeEncargoDelivery(
+          tenantId,
+          request.params.runId,
+          request.params.deliveryId,
+        );
+        if (!delivery) return reply.status(404).send({ error: "Delivery link not found" });
+        return delivery;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 
   app.get("/office/dashboard", async (request, reply) => {
     try {

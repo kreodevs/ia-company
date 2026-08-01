@@ -52,7 +52,7 @@ export const AGENT_ROLE_LABEL_KEYS: Record<string, string> = {
   "marketing-strategist": "office.roles.marketingStrategist",
 };
 
-/** Persona display names for platform agents (chips, evidence viewer). */
+/** Legacy persona names — do not use in user-facing UI; prefer agentDisplayLabel / agentRoleLabelKey. */
 export const AGENT_PERSONA_NAMES: Record<string, string> = {
   "coordinator-chief": "Coordinator",
   "ceo-bezos": "Jeff Bezos",

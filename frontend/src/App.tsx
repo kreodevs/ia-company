@@ -15,6 +15,7 @@ import OfficeDepartmentPage from "./pages/OfficeDepartmentPage";
 import OfficeArchivePage from "./pages/OfficeArchivePage";
 import OfficeEncargosPage from "./pages/OfficeEncargosPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
+import PublicDeliveryPage from "./pages/PublicDeliveryPage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
 import ConsensusPage from "./pages/ConsensusPage";
@@ -74,6 +75,7 @@ function AppShell() {
         <Routes>
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/d/:token" element={<PublicDeliveryPage />} />
 
           <Route element={<SetupGate />}>
             <Route path="setup" element={<SetupSuperAdminPage />} />

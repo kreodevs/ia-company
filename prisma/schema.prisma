@@ -52,6 +52,7 @@ model Tenant {
   notifications TenantNotification[]
   orgUnits OrgUnit[]
   artifacts Artifact[]
+  encargoDeliveries EncargoDelivery[]
 }
 
 enum TenantUserRole {
@@ -223,6 +224,8 @@ model ExecutionRun {
   id           String          @id @default(cuid())
   workflowId   String
   tenantId     String?
+  orgUnitId    String?
+  productId    String?
   status       ExecutionStatus @default(PENDING)
   sharedMemory Json            @default("{}")
   totalTokens  Int             @default(0)
@@ -235,12 +238,19 @@ model ExecutionRun {
 
   workflow Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   tenant   Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  orgUnit  OrgUnit?       @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
+  product  TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
   logs     ExecutionLog[]
   opencodeDelegation OpencodeDelegation?
   opencodeRunGate    OpencodeRunGate?
 
   @@index([workflowId])
   @@index([status])
+  @@index([tenantId, status])
+  @@index([tenantId, orgUnitId])
+  @@index([tenantId, productId])
+  @@index([tenantId, orgUnitId, status])
+  @@index([tenantId, productId, status])
 }
 
 enum LogLevel {
@@ -373,6 +383,7 @@ model TenantProduct {
   productSignals ProductSignal[]
   revenueEvents ProductRevenueEvent[]
   waitlistSignups ProductWaitlistSignup[]
+  executionRuns ExecutionRun[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
@@ -924,6 +935,7 @@ model OrgUnit {
   template BusinessTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   products TenantProduct[]
   artifacts Artifact[]
+  executionRuns ExecutionRun[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, type])
@@ -978,6 +990,26 @@ model PasswordResetToken {
   tenantUser TenantUser @relation(fields: [tenantUserId], references: [id], onDelete: Cascade)
 
   @@index([tenantUserId])
+}
+
+// ─── Client delivery (read-only share links) ─────────────────────────────────
+
+model EncargoDelivery {
+  id                 String    @id @default(cuid())
+  tenantId           String
+  runId              String
+  token              String    @unique
+  label              String?
+  expiresAt          DateTime?
+  revokedAt          DateTime?
+  createdByUserId    String?
+  includeFinalReport Boolean   @default(true)
+  documentIds        Json      @default("[]")
+  createdAt          DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, runId])
 }
 
 // ─── Platform settings (superadmin UI; secrets encrypted) ───────────────────

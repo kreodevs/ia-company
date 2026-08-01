@@ -8,6 +8,7 @@
 | `WarRoomAgentSeat.tsx` | Agent seat on the tactical ring (shared by product + general views) |
 | `war-room-shared.ts` | Visual helpers (emoji map, circle layout, time formatting) |
 | `WarRoomRunSelector.tsx` | Chip tabs to pick which **active run/flow** to watch (up to ~5 simultaneous) |
+| `WarRoomRecentRuns.tsx` | Shared recent-runs list (department war room + future unified shell) |
 | `ProductHealthPanel.tsx` | Operational health strip: deliverables X/Y, consensus KB, MCP usage, last run diagnosis |
 | `ProductMetricsStrip.tsx` | Live revenue (Stripe) and waitlist signup counts with link to settings |
 | `DeliverableHealthBanner.tsx` | Warns when last run steps lack on-disk deliverables |

@@ -3,7 +3,7 @@ export const org = {
   title: "Departamentos",
   subtitle: "Empresas y departamentos virtuales — cada uno con agentes, config, tokens de diseño y artefactos.",
   createDepartment: "Nuevo departamento",
-  openStudio: "Abrir Org Studio",
+  openStudio: "Diseñar departamento",
   emptyTitle: "Sin departamentos",
   emptyDesc: "Crea una agencia de marketing, product studio o departamento custom con asistencia IA.",
   noDescription: "Sin descripción.",
@@ -58,7 +58,7 @@ export const org = {
   noDesignMd: "Aún no hay design.md sincronizado.",
   studio: {
     loading: "Cargando plantillas…",
-    title: "Org Studio",
+    title: "Estudio de departamentos",
     subtitle: "Creador de departamentos asistido por IA — elige plantilla, ajusta config y despliega agentes.",
     step1: "1. Describe tu departamento",
     step2: "2. Revisa la propuesta",

@@ -828,11 +828,12 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       where: {
         tenantId,
         OR: [
+          { productId: { not: null } },
           { sharedMemory: { path: ["productId"], not: Prisma.JsonNull } },
           { sharedMemory: { path: ["focusProductSlug"], not: Prisma.JsonNull } },
         ],
       },
-      select: { id: true, totalCostUsd: true, sharedMemory: true },
+      select: { id: true, totalCostUsd: true, sharedMemory: true, productId: true },
       take: 500,
     }),
     prisma.orgUnit.findMany({

@@ -25,7 +25,7 @@ function buildGapBrief(orgUnitName: string, missing: OrgUnitStaffRoster["members
   const roles = missing
     .map((seat) => seat.role?.trim() || humanizeAgentSlug(seat.name))
     .join(", ");
-  return `Departamento "${orgUnitName}". Roles definidos pero aún no creados en Equipo IA: ${roles}. Propón el agente más prioritario para contratar ahora, con skills existentes o nuevas y grants MCP concretos.`;
+  return `Departamento "${orgUnitName}". Roles definidos pero aún no creados en la plantilla de especialistas: ${roles}. Propón el agente más prioritario para contratar ahora, con skills existentes o nuevas y grants MCP concretos.`;
 }
 
 function buildRoleBrief(orgUnitName: string, seat: OrgUnitStaffRoster["members"][number]): string {

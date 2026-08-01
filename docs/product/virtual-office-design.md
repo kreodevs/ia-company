@@ -288,9 +288,9 @@ Extender `office-theme.css` y estética war room:
 ### Fase 1 — Quick wins (1–2 días)
 
 - [x] Servicio “Analizar repositorio” en coordinador
-- [ ] Mapa slug → rol legible en UI (i18n, sin nombres de persona)
-- [ ] Link “Archivo” en header de Oficina → encargos con tab documentos
-- [ ] Org units renombrados visualmente como “salas” en copy
+- [x] Mapa slug → rol legible en UI (i18n, sin nombres de persona)
+- [x] Link “Archivo” en nav de Oficina → `/office/archive`
+- [x] Org units renombrados visualmente como “departamentos / salas” en copy
 
 ### Fase 2 — Planta básica (3–5 días)
 

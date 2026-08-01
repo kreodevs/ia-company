@@ -71,10 +71,10 @@ export function buildDepartmentRunScopeWhere(input: {
 }): Prisma.ExecutionRunWhereInput | null {
   if (input.orgUnitId) {
     return {
-      sharedMemory: {
-        path: ["orgUnitId"],
-        equals: input.orgUnitId,
-      },
+      OR: [
+        { orgUnitId: input.orgUnitId },
+        { sharedMemory: { path: ["orgUnitId"], equals: input.orgUnitId } },
+      ],
     };
   }
   if (input.rosterNames?.length) {

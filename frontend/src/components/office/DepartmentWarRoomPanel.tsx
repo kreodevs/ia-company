@@ -11,11 +11,10 @@ import {
 } from "../../lib/war-room-live";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
-import Badge from "../ui/Badge";
 import WarRoomAgentSeat from "../war-room/WarRoomAgentSeat";
 import WarRoomHandoffOverlay from "../war-room/WarRoomHandoffOverlay";
+import WarRoomRecentRuns from "../war-room/WarRoomRecentRuns";
 import WarRoomRunSelector from "../war-room/WarRoomRunSelector";
-import { shortTime } from "../war-room/war-room-shared";
 import type { DepartmentRoomAgent } from "./DepartmentRoomView";
 
 interface DepartmentWarRoomPanelProps {
@@ -153,22 +152,7 @@ export default function DepartmentWarRoomPanel({
 
   const recentRunsSection =
     data && data.recentRuns.length > 0 ? (
-      <section className="office-dept-recent-runs">
-        <h3 className="office-dept-recent-runs-title">{t("warRoom.recentRuns")}</h3>
-        <ol className="office-dept-recent-runs-list">
-          {data.recentRuns.map((run) => (
-            <li key={run.id}>
-              <Link to={`/office/encargos/${run.id}`} className="office-dept-recent-run-row">
-                <span className="office-dept-recent-run-name">{formatWorkflowTitle(run.workflowName)}</span>
-                <span className="office-dept-recent-run-meta">
-                  {shortTime(run.startedAt)} · {run.totalTokens.toLocaleString()} tokens
-                </span>
-                <Badge>{run.status}</Badge>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <WarRoomRecentRuns runs={data.recentRuns} />
     ) : null;
 
   if (!data?.activeRun) {

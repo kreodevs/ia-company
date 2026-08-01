@@ -64,7 +64,10 @@ describe("office-run-department", () => {
 
   it("builds scoped SQL filters for org units and virtual departments", () => {
     assert.deepEqual(buildDepartmentRunScopeWhere({ orgUnitId: "org-1" }), {
-      sharedMemory: { path: ["orgUnitId"], equals: "org-1" },
+      OR: [
+        { orgUnitId: "org-1" },
+        { sharedMemory: { path: ["orgUnitId"], equals: "org-1" } },
+      ],
     });
     assert.deepEqual(buildDepartmentRunScopeWhere({ rosterNames: ["fullstack-dhh"] }), {
       workflow: {

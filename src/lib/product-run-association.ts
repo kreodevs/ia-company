@@ -9,6 +9,7 @@ export function buildProductRunScopeWhere(
   product: { id: string; slug: string; lastRunId?: string | null },
 ): Prisma.ExecutionRunWhereInput {
   const branches: Prisma.ExecutionRunWhereInput[] = [
+    { productId: product.id },
     { sharedMemory: { path: ["productId"], equals: product.id } },
     { sharedMemory: { path: ["focusProductSlug"], equals: product.slug } },
   ];

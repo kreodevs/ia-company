@@ -5,9 +5,7 @@ import {
 } from "./referenced-doc-path";
 import {
   AGENT_EMOJI,
-  AGENT_PERSONA_NAMES,
   agentRoleLabelKey,
-  humanizeAgentSlug,
 } from "./office-visual";
 
 export function pickDocumentForAgent(
@@ -39,7 +37,7 @@ export interface EvidenceChipMeta {
   emoji: string;
 }
 
-/** Pull author name from agent markdown when present (e.g. **De:** Jeff Bezos). */
+/** @deprecated Prefer role labels via agentRoleLabelKey in user-facing UI. */
 export function extractPersonaFromSummary(summary: string): string | null {
   const patterns = [
     /\*\*(?:Analista|De|Asesor[^:*]*|By|Analyst|From|Advisor[^:*]*):\*\*\s*([^\n(,]+)/i,
@@ -55,16 +53,12 @@ export function extractPersonaFromSummary(summary: string): string | null {
 
 export function resolveEvidenceChip(
   agent: string,
-  summary: string,
+  _summary: string,
   translate: (key: string) => string,
 ): EvidenceChipMeta {
-  const displayName =
-    extractPersonaFromSummary(summary) ??
-    AGENT_PERSONA_NAMES[agent] ??
-    humanizeAgentSlug(agent);
   const roleLabel = translate(agentRoleLabelKey(agent));
   const emoji = AGENT_EMOJI[agent] ?? "🤖";
-  return { agent, displayName, roleLabel, emoji };
+  return { agent, displayName: roleLabel, roleLabel, emoji };
 }
 
 export function buildEvidenceChipItems(

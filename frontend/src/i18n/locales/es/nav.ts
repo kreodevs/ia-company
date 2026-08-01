@@ -20,6 +20,7 @@ export const nav = {
   runs: "Ejecuciones",
   office: "Inicio",
   encargos: "Mis encargos",
+  archive: "Archivo",
   pendientes: "Mis pendientes",
   ops: "Operaciones",
   products: "Productos",

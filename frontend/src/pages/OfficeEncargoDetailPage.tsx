@@ -15,6 +15,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
+import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import {
   encargoDepartmentLabel,
@@ -214,6 +215,12 @@ export default function OfficeEncargoDetailPage() {
           <dd>${detail.totalCostUsd.toFixed(2)}</dd>
         </div>
       </dl>
+
+      <EncargoDeliveryPanel
+        runId={detail.id}
+        documents={documents}
+        enabled={detail.phase === "delivered"}
+      />
 
       {showNextPanel ? (
         <section className="office-panel office-encargo-next-panel">

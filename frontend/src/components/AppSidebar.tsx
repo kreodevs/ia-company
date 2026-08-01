@@ -1,4 +1,5 @@
 import {
+  Archive,
   Activity,
   BookOpen,
   ChevronDown,
@@ -56,6 +57,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/settings": Settings,
   "/office": Building2,
   "/office/encargos": ClipboardList,
+  "/office/archive": Archive,
   "/office/pendientes": Inbox,
   "/products": Package,
   "/org-units": Network,
@@ -371,6 +373,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           { to: "/office", labelKey: "nav.office", end: true },
           { to: "/office/pendientes", labelKey: "nav.pendientes", badge: pendingDecisions },
           { to: "/office/encargos", labelKey: "nav.encargos" },
+          { to: "/office/archive", labelKey: "nav.archive" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
           { to: "/org-units", labelKey: "nav.orgUnits" },

@@ -132,9 +132,6 @@ export default function DecisionEvidencePanel({
                 </span>
                 <span>
                   <strong className="block text-sm leading-tight">{chip.displayName}</strong>
-                  <span className="text-[0.72rem] text-[var(--color-muted-foreground)]">
-                    {chip.roleLabel}
-                  </span>
                 </span>
               </button>
             ))}

@@ -826,6 +826,40 @@ export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   warRoomHref: string | null;
 }
 
+export interface EncargoDeliverySummary {
+  id: string;
+  token: string;
+  label: string | null;
+  expiresAt: string | null;
+  revokedAt: string | null;
+  includeFinalReport: boolean;
+  documentIds: string[];
+  createdAt: string;
+  publicUrl: string;
+}
+
+export interface PublicDeliveryPayload {
+  label: string | null;
+  expired: boolean;
+  revoked: boolean;
+  encargo: {
+    title: string;
+    request: string;
+    procedureLabel: string;
+    departmentName: string | null;
+    productName: string | null;
+    phase: string;
+    completedAt: string | null;
+  };
+  finalReport: string | null;
+  documents: Array<{
+    id: string;
+    title: string;
+    agentName: string;
+    markdown: string;
+  }>;
+}
+
 export interface OfficeDashboard {
   mode: OfficeMode;
   autonomyEnabled: boolean;
@@ -1690,6 +1724,28 @@ export const api = {
         "/office/procedures",
       ),
     encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
+    deliveries: {
+      list: (runId: string) =>
+        request<{ items: EncargoDeliverySummary[] }>(`/office/encargos/${runId}/deliveries`),
+      create: (
+        runId: string,
+        body: {
+          label?: string;
+          expiresAt?: string | null;
+          includeFinalReport?: boolean;
+          documentIds?: string[];
+        },
+      ) =>
+        request<EncargoDeliverySummary>(`/office/encargos/${runId}/deliveries`, {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+      revoke: (runId: string, deliveryId: string) =>
+        request<EncargoDeliverySummary>(
+          `/office/encargos/${runId}/deliveries/${deliveryId}`,
+          { method: "DELETE" },
+        ),
+    },
     archive: (params?: {
       departmentSlug?: string;
       orgUnitId?: string;
@@ -2065,5 +2121,8 @@ export const api = {
           body: JSON.stringify(body),
         }),
     },
+  },
+  public: {
+    delivery: (token: string) => request<PublicDeliveryPayload>(`/public/delivery/${token}`),
   },
 };

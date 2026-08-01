@@ -3,7 +3,7 @@ export const org = {
   title: "Departments",
   subtitle: "Virtual companies and departments — each with its own agents, config, design tokens, and artifacts.",
   createDepartment: "New department",
-  openStudio: "Open Org Studio",
+  openStudio: "Design department",
   emptyTitle: "No departments yet",
   emptyDesc: "Create a marketing agency, product studio, or custom department with AI-assisted setup.",
   noDescription: "No description.",
@@ -58,7 +58,7 @@ export const org = {
   noDesignMd: "No design.md synced yet.",
   studio: {
     loading: "Loading templates…",
-    title: "Org Studio",
+    title: "Department studio",
     subtitle: "AI-assisted department creator — pick a template, refine config, and deploy agents.",
     step1: "1. Describe your department",
     step2: "2. Review proposal",

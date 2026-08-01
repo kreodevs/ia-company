@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
+import { executionRunCreateData } from "../../lib/run-scope.js";
 import { logAudit } from "../../lib/audit.js";
 import { enqueueWorkflowRun } from "../../worker/queue.js";
 import {
@@ -162,12 +163,11 @@ export async function decisionRoutes(app: FastifyInstance) {
         }));
 
         const run = await prisma.executionRun.create({
-          data: {
+          data: executionRunCreateData({
             workflowId: drilldownWorkflow.id,
             tenantId,
-            status: "PENDING",
-            sharedMemory: initialMemory as object,
-          },
+            sharedMemory: initialMemory,
+          }),
         });
         await enqueueWorkflowRun({
           runId: run.id,

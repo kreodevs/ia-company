@@ -43,7 +43,7 @@ flowchart LR
 
 ### Main Office
 
-On `/office` you can filter by **Department** (Org Unit). That loads `design.md`, dept agents, and artifact pipeline context — it does not replace picking a product.
+On `/office` you can filter by **department**. That loads `design.md`, dept agents, and artifact pipeline context — it does not replace picking a product.
 
 | Control | Effect |
 |---------|--------|
