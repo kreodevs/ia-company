@@ -7,7 +7,12 @@ frontend/dist
 .env.*
 !.env.example
 !.env.production.example
-projects
+# Runtime tenant workspaces live on the volume; only ship vertical-pack templates.
+projects/*
+!projects/.gitkeep
+!projects/README.md
+!projects/snapog
+!projects/snapog/**
 *.md
 !docker/README.md
 .cursor

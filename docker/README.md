@@ -56,7 +56,7 @@ The **worker** service reuses the API image with `command: ["node", "dist/src/wo
 
 - `postgres_data` — database persistence
 - `redis_data` — queue persistence
-- `workspace_data` → `/app/projects` — agent file tools workspace (seeded from `pack-seed/projects/` on first API boot when a slug is missing)
+- `workspace_data` → `/app/projects` — agent workspace (empty volume; `pack-seed/projects/` copied on first API boot for vertical packs like SnapOG)
 
 ## Health checks
 
