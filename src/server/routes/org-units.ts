@@ -15,7 +15,11 @@ import {
 import type { OrgStudioProposal } from "../../lib/org-os-types.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
-import { listProceduresForOrgUnit } from "../../lib/office-procedures.js";
+import {
+  createDepartmentProcedure,
+  linkWorkflowToOrgUnit,
+  listProceduresForOrgUnit,
+} from "../../lib/office-procedures.js";
 import { getDepartmentTeam } from "../../lib/office-department-team.js";
 
 export async function orgUnitRoutes(app: FastifyInstance) {
@@ -64,6 +68,48 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       return handleRouteError(reply, err);
     }
   });
+
+  app.post<{ Params: { id: string }; Body: { name?: string; description?: string | null } }>(
+    "/org-units/:id/procedures",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const name = request.body?.name?.trim();
+        if (!name) return reply.status(400).send({ error: "name is required" });
+        const procedure = await createDepartmentProcedure(
+          tenantId,
+          { orgUnitId: request.params.id },
+          { name, description: request.body?.description ?? null },
+        );
+        await logAudit(request, "org_unit.procedure.create", {
+          orgUnitId: request.params.id,
+          workflowId: procedure.id,
+        });
+        return reply.status(201).send(procedure);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string }; Body: { workflowId?: string } }>(
+    "/org-units/:id/procedures/link",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const workflowId = request.body?.workflowId?.trim();
+        if (!workflowId) return reply.status(400).send({ error: "workflowId is required" });
+        const procedure = await linkWorkflowToOrgUnit(tenantId, request.params.id, workflowId);
+        await logAudit(request, "org_unit.procedure.link", {
+          orgUnitId: request.params.id,
+          workflowId,
+        });
+        return reply.status(201).send(procedure);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
 
   app.post<{ Body: { name: string; slug?: string; description?: string; type?: string } }>(
     "/org-units",

@@ -5,7 +5,7 @@
 | `CoordinatorChat` | Chat streaming (TanStack AI SSE) + HITL plan approval + execute encargos; legacy REST via `frontend/src/lib/office-chat-config.ts` |
 | `OfficeFloorPlan` | Virtual office floor — departments, reception, busy/idle (letter theme: white cards on pale gradient) |
 | `DepartmentRoomView` | Shared department room — scope select (general/product), meeting table, **coordinator chat**, **department procedures**, extras slot |
-| `DepartmentProceduresPanel` | Lists workflows as **procedimientos** for a virtual or custom department; **Usar** pre-fills the coordinator |
+| `DepartmentProceduresPanel` | Manual **procedimientos** (workflows) + **procedimientos programados** (AutonomousSchedule rules) for a virtual or custom department; **Usar** pre-fills the coordinator |
 | `DepartmentWarRoomPanel` | Live department war room — SSE, handoffs, procedure context, run selector |
 | `EncargoDeliveryPanel` | Client delivery links on encargo detail (create/copy/revoke/read-only `/d/:token` shares) |
 | `DeliveryPreviewModal` | Preview delivery as the client will see it before sharing |
@@ -15,7 +15,7 @@
 
 Pages: `OfficeArchivePage` at `/office/archive` — unified document hub.
 
-Department rooms (`/office/departments/:slug`, `/org-units/:id`) show **Procedimientos del departamento** — workflows grouped by specialist roster, with one-click launch into the coordinator.
+Department rooms show **Procedimientos del departamento** with **Nuevo procedimiento** / **Vincular existente** (creates or links workflows via `orgUnit.config.linkedWorkflowIds` or virtual dept tags), plus **Procedimientos programados**.
 
 Configuration (admin): `/settings/procedures` (grouped catalog), `/settings/specialists` (agent/skill templates). Legacy `/office/workflows` and `/ai-team` redirect or remain as aliases.
 

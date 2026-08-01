@@ -1,5 +1,8 @@
-import type { OrgUnit, Workflow } from "@prisma/client";
+import type { AutonomousSchedule, OrgUnit, Workflow } from "@prisma/client";
 import { OFFICE_SERVICES } from "./office-coordinator.js";
+import { parseScheduleConditions } from "./orchestration-conditions.js";
+import { enrichSchedulesForTenant } from "./schedule-enrichment.js";
+import type { ScheduleConditions } from "../types/orchestration.js";
 import {
   resolveVirtualDepartmentForAgent,
   VIRTUAL_OFFICE_DEPARTMENTS,
@@ -22,6 +25,28 @@ export interface OfficeProcedureSummary {
   stepCount: number;
   departmentSlug: string | null;
   serviceId: string | null;
+}
+
+export interface OfficeScheduledProcedureSummary {
+  scheduleId: string;
+  scheduleName: string;
+  enabled: boolean;
+  orchestrationMode: "fixed" | "meta_dynamic";
+  workflowId: string | null;
+  workflowName: string | null;
+  procedureLabel: string | null;
+  intervalSec: number;
+  cronExpr: string | null;
+  nextRunAt: string | null;
+  lastRunAt: string | null;
+  tenantTimezone: string;
+  conditionsMet: boolean;
+  currentSkipReason: string | null;
+}
+
+export interface OfficeDepartmentProceduresResponse {
+  items: OfficeProcedureSummary[];
+  scheduled: OfficeScheduledProcedureSummary[];
 }
 
 export function formatProcedureLabel(name: string): string {
@@ -112,11 +137,46 @@ function readDefaultWorkflowName(org: OrgUnit & { template: { definition: unknow
   return typeof definition?.defaultWorkflow === "string" ? definition.defaultWorkflow : null;
 }
 
+const VIRTUAL_DEPARTMENT_LINK_TAG = /<!--\s*office-dept-link:([\w-]+)\s*-->/g;
+
+export function readLinkedWorkflowIds(org: { config: unknown }): string[] {
+  const config = (org.config ?? {}) as Record<string, unknown>;
+  if (!Array.isArray(config.linkedWorkflowIds)) return [];
+  return config.linkedWorkflowIds.filter((id): id is string => typeof id === "string" && id.length > 0);
+}
+
+export function readVirtualDepartmentSlugFromWorkflow(description: string | null | undefined): string | null {
+  if (!description) return null;
+  const match = description.match(/<!--\s*office-dept-link:([\w-]+)\s*-->/);
+  return match?.[1] ?? null;
+}
+
+function stripVirtualDepartmentLinkTags(description: string | null | undefined): string | null {
+  const cleaned = (description ?? "").replace(VIRTUAL_DEPARTMENT_LINK_TAG, "").trim();
+  return cleaned || null;
+}
+
+function withVirtualDepartmentLinkTag(description: string | null | undefined, departmentSlug: string): string {
+  const base = stripVirtualDepartmentLinkTags(description);
+  const tag = `<!-- office-dept-link:${departmentSlug} -->`;
+  return base ? `${base}\n${tag}` : tag;
+}
+
+export function workflowBelongsToVirtualDepartment(
+  workflow: WorkflowWithSteps,
+  departmentSlug: string,
+): boolean {
+  if (readVirtualDepartmentSlugFromWorkflow(workflow.description) === departmentSlug) return true;
+  return scheduleMatchesVirtualDepartmentSlug(workflow, departmentSlug);
+}
+
 function workflowMatchesOrgUnit(
   workflow: WorkflowWithSteps,
   staffAgentNames: string[],
   defaultWorkflowName: string | null,
+  linkedWorkflowIds: string[] = [],
 ): boolean {
+  if (linkedWorkflowIds.includes(workflow.id)) return true;
   if (defaultWorkflowName && workflow.name === defaultWorkflowName) return true;
   if (staffAgentNames.length === 0) return false;
   const staff = new Set(staffAgentNames);
@@ -124,6 +184,18 @@ function workflowMatchesOrgUnit(
   if (workflowAgents.length === 0) return false;
   const overlap = workflowAgents.filter((name) => staff.has(name)).length;
   return overlap / workflowAgents.length >= 0.5;
+}
+
+function workflowMatchesOrgUnitRecord(
+  workflow: WorkflowWithSteps,
+  org: OrgUnit & { template: { definition: unknown } | null },
+): boolean {
+  return workflowMatchesOrgUnit(
+    workflow,
+    suggestedAgentsFromOrgRecord(org),
+    readDefaultWorkflowName(org),
+    readLinkedWorkflowIds(org),
+  );
 }
 
 async function loadTenantWorkflows(tenantId: string): Promise<WorkflowWithSteps[]> {
@@ -139,21 +211,111 @@ async function loadTenantWorkflows(tenantId: string): Promise<WorkflowWithSteps[
   });
 }
 
+export function scheduleMatchesVirtualDepartmentSlug(
+  workflow: WorkflowWithSteps | null,
+  departmentSlug: string,
+): boolean {
+  if (!workflow) return false;
+  const agentNames = agentNamesFromWorkflow(workflow);
+  return resolveWorkflowVirtualDepartment(agentNames) === departmentSlug;
+}
+
+export function scheduleConditionsTargetOrgUnit(
+  conditions: ScheduleConditions | null,
+  orgUnitId: string,
+): boolean {
+  return conditions?.orgUnitId === orgUnitId;
+}
+
+function mapScheduleToScheduledProcedureSummary(
+  schedule: AutonomousSchedule & {
+    tenantTimezone: string;
+    conditionsMet: boolean;
+    currentSkipReason: string | null;
+  },
+  workflow: WorkflowWithSteps | null,
+): OfficeScheduledProcedureSummary {
+  const procedure = workflow ? mapWorkflowToProcedure(workflow) : null;
+  return {
+    scheduleId: schedule.id,
+    scheduleName: schedule.name,
+    enabled: schedule.enabled,
+    orchestrationMode:
+      schedule.orchestrationMode === "meta_dynamic" ? "meta_dynamic" : "fixed",
+    workflowId: schedule.workflowId,
+    workflowName: workflow?.name ?? null,
+    procedureLabel:
+      procedure?.procedureLabel ??
+      (schedule.orchestrationMode === "meta_dynamic" ? schedule.name : null),
+    intervalSec: schedule.intervalSec,
+    cronExpr: schedule.cronExpr,
+    nextRunAt: schedule.nextRunAt?.toISOString() ?? null,
+    lastRunAt: schedule.lastRunAt?.toISOString() ?? null,
+    tenantTimezone: schedule.tenantTimezone,
+    conditionsMet: schedule.conditionsMet,
+    currentSkipReason: schedule.currentSkipReason,
+  };
+}
+
+async function listScheduledProceduresForDepartmentContext(
+  tenantId: string,
+  filter:
+    | { kind: "virtual"; departmentSlug: string }
+    | { kind: "org_unit"; orgUnit: OrgUnit & { template: { definition: unknown } | null } },
+): Promise<OfficeScheduledProcedureSummary[]> {
+  const [schedules, workflows] = await Promise.all([
+    prisma.autonomousSchedule.findMany({
+      where: { tenantId },
+      orderBy: [{ enabled: "desc" }, { priority: "desc" }, { name: "asc" }],
+    }),
+    loadTenantWorkflows(tenantId),
+  ]);
+
+  const workflowById = new Map(workflows.map((workflow) => [workflow.id, workflow]));
+  const enriched = await enrichSchedulesForTenant(tenantId, schedules);
+  const items: OfficeScheduledProcedureSummary[] = [];
+
+  for (const schedule of enriched) {
+    const workflow = schedule.workflowId
+      ? (workflowById.get(schedule.workflowId) ?? null)
+      : null;
+    const conditions = parseScheduleConditions(schedule.conditions);
+
+    const matches =
+      filter.kind === "virtual"
+        ? workflow !== null && workflowBelongsToVirtualDepartment(workflow, filter.departmentSlug)
+        : scheduleConditionsTargetOrgUnit(conditions, filter.orgUnit.id) ||
+          (workflow ? workflowMatchesOrgUnitRecord(workflow, filter.orgUnit) : false);
+
+    if (!matches) continue;
+
+    items.push(mapScheduleToScheduledProcedureSummary(schedule, workflow));
+  }
+
+  return items;
+}
+
 export async function listProceduresForVirtualDepartment(
   tenantId: string,
   departmentSlug: string,
-): Promise<{ items: OfficeProcedureSummary[] }> {
-  const workflows = await loadTenantWorkflows(tenantId);
+): Promise<OfficeDepartmentProceduresResponse> {
+  const [workflows, scheduled] = await Promise.all([
+    loadTenantWorkflows(tenantId),
+    listScheduledProceduresForDepartmentContext(tenantId, {
+      kind: "virtual",
+      departmentSlug,
+    }),
+  ]);
   const items = workflows
-    .map(mapWorkflowToProcedure)
-    .filter((procedure) => procedure.departmentSlug === departmentSlug);
-  return { items };
+    .filter((workflow) => workflowBelongsToVirtualDepartment(workflow, departmentSlug))
+    .map(mapWorkflowToProcedure);
+  return { items, scheduled };
 }
 
 export async function listProceduresForOrgUnit(
   tenantId: string,
   orgUnitId: string,
-): Promise<{ items: OfficeProcedureSummary[] }> {
+): Promise<OfficeDepartmentProceduresResponse> {
   const [workflows, orgUnit] = await Promise.all([
     loadTenantWorkflows(tenantId),
     prisma.orgUnit.findFirst({
@@ -161,16 +323,21 @@ export async function listProceduresForOrgUnit(
       include: { template: { select: { definition: true } } },
     }),
   ]);
-  if (!orgUnit) return { items: [] };
+  if (!orgUnit) return { items: [], scheduled: [] };
 
-  const staffAgentNames = suggestedAgentsFromOrgRecord(orgUnit);
-  const defaultWorkflowName = readDefaultWorkflowName(orgUnit);
+  const [items, scheduled] = await Promise.all([
+    Promise.resolve(
+      workflows
+        .filter((workflow) => workflowMatchesOrgUnitRecord(workflow, orgUnit))
+        .map(mapWorkflowToProcedure),
+    ),
+    listScheduledProceduresForDepartmentContext(tenantId, {
+      kind: "org_unit",
+      orgUnit,
+    }),
+  ]);
 
-  const items = workflows
-    .filter((workflow) => workflowMatchesOrgUnit(workflow, staffAgentNames, defaultWorkflowName))
-    .map(mapWorkflowToProcedure);
-
-  return { items };
+  return { items, scheduled };
 }
 
 export interface OfficeProcedureGroup {
@@ -197,11 +364,9 @@ export async function listGroupedProcedures(tenantId: string): Promise<{
   const orgAssignedIds = new Set<string>();
 
   const orgGroups = orgUnits.map((org) => {
-    const staffAgentNames = suggestedAgentsFromOrgRecord(org);
-    const defaultWorkflowName = readDefaultWorkflowName(org);
     const items = workflows
       .filter((workflow) => {
-        if (!workflowMatchesOrgUnit(workflow, staffAgentNames, defaultWorkflowName)) return false;
+        if (!workflowMatchesOrgUnitRecord(workflow, org)) return false;
         orgAssignedIds.add(workflow.id);
         return true;
       })
@@ -215,11 +380,13 @@ export async function listGroupedProcedures(tenantId: string): Promise<{
   });
 
   const virtualGroups = VIRTUAL_OFFICE_DEPARTMENTS.map((def) => {
-    const items = procedures.filter((procedure) => {
-      if (procedure.departmentSlug !== def.slug) return false;
-      if (orgAssignedIds.has(procedure.id)) return false;
-      return true;
-    });
+    const items = workflows
+      .filter((workflow) => {
+        if (!workflowBelongsToVirtualDepartment(workflow, def.slug)) return false;
+        if (orgAssignedIds.has(workflow.id)) return false;
+        return true;
+      })
+      .map(mapWorkflowToProcedure);
     return {
       departmentSlug: def.slug,
       orgUnitId: null,
@@ -264,10 +431,11 @@ export async function enrichDepartmentProcedureCounts<
   }
 
   for (const workflow of workflows) {
-    const agentNames = agentNamesFromWorkflow(workflow);
-    const virtualSlug = resolveWorkflowVirtualDepartment(agentNames);
-    if (virtualSlug) {
-      virtualCounts.set(virtualSlug, (virtualCounts.get(virtualSlug) ?? 0) + 1);
+    for (const def of VIRTUAL_OFFICE_DEPARTMENTS) {
+      if (workflowBelongsToVirtualDepartment(workflow, def.slug)) {
+        virtualCounts.set(def.slug, (virtualCounts.get(def.slug) ?? 0) + 1);
+        break;
+      }
     }
   }
 
@@ -281,13 +449,192 @@ export async function enrichDepartmentProcedureCounts<
 
     const org = orgById.get(department.id);
     if (!org) return department;
-    const staffAgentNames = suggestedAgentsFromOrgRecord(org);
-    const defaultWorkflowName = readDefaultWorkflowName(org);
     const procedureCount = workflows.filter((workflow) =>
-      workflowMatchesOrgUnit(workflow, staffAgentNames, defaultWorkflowName),
+      workflowMatchesOrgUnitRecord(workflow, org),
     ).length;
     return { ...department, procedureCount };
   });
+}
+
+async function seedWorkflowStepsFromAgentNames(
+  tenantId: string,
+  workflowId: string,
+  agentNames: string[],
+): Promise<WorkflowWithSteps | null> {
+  const uniqueNames = [...new Set(agentNames.filter(Boolean))].slice(0, 6);
+  if (uniqueNames.length === 0) return null;
+
+  const agents = await prisma.agent.findMany({
+    where: { tenantId, name: { in: uniqueNames }, isActive: true },
+    orderBy: { name: "asc" },
+  });
+  if (agents.length === 0) return null;
+
+  const orderedAgents = uniqueNames
+    .map((name) => agents.find((agent) => agent.name === name))
+    .filter((agent): agent is (typeof agents)[number] => Boolean(agent));
+
+  await prisma.workflowStep.createMany({
+    data: orderedAgents.map((agent, index) => ({
+      workflowId,
+      agentId: agent.id,
+      stepOrder: index + 1,
+      label: agent.role || agent.name.replace(/-/g, " "),
+      positionX: 0,
+      positionY: index * 150,
+      inputConfig: {},
+      outputConfig: {},
+    })),
+  });
+
+  return prisma.workflow.findFirst({
+    where: { id: workflowId, tenantId },
+    include: {
+      steps: {
+        include: { agent: { select: { name: true } } },
+        orderBy: { stepOrder: "asc" },
+      },
+    },
+  });
+}
+
+async function linkWorkflowToOrgUnitRecord(
+  org: OrgUnit & { template: { definition: unknown } | null },
+  workflowId: string,
+): Promise<void> {
+  const config = { ...((org.config ?? {}) as Record<string, unknown>) };
+  const linkedWorkflowIds = readLinkedWorkflowIds(org);
+  if (!linkedWorkflowIds.includes(workflowId)) {
+    config.linkedWorkflowIds = [...linkedWorkflowIds, workflowId];
+  }
+  await prisma.orgUnit.update({
+    where: { id: org.id },
+    data: { config: config as object },
+  });
+}
+
+export async function linkWorkflowToOrgUnit(
+  tenantId: string,
+  orgUnitId: string,
+  workflowId: string,
+): Promise<OfficeProcedureSummary> {
+  const [orgUnit, workflow] = await Promise.all([
+    prisma.orgUnit.findFirst({
+      where: { id: orgUnitId, tenantId, isActive: true },
+      include: { template: { select: { definition: true } } },
+    }),
+    prisma.workflow.findFirst({
+      where: { id: workflowId, tenantId },
+      include: {
+        steps: {
+          include: { agent: { select: { name: true } } },
+          orderBy: { stepOrder: "asc" },
+        },
+      },
+    }),
+  ]);
+  if (!orgUnit) throw new Error("Org unit not found");
+  if (!workflow) throw new Error("Workflow not found");
+
+  await linkWorkflowToOrgUnitRecord(orgUnit, workflowId);
+  return mapWorkflowToProcedure(workflow);
+}
+
+export async function linkWorkflowToVirtualDepartment(
+  tenantId: string,
+  departmentSlug: string,
+  workflowId: string,
+): Promise<OfficeProcedureSummary> {
+  const department = VIRTUAL_OFFICE_DEPARTMENTS.find((def) => def.slug === departmentSlug);
+  if (!department) throw new Error("Department not found");
+
+  const workflow = await prisma.workflow.findFirst({
+    where: { id: workflowId, tenantId },
+    include: {
+      steps: {
+        include: { agent: { select: { name: true } } },
+        orderBy: { stepOrder: "asc" },
+      },
+    },
+  });
+  if (!workflow) throw new Error("Workflow not found");
+
+  await prisma.workflow.update({
+    where: { id: workflow.id },
+    data: {
+      description: withVirtualDepartmentLinkTag(workflow.description, departmentSlug),
+    },
+  });
+
+  return mapWorkflowToProcedure({
+    ...workflow,
+    description: withVirtualDepartmentLinkTag(workflow.description, departmentSlug),
+  });
+}
+
+export async function createDepartmentProcedure(
+  tenantId: string,
+  target: { orgUnitId: string } | { departmentSlug: string },
+  input: { name: string; description?: string | null },
+): Promise<OfficeProcedureSummary> {
+  const name = input.name.trim();
+  if (!name) throw new Error("name is required");
+
+  let seedAgentNames: string[] = [];
+  let orgUnit: (OrgUnit & { template: { definition: unknown } | null }) | null = null;
+
+  if ("orgUnitId" in target) {
+    orgUnit = await prisma.orgUnit.findFirst({
+      where: { id: target.orgUnitId, tenantId, isActive: true },
+      include: { template: { select: { definition: true } } },
+    });
+    if (!orgUnit) throw new Error("Org unit not found");
+    seedAgentNames = suggestedAgentsFromOrgRecord(orgUnit);
+  } else {
+    const department = VIRTUAL_OFFICE_DEPARTMENTS.find((def) => def.slug === target.departmentSlug);
+    if (!department) throw new Error("Department not found");
+    seedAgentNames = department.agentNames;
+  }
+
+  const workflow = await prisma.workflow.create({
+    data: {
+      tenantId,
+      name,
+      description: input.description?.trim() || null,
+    },
+    include: {
+      steps: {
+        include: { agent: { select: { name: true } } },
+        orderBy: { stepOrder: "asc" },
+      },
+    },
+  });
+
+  const seeded = await seedWorkflowStepsFromAgentNames(tenantId, workflow.id, seedAgentNames);
+  const hydrated = seeded ?? workflow;
+
+  if (orgUnit) {
+    await linkWorkflowToOrgUnitRecord(orgUnit, workflow.id);
+  } else {
+    await prisma.workflow.update({
+      where: { id: workflow.id },
+      data: {
+        description: withVirtualDepartmentLinkTag(hydrated.description, target.departmentSlug),
+      },
+    });
+  }
+
+  const finalWorkflow = await prisma.workflow.findFirst({
+    where: { id: workflow.id, tenantId },
+    include: {
+      steps: {
+        include: { agent: { select: { name: true } } },
+        orderBy: { stepOrder: "asc" },
+      },
+    },
+  });
+  if (!finalWorkflow) throw new Error("Workflow not found");
+  return mapWorkflowToProcedure(finalWorkflow);
 }
 
 export function resolveEncargoDepartmentContext(input: {

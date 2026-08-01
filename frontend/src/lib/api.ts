@@ -813,6 +813,28 @@ export interface OfficeProcedureSummary {
   serviceId: string | null;
 }
 
+export interface OfficeScheduledProcedureSummary {
+  scheduleId: string;
+  scheduleName: string;
+  enabled: boolean;
+  orchestrationMode: "fixed" | "meta_dynamic";
+  workflowId: string | null;
+  workflowName: string | null;
+  procedureLabel: string | null;
+  intervalSec: number;
+  cronExpr: string | null;
+  nextRunAt: string | null;
+  lastRunAt: string | null;
+  tenantTimezone: string;
+  conditionsMet: boolean;
+  currentSkipReason: string | null;
+}
+
+export interface OfficeDepartmentProceduresResponse {
+  items: OfficeProcedureSummary[];
+  scheduled: OfficeScheduledProcedureSummary[];
+}
+
 export interface OfficeProcedureGroup {
   departmentSlug: string | null;
   orgUnitId: string | null;
@@ -1771,8 +1793,21 @@ export const api = {
       return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
     },
     departmentProcedures: (departmentSlug: string) =>
-      request<{ items: OfficeProcedureSummary[] }>(
+      request<OfficeDepartmentProceduresResponse>(
         `/office/departments/${encodeURIComponent(departmentSlug)}/procedures`,
+      ),
+    createDepartmentProcedure: (
+      departmentSlug: string,
+      body: { name: string; description?: string | null },
+    ) =>
+      request<OfficeProcedureSummary>(
+        `/office/departments/${encodeURIComponent(departmentSlug)}/procedures`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
+    linkDepartmentProcedure: (departmentSlug: string, workflowId: string) =>
+      request<OfficeProcedureSummary>(
+        `/office/departments/${encodeURIComponent(departmentSlug)}/procedures/link`,
+        { method: "POST", body: JSON.stringify({ workflowId }) },
       ),
     departmentTeam: (departmentSlug: string, watchRunId?: string) => {
       const q = watchRunId ? `?watchRun=${encodeURIComponent(watchRunId)}` : "";
@@ -2070,7 +2105,17 @@ export const api = {
     list: () => request<import("./org-types").OrgUnit[]>("/org-units"),
     get: (id: string) => request<import("./org-types").OrgUnit>(`/org-units/${id}`),
     procedures: (id: string) =>
-      request<{ items: OfficeProcedureSummary[] }>(`/org-units/${id}/procedures`),
+      request<OfficeDepartmentProceduresResponse>(`/org-units/${id}/procedures`),
+    createProcedure: (id: string, body: { name: string; description?: string | null }) =>
+      request<OfficeProcedureSummary>(`/org-units/${id}/procedures`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    linkProcedure: (id: string, workflowId: string) =>
+      request<OfficeProcedureSummary>(`/org-units/${id}/procedures/link`, {
+        method: "POST",
+        body: JSON.stringify({ workflowId }),
+      }),
     team: (id: string, watchRunId?: string) => {
       const q = watchRunId ? `?watchRun=${encodeURIComponent(watchRunId)}` : "";
       return request<DepartmentTeam>(`/org-units/${id}/team${q}`);

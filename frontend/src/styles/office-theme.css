@@ -2402,6 +2402,23 @@ html[data-theme="letter"] .office-link-inline {
   margin-bottom: 0.75rem;
 }
 
+.office-dept-procedures-head--with-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.office-dept-procedures-toolbar {
+  margin-top: 0;
+}
+
+.office-dept-procedures-empty {
+  display: grid;
+  gap: 0.35rem;
+}
+
 .office-dept-procedures-subtitle {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
@@ -2447,6 +2464,34 @@ html[data-theme="letter"] .office-link-inline {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+}
+
+.office-dept-scheduled-procedures {
+  margin-top: 1.25rem;
+}
+
+.office-dept-scheduled-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.office-dept-procedure-card--scheduled {
+  border-style: dashed;
+}
+
+.office-dept-scheduled-icon {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-right: 0.25rem;
+  vertical-align: -0.15rem;
+  opacity: 0.75;
+}
+
+.office-dept-scheduled-waiting {
+  color: var(--office-warning, #d97706);
 }
 
 .office-encargos-filters-row {

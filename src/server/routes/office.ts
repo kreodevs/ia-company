@@ -16,6 +16,8 @@ import {
 } from "../../lib/office-coordinator.js";
 import { listOfficeArchive } from "../../lib/office-archive.js";
 import {
+  createDepartmentProcedure,
+  linkWorkflowToVirtualDepartment,
   listProceduresForVirtualDepartment,
   listGroupedProcedures,
 } from "../../lib/office-procedures.js";
@@ -215,6 +217,44 @@ export async function officeRoutes(app: FastifyInstance) {
       try {
         const tenantId = requireImpersonatedTenant(request);
         return listProceduresForVirtualDepartment(tenantId, request.params.slug);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{ Params: { slug: string }; Body: { name?: string; description?: string | null } }>(
+    "/office/departments/:slug/procedures",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const name = request.body?.name?.trim();
+        if (!name) return reply.status(400).send({ error: "name is required" });
+        const procedure = await createDepartmentProcedure(
+          tenantId,
+          { departmentSlug: request.params.slug },
+          { name, description: request.body?.description ?? null },
+        );
+        return reply.status(201).send(procedure);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{ Params: { slug: string }; Body: { workflowId?: string } }>(
+    "/office/departments/:slug/procedures/link",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const workflowId = request.body?.workflowId?.trim();
+        if (!workflowId) return reply.status(400).send({ error: "workflowId is required" });
+        const procedure = await linkWorkflowToVirtualDepartment(
+          tenantId,
+          request.params.slug,
+          workflowId,
+        );
+        return reply.status(201).send(procedure);
       } catch (err) {
         return handleRouteError(reply, err);
       }

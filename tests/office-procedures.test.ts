@@ -3,8 +3,13 @@ import { describe, it } from "node:test";
 import {
   formatProcedureLabel,
   groupWorkflowsByVirtualDepartment,
+  readLinkedWorkflowIds,
+  readVirtualDepartmentSlugFromWorkflow,
   resolveEncargoDepartmentContext,
   resolveWorkflowVirtualDepartment,
+  scheduleConditionsTargetOrgUnit,
+  scheduleMatchesVirtualDepartmentSlug,
+  workflowBelongsToVirtualDepartment,
 } from "../src/lib/office-procedures.js";
 
 describe("office-procedures", () => {
@@ -94,5 +99,43 @@ describe("office-procedures", () => {
     });
     assert.equal(virtual.departmentSlug, "engineering");
     assert.equal(virtual.departmentHref, "/office/departments/engineering");
+  });
+
+  it("matches scheduled procedures to virtual department by workflow agents", () => {
+    const strategyWorkflow = {
+      id: "wf-strategy",
+      name: "opportunity-discovery",
+      description: null,
+      steps: [
+        { agent: { name: "research-thompson" }, stepOrder: 1 },
+        { agent: { name: "ceo-bezos" }, stepOrder: 2 },
+      ],
+    } as never;
+
+    assert.equal(scheduleMatchesVirtualDepartmentSlug(strategyWorkflow, "strategy"), true);
+    assert.equal(scheduleMatchesVirtualDepartmentSlug(strategyWorkflow, "engineering"), false);
+    assert.equal(scheduleMatchesVirtualDepartmentSlug(null, "strategy"), false);
+  });
+
+  it("matches schedule conditions scoped to an org unit", () => {
+    assert.equal(scheduleConditionsTargetOrgUnit({ orgUnitId: "org-1" }, "org-1"), true);
+    assert.equal(scheduleConditionsTargetOrgUnit({ orgUnitId: "org-1" }, "org-2"), false);
+    assert.equal(scheduleConditionsTargetOrgUnit(null, "org-1"), false);
+  });
+
+  it("reads explicit org links and virtual department tags", () => {
+    assert.deepEqual(readLinkedWorkflowIds({ config: { linkedWorkflowIds: ["wf-1"] } }), ["wf-1"]);
+    assert.equal(
+      readVirtualDepartmentSlugFromWorkflow("Notes\n<!-- office-dept-link:strategy -->"),
+      "strategy",
+    );
+    const taggedWorkflow = {
+      id: "wf-tagged",
+      name: "custom-flow",
+      description: "<!-- office-dept-link:strategy -->",
+      steps: [{ agent: { name: "research-thompson" }, stepOrder: 1 }],
+    } as never;
+    assert.equal(workflowBelongsToVirtualDepartment(taggedWorkflow, "strategy"), true);
+    assert.equal(workflowBelongsToVirtualDepartment(taggedWorkflow, "product"), false);
   });
 });
