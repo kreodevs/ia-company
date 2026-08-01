@@ -1,6 +1,7 @@
 import type { ExecutionStatus } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { suggestedAgentsFromOrgRecord } from "./org-context.js";
+import { runBelongsToDepartmentRoster } from "./office-run-department.js";
 
 export type OfficeDepartmentKind = "virtual" | "org_unit";
 
@@ -75,28 +76,24 @@ interface AgentStatusRow {
 interface ActiveRunRow {
   id: string;
   sharedMemory: unknown;
+  workflowAgentNames: string[];
 }
 
-function memoryOrgUnitId(memory: unknown): string | null {
-  if (!memory || typeof memory !== "object") return null;
-  const id = (memory as { orgUnitId?: unknown }).orgUnitId;
-  return typeof id === "string" ? id : null;
-}
-
-function memoryTeamAgents(memory: unknown): string[] {
-  if (!memory || typeof memory !== "object") return [];
-  const raw = (memory as { teamAgents?: unknown }).teamAgents;
-  return Array.isArray(raw) ? raw.filter((n): n is string => typeof n === "string") : [];
+function runMatchesDepartment(
+  run: ActiveRunRow,
+  agentNames: string[],
+  orgUnitId: string | null,
+): boolean {
+  return runBelongsToDepartmentRoster({
+    sharedMemory: run.sharedMemory,
+    rosterNames: agentNames,
+    orgUnitId,
+    workflowAgentNames: run.workflowAgentNames,
+  });
 }
 
 function countRunsForAgents(runs: ActiveRunRow[], agentNames: string[]): number {
-  const set = new Set(agentNames);
-  return runs.filter((run) => {
-    const mem = run.sharedMemory;
-    const current = memoryTeamAgents(mem);
-    if (current.some((n) => set.has(n))) return true;
-    return false;
-  }).length;
+  return runs.filter((run) => runMatchesDepartment(run, agentNames, null)).length;
 }
 
 export function buildVirtualRoom(
@@ -108,10 +105,7 @@ export function buildVirtualRoom(
   const busyAgentCount = deptAgents.filter((a) => a.status === "busy").length;
   const activeRunCount = countRunsForAgents(activeRuns, def.agentNames);
   const status = busyAgentCount > 0 || activeRunCount > 0 ? "busy" : "idle";
-  const firstRun = activeRuns.find((run) => {
-    const team = memoryTeamAgents(run.sharedMemory);
-    return team.some((n) => def.agentNames.includes(n));
-  });
+  const firstRun = activeRuns.find((run) => runMatchesDepartment(run, def.agentNames, null));
 
   return {
     id: `virtual:${def.slug}`,
@@ -149,7 +143,7 @@ function buildOrgUnitRoom(
 ): OfficeDepartmentRoom {
   const deptAgents = agents.filter((a) => suggestedAgentNames.includes(a.name));
   const busyAgentCount = deptAgents.filter((a) => a.status === "busy").length;
-  const runsForOrg = activeRuns.filter((run) => memoryOrgUnitId(run.sharedMemory) === org.id);
+  const runsForOrg = activeRuns.filter((run) => runMatchesDepartment(run, suggestedAgentNames, org.id));
   const activeRunCount = Math.max(runsForOrg.length, countRunsForAgents(activeRuns, suggestedAgentNames));
   const status = busyAgentCount > 0 || runsForOrg.length > 0 ? "busy" : "idle";
 
@@ -195,7 +189,18 @@ export async function buildOfficeDepartmentRooms(
     }),
     prisma.executionRun.findMany({
       where: { tenantId, status: { in: activeStatuses } },
-      select: { id: true, sharedMemory: true },
+      select: {
+        id: true,
+        sharedMemory: true,
+        workflow: {
+          select: {
+            steps: {
+              select: { agent: { select: { name: true } } },
+              orderBy: { stepOrder: "asc" },
+            },
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     }),
   ]);
@@ -205,13 +210,21 @@ export async function buildOfficeDepartmentRooms(
     status: a.status,
   }));
 
+  const activeRunRows: ActiveRunRow[] = activeRuns.map((run) => ({
+    id: run.id,
+    sharedMemory: run.sharedMemory,
+    workflowAgentNames: run.workflow.steps
+      .map((step) => step.agent?.name)
+      .filter((name): name is string => typeof name === "string"),
+  }));
+
   const virtualRooms = VIRTUAL_OFFICE_DEPARTMENTS.map((def) =>
-    buildVirtualRoom(def, agentRows, activeRuns),
+    buildVirtualRoom(def, agentRows, activeRunRows),
   );
 
   const orgRooms = orgUnits.map((org) => {
     const suggested = suggestedAgentsFromOrgRecord(org);
-    return buildOrgUnitRoom(org, suggested, agentRows, activeRuns);
+    return buildOrgUnitRoom(org, suggested, agentRows, activeRunRows);
   });
 
   return [...virtualRooms, ...orgRooms];

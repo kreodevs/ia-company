@@ -6,13 +6,24 @@ import {
   type VirtualOfficeDepartmentDef,
 } from "./office-departments.js";
 import { encargoActivityFields } from "./office-encargos.js";
+import {
+  runBelongsToDepartmentRoster,
+} from "./office-run-department.js";
 import { extractRunTaskPreview } from "./product-run-association.js";
 import type { SharedMemory } from "../types/index.js";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
 const runInclude = {
-  workflow: { select: { name: true } },
+  workflow: {
+    select: {
+      name: true,
+      steps: {
+        select: { agent: { select: { name: true } } },
+        orderBy: { stepOrder: "asc" as const },
+      },
+    },
+  },
   logs: {
     where: { agentId: { not: null } },
     orderBy: { createdAt: "desc" as const },
@@ -29,7 +40,10 @@ const runInclude = {
 };
 
 type RunRow = Awaited<ReturnType<typeof prisma.executionRun.findMany>>[number] & {
-  workflow: { name: string };
+  workflow: {
+    name: string;
+    steps: Array<{ agent: { name: string } | null }>;
+  };
   logs: Array<{
     id: string;
     level: string;
@@ -40,22 +54,23 @@ type RunRow = Awaited<ReturnType<typeof prisma.executionRun.findMany>>[number] &
   }>;
 };
 
-function memoryTeamAgents(memory: unknown): string[] {
-  if (!memory || typeof memory !== "object") return [];
-  const raw = (memory as { teamAgents?: unknown }).teamAgents;
-  return Array.isArray(raw) ? raw.filter((n): n is string => typeof n === "string") : [];
+function workflowAgentNamesFromRun(run: RunRow): string[] {
+  return run.workflow.steps
+    .map((step) => step.agent?.name)
+    .filter((name): name is string => typeof name === "string");
 }
 
-function memoryOrgUnitId(memory: unknown): string | null {
-  if (!memory || typeof memory !== "object") return null;
-  const id = (memory as { orgUnitId?: unknown }).orgUnitId;
-  return typeof id === "string" ? id : null;
-}
-
-function memoryCurrentAgentId(memory: unknown): string | null {
-  if (!memory || typeof memory !== "object") return null;
-  const id = (memory as { currentAgentId?: unknown }).currentAgentId;
-  return typeof id === "string" ? id : null;
+function runBelongsToDepartment(
+  run: RunRow,
+  roster: Set<string>,
+  orgUnitId: string | null,
+): boolean {
+  return runBelongsToDepartmentRoster({
+    sharedMemory: run.sharedMemory,
+    rosterNames: [...roster],
+    orgUnitId,
+    workflowAgentNames: workflowAgentNamesFromRun(run),
+  });
 }
 
 export interface DepartmentTeamAgent {
@@ -114,15 +129,10 @@ export interface DepartmentTeamPayload {
   procedureLabel: string | null;
 }
 
-function runBelongsToDepartment(
-  run: RunRow,
-  roster: Set<string>,
-  orgUnitId: string | null,
-): boolean {
-  const mem = run.sharedMemory;
-  if (orgUnitId && memoryOrgUnitId(mem) === orgUnitId) return true;
-  const team = memoryTeamAgents(mem);
-  return team.some((name) => roster.has(name));
+function memoryCurrentAgentId(memory: unknown): string | null {
+  if (!memory || typeof memory !== "object") return null;
+  const id = (memory as { currentAgentId?: unknown }).currentAgentId;
+  return typeof id === "string" ? id : null;
 }
 
 function buildActiveRunSummary(
@@ -410,20 +420,33 @@ export async function countActiveRunsForDepartment(
     excludeRunId?: string;
   },
 ): Promise<number> {
-  const rosterSet = new Set(input.rosterNames);
   const runs = await prisma.executionRun.findMany({
     where: {
       tenantId,
       status: { in: ACTIVE_STATUSES },
       ...(input.excludeRunId ? { id: { not: input.excludeRunId } } : {}),
     },
-    select: { id: true, sharedMemory: true },
+    select: {
+      id: true,
+      sharedMemory: true,
+      workflow: {
+        select: {
+          steps: {
+            select: { agent: { select: { name: true } } },
+            orderBy: { stepOrder: "asc" },
+          },
+        },
+      },
+    },
   });
   return runs.filter((run) =>
-    runBelongsToDepartment(
-      run as RunRow,
-      rosterSet,
-      input.orgUnitId ?? null,
-    ),
+    runBelongsToDepartmentRoster({
+      sharedMemory: run.sharedMemory,
+      rosterNames: input.rosterNames,
+      orgUnitId: input.orgUnitId ?? null,
+      workflowAgentNames: run.workflow.steps
+        .map((step) => step.agent?.name)
+        .filter((name): name is string => typeof name === "string"),
+    }),
   ).length;
 }

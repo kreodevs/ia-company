@@ -5,6 +5,7 @@ import {
   departmentWarRoomHref,
 } from "./office-department-team.js";
 import { encargoActivityFields } from "./office-encargos.js";
+import { extractRunTeamAgentNames } from "./office-run-department.js";
 import { resolveEncargoDepartmentContext } from "./office-procedures.js";
 import { VIRTUAL_OFFICE_DEPARTMENTS } from "./office-departments.js";
 import { prisma } from "./prisma.js";
@@ -161,9 +162,23 @@ export async function notifyRunFinishedInApp(params: {
 
   const run = await prisma.executionRun.findUnique({
     where: { id: params.runId },
-    select: { sharedMemory: true },
+    select: {
+      sharedMemory: true,
+      workflow: {
+        select: {
+          steps: {
+            select: { agent: { select: { name: true } } },
+            orderBy: { stepOrder: "asc" },
+          },
+        },
+      },
+    },
   });
   const memory = (run?.sharedMemory ?? {}) as SharedMemory;
+  const workflowAgentNames =
+    run?.workflow.steps
+      .map((step) => step.agent?.name)
+      .filter((name): name is string => typeof name === "string") ?? [];
   const orgUnits = await prisma.orgUnit.findMany({
     where: { tenantId: params.tenantId, isActive: true },
     select: { id: true, name: true },
@@ -174,10 +189,9 @@ export async function notifyRunFinishedInApp(params: {
     sharedMemory: memory,
     orgUnitNameById,
   });
+  const teamAgents = extractRunTeamAgentNames(memory, workflowAgentNames);
   const deptContext = resolveEncargoDepartmentContext({
-    teamAgents: Array.isArray(memory.teamAgents)
-      ? memory.teamAgents.filter((n): n is string => typeof n === "string")
-      : [],
+    teamAgents,
     orgUnitId: typeof memory.orgUnitId === "string" ? memory.orgUnitId : null,
     orgUnitName: fields.orgUnitName,
     workflowName: params.workflowName,
@@ -209,9 +223,7 @@ export async function notifyRunFinishedInApp(params: {
 
   if (params.status !== "COMPLETED" || !deptLabel) return;
 
-  let rosterNames = Array.isArray(memory.teamAgents)
-    ? memory.teamAgents.filter((n): n is string => typeof n === "string")
-    : [];
+  let rosterNames = teamAgents;
   if (rosterNames.length === 0 && deptContext.departmentSlug) {
     rosterNames =
       VIRTUAL_OFFICE_DEPARTMENTS.find((d) => d.slug === deptContext.departmentSlug)?.agentNames ??

@@ -19,4 +19,6 @@ Configuration (admin): `/settings/procedures` (grouped catalog), `/settings/spec
 
 API: `GET /office/departments/:slug/procedures`, `GET /org-units/:id/procedures`, `GET /office/procedures`, `GET /office/departments/:slug/team`, `GET /org-units/:id/team`.
 
+Run→department association is centralized in `src/lib/office-run-department.ts` (`teamAgents` at launch + workflow steps + `_history`).
+
 Onboarding dismisses via `localStorage` key `ac.office-onboarding-v1`.

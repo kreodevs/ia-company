@@ -12,6 +12,7 @@ import type { ProposalEvidence } from "./decision-proposals.js";
 import { extractReferencedDocPaths } from "./referenced-doc-path.js";
 import { resolveEncargoDepartmentContext } from "./office-procedures.js";
 import { departmentWarRoomHref } from "./office-department-team.js";
+import { extractRunTeamAgentNames } from "./office-run-department.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -131,15 +132,6 @@ function extractRequest(memory: SharedMemory): string {
   );
 }
 
-function extractTeamAgents(memory: SharedMemory): string[] {
-  if (Array.isArray(memory.teamAgents)) {
-    return memory.teamAgents.filter((a): a is string => typeof a === "string");
-  }
-  const history = Array.isArray(memory._history) ? memory._history : [];
-  const names = history.map((h) => h.agentName).filter(Boolean);
-  return [...new Set(names)];
-}
-
 function readMemoryOrgUnitId(memory: SharedMemory): string | null {
   return readMemoryString(memory, "orgUnitId");
 }
@@ -242,7 +234,7 @@ export function encargoActivityFields(input: {
   orgUnitName: string | null;
 } {
   const request = extractRequest(input.sharedMemory);
-  const teamAgents = extractTeamAgents(input.sharedMemory);
+  const teamAgents = extractRunTeamAgentNames(input.sharedMemory);
   const orgUnitId = readMemoryOrgUnitId(input.sharedMemory);
   const orgUnitName = orgUnitId ? (input.orgUnitNameById.get(orgUnitId) ?? null) : null;
   const context = resolveEncargoDepartmentContext({
@@ -270,7 +262,7 @@ async function mapRunToSummary(
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
   const product = resolveProductFromMemory(memory, products);
-  const teamAgents = extractTeamAgents(memory);
+  const teamAgents = extractRunTeamAgentNames(memory);
   const orgUnitId = readMemoryOrgUnitId(memory);
   const orgUnitName = orgUnitId ? (orgUnitNameById.get(orgUnitId) ?? null) : null;
   const departmentContext = resolveEncargoDepartmentContext({
@@ -536,7 +528,7 @@ async function loadDocumentsForRun(
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const product = resolveProductFromMemory(memory, products);
   const consensusId = product ? (consensusByProductId.get(product.id) ?? null) : null;
-  const teamAgents = extractTeamAgents(memory);
+  const teamAgents = extractRunTeamAgentNames(memory);
   const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenant?.slug, product?.slug ?? null);
   return loadRunDocuments(run, workspaceRoot, consensusId, teamAgents);
 }

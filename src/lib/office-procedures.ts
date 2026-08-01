@@ -6,6 +6,7 @@ import {
   type VirtualOfficeDepartmentDef,
 } from "./office-departments.js";
 import { suggestedAgentsFromOrgRecord } from "./org-context.js";
+import { agentNamesFromWorkflowSteps } from "./office-run-department.js";
 import { prisma } from "./prisma.js";
 
 type WorkflowWithSteps = Workflow & {
@@ -33,13 +34,7 @@ export function formatProcedureLabel(name: string): string {
 }
 
 function agentNamesFromWorkflow(workflow: WorkflowWithSteps): string[] {
-  return [
-    ...new Set(
-      workflow.steps
-        .map((step) => step.agent?.name)
-        .filter((name): name is string => typeof name === "string" && name.length > 0),
-    ),
-  ];
+  return agentNamesFromWorkflowSteps(workflow.steps);
 }
 
 export function resolveWorkflowVirtualDepartment(

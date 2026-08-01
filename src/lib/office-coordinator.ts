@@ -22,6 +22,10 @@ import { resolveTenantGithubToken } from "./tenant-integrations.js";
 import { buildOfficeDepartmentRooms, type OfficeDepartmentRoom } from "./office-departments.js";
 import { enrichDepartmentProcedureCounts } from "./office-procedures.js";
 import { encargoActivityFields } from "./office-encargos.js";
+import {
+  agentNamesFromWorkflowSteps,
+  officeLaunchMemoryFields,
+} from "./office-run-department.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -651,9 +655,15 @@ export async function executeOfficeTask(
     const workflowId = input.workflowId ?? plan.workflowId!;
     const workflow = await prisma.workflow.findFirst({
       where: { id: workflowId, tenantId },
-      select: { id: true, name: true },
+      include: {
+        steps: {
+          include: { agent: { select: { name: true } } },
+          orderBy: { stepOrder: "asc" },
+        },
+      },
     });
     if (!workflow) throw new Error("Workflow not found");
+    const teamAgentNames = agentNamesFromWorkflowSteps(workflow.steps);
 
     if (productId) {
       return withProduct(
@@ -662,7 +672,10 @@ export async function executeOfficeTask(
           task,
           mergeConsensus: true,
           setFocus: true,
-          orgContext: orgMemory,
+          orgContext: {
+            ...orgMemory,
+            teamAgents: teamAgentNames,
+          },
         }),
       );
     }
@@ -672,12 +685,13 @@ export async function executeOfficeTask(
       workflowName: workflow.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: withOrgMemory({
-        task,
-        nextAction: task,
-        officeRequest: task,
-        coordinatorNote: "Task dispatched from Office dashboard",
-      }),
+      initialMemory: withOrgMemory(
+        officeLaunchMemoryFields({
+          task,
+          teamAgentNames,
+          coordinatorNote: "Task dispatched from Office dashboard",
+        }),
+      ),
     });
     return withProduct({ runId, workflowId: workflow.id, workflowName: workflow.name });
   }
@@ -706,7 +720,14 @@ export async function executeOfficeTask(
       workflowName: wf.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: withOrgMemory({ task, nextAction: task, officeRequest: task }),
+      initialMemory: withOrgMemory(
+        officeLaunchMemoryFields({
+          task,
+          teamAgentNames: plan.agents
+            .filter((agent) => agent.id === agentIds[0])
+            .map((agent) => agent.name),
+        }),
+      ),
     });
     return withProduct({ runId, workflowId: wf.id, workflowName: wf.name });
   }
@@ -727,12 +748,12 @@ export async function executeOfficeTask(
       workflowName: teamWf.name,
       mergeConsensus: true,
       syncConsensus: true,
-      initialMemory: withOrgMemory({
-        task,
-        nextAction: task,
-        officeRequest: task,
-        teamAgents: plan.agents.map((a) => a.name),
-      }),
+      initialMemory: withOrgMemory(
+        officeLaunchMemoryFields({
+          task,
+          teamAgentNames: plan.agents.map((a) => a.name),
+        }),
+      ),
     });
     return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
   }
@@ -742,12 +763,12 @@ export async function executeOfficeTask(
     workflowName: teamWf.name,
     mergeConsensus: true,
     syncConsensus: true,
-    initialMemory: withOrgMemory({
-      task,
-      nextAction: task,
-      officeRequest: task,
-      teamAgents: plan.agents.map((a) => a.name),
-    }),
+    initialMemory: withOrgMemory(
+      officeLaunchMemoryFields({
+        task,
+        teamAgentNames: plan.agents.map((a) => a.name),
+      }),
+    ),
   });
   return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
 }
