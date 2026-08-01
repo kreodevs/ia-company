@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { plannedCatalogCoversGaps } from "../src/lib/workflow-studio.js";
+import { plannedCatalogCoversGaps, reconcileGapSkillDrafts } from "../src/lib/workflow-studio.js";
 import type { WorkflowStudioProposal } from "../src/lib/catalog-studio-types.js";
 
 describe("plannedCatalogCoversGaps", () => {
@@ -58,5 +58,16 @@ describe("plannedCatalogCoversGaps", () => {
     };
 
     assert.equal(plannedCatalogCoversGaps(proposal), false);
+  });
+
+  it("reconcileGapSkillDrafts adds drafts for gaps.missingSkills", () => {
+    const proposal: WorkflowStudioProposal = {
+      brief: "Test",
+      gaps: { missingAgents: [], missingSkills: ["agent-browser"], notes: "" },
+      newSkills: [],
+    };
+    reconcileGapSkillDrafts(proposal, new Set());
+    assert.equal(proposal.newSkills?.length, 1);
+    assert.equal(proposal.newSkills?.[0]?.name, "agent-browser");
   });
 });

@@ -187,6 +187,33 @@ function buildWorkflowMungerContext(proposal: WorkflowStudioProposal): string {
   return sections.join("\n\n");
 }
 
+/** If gaps list skills missing from newSkills, add minimal drafts so coverage stays coherent. */
+export function reconcileGapSkillDrafts(
+  proposal: WorkflowStudioProposal,
+  existingSkillNames: Set<string>,
+): void {
+  const missing = proposal.gaps?.missingSkills ?? [];
+  if (missing.length === 0) return;
+
+  proposal.newSkills ??= [];
+  const drafted = new Set(proposal.newSkills.map((skill) => slugifyCatalogName(skill.name)));
+
+  for (const skillName of missing) {
+    const slug = slugifyCatalogName(skillName);
+    if (!slug || existingSkillNames.has(slug) || drafted.has(slug)) continue;
+    proposal.newSkills.push({
+      name: slug,
+      description: `Technical capability required by the workflow: ${slug.replace(/-/g, " ")}.`,
+      promptContent: [
+        `You implement the **${slug}** capability for tenant workflows.`,
+        "Follow platform skill conventions: concrete steps, safety guardrails, measurable output.",
+        "When part of a workflow, end with a JSON handoff block for the next agent.",
+      ].join("\n"),
+    });
+    drafted.add(slug);
+  }
+}
+
 function reconcileMungerWithPlannedCatalog(
   proposal: WorkflowStudioProposal,
   review: StudioMungerReview,
@@ -309,8 +336,12 @@ export async function proposeWorkflowWithLlm(
     [
       ...CATALOG_STUDIO_LLM_RULES,
       "Task: design ONE reusable agent workflow for the tenant.",
-      "Use ONLY tenant agent names from the catalog for workflow.steps[].agentName.",
+      "Steps may use existing tenant agents OR newAgents you define (new agents must appear in newAgents[] and in workflow.steps).",
       "If the goal needs capabilities missing from agents/skills, propose newAgents and/or newSkills.",
+      "Consistency rule: every gaps.missingSkills entry MUST have a matching draft in newSkills (unless already in tenant catalog).",
+      "Consistency rule: every gaps.missingAgents entry MUST appear in newAgents[] or workflow.steps[].agentName.",
+      "Do NOT assign research/marketing/copy agents to parse repositories, run browser automation, or generate audio unless they already have that skill in the tenant catalog.",
+      "Technical deliverables (GitHub/code analysis, browser automation, TTS/audio) require explicit skills such as github-explorer, agent-browser, tts-audio-generation — link them via newSkills and newAgents.skillNames.",
       "If the brief is ambiguous (target product, output format, channel, language, scope), respond with needsClarification instead of guessing.",
       'JSON shape A (clarify): { "needsClarification": true, "questions": ["question 1", "question 2"] } — max 4 questions.',
       'JSON shape B (proposal): {',
@@ -334,6 +365,7 @@ export async function proposeWorkflowWithLlm(
       `Skill examples:\n${JSON.stringify(SKILL_FEW_SHOT_EXAMPLES, null, 0)}`,
     ].join("\n\n"),
     CATALOG_STUDIO_MAX_TOKENS_PROPOSE,
+    0.28,
   );
 
   const proposal: WorkflowStudioProposal = { brief: enrichedBrief };
@@ -366,6 +398,10 @@ export async function proposeWorkflowWithLlm(
   proposal.gaps = parseGapAnalysis(parsed?.gaps);
   proposal.newAgents = parseAgentDefs(parsed?.newAgents);
   proposal.newSkills = parseNewSkillDrafts(parsed?.newSkills);
+  reconcileGapSkillDrafts(
+    proposal,
+    new Set(skills.map((skill) => slugifyCatalogName(skill.name))),
+  );
   proposal.mungerReview = await reviewWorkflowProposalWithMunger(tenantId, proposal);
   return proposal;
 }

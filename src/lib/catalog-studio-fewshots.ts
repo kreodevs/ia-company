@@ -25,15 +25,28 @@ export const AGENT_FEW_SHOT_EXAMPLES = MARKETING_AGENCY_TEMPLATE.suggestedAgents
 
 export const WORKFLOW_FEW_SHOT_EXAMPLES = [
   {
-    name: "video-tutorial-pipeline",
+    name: "micro-video-from-github",
     description:
-      "Research codebase and UX → write script → produce TTS narration for product tutorials.",
+      "Parse GitHub repo → map UX → script → browser capture + TTS for micro video tutorials.",
     steps: [
-      { agentName: "research-thompson", label: "Map product surface" },
+      { agentName: "fullstack-dhh", label: "Repo structure & code paths" },
       { agentName: "product-norman", label: "User flows & affordances" },
       { agentName: "copy-manager", label: "Tutorial script" },
-      { agentName: "devops-hightower", label: "TTS / asset handoff" },
+      { agentName: "video-producer", label: "Browser recording + TTS" },
     ],
+    gaps: {
+      missingAgents: ["video-producer"],
+      missingSkills: ["github-explorer", "agent-browser", "tts-audio-generation"],
+      notes: "Reuse platform agents where possible; create video-producer plus technical skills.",
+    },
+    newAgents: [
+      {
+        name: "video-producer",
+        role: "Browser recording and narration",
+        skillNames: ["agent-browser", "tts-audio-generation"],
+      },
+    ],
+    newSkills: ["github-explorer", "agent-browser", "tts-audio-generation"],
   },
   {
     name: "seo-review",
