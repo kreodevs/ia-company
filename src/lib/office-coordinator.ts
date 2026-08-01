@@ -1,4 +1,5 @@
 import type { ExecutionStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
 import { assertTenantCanExecute, getTenantMonthlyUsage } from "./usage-limits.js";
@@ -797,7 +798,17 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     prisma.executionRun.findMany({
       where: { tenantId, status: { in: activeStatuses } },
       orderBy: { createdAt: "desc" },
-      include: { workflow: { select: { name: true } } },
+      include: {
+        workflow: {
+          select: {
+            name: true,
+            steps: {
+              select: { agent: { select: { name: true } } },
+              orderBy: { stepOrder: "asc" },
+            },
+          },
+        },
+      },
     }),
     prisma.executionRun.findMany({
       where: { tenantId, status: { in: ["COMPLETED", "FAILED"] } },
@@ -814,8 +825,15 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       take: 3,
     }),
     prisma.executionRun.findMany({
-      where: { tenantId },
+      where: {
+        tenantId,
+        OR: [
+          { sharedMemory: { path: ["productId"], not: Prisma.JsonNull } },
+          { sharedMemory: { path: ["focusProductSlug"], not: Prisma.JsonNull } },
+        ],
+      },
       select: { id: true, totalCostUsd: true, sharedMemory: true },
+      take: 500,
     }),
     prisma.orgUnit.findMany({
       where: { tenantId, isActive: true },
@@ -943,7 +961,7 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
 
   const departments = await enrichDepartmentProcedureCounts(
     tenantId,
-    await buildOfficeDepartmentRooms(tenantId, agentStatuses),
+    await buildOfficeDepartmentRooms(tenantId, agentStatuses, activeRuns),
   );
 
   return {

@@ -19,10 +19,8 @@ import WarRoomAgentSeat from "./WarRoomAgentSeat";
 import WarRoomHandoffOverlay from "./WarRoomHandoffOverlay";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import { shortTime } from "./war-room-shared";
-import { useWarRoomHandoff, useHeldAgentTeam } from "../../lib/war-room-live";
+import { useWarRoomHandoff, useHeldAgentTeam, createTeamRefreshScheduler, STEP_EVENT_REFRESH_MS, warRoomUsesStreamRefresh } from "../../lib/war-room-live";
 
-const TEAM_REFRESH_MIN_MS = 2500;
-const STEP_EVENT_REFRESH_MS = 2800;
 const COORDINATOR_COLLAPSED_KEY = "war-room-coordinator-collapsed";
 
 function readCoordinatorCollapsed(): boolean {
@@ -39,51 +37,6 @@ function writeCoordinatorCollapsed(collapsed: boolean): void {
   } catch {
     // ignore quota / private mode
   }
-}
-
-function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
-  let inFlight = false;
-  let lastAt = 0;
-  let timer: ReturnType<typeof setTimeout> | null = null;
-
-  const run = async () => {
-    if (inFlight) return;
-    inFlight = true;
-    try {
-      await refresh();
-      lastAt = Date.now();
-    } catch {
-      // Keep last good snapshot — rate limits should not blank the war room.
-    } finally {
-      inFlight = false;
-    }
-  };
-
-  return {
-    schedule(minIntervalMs = TEAM_REFRESH_MIN_MS) {
-      const elapsed = Date.now() - lastAt;
-      if (timer) clearTimeout(timer);
-
-      if (elapsed >= minIntervalMs && !inFlight) {
-        void run();
-        return;
-      }
-
-      timer = setTimeout(() => {
-        timer = null;
-        void run();
-      }, Math.max(minIntervalMs - elapsed, 400));
-    },
-    flush() {
-      if (timer) clearTimeout(timer);
-      timer = null;
-      void run();
-    },
-    dispose() {
-      if (timer) clearTimeout(timer);
-      timer = null;
-    },
-  };
 }
 
 export interface WarRoomContentProps {
@@ -164,17 +117,9 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
 
   useEffect(() => {
     const active = data?.activeRun;
-    if (!active) return;
+    if (!active || warRoomUsesStreamRefresh(active.status)) return;
 
-    const needsPoll =
-      active.status === "DELEGATED" ||
-      active.status === "AWAITING_USER" ||
-      active.status === "RUNNING" ||
-      active.status === "PENDING";
-
-    if (!needsPoll) return;
-
-    const intervalMs = active.status === "DELEGATED" ? 4000 : 8000;
+    const intervalMs = active.status === "DELEGATED" ? 8000 : 12000;
     const timer = window.setInterval(() => refreshScheduler.current.schedule(intervalMs), intervalMs);
     return () => window.clearInterval(timer);
   }, [data?.activeRun?.id, data?.activeRun?.status]);

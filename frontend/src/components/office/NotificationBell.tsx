@@ -11,7 +11,8 @@ import {
 import { toast } from "../molecules/Sonner";
 import { cn } from "../../lib/utils";
 
-const POLL_MS = 12_000;
+const POLL_MS = 30_000;
+const POLL_MS_HIDDEN = 120_000;
 const SEEN_KEY = "ac-notif-seen";
 
 function loadSeen(): Set<string> {
@@ -95,8 +96,24 @@ export function useOfficeNotifications(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
     void refresh();
-    const timer = window.setInterval(() => void refresh(), POLL_MS);
-    return () => window.clearInterval(timer);
+    const tick = () => {
+      const delay = document.hidden ? POLL_MS_HIDDEN : POLL_MS;
+      return window.setTimeout(() => {
+        void refresh().finally(() => {
+          timer = tick();
+        });
+      }, delay);
+    };
+    let timer = tick();
+    const onVisibility = () => {
+      window.clearTimeout(timer);
+      timer = tick();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [enabled, refresh]);
 
   const markRead = async (id: string) => {

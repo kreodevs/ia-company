@@ -7,6 +7,7 @@ import {
   createTeamRefreshScheduler,
   useHeldAgentTeam,
   useWarRoomHandoff,
+  warRoomUsesStreamRefresh,
 } from "../../lib/war-room-live";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
@@ -85,16 +86,10 @@ export default function DepartmentWarRoomPanel({
 
   useEffect(() => {
     const active = data?.activeRun;
-    if (
-      !active ||
-      (active.status !== "RUNNING" &&
-        active.status !== "PENDING" &&
-        active.status !== "DELEGATED" &&
-        active.status !== "AWAITING_USER")
-    ) {
-      return;
-    }
-    const intervalMs = active.status === "DELEGATED" ? 4000 : 8000;
+    if (!active || warRoomUsesStreamRefresh(active.status)) return;
+
+    const intervalMs =
+      active.status === "DELEGATED" ? 8000 : active.status === "AWAITING_USER" ? 12000 : 15000;
     const timer = window.setInterval(() => refreshScheduler.current.schedule(intervalMs), intervalMs);
     return () => window.clearInterval(timer);
   }, [data?.activeRun?.id, data?.activeRun?.status]);

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   agentNamesFromWorkflowSteps,
+  buildDepartmentRunScopeWhere,
   extractRunTeamAgentNames,
   officeLaunchMemoryFields,
   runBelongsToDepartmentRoster,
@@ -59,5 +60,21 @@ describe("office-run-department", () => {
       ]),
       ["qa-bach", "fullstack-dhh"],
     );
+  });
+
+  it("builds scoped SQL filters for org units and virtual departments", () => {
+    assert.deepEqual(buildDepartmentRunScopeWhere({ orgUnitId: "org-1" }), {
+      sharedMemory: { path: ["orgUnitId"], equals: "org-1" },
+    });
+    assert.deepEqual(buildDepartmentRunScopeWhere({ rosterNames: ["fullstack-dhh"] }), {
+      workflow: {
+        steps: {
+          some: {
+            agent: { name: { in: ["fullstack-dhh"] } },
+          },
+        },
+      },
+    });
+    assert.equal(buildDepartmentRunScopeWhere({}), null);
   });
 });

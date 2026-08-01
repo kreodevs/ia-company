@@ -178,6 +178,11 @@ export function resolveVirtualDepartmentForAgent(agentName: string | null | unde
 export async function buildOfficeDepartmentRooms(
   tenantId: string,
   agents: Array<{ id: string; name: string; status: "idle" | "busy" }>,
+  preloadedActiveRuns?: Array<{
+    id: string;
+    sharedMemory: unknown;
+    workflow: { steps: Array<{ agent: { name: string } | null }> };
+  }>,
 ): Promise<OfficeDepartmentRoom[]> {
   const activeStatuses: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
@@ -187,22 +192,25 @@ export async function buildOfficeDepartmentRooms(
       include: { template: { select: { definition: true } } },
       orderBy: { name: "asc" },
     }),
-    prisma.executionRun.findMany({
-      where: { tenantId, status: { in: activeStatuses } },
-      select: {
-        id: true,
-        sharedMemory: true,
-        workflow: {
+    preloadedActiveRuns
+      ? Promise.resolve(preloadedActiveRuns)
+      : prisma.executionRun.findMany({
+          where: { tenantId, status: { in: activeStatuses } },
           select: {
-            steps: {
-              select: { agent: { select: { name: true } } },
-              orderBy: { stepOrder: "asc" },
+            id: true,
+            sharedMemory: true,
+            workflow: {
+              select: {
+                steps: {
+                  select: { agent: { select: { name: true } } },
+                  orderBy: { stepOrder: "asc" },
+                },
+              },
             },
           },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        }),
   ]);
 
   const agentRows: AgentStatusRow[] = agents.map((a) => ({

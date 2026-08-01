@@ -47,10 +47,8 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
   const [coordinatorCollapsed, setCoordinatorCollapsed] = useState(readCoordinatorCollapsed);
 
   const refresh = useCallback(async () => {
-    const [dash, encargoRes] = await Promise.all([
-      api.office.dashboard(),
-      api.office.encargos({ phase: "in_progress", limit: 12 }),
-    ]);
+    const dash = await api.office.dashboard();
+    const encargoRes = await api.office.encargos({ phase: "in_progress", limit: 12 });
     setDashboard(dash);
     setEncargos(encargoRes.items);
   }, []);
@@ -64,7 +62,7 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
 
   useEffect(() => {
     if (!dashboard?.stats.activeRuns) return;
-    const timer = window.setInterval(() => void refresh(), 8000);
+    const timer = window.setInterval(() => void refresh(), 20000);
     return () => window.clearInterval(timer);
   }, [dashboard?.stats.activeRuns, refresh]);
 

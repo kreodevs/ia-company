@@ -49,10 +49,8 @@ export default function SpecialistProfileModal({
       }
     };
     void loadTeam();
-    const timer = window.setInterval(() => void loadTeam(), 8000);
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
     };
   }, [agent.id, agent.name, departmentSlug, orgUnitId]);
 

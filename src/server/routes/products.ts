@@ -781,11 +781,14 @@ export async function productRoutes(app: FastifyInstance) {
         getProductMetrics(tenantId, product.id),
       ]);
 
-      const { runBelongsToProduct, extractRunTaskPreview } = await import(
+      const { runBelongsToProduct, extractRunTaskPreview, buildProductRunScopeWhere } = await import(
         "../../lib/product-run-association.js"
       );
       const isFocusProduct = cycle.focusProductId === product.id;
       const activeStatuses = ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"] as const;
+      const runListInclude = {
+        workflow: { select: { name: true } },
+      };
       const runInclude = {
         workflow: { select: { name: true } },
         logs: {
@@ -802,19 +805,23 @@ export async function productRoutes(app: FastifyInstance) {
           },
         },
       };
+      const productScopeWhere = isFocusProduct
+        ? {}
+        : buildProductRunScopeWhere(product);
+      const runWhereBase = { tenantId, ...productScopeWhere };
 
       const [activeRunsQuery, recentRunsQuery] = await Promise.all([
         prisma.executionRun.findMany({
-          where: { tenantId, status: { in: [...activeStatuses] } },
+          where: { ...runWhereBase, status: { in: [...activeStatuses] } },
           orderBy: { createdAt: "desc" },
-          take: 20,
-          include: runInclude,
+          take: isFocusProduct ? 20 : 12,
+          include: runListInclude,
         }),
         prisma.executionRun.findMany({
-          where: { tenantId },
+          where: runWhereBase,
           orderBy: { createdAt: "desc" },
-          take: 30,
-          include: runInclude,
+          take: isFocusProduct ? 30 : 15,
+          include: runListInclude,
         }),
       ]);
 
@@ -847,22 +854,7 @@ export async function productRoutes(app: FastifyInstance) {
           runs.find((r) => r.id === watchRunId) ??
           (await prisma.executionRun.findFirst({
             where: { id: watchRunId, tenantId },
-            include: {
-              workflow: { select: { name: true } },
-              logs: {
-                where: { agentId: { not: null } },
-                orderBy: { createdAt: "desc" },
-                take: 30,
-                select: {
-                  id: true,
-                  level: true,
-                  message: true,
-                  agentId: true,
-                  stepId: true,
-                  createdAt: true,
-                },
-              },
-            },
+            include: runInclude,
           }));
         if (
           watched &&
@@ -872,9 +864,25 @@ export async function productRoutes(app: FastifyInstance) {
         }
       }
 
+      type TeamRunLog = {
+        agentId: string | null;
+        createdAt: Date;
+        message: string;
+      };
+      type TeamRunRow = (typeof activeRunsQuery)[number] & { logs?: TeamRunLog[] };
+      const logsForRun = (run: TeamRunRow): TeamRunLog[] => run.logs ?? [];
+
+      if (activeRun && logsForRun(activeRun).length === 0) {
+        const withLogs = await prisma.executionRun.findFirst({
+          where: { id: activeRun.id, tenantId },
+          include: runInclude,
+        });
+        if (withLogs) activeRun = withLogs as TeamRunRow;
+      }
+
       const activeRuns = productActiveRuns.map((run) => {
         const agentIds = new Set<string>();
-        for (const log of run.logs) {
+        for (const log of logsForRun(run)) {
           if (log.agentId) agentIds.add(log.agentId);
         }
         return {
@@ -912,7 +920,7 @@ export async function productRoutes(app: FastifyInstance) {
       const lastWorkedAt = new Map<string, { at: Date; message: string }>();
       const runsForAgentActivity = activeRun ? [activeRun] : runsForProduct;
       for (const r of runsForAgentActivity) {
-        for (const log of r.logs) {
+        for (const log of logsForRun(r as TeamRunRow)) {
           if (!log.agentId) continue;
           const existing = lastWorkedAt.get(log.agentId);
           if (!existing || log.createdAt > existing.at) {
@@ -923,7 +931,7 @@ export async function productRoutes(app: FastifyInstance) {
 
       const activeAgentIds = new Set<string>();
       if (activeRun) {
-        for (const log of activeRun.logs) {
+        for (const log of logsForRun(activeRun as TeamRunRow)) {
           if (log.agentId) activeAgentIds.add(log.agentId);
         }
       }

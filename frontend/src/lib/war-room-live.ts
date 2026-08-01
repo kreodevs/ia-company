@@ -3,7 +3,8 @@ import type { TeamAgent, TeamAgentStatus } from "./api";
 
 /** Keep active agent states visible long enough to read the war-room table. */
 export const AGENT_STATUS_HOLD_MS = 2800;
-export const STEP_EVENT_REFRESH_MS = 400;
+export const TEAM_REFRESH_MIN_MS = 2500;
+export const STEP_EVENT_REFRESH_MS = TEAM_REFRESH_MIN_MS;
 
 function statusPriority(status: TeamAgentStatus): number {
   if (status === "thinking") return 3;
@@ -89,22 +90,45 @@ export function useHeldAgentTeam<T extends TeamAgent>(team: T[]): T[] {
 }
 
 export function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {
+  let inFlight = false;
+  let lastAt = 0;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let disposed = false;
 
-  const schedule = (delayMs: number) => {
+  const run = async () => {
+    if (disposed || inFlight) return;
+    inFlight = true;
+    try {
+      await refresh();
+      lastAt = Date.now();
+    } catch {
+      // Keep last good snapshot — rate limits should not blank the war room.
+    } finally {
+      inFlight = false;
+    }
+  };
+
+  const schedule = (minIntervalMs = TEAM_REFRESH_MIN_MS) => {
     if (disposed) return;
+    const elapsed = Date.now() - lastAt;
     if (timer) clearTimeout(timer);
+
+    if (elapsed >= minIntervalMs && !inFlight) {
+      void run();
+      return;
+    }
+
     timer = setTimeout(() => {
       timer = null;
-      void refresh();
-    }, delayMs);
+      void run();
+    }, Math.max(minIntervalMs - elapsed, 400));
   };
 
   const flush = () => {
+    if (disposed) return;
     if (timer) clearTimeout(timer);
     timer = null;
-    void refresh();
+    void run();
   };
 
   const dispose = () => {
@@ -161,4 +185,9 @@ export function useWarRoomHandoff(
     };
 
   return { handoff, bindStreamHandler };
+}
+
+/** True when SSE log stream should drive refreshes instead of interval polling. */
+export function warRoomUsesStreamRefresh(status: string | undefined): boolean {
+  return status === "RUNNING" || status === "PENDING";
 }

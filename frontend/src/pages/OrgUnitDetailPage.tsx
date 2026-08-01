@@ -104,9 +104,10 @@ export default function OrgUnitDetailPage() {
 
   useEffect(() => {
     if (!departmentMeta || departmentMeta.status !== "busy") return;
-    const timer = window.setInterval(() => void load(), 8000);
+    if (activeTab === "room") return;
+    const timer = window.setInterval(() => void load(), 30000);
     return () => window.clearInterval(timer);
-  }, [departmentMeta?.status, load]);
+  }, [departmentMeta?.status, activeTab, load]);
 
   const subtitle = useMemo(() => {
     if (!unit) return "";

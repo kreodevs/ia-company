@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import type { SharedMemory } from "../types/index.js";
 
 export function readMemoryOrgUnitId(memory: unknown): string | null {
@@ -61,6 +62,33 @@ export function runBelongsToDepartmentRoster(input: {
 
   const team = extractRunTeamAgentNames(input.sharedMemory, input.workflowAgentNames ?? []);
   return team.some((name) => roster.has(name));
+}
+
+/** Narrow tenant run queries before in-memory department filtering. */
+export function buildDepartmentRunScopeWhere(input: {
+  orgUnitId?: string | null;
+  rosterNames?: string[];
+}): Prisma.ExecutionRunWhereInput | null {
+  if (input.orgUnitId) {
+    return {
+      sharedMemory: {
+        path: ["orgUnitId"],
+        equals: input.orgUnitId,
+      },
+    };
+  }
+  if (input.rosterNames?.length) {
+    return {
+      workflow: {
+        steps: {
+          some: {
+            agent: { name: { in: input.rosterNames } },
+          },
+        },
+      },
+    };
+  }
+  return null;
 }
 
 export function officeLaunchMemoryFields(input: {

@@ -1,6 +1,19 @@
+import type { Prisma } from "@prisma/client";
+
 export interface RunProductMemory {
   productId?: unknown;
   focusProductSlug?: unknown;
+}
+
+export function buildProductRunScopeWhere(
+  product: { id: string; slug: string; lastRunId?: string | null },
+): Prisma.ExecutionRunWhereInput {
+  const branches: Prisma.ExecutionRunWhereInput[] = [
+    { sharedMemory: { path: ["productId"], equals: product.id } },
+    { sharedMemory: { path: ["focusProductSlug"], equals: product.slug } },
+  ];
+  if (product.lastRunId) branches.push({ id: product.lastRunId });
+  return { OR: branches };
 }
 
 export function extractRunProductMemory(sharedMemory: unknown): {

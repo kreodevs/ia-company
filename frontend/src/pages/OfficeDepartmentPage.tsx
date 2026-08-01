@@ -22,11 +22,7 @@ export default function OfficeDepartmentPage() {
       .finally(() => setLoading(false));
   }, [refresh]);
 
-  useEffect(() => {
-    if (!dashboard?.stats.activeRuns) return;
-    const timer = window.setInterval(() => void refresh(), 8000);
-    return () => window.clearInterval(timer);
-  }, [dashboard?.stats.activeRuns, refresh]);
+  // Live updates come from DepartmentWarRoomPanel (team SSE); avoid duplicate dashboard polling.
 
   const department = useMemo(() => {
     if (!dashboard || !slug) return null;

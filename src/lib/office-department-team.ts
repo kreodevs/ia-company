@@ -7,6 +7,7 @@ import {
 } from "./office-departments.js";
 import { encargoActivityFields } from "./office-encargos.js";
 import {
+  buildDepartmentRunScopeWhere,
   runBelongsToDepartmentRoster,
 } from "./office-run-department.js";
 import { extractRunTaskPreview } from "./product-run-association.js";
@@ -14,7 +15,7 @@ import type { SharedMemory } from "../types/index.js";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
-const runInclude = {
+const runListInclude = {
   workflow: {
     select: {
       name: true,
@@ -24,6 +25,10 @@ const runInclude = {
       },
     },
   },
+};
+
+const runInclude = {
+  ...runListInclude,
   logs: {
     where: { agentId: { not: null } },
     orderBy: { createdAt: "desc" as const },
@@ -44,7 +49,7 @@ type RunRow = Awaited<ReturnType<typeof prisma.executionRun.findMany>>[number] &
     name: string;
     steps: Array<{ agent: { name: string } | null }>;
   };
-  logs: Array<{
+  logs?: Array<{
     id: string;
     level: string;
     message: string;
@@ -141,7 +146,7 @@ function buildActiveRunSummary(
   products: Array<{ id: string; name: string; slug: string }>,
 ) {
   const agentIds = new Set<string>();
-  for (const log of run.logs) {
+  for (const log of run.logs ?? []) {
     if (log.agentId) agentIds.add(log.agentId);
   }
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
@@ -174,7 +179,7 @@ function buildTeamForRun(
   activeRun: RunRow | null,
 ): DepartmentTeamAgent[] {
   const lastWorkedAt = new Map<string, { at: Date; message: string }>();
-  if (activeRun) {
+  if (activeRun?.logs) {
     for (const log of activeRun.logs) {
       if (!log.agentId) continue;
       const existing = lastWorkedAt.get(log.agentId);
@@ -274,22 +279,32 @@ export async function getDepartmentTeam(
   if (!ctx) return null;
 
   const rosterSet = new Set(ctx.rosterNames);
+  const deptOrgUnitId = ctx.orgUnit?.id ?? null;
+  const scopeWhere = buildDepartmentRunScopeWhere({
+    orgUnitId: deptOrgUnitId,
+    rosterNames: deptOrgUnitId ? undefined : ctx.rosterNames,
+  });
+  const runWhereBase = {
+    tenantId,
+    ...(scopeWhere ?? {}),
+  };
+
   const [agents, activeRunsQuery, recentRunsQuery, orgUnits, products] = await Promise.all([
     prisma.agent.findMany({
       where: { tenantId, isActive: true, name: { in: ctx.rosterNames } },
       orderBy: { name: "asc" },
     }),
     prisma.executionRun.findMany({
-      where: { tenantId, status: { in: ACTIVE_STATUSES } },
+      where: { ...runWhereBase, status: { in: ACTIVE_STATUSES } },
       orderBy: { createdAt: "desc" },
-      take: 30,
-      include: runInclude,
+      take: 15,
+      include: runListInclude,
     }),
     prisma.executionRun.findMany({
-      where: { tenantId },
+      where: runWhereBase,
       orderBy: { createdAt: "desc" },
-      take: 20,
-      include: runInclude,
+      take: 10,
+      include: runListInclude,
     }),
     prisma.orgUnit.findMany({
       where: { tenantId, isActive: true },
@@ -302,7 +317,6 @@ export async function getDepartmentTeam(
   ]);
 
   const orgUnitNameById = new Map(orgUnits.map((o) => [o.id, o.name]));
-  const deptOrgUnitId = ctx.orgUnit?.id ?? null;
 
   const deptActiveRuns = activeRunsQuery.filter((run) =>
     runBelongsToDepartment(run as RunRow, rosterSet, deptOrgUnitId),
@@ -312,7 +326,7 @@ export async function getDepartmentTeam(
   );
 
   const watchRunId = input.watchRunId?.trim() || null;
-  let activeRun =
+  let activeRun: RunRow | null =
     (watchRunId ? deptActiveRuns.find((r) => r.id === watchRunId) : null) ??
     deptActiveRuns[0] ??
     null;
@@ -320,15 +334,23 @@ export async function getDepartmentTeam(
   if (watchRunId && !activeRun) {
     const watched = await prisma.executionRun.findFirst({
       where: { id: watchRunId, tenantId },
-      include: runInclude,
+      include: runListInclude,
     });
     if (
       watched &&
       ACTIVE_STATUSES.includes(watched.status as ExecutionStatus) &&
       runBelongsToDepartment(watched as RunRow, rosterSet, deptOrgUnitId)
     ) {
-      activeRun = watched;
+      activeRun = watched as RunRow;
     }
+  }
+
+  if (activeRun && activeRun.logs === undefined) {
+    const withLogs = await prisma.executionRun.findFirst({
+      where: { id: activeRun.id, tenantId },
+      include: runInclude,
+    });
+    if (withLogs) activeRun = withLogs as RunRow;
   }
 
   const activeRuns = deptActiveRuns.map((run) => {
@@ -412,10 +434,15 @@ export async function countActiveRunsForDepartment(
     excludeRunId?: string;
   },
 ): Promise<number> {
+  const scopeWhere = buildDepartmentRunScopeWhere({
+    orgUnitId: input.orgUnitId ?? null,
+    rosterNames: input.orgUnitId ? undefined : input.rosterNames,
+  });
   const runs = await prisma.executionRun.findMany({
     where: {
       tenantId,
       status: { in: ACTIVE_STATUSES },
+      ...(scopeWhere ?? {}),
       ...(input.excludeRunId ? { id: { not: input.excludeRunId } } : {}),
     },
     select: {

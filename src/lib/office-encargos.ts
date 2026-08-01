@@ -12,7 +12,7 @@ import type { ProposalEvidence } from "./decision-proposals.js";
 import { extractReferencedDocPaths } from "./referenced-doc-path.js";
 import { resolveEncargoDepartmentContext } from "./office-procedures.js";
 import { departmentWarRoomHref } from "./office-department-team.js";
-import { extractRunTeamAgentNames } from "./office-run-department.js";
+import { buildDepartmentRunScopeWhere, extractRunTeamAgentNames } from "./office-run-department.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -258,6 +258,7 @@ async function mapRunToSummary(
   tenantId: string,
   tenantSlug: string | null | undefined,
   orgUnitNameById: Map<string, string>,
+  options: { skipDocumentCount?: boolean } = {},
 ): Promise<OfficeEncargoSummary> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
@@ -273,11 +274,14 @@ async function mapRunToSummary(
   });
   const consensusId = product ? productConsensusByProductId.get(product.id) : undefined;
   const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenantSlug, product?.slug ?? null);
-  const documentCount = await countDocumentsForRun(run, workspaceRoot, consensusId ?? null);
+  const documentCount = options.skipDocumentCount
+    ? 0
+    : await countDocumentsForRun(run, workspaceRoot, consensusId ?? null);
 
   const phase = toPhase(run.status);
   const hasRunSummary = Boolean(readMemoryString(memory, "runSummary"));
-  const hasFinalReport = phase === "delivered" && (hasRunSummary || documentCount > 0);
+  const hasFinalReport =
+    phase === "delivered" && (hasRunSummary || (!options.skipDocumentCount && documentCount > 0));
 
   return {
     id: run.id,
@@ -314,12 +318,17 @@ export async function listOfficeEncargos(
   } = {},
 ): Promise<{ items: OfficeEncargoSummary[] }> {
   const limit = Math.min(100, Math.max(1, options.limit ?? 50));
+  const hasScopeFilter = Boolean(options.phase || options.departmentSlug || options.orgUnitId);
+  const fetchLimit = hasScopeFilter ? Math.min(100, limit * 4) : limit;
+  const scopeWhere = options.orgUnitId
+    ? buildDepartmentRunScopeWhere({ orgUnitId: options.orgUnitId })
+    : null;
 
   const [runs, products, consensusRows, tenant, orgUnits] = await Promise.all([
     prisma.executionRun.findMany({
-      where: { tenantId },
+      where: { tenantId, ...(scopeWhere ?? {}) },
       orderBy: { createdAt: "desc" },
-      take: limit,
+      take: fetchLimit,
       include: { workflow: { select: { name: true } } },
     }),
     prisma.tenantProduct.findMany({
@@ -342,7 +351,9 @@ export async function listOfficeEncargos(
 
   let items = await Promise.all(
     runs.map((run) =>
-      mapRunToSummary(run, products, consensusByProductId, tenantId, tenant?.slug, orgUnitNameById),
+      mapRunToSummary(run, products, consensusByProductId, tenantId, tenant?.slug, orgUnitNameById, {
+        skipDocumentCount: true,
+      }),
     ),
   );
 
@@ -356,7 +367,7 @@ export async function listOfficeEncargos(
     items = items.filter((item) => item.orgUnitId === options.orgUnitId);
   }
 
-  return { items };
+  return { items: items.slice(0, limit) };
 }
 
 export async function loadRunDocuments(
