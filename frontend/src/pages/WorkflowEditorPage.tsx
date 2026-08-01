@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
+import WorkflowAiEnrichModal from "../components/workflows/WorkflowAiEnrichModal";
 import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
 import {
   consumeStoredWorkflowTask,
@@ -23,6 +24,7 @@ export default function WorkflowEditorPage() {
   const [consensus, setConsensus] = useState<TenantConsensus | null>(null);
   const [saving, setSaving] = useState(false);
   const [executing, setExecuting] = useState(false);
+  const [enrichOpen, setEnrichOpen] = useState(false);
   const [useConsensus, setUseConsensus] = useState(true);
   const [taskOverride, setTaskOverride] = useState("");
   const pendingNavTaskRef = useRef<string | undefined>(
@@ -125,6 +127,11 @@ export default function WorkflowEditorPage() {
         }
         title={workflow.name}
         subtitle={workflow.description ?? undefined}
+        actions={
+          <Button variant="secondary" onClick={() => setEnrichOpen(true)}>
+            {t("workflows.ai.enrichOpen")}
+          </Button>
+        }
       />
 
       <Card className="space-y-3">
@@ -163,6 +170,17 @@ export default function WorkflowEditorPage() {
       <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
         <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
       </div>
+
+      <WorkflowAiEnrichModal
+        open={enrichOpen}
+        workflowId={workflow.id}
+        workflowName={workflow.name}
+        onClose={() => setEnrichOpen(false)}
+        onEnriched={(updated) => {
+          setWorkflow(updated);
+          void load();
+        }}
+      />
     </div>
   );
 }

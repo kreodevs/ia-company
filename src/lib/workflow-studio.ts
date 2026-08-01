@@ -13,10 +13,12 @@ import {
   generateCatalogJson,
 } from "./catalog-studio-llm.js";
 import type {
+  ApplyWorkflowEnrichmentInput,
   ApplyWorkflowStudioInput,
   NewSkillDraft,
   StudioMungerReview,
   WorkflowDraftProposal,
+  WorkflowEnrichmentProposal,
   WorkflowGapAnalysis,
   WorkflowStudioProposal,
   WorkflowStepProposal,
@@ -30,6 +32,11 @@ import {
   listTenantSkillsForCatalog,
   slugifyCatalogName,
 } from "./tenant-catalog.js";
+import { updateWorkflowGraph } from "../server/lib/workflow-graph.js";
+import {
+  analyzeWorkflowImpact,
+  diffRemovedAgentNames,
+} from "./workflow-impact.js";
 
 function parseNewSkillDrafts(raw: unknown): NewSkillDraft[] {
   if (!Array.isArray(raw)) return [];
@@ -509,5 +516,257 @@ export async function applyWorkflowProposal(tenantId: string, input: ApplyWorkfl
     workflow: full,
     skillsCreated: [...approvedSkillNames],
     agentsCreated: agentsToCreate.map((agent) => agent.name),
+  };
+}
+
+async function loadTenantWorkflowForEnrichment(tenantId: string, workflowId: string) {
+  const workflow = await prisma.workflow.findFirst({
+    where: { id: workflowId, tenantId },
+    include: {
+      steps: {
+        include: { agent: true },
+        orderBy: { stepOrder: "asc" },
+      },
+    },
+  });
+  if (!workflow) {
+    throw new Error("Workflow not found.");
+  }
+  return workflow;
+}
+
+function buildCurrentWorkflowContext(workflow: Awaited<ReturnType<typeof loadTenantWorkflowForEnrichment>>) {
+  return {
+    name: workflow.name,
+    description: workflow.description ?? "",
+    steps: workflow.steps.map((step) => ({
+      agentName: step.agent.name,
+      label: step.label ?? undefined,
+    })),
+  };
+}
+
+async function attachEnrichmentImpact(
+  tenantId: string,
+  workflowId: string,
+  proposal: WorkflowEnrichmentProposal,
+  previousSteps: WorkflowStepProposal[],
+): Promise<WorkflowImpactReport> {
+  const proposedSteps = proposal.workflow?.steps ?? [];
+  const impact = await analyzeWorkflowImpact(tenantId, workflowId, {
+    proposedName: proposal.workflow?.name,
+    previousStepCount: previousSteps.length,
+    proposedStepCount: proposedSteps.length,
+    removedAgentNames: diffRemovedAgentNames(previousSteps, proposedSteps),
+  });
+  proposal.impact = impact;
+  proposal.previousStepCount = previousSteps.length;
+  return impact;
+}
+
+export async function proposeWorkflowEnrichmentWithLlm(
+  tenantId: string,
+  workflowId: string,
+  brief: string,
+  answers?: Record<string, string>,
+): Promise<WorkflowEnrichmentProposal> {
+  const enrichedBrief = buildBriefWithAnswers(brief, answers);
+  if (enrichedBrief.length < 12) {
+    throw new Error("Brief must be at least 12 characters.");
+  }
+
+  await assertCatalogStudioProposeRateLimit(tenantId);
+
+  const existingWorkflow = await loadTenantWorkflowForEnrichment(tenantId, workflowId);
+  const current = buildCurrentWorkflowContext(existingWorkflow);
+  const previousSteps = current.steps;
+
+  const [agents, skills, workflowExamples] = await Promise.all([
+    listTenantAgentsForCatalog(tenantId),
+    listTenantSkillsForCatalog(tenantId),
+    listTenantWorkflowExamples(tenantId),
+  ]);
+
+  const agentCatalog = agents.map((agent) => ({
+    name: agent.name,
+    role: agent.role,
+    skills: agent.skills.map((link) => link.skill.name),
+  }));
+
+  const parsed = await generateCatalogJson(
+    tenantId,
+    [
+      ...CATALOG_STUDIO_LLM_RULES,
+      "Task: ENRICH an EXISTING tenant workflow — modify steps/description based on the founder brief.",
+      "Preserve the workflow identity: keep the same `name` slug unless the brief explicitly asks to rename.",
+      "Return the FULL updated step list (not a diff). Reorder, add, or remove steps as needed.",
+      "Steps may use existing tenant agents OR newAgents you define.",
+      "If new capabilities are needed, propose newAgents and/or newSkills with the same consistency rules as new workflow design.",
+      "If the brief is ambiguous, respond with needsClarification instead of guessing.",
+      'JSON shape A (clarify): { "needsClarification": true, "questions": ["question 1"] } — max 4 questions.',
+      'JSON shape B (proposal): same as new workflow design with workflow, gaps, newAgents, newSkills.',
+      "Never return both needsClarification and workflow.",
+    ].join("\n"),
+    [
+      `Enrichment brief:\n${enrichedBrief}`,
+      `Current workflow to enrich:\n${JSON.stringify(current, null, 0)}`,
+      `Tenant agents:\n${JSON.stringify(agentCatalog, null, 0) || "(none)"}`,
+      `Tenant skills: ${skills.map((s) => s.name).join(", ") || "(none)"}`,
+      `Other workflows (style reference):\n${JSON.stringify(workflowExamples.slice(0, 5), null, 0) || "(none)"}`,
+      `Workflow examples:\n${JSON.stringify(WORKFLOW_FEW_SHOT_EXAMPLES, null, 0)}`,
+    ].join("\n\n"),
+    CATALOG_STUDIO_MAX_TOKENS_PROPOSE,
+    0.28,
+  );
+
+  const proposal: WorkflowEnrichmentProposal = {
+    brief: enrichedBrief,
+    targetWorkflowId: workflowId,
+    previousStepCount: previousSteps.length,
+  };
+
+  if (parsed?.needsClarification === true) {
+    const questions = Array.isArray(parsed.questions)
+      ? parsed.questions
+          .filter((q): q is string => typeof q === "string" && q.trim().length > 0)
+          .slice(0, 4)
+      : [];
+    if (questions.length === 0) {
+      throw new Error("LLM requested clarification but returned no questions. Try adding more detail.");
+    }
+    proposal.needsClarification = true;
+    proposal.questions = questions;
+    return proposal;
+  }
+
+  const workflow = parseWorkflowDraft(parsed?.workflow);
+  if (!workflow) {
+    throw new Error("LLM did not return a valid workflow proposal. Try rephrasing the brief.");
+  }
+
+  if (!enrichedBrief.toLowerCase().includes("rename") && !enrichedBrief.toLowerCase().includes("renombr")) {
+    workflow.name = existingWorkflow.name;
+  }
+
+  proposal.workflow = workflow;
+  proposal.existingAgentNames = Array.isArray(parsed?.existingAgentNames)
+    ? parsed.existingAgentNames
+        .filter((n): n is string => typeof n === "string")
+        .map(slugifyCatalogName)
+    : [];
+  proposal.gaps = parseGapAnalysis(parsed?.gaps);
+  proposal.newAgents = parseAgentDefs(parsed?.newAgents);
+  proposal.newSkills = parseNewSkillDrafts(parsed?.newSkills);
+  reconcileGapSkillDrafts(
+    proposal,
+    new Set(skills.map((skill) => slugifyCatalogName(skill.name))),
+  );
+  proposal.mungerReview = await reviewWorkflowProposalWithMunger(tenantId, proposal);
+  await attachEnrichmentImpact(tenantId, workflowId, proposal, previousSteps);
+  return proposal;
+}
+
+export async function applyWorkflowEnrichment(tenantId: string, input: ApplyWorkflowEnrichmentInput) {
+  const { proposal, approved, workflowId } = input;
+  if (!approved) {
+    throw new Error("Human approval required: set approved=true to apply enrichment.");
+  }
+  if (proposal.needsClarification || !proposal.workflow) {
+    throw new Error("Cannot apply a clarification request — complete the brief first.");
+  }
+  if (proposal.targetWorkflowId !== workflowId) {
+    throw new Error("Proposal workflowId mismatch.");
+  }
+  if (proposal.mungerReview && !proposal.mungerReview.approved) {
+    throw new Error(
+      `VETO: ${proposal.mungerReview.veto?.reason ?? "Munger blocked this workflow."}`,
+    );
+  }
+
+  const existingWorkflow = await loadTenantWorkflowForEnrichment(tenantId, workflowId);
+  const renaming = proposal.workflow.name !== existingWorkflow.name;
+  if (renaming && !input.allowRename) {
+    throw new Error(
+      `Renaming to "${proposal.workflow.name}" requires allowRename=true after reviewing impact risks.`,
+    );
+  }
+
+  if (renaming) {
+    const nameTaken = await prisma.workflow.findFirst({
+      where: { tenantId, name: proposal.workflow.name, id: { not: workflowId } },
+      select: { id: true },
+    });
+    if (nameTaken) {
+      throw new Error(`A workflow named "${proposal.workflow.name}" already exists.`);
+    }
+  }
+
+  const approvedSkillNames = new Set(
+    (input.approvedNewSkillNames ?? []).map(slugifyCatalogName),
+  );
+  const approvedAgentNames = new Set(
+    (input.approvedNewAgentNames ?? []).map(slugifyCatalogName),
+  );
+
+  for (const skill of proposal.newSkills ?? []) {
+    if (!approvedSkillNames.has(skill.name)) continue;
+    await ensureTenantSkill(tenantId, skill);
+  }
+
+  const agentsToCreate = (proposal.newAgents ?? []).filter((agent) =>
+    approvedAgentNames.has(slugifyCatalogName(agent.name)),
+  );
+  if (agentsToCreate.length) {
+    await ensureTenantAgents(tenantId, agentsToCreate);
+    for (const agent of agentsToCreate) {
+      if (agent.skillNames?.length) {
+        await linkAgentSkillsByName(tenantId, agent.name, agent.skillNames);
+      }
+    }
+  }
+
+  const agentRows = await listTenantAgentsForCatalog(tenantId);
+  const agentIdByName = new Map(agentRows.map((row) => [row.name, row.id]));
+
+  const missingStepAgents = proposal.workflow.steps.filter(
+    (step) => !agentIdByName.has(step.agentName),
+  );
+  if (missingStepAgents.length) {
+    throw new Error(
+      `Missing agents for workflow steps: ${missingStepAgents.map((s) => s.agentName).join(", ")}. Approve creating them or adjust the proposal.`,
+    );
+  }
+
+  const steps = proposal.workflow.steps.map((step, index) => ({
+    id: `temp-${index}`,
+    agentId: agentIdByName.get(step.agentName)!,
+    stepOrder: index,
+    label: step.label ?? step.agentName.replace(/-/g, " "),
+    positionX: 80,
+    positionY: index * 150,
+    inputConfig: {},
+    outputConfig: {},
+  }));
+
+  const edges =
+    steps.length > 1
+      ? steps.slice(0, -1).map((_, index) => ({
+          sourceStepId: `temp-${index}`,
+          targetStepId: `temp-${index + 1}`,
+        }))
+      : [];
+
+  const updated = await updateWorkflowGraph(workflowId, {
+    name: proposal.workflow.name,
+    description: proposal.workflow.description,
+    steps,
+    edges,
+  });
+
+  return {
+    workflow: updated,
+    skillsCreated: [...approvedSkillNames],
+    agentsCreated: agentsToCreate.map((agent) => agent.name),
+    impact: proposal.impact,
   };
 }

@@ -34,9 +34,36 @@ export const workflows = {
     newSkillsTitle: "Skills nuevas a crear (marca las que apruebas)",
     approvalHint:
       "Se crearán solo los agentes y skills marcados. Luego se crea el flujo con los pasos propuestos.",
+    enrichOpen: "Enriquecer con IA",
+    enrichTitle: "Enriquecer flujo con IA",
+    enrichSubtitle:
+      "Describe qué quieres añadir o cambiar. La IA propone el flujo actualizado y te avisa si otras rutas dependen de este procedimiento.",
+    enrichBriefPlaceholder:
+      "Ej.: después de CFO añade marketing y ventas; mantén Munger antes de decisiones grandes…",
+    enrichApply: "Aplicar enriquecimiento",
+    enrichApplying: "Aplicando…",
+    enrichSteps: "pasos",
+    enrichHighRiskHint: "Hay riesgos altos: revisa referencias y encargos activos antes de aplicar.",
+    allowRename: "Entiendo el riesgo: permitir renombrar este procedimiento",
+    impact: {
+      title: "Impacto en el resto de la plataforma",
+      subtitle:
+        "No se borran otros flujos, pero las referencias listadas ejecutarán la versión enriquecida.",
+      referencesTitle: "{{count}} referencia(s) a este procedimiento",
+      noReferences: "Ninguna programación, sala u operación referencia este procedimiento.",
+      risksTitle: "Riesgos detectados",
+      renameNotice: 'La propuesta renombra "{{from}}" → "{{to}}".',
+      refSchedule: "Programación",
+      refOrgUnit: "Unidad org.",
+      refDepartment: "Sala departamento",
+      refOfficeService: "Servicio coordinador",
+      refProductPreset: "Preset producto",
+      refOrchestrationPreset: "Preset operaciones",
+    },
   },
   editor: {
     loading: "Cargando workflow…",
+    loadingOne: "Cargando workflow…",
     loadSyncConsensus: "Cargar y sincronizar consensus del tenant",
     nextActionOverride: "Override de Next Action (opcional)",
     taskMemorySeed: "Tarea / semilla de memoria",

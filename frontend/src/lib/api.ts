@@ -2259,6 +2259,37 @@ export const api = {
           method: "POST",
           body: JSON.stringify(body),
         }),
+      impact: (workflowId: string, query?: { proposedName?: string; proposedStepCount?: number; previousStepCount?: number }) => {
+        const params = new URLSearchParams();
+        if (query?.proposedName) params.set("proposedName", query.proposedName);
+        if (query?.proposedStepCount != null) params.set("proposedStepCount", String(query.proposedStepCount));
+        if (query?.previousStepCount != null) params.set("previousStepCount", String(query.previousStepCount));
+        const qs = params.toString();
+        return request<import("./catalog-studio-types").WorkflowImpactReport>(
+          `/catalog-studio/workflows/${workflowId}/impact${qs ? `?${qs}` : ""}`,
+        );
+      },
+      enrichPropose: (body: { workflowId: string; brief: string; answers?: Record<string, string> }) =>
+        request<import("./catalog-studio-types").WorkflowEnrichmentProposal>(
+          "/catalog-studio/workflows/enrich/propose",
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+      enrichApply: (body: {
+        workflowId: string;
+        proposal: import("./catalog-studio-types").WorkflowEnrichmentProposal;
+        approved: boolean;
+        approvedNewAgentNames?: string[];
+        approvedNewSkillNames?: string[];
+        allowRename?: boolean;
+      }) =>
+        request<{
+          workflow: Workflow;
+          skillsCreated: string[];
+          agentsCreated: string[];
+        }>("/catalog-studio/workflows/enrich/apply", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
     },
   },
   public: {

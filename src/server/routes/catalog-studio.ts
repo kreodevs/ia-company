@@ -4,10 +4,17 @@ import { logAudit } from "../../lib/audit.js";
 import type {
   AgentStudioProposal,
   SkillStudioProposal,
+  WorkflowEnrichmentProposal,
   WorkflowStudioProposal,
 } from "../../lib/catalog-studio-types.js";
 import { applySkillProposal, proposeSkillWithLlm } from "../../lib/skill-studio.js";
-import { applyWorkflowProposal, proposeWorkflowWithLlm } from "../../lib/workflow-studio.js";
+import {
+  applyWorkflowEnrichment,
+  applyWorkflowProposal,
+  proposeWorkflowEnrichmentWithLlm,
+  proposeWorkflowWithLlm,
+} from "../../lib/workflow-studio.js";
+import { analyzeWorkflowImpact } from "../../lib/workflow-impact.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 
 export async function catalogStudioRoutes(app: FastifyInstance) {
@@ -161,6 +168,98 @@ export async function catalogStudioRoutes(app: FastifyInstance) {
         skillsCreated: result.skillsCreated,
       });
       return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{
+    Params: { workflowId: string };
+    Querystring: { proposedName?: string; proposedStepCount?: string; previousStepCount?: string };
+  }>("/catalog-studio/workflows/:workflowId/impact", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { workflowId } = request.params;
+      const proposedStepCount = request.query.proposedStepCount
+        ? Number.parseInt(request.query.proposedStepCount, 10)
+        : undefined;
+      const previousStepCount = request.query.previousStepCount
+        ? Number.parseInt(request.query.previousStepCount, 10)
+        : undefined;
+      const impact = await analyzeWorkflowImpact(tenantId, workflowId, {
+        proposedName: request.query.proposedName,
+        proposedStepCount: Number.isFinite(proposedStepCount) ? proposedStepCount : undefined,
+        previousStepCount: Number.isFinite(previousStepCount) ? previousStepCount : undefined,
+      });
+      return impact;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Body: { workflowId: string; brief: string; answers?: Record<string, string> } }>(
+    "/catalog-studio/workflows/enrich/propose",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const workflowId = request.body?.workflowId?.trim();
+        const brief = request.body?.brief?.trim();
+        if (!workflowId) return reply.status(400).send({ error: "workflowId is required" });
+        if (!brief) return reply.status(400).send({ error: "brief is required" });
+        const proposal = await proposeWorkflowEnrichmentWithLlm(
+          tenantId,
+          workflowId,
+          brief,
+          request.body?.answers,
+        );
+        await logAudit(request, "catalog_studio.workflow.enrich_propose", {
+          workflowId,
+          briefLength: brief.length,
+          needsClarification: Boolean(proposal.needsClarification),
+          stepCount: proposal.workflow?.steps.length ?? 0,
+          referenceCount: proposal.impact?.referenceCount ?? 0,
+          mungerApproved: proposal.mungerReview?.approved ?? true,
+        });
+        return proposal;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{
+    Body: {
+      workflowId: string;
+      proposal: WorkflowEnrichmentProposal;
+      approved: boolean;
+      approvedNewAgentNames?: string[];
+      approvedNewSkillNames?: string[];
+      allowRename?: boolean;
+    };
+  }>("/catalog-studio/workflows/enrich/apply", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const workflowId = request.body?.workflowId?.trim();
+      const proposal = request.body?.proposal;
+      if (!workflowId) return reply.status(400).send({ error: "workflowId is required" });
+      if (!proposal?.brief) {
+        return reply.status(400).send({ error: "proposal is required" });
+      }
+      const result = await applyWorkflowEnrichment(tenantId, {
+        workflowId,
+        proposal,
+        approved: request.body.approved === true,
+        approvedNewAgentNames: request.body.approvedNewAgentNames,
+        approvedNewSkillNames: request.body.approvedNewSkillNames,
+        allowRename: request.body.allowRename === true,
+      });
+      await logAudit(request, "catalog_studio.workflow.enrich_apply", {
+        workflowId: result.workflow?.id,
+        workflowName: result.workflow?.name,
+        agentsCreated: result.agentsCreated,
+        skillsCreated: result.skillsCreated,
+      });
+      return reply.status(200).send(result);
     } catch (err) {
       return handleRouteError(reply, err);
     }

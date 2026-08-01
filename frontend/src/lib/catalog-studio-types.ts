@@ -85,3 +85,33 @@ export interface WorkflowStudioProposal {
   newSkills?: NewSkillDraft[];
   mungerReview?: StudioMungerReview;
 }
+
+export interface WorkflowImpactReference {
+  kind: "schedule" | "org_unit" | "department" | "office_service" | "product_preset" | "orchestration_preset";
+  id?: string;
+  name: string;
+  detail?: string;
+}
+
+export type WorkflowImpactSeverity = "high" | "medium" | "low";
+
+export interface WorkflowImpactRisk {
+  severity: WorkflowImpactSeverity;
+  code: string;
+  message: string;
+}
+
+export interface WorkflowImpactReport {
+  workflowId: string;
+  workflowName: string;
+  references: WorkflowImpactReference[];
+  risks: WorkflowImpactRisk[];
+  activeRunCount: number;
+  referenceCount: number;
+}
+
+export interface WorkflowEnrichmentProposal extends WorkflowStudioProposal {
+  targetWorkflowId: string;
+  impact?: WorkflowImpactReport;
+  previousStepCount?: number;
+}

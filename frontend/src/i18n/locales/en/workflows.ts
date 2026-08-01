@@ -34,9 +34,36 @@ export const workflows = {
     newSkillsTitle: "New skills to create (check those you approve)",
     approvalHint:
       "Only checked agents and skills will be created. Then the proposed flow is saved with its steps.",
+    enrichOpen: "Enrich with AI",
+    enrichTitle: "Enrich flow with AI",
+    enrichSubtitle:
+      "Describe what to add or change. AI proposes an updated flow and warns if other routes depend on this procedure.",
+    enrichBriefPlaceholder:
+      "E.g. after CFO add marketing and sales; keep Munger before major decisions…",
+    enrichApply: "Apply enrichment",
+    enrichApplying: "Applying…",
+    enrichSteps: "steps",
+    enrichHighRiskHint: "High risks detected: review references and active jobs before applying.",
+    allowRename: "I understand the risk: allow renaming this procedure",
+    impact: {
+      title: "Impact on the rest of the platform",
+      subtitle:
+        "Other flows are not deleted, but listed references will run the enriched version.",
+      referencesTitle: "{{count}} reference(s) to this procedure",
+      noReferences: "No schedules, rooms, or operations reference this procedure.",
+      risksTitle: "Detected risks",
+      renameNotice: 'Proposal renames "{{from}}" → "{{to}}".',
+      refSchedule: "Schedule",
+      refOrgUnit: "Org unit",
+      refDepartment: "Department room",
+      refOfficeService: "Coordinator service",
+      refProductPreset: "Product preset",
+      refOrchestrationPreset: "Operations preset",
+    },
   },
   editor: {
     loading: "Loading workflow…",
+    loadingOne: "Loading workflow…",
     loadSyncConsensus: "Load & sync tenant consensus",
     nextActionOverride: "Next action override (optional)",
     taskMemorySeed: "Task / memory seed",
