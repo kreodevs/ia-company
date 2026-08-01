@@ -1,16 +1,24 @@
 :root,
 [data-theme="letter"] {
-  /* ─── Stripe HDS Light — palette ─────────────────────────────────────── */
-  --brand-lavender: #7f7dfc;
-  --pale-background: #f8fafd;
+  /* ─── Stripe HDS Light — core palette (dashboard-aligned) ─────────────── */
+  --brand-lavender: #7a73ff;
+  --pale-background: #f6f9fc;
   --surface-white: #ffffff;
-  --dark-slate: #273951;
-  --slate-body: #50617a;
-  --stripe-indigo: #533afd;
-  --stripe-orange: #ff6118;
-  --subdued-heading: #64748d;
-  --deep-navy: #061b31;
-  --quiet-surface: #e5edf5;
+  --surface-sunken: #eef3f9;
+  --surface-elevated: #ffffff;
+  --dark-slate: #3c4257;
+  --slate-body: #425466;
+  --stripe-indigo: #635bff;
+  --stripe-indigo-hover: #5851ea;
+  --stripe-indigo-pressed: #4f46e5;
+  --stripe-indigo-soft: rgba(99, 91, 255, 0.1);
+  --stripe-indigo-ring: rgba(99, 91, 255, 0.28);
+  --stripe-orange: #ff7a00;
+  --stripe-orange-soft: rgba(255, 122, 0, 0.12);
+  --subdued-heading: #697386;
+  --deep-navy: #0a2540;
+  --quiet-surface: #e6ebf1;
+  --stripe-navy-muted: #a3acb9;
 
   /* Legacy aliases (existing pages) */
   --color-vault-ink: var(--deep-navy);
@@ -19,7 +27,7 @@
   --color-fog-gray: var(--slate-body);
   --color-hairline: var(--quiet-surface);
   --color-obsidian: var(--deep-navy);
-  --color-peach-wall: #fff7f3;
+  --color-peach-wall: #fff8f3;
   --color-mint-wall: #f0fdf8;
   --color-lavender-wall: #f5f3ff;
   --color-deep-teal: var(--stripe-indigo);
@@ -106,7 +114,7 @@
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
-  --radius-xl: 16px;
+  --radius-xl: 12px;
   --radius-pill: 9999px;
   --radius-large-pill: 999px;
   --radius-circle: 100px;
@@ -115,50 +123,55 @@
   --radius-inputs: var(--radius-md);
   --radius-buttons: var(--radius-lg);
 
-  /* ─── Shadows ────────────────────────────────────────────────────────── */
-  --shadow-sm-bottom: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);
-  --shadow-md-bottom: 0px 15px 35px 0px rgba(23, 23, 23, 0.08);
-  --shadow-md-subtle: 0px 3px 6px 0px rgba(23, 23, 23, 0.06);
-  --shadow-lg-bottom: 0px 16px 32px 0px rgba(50, 50, 93, 0.12);
-  --shadow-xl-diffuse: 0px 20.187px 40.374px -20.187px rgba(0, 0, 0, 0.1);
+  /* ─── Shadows (Stripe-style diffuse elevation) ───────────────────────── */
+  --shadow-sm-bottom: 0 1px 1px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md-bottom: 0 4px 12px rgba(50, 50, 93, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md-subtle: 0 2px 5px rgba(50, 50, 93, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-lg-bottom: 0 13px 27px rgba(50, 50, 93, 0.1), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl-diffuse: 0 30px 60px rgba(0, 0, 0, 0.1);
+  --shadow-card: var(--shadow-md-subtle);
+  --shadow-focus: 0 0 0 3px var(--stripe-indigo-ring);
 
   /* ─── Semantic bridge (shadcn / app) ─────────────────────────────────── */
   --primary: var(--stripe-indigo);
   --primary-foreground: var(--surface-white);
-  --primary-hover: #4228e0;
+  --primary-hover: var(--stripe-indigo-hover);
+  --primary-gradient: linear-gradient(180deg, #7a73ff 0%, #635bff 55%, #5851ea 100%);
   --background: var(--pale-background);
   --background-secondary: var(--surface-white);
-  --background-tertiary: var(--quiet-surface);
+  --background-tertiary: var(--surface-sunken);
   --foreground: var(--deep-navy);
   --foreground-muted: var(--slate-body);
   --foreground-subtle: var(--subdued-heading);
   --accent: var(--stripe-indigo);
   --accent-foreground: var(--surface-white);
-  --select-highlight-bg: rgba(83, 58, 253, 0.14);
+  --select-highlight-bg: var(--stripe-indigo-soft);
   --select-highlight-fg: var(--deep-navy);
-  --select-chevron: #334155;
+  --select-chevron: var(--dark-slate);
   --card: var(--surface-white);
   --card-foreground: var(--deep-navy);
   --card-border: var(--quiet-surface);
-  --secondary: var(--pale-background);
+  --secondary: var(--surface-white);
   --secondary-foreground: var(--deep-navy);
-  --muted: var(--pale-background);
+  --muted: var(--surface-sunken);
   --muted-foreground: var(--slate-body);
-  --destructive: #ef4444;
+  --destructive: #df1b41;
   --destructive-foreground: var(--surface-white);
-  --success: #22c55e;
-  --success-foreground: var(--deep-navy);
+  --success: #09825d;
+  --success-foreground: var(--surface-white);
   --warning: var(--stripe-orange);
-  --warning-foreground: var(--surface-white);
-  --info: var(--subdued-heading);
-  --info-foreground: var(--deep-navy);
+  --warning-foreground: var(--deep-navy);
+  --info: #0073e6;
+  --info-foreground: var(--surface-white);
   --border: var(--quiet-surface);
-  --border-hover: #d5dee8;
+  --border-hover: #c9d4e0;
   --input: var(--surface-white);
   --input-border: var(--quiet-surface);
   --input-focus: var(--stripe-indigo);
   --ring: var(--stripe-indigo);
   --ring-offset: var(--surface-white);
+  --popover: var(--surface-white);
+  --popover-foreground: var(--deep-navy);
   --radius: var(--radius-md);
   --transition-base: 150ms ease;
   --spacing-xxs: 2px;
@@ -184,21 +197,35 @@
   --color-surface: var(--background-secondary);
 
   /* Shell / navigation */
-  --surface-header: var(--surface-white);
+  --surface-header: rgba(255, 255, 255, 0.88);
   --surface-header-border: var(--quiet-surface);
-  --surface-header-scrolled: rgba(255, 255, 255, 0.76);
-  --surface-header-border-scrolled: rgba(229, 237, 245, 0.85);
+  --surface-header-scrolled: rgba(255, 255, 255, 0.94);
+  --surface-header-border-scrolled: rgba(230, 235, 241, 0.95);
   --surface-header-shadow-scrolled: var(--shadow-sm-bottom);
   --nav-link-color: var(--slate-body);
-  --nav-link-hover-bg: var(--pale-background);
+  --nav-link-hover-bg: var(--stripe-indigo-soft);
   --nav-link-hover-color: var(--deep-navy);
-  --nav-link-active-bg: rgba(83, 58, 253, 0.08);
+  --nav-link-active-bg: var(--stripe-indigo-soft);
   --nav-link-active-color: var(--stripe-indigo);
   --surface-sidebar: var(--surface-white);
   --surface-sidebar-border: var(--quiet-surface);
   --skip-link-bg: var(--stripe-indigo);
   --skip-link-fg: var(--surface-white);
+
+  /* Workflow canvas (React Flow) — light board, not dark slab */
+  --flow-canvas-bg: var(--surface-sunken);
+  --flow-grid-color: #d8e0ea;
+  --flow-edge-color: var(--stripe-indigo);
+  --flow-edge-glow: rgba(99, 91, 255, 0.35);
+  --flow-node-bg: var(--surface-white);
+  --flow-node-border: var(--quiet-surface);
+  --flow-node-shadow: var(--shadow-md-subtle);
   --flow-node-selected-border: var(--stripe-indigo);
+  --flow-controls-bg: var(--surface-white);
+  --flow-controls-border: var(--quiet-surface);
+  --flow-minimap-mask: rgba(10, 37, 64, 0.08);
+  --flow-minimap-node: var(--stripe-indigo);
+
   --button-padding-x: 16px;
   --button-padding-y: 10px;
   --button-font-size: var(--text-cta);

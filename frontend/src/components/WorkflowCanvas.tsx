@@ -16,6 +16,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../context/ThemeContext";
 import type { Agent, Workflow, WorkflowStep } from "../lib/api";
 
 type AgentNodeData = {
@@ -54,6 +55,8 @@ interface WorkflowCanvasProps {
 
 export default function WorkflowCanvas({ workflow, agents, onSave, saving }: WorkflowCanvasProps) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const flowColorMode = theme === "letter" ? "light" : "dark";
 
   const initialNodes: Node<AgentNodeData>[] = useMemo(
     () =>
@@ -78,7 +81,7 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
         source: e.sourceStepId,
         target: e.targetStepId,
         animated: true,
-        style: { stroke: "var(--color-primary)" },
+        style: { stroke: "var(--flow-edge-color, var(--color-primary))" },
       })),
     [workflow.edges],
   );
@@ -173,7 +176,7 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
         </button>
       </div>
 
-      <div className="h-[min(420px,55vh)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] sm:h-[500px] lg:h-[600px]">
+      <div className="workflow-canvas-shell h-[min(420px,55vh)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--flow-canvas-bg,var(--color-background))] sm:h-[500px] lg:h-[600px]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -182,14 +185,14 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           fitView
-          colorMode="dark"
+          colorMode={flowColorMode}
         >
-          <Background gap={20} color="var(--color-border)" />
+          <Background gap={20} color="var(--flow-grid-color, var(--color-border))" />
           <Controls className="!bottom-2 !left-2 sm:!bottom-4 sm:!left-4" />
           <MiniMap
             className="!hidden sm:!block"
-            nodeColor="var(--color-primary)"
-            maskColor="rgb(0 0 0 / 0.6)"
+            nodeColor="var(--flow-minimap-node, var(--color-primary))"
+            maskColor="var(--flow-minimap-mask, rgb(0 0 0 / 0.6))"
           />
         </ReactFlow>
       </div>

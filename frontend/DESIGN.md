@@ -4,7 +4,7 @@ The frontend ships three visual themes, switched from the header (**Tema / Theme
 
 | Theme | Label | CSS | Reference |
 |-------|-------|-----|-----------|
-| **Stripe HDS Light** | Default (`letter`) | `src/styles/letter-theme.css` | `DESIGN-STRIPE-HDS.md` |
+| **Stripe HDS Light** | Default (`letter`) | `letter-theme.css`, `stripe-hds-overrides.css` | `DESIGN-STRIPE-HDS.md` |
 | **Paperclip Warm** | Dark warm (`paperclip`) | `src/styles/paperclip-theme.css` | `DESIGN-PAPERCLIP.md` |
 | **Slash** | Dark vault (`slash`) | `src/styles/slash-theme.css` | `DESIGN-SLASH.md` |
 

@@ -2,7 +2,7 @@
 
 **Version:** alpha · **Theme id:** `letter` (default)
 
-Light palette anchored on **pale background** `#f8fafd` with **Stripe indigo** `#533afd` for primary actions. Typography uses Inter as a stand-in for sohne-var / SF Pro Display.
+Light palette anchored on **pale background** `#f6f9fc` with **Stripe blurple** `#635bff` for primary actions. Typography uses Inter as a stand-in for sohne-var / SF Pro Display.
 
 ## Activation
 
@@ -13,18 +13,32 @@ Light palette anchored on **pale background** `#f8fafd` with **Stripe indigo** `
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--pale-background` | #f8fafd | Page background |
+| `--pale-background` | #f6f9fc | Page background |
 | `--surface-white` | #ffffff | Cards, header, inputs |
-| `--deep-navy` | #061b31 | Headings, primary text |
-| `--slate-body` | #50617a | Body, nav links |
-| `--subdued-heading` | #64748d | Muted labels |
-| `--stripe-indigo` | #533afd | Primary CTA, links, focus ring |
-| `--stripe-orange` | #ff6118 | Accent / warning CTA |
-| `--brand-lavender` | #7f7dfc | Secondary brand tint |
-| `--quiet-surface` | #e5edf5 | Borders, dividers |
-| `--dark-slate` | #273951 | Form labels |
+| `--surface-sunken` | #eef3f9 | Workflow canvas, muted wells |
+| `--deep-navy` | #0a2540 | Headings, primary text |
+| `--slate-body` | #425466 | Body, nav links |
+| `--subdued-heading` | #697386 | Muted labels |
+| `--stripe-indigo` | #635bff | Primary CTA, links, focus ring |
+| `--stripe-indigo-hover` | #5851ea | Primary hover |
+| `--stripe-orange` | #ff7a00 | Accent / warning CTA |
+| `--brand-lavender` | #7a73ff | Secondary brand tint |
+| `--quiet-surface` | #e6ebf1 | Borders, dividers |
+| `--dark-slate` | #3c4257 | Form labels |
 
-**Contrast:** On tinted surfaces (`primary/10`, filter pills, mode pills), use **indigo text** (`#4228e0` / `#533afd`) — never white on pale lavender fills.
+**Contrast:** On tinted surfaces (`primary/10`, filter pills, mode pills), use **indigo text** (`#635bff` / `#5851ea`) — never white on pale lavender fills.
+
+## Workflow canvas tokens
+
+| Token | Role |
+|-------|------|
+| `--flow-canvas-bg` | Light board background (not dark slab) |
+| `--flow-grid-color` | Dot grid |
+| `--flow-edge-color` | Edge stroke |
+| `--flow-node-bg` / `--flow-node-border` | Agent nodes |
+| `--flow-minimap-mask` | Minimap overlay |
+
+React Flow uses `colorMode="light"` when `letter` is active. Overrides: `stripe-hds-overrides.css`.
 
 ## Typography
 
@@ -46,4 +60,4 @@ Radii: 4px sm → 16px xl cards. Shadows: `--shadow-sm-bottom` through `--shadow
 
 `--primary`, `--background`, `--foreground`, `--card`, `--border`, `--font-sans`, `--font-display` — see `src/styles/letter-theme.css`.
 
-Office and War Room: `html[data-theme="letter"]` overrides in `office-theme.css`, `office-encargos.css`, `war-room.css`.
+Office and War Room: `html[data-theme="letter"]` overrides in `office-theme.css`, `office-encargos.css`, `war-room.css`. App shell + React Flow: `stripe-hds-overrides.css`.

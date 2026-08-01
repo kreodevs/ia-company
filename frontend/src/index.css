@@ -4,6 +4,7 @@
 @custom-variant dark (html[data-theme="slash"] &, html[data-theme="paperclip"] &);
 @plugin "@tailwindcss/typography";
 @import "./styles/letter-theme.css";
+@import "./styles/stripe-hds-overrides.css";
 @import "./styles/paperclip-theme.css";
 @import "./styles/slash-theme.css";
 @import "./styles/office-theme.css";
@@ -594,11 +595,13 @@ html[data-sidebar-collapsed="true"] .app-sidebar {
 }
 
 .react-flow__node-agent {
-  background: var(--card);
-  border: 1px solid var(--card-border);
+  background: var(--flow-node-bg, var(--card));
+  border: 1px solid var(--flow-node-border, var(--card-border));
   border-radius: var(--radius-cards);
   padding: 0.75rem 1rem;
   min-width: 180px;
+  box-shadow: var(--flow-node-shadow, none);
+  color: var(--card-foreground);
 }
 
 .react-flow__node-agent.selected {

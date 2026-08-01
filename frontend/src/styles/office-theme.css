@@ -1072,7 +1072,7 @@ html[data-theme="letter"] .office-panel-title {
 
 html[data-theme="letter"] .office-task-panel {
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(83, 58, 253, 0.06), transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99, 91, 255, 0.06), transparent 55%),
     var(--surface-white);
   border-color: var(--quiet-surface);
 }
@@ -1083,13 +1083,13 @@ html[data-theme="letter"] .office-task-textarea {
 }
 
 html[data-theme="letter"] .office-task-textarea:focus {
-  border-color: rgba(83, 58, 253, 0.45);
-  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+  border-color: rgba(99, 91, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
 }
 
 html[data-theme="letter"] .office-scope-bar {
-  background: rgba(83, 58, 253, 0.04);
-  border-color: rgba(83, 58, 253, 0.15);
+  background: rgba(99, 91, 255, 0.04);
+  border-color: rgba(99, 91, 255, 0.15);
 }
 
 html[data-theme="letter"] .office-scope-hint {
@@ -1119,8 +1119,8 @@ html[data-theme="letter"] .office-chat-bubble-assistant p {
 }
 
 html[data-theme="letter"] .office-chat-bubble-user p {
-  background: rgba(83, 58, 253, 0.08);
-  border: 1px solid rgba(83, 58, 253, 0.2);
+  background: rgba(99, 91, 255, 0.08);
+  border: 1px solid rgba(99, 91, 255, 0.2);
   color: var(--deep-navy);
 }
 
@@ -1135,8 +1135,8 @@ html[data-theme="letter"] .office-notif-panel {
 }
 
 html[data-theme="letter"] .office-mode-pill {
-  border-color: rgba(83, 58, 253, 0.35);
-  background: rgba(83, 58, 253, 0.08);
+  border-color: rgba(99, 91, 255, 0.35);
+  background: rgba(99, 91, 255, 0.08);
   color: #4228e0;
 }
 
@@ -1165,13 +1165,13 @@ html[data-theme="letter"] .office-estimate {
 }
 
 html[data-theme="letter"] .office-service-btn:hover {
-  border-color: rgba(83, 58, 253, 0.35);
-  background: rgba(83, 58, 253, 0.06);
+  border-color: rgba(99, 91, 255, 0.35);
+  background: rgba(99, 91, 255, 0.06);
 }
 
 html[data-theme="letter"] .office-service-btn[data-active="true"] {
-  border-color: rgba(83, 58, 253, 0.45);
-  background: rgba(83, 58, 253, 0.1);
+  border-color: rgba(99, 91, 255, 0.45);
+  background: rgba(99, 91, 255, 0.1);
   color: var(--deep-navy);
 }
 
@@ -1181,7 +1181,7 @@ html[data-theme="letter"] .office-archive-preview-panel {
 }
 
 html[data-theme="letter"] .office-archive-item[data-selected="true"] {
-  box-shadow: 0 0 0 1px rgba(83, 58, 253, 0.2);
+  box-shadow: 0 0 0 1px rgba(99, 91, 255, 0.2);
 }
 
 /* Stripe HDS Light — department meeting room */
@@ -1190,11 +1190,11 @@ html[data-theme="letter"] .office-dept-page {
   --office-dept-panel-border: #d5dee8;
   --office-dept-label: var(--deep-navy);
   --office-dept-muted: #425466;
-  --office-dept-table-ring: rgba(83, 58, 253, 0.22);
-  --office-dept-table-glow: rgba(83, 58, 253, 0.09);
-  --office-dept-core-border: rgba(83, 58, 253, 0.28);
-  --office-dept-core-bg: rgba(83, 58, 253, 0.08);
-  --office-dept-seat-border: rgba(83, 58, 253, 0.22);
+  --office-dept-table-ring: rgba(99, 91, 255, 0.22);
+  --office-dept-table-glow: rgba(99, 91, 255, 0.09);
+  --office-dept-core-border: rgba(99, 91, 255, 0.28);
+  --office-dept-core-bg: rgba(99, 91, 255, 0.08);
+  --office-dept-seat-border: rgba(99, 91, 255, 0.22);
 }
 
 html[data-theme="letter"] .office-dept-back {
@@ -1206,8 +1206,8 @@ html[data-theme="letter"] .office-dept-subtitle {
 }
 
 html[data-theme="letter"] .office-dept-status-pill {
-  border-color: rgba(83, 58, 253, 0.25);
-  background: rgba(83, 58, 253, 0.06);
+  border-color: rgba(99, 91, 255, 0.25);
+  background: rgba(99, 91, 255, 0.06);
   color: #4228e0;
 }
 
@@ -1227,8 +1227,8 @@ html[data-theme="letter"] .office-dept-settings-tabs {
 }
 
 html[data-theme="letter"] .office-dept-scope-bar {
-  background: rgba(83, 58, 253, 0.07);
-  border-color: rgba(83, 58, 253, 0.24);
+  background: rgba(99, 91, 255, 0.07);
+  border-color: rgba(99, 91, 255, 0.24);
 }
 
 html[data-theme="letter"] .office-dept-scope-label {
@@ -1242,7 +1242,7 @@ html[data-theme="letter"] .office-dept-scope-hint {
 
 html[data-theme="letter"] .office-dept-scope-select button,
 html[data-theme="letter"] .office-dept-scope-select [role="combobox"] {
-  border-color: rgba(83, 58, 253, 0.3);
+  border-color: rgba(99, 91, 255, 0.3);
   background: var(--surface-white);
   box-shadow: 0 1px 2px rgba(23, 23, 23, 0.06);
   color: var(--deep-navy);
@@ -1270,8 +1270,8 @@ html[data-theme="letter"] .office-dept-seat-name {
 }
 
 html[data-theme="letter"] .office-dept-seat-busy .office-dept-seat-avatar {
-  border-color: rgba(83, 58, 253, 0.55);
-  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+  border-color: rgba(99, 91, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
 }
 
 html[data-theme="letter"] .office-dept-extra-panel,
@@ -1576,7 +1576,7 @@ html[data-theme="letter"] .office-floor {
     165deg,
     var(--surface-white) 0%,
     var(--pale-background) 58%,
-    rgba(83, 58, 253, 0.05) 100%
+    rgba(99, 91, 255, 0.05) 100%
   );
   box-shadow: var(--shadow-md-subtle);
 }
@@ -1597,9 +1597,9 @@ html[data-theme="letter"] .office-floor-stat {
 }
 
 html[data-theme="letter"] .office-floor-stat[data-active] {
-  border-color: rgba(83, 58, 253, 0.32);
+  border-color: rgba(99, 91, 255, 0.32);
   color: var(--stripe-indigo);
-  background: rgba(83, 58, 253, 0.08);
+  background: rgba(99, 91, 255, 0.08);
 }
 
 html[data-theme="letter"] .office-reception-card {
@@ -1629,11 +1629,11 @@ html[data-theme="letter"] .office-room-card:hover {
 }
 
 html[data-theme="letter"] .office-room-active {
-  box-shadow: 0 0 0 1px rgba(83, 58, 253, 0.32);
+  box-shadow: 0 0 0 1px rgba(99, 91, 255, 0.32);
 }
 
 html[data-theme="letter"] .office-room-strategy {
-  border-color: rgba(83, 58, 253, 0.2);
+  border-color: rgba(99, 91, 255, 0.2);
 }
 
 html[data-theme="letter"] .office-room-product {
@@ -1658,7 +1658,7 @@ html[data-theme="letter"] .office-room-status {
 
 html[data-theme="letter"] .office-room-status[data-status="busy"] {
   background: var(--stripe-indigo);
-  box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.16);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.16);
 }
 
 html[data-theme="letter"] .office-room-agent-dot {

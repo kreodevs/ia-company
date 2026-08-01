@@ -1,0 +1,147 @@
+/* Stripe HDS Light — app-wide polish (letter theme only) */
+
+html[data-theme="letter"] body {
+  background: var(--pale-background);
+  color: var(--deep-navy);
+}
+
+html[data-theme="letter"] .app-topbar {
+  background: var(--surface-header);
+  border-bottom-color: var(--quiet-surface);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+html[data-theme="letter"] .app-topbar--scrolled {
+  background: var(--surface-header-scrolled);
+  border-bottom-color: var(--surface-header-border-scrolled);
+  box-shadow: var(--surface-header-shadow-scrolled);
+}
+
+html[data-theme="letter"] .app-sidebar,
+html[data-theme="letter"] [data-sidebar="true"] {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .nav-link-active {
+  background: var(--stripe-indigo-soft);
+  color: var(--stripe-indigo);
+  font-weight: 600;
+}
+
+/* Primary buttons — subtle Stripe gradient */
+html[data-theme="letter"] [class*="bg-[var(--primary)]"],
+html[data-theme="letter"] .bg-\[var\(--color-primary\)\] {
+  background: var(--primary-gradient) !important;
+  border: 1px solid rgba(88, 81, 234, 0.35);
+  box-shadow: var(--shadow-sm-bottom);
+}
+
+html[data-theme="letter"] [class*="bg-[var(--primary)]"]:hover,
+html[data-theme="letter"] .bg-\[var\(--color-primary\)\]:hover {
+  filter: brightness(1.03);
+}
+
+/* Cards & panels */
+html[data-theme="letter"] .page-shell [class*="border-[var(--color-border)]"],
+html[data-theme="letter"] .page-shell [class*="border-[var(--border)]"] {
+  border-color: var(--quiet-surface);
+}
+
+html[data-theme="letter"] .page-shell > div > [class*="rounded"] {
+  box-shadow: var(--shadow-card);
+}
+
+/* ─── React Flow — light workflow board ─────────────────────────────────── */
+
+html[data-theme="letter"] .workflow-canvas-shell {
+  background: var(--flow-canvas-bg);
+  border-color: var(--quiet-surface);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+html[data-theme="letter"] .react-flow {
+  background: var(--flow-canvas-bg);
+}
+
+html[data-theme="letter"] .react-flow__background pattern circle,
+html[data-theme="letter"] .react-flow__background path {
+  fill: var(--flow-grid-color);
+  stroke: var(--flow-grid-color);
+}
+
+html[data-theme="letter"] .react-flow__node-agent {
+  background: var(--flow-node-bg);
+  border: 1px solid var(--flow-node-border);
+  border-radius: var(--radius-cards);
+  box-shadow: var(--flow-node-shadow);
+  color: var(--deep-navy);
+}
+
+html[data-theme="letter"] .react-flow__node-agent.selected {
+  border-color: var(--flow-node-selected-border);
+  box-shadow: var(--shadow-focus), var(--flow-node-shadow);
+}
+
+html[data-theme="letter"] .react-flow__edge-path {
+  stroke: var(--flow-edge-color);
+  stroke-width: 2;
+}
+
+html[data-theme="letter"] .react-flow__controls {
+  background: var(--flow-controls-bg);
+  border: 1px solid var(--flow-controls-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md-subtle);
+  overflow: hidden;
+}
+
+html[data-theme="letter"] .react-flow__controls-button {
+  background: var(--flow-controls-bg);
+  border-bottom-color: var(--quiet-surface);
+  color: var(--slate-body);
+  fill: var(--slate-body);
+}
+
+html[data-theme="letter"] .react-flow__controls-button:hover {
+  background: var(--stripe-indigo-soft);
+  color: var(--stripe-indigo);
+  fill: var(--stripe-indigo);
+}
+
+html[data-theme="letter"] .react-flow__minimap {
+  background: var(--surface-white);
+  border: 1px solid var(--quiet-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md-subtle);
+}
+
+html[data-theme="letter"] .react-flow__attribution {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-sm);
+  color: var(--subdued-heading);
+}
+
+/* Form controls on workflow / settings pages */
+html[data-theme="letter"] input[type="text"],
+html[data-theme="letter"] input[type="email"],
+html[data-theme="letter"] input[type="password"],
+html[data-theme="letter"] input[type="number"],
+html[data-theme="letter"] textarea,
+html[data-theme="letter"] select {
+  background: var(--surface-white);
+  border-color: var(--quiet-surface);
+  color: var(--deep-navy);
+}
+
+html[data-theme="letter"] input:focus-visible,
+html[data-theme="letter"] textarea:focus-visible,
+html[data-theme="letter"] select:focus-visible {
+  border-color: var(--stripe-indigo);
+  box-shadow: var(--shadow-focus);
+}
+
+html[data-theme="letter"] input[type="checkbox"] {
+  accent-color: var(--stripe-indigo);
+}
