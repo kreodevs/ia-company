@@ -580,6 +580,26 @@ export interface ProductTeam {
   metrics: ProductMetricsSnapshot | null;
 }
 
+export interface DepartmentTeam {
+  department: {
+    slug: string | null;
+    name: string;
+    kind: "virtual" | "org_unit";
+    emoji: string;
+    orgUnitId: string | null;
+    href: string;
+  };
+  activeRun: (TeamActiveRun & {
+    procedureLabel: string;
+    productId: string | null;
+    productName: string | null;
+  }) | null;
+  activeRuns: Array<TeamActiveRunSummary & { procedureLabel: string }>;
+  recentRuns: TeamRecentRun[];
+  team: TeamAgent[];
+  procedureLabel: string | null;
+}
+
 export interface OpencodeActiveInfo {
   delegationId: string;
   runId: string;
@@ -705,6 +725,9 @@ export interface OfficeActivityItem {
   href: string | null;
   status?: string;
   costUsd?: number;
+  procedureLabel?: string | null;
+  departmentSlug?: string | null;
+  orgUnitName?: string | null;
 }
 
 export interface OfficeRoiProduct {
@@ -736,11 +759,16 @@ export interface OfficeEncargoSummary {
   title: string;
   request: string;
   workflowName: string;
+  procedureLabel: string;
   status: string;
   phase: OfficeEncargoPhase;
   productId: string | null;
   productName: string | null;
   productSlug: string | null;
+  departmentSlug: string | null;
+  orgUnitId: string | null;
+  orgUnitName: string | null;
+  departmentHref: string | null;
   teamAgents: string[];
   totalCostUsd: number;
   startedAt: string | null;
@@ -748,6 +776,24 @@ export interface OfficeEncargoSummary {
   createdAt: string;
   documentCount: number;
   hasFinalReport: boolean;
+}
+
+export interface OfficeProcedureSummary {
+  id: string;
+  name: string;
+  procedureLabel: string;
+  description: string | null;
+  agentNames: string[];
+  stepCount: number;
+  departmentSlug: string | null;
+  serviceId: string | null;
+}
+
+export interface OfficeProcedureGroup {
+  departmentSlug: string | null;
+  orgUnitId: string | null;
+  orgUnitName: string | null;
+  items: OfficeProcedureSummary[];
 }
 
 export interface OfficeEncargoDocument {
@@ -824,6 +870,7 @@ export interface OfficeDepartmentRoom {
   busyAgentCount: number;
   activeRunCount: number;
   activeEncargoHref: string | null;
+  procedureCount: number;
   href: string;
 }
 
@@ -950,7 +997,8 @@ export type TenantNotificationType =
   | "run_completed"
   | "run_failed"
   | "decision_pending"
-  | "task_started";
+  | "task_started"
+  | "department_run_completed";
 
 export interface TenantNotificationItem {
   id: string;
@@ -1613,13 +1661,34 @@ export const api = {
   },
   office: {
     dashboard: () => request<OfficeDashboard>("/office/dashboard"),
-    encargos: (params?: { limit?: number; phase?: OfficeEncargoPhase }) => {
+    encargos: (params?: {
+      limit?: number;
+      phase?: OfficeEncargoPhase;
+      departmentSlug?: string;
+      orgUnitId?: string;
+    }) => {
       const q = new URLSearchParams();
       if (params?.limit) q.set("limit", String(params.limit));
       if (params?.phase) q.set("phase", params.phase);
+      if (params?.departmentSlug) q.set("departmentSlug", params.departmentSlug);
+      if (params?.orgUnitId) q.set("orgUnitId", params.orgUnitId);
       const qs = q.toString();
       return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
     },
+    departmentProcedures: (departmentSlug: string) =>
+      request<{ items: OfficeProcedureSummary[] }>(
+        `/office/departments/${encodeURIComponent(departmentSlug)}/procedures`,
+      ),
+    departmentTeam: (departmentSlug: string, watchRunId?: string) => {
+      const q = watchRunId ? `?watchRun=${encodeURIComponent(watchRunId)}` : "";
+      return request<DepartmentTeam>(
+        `/office/departments/${encodeURIComponent(departmentSlug)}/team${q}`,
+      );
+    },
+    proceduresGrouped: () =>
+      request<{ groups: OfficeProcedureGroup[]; unassigned: OfficeProcedureSummary[] }>(
+        "/office/procedures",
+      ),
     encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
     archive: (params?: {
       departmentSlug?: string;
@@ -1850,6 +1919,12 @@ export const api = {
   orgUnits: {
     list: () => request<import("./org-types").OrgUnit[]>("/org-units"),
     get: (id: string) => request<import("./org-types").OrgUnit>(`/org-units/${id}`),
+    procedures: (id: string) =>
+      request<{ items: OfficeProcedureSummary[] }>(`/org-units/${id}/procedures`),
+    team: (id: string, watchRunId?: string) => {
+      const q = watchRunId ? `?watchRun=${encodeURIComponent(watchRunId)}` : "";
+      return request<DepartmentTeam>(`/org-units/${id}/team${q}`);
+    },
     staff: (id: string) =>
       request<import("./org-types").OrgUnitStaffRoster>(`/org-units/${id}/staff`),
     linkStaffAgent: (id: string, agentName: string) =>

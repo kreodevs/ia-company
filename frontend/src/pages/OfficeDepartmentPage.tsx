@@ -69,6 +69,7 @@ export default function OfficeDepartmentPage() {
         };
       })}
       activeEncargoHref={department.activeEncargoHref}
+      departmentSlug={department.slug}
       sidebarFooter={
         <>
           <h2 className="office-panel-title" style={{ marginTop: "1.25rem" }}>

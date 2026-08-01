@@ -1,12 +1,12 @@
-# Guía — Equipo IA y habilidades
+# Guía — Plantilla de especialistas y habilidades
 
-Catálogo de agentes, skills reutilizables y Catalog Studio.
+Contrata y configura roles reutilizables. La operación diaria (encargos, procedimientos) ocurre en las **salas de departamento**.
 
 ---
 
 ## Tabla de contenidos
 
-1. [Equipo IA hub](#equipo-ia-hub)
+1. [Plantilla de especialistas](#plantilla-de-especialistas)
 2. [Habilidades (skills)](#habilidades-skills)
 3. [Catalog Studio](#catalog-studio)
 4. [Relación con flujos y departamentos](#relación-con-flujos-y-departamentos)
@@ -16,9 +16,9 @@ Catálogo de agentes, skills reutilizables y Catalog Studio.
 
 ---
 
-## Equipo IA hub
+## Plantilla de especialistas
 
-Ruta: **Equipo IA** (`/ai-team`).
+Ruta: **Configuración → Plantilla de especialistas** (`/settings/specialists`). La ruta legacy `/ai-team` redirige aquí.
 
 | Pestaña (UI) | Query `?tab=` | Función |
 |--------------|---------------|---------|
@@ -70,10 +70,11 @@ Munger también interviene en **Org Studio** con la misma lógica de veto.
 
 | Necesitas… | Dónde |
 |------------|-------|
-| Rol nuevo en el catálogo | Equipo IA → Crear agente (o Nuevo agente manual) |
-| Mismo proceso repetible | Flujos (`/office/workflows`) — cadena ordenada |
+| Rol nuevo en el catálogo | Plantilla de especialistas → Crear agente |
+| Mismo proceso repetible | **Procedimientos** — `/settings/procedures` o sala del departamento |
 | Equipo + marca unificada | Org Studio + `design.md` |
-| Falta un rol en encargo | Coordinador enlaza a `/ai-team?tab=create-agent&brief=…` |
+| Falta un rol en encargo | Coordinador enlaza a `/settings/specialists?tab=create-agent&brief=…` |
+| Lanzar trabajo del día | Sala del departamento → coordinador o procedimiento |
 
 Los agentes de plataforma (`ceo-bezos`, `research-thompson`, …) se clonan al tenant bajo demanda cuando un flujo o servicio los necesita.
 
@@ -97,7 +98,7 @@ Catalog Studio y la plataforma esperan un documento markdown con estas secciones
 
 Nombre del agente: **kebab-case** (`design-lead`, `copy-manager`).
 
-Skills sugeridas se asocian en Equipo IA — no van dentro del prompt como sustituto de habilidades reales.
+Skills sugeridas se asocian en **Plantilla de especialistas** — no van dentro del prompt como sustituto de habilidades reales.
 
 ```mermaid
 flowchart TD
@@ -247,7 +248,7 @@ Opcional: incluir un anexo JSON técnico *dentro* del markdown del brief
 
 ## Crear el agente en la UI
 
-1. **Equipo IA** → pestaña **Crear agente** (Catalog Studio con Munger) **o** pestaña **Agentes** → **Nuevo agente** (formulario manual).
+1. **Plantilla de especialistas** → pestaña **Crear agente** (Catalog Studio con Munger) **o** pestaña **Agentes** → **Nuevo agente** (formulario manual).
 2. Pega el system prompt completo con secciones `## Rol`, `## Persona`, etc.
 3. Asigna skills en el formulario: p. ej. `frontend-design`, `ui-ux-pro-max` para design-lead.
 4. En Catalog Studio: aprueba checkboxes y supera Munger si aplica.
@@ -509,4 +510,4 @@ No puedes **Aprobar y aplicar** hasta ajustar la propuesta. Misma lógica en Org
 
 ### Enlaces desde encargos con rol faltante
 
-El Coordinador puede abrir `/ai-team?tab=create-agent&brief=…` con el brief precargado.
+El Coordinador puede abrir `/settings/specialists?tab=create-agent&brief=…` con el brief precargado.

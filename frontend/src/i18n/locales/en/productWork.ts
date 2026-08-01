@@ -1,6 +1,6 @@
 export const productWork = {
   title: "Assign work to product",
-  subtitle: "Run workflows or agents on {{name}} with product workspace and memory context.",
+  subtitle: "Run procedures or agents on {{name}} with product workspace and memory context.",
   loading: "Loading options…",
   loadFailed: "Could not load launch options.",
   launch: "Launch",
@@ -10,10 +10,10 @@ export const productWork = {
   taskLabel: "Task (optional)",
   taskPlaceholder: "E.g. SEO audit of landing page, 90-day content plan…",
   taskHint: "If empty, agents use the product memory Next Action.",
-  noWorkflows: "No custom workflows. Use presets or create one under Workflows.",
+  noWorkflows: "No custom procedures. Use presets or create one under Settings → Procedures.",
   tabs: {
     presets: "Presets",
-    workflows: "Workflows",
+    workflows: "Procedures",
     agents: "Agents",
   },
   categories: {

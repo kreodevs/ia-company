@@ -211,7 +211,7 @@ export default function OrgUnitDetailPage() {
       navigation={navigation}
       headerActions={
         activeTab === "staff" ? (
-          <Link to={`/ai-team?tab=create-agent&orgUnitId=${unit.id}`}>
+          <Link to={`/settings/specialists?tab=create-agent&orgUnitId=${unit.id}`}>
             <Button variant="secondary" size="sm">
               {t("org.createAgentForDept")}
             </Button>

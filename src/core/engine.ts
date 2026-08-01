@@ -254,6 +254,12 @@ export class WorkflowExecutor {
           stepOrder: step.stepOrder,
         });
 
+        sharedMemory = { ...sharedMemory, currentAgentId: step.agent.id };
+        await prisma.executionRun.update({
+          where: { id: runId },
+          data: { sharedMemory: sharedMemory as object },
+        });
+
         await this.appendLog(runId, "info", `Starting step: ${step.agent.name}`, {
           stepId: step.id,
           agentId: step.agent.id,
@@ -423,6 +429,9 @@ export class WorkflowExecutor {
             }
           }
         }
+
+        sharedMemory = { ...sharedMemory };
+        delete sharedMemory.currentAgentId;
 
         await prisma.executionRun.update({
           where: { id: runId },

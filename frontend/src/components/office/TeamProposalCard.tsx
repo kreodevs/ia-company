@@ -74,7 +74,7 @@ export default function TeamProposalCard({
             {plan.missingAgentRoles.map((role) => (
               <li key={role.name}>
                 <Link
-                  to={`/ai-team?tab=create-agent&brief=${encodeURIComponent(role.suggestedBrief)}`}
+                  to={`/settings/specialists?tab=create-agent&brief=${encodeURIComponent(role.suggestedBrief)}`}
                   className="text-sm text-[var(--color-primary)] underline"
                 >
                   {t("office.task.createMissingRole", { name: role.name.replace(/-/g, " ") })}

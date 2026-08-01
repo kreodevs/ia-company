@@ -4,6 +4,11 @@ import { useTranslation } from "react-i18next";
 import { api, type TenantProduct } from "../../lib/api";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import CoordinatorChat from "./CoordinatorChat";
+import DepartmentProceduresPanel, {
+  type DepartmentProcedureSelection,
+} from "./DepartmentProceduresPanel";
+import DepartmentWarRoomPanel from "./DepartmentWarRoomPanel";
+import SpecialistProfileModal from "./SpecialistProfileModal";
 import Select from "../ui/Select";
 
 export const DEPARTMENT_SCOPE_GENERAL = "__general__";
@@ -27,6 +32,7 @@ export interface DepartmentRoomViewProps {
   agents: DepartmentRoomAgent[];
   activeEncargoHref?: string | null;
   orgUnitId?: string;
+  departmentSlug?: string;
   linkedProductIds?: string[];
   headerActions?: ReactNode;
   navigation?: ReactNode;
@@ -54,6 +60,7 @@ export default function DepartmentRoomView({
   agents,
   activeEncargoHref,
   orgUnitId,
+  departmentSlug,
   linkedProductIds,
   headerActions,
   navigation,
@@ -65,6 +72,23 @@ export default function DepartmentRoomView({
   const [products, setProducts] = useState<TenantProduct[]>([]);
   const [focusProductId, setFocusProductId] = useState<string | null>(null);
   const [productScope, setProductScope] = useState(DEPARTMENT_SCOPE_GENERAL);
+  const [procedureSelection, setProcedureSelection] = useState<DepartmentProcedureSelection | null>(
+    null,
+  );
+  const [selectedAgent, setSelectedAgent] = useState<DepartmentRoomAgent | null>(null);
+  const [specialistPrompt, setSpecialistPrompt] = useState<string | null>(null);
+
+  const handleUseProcedure = (selection: DepartmentProcedureSelection) => {
+    setProcedureSelection(selection);
+    setSpecialistPrompt(null);
+    document.getElementById("office-dept-coordinator")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleAssignSpecialist = (_agentName: string, prompt: string) => {
+    setSpecialistPrompt(prompt);
+    setProcedureSelection(null);
+    document.getElementById("office-dept-coordinator")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     api.products
@@ -178,7 +202,16 @@ export default function DepartmentRoomView({
               })}
             </p>
           ) : null}
-          {seats.length === 0 ? (
+          {departmentSlug || orgUnitId ? (
+            <DepartmentWarRoomPanel
+              departmentSlug={departmentSlug}
+              orgUnitId={orgUnitId}
+              agentNames={agentNames}
+              seats={seats}
+              onSeatClick={setSelectedAgent}
+              positionOnCircle={positionOnCircle}
+            />
+          ) : seats.length === 0 ? (
             <p className="office-empty">{t("office.floor.noSpecialists")}</p>
           ) : (
             <div className="office-dept-table">
@@ -186,10 +219,13 @@ export default function DepartmentRoomView({
               {seats.map((agent, index) => {
                 const { x, y } = positionOnCircle(index, Math.max(seats.length, 1), 38);
                 return (
-                  <div
+                  <button
                     key={agent.id}
+                    type="button"
                     className={`office-dept-seat office-dept-seat-${agent.status}`}
                     style={{ left: `${x}%`, top: `${y}%` }}
+                    onClick={() => setSelectedAgent(agent)}
+                    aria-label={agentDisplayLabel(agent, t)}
                   >
                     <div
                       className="office-dept-seat-avatar"
@@ -206,7 +242,7 @@ export default function DepartmentRoomView({
                           ? t("office.agents.busy")
                           : t("office.agents.idle")}
                     </p>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -218,13 +254,16 @@ export default function DepartmentRoomView({
           ) : null}
         </section>
 
-        <aside className="office-dept-sidebar office-dept-sidebar-chat">
+        <aside id="office-dept-coordinator" className="office-dept-sidebar office-dept-sidebar-chat">
           <h2 className="office-panel-title">{t("office.chat.coordinatorName")}</h2>
           <div className="office-dept-coordinator-panel">
             <CoordinatorChat
-              key={`${orgUnitId ?? "virtual"}-${productScope}`}
+              key={`${orgUnitId ?? departmentSlug ?? "virtual"}-${productScope}-${procedureSelection?.workflowId ?? "none"}-${specialistPrompt ?? "none"}`}
               productId={productScope === DEPARTMENT_SCOPE_GENERAL ? undefined : productScope}
               orgUnitId={orgUnitId}
+              serviceId={procedureSelection?.serviceId}
+              workflowId={procedureSelection?.workflowId}
+              initialUserMessage={specialistPrompt ?? procedureSelection?.prompt}
               welcomeMessageKey="office.floor.coordinatorWelcome"
             />
           </div>
@@ -234,7 +273,26 @@ export default function DepartmentRoomView({
         </>
       ) : null}
 
+      {(departmentSlug || orgUnitId) ? (
+        <DepartmentProceduresPanel
+          departmentSlug={departmentSlug}
+          orgUnitId={orgUnitId}
+          onUseProcedure={handleUseProcedure}
+        />
+      ) : null}
+
       {children ? <div className="office-dept-extras">{children}</div> : null}
+
+      {selectedAgent ? (
+        <SpecialistProfileModal
+          agent={selectedAgent}
+          departmentTitle={title}
+          departmentSlug={departmentSlug}
+          orgUnitId={orgUnitId}
+          onClose={() => setSelectedAgent(null)}
+          onAssign={handleAssignSpecialist}
+        />
+      ) : null}
     </div>
   );
 }

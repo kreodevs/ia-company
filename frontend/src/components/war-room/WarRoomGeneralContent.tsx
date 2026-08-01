@@ -8,6 +8,7 @@ import {
   type OfficeEncargoSummary,
   type TenantProduct,
 } from "../../lib/api";
+import { encargoContextLine } from "../../lib/office-encargo-display";
 import CoordinatorChat from "../office/CoordinatorChat";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
@@ -249,8 +250,9 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
                   }
                   className="war-room-briefing-link"
                 >
-                  <p className="war-room-briefing-name">{encargo.workflowName}</p>
+                  <p className="war-room-briefing-name">{encargo.title}</p>
                   <p className="war-room-briefing-meta">
+                    {encargoContextLine(encargo, t)} ·{" "}
                     {encargo.productName ?? t("warRoom.general.noProduct")} · {shortTime(encargo.startedAt)}
                   </p>
                 </Link>

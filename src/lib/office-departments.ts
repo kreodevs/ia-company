@@ -63,6 +63,7 @@ export interface OfficeDepartmentRoom {
   busyAgentCount: number;
   activeRunCount: number;
   activeEncargoHref: string | null;
+  procedureCount: number;
   href: string;
 }
 
@@ -127,6 +128,7 @@ export function buildVirtualRoom(
     busyAgentCount,
     activeRunCount: Math.max(activeRunCount, busyAgentCount > 0 ? 1 : 0),
     activeEncargoHref: firstRun ? `/office/encargos/${firstRun.id}` : null,
+    procedureCount: 0,
     href: `/office/departments/${def.slug}`,
   };
 }
@@ -166,6 +168,7 @@ function buildOrgUnitRoom(
     busyAgentCount,
     activeRunCount,
     activeEncargoHref: runsForOrg[0] ? `/office/encargos/${runsForOrg[0]!.id}` : null,
+    procedureCount: 0,
     href: `/org-units/${org.id}`,
   };
 }

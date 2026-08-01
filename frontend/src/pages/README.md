@@ -14,7 +14,7 @@ Route-level screens for the Auto-Company frontend.
 
 ## Tenant workspace
 
-Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, encargos, workflows, war room, products, deptos, **Equipo IA**), **Oficina de depuración** (runs, ops…), **Administración** (settings, team). Default landing after login: `/office`.
+Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, encargos, war room, products, deptos), **Oficina de depuración** (runs, ops…), **Administración** (settings, **Procedimientos**, **Plantilla de especialistas**, team). Default landing after login: `/office`.
 
 | Route | Page |
 |-------|------|
@@ -22,10 +22,11 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 | `/office/pendientes` | `PendingDecisionsPage` — bandeja Go/No-Go con pestañas Por aprobar / Aprobadas / Rechazadas |
 | `/office/encargos` | `OfficeEncargosPage` |
 | `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
-| `/office/workflows` | `WorkflowsPage` |
+| `/office/workflows` | redirect → `/settings/procedures` |
 | `/office/workflows/:id` | `WorkflowEditorPage` |
-| `/ai-team` | `AiTeamHubPage` — tabs Agentes, Habilidades, Catalog Studio |
-| `/agents` · `/skills` | redirect → `/ai-team` |
+| `/settings/procedures` | `ProceduresSettingsPage` — catálogo agrupado por departamento |
+| `/settings/specialists` | `AiTeamHubPage` — tabs Agentes, Habilidades, Catalog Studio |
+| `/ai-team` · `/agents` · `/skills` | redirect → `/settings/specialists` |
 | `/runs` | `RunsPage` |
 | `/runs/:id` | `RunDetailPage` |
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |

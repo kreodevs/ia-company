@@ -15,6 +15,8 @@ import {
 import type { OrgStudioProposal } from "../../lib/org-os-types.js";
 import { logAudit } from "../../lib/audit.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import { listProceduresForOrgUnit } from "../../lib/office-procedures.js";
+import { getDepartmentTeam } from "../../lib/office-department-team.js";
 
 export async function orgUnitRoutes(app: FastifyInstance) {
   app.get("/org-units", async (request, reply) => {
@@ -32,6 +34,32 @@ export async function orgUnitRoutes(app: FastifyInstance) {
       const unit = await getOrgUnit(tenantId, request.params.id);
       if (!unit) return reply.status(404).send({ error: "Org unit not found" });
       return unit;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string }; Querystring: { watchRun?: string } }>(
+    "/org-units/:id/team",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const team = await getDepartmentTeam(tenantId, {
+          orgUnitId: request.params.id,
+          watchRunId: request.query.watchRun,
+        });
+        if (!team) return reply.status(404).send({ error: "Org unit not found" });
+        return team;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>("/org-units/:id/procedures", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      return listProceduresForOrgUnit(tenantId, request.params.id);
     } catch (err) {
       return handleRouteError(reply, err);
     }

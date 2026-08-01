@@ -16,6 +16,11 @@ import {
 } from "../../lib/office-coordinator.js";
 import { listOfficeArchive } from "../../lib/office-archive.js";
 import {
+  listProceduresForVirtualDepartment,
+  listGroupedProcedures,
+} from "../../lib/office-procedures.js";
+import { getDepartmentTeam } from "../../lib/office-department-team.js";
+import {
   createTenantNotification,
   listTenantNotifications,
   markAllNotificationsRead,
@@ -27,12 +32,12 @@ export async function officeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
   app.addHook("preHandler", app.requireTenantContext);
 
-  app.get<{ Querystring: { limit?: string; phase?: string } }>(
+  app.get<{ Querystring: { limit?: string; phase?: string; departmentSlug?: string; orgUnitId?: string } }>(
     "/office/encargos",
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const { limit, phase } = request.query;
+        const { limit, phase, departmentSlug, orgUnitId } = request.query;
         const validPhases = ["queued", "in_progress", "delivered", "failed", "cancelled"] as const;
         const phaseFilter = validPhases.includes(phase as (typeof validPhases)[number])
           ? (phase as (typeof validPhases)[number])
@@ -40,6 +45,8 @@ export async function officeRoutes(app: FastifyInstance) {
         return listOfficeEncargos(tenantId, {
           limit: limit ? Number(limit) : undefined,
           phase: phaseFilter,
+          departmentSlug,
+          orgUnitId,
         });
       } catch (err) {
         return handleRouteError(reply, err);
@@ -62,6 +69,44 @@ export async function officeRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       return getOfficeDashboard(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { slug: string }; Querystring: { watchRun?: string } }>(
+    "/office/departments/:slug/team",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const team = await getDepartmentTeam(tenantId, {
+          departmentSlug: request.params.slug,
+          watchRunId: request.query.watchRun,
+        });
+        if (!team) return reply.status(404).send({ error: "Department not found" });
+        return team;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { slug: string } }>(
+    "/office/departments/:slug/procedures",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        return listProceduresForVirtualDepartment(tenantId, request.params.slug);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get("/office/procedures", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      return listGroupedProcedures(tenantId);
     } catch (err) {
       return handleRouteError(reply, err);
     }

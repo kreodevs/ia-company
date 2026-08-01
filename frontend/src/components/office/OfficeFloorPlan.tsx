@@ -149,8 +149,15 @@ function DepartmentRoomCard({
       </div>
       <p className="office-room-meta">
         {dept.status === "busy"
-          ? t("office.floor.busyMeta", { busy: busyCount || dept.busyAgentCount, total: dept.agentNames.length })
-          : t("office.floor.idleMeta", { total: dept.agentNames.length })}
+          ? t("office.floor.busyMeta", {
+              busy: busyCount || dept.busyAgentCount,
+              total: dept.agentNames.length,
+              procedures: dept.procedureCount ?? 0,
+            })
+          : t("office.floor.idleMeta", {
+              total: dept.agentNames.length,
+              procedures: dept.procedureCount ?? 0,
+            })}
       </p>
       {dept.activeEncargoHref ? (
         <span className="office-room-active-link">{t("office.floor.viewEncargo")} →</span>

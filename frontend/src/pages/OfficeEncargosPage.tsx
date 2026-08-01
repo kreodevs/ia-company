@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ClipboardList, Crosshair } from "lucide-react";
 import { api, type OfficeEncargoPhase, type OfficeEncargoSummary } from "../lib/api";
+import type { OrgUnit } from "../lib/org-types";
+import {
+  encargoContextLine,
+  encargoTeamLabels,
+  VIRTUAL_DEPARTMENT_SLUGS,
+} from "../lib/office-encargo-display";
 import PageLoading from "../components/ui/PageLoading";
 import StatusBadge from "../components/ui/StatusBadge";
+import Select from "../components/ui/Select";
 
 const PHASE_FILTERS: Array<OfficeEncargoPhase | "all"> = [
   "all",
@@ -20,14 +27,23 @@ export default function OfficeEncargosPage() {
   const [items, setItems] = useState<OfficeEncargoSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [phase, setPhase] = useState<OfficeEncargoPhase | "all">("all");
+  const [departmentSlug, setDepartmentSlug] = useState("");
+  const [orgUnitId, setOrgUnitId] = useState("");
+  const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
+
+  useEffect(() => {
+    api.orgUnits.list().then(setOrgUnits).catch(() => setOrgUnits([]));
+  }, []);
 
   const refresh = useCallback(async () => {
     const res = await api.office.encargos({
       limit: 50,
       phase: phase === "all" ? undefined : phase,
+      departmentSlug: departmentSlug || undefined,
+      orgUnitId: orgUnitId || undefined,
     });
     setItems(res.items);
-  }, [phase]);
+  }, [phase, departmentSlug, orgUnitId]);
 
   useEffect(() => {
     setLoading(true);
@@ -60,19 +76,52 @@ export default function OfficeEncargosPage() {
         </Link>
       </header>
 
-      <div className="office-encargos-filters" role="tablist" aria-label={t("office.encargos.filterLabel")}>
-        {PHASE_FILTERS.map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            role="tab"
-            aria-selected={phase === filter}
-            className={`office-encargos-filter ${phase === filter ? "office-encargos-filter-active" : ""}`}
-            onClick={() => setPhase(filter)}
-          >
-            {t(`office.encargos.phase.${filter}`)}
-          </button>
-        ))}
+      <div className="office-encargos-filters-row">
+        <div className="office-encargos-filters" role="tablist" aria-label={t("office.encargos.filterLabel")}>
+          {PHASE_FILTERS.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              role="tab"
+              aria-selected={phase === filter}
+              className={`office-encargos-filter ${phase === filter ? "office-encargos-filter-active" : ""}`}
+              onClick={() => setPhase(filter)}
+            >
+              {t(`office.encargos.phase.${filter}`)}
+            </button>
+          ))}
+        </div>
+        <Select
+          value={departmentSlug}
+          onChange={(value) => {
+            setDepartmentSlug(value);
+            if (value) setOrgUnitId("");
+          }}
+          ariaLabel={t("office.encargos.filterDepartment")}
+          className="office-encargos-dept-filter"
+          size="sm"
+          options={[
+            { value: "", label: t("office.encargos.allDepartments") },
+            ...VIRTUAL_DEPARTMENT_SLUGS.map((slug) => ({
+              value: slug,
+              label: t(`office.departments.${slug}.name` as "office.departments.strategy.name"),
+            })),
+          ]}
+        />
+        <Select
+          value={orgUnitId}
+          onChange={(value) => {
+            setOrgUnitId(value);
+            if (value) setDepartmentSlug("");
+          }}
+          ariaLabel={t("office.encargos.filterOrgUnit")}
+          className="office-encargos-dept-filter"
+          size="sm"
+          options={[
+            { value: "", label: t("office.encargos.allOrgUnits") },
+            ...orgUnits.map((unit) => ({ value: unit.id, label: unit.name })),
+          ]}
+        />
       </div>
 
       {items.length === 0 ? (
@@ -101,8 +150,10 @@ export default function OfficeEncargosPage() {
                 {item.request && item.request !== item.title ? (
                   <p className="office-encargo-card-request">{item.request}</p>
                 ) : null}
+                <div className="office-encargo-card-context">
+                  <span className="office-encargo-context-chip">{encargoContextLine(item, t)}</span>
+                </div>
                 <div className="office-encargo-card-meta">
-                  <span>{item.workflowName}</span>
                   {item.productName ? <span>{item.productName}</span> : null}
                   <span>
                     {new Date(item.completedAt ?? item.createdAt).toLocaleString([], {
@@ -116,7 +167,7 @@ export default function OfficeEncargosPage() {
                 </div>
                 {item.teamAgents.length > 0 ? (
                   <p className="office-encargo-card-team">
-                    {t("office.encargos.team")}: {item.teamAgents.map((a) => a.replace(/-/g, " ")).join(" · ")}
+                    {t("office.encargos.team")}: {encargoTeamLabels(item.teamAgents, t)}
                   </p>
                 ) : null}
                 <div className="office-encargo-card-foot">

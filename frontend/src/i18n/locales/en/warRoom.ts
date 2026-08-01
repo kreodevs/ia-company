@@ -132,4 +132,8 @@ export const warRoom = {
     openRun: "Open run logs",
     agentDocs: "{{count}} agent docs",
   },
+  handoff: {
+    fromTo: "Handoff: {{from}} → {{to}}",
+    toAgent: "{{name}}'s turn",
+  },
 } as const;

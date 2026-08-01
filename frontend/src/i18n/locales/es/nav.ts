@@ -13,6 +13,8 @@ export const nav = {
   settings: "Configuración",
   agents: "Agentes",
   aiTeam: "Equipo IA",
+  specialistTemplates: "Plantilla de especialistas",
+  procedures: "Procedimientos",
   skills: "Habilidades",
   workflows: "Flujos",
   runs: "Ejecuciones",

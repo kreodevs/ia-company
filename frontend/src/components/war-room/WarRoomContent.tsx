@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Maximize2, MessageSquare, Minimize2 } from "lucide-react";
 import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../../lib/api";
+import { formatWorkflowTitle } from "../../lib/workflow-display";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
@@ -15,8 +16,10 @@ import ProductHealthPanel from "./ProductHealthPanel";
 import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 import WarRoomAgentSeat from "./WarRoomAgentSeat";
+import WarRoomHandoffOverlay from "./WarRoomHandoffOverlay";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import { shortTime } from "./war-room-shared";
+import { useWarRoomHandoff } from "../../lib/war-room-live";
 
 const TEAM_REFRESH_MIN_MS = 2500;
 /** Keep active agent states visible long enough to read the war-room table. */
@@ -210,6 +213,9 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
   }, [productId, watchRunId]);
 
   const refreshScheduler = useRef(createTeamRefreshScheduler(() => refresh()));
+  const { handoff, bindStreamHandler } = useWarRoomHandoff(data?.activeRun?.id, () =>
+    refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS),
+  );
   useEffect(() => {
     refreshScheduler.current = createTeamRefreshScheduler(() => refresh());
   }, [refresh]);
@@ -272,23 +278,21 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
     ) {
       return;
     }
-    const close = api.runs.streamLogs(data.activeRun.id, (raw) => {
-      const evt = raw as { type?: string; data?: { agentId?: string | null; message?: string } };
-      if (evt.type === "log" && evt.data?.agentId) {
-        const agent = data.team.find((a) => a.id === evt.data?.agentId);
-        const preview = String(evt.data?.message ?? "").slice(0, 80);
+    const close = api.runs.streamLogs(data.activeRun.id, bindStreamHandler((evt) => {
+      const event = evt as { type?: string; data?: { agentId?: string | null; message?: string } };
+      if (event.type === "log" && event.data?.agentId) {
+        const agent = data.team.find((a) => a.id === event.data?.agentId);
+        const preview = String(event.data?.message ?? "").slice(0, 80);
         if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
-      } else if (evt.type === "step_start" || evt.type === "step_complete") {
-        refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS);
-      } else if (evt.type === "done") {
+      } else if (event.type === "done") {
         refreshScheduler.current.flush();
       }
-    });
+    }));
     return () => {
       close();
       refreshScheduler.current.dispose();
     };
-  }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote]);
+  }, [data?.activeRun?.id, data?.activeRun?.status, data?.team, flashNote, bindStreamHandler]);
 
   const displayTeam = useHeldAgentTeam(data?.team ?? []);
 
@@ -356,7 +360,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
               <span className="war-room-pulse" aria-hidden />
               {data.activeRun.status === "DELEGATED"
                 ? t("opencode.externalImplementation")
-                : t("warRoom.liveRun", { workflow: data.activeRun.workflowName })}
+                : t("warRoom.liveRun", { workflow: formatWorkflowTitle(data.activeRun.workflowName) })}
             </Link>
           )}
           {data.activeRun?.opencode && (
@@ -444,7 +448,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
             activeRuns.length > 1
               ? t("warRoom.kpis.activeRunsDelta", { count: activeRuns.length })
               : data.activeRun
-                ? t("warRoom.kpis.activeRunDelta", { workflow: data.activeRun.workflowName })
+                ? t("warRoom.kpis.activeRunDelta", { workflow: formatWorkflowTitle(data.activeRun.workflowName) })
                 : t("warRoom.kpis.standby")
           }
           trend={activeRuns.length > 0 ? "up" : "down"}
@@ -547,7 +551,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
               <div className="war-room-core">
                 <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
                 <p className="war-room-core-name">
-                  {data.activeRun ? data.activeRun.workflowName : t("warRoom.standby")}
+                  {data.activeRun ? formatWorkflowTitle(data.activeRun.workflowName) : t("warRoom.standby")}
                 </p>
                 <p className="war-room-core-status">
                   {data.activeRun
@@ -563,6 +567,10 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
                   </p>
                 )}
               </div>
+              <WarRoomHandoffOverlay
+                handoff={handoff}
+                agentNames={displayTeam.map((agent) => agent.name)}
+              />
               {displayTeam.map((agent, i) => (
                 <WarRoomAgentSeat key={agent.id} agent={agent} index={i} total={totalAgents} />
               ))}
@@ -583,7 +591,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
               )}
               <Link to={`/runs/${data.activeRun.id}`} className="war-room-briefing-link">
                 <p className="war-room-briefing-label">{t("warRoom.workflow")}</p>
-                <p className="war-room-briefing-name">{data.activeRun.workflowName}</p>
+                <p className="war-room-briefing-name">{formatWorkflowTitle(data.activeRun.workflowName)}</p>
               </Link>
               {data.activeRun.task && (
                 <p className="war-room-briefing-meta">
@@ -664,7 +672,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
             data.recentRuns.map((r) => (
               <li key={r.id}>
                 <Link to={`/office/encargos/${r.id}`} className="war-room-run-row">
-                  <span className="war-room-run-name">{r.workflowName}</span>
+                  <span className="war-room-run-name">{formatWorkflowTitle(r.workflowName)}</span>
                   <span className="war-room-run-meta">
                     {shortTime(r.startedAt)} · {r.totalTokens.toLocaleString()} tokens
                   </span>

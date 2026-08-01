@@ -29,9 +29,9 @@ flowchart LR
 
 Cada paso debe producir entregables y un **handoff JSON de consenso** (ver **[Handoffs y flujo](/help/guia-equipo-ia#handoffs-y-flujo)**).
 
-Ruta: **Flujos** (`/office/workflows`). El editor usa un canvas visual (`WorkflowCanvas`) para ordenar nodos.
+Ruta diaria: **Procedimientos del departamento** (dentro de cada sala en `/office/departments/:slug` o `/org-units/:id`). Configuración avanzada: **Configuración → Procedimientos** (`/settings/procedures`). El editor visual sigue en `/office/workflows/:id`. La ruta `/office/workflows` redirige al catálogo agrupado por departamento.
 
-Los workflows de plataforma (evaluación de producto, launch, pricing…) se **copian al tenant** automáticamente la primera vez que los necesitas.
+Los procedimientos de plataforma (evaluación de producto, launch, pricing…) se **copian al tenant** automáticamente la primera vez que los necesitas.
 
 ---
 

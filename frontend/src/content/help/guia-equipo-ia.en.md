@@ -14,9 +14,9 @@ Agent catalog, reusable skills, and Catalog Studio.
 
 ---
 
-## AI team hub
+## Plantilla de especialistas
 
-Route: **AI team** (`/ai-team`).
+Route: **Settings → Specialist templates** (`/settings/specialists`). Legacy `/ai-team` redirects here.
 
 | Tab (UI) | Query `?tab=` | Purpose |
 |----------|---------------|---------|
@@ -68,10 +68,10 @@ Munger uses the same veto logic in **Org Studio**.
 
 | You need… | Where |
 |-----------|-------|
-| New catalog role | AI team → Create agent (or New agent manual) |
-| Repeatable process | Workflows (`/office/workflows`) — ordered chain |
+| New catalog role | Specialist templates → Create agent (or New agent manual) |
+| Repeatable process | Department room → **Procedures** panel, or Settings → Procedures |
 | Team + unified brand | Org Studio + `design.md` |
-| Missing role on a job | Coordinator links to `/ai-team?tab=create-agent&brief=…` |
+| Missing role on a job | Coordinator links to `/settings/specialists?tab=create-agent&brief=…` |
 
 Platform agents (`ceo-bezos`, `research-thompson`, …) clone to the tenant on demand when a workflow or service needs them.
 
@@ -507,4 +507,4 @@ You cannot **Approve and apply** until you adjust the proposal. Same logic in Or
 
 ### Links from jobs with a missing role
 
-The Coordinator may open `/ai-team?tab=create-agent&brief=…` with a prefilled brief.
+The Coordinator may open `/settings/specialists?tab=create-agent&brief=…` with a prefilled brief.

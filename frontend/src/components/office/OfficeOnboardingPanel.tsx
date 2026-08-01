@@ -41,7 +41,7 @@ export default function OfficeOnboardingPanel({ dashboard, onDismiss }: OfficeOn
       done: dashboard.stats.agentsTotal >= 1,
       titleKey: "office.onboarding.stepTeam",
       descKey: "office.onboarding.stepTeamDesc",
-      to: "/ai-team",
+      to: "/settings/specialists",
     },
     {
       id: "dept",

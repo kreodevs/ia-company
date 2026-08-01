@@ -305,11 +305,24 @@ Extender `office-theme.css` y estética war room:
 - [x] Filtros por departamento / producto / rol / origen
 - [x] Preview lateral con `RichMarkdownView`
 
-### Fase 4 — Pulido (opcional)
+### Fase 5 — Procedimientos departamentales (Sprint 1–3, 2026-08)
 
-- [ ] War room a nivel departamento (no solo producto)
-- [ ] Animaciones de “handoff” entre especialistas
-- [ ] Notificaciones “tu departamento de Ingeniería terminó”
+- [x] Procedimientos agrupados por departamento (virtual y org unit)
+- [x] Panel **Procedimientos del departamento** en salas (`DepartmentProceduresPanel`)
+- [x] Encargos con contexto dept → procedimiento (lista, detalle, actividad dashboard)
+- [x] Workflows / Equipo IA fuera del nav diario → **Configuración → Procedimientos / Plantilla de especialistas**
+- [x] Ficha de especialista con encargos recientes (`SpecialistProfileModal`)
+- [x] Filtro de encargos por departamento custom (org unit)
+- [x] War room departamental con contexto dept/procedimiento
+- [x] Sección documentos en ficha de especialista
+
+---
+
+- [x] War room a nivel departamento con contexto dept/procedimiento (`DepartmentWarRoomPanel`, APIs `/office/departments/:slug/team`, `/org-units/:id/team`)
+- [x] Animaciones de handoff entre especialistas (`WarRoomHandoffOverlay` + SSE `step_start`)
+- [x] Notificaciones «departamento listo» al terminar el último encargo activo (`department_run_completed`)
+- [x] Sección documentos en ficha de especialista (archive por agente)
+- [x] `currentAgentId` en shared memory para estado busy preciso en dashboard
 
 ---
 

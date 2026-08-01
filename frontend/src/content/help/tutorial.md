@@ -46,7 +46,7 @@ Si la tarea encaja con un producto pero no has elegido uno, el Coordinador puede
 
 ### Paso 4 — Revisa y aprueba
 
-Pulsa **Aprobar y ejecutar** — nada corre sin tu OK. Si faltan roles en tu catálogo, verás enlaces para crearlos en **Equipo IA**.
+Pulsa **Aprobar y ejecutar** — nada corre sin tu OK. Si faltan roles en tu catálogo, verás enlaces para crearlos en **Plantilla de especialistas** (`/settings/specialists`).
 
 ### Paso 5 — Sigue y recoge
 
@@ -78,7 +78,8 @@ Cada tema tiene su **guía propia** con diagramas y detalle. Ábrela desde **Art
 | **Oficina y encargos** | Coordinador, alcance, Mis encargos, War room, archivo | [/help/guia-oficina](/help/guia-oficina) |
 | **Productos** | Ciclo de vida, oportunidades, memoria por producto | [/help/guia-productos](/help/guia-productos) |
 | **Departamentos** | Org Studio, `design.md`, tokens, galería | [/help/guia-departamentos](/help/guia-departamentos) |
-| **Equipo IA y habilidades** | Agentes, skills, construcción de agentes y handoffs | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
+| **Plantilla de especialistas** | Contratar/configurar roles y skills | [/help/guia-equipo-ia](/help/guia-equipo-ia) → `/settings/specialists` |
+| **Procedimientos por departamento** | Editar rutinas de trabajo | `/settings/procedures` o dentro de cada sala |
 | **Flujos y programaciones** | Playbooks, programaciones, panel Operaciones y GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
 
 ### Cómo encaja todo

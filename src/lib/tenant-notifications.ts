@@ -1,13 +1,22 @@
 import type { ExecutionStatus } from "@prisma/client";
 import { encargoHumanHref } from "./office-encargos.js";
+import {
+  countActiveRunsForDepartment,
+  departmentWarRoomHref,
+} from "./office-department-team.js";
+import { encargoActivityFields } from "./office-encargos.js";
+import { resolveEncargoDepartmentContext } from "./office-procedures.js";
+import { VIRTUAL_OFFICE_DEPARTMENTS } from "./office-departments.js";
 import { prisma } from "./prisma.js";
+import type { SharedMemory } from "../types/index.js";
 
 export type TenantNotificationType =
   | "run_completed"
   | "run_failed"
   | "decision_pending"
   | "task_started"
-  | "playbook_suggestion";
+  | "playbook_suggestion"
+  | "department_run_completed";
 
 export interface TenantNotificationDto {
   id: string;
@@ -150,13 +159,91 @@ export async function notifyRunFinishedInApp(params: {
 
   if (!notify) return;
 
+  const run = await prisma.executionRun.findUnique({
+    where: { id: params.runId },
+    select: { sharedMemory: true },
+  });
+  const memory = (run?.sharedMemory ?? {}) as SharedMemory;
+  const orgUnits = await prisma.orgUnit.findMany({
+    where: { tenantId: params.tenantId, isActive: true },
+    select: { id: true, name: true },
+  });
+  const orgUnitNameById = new Map(orgUnits.map((o) => [o.id, o.name]));
+  const fields = encargoActivityFields({
+    workflowName: params.workflowName,
+    sharedMemory: memory,
+    orgUnitNameById,
+  });
+  const deptContext = resolveEncargoDepartmentContext({
+    teamAgents: Array.isArray(memory.teamAgents)
+      ? memory.teamAgents.filter((n): n is string => typeof n === "string")
+      : [],
+    orgUnitId: typeof memory.orgUnitId === "string" ? memory.orgUnitId : null,
+    orgUnitName: fields.orgUnitName,
+    workflowName: params.workflowName,
+  });
+
   const copy = buildRunNotificationCopy(params);
+  const deptLabel = deptContext.orgUnitName ?? fields.departmentSlug ?? null;
+  const title = deptLabel
+    ? `${copy.title} · ${deptLabel}`
+    : copy.title;
+  const body = deptLabel
+    ? `${fields.procedureLabel}: ${copy.body}`
+    : copy.body;
+
+  const warHref =
+    departmentWarRoomHref({
+      departmentSlug: deptContext.departmentSlug,
+      orgUnitId: deptContext.orgUnitId,
+    }) ?? encargoHumanHref(params.runId);
+
   await createTenantNotification({
     tenantId: params.tenantId,
     type: params.status === "COMPLETED" ? "run_completed" : "run_failed",
-    title: copy.title,
-    body: copy.body,
+    title,
+    body,
     href: encargoHumanHref(params.runId),
+    runId: params.runId,
+  });
+
+  if (params.status !== "COMPLETED" || !deptLabel) return;
+
+  let rosterNames = Array.isArray(memory.teamAgents)
+    ? memory.teamAgents.filter((n): n is string => typeof n === "string")
+    : [];
+  if (rosterNames.length === 0 && deptContext.departmentSlug) {
+    rosterNames =
+      VIRTUAL_OFFICE_DEPARTMENTS.find((d) => d.slug === deptContext.departmentSlug)?.agentNames ??
+      [];
+  }
+  if (rosterNames.length === 0 && deptContext.orgUnitId) {
+    const org = await prisma.orgUnit.findFirst({
+      where: { id: deptContext.orgUnitId, tenantId: params.tenantId },
+      include: { template: { select: { definition: true } } },
+    });
+    if (org) {
+      const { suggestedAgentsFromOrgRecord } = await import("./org-context.js");
+      rosterNames = suggestedAgentsFromOrgRecord(org);
+    }
+  }
+  if (rosterNames.length === 0) return;
+
+  const remaining = await countActiveRunsForDepartment(params.tenantId, {
+    departmentSlug: deptContext.departmentSlug,
+    orgUnitId: deptContext.orgUnitId,
+    rosterNames,
+    excludeRunId: params.runId,
+  });
+
+  if (remaining > 0) return;
+
+  await createTenantNotification({
+    tenantId: params.tenantId,
+    type: "department_run_completed",
+    title: `Departamento listo · ${deptLabel}`,
+    body: `${fields.procedureLabel} terminó. No quedan encargos activos en este departamento.`,
+    href: warHref,
     runId: params.runId,
   });
 }

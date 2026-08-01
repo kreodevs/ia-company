@@ -21,6 +21,7 @@ interface CoordinatorChatProps {
   productId?: string;
   orgUnitId?: string;
   serviceId?: string | null;
+  workflowId?: string | null;
   initialUserMessage?: string | null;
   welcomeMessageKey?: string;
   onPlanChange?: (plan: OfficeTaskPlan | null) => void;
@@ -31,6 +32,7 @@ function CoordinatorChatLegacy({
   productId,
   orgUnitId,
   serviceId,
+  workflowId,
   initialUserMessage,
   welcomeMessageKey,
   onPlanChange,
@@ -106,7 +108,7 @@ function CoordinatorChatLegacy({
         productId: productId || undefined,
         orgUnitId: orgUnitId || undefined,
         serviceId: serviceId ?? plan.serviceId ?? undefined,
-        workflowId: plan.workflowId ?? undefined,
+        workflowId: workflowId ?? plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
       });
@@ -156,6 +158,7 @@ function CoordinatorChatStream({
   productId,
   orgUnitId,
   serviceId,
+  workflowId,
   initialUserMessage,
   welcomeMessageKey,
   onPlanChange,
@@ -174,12 +177,14 @@ function CoordinatorChatStream({
     productId: productId || undefined,
     orgUnitId: orgUnitId || undefined,
     serviceId: serviceId ?? undefined,
+    workflowId: workflowId ?? undefined,
   });
 
   scopeRef.current = {
     productId: productId || undefined,
     orgUnitId: orgUnitId || undefined,
     serviceId: serviceId ?? undefined,
+    workflowId: workflowId ?? undefined,
   };
 
   const connection = useMemo(
@@ -250,7 +255,7 @@ function CoordinatorChatStream({
         productId: productId || undefined,
         orgUnitId: orgUnitId || undefined,
         serviceId: serviceId ?? plan.serviceId ?? undefined,
-        workflowId: plan.workflowId ?? undefined,
+        workflowId: workflowId ?? plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
       });

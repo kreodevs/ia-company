@@ -29,9 +29,9 @@ flowchart LR
 
 Each step should produce deliverables and a **consensus JSON handoff** (see **[Handoffs and flow](/help/guia-equipo-ia#handoffs-and-flow)**).
 
-Route: **Workflows** (`/office/workflows`). The editor uses a visual canvas (`WorkflowCanvas`) to order nodes.
+Route (daily use): **Department procedures** (inside each room at `/office/departments/:slug` or `/org-units/:id`). Advanced config: **Settings → Procedures** (`/settings/procedures`). The visual editor remains at `/office/workflows/:id`. The `/office/workflows` route redirects to the department-grouped catalog.
 
-Platform workflows (product evaluation, launch, pricing…) are **ensured on the tenant** automatically the first time you need them.
+Platform procedures (product evaluation, launch, pricing…) are **ensured on the tenant** automatically the first time you need them.
 
 ---
 

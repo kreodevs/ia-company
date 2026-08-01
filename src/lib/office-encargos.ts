@@ -10,6 +10,8 @@ import { resolveTenantWorkspaceRoot } from "./tenant-workspace.js";
 import type { SharedMemory } from "../types/index.js";
 import type { ProposalEvidence } from "./decision-proposals.js";
 import { extractReferencedDocPaths } from "./referenced-doc-path.js";
+import { resolveEncargoDepartmentContext } from "./office-procedures.js";
+import { departmentWarRoomHref } from "./office-department-team.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -18,11 +20,16 @@ export interface OfficeEncargoSummary {
   title: string;
   request: string;
   workflowName: string;
+  procedureLabel: string;
   status: ExecutionStatus;
   phase: OfficeEncargoPhase;
   productId: string | null;
   productName: string | null;
   productSlug: string | null;
+  departmentSlug: string | null;
+  orgUnitId: string | null;
+  orgUnitName: string | null;
+  departmentHref: string | null;
   teamAgents: string[];
   totalCostUsd: number;
   startedAt: string | null;
@@ -133,6 +140,10 @@ function extractTeamAgents(memory: SharedMemory): string[] {
   return [...new Set(names)];
 }
 
+function readMemoryOrgUnitId(memory: SharedMemory): string | null {
+  return readMemoryString(memory, "orgUnitId");
+}
+
 function resolveProductFromMemory(
   memory: SharedMemory,
   products: Array<{ id: string; slug: string; name: string }>,
@@ -220,17 +231,54 @@ async function countDocumentsForRun(
   return Math.max(historyLen, revisionCount, fileCount, savedPaths);
 }
 
+export function encargoActivityFields(input: {
+  workflowName: string;
+  sharedMemory: SharedMemory;
+  orgUnitNameById: Map<string, string>;
+}): {
+  title: string;
+  procedureLabel: string;
+  departmentSlug: string | null;
+  orgUnitName: string | null;
+} {
+  const request = extractRequest(input.sharedMemory);
+  const teamAgents = extractTeamAgents(input.sharedMemory);
+  const orgUnitId = readMemoryOrgUnitId(input.sharedMemory);
+  const orgUnitName = orgUnitId ? (input.orgUnitNameById.get(orgUnitId) ?? null) : null;
+  const context = resolveEncargoDepartmentContext({
+    teamAgents,
+    orgUnitId,
+    orgUnitName,
+    workflowName: input.workflowName,
+  });
+  return {
+    title: buildTitle(request, input.workflowName),
+    procedureLabel: context.procedureLabel,
+    departmentSlug: context.departmentSlug,
+    orgUnitName: context.orgUnitName,
+  };
+}
+
 async function mapRunToSummary(
   run: ExecutionRun & { workflow: { name: string } },
   products: Array<{ id: string; slug: string; name: string }>,
   productConsensusByProductId: Map<string, string>,
   tenantId: string,
   tenantSlug: string | null | undefined,
+  orgUnitNameById: Map<string, string>,
 ): Promise<OfficeEncargoSummary> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
   const product = resolveProductFromMemory(memory, products);
   const teamAgents = extractTeamAgents(memory);
+  const orgUnitId = readMemoryOrgUnitId(memory);
+  const orgUnitName = orgUnitId ? (orgUnitNameById.get(orgUnitId) ?? null) : null;
+  const departmentContext = resolveEncargoDepartmentContext({
+    teamAgents,
+    orgUnitId,
+    orgUnitName,
+    workflowName: run.workflow.name,
+  });
   const consensusId = product ? productConsensusByProductId.get(product.id) : undefined;
   const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenantSlug, product?.slug ?? null);
   const documentCount = await countDocumentsForRun(run, workspaceRoot, consensusId ?? null);
@@ -244,11 +292,16 @@ async function mapRunToSummary(
     title: buildTitle(request, run.workflow.name),
     request,
     workflowName: run.workflow.name,
+    procedureLabel: departmentContext.procedureLabel,
     status: run.status,
     phase,
     productId: product?.id ?? null,
     productName: product?.name ?? null,
     productSlug: product?.slug ?? null,
+    departmentSlug: departmentContext.departmentSlug,
+    orgUnitId: departmentContext.orgUnitId,
+    orgUnitName: departmentContext.orgUnitName,
+    departmentHref: departmentContext.departmentHref,
     teamAgents,
     totalCostUsd: run.totalCostUsd,
     startedAt: run.startedAt?.toISOString() ?? null,
@@ -261,11 +314,16 @@ async function mapRunToSummary(
 
 export async function listOfficeEncargos(
   tenantId: string,
-  options: { limit?: number; phase?: OfficeEncargoPhase } = {},
+  options: {
+    limit?: number;
+    phase?: OfficeEncargoPhase;
+    departmentSlug?: string;
+    orgUnitId?: string;
+  } = {},
 ): Promise<{ items: OfficeEncargoSummary[] }> {
   const limit = Math.min(100, Math.max(1, options.limit ?? 50));
 
-  const [runs, products, consensusRows, tenant] = await Promise.all([
+  const [runs, products, consensusRows, tenant, orgUnits] = await Promise.all([
     prisma.executionRun.findMany({
       where: { tenantId },
       orderBy: { createdAt: "desc" },
@@ -281,18 +339,29 @@ export async function listOfficeEncargos(
       select: { id: true, productId: true },
     }),
     prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
+    prisma.orgUnit.findMany({
+      where: { tenantId, isActive: true },
+      select: { id: true, name: true },
+    }),
   ]);
 
   const consensusByProductId = new Map(consensusRows.map((c) => [c.productId, c.id]));
+  const orgUnitNameById = new Map(orgUnits.map((org) => [org.id, org.name]));
 
   let items = await Promise.all(
     runs.map((run) =>
-      mapRunToSummary(run, products, consensusByProductId, tenantId, tenant?.slug),
+      mapRunToSummary(run, products, consensusByProductId, tenantId, tenant?.slug, orgUnitNameById),
     ),
   );
 
   if (options.phase) {
     items = items.filter((item) => item.phase === options.phase);
+  }
+  if (options.departmentSlug) {
+    items = items.filter((item) => item.departmentSlug === options.departmentSlug);
+  }
+  if (options.orgUnitId) {
+    items = items.filter((item) => item.orgUnitId === options.orgUnitId);
   }
 
   return { items };
@@ -495,7 +564,7 @@ export async function getOfficeEncargoDetail(
   });
   if (!run) return null;
 
-  const [products, consensusRows, tenant, proposalRow] = await Promise.all([
+  const [products, consensusRows, tenant, orgUnits, proposalRow] = await Promise.all([
     prisma.tenantProduct.findMany({
       where: { tenantId },
       select: { id: true, slug: true, name: true },
@@ -505,6 +574,10 @@ export async function getOfficeEncargoDetail(
       select: { id: true, productId: true },
     }),
     prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
+    prisma.orgUnit.findMany({
+      where: { tenantId, isActive: true },
+      select: { id: true, name: true },
+    }),
     prisma.decisionProposal.findFirst({
       where: { tenantId, runId: run.id },
       orderBy: { createdAt: "desc" },
@@ -512,6 +585,7 @@ export async function getOfficeEncargoDetail(
     }),
   ]);
   const consensusByProductId = new Map(consensusRows.map((c) => [c.productId, c.id]));
+  const orgUnitNameById = new Map(orgUnits.map((org) => [org.id, org.name]));
 
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const product = resolveProductFromMemory(memory, products);
@@ -522,6 +596,7 @@ export async function getOfficeEncargoDetail(
     consensusByProductId,
     tenantId,
     tenant?.slug,
+    orgUnitNameById,
   );
   const documents = await loadDocumentsForRun(run, tenantId);
 
@@ -558,7 +633,14 @@ export async function getOfficeEncargoDetail(
     nextAction: extractNextAction(memory),
     decisionProposal,
     debugHref: `/debug/runs/${run.id}`,
-    warRoomHref: product ? `/war-room/${product.id}` : null,
+    warRoomHref:
+      product
+        ? `/war-room/${product.id}?run=${run.id}`
+        : departmentWarRoomHref({
+            departmentSlug: summary.departmentSlug,
+            orgUnitId: summary.orgUnitId,
+            runId: run.id,
+          }),
   };
 }
 

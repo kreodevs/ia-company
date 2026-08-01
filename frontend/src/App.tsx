@@ -44,12 +44,13 @@ import SetupSuperAdminPage from "./pages/SetupSuperAdminPage";
 import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
 import TenantUsersPage from "./pages/TenantUsersPage";
 import WorkflowEditorPage from "./pages/WorkflowEditorPage";
-import WorkflowsPage from "./pages/WorkflowsPage";
+import ProceduresSettingsPage from "./pages/ProceduresSettingsPage";
 import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
 
 function RedirectAiTeamTab({ tab }: { tab: "agents" | "skills" }) {
-  return <Navigate to={tab === "agents" ? "/ai-team" : `/ai-team?tab=${tab}`} replace />;
+  const suffix = tab === "agents" ? "" : `?tab=${tab}`;
+  return <Navigate to={`/settings/specialists${suffix}`} replace />;
 }
 
 function RedirectProductConsensus() {
@@ -60,7 +61,7 @@ function RedirectProductConsensus() {
 
 function RedirectWorkflowEditor() {
   const { id } = useParams<{ id: string }>();
-  if (!id) return <Navigate to="/office/workflows" replace />;
+  if (!id) return <Navigate to="/settings/procedures" replace />;
   return <Navigate to={`/office/workflows/${id}`} replace />;
 }
 
@@ -97,17 +98,19 @@ function AppShell() {
               <Route path="office/pendientes" element={<PendingDecisionsPage />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />
-              <Route path="office/workflows" element={<WorkflowsPage />} />
-              <Route path="ai-team" element={<AiTeamHubPage />} />
+              <Route path="office/workflows" element={<Navigate to="/settings/procedures" replace />} />
+              <Route path="ai-team" element={<Navigate to="/settings/specialists" replace />} />
+              <Route path="settings/specialists" element={<AiTeamHubPage />} />
+              <Route path="settings/procedures" element={<ProceduresSettingsPage />} />
               <Route path="agents" element={<RedirectAiTeamTab tab="agents" />} />
               <Route path="skills" element={<RedirectAiTeamTab tab="skills" />} />
-              <Route path="workflows" element={<Navigate to="/office/workflows" replace />} />
+              <Route path="workflows" element={<Navigate to="/settings/procedures" replace />} />
               <Route path="workflows/:id" element={<RedirectWorkflowEditor />} />
               <Route path="runs" element={<RunsPage />} />
               <Route path="runs/:id" element={<RunDetailPage />} />
               <Route path="debug/runs" element={<RunsPage />} />
               <Route path="debug/runs/:id" element={<RunDetailPage />} />
-              <Route path="debug/workflows" element={<Navigate to="/office/workflows" replace />} />
+              <Route path="debug/workflows" element={<Navigate to="/settings/procedures" replace />} />
               <Route path="debug/workflows/:id" element={<RedirectWorkflowEditor />} />
               <Route path="debug/agents" element={<RedirectAiTeamTab tab="agents" />} />
               <Route path="debug/skills" element={<RedirectAiTeamTab tab="skills" />} />

@@ -74,15 +74,15 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   },
   {
     slug: "guia-equipo-ia",
-    title: "Equipo IA y habilidades",
+    title: "Plantilla de especialistas y habilidades",
     description: "Agentes, skills, Catalog Studio, construcción de agentes y handoffs.",
     contentEs: guiaEquipoIaEs,
     contentEn: guiaEquipoIaEn,
   },
   {
     slug: "guia-flujos",
-    title: "Flujos y programaciones",
-    description: "Workflows, programaciones, panel Operaciones (/ops) y decisiones GO/NO-GO.",
+    title: "Procedimientos y programaciones",
+    description: "Procedimientos por departamento, programaciones, panel Operaciones (/ops) y decisiones GO/NO-GO.",
     contentEs: guiaFlujosEs,
     contentEn: guiaFlujosEn,
   },
@@ -106,12 +106,12 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
     description: "Virtual rooms vs Org Studio, design.md, tokens, and gallery.",
   },
   "guia-equipo-ia": {
-    title: "AI team and skills",
+    title: "Specialist templates and skills",
     description: "Agents, skills, Catalog Studio, building agents, and handoffs.",
   },
   "guia-flujos": {
-    title: "Workflows and schedules",
-    description: "Workflows, schedules, Operations panel (/ops), and GO/NO-GO decisions.",
+    title: "Procedures and schedules",
+    description: "Department procedures, schedules, Operations panel (/ops), and GO/NO-GO decisions.",
   },
 };
 

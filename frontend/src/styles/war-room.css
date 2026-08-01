@@ -1452,3 +1452,106 @@ html[data-theme="letter"] .war-room {
     flex: 1 1 calc(50% - 0.45rem);
   }
 }
+
+.war-room-handoff-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.war-room-handoff-banner {
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  color: var(--war-room-fg, inherit);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: war-room-handoff-banner-in 0.35s ease;
+}
+
+@keyframes war-room-handoff-banner-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.war-room-handoff-pulse {
+  position: absolute;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  border: 2px solid rgba(96, 165, 250, 0.75);
+  animation: war-room-handoff-pulse 1.2s ease-out infinite;
+  transform: translate(-50%, -50%);
+}
+
+.war-room-handoff-pulse-out {
+  border-color: rgba(148, 163, 184, 0.55);
+  animation-duration: 0.9s;
+  animation-iteration-count: 1;
+}
+
+@keyframes war-room-handoff-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.85; }
+  100% { transform: translate(-50%, -50%) scale(1.35); opacity: 0; }
+}
+
+.office-dept-war-room-live {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.office-dept-war-room-live-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.office-dept-war-room-live-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted-foreground);
+}
+
+.office-dept-war-room-live-procedure {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.office-dept-war-room-live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.office-dept-war-room-table {
+  min-height: 18rem;
+}
+
+.office-dept-war-room-seat-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.office-dept-war-room-seat-btn .war-room-seat {
+  position: static;
+  transform: none;
+}

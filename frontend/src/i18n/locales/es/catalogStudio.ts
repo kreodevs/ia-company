@@ -1,6 +1,6 @@
 export const catalogStudio = {
-  title: "Equipo IA",
-  subtitle: "Catálogo de agentes y habilidades de tu tenant — reutiliza antes de crear.",
+  title: "Plantilla de especialistas",
+  subtitle: "Contrata y configura roles, modelos y skills. Para ver quién trabaja ahora, entra a un departamento.",
   tabs: {
     agents: "Agentes",
     skills: "Habilidades",

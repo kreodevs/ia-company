@@ -1,6 +1,6 @@
 export const productWork = {
   title: "Asignar trabajo al producto",
-  subtitle: "Ejecuta workflows o agentes sobre {{name}} con contexto del workspace y memoria del producto.",
+  subtitle: "Ejecuta procedimientos o agentes sobre {{name}} con contexto del workspace y memoria del producto.",
   loading: "Cargando opciones…",
   loadFailed: "No se pudieron cargar las opciones de lanzamiento.",
   launch: "Lanzar",
@@ -10,10 +10,10 @@ export const productWork = {
   taskLabel: "Tarea (opcional)",
   taskPlaceholder: "Ej.: auditoría SEO de la landing, plan de contenido 90 días…",
   taskHint: "Si lo dejas vacío, los agentes usan la Next Action de la memoria del producto.",
-  noWorkflows: "No hay workflows personalizados. Usa presets o crea uno en Workflows.",
+  noWorkflows: "No hay procedimientos personalizados. Usa presets o crea uno en Configuración → Procedimientos.",
   tabs: {
     presets: "Presets",
-    workflows: "Workflows",
+    workflows: "Procedimientos",
     agents: "Agentes",
   },
   categories: {

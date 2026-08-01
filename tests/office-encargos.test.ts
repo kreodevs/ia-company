@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  encargoActivityFields,
   encargoHumanHref,
   resolveFinalReport,
   resolveStepMarkdown,
@@ -9,6 +10,34 @@ import {
 describe("office-encargos", () => {
   it("encargoHumanHref points to human office route", () => {
     assert.equal(encargoHumanHref("run-123"), "/office/encargos/run-123");
+  });
+
+  it("encargoActivityFields exposes department and procedure context", () => {
+    const fields = encargoActivityFields({
+      workflowName: "feature-development",
+      sharedMemory: {
+        teamAgents: ["fullstack-dhh", "qa-bach"],
+        officeRequest: "Implementar login OAuth",
+      },
+      orgUnitNameById: new Map(),
+    });
+    assert.equal(fields.title, "Implementar login OAuth");
+    assert.equal(fields.procedureLabel, "Feature Development");
+    assert.equal(fields.departmentSlug, "engineering");
+    assert.equal(fields.orgUnitName, null);
+  });
+
+  it("encargoActivityFields resolves custom org unit name", () => {
+    const fields = encargoActivityFields({
+      workflowName: "marketing-sprint",
+      sharedMemory: {
+        orgUnitId: "org-42",
+        teamAgents: ["marketing-godin"],
+      },
+      orgUnitNameById: new Map([["org-42", "Agencia LATAM"]]),
+    });
+    assert.equal(fields.orgUnitName, "Agencia LATAM");
+    assert.equal(fields.departmentSlug, null);
   });
 
   it("resolveStepMarkdown prefers full output over short handoff stub", () => {

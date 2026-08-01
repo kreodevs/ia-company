@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { TeamActiveRunSummary } from "../../lib/api";
+import { formatWorkflowTitle } from "../../lib/workflow-display";
 
 function shortTime(iso: string | null): string {
   if (!iso) return "—";
@@ -76,7 +77,7 @@ export default function WarRoomRunSelector({
           >
             <span className="war-room-run-chip-head">
               <span className={`war-room-run-chip-dot${tone === "live" ? " is-live" : ""}`} aria-hidden />
-              <span className="war-room-run-chip-title">{run.workflowName}</span>
+              <span className="war-room-run-chip-title">{formatWorkflowTitle(run.workflowName)}</span>
             </span>
             <span className="war-room-run-chip-meta">
               {run.status} · {shortTime(run.startedAt)}

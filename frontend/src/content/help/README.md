@@ -14,8 +14,8 @@ Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and desc
 | `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room, archive |
 | `guia-productos` | Productos | Phases, consensus, desk |
 | `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
-| `guia-equipo-ia` | Equipo IA y habilidades | Agents, skills, Catalog Studio, building agents, handoffs |
-| `guia-flujos` | Flujos y programaciones | Workflows, schedules, Operations `/ops`, GO/NO-GO |
+| `guia-equipo-ia` | Plantilla de especialistas y habilidades | Agents, skills, Catalog Studio, building agents, handoffs |
+| `guia-flujos` | Procedimientos y programaciones | Department procedures, schedules, Operations `/ops`, GO/NO-GO |
 
 Default route: `/help` → `/help/guia-completa`.
 

@@ -13,6 +13,8 @@ export const nav = {
   settings: "Settings",
   agents: "Agents",
   aiTeam: "AI team",
+  specialistTemplates: "Specialist templates",
+  procedures: "Procedures",
   skills: "Skills",
   workflows: "Workflows",
   runs: "Runs",

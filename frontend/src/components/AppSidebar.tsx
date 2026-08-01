@@ -50,6 +50,8 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin": LayoutDashboard,
   "/admin/templates": Layers,
   "/office/workflows": GitBranch,
+  "/settings/procedures": GitBranch,
+  "/settings/specialists": Bot,
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
@@ -369,11 +371,9 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           { to: "/office", labelKey: "nav.office", end: true },
           { to: "/office/pendientes", labelKey: "nav.pendientes", badge: pendingDecisions },
           { to: "/office/encargos", labelKey: "nav.encargos" },
-          { to: "/office/workflows", labelKey: "nav.workflows" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
           { to: "/org-units", labelKey: "nav.orgUnits" },
-          { to: "/ai-team", labelKey: "nav.aiTeam" },
         ],
       });
 
@@ -387,6 +387,8 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
       if (isTenantAdmin) {
         debugItems.push({ to: "/debug/team", labelKey: "nav.team" });
         debugItems.push({ to: "/settings", labelKey: "nav.settings" });
+        debugItems.push({ to: "/settings/procedures", labelKey: "nav.procedures" });
+        debugItems.push({ to: "/settings/specialists", labelKey: "nav.specialistTemplates" });
       }
 
       result.push({

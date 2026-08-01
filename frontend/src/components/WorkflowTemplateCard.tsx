@@ -13,6 +13,7 @@ interface WorkflowTemplateCardProps {
   editorPath: string;
   deleting?: boolean;
   onDelete: () => void;
+  hideSlug?: boolean;
 }
 
 export default function WorkflowTemplateCard({
@@ -20,6 +21,7 @@ export default function WorkflowTemplateCard({
   editorPath,
   deleting = false,
   onDelete,
+  hideSlug = false,
 }: WorkflowTemplateCardProps) {
   const { t } = useTranslation();
   const pipeline = workflowPipelineSteps(workflow);
@@ -31,9 +33,11 @@ export default function WorkflowTemplateCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate font-semibold">{title}</h3>
-          <p className="mt-0.5 truncate text-xs text-[var(--color-muted-foreground)]">
-            {workflow.name}
-          </p>
+          {!hideSlug && workflow.name !== title ? (
+            <p className="mt-0.5 truncate text-xs text-[var(--color-muted-foreground)]">
+              {workflow.name}
+            </p>
+          ) : null}
         </div>
         <span className="shrink-0 rounded-full border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-2.5 py-0.5 text-xs text-[var(--color-muted-foreground)]">
           {t("workflowCard.stepsCount", {

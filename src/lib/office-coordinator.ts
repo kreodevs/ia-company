@@ -20,6 +20,8 @@ import {
 } from "./github-repo.js";
 import { resolveTenantGithubToken } from "./tenant-integrations.js";
 import { buildOfficeDepartmentRooms, type OfficeDepartmentRoom } from "./office-departments.js";
+import { enrichDepartmentProcedureCounts } from "./office-procedures.js";
+import { encargoActivityFields } from "./office-encargos.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -84,6 +86,9 @@ export interface OfficeActivityItem {
   href: string | null;
   status?: ExecutionStatus | "pending_review";
   costUsd?: number;
+  procedureLabel?: string | null;
+  departmentSlug?: string | null;
+  orgUnitName?: string | null;
 }
 
 export interface OfficeRoiProduct {
@@ -759,6 +764,7 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     pendingDecisions,
     schedules,
     allProductRuns,
+    orgUnits,
   ] = await Promise.all([
     getTenantMonthlyUsage(tenantId),
     prisma.agent.findMany({
@@ -790,7 +796,13 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       where: { tenantId },
       select: { id: true, totalCostUsd: true, sharedMemory: true },
     }),
+    prisma.orgUnit.findMany({
+      where: { tenantId, isActive: true },
+      select: { id: true, name: true },
+    }),
   ]);
+
+  const orgUnitNameById = new Map(orgUnits.map((org) => [org.id, org.name]));
 
   const busyAgentIds = new Set<string>();
   for (const run of activeRuns) {
@@ -809,27 +821,43 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
   const activity: OfficeActivityItem[] = [];
 
   for (const run of activeRuns) {
+    const fields = encargoActivityFields({
+      workflowName: run.workflow?.name ?? "task",
+      sharedMemory: (run.sharedMemory ?? {}) as import("../types/index.js").SharedMemory,
+      orgUnitNameById,
+    });
     activity.push({
       id: `run-active-${run.id}`,
       type: "run_active",
-      title: run.workflow?.name ?? "Workflow",
+      title: fields.title,
       subtitle: run.status,
       timestamp: (run.startedAt ?? run.createdAt).toISOString(),
       href: `/office/encargos/${run.id}`,
       status: run.status,
+      procedureLabel: fields.procedureLabel,
+      departmentSlug: fields.departmentSlug,
+      orgUnitName: fields.orgUnitName,
     });
   }
 
   for (const run of recentRuns.slice(0, 5)) {
+    const fields = encargoActivityFields({
+      workflowName: run.workflow?.name ?? "task",
+      sharedMemory: (run.sharedMemory ?? {}) as import("../types/index.js").SharedMemory,
+      orgUnitNameById,
+    });
     activity.push({
       id: `run-${run.id}`,
       type: run.status === "FAILED" ? "run_failed" : "run_completed",
-      title: run.workflow?.name ?? "Workflow",
+      title: fields.title,
       subtitle: run.status,
       timestamp: (run.completedAt ?? run.createdAt).toISOString(),
       href: `/office/encargos/${run.id}`,
       status: run.status,
       costUsd: run.totalCostUsd,
+      procedureLabel: fields.procedureLabel,
+      departmentSlug: fields.departmentSlug,
+      orgUnitName: fields.orgUnitName,
     });
   }
 
@@ -892,7 +920,10 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
     status: busyAgentIds.has(a.id) ? ("busy" as const) : ("idle" as const),
   }));
 
-  const departments = await buildOfficeDepartmentRooms(tenantId, agentStatuses);
+  const departments = await enrichDepartmentProcedureCounts(
+    tenantId,
+    await buildOfficeDepartmentRooms(tenantId, agentStatuses),
+  );
 
   return {
     mode,

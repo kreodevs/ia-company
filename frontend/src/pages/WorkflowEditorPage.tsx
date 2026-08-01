@@ -119,8 +119,8 @@ export default function WorkflowEditorPage() {
     <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
       <PageHeader
         eyebrow={
-          <Link to="/office/workflows" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.workflows")}
+          <Link to="/settings/procedures" className="interactive text-[var(--color-primary)] hover:underline">
+            ← {t("nav.procedures")}
           </Link>
         }
         title={workflow.name}

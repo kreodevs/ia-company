@@ -6,6 +6,7 @@ import {
   type OfficeDashboard,
   type OfficeServiceTemplate,
 } from "../lib/api";
+import { encargoContextLine } from "../lib/office-encargo-display";
 import CoordinatorChat from "../components/office/CoordinatorChat";
 import OfficeFloorPlan from "../components/office/OfficeFloorPlan";
 import OfficeOnboardingPanel, {
@@ -189,6 +190,9 @@ export default function OfficePage() {
                       </p>
                     </div>
                     <p className="office-activity-meta">
+                      {item.procedureLabel
+                        ? `${encargoContextLine(item, t)} · `
+                        : ""}
                       {t(`office.activity.${item.type}`)} ·{" "}
                       {new Date(item.timestamp).toLocaleString([], {
                         month: "short",
@@ -215,7 +219,7 @@ export default function OfficePage() {
             </ul>
           )}
 
-          <Link to="/ai-team" className="office-roi-link">
+          <Link to="/settings/specialists" className="office-roi-link">
             {t("office.agents.viewAll")}
           </Link>
         </aside>

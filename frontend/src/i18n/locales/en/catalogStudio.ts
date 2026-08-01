@@ -1,6 +1,6 @@
 export const catalogStudio = {
-  title: "AI team",
-  subtitle: "Your tenant agent and skill catalog — reuse before inventing.",
+  title: "Specialist templates",
+  subtitle: "Hire and configure roles, models, and skills. To see who is working now, enter a department room.",
   tabs: {
     agents: "Agents",
     skills: "Skills",

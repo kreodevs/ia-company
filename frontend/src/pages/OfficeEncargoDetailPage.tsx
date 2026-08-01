@@ -16,6 +16,10 @@ import Input from "../components/ui/Input";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
+import {
+  encargoDepartmentLabel,
+  encargoTeamLabels,
+} from "../lib/office-encargo-display";
 
 type DetailTab = "final" | "documents";
 
@@ -145,6 +149,18 @@ export default function OfficeEncargoDetailPage() {
         </div>
       </header>
 
+      <nav className="office-encargo-breadcrumb" aria-label={t("office.encargos.detailEyebrow")}>
+        <Link to="/office">{t("office.encargos.breadcrumbOffice")}</Link>
+        <span aria-hidden>→</span>
+        {detail.departmentHref ? (
+          <Link to={detail.departmentHref}>{encargoDepartmentLabel(detail, t)}</Link>
+        ) : (
+          <span>{encargoDepartmentLabel(detail, t)}</span>
+        )}
+        <span aria-hidden>→</span>
+        <span>{detail.procedureLabel}</span>
+      </nav>
+
       <div className="office-encargo-detail-toolbar">
         <Link to="/office/encargos" className="office-link-btn">
           {t("office.encargos.backToList")}
@@ -163,8 +179,18 @@ export default function OfficeEncargoDetailPage() {
 
       <dl className="office-encargo-detail-meta">
         <div>
-          <dt>{t("office.encargos.workflow")}</dt>
-          <dd>{detail.workflowName}</dd>
+          <dt>{t("office.encargos.department")}</dt>
+          <dd>
+            {detail.departmentHref ? (
+              <Link to={detail.departmentHref}>{encargoDepartmentLabel(detail, t)}</Link>
+            ) : (
+              encargoDepartmentLabel(detail, t)
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>{t("office.encargos.procedure")}</dt>
+          <dd>{detail.procedureLabel}</dd>
         </div>
         {detail.productName ? (
           <div>
@@ -180,7 +206,7 @@ export default function OfficeEncargoDetailPage() {
         {detail.teamAgents.length > 0 ? (
           <div>
             <dt>{t("office.encargos.team")}</dt>
-            <dd>{detail.teamAgents.map((a) => a.replace(/-/g, " ")).join(", ")}</dd>
+            <dd>{encargoTeamLabels(detail.teamAgents, t)}</dd>
           </div>
         ) : null}
         <div>

@@ -25,7 +25,7 @@ Si no sabes dónde ir, abre **Oficina** y describe qué necesitas.
 | 2 | Revisar plan (equipo, coste, tiempo) | mismo chat |
 | 3 | Aprobar y ejecutar | botón «Aprobar y ejecutar» |
 | 4 | Seguir en vivo | **War room** del producto (si aplica) |
-| 5 | Recoger resultados | **Encargos** → detalle del encargo |
+| 5 | Recoger resultados | **Encargos** → detalle del encargo (departamento → procedimiento → equipo) |
 
 **Atajo:** servicios rápidos en Oficina (chips: mercado, validar idea, feature, repo…).
 
@@ -78,6 +78,8 @@ Si no sabes dónde ir, abre **Oficina** y describe qué necesitas.
 | Objetivo | Dónde | Ruta |
 |----------|-------|------|
 | Ver departamentos | **Departamentos** | `/org-units` |
+| Entrar a sala virtual | Planta → Estrategia / Ingeniería… | `/office/departments/:slug` |
+| Procedimientos del dept | Dentro de la sala | tab Procedimientos |
 | Crear departamento (plantilla) | **Org Studio** | `/org-studio` |
 | Encargo scoped a un dept | Oficina → selector departamento | `/office` |
 | Agentes del departamento | Detalle departamento | `/org-units/:id` |
@@ -86,14 +88,15 @@ Los departamentos definen **agentes sugeridos, estilo y pipeline de artefactos**
 
 ---
 
-### Quiero configurar agentes y habilidades
+### Quiero configurar agentes y procedimientos
 
 | Qué | Dónde | Ruta |
 |-----|-------|------|
-| Catálogo de agentes | **Equipo IA** | `/ai-team` |
-| Crear agente | Equipo IA → Crear | `/ai-team?tab=create-agent` |
-| Skills | Equipo IA → Skills | `/ai-team` (tab skills) |
-| Workflows reutilizables | **Workflows** | `/office/workflows` |
+| Plantilla de especialistas (contratar/configurar) | **Configuración → Plantilla de especialistas** | `/settings/specialists` |
+| Procedimientos por departamento | **Configuración → Procedimientos** | `/settings/procedures` |
+| Operación diaria (lanzar trabajo) | Sala del departamento | `/office/departments/:slug` o `/org-units/:id` |
+
+El catálogo técnico ya no está en el nav diario de Oficina — vive bajo Configuración (admin).
 
 ---
 
@@ -113,7 +116,7 @@ Los departamentos definen **agentes sugeridos, estilo y pipeline de artefactos**
 | Qué | Dónde | Ruta |
 |-----|-------|------|
 | Reglas de calendario | **Configuración → Orquestación** | `/settings` |
-| Workflows disponibles | Workflows | `/office/workflows` |
+| Procedimientos disponibles | Configuración → Procedimientos | `/settings/procedures` |
 
 Modo por defecto: **bajo demanda** (nada corre sin tu OK).
 
