@@ -17,6 +17,7 @@ import {
   syncTenantPortfolioManifest,
   agentDocsPath,
 } from "../lib/workspace-layout.js";
+import { isCompanyScopedMemory } from "../lib/scope-contract.js";
 import { resolveAgentProviderConfig, tenantLlmFromRecord, type TenantLlmOverrides } from "../lib/tenant-llm.js";
 import type {
   AgentWithSkills,
@@ -777,8 +778,9 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
 
     const wroteDocs = agentWroteDocsInStep(response, agent.name);
     let savedDeliverablePath: string | undefined;
+    const companyScoped = isCompanyScopedMemory(sharedMemory as Record<string, unknown>);
 
-    if (tenantCtx.productSlug && output.trim() && !wroteDocs) {
+    if ((tenantCtx.productSlug || companyScoped) && output.trim() && !wroteDocs) {
       const savedPath = await persistAgentDeliverableIfMissing({
         workspaceRoot: tenantCtx.workspaceRoot,
         agentName: agent.name,
@@ -786,6 +788,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
         runId,
         output,
         response,
+        companyScoped: companyScoped && !tenantCtx.productSlug,
       });
       if (savedPath) {
         savedDeliverablePath = savedPath;
@@ -826,7 +829,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
     providerConfig: ReturnType<typeof resolveAgentProviderConfig>,
     tenantCtx: TenantExecutionContext,
     workflowName: string | undefined,
-    _sharedMemory: SharedMemory,
+    sharedMemory: SharedMemory,
   ): Promise<StepResult> {
     try {
       const result = await runReplicateStep(providerConfig, systemPrompt, userPrompt);
@@ -836,13 +839,15 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
       const totalTokens = promptTokens + completionTokens;
 
       let savedDeliverablePath: string | undefined;
-      if (tenantCtx.productSlug && output) {
+      const companyScoped = isCompanyScopedMemory(sharedMemory as Record<string, unknown>);
+      if ((tenantCtx.productSlug || companyScoped) && output) {
         const savedPath = await persistHandoffAsAgentDoc({
           workspaceRoot: tenantCtx.workspaceRoot,
           agentName: agent.name,
           workflowName: workflowName ?? "workflow",
           runId,
           content: output,
+          companyScoped: companyScoped && !tenantCtx.productSlug,
         });
         if (savedPath) {
           savedDeliverablePath = savedPath;
@@ -1132,6 +1137,7 @@ export function compileSystemPrompt(
   },
 ): string {
   const sections: string[] = [`# Role: ${agent.role}`, agent.systemPrompt];
+  const companyScoped = isCompanyScopedMemory(sharedMemory as Record<string, unknown>);
 
   if (agent.skills.length > 0) {
     sections.push("\n## Available Skills\n");
@@ -1148,7 +1154,7 @@ export function compileSystemPrompt(
     sections.push(`\n## Cycle Convergence\n${sharedMemory.convergenceRules.trim()}`);
   }
 
-  if (typeof sharedMemory.focusProductSlug === "string") {
+  if (!companyScoped && typeof sharedMemory.focusProductSlug === "string") {
     sections.push(
       `\n## Focus Product\n${sharedMemory.focusProductName ?? sharedMemory.focusProductSlug} (\`${sharedMemory.focusProductSlug}\`) — workspace root is this product repo.`,
     );
@@ -1163,7 +1169,7 @@ export function compileSystemPrompt(
     }
   }
 
-  if (sharedMemory.productProfile && typeof sharedMemory.productProfile === "object") {
+  if (!companyScoped && sharedMemory.productProfile && typeof sharedMemory.productProfile === "object") {
     const profileSection = buildProductProfilePromptSection(
       parseProductProfile(sharedMemory.productProfile),
     );
@@ -1171,11 +1177,19 @@ export function compileSystemPrompt(
   }
 
   sections.push(`\n${buildWorkspacePromptSection({
-    productSlug: workspace?.productSlug ?? (typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined),
-    productName: workspace?.productName ?? (typeof sharedMemory.focusProductName === "string" ? sharedMemory.focusProductName : undefined),
+    companyScoped,
+    productSlug: companyScoped
+      ? undefined
+      : workspace?.productSlug ??
+        (typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined),
+    productName: companyScoped
+      ? undefined
+      : workspace?.productName ??
+        (typeof sharedMemory.focusProductName === "string" ? sharedMemory.focusProductName : undefined),
   })}`);
 
-  sections.push(`\n## Your deliverables path\nSave role documents under \`${agentDocsPath(agent.name)}/\` (relative to workspace root).`);
+  const deliverableDir = agentDocsPath(agent.name, { companyScoped });
+  sections.push(`\n## Your deliverables path\nSave role documents under \`${deliverableDir}/\` (relative to workspace root).`);
 
   if (inputConfig.passSharedMemory !== false && Object.keys(sharedMemory).length > 0) {
     const { _history, ...rest } = sharedMemory;
@@ -1215,7 +1229,7 @@ export function compileSystemPrompt(
     );
   }
 
-  if (workspace?.productSlug) {
+  if (workspace?.productSlug && !companyScoped) {
     sections.push(
       `\n## Product Consensus (${workspace.productSlug})\nYour handoff is appended to **${workspace.productSlug}'s** product consensus (one revision per step). Read \`consensus.md\` at the workspace root for full prior context; use the JSON memory above for the most recent state. Tenant-level (company) consensus is separate and only tracks cycle strategy / pipeline.`,
     );

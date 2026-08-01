@@ -32,4 +32,11 @@ export const runs = {
     done: "Finished — {{status}}",
     logPayload: "Details",
   },
+  scope: {
+    companyDiscovery: "Company discovery",
+    companyReview: "Company review",
+    companyOperate: "Company operation",
+    product: "Product operation",
+    department: "Department operation",
+  },
 } as const;

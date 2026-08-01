@@ -13,6 +13,7 @@ import { extractReferencedDocPaths } from "./referenced-doc-path.js";
 import { resolveEncargoDepartmentContext } from "./office-procedures.js";
 import { departmentWarRoomHref } from "./office-department-team.js";
 import { buildDepartmentRunScopeWhere, extractRunTeamAgentNames } from "./office-run-department.js";
+import { isCompanyScopedMemory, resolveRunScopeMeta } from "./scope-contract.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
 
@@ -38,6 +39,9 @@ export interface OfficeEncargoSummary {
   createdAt: string;
   documentCount: number;
   hasFinalReport: boolean;
+  scopeLevel: "company" | "product" | "department" | null;
+  scopeIntent: string | null;
+  scopeLabelKey: string | null;
 }
 
 export interface OfficeEncargoDocument {
@@ -262,7 +266,11 @@ async function mapRunToSummary(
 ): Promise<OfficeEncargoSummary> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
-  const product = resolveProductFromMemory(memory, products);
+  const scopeMeta = resolveRunScopeMeta(memory as Record<string, unknown>, run.workflow.name);
+  const product =
+    isCompanyScopedMemory(memory as Record<string, unknown>)
+      ? null
+      : resolveProductFromMemory(memory, products);
   const teamAgents = extractRunTeamAgentNames(memory);
   const orgUnitId = readMemoryOrgUnitId(memory);
   const orgUnitName = orgUnitId ? (orgUnitNameById.get(orgUnitId) ?? null) : null;
@@ -305,6 +313,9 @@ async function mapRunToSummary(
     createdAt: run.createdAt.toISOString(),
     documentCount,
     hasFinalReport,
+    scopeLevel: scopeMeta?.level ?? null,
+    scopeIntent: scopeMeta?.intent ?? null,
+    scopeLabelKey: scopeMeta?.labelKey ?? null,
   };
 }
 

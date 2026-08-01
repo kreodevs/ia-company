@@ -94,3 +94,53 @@ export function shouldMergeTenantConsensus(input: {
   }
   return true;
 }
+
+/** Company-scoped scheduled runs use tenant workspace — not the cycle focus product. */
+export function shouldAttachFocusProductForScheduledRun(workflowName: string): boolean {
+  return !isCompanyScopedWorkflow(workflowName);
+}
+
+export interface RunScopeMeta {
+  level: ScopeLevel;
+  intent: ScopeIntent;
+  /** i18n key under runs.scope.* */
+  labelKey: string;
+}
+
+export function resolveRunScopeMeta(
+  memory: Record<string, unknown>,
+  workflowName?: string | null,
+): RunScopeMeta | null {
+  const scope = parseScopeContract(memory);
+  if (scope) {
+    if (scope.level === "company") {
+      const intent = scope.intent;
+      const labelKey =
+        intent === "discovery"
+          ? "runs.scope.companyDiscovery"
+          : intent === "review"
+            ? "runs.scope.companyReview"
+            : "runs.scope.companyOperate";
+      return { level: "company", intent, labelKey };
+    }
+    if (scope.level === "department") {
+      return { level: "department", intent: scope.intent, labelKey: "runs.scope.department" };
+    }
+    return { level: "product", intent: scope.intent, labelKey: "runs.scope.product" };
+  }
+  if (workflowName && isCompanyScopedWorkflow(workflowName)) {
+    return {
+      level: "company",
+      intent: "discovery",
+      labelKey: "runs.scope.companyDiscovery",
+    };
+  }
+  if (typeof memory.productId === "string" || typeof memory.focusProductSlug === "string") {
+    return { level: "product", intent: "operate", labelKey: "runs.scope.product" };
+  }
+  return null;
+}
+
+export function isCompanyScopedMemory(memory: Record<string, unknown>): boolean {
+  return parseScopeContract(memory)?.level === "company";
+}

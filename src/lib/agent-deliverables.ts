@@ -160,6 +160,7 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
   runId: string;
   output: string;
   response: GenerateTextResult<TOOLS, unknown>;
+  companyScoped?: boolean;
 }): Promise<string | null> {
   if (agentWroteDocsInStep(input.response, input.agentName)) return null;
 
@@ -169,6 +170,7 @@ export async function persistAgentDeliverableIfMissing<TOOLS extends ToolSet>(in
     workflowName: input.workflowName,
     runId: input.runId,
     content: input.output,
+    companyScoped: input.companyScoped,
   });
 }
 
@@ -178,11 +180,12 @@ export async function persistHandoffAsAgentDoc(input: {
   workflowName: string;
   runId: string;
   content: string;
+  companyScoped?: boolean;
 }): Promise<string | null> {
   const content = input.content.trim();
   if (!content) return null;
 
-  const docsDir = agentDocsPath(input.agentName);
+  const docsDir = agentDocsPath(input.agentName, { companyScoped: input.companyScoped });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const workflowSlug = slugifySegment(input.workflowName) || "workflow";
   const relativePath = join(docsDir, `${stamp}-${workflowSlug}.md`);

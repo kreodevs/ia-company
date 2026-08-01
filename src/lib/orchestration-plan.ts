@@ -12,6 +12,7 @@ import {
 import { ORCHESTRATION_PRESETS, isOrchestrationPresetId } from "./orchestration-presets.js";
 import { executeMetaScheduleRun, resolveMetaOrchestratorDecision } from "../core/meta-orchestrator.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
+import { isCompanyScopedWorkflow, shouldAttachFocusProductForScheduledRun } from "./scope-contract.js";
 import type { OrchestrationPreviewEntry } from "../types/orchestration.js";
 import { loadOrgUnitContext, orgContextToInitialMemory } from "./org-context.js";
 
@@ -192,7 +193,7 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
   let productSlug: string | undefined;
   let orgMemory: Record<string, unknown> | undefined;
 
-  if (!orgUnitId) {
+  if (!orgUnitId && shouldAttachFocusProductForScheduledRun(workflow.name)) {
     const { resolveFocusProductForTenant } = await import("./product-run-association.js");
     const focused = await resolveFocusProductForTenant(schedule.tenantId);
     if (focused) {
@@ -236,8 +237,8 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
 
   return executeWorkflowInBackground(schedule.workflowId, {
     tenantId: schedule.tenantId,
-    productId,
-    productSlug,
+    productId: isCompanyScopedWorkflow(workflow.name) ? undefined : productId,
+    productSlug: isCompanyScopedWorkflow(workflow.name) ? undefined : productSlug,
     workflowName: workflow.name,
     mergeConsensus: false,
     syncConsensus: true,

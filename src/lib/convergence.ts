@@ -39,6 +39,7 @@ import {
   unwrapStuckNextAction,
 } from "./stuck-action.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
+import { isCompanyScopedMemory, resolveRunScopeMeta } from "./scope-contract.js";
 
 function parseGoNoGo(value: unknown): GoNoGoDecision | null {
   const raw = asString(value)?.toUpperCase();
@@ -114,6 +115,20 @@ This is a per-PRODUCT memory. End your reply with a fenced JSON block that will 
 `.trim();
 }
 
+export async function persistDiscoveryPipelineIdeas(
+  tenantId: string,
+  topIdeas: string[],
+): Promise<void> {
+  if (topIdeas.length === 0) return;
+  const interestCategories = await getTenantInterestCategories(tenantId);
+  const ideasWithScores = topIdeas.slice(0, 3).map((title) => ({
+    title,
+    interestScore: scoreIdeaAgainstInterests(title, null, interestCategories),
+  }));
+  await addPipelineIdeas(tenantId, ideasWithScores);
+  await updateCompanyPhase(tenantId, "validating");
+}
+
 export async function processConvergenceAfterRun(
   tenantId: string,
   workflowName: string,
@@ -126,7 +141,7 @@ export async function processConvergenceAfterRun(
   const stoppedByVeto = memory._stoppedByVeto === true;
 
   // 1. Per-product handoffs (one revision per step) — only when a product is in scope.
-  if (productSlug) {
+  if (productSlug && !isCompanyScopedMemory(memory as Record<string, unknown>)) {
     const product = await getProductBySlug(tenantId, productSlug);
     if (product) {
       const history = Array.isArray(memory._history) ? memory._history : [];
@@ -191,6 +206,10 @@ export async function processConvergenceAfterRun(
   }
 
   if (stoppedByVeto) {
+    const topIdeas = asStringArray(enriched.topIdeas);
+    if (workflowName === WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY && topIdeas.length > 0) {
+      await persistDiscoveryPipelineIdeas(tenantId, topIdeas);
+    }
     const companyMemory: SharedMemory = {
       ...enriched,
       nextAction: asString(memory.nextAction) ?? undefined,
@@ -229,13 +248,7 @@ export async function processConvergenceAfterRun(
 
   const topIdeas = asStringArray(enriched.topIdeas);
   if (topIdeas.length > 0) {
-    const interestCategories = await getTenantInterestCategories(tenantId);
-    const ideasWithScores = topIdeas.slice(0, 3).map((title) => ({
-      title,
-      interestScore: scoreIdeaAgainstInterests(title, null, interestCategories),
-    }));
-    await addPipelineIdeas(tenantId, ideasWithScores);
-    await updateCompanyPhase(tenantId, "validating");
+    await persistDiscoveryPipelineIdeas(tenantId, topIdeas);
   }
 
   const goNoGo = parseGoNoGo(enriched.goNoGo);

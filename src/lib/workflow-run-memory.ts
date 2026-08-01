@@ -72,11 +72,12 @@ export async function buildScheduledWorkflowInitialMemory(
   ]);
 
   const pendingIdea = findIdeaToEvaluate(ideas, products);
+  const companyScoped = isCompanyScopedWorkflow(workflowName);
   let focusProduct =
-    options.productId != null
+    !companyScoped && options.productId != null
       ? (products.find((product) => product.id === options.productId) ?? null)
       : null;
-  if (!focusProduct && cycle.focusProductId) {
+  if (!companyScoped && !focusProduct && cycle.focusProductId) {
     focusProduct = products.find((product) => product.id === cycle.focusProductId) ?? null;
   }
 
@@ -89,22 +90,33 @@ export async function buildScheduledWorkflowInitialMemory(
       : undefined,
   });
 
-  const base = mergeConsensusIntoMemory(consensus, {
+  const memoryOverride: SharedMemory = {
     task,
     nextAction: task,
     metaReason: options.reason,
     cycleNumber: cycle.cycleNumber,
     companyPhase: phase,
     pipelineIdea: pendingIdea?.title,
-    focusProductSlug: focusProduct?.slug,
-    focusProductName: focusProduct?.name,
     ...(options.orgMemory ?? {}),
-  });
+  };
+  if (!companyScoped && focusProduct) {
+    memoryOverride.focusProductSlug = focusProduct.slug;
+    memoryOverride.focusProductName = focusProduct.name;
+    memoryOverride.productId = focusProduct.id;
+  }
+
+  const base = mergeConsensusIntoMemory(consensus, memoryOverride);
 
   base.convergenceRules = convergencePromptSection(cycle.cycleNumber, phase, interests);
 
-  if (isCompanyScopedWorkflow(workflowName)) {
-    return attachScopeContract(base, buildCompanyScopeContract("discovery")) as SharedMemory;
+  if (companyScoped) {
+    const intent =
+      workflowName === WORKFLOW_NAMES.WEEKLY_REVIEW
+        ? "review"
+        : workflowName === WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION
+          ? "discovery"
+          : "discovery";
+    return attachScopeContract(base, buildCompanyScopeContract(intent)) as SharedMemory;
   }
 
   if (

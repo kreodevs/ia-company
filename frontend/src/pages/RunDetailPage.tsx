@@ -9,6 +9,7 @@ import Button from "../components/ui/Button";
 import StatusBadge from "../components/ui/StatusBadge";
 import OpencodeRunPanel from "../components/opencode/OpencodeRunPanel";
 import OpencodeDiffPanel from "../components/opencode/OpencodeDiffPanel";
+import RunScopeBadge from "../components/runs/RunScopeBadge";
 
 interface StreamEvent {
   type: string;
@@ -101,6 +102,9 @@ export default function RunDetailPage() {
           tokens: run.totalTokens.toLocaleString(),
           cost: run.totalCostUsd.toFixed(4),
         })}
+        meta={
+          <RunScopeBadge sharedMemory={run.sharedMemory} workflowName={run.workflow?.name} />
+        }
         actions={
           canCancel ? (
             <Button variant="destructive" disabled={cancelling} onClick={() => void cancelRun()} fullWidthMobile>

@@ -19,7 +19,7 @@ const AGENT_DOC_DIRS = [
   "ui",
 ] as const;
 
-export function agentDocsPath(agentName: string): string {
+export function agentDocsPath(agentName: string, options?: { companyScoped?: boolean }): string {
   const prefix = agentName.split("-")[0];
   const map: Record<string, string> = {
     research: "docs/research",
@@ -37,7 +37,11 @@ export function agentDocsPath(agentName: string): string {
     interaction: "docs/interaction",
     ui: "docs/ui",
   };
-  return map[prefix] ?? "docs";
+  const base = map[prefix] ?? "docs";
+  if (options?.companyScoped) {
+    return base.replace(/^docs\//, "docs/company/");
+  }
+  return base;
 }
 
 export async function bootstrapTenantWorkspaceLayout(
@@ -48,6 +52,7 @@ export async function bootstrapTenantWorkspaceLayout(
 
   for (const dir of AGENT_DOC_DIRS) {
     await mkdir(join(workspaceRoot, "docs", dir), { recursive: true });
+    await mkdir(join(workspaceRoot, "docs", "company", dir), { recursive: true });
   }
 
   const readme = `# ${tenantName ?? "Tenant"} workspace
@@ -58,6 +63,7 @@ This folder is the **tenant sandbox root** for Auto-Company platform runs.
 |------|---------|
 | \`consensus.md\` | Shared cycle memory (also in the UI) |
 | \`docs/research/\` | Market research and opportunity briefs |
+| \`docs/company/\` | **Company-level** runs (discovery, weekly review) — not tied to one product |
 | \`docs/ceo/\`, \`docs/product/\`, … | Deliverables per agent role |
 | \`portfolio.md\` | Registered products for this tenant (read-only summary) |
 
@@ -100,7 +106,19 @@ export async function syncTenantPortfolioManifest(
 export function buildWorkspacePromptSection(options: {
   productSlug?: string;
   productName?: string;
+  companyScoped?: boolean;
 }): string {
+  if (options.companyScoped) {
+    return `
+## Workspace (company-level run)
+Your workspace root is the **tenant sandbox** — this run is **not** scoped to a single product.
+- Save deliverables under \`docs/company/<role>/\` (e.g. \`docs/company/research/\`).
+- \`consensus.md\` — tenant (company) memory for cycles and pipeline.
+- \`portfolio.md\` — registered products; do not confuse this run with operating one product.
+- Product code repos are sibling folders: \`../{product-slug}/\` — only read if explicitly needed.
+`.trim();
+  }
+
   if (options.productSlug) {
     return `
 ## Workspace (product run)

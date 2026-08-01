@@ -11,6 +11,7 @@ import {
 } from "../lib/office-encargo-display";
 import PageLoading from "../components/ui/PageLoading";
 import StatusBadge from "../components/ui/StatusBadge";
+import RunScopeBadge from "../components/runs/RunScopeBadge";
 import Select from "../components/ui/Select";
 
 const PHASE_FILTERS: Array<OfficeEncargoPhase | "all"> = [
@@ -141,6 +142,11 @@ export default function OfficeEncargosPage() {
                   <span className="office-encargo-phase" data-phase={item.phase}>
                     {t(`office.encargos.phase.${item.phase}`)}
                   </span>
+                  {item.scopeLabelKey && item.scopeLevel ? (
+                    <RunScopeBadge
+                      scope={{ level: item.scopeLevel, labelKey: item.scopeLabelKey }}
+                    />
+                  ) : null}
                   <StatusBadge
                     status={item.status}
                     label={t(`status.${item.status}`, { defaultValue: item.status })}

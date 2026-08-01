@@ -7,6 +7,7 @@ import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
 import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
+import RunScopeBadge from "../components/runs/RunScopeBadge";
 
 const ACTIVE_STATUSES = new Set(["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"]);
 const STATUS_OPTIONS = [
@@ -38,9 +39,12 @@ function RunCard({ run }: { run: ExecutionRun }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium">
-            {run.workflow?.name ?? run.workflowId.slice(0, 8)}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="truncate font-medium">
+              {run.workflow?.name ?? run.workflowId.slice(0, 8)}
+            </p>
+            <RunScopeBadge sharedMemory={run.sharedMemory} workflowName={run.workflow?.name} />
+          </div>
           <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
             {run.startedAt ? new Date(run.startedAt).toLocaleString() : "—"}
           </p>

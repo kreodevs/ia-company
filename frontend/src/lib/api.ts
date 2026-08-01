@@ -800,6 +800,9 @@ export interface OfficeEncargoSummary {
   createdAt: string;
   documentCount: number;
   hasFinalReport: boolean;
+  scopeLevel?: "company" | "product" | "department" | null;
+  scopeIntent?: string | null;
+  scopeLabelKey?: string | null;
 }
 
 export interface OfficeProcedureSummary {

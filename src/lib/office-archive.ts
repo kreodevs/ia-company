@@ -9,6 +9,7 @@ import {
 } from "./office-encargos.js";
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import { resolveTenantWorkspaceRoot } from "./tenant-workspace.js";
+import { isCompanyScopedMemory } from "./scope-contract.js";
 import type { SharedMemory } from "../types/index.js";
 
 export type OfficeArchiveSource = "encargo" | "encargo_summary" | "workspace" | "artifact";
@@ -221,7 +222,9 @@ export async function listOfficeArchive(
     const request = extractRequest(memory);
     const encargoTitle =
       request.length >= 8 ? request.slice(0, 120) : (run.workflow?.name ?? "Encargo");
-    const product = resolveProductFromMemory(memory, products);
+    const product = isCompanyScopedMemory(memory as Record<string, unknown>)
+      ? null
+      : resolveProductFromMemory(memory, products);
     const orgUnitId = memoryOrgUnitId(memory) ?? product?.orgUnitId ?? null;
     const orgUnitName = orgUnitId ? (orgUnitNameById.get(orgUnitId) ?? null) : null;
     const teamAgents = extractTeamAgents(memory);

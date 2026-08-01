@@ -4,6 +4,8 @@ import {
   buildCompanyScopeContract,
   buildProductScopeContract,
   isCompanyScopedWorkflow,
+  resolveRunScopeMeta,
+  shouldAttachFocusProductForScheduledRun,
   shouldMergeProductConsensus,
 } from "../src/lib/scope-contract.js";
 import { WORKFLOW_NAMES } from "../src/lib/workflow-names.js";
@@ -44,6 +46,20 @@ describe("scope-contract", () => {
     });
     assert.equal(product.level, "product");
     assert.equal(product.productId, "p1");
+  });
+
+  it("skips focus product attachment for company workflows", () => {
+    assert.equal(shouldAttachFocusProductForScheduledRun(WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY), false);
+    assert.equal(shouldAttachFocusProductForScheduledRun(WORKFLOW_NAMES.FEATURE_DEVELOPMENT), true);
+  });
+
+  it("resolves run scope meta from memory", () => {
+    const meta = resolveRunScopeMeta(
+      { _scopeContract: { level: "company", intent: "discovery" } },
+      WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY,
+    );
+    assert.equal(meta?.level, "company");
+    assert.equal(meta?.labelKey, "runs.scope.companyDiscovery");
   });
 });
 

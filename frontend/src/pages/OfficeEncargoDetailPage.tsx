@@ -16,6 +16,7 @@ import Input from "../components/ui/Input";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
+import RunScopeBadge from "../components/runs/RunScopeBadge";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import {
   encargoDepartmentLabel,
@@ -138,6 +139,13 @@ export default function OfficeEncargoDetailPage() {
           <p className="office-eyebrow">{t("office.encargos.detailEyebrow")}</p>
           <h1 className="office-title">{detail.title}</h1>
           {detail.request ? <p className="office-subtitle">{detail.request}</p> : null}
+          {detail.scopeLabelKey && detail.scopeLevel ? (
+            <div className="mt-2">
+              <RunScopeBadge
+                scope={{ level: detail.scopeLevel, labelKey: detail.scopeLabelKey }}
+              />
+            </div>
+          ) : null}
         </div>
         <div className="office-encargo-detail-actions">
           <span className="office-encargo-phase" data-phase={detail.phase}>
