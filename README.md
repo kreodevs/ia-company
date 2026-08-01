@@ -11,7 +11,7 @@ Desarrollado y mantenido por **[Kreo Devs](https://github.com/kreodevs)** · [`i
 [![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](#arquitectura)
 [![Redis](https://img.shields.io/badge/Queue-Redis-BullMQ-DC382D?logo=redis&logoColor=white)](#arquitectura)
 [![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED?logo=docker&logoColor=white)](#producción)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green?logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?logo=gnu&logoColor=white)](docs/licensing.md)
 
 </div>
 
@@ -181,6 +181,13 @@ Este proyecto está **inspirado** en [Auto Company](https://github.com/MaxMiksa/
 
 ---
 
-## Licencia
+## Licencia y modelo de uso
 
-MIT. El proyecto original Auto Company también usa licencia MIT.
+**[AGPL-3.0](LICENSE)** — open source con copyleft en servicios en red. Detalle del modelo self-host vs oficina alquilada: [`docs/licensing.md`](docs/licensing.md).
+
+| Modalidad | Para quién |
+|-----------|------------|
+| **Self-host** | Control total en tu VPS; instalación DIY o asistida (consultoría). |
+| **Oficina alquilada** | Multi-tenant en instancia operada por Kreo Devs — sin administrar infra. |
+
+El proyecto original [Auto Company](https://github.com/MaxMiksa/Auto-Company) sigue bajo MIT; esta plataforma es fork/evolución multi-tenant de Kreo Devs.
