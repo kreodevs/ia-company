@@ -29,8 +29,12 @@ import {
 import {
   createEncargoDelivery,
   listEncargoDeliveries,
+  previewDeliveryPayload,
   revokeEncargoDelivery,
+  rotateEncargoDeliveryToken,
+  sendEncargoDeliveryEmail,
 } from "../../lib/encargo-delivery.js";
+import { getTenantDeliveryBranding } from "../../lib/tenant-delivery-branding.js";
 import { handleRouteError, requireImpersonatedTenant, requireSession } from "../lib/request-context.js";
 
 export async function officeRoutes(app: FastifyInstance) {
@@ -84,6 +88,7 @@ export async function officeRoutes(app: FastifyInstance) {
     Body: {
       label?: string;
       expiresAt?: string | null;
+      expiryPreset?: string;
       includeFinalReport?: boolean;
       documentIds?: string[];
     };
@@ -112,6 +117,64 @@ export async function officeRoutes(app: FastifyInstance) {
           request.params.deliveryId,
         );
         if (!delivery) return reply.status(404).send({ error: "Delivery link not found" });
+        return delivery;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{
+    Params: { runId: string };
+    Body: {
+      label?: string;
+      includeFinalReport?: boolean;
+      documentIds?: string[];
+    };
+  }>("/office/encargos/:runId/deliveries/preview", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const detail = await getOfficeEncargoDetail(tenantId, request.params.runId);
+      if (!detail) return reply.status(404).send({ error: "Encargo not found" });
+      const branding = await getTenantDeliveryBranding(tenantId);
+      return previewDeliveryPayload(detail, branding, request.body ?? {});
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { runId: string; deliveryId: string };
+    Body: { to: string; subject?: string; message?: string };
+  }>("/office/encargos/:runId/deliveries/:deliveryId/send-email", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const to = request.body?.to?.trim();
+      if (!to) return reply.status(400).send({ error: "to is required" });
+      const delivery = await sendEncargoDeliveryEmail(
+        tenantId,
+        request.params.runId,
+        request.params.deliveryId,
+        { to, subject: request.body?.subject, message: request.body?.message },
+      );
+      if (!delivery) return reply.status(404).send({ error: "Delivery link not found or inactive" });
+      return delivery;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { runId: string; deliveryId: string } }>(
+    "/office/encargos/:runId/deliveries/:deliveryId/rotate",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const delivery = await rotateEncargoDeliveryToken(
+          tenantId,
+          request.params.runId,
+          request.params.deliveryId,
+        );
+        if (!delivery) return reply.status(404).send({ error: "Delivery link not found or revoked" });
         return delivery;
       } catch (err) {
         return handleRouteError(reply, err);

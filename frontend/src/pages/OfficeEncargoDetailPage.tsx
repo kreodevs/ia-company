@@ -219,6 +219,7 @@ export default function OfficeEncargoDetailPage() {
       <EncargoDeliveryPanel
         runId={detail.id}
         documents={documents}
+        hasFinalReport={Boolean(detail.finalReport)}
         enabled={detail.phase === "delivered"}
       />
 

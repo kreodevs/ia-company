@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import {
   api,
   type OfficeDashboard,
@@ -13,26 +12,10 @@ import CoordinatorChat from "../office/CoordinatorChat";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
 import KpiCard from "../ui/KpiCard";
-import WarRoomAgentSeat from "./WarRoomAgentSeat";
+import WarRoomTable from "./WarRoomTable";
+import { WarRoomMainShell } from "./WarRoomCoordinatorAside";
+import { WAR_ROOM_COORDINATOR_STORAGE_KEYS } from "./war-room-coordinator-state";
 import { shortTime, type WarRoomSeatAgent } from "./war-room-shared";
-
-const COORDINATOR_COLLAPSED_KEY = "war-room-general-coordinator-collapsed";
-
-function readCoordinatorCollapsed(): boolean {
-  try {
-    return localStorage.getItem(COORDINATOR_COLLAPSED_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function writeCoordinatorCollapsed(collapsed: boolean): void {
-  try {
-    localStorage.setItem(COORDINATOR_COLLAPSED_KEY, collapsed ? "1" : "0");
-  } catch {
-    // ignore
-  }
-}
 
 interface WarRoomGeneralContentProps {
   products: TenantProduct[];
@@ -44,7 +27,6 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
   const [dashboard, setDashboard] = useState<OfficeDashboard | null>(null);
   const [encargos, setEncargos] = useState<OfficeEncargoSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [coordinatorCollapsed, setCoordinatorCollapsed] = useState(readCoordinatorCollapsed);
 
   const refresh = useCallback(async () => {
     const dash = await api.office.dashboard();
@@ -66,14 +48,6 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
     return () => window.clearInterval(timer);
   }, [dashboard?.stats.activeRuns, refresh]);
 
-  const toggleCoordinatorCollapsed = useCallback(() => {
-    setCoordinatorCollapsed((prev) => {
-      const next = !prev;
-      writeCoordinatorCollapsed(next);
-      return next;
-    });
-  }, []);
-
   const seatAgents = useMemo<WarRoomSeatAgent[]>(() => {
     if (!dashboard) return [];
     return dashboard.agents.map((agent) => ({
@@ -87,7 +61,6 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
   const onDuty = seatAgents.filter((agent) => agent.status !== "idle");
   const thinking = seatAgents.filter((agent) => agent.status === "thinking");
   const totalAgents = seatAgents.length;
-  const tableDensity = totalAgents > 16 ? "compact" : totalAgents > 12 ? "cozy" : "normal";
   const highlightedEncargo = watchRunId ? encargos.find((item) => item.id === watchRunId) : null;
 
   if (loading || !dashboard) {
@@ -149,84 +122,31 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
         />
       </section>
 
-      <div
-        className={`war-room-main${coordinatorCollapsed ? " war-room-main--coordinator-collapsed" : ""}`}
+      <WarRoomMainShell
+        storageKey={WAR_ROOM_COORDINATOR_STORAGE_KEYS.general}
+        titleId="war-room-general-coordinator-title"
+        panelId="war-room-general-coordinator-panel"
+        subtitle={t("warRoom.general.coordinator.subtitle")}
+        coordinator={
+          <CoordinatorChat
+            welcomeMessageKey="warRoom.general.coordinator.welcome"
+            onExecuted={() => void refresh()}
+          />
+        }
       >
-        <aside
-          className={`war-room-coordinator war-room-coordinator-inline${coordinatorCollapsed ? " is-collapsed" : ""}`}
-          aria-labelledby="war-room-general-coordinator-title"
-        >
-          {coordinatorCollapsed ? (
-            <button
-              type="button"
-              className="war-room-coordinator-expand"
-              onClick={toggleCoordinatorCollapsed}
-              aria-label={t("warRoom.coordinator.expand")}
-              aria-expanded={false}
-              aria-controls="war-room-general-coordinator-panel"
-            >
-              <MessageSquare className="h-4 w-4" aria-hidden />
-              <ChevronRight className="h-4 w-4" aria-hidden />
-              <span className="war-room-coordinator-expand-label">{t("warRoom.coordinator.title")}</span>
-            </button>
-          ) : (
-            <>
-              <div className="war-room-coordinator-header">
-                <h2 id="war-room-general-coordinator-title" className="war-room-section-title">
-                  {t("warRoom.coordinator.title")}
-                </h2>
-                <button
-                  type="button"
-                  className="war-room-coordinator-collapse"
-                  onClick={toggleCoordinatorCollapsed}
-                  aria-label={t("warRoom.coordinator.collapse")}
-                  aria-expanded
-                  aria-controls="war-room-general-coordinator-panel"
-                >
-                  <ChevronLeft className="h-4 w-4" aria-hidden />
-                </button>
-              </div>
-              <p className="war-room-coordinator-subtitle">{t("warRoom.general.coordinator.subtitle")}</p>
-              <div id="war-room-general-coordinator-panel" className="war-room-coordinator-panel">
-                <CoordinatorChat
-                  welcomeMessageKey="warRoom.general.coordinator.welcome"
-                  onExecuted={() => void refresh()}
-                />
-              </div>
-            </>
-          )}
-        </aside>
-
-        <div className="war-room-table-shell">
-          <section
-            className="war-room-table"
-            data-density={tableDensity}
-            aria-label={t("warRoom.tableAria")}
-          >
-            <div className="war-room-table-backdrop" aria-hidden>
-              <div className="war-room-table-grid" />
-            </div>
-            <div className="war-room-table-stage">
-              <div className="war-room-table-ring" aria-hidden />
-              <div className="war-room-core">
-                <p className="war-room-core-label">{t("warRoom.tacticalCore")}</p>
-                <p className="war-room-core-name">{t("warRoom.general.portfolioCore")}</p>
-                <p className="war-room-core-status">
-                  {dashboard.stats.activeRuns > 0
-                    ? t("warRoom.general.coreRunning", { count: dashboard.stats.activeRuns })
-                    : t("warRoom.coreIdle", { count: totalAgents })}
-                </p>
-                {highlightedEncargo && (
-                  <p className="war-room-core-task">{highlightedEncargo.title || highlightedEncargo.request}</p>
-                )}
-              </div>
-              {seatAgents.map((agent, index) => (
-                <WarRoomAgentSeat key={agent.id} agent={agent} index={index} total={totalAgents} />
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
+        <WarRoomTable
+          agents={seatAgents}
+          core={{
+            label: t("warRoom.tacticalCore"),
+            name: t("warRoom.general.portfolioCore"),
+            status:
+              dashboard.stats.activeRuns > 0
+                ? t("warRoom.general.coreRunning", { count: dashboard.stats.activeRuns })
+                : t("warRoom.coreIdle", { count: totalAgents }),
+            task: highlightedEncargo?.title || highlightedEncargo?.request || null,
+          }}
+        />
+      </WarRoomMainShell>
 
       <aside className="war-room-details war-room-briefing-bar">
         <div className="war-room-briefing-col">

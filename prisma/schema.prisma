@@ -53,6 +53,7 @@ model Tenant {
   orgUnits OrgUnit[]
   artifacts Artifact[]
   encargoDeliveries EncargoDelivery[]
+  deliveryBranding TenantDeliveryBranding?
 }
 
 enum TenantUserRole {
@@ -1005,11 +1006,28 @@ model EncargoDelivery {
   createdByUserId    String?
   includeFinalReport Boolean   @default(true)
   documentIds        Json      @default("[]")
+  contentSnapshot    Json?
+  firstViewedAt      DateTime?
+  viewCount          Int       @default(0)
+  recipientEmail     String?
+  emailedAt          DateTime?
   createdAt          DateTime  @default(now())
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, runId])
+}
+
+model TenantDeliveryBranding {
+  tenantId              String   @id
+  logoUrl               String?
+  primaryColor          String   @default("#2563eb")
+  footerText            String?
+  confidentialityNotice String?  @db.Text
+  contactEmail          String?
+  updatedAt             DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 // ─── Platform settings (superadmin UI; secrets encrypted) ───────────────────

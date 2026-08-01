@@ -5,6 +5,10 @@ import { logAudit } from "../../lib/audit.js";
 import { INTEREST_CATEGORIES, listTenantInterests, setTenantInterests } from "../../lib/tenant-interests.js";
 import { getTenantMonthlyUsage } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
+import {
+  getTenantDeliveryBranding,
+  upsertTenantDeliveryBranding,
+} from "../../lib/tenant-delivery-branding.js";
 
 export async function tenantSettingsRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -299,6 +303,34 @@ export async function tenantSettingsRoutes(app: FastifyInstance) {
       const tenantId = requireImpersonatedTenant(request);
       const { testTenantSmtpConnection } = await import("../../lib/tenant-smtp.js");
       return testTenantSmtpConnection(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get("/tenant/settings/delivery-branding", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      return getTenantDeliveryBranding(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put<{
+    Body: {
+      logoUrl?: string | null;
+      primaryColor?: string;
+      footerText?: string | null;
+      confidentialityNotice?: string | null;
+      contactEmail?: string | null;
+    };
+  }>("/tenant/settings/delivery-branding", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const branding = await upsertTenantDeliveryBranding(tenantId, request.body ?? {});
+      await logAudit(request, "tenant.delivery_branding.update", { tenantId });
+      return branding;
     } catch (err) {
       return handleRouteError(reply, err);
     }

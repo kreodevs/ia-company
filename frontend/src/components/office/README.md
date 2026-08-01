@@ -7,7 +7,8 @@
 | `DepartmentRoomView` | Shared department room — scope select (general/product), meeting table, **coordinator chat**, **department procedures**, extras slot |
 | `DepartmentProceduresPanel` | Lists workflows as **procedimientos** for a virtual or custom department; **Usar** pre-fills the coordinator |
 | `DepartmentWarRoomPanel` | Live department war room — SSE, handoffs, procedure context, run selector |
-| `EncargoDeliveryPanel` | Client delivery links on encargo detail (create/copy/revoke read-only `/d/:token` shares) |
+| `EncargoDeliveryPanel` | Client delivery links on encargo detail (create/copy/revoke/read-only `/d/:token` shares) |
+| `DeliveryPreviewModal` | Preview delivery as the client will see it before sharing |
 | `SpecialistProfileModal` | Specialist card — assign, template config, recent encargos, **documents** (archive) |
 | `TeamProposalCard` | Plan UI with missing-role deep links |
 | `OfficeOnboardingPanel` | Post-login checklist (Plantilla de especialistas → Org Studio → primer encargo) |

@@ -18,9 +18,10 @@ import TabsBar from "../components/ui/TabsBar";
 import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPanel";
 import TenantSmtpSection from "../components/settings/TenantSmtpSection";
 import TenantMcpSettingsPanel from "../components/settings/TenantMcpSettingsPanel";
+import TenantDeliveryBrandingPanel from "../components/settings/TenantDeliveryBrandingPanel";
 
-type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules";
-const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules"];
+type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules" | "delivery";
+const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules", "delivery"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -212,6 +213,7 @@ export default function SettingsPage() {
           { id: "notifications", label: t("settings.tabs.notifications") },
           { id: "limits", label: t("settings.tabs.limits") },
           { id: "schedules", label: t("settings.tabs.schedules") },
+          { id: "delivery", label: t("settings.tabs.delivery") },
         ]}
         activeId={activeTab}
         onChange={(id) => setTab(id as SettingsTab)}
@@ -661,6 +663,8 @@ export default function SettingsPage() {
           onRefresh={load}
         />
       )}
+
+      {activeTab === "delivery" && <TenantDeliveryBrandingPanel />}
     </div>
   );
 }

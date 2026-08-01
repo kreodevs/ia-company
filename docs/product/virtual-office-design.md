@@ -323,6 +323,14 @@ Extender `office-theme.css` y estética war room:
 - [x] Notificaciones «departamento listo» al terminar el último encargo activo (`department_run_completed`)
 - [x] Sección documentos en ficha de especialista (archive por agente)
 - [x] `currentAgentId` en shared memory para estado busy preciso en dashboard
+- [x] Shell unificado war room (`useWarRoomTeam`, `WarRoomTable`, `WarRoomBriefingBar`) — producto + departamento + vista general
+
+### Fase 6 — Entrega cliente (2026-08)
+
+- [x] Modelo `EncargoDelivery` + enlace público `/d/:token`
+- [x] Panel compartir en encargo entregado (crear / copiar / revocar / email / rotar)
+- [x] Sprint G+H: branding, doc picker, caducidad, preview, export, audit vistas
+- [ ] 10/10 absoluto: ver [`external-client-roadmap.md`](./external-client-roadmap.md) (PIN, PDF server-side, QR)
 
 ---
 

@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TenantProduct } from "../../lib/api";
-import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import CoordinatorChat from "./CoordinatorChat";
 import DepartmentProceduresPanel, {
   type DepartmentProcedureSelection,
 } from "./DepartmentProceduresPanel";
 import DepartmentWarRoomPanel from "./DepartmentWarRoomPanel";
 import SpecialistProfileModal from "./SpecialistProfileModal";
+import WarRoomIdleSeats from "../war-room/WarRoomIdleSeats";
 import Select from "../ui/Select";
 
 export const DEPARTMENT_SCOPE_GENERAL = "__general__";
@@ -39,14 +39,6 @@ export interface DepartmentRoomViewProps {
   showMeetingRoom?: boolean;
   sidebarFooter?: ReactNode;
   children?: ReactNode;
-}
-
-function positionOnCircle(index: number, total: number, radiusPct: number): { x: number; y: number } {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  return {
-    x: 50 + Math.cos(angle) * radiusPct,
-    y: 50 + Math.sin(angle) * radiusPct,
-  };
 }
 
 export default function DepartmentRoomView({
@@ -209,43 +201,11 @@ export default function DepartmentRoomView({
               agentNames={agentNames}
               seats={seats}
               onSeatClick={setSelectedAgent}
-              positionOnCircle={positionOnCircle}
             />
           ) : seats.length === 0 ? (
             <p className="office-empty">{t("office.floor.noSpecialists")}</p>
           ) : (
-            <div className="office-dept-table">
-              <div className="office-dept-table-core" aria-hidden />
-              {seats.map((agent, index) => {
-                const { x, y } = positionOnCircle(index, Math.max(seats.length, 1), 38);
-                return (
-                  <button
-                    key={agent.id}
-                    type="button"
-                    className={`office-dept-seat office-dept-seat-${agent.status}`}
-                    style={{ left: `${x}%`, top: `${y}%` }}
-                    onClick={() => setSelectedAgent(agent)}
-                    aria-label={agentDisplayLabel(agent, t)}
-                  >
-                    <div
-                      className="office-dept-seat-avatar"
-                      style={{ background: avatarGradient(agent.name) }}
-                      data-pending={!agent.provisioned ? "true" : undefined}
-                    >
-                      <span aria-hidden>{AGENT_EMOJI[agent.name] ?? "🧑‍💼"}</span>
-                    </div>
-                    <p className="office-dept-seat-name">{agentDisplayLabel(agent, t)}</p>
-                    <p className="office-dept-seat-status">
-                      {!agent.provisioned
-                        ? t("office.floor.agentPending")
-                        : agent.status === "busy"
-                          ? t("office.agents.busy")
-                          : t("office.agents.idle")}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
+            <WarRoomIdleSeats seats={seats} onSeatClick={setSelectedAgent} />
           )}
           {activeEncargoHref ? (
             <Link to={activeEncargoHref} className="office-link-btn office-dept-encargo-link">

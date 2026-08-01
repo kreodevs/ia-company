@@ -1,11 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Download, Printer } from "lucide-react";
 import { api, type PublicDeliveryPayload } from "../lib/api";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
+import Button from "../components/ui/Button";
 
 type PublicTab = "summary" | "documents";
+
+function setMetaTag(name: string, content: string, property = false) {
+  const attr = property ? "property" : "name";
+  let el = document.querySelector(`meta[${attr}="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
 
 export default function PublicDeliveryPage() {
   const { token } = useParams<{ token: string }>();
@@ -24,6 +37,18 @@ export default function PublicDeliveryPage() {
       .catch(() => setPayload(null))
       .finally(() => setLoading(false));
   }, [token]);
+
+  useEffect(() => {
+    if (!payload) return;
+    const title = `${payload.encargo.title} — ${payload.branding.tenantName}`;
+    document.title = title;
+    setMetaTag("robots", "noindex, nofollow");
+    setMetaTag("description", payload.encargo.request || payload.encargo.procedureLabel);
+    setMetaTag("og:title", title, true);
+    setMetaTag("og:description", payload.encargo.procedureLabel, true);
+    setMetaTag("og:type", "article", true);
+    if (payload.branding.logoUrl) setMetaTag("og:image", payload.branding.logoUrl, true);
+  }, [payload]);
 
   const selectedDoc = useMemo(() => {
     if (!payload?.documents.length) return null;
@@ -48,10 +73,24 @@ export default function PublicDeliveryPage() {
   }
 
   const blocked = payload.expired || payload.revoked;
+  const { branding } = payload;
+  const tocItems = [
+    ...(payload.finalReport ? [{ id: "summary", label: t("office.encargos.tabFinal") }] : []),
+    ...payload.documents.map((doc) => ({ id: doc.id, label: doc.title })),
+  ];
 
   return (
-    <div className="public-delivery-page">
-      <header className="public-delivery-header">
+    <div
+      className="public-delivery-page"
+      style={{ ["--delivery-primary" as string]: branding.primaryColor }}
+    >
+      <header className="public-delivery-header public-delivery-header-branded">
+        <div className="public-delivery-brand-row">
+          {branding.logoUrl ? (
+            <img src={branding.logoUrl} alt="" className="public-delivery-logo" />
+          ) : null}
+          <p className="public-delivery-brand-name">{branding.tenantName}</p>
+        </div>
         <p className="public-delivery-eyebrow">{t("office.encargos.delivery.publicEyebrow")}</p>
         <h1>{payload.encargo.title}</h1>
         {payload.label ? <p className="public-delivery-label">{payload.label}</p> : null}
@@ -61,6 +100,12 @@ export default function PublicDeliveryPage() {
             <dt>{t("office.encargos.procedure")}</dt>
             <dd>{payload.encargo.procedureLabel}</dd>
           </div>
+          {payload.encargo.completedAt ? (
+            <div>
+              <dt>{t("office.encargos.delivery.deliveredAt")}</dt>
+              <dd>{new Date(payload.encargo.completedAt).toLocaleDateString()}</dd>
+            </div>
+          ) : null}
           {payload.encargo.departmentName ? (
             <div>
               <dt>{t("office.encargos.department")}</dt>
@@ -73,8 +118,22 @@ export default function PublicDeliveryPage() {
               <dd>{payload.encargo.productName}</dd>
             </div>
           ) : null}
+          {branding.contactEmail ? (
+            <div>
+              <dt>{t("office.encargos.delivery.contact")}</dt>
+              <dd>
+                <a href={`mailto:${branding.contactEmail}`}>{branding.contactEmail}</a>
+              </dd>
+            </div>
+          ) : null}
         </dl>
       </header>
+
+      {branding.confidentialityNotice ? (
+        <aside className="public-delivery-confidential" role="note">
+          {branding.confidentialityNotice}
+        </aside>
+      ) : null}
 
       {blocked ? (
         <div className="public-delivery-blocked" role="alert">
@@ -84,6 +143,41 @@ export default function PublicDeliveryPage() {
         </div>
       ) : (
         <>
+          <div className="public-delivery-toolbar">
+            <a href={api.public.deliveryExportHtmlUrl(token!, true)} target="_blank" rel="noreferrer">
+              <Button size="sm" variant="secondary">
+                <Printer className="h-4 w-4" aria-hidden />
+                {t("office.encargos.delivery.printPdf")}
+              </Button>
+            </a>
+            <a href={api.public.deliveryExportMdUrl(token!)} download>
+              <Button size="sm" variant="ghost">
+                <Download className="h-4 w-4" aria-hidden />
+                {t("office.encargos.delivery.downloadMd")}
+              </Button>
+            </a>
+          </div>
+
+          {tocItems.length > 1 ? (
+            <nav className="public-delivery-toc" aria-label={t("office.encargos.delivery.toc")}>
+              {tocItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    if (item.id === "summary") setTab("summary");
+                    else {
+                      setTab("documents");
+                      setSelectedDocId(item.id);
+                    }
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          ) : null}
+
           <nav className="public-delivery-tabs" aria-label={t("office.encargos.delivery.publicTabs")}>
             {payload.finalReport ? (
               <button
@@ -138,6 +232,10 @@ export default function PublicDeliveryPage() {
           </div>
         </>
       )}
+
+      {branding.footerText ? (
+        <footer className="public-delivery-footer">{branding.footerText}</footer>
+      ) : null}
     </div>
   );
 }

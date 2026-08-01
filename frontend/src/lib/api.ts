@@ -834,14 +834,38 @@ export interface EncargoDeliverySummary {
   revokedAt: string | null;
   includeFinalReport: boolean;
   documentIds: string[];
+  firstViewedAt: string | null;
+  viewCount: number;
+  recipientEmail: string | null;
+  emailedAt: string | null;
   createdAt: string;
   publicUrl: string;
+}
+
+export interface TenantDeliveryBranding {
+  tenantId: string;
+  tenantName: string;
+  logoUrl: string | null;
+  primaryColor: string;
+  footerText: string | null;
+  confidentialityNotice: string | null;
+  contactEmail: string | null;
+}
+
+export interface PublicDeliveryBranding {
+  tenantName: string;
+  logoUrl: string | null;
+  primaryColor: string;
+  footerText: string | null;
+  confidentialityNotice: string | null;
+  contactEmail: string | null;
 }
 
 export interface PublicDeliveryPayload {
   label: string | null;
   expired: boolean;
   revoked: boolean;
+  branding: PublicDeliveryBranding;
   encargo: {
     title: string;
     request: string;
@@ -1732,6 +1756,7 @@ export const api = {
         body: {
           label?: string;
           expiresAt?: string | null;
+          expiryPreset?: string;
           includeFinalReport?: boolean;
           documentIds?: string[];
         },
@@ -1740,6 +1765,32 @@ export const api = {
           method: "POST",
           body: JSON.stringify(body),
         }),
+      preview: (
+        runId: string,
+        body: {
+          label?: string;
+          includeFinalReport?: boolean;
+          documentIds?: string[];
+        },
+      ) =>
+        request<PublicDeliveryPayload>(`/office/encargos/${runId}/deliveries/preview`, {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+      sendEmail: (
+        runId: string,
+        deliveryId: string,
+        body: { to: string; subject?: string; message?: string },
+      ) =>
+        request<EncargoDeliverySummary>(
+          `/office/encargos/${runId}/deliveries/${deliveryId}/send-email`,
+          { method: "POST", body: JSON.stringify(body) },
+        ),
+      rotate: (runId: string, deliveryId: string) =>
+        request<EncargoDeliverySummary>(
+          `/office/encargos/${runId}/deliveries/${deliveryId}/rotate`,
+          { method: "POST" },
+        ),
       revoke: (runId: string, deliveryId: string) =>
         request<EncargoDeliverySummary>(
           `/office/encargos/${runId}/deliveries/${deliveryId}`,
@@ -1897,6 +1948,12 @@ export const api = {
     testSmtp: () =>
       request<{ ok: boolean; message: string }>("/tenant/settings/integrations/smtp/test", {
         method: "POST",
+      }),
+    getDeliveryBranding: () => request<TenantDeliveryBranding>("/tenant/settings/delivery-branding"),
+    updateDeliveryBranding: (body: Partial<TenantDeliveryBranding>) =>
+      request<TenantDeliveryBranding>("/tenant/settings/delivery-branding", {
+        method: "PUT",
+        body: JSON.stringify(body),
       }),
     getScheduling: () => request<TenantSchedulingSettings>("/tenant/settings/scheduling"),
     updateScheduling: (body: { timezone: string }) =>
@@ -2124,5 +2181,8 @@ export const api = {
   },
   public: {
     delivery: (token: string) => request<PublicDeliveryPayload>(`/public/delivery/${token}`),
+    deliveryExportHtmlUrl: (token: string, print = false) =>
+      `${API_BASE}/public/delivery/${token}/export.html${print ? "?print=1" : ""}`,
+    deliveryExportMdUrl: (token: string) => `${API_BASE}/public/delivery/${token}/export.md`,
   },
 };
