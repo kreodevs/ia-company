@@ -377,6 +377,17 @@ export const office = {
       failed: "Fallido",
       cancelled: "Cancelado",
     },
+    selectAllDeletable: "Seleccionar eliminables",
+    selectEncargo: "Seleccionar encargo: {{title}}",
+    deleteSelected: "Eliminar ({{count}})",
+    cannotDeleteInProgress: "No se puede eliminar un encargo en curso",
+    deleteConfirmTitle: "¿Eliminar {{count}} encargo(s)?",
+    deleteConfirmDescription:
+      "Se borrarán el historial del encargo, informes del equipo, revisiones en base de datos y archivos en docs/. Esta acción no se puede deshacer.",
+    deleteConfirmAction: "Eliminar definitivamente",
+    deleteSuccess: "{{count}} encargo(s) eliminado(s) — {{files}} archivo(s) de docs borrado(s)",
+    deletePartialSkip: "{{count}} encargo(s) no se pudieron eliminar (en curso o no encontrados)",
+    deleteFailed: "No se pudieron eliminar los encargos",
     delivery: {
       title: "Entrega al cliente",
       subtitle: "Genera un enlace de solo lectura para compartir el resumen y los documentos.",

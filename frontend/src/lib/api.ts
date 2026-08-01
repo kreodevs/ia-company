@@ -1823,6 +1823,11 @@ export const api = {
         "/office/procedures",
       ),
     encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
+    bulkDeleteEncargos: (ids: string[]) =>
+      request<{ deleted: string[]; skipped: Array<{ id: string; reason: string }>; filesRemoved: number }>(
+        "/office/encargos/bulk-delete",
+        { method: "POST", body: JSON.stringify({ ids }) },
+      ),
     deliveries: {
       list: (runId: string) =>
         request<{ items: EncargoDeliverySummary[] }>(`/office/encargos/${runId}/deliveries`),

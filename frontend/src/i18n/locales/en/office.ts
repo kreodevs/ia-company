@@ -377,6 +377,17 @@ export const office = {
       failed: "Failed",
       cancelled: "Cancelled",
     },
+    selectAllDeletable: "Select deletable",
+    selectEncargo: "Select job: {{title}}",
+    deleteSelected: "Delete ({{count}})",
+    cannotDeleteInProgress: "Cannot delete a job that is still running",
+    deleteConfirmTitle: "Delete {{count}} job(s)?",
+    deleteConfirmDescription:
+      "This removes the job history, team reports, database revisions, and docs/ workspace files. This cannot be undone.",
+    deleteConfirmAction: "Delete permanently",
+    deleteSuccess: "Deleted {{count}} job(s) — removed {{files}} docs/ file(s)",
+    deletePartialSkip: "{{count}} job(s) could not be deleted (in progress or not found)",
+    deleteFailed: "Could not delete jobs",
     delivery: {
       title: "Client delivery",
       subtitle: "Create a read-only link to share the summary and team documents.",

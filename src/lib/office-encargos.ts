@@ -3,6 +3,7 @@ import { extractHandoffFromAgentOutput } from "./product-consensus.js";
 import {
   listWorkspaceAgentDocs,
   readWorkspaceFile,
+  deleteWorkspaceFile,
 } from "./product-code.js";
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import { prisma } from "./prisma.js";
@@ -660,4 +661,86 @@ export async function getOfficeEncargoDetail(
 
 export function encargoHumanHref(runId: string): string {
   return `/office/encargos/${runId}`;
+}
+
+const NON_DELETABLE_ENCARGO_STATUSES: ExecutionStatus[] = ["RUNNING", "DELEGATED", "AWAITING_USER"];
+
+export function isOfficeEncargoDeletable(status: ExecutionStatus): boolean {
+  return !NON_DELETABLE_ENCARGO_STATUSES.includes(status);
+}
+
+export type DeleteOfficeEncargoSkipReason = "not_found" | "in_progress";
+
+export interface DeleteOfficeEncargosResult {
+  deleted: string[];
+  skipped: Array<{ id: string; reason: DeleteOfficeEncargoSkipReason }>;
+  filesRemoved: number;
+}
+
+export async function deleteOfficeEncargos(
+  tenantId: string,
+  runIds: string[],
+): Promise<DeleteOfficeEncargosResult> {
+  const uniqueIds = [...new Set(runIds.map((id) => id.trim()).filter(Boolean))];
+  const result: DeleteOfficeEncargosResult = { deleted: [], skipped: [], filesRemoved: 0 };
+
+  for (const runId of uniqueIds) {
+    const run = await prisma.executionRun.findFirst({
+      where: { id: runId, tenantId },
+      include: { workflow: { select: { name: true } } },
+    });
+    if (!run) {
+      result.skipped.push({ id: runId, reason: "not_found" });
+      continue;
+    }
+    if (!isOfficeEncargoDeletable(run.status)) {
+      result.skipped.push({ id: runId, reason: "in_progress" });
+      continue;
+    }
+
+    const documents = await loadDocumentsForRun(run, tenantId);
+    const filePaths = [
+      ...new Set(documents.filter((doc) => doc.kind === "file" && doc.path).map((doc) => doc.path!)),
+    ];
+
+    const [products, tenant] = await Promise.all([
+      prisma.tenantProduct.findMany({
+        where: { tenantId },
+        select: { id: true, slug: true, name: true },
+      }),
+      prisma.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } }),
+    ]);
+    const memory = (run.sharedMemory ?? {}) as SharedMemory;
+    const product = resolveProductFromMemory(memory, products);
+    const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenant?.slug, product?.slug ?? null);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.productConsensusRevision.deleteMany({ where: { runId: run.id } });
+      await tx.encargoDelivery.deleteMany({ where: { tenantId, runId: run.id } });
+      await tx.tenantNotification.deleteMany({ where: { tenantId, runId: run.id } });
+      await tx.decisionProposal.updateMany({
+        where: { tenantId, OR: [{ runId: run.id }, { drilldownRunId: run.id }] },
+        data: { runId: null, drilldownRunId: null },
+      });
+      await tx.artifact.updateMany({ where: { runId: run.id }, data: { runId: null } });
+      await tx.productDeskItem.updateMany({
+        where: { tenantId, OR: [{ runId: run.id }, { consumedByRunId: run.id }] },
+        data: { runId: null, consumedByRunId: null },
+      });
+      await tx.executionRun.delete({ where: { id: run.id } });
+    });
+
+    for (const path of filePaths) {
+      try {
+        await deleteWorkspaceFile(workspaceRoot, path);
+        result.filesRemoved += 1;
+      } catch {
+        // file may already be missing
+      }
+    }
+
+    result.deleted.push(runId);
+  }
+
+  return result;
 }

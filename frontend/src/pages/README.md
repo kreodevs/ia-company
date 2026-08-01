@@ -20,7 +20,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 |-------|------|
 | `/` · `/office` | `OfficePage` — coordinador en contexto general; opcionalmente filtra por departamento si hay org units |
 | `/office/pendientes` | `PendingDecisionsPage` — bandeja Go/No-Go con pestañas Por aprobar / Aprobadas / Rechazadas |
-| `/office/encargos` | `OfficeEncargosPage` |
+| `/office/encargos` | `OfficeEncargosPage` — lista con selección múltiple y borrado (incluye docs asociados) |
 | `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
 | `/office/workflows` | redirect → `/settings/procedures` |
 | `/office/workflows/:id` | `WorkflowEditorPage` |

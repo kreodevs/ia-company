@@ -269,6 +269,16 @@ export async function readWorkspaceFile(
   };
 }
 
+/** Deletes a file under the workspace root (docs deliverables only). */
+export async function deleteWorkspaceFile(workspaceRoot: string, relativePath: string): Promise<void> {
+  const abs = safeJoin(workspaceRoot, relativePath);
+  const rel = relative(workspaceRoot, abs).split(sep).join("/");
+  if (!rel.startsWith("docs/")) {
+    throw new Error("Only docs/ paths can be deleted from workspace");
+  }
+  await fs.unlink(abs);
+}
+
 export async function ensureProductRepoNotInitialized(productSlug: string): Promise<boolean> {
   const root = resolveProductWorkspaceRoot(productSlug);
   try {

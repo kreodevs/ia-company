@@ -6,6 +6,7 @@ import { handleCoordinatorChatStream } from "../../lib/coordinator-chat-stream.j
 import { pipeWebResponseToFastify } from "../lib/sse-response.js";
 import {
   encargoHumanHref,
+  deleteOfficeEncargos,
   getOfficeEncargoDetail,
   listOfficeEncargos,
 } from "../../lib/office-encargos.js";
@@ -71,6 +72,19 @@ export async function officeRoutes(app: FastifyInstance) {
       const detail = await getOfficeEncargoDetail(tenantId, request.params.runId);
       if (!detail) return reply.status(404).send({ error: "Encargo not found" });
       return detail;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Body: { ids?: string[] } }>("/office/encargos/bulk-delete", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const ids = Array.isArray(request.body?.ids) ? request.body.ids : [];
+      if (ids.length === 0) {
+        return reply.status(400).send({ error: "ids required" });
+      }
+      return deleteOfficeEncargos(tenantId, ids);
     } catch (err) {
       return handleRouteError(reply, err);
     }

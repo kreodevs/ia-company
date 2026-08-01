@@ -217,6 +217,47 @@ html[data-theme="letter"] .office-encargo-card {
   gap: 0.75rem;
 }
 
+.office-encargos-bulk-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.office-encargo-list-item {
+  list-style: none;
+}
+
+.office-encargo-card-row {
+  align-items: stretch;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.office-encargo-card-row-selected .office-encargo-card {
+  border-color: color-mix(in srgb, var(--color-primary, #6366f1) 45%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary, #6366f1) 25%, transparent);
+}
+
+.office-encargo-select-cb {
+  align-self: flex-start;
+  flex-shrink: 0;
+  margin-top: 1.1rem;
+}
+
+.office-encargo-select-placeholder {
+  flex-shrink: 0;
+  width: 1.25rem;
+}
+
+.office-encargo-card-row .office-encargo-card {
+  flex: 1;
+  min-width: 0;
+}
+
 .office-encargo-card {
   display: block;
   padding: 1rem 1.1rem;

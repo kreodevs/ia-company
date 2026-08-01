@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   encargoActivityFields,
   encargoHumanHref,
+  isOfficeEncargoDeletable,
   resolveFinalReport,
   resolveStepMarkdown,
 } from "../src/lib/office-encargos.js";
@@ -55,5 +56,11 @@ describe("office-encargos", () => {
       [],
     );
     assert.equal(summary, "Executive synthesis for the team.");
+  });
+
+  it("isOfficeEncargoDeletable blocks active runs", () => {
+    assert.equal(isOfficeEncargoDeletable("RUNNING"), false);
+    assert.equal(isOfficeEncargoDeletable("COMPLETED"), true);
+    assert.equal(isOfficeEncargoDeletable("CANCELLED"), true);
   });
 });
