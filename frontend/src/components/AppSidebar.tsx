@@ -389,7 +389,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
       if (isTenantAdmin) {
         debugItems.push({ to: "/debug/team", labelKey: "nav.team" });
-        debugItems.push({ to: "/settings", labelKey: "nav.settings" });
+        debugItems.push({ to: "/settings", labelKey: "nav.settings", end: true });
         debugItems.push({ to: "/settings/procedures", labelKey: "nav.procedures" });
         debugItems.push({ to: "/settings/specialists", labelKey: "nav.specialistTemplates" });
       }
