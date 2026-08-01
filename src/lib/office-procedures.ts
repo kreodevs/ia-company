@@ -582,6 +582,7 @@ export async function createDepartmentProcedure(
 
   let seedAgentNames: string[] = [];
   let orgUnit: (OrgUnit & { template: { definition: unknown } | null }) | null = null;
+  let virtualDepartmentSlug: string | null = null;
 
   if ("orgUnitId" in target) {
     orgUnit = await prisma.orgUnit.findFirst({
@@ -591,6 +592,7 @@ export async function createDepartmentProcedure(
     if (!orgUnit) throw new Error("Org unit not found");
     seedAgentNames = suggestedAgentsFromOrgRecord(orgUnit);
   } else {
+    virtualDepartmentSlug = target.departmentSlug;
     const department = VIRTUAL_OFFICE_DEPARTMENTS.find((def) => def.slug === target.departmentSlug);
     if (!department) throw new Error("Department not found");
     seedAgentNames = department.agentNames;
@@ -615,11 +617,11 @@ export async function createDepartmentProcedure(
 
   if (orgUnit) {
     await linkWorkflowToOrgUnitRecord(orgUnit, workflow.id);
-  } else {
+  } else if (virtualDepartmentSlug) {
     await prisma.workflow.update({
       where: { id: workflow.id },
       data: {
-        description: withVirtualDepartmentLinkTag(hydrated.description, target.departmentSlug),
+        description: withVirtualDepartmentLinkTag(hydrated.description, virtualDepartmentSlug),
       },
     });
   }
