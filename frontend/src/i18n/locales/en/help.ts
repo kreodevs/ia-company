@@ -1,7 +1,7 @@
 export const help = {
   breadcrumb: "Help",
   title: "Help center",
-  subtitle: "Quick start and six topic guides: Office, products, departments, AI team, workflows, and operations.",
+  subtitle: "Quick start and seven topic guides: Office, products, departments, AI team, workflows, daily pilot flow, and operations.",
   articles: "Articles",
   articlesHeading: "Articles",
   guidesByTopic: "Guides by topic",

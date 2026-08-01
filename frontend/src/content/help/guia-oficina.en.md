@@ -2,6 +2,8 @@
 
 How to request work, approve runs, and collect results from the **Office**.
 
+> **Daily pilot routine:** if you run the platform alongside another job, see [/help/guia-piloto](/help/guia-piloto).
+
 ---
 
 ## Table of contents

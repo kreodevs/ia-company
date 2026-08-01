@@ -16,6 +16,7 @@ Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and desc
 | `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
 | `guia-equipo-ia` | Plantilla de especialistas y habilidades | Agents, skills, Catalog Studio, building agents, handoffs |
 | `guia-flujos` | Procedimientos y programaciones | Department procedures, schedules, Operations `/ops`, GO/NO-GO |
+| `guia-piloto` | Flujo diario piloto | 30–60 min/day routine: job → war room → client delivery |
 
 Default route: `/help` → `/help/guia-completa`.
 
@@ -64,7 +65,7 @@ Prefer adding `##` sections to an existing guide rather than creating a new arti
 
 ## Mobile UX
 
-- **Guías por tema** chip strip (below quick links) lists all 6 guides on mobile/tablet.
+- **Guías por tema** chip strip (below quick links) lists all 7 guides on mobile/tablet.
 - **Artículos** sidebar stays expanded by default on small screens.
 - Help icon (book) in the top bar on viewports &lt; 1024px.
 

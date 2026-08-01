@@ -2,6 +2,8 @@
 
 Cómo pedir trabajo, aprobar ejecuciones y recoger resultados desde la **Oficina**.
 
+> **Rutina diaria (piloto):** si operas la plataforma con otro empleo en paralelo, usa la guía [/help/guia-piloto](/help/guia-piloto).
+
 ---
 
 ## Tabla de contenidos

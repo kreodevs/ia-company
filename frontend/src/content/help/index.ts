@@ -11,6 +11,8 @@ import guiaEquipoIaEs from "./guia-equipo-ia.md?raw";
 import guiaEquipoIaEn from "./guia-equipo-ia.en.md?raw";
 import guiaFlujosEs from "./guia-flujos.md?raw";
 import guiaFlujosEn from "./guia-flujos.en.md?raw";
+import guiaPilotoEs from "./guia-piloto.md?raw";
+import guiaPilotoEn from "./guia-piloto.en.md?raw";
 
 export interface HelpArticle {
   slug: string;
@@ -86,6 +88,13 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
     contentEs: guiaFlujosEs,
     contentEn: guiaFlujosEn,
   },
+  {
+    slug: "guia-piloto",
+    title: "Flujo diario piloto",
+    description: "Rutina 30–60 min/día: encargo → war room → entrega al cliente con PIN.",
+    contentEs: guiaPilotoEs,
+    contentEn: guiaPilotoEn,
+  },
 ];
 
 const EN_TITLES: Record<string, { title: string; description: string }> = {
@@ -112,6 +121,10 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   "guia-flujos": {
     title: "Procedures and schedules",
     description: "Department procedures, schedules, Operations panel (/ops), and GO/NO-GO decisions.",
+  },
+  "guia-piloto": {
+    title: "Daily pilot workflow",
+    description: "30–60 min/day routine: job → war room → client delivery with optional PIN.",
   },
 };
 

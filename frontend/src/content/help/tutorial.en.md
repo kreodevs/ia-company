@@ -80,6 +80,7 @@ Each topic has its **own guide** with diagrams and detail. Open it from **Articl
 | **Departments** | Org Studio, `design.md`, tokens, gallery | [/help/guia-departamentos](/help/guia-departamentos) |
 | **AI team and skills** | Agents, skills, building agents, and handoffs | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
 | **Workflows and schedules** | Playbooks, schedules, Operations panel, and GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
+| **Daily pilot workflow** | 30–60 min routine: job → client delivery | [/help/guia-piloto](/help/guia-piloto) |
 
 ### How it fits together
 

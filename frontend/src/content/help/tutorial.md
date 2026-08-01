@@ -81,6 +81,7 @@ Cada tema tiene su **guía propia** con diagramas y detalle. Ábrela desde **Art
 | **Plantilla de especialistas** | Contratar/configurar roles y skills | [/help/guia-equipo-ia](/help/guia-equipo-ia) → `/settings/specialists` |
 | **Procedimientos por departamento** | Editar rutinas de trabajo | `/settings/procedures` o dentro de cada sala |
 | **Flujos y programaciones** | Playbooks, programaciones, panel Operaciones y GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
+| **Flujo diario piloto** | Rutina 30–60 min: encargo → entrega al cliente | [/help/guia-piloto](/help/guia-piloto) |
 
 ### Cómo encaja todo
 

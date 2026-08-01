@@ -41,7 +41,7 @@ Fase A ──► Fase B ──► Fase C ──► Fase D ──► [ Lanzamient
 | A3 | **Shell safety unificada** — misma policy en `run_shell_command` y tools | ✅ `shell-policy.ts` | — |
 | A4 | **Entregables fiables** — dedupe docs, listado agent-docs visible post-run | Convergence usa `shouldSkipHandoffDocPersist` | M |
 | A5 | **PIN opcional en `/d/:token`** | ✅ `accessPinHash` + gate UI | — |
-| A6 | **Flujo diario documentado para ti** — 1 página: recepción → procedimiento → encargo → entrega | [`pilot-daily-flow.md`](./pilot-daily-flow.md) | — |
+| A6 | **Flujo diario documentado para ti** | ✅ [`/help/guia-piloto`](/help/guia-piloto) + [`pilot-daily-flow.md`](./pilot-daily-flow.md) | — |
 
 **Criterio de salida:** Completas 1 encargo real de punta a punta (brief → docs → link entrega → cliente lo abre) en prod.
 

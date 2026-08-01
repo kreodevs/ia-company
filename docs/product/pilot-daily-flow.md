@@ -3,6 +3,8 @@
 > Guía para operar **tu** empresa con Auto Company mientras tienes otro empleo.  
 > Objetivo Fase A: un encargo real → entrega al cliente → sin workarounds.
 
+**En la app:** [/help/guia-piloto](/help/guia-piloto) (Ayuda → *Flujo diario piloto*).
+
 ---
 
 ## Rutina recomendada (30–60 min/día laborable)
@@ -96,4 +98,4 @@ En el producto asociado, actualiza **revenue** o notas de cierre cuando cobres �
 
 ---
 
-*Parte de [product-roadmap.md](./product-roadmap.md) — Fase A.*
+*Parte de [product-roadmap.md](./product-roadmap.md) — Fase A. Contenido operador en `/help/guia-piloto`.*
