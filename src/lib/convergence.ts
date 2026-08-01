@@ -39,7 +39,7 @@ import {
   unwrapStuckNextAction,
 } from "./stuck-action.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
-import { isCompanyScopedMemory, resolveRunScopeMeta } from "./scope-contract.js";
+import { isCompanyScopedMemory } from "./scope-contract.js";
 
 function parseGoNoGo(value: unknown): GoNoGoDecision | null {
   const raw = asString(value)?.toUpperCase();

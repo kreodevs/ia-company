@@ -20,6 +20,7 @@ import type {
   WorkflowDraftProposal,
   WorkflowEnrichmentProposal,
   WorkflowGapAnalysis,
+  WorkflowImpactReport,
   WorkflowStudioProposal,
   WorkflowStepProposal,
 } from "./catalog-studio-types.js";
