@@ -838,6 +838,7 @@ export interface EncargoDeliverySummary {
   viewCount: number;
   recipientEmail: string | null;
   emailedAt: string | null;
+  hasAccessPin: boolean;
   createdAt: string;
   publicUrl: string;
 }
@@ -865,6 +866,8 @@ export interface PublicDeliveryPayload {
   label: string | null;
   expired: boolean;
   revoked: boolean;
+  pinRequired: boolean;
+  locked: boolean;
   branding: PublicDeliveryBranding;
   encargo: {
     title: string;
@@ -2180,9 +2183,39 @@ export const api = {
     },
   },
   public: {
-    delivery: (token: string) => request<PublicDeliveryPayload>(`/public/delivery/${token}`),
-    deliveryExportHtmlUrl: (token: string, print = false) =>
-      `${API_BASE}/public/delivery/${token}/export.html${print ? "?print=1" : ""}`,
-    deliveryExportMdUrl: (token: string) => `${API_BASE}/public/delivery/${token}/export.md`,
+    deliveryPinStorageKey: (token: string) => `delivery-pin:${token}`,
+    delivery: (token: string, pin?: string | null) => {
+      const headers = new Headers();
+      const stored =
+        pin?.trim() ||
+        (typeof sessionStorage !== "undefined"
+          ? sessionStorage.getItem(`delivery-pin:${token}`)
+          : null);
+      if (stored) headers.set("X-Delivery-Pin", stored);
+      return request<PublicDeliveryPayload>(`/public/delivery/${token}`, { headers });
+    },
+    unlockDelivery: (token: string, pin: string) =>
+      request<PublicDeliveryPayload>(`/public/delivery/${token}/unlock`, {
+        method: "POST",
+        body: JSON.stringify({ pin }),
+      }),
+    deliveryExportHtmlUrl: (token: string, print = false) => {
+      const pin =
+        typeof sessionStorage !== "undefined"
+          ? sessionStorage.getItem(`delivery-pin:${token}`)
+          : null;
+      const qs = new URLSearchParams();
+      if (print) qs.set("print", "1");
+      if (pin) qs.set("pin", pin);
+      const query = qs.toString();
+      return `${API_BASE}/public/delivery/${token}/export.html${query ? `?${query}` : ""}`;
+    },
+    deliveryExportMdUrl: (token: string) => {
+      const pin =
+        typeof sessionStorage !== "undefined"
+          ? sessionStorage.getItem(`delivery-pin:${token}`)
+          : null;
+      return `${API_BASE}/public/delivery/${token}/export.md${pin ? `?pin=${encodeURIComponent(pin)}` : ""}`;
+    },
   },
 };

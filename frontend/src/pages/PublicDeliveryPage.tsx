@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download, Printer } from "lucide-react";
@@ -6,8 +6,11 @@ import { api, type PublicDeliveryPayload } from "../lib/api";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 type PublicTab = "summary" | "documents";
+
+const deliveryPinKey = (token: string) => `delivery-pin:${token}`;
 
 function setMetaTag(name: string, content: string, property = false) {
   const attr = property ? "property" : "name";
@@ -25,18 +28,47 @@ export default function PublicDeliveryPage() {
   const { t } = useTranslation();
   const [payload, setPayload] = useState<PublicDeliveryPayload | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [unlocking, setUnlocking] = useState(false);
   const [tab, setTab] = useState<PublicTab>("summary");
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadDelivery = useCallback(async (pin?: string | null) => {
     if (!token) return;
     setLoading(true);
-    api.public
-      .delivery(token)
-      .then(setPayload)
-      .catch(() => setPayload(null))
-      .finally(() => setLoading(false));
+    setPinError(null);
+    try {
+      const data = await api.public.delivery(token, pin);
+      setPayload(data);
+    } catch {
+      setPayload(null);
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    const stored = sessionStorage.getItem(deliveryPinKey(token));
+    void loadDelivery(stored);
+  }, [token, loadDelivery]);
+
+  const submitPin = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!token || !pinInput.trim()) return;
+    setUnlocking(true);
+    setPinError(null);
+    try {
+      const data = await api.public.unlockDelivery(token, pinInput.trim());
+      sessionStorage.setItem(deliveryPinKey(token), pinInput.trim());
+      setPayload(data);
+    } catch {
+      setPinError(t("office.encargos.delivery.pinInvalid"));
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   useEffect(() => {
     if (!payload) return;
@@ -73,6 +105,7 @@ export default function PublicDeliveryPage() {
   }
 
   const blocked = payload.expired || payload.revoked;
+  const locked = payload.locked && !blocked;
   const { branding } = payload;
   const tocItems = [
     ...(payload.finalReport ? [{ id: "summary", label: t("office.encargos.tabFinal") }] : []),
@@ -141,6 +174,27 @@ export default function PublicDeliveryPage() {
             ? t("office.encargos.delivery.publicRevoked")
             : t("office.encargos.delivery.publicExpired")}
         </div>
+      ) : locked ? (
+        <form className="public-delivery-pin-gate" onSubmit={submitPin}>
+          <p className="public-delivery-pin-lead">{t("office.encargos.delivery.pinRequired")}</p>
+          <Input
+            label={t("office.encargos.delivery.pinLabel")}
+            type="password"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={pinInput}
+            onChange={(e) => setPinInput(e.target.value)}
+            placeholder={t("office.encargos.delivery.pinPlaceholder")}
+          />
+          {pinError ? (
+            <p className="public-delivery-pin-error" role="alert">
+              {pinError}
+            </p>
+          ) : null}
+          <Button type="submit" disabled={unlocking || pinInput.trim().length < 4}>
+            {t("office.encargos.delivery.pinUnlock")}
+          </Button>
+        </form>
       ) : (
         <>
           <div className="public-delivery-toolbar">

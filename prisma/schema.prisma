@@ -1011,6 +1011,7 @@ model EncargoDelivery {
   viewCount          Int       @default(0)
   recipientEmail     String?
   emailedAt          DateTime?
+  accessPinHash      String?
   createdAt          DateTime  @default(now())
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)

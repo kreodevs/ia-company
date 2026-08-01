@@ -37,11 +37,11 @@ Fase A ──► Fase B ──► Fase C ──► Fase D ──► [ Lanzamient
 | # | Entrega | Por qué | Esfuerzo |
 |---|---------|---------|----------|
 | A1 | **Deploy prod al día** — `migrate deploy`, worker, Redis, backfill scope si aplica | G+H y war room no existen en prod sin esto | S |
-| A2 | **Munger veto = hard stop** — run se bloquea al detectar VETO en output | Confianza en decisiones; evita tokens quemados | M |
-| A3 | **Shell safety unificada** — misma policy en `run_shell_command` y tools | Guardrails CLAUDE.md reales | M |
-| A4 | **Entregables fiables** — dedupe docs, listado agent-docs visible post-run | Síntoma histórico: runs con tokens, UI vacía | M |
-| A5 | **PIN opcional en `/d/:token`** | Tu exigencia 10/10; clientes reales lo piden | M |
-| A6 | **Flujo diario documentado para ti** — 1 página: recepción → procedimiento → encargo → entrega | Reduce fricción cognitiva; valida UX | S |
+| A2 | **Munger veto = hard stop** — run se bloquea al detectar VETO en output | ✅ Implementado en `engine.ts` | — |
+| A3 | **Shell safety unificada** — misma policy en `run_shell_command` y tools | ✅ `shell-policy.ts` | — |
+| A4 | **Entregables fiables** — dedupe docs, listado agent-docs visible post-run | Convergence usa `shouldSkipHandoffDocPersist` | M |
+| A5 | **PIN opcional en `/d/:token`** | ✅ `accessPinHash` + gate UI | — |
+| A6 | **Flujo diario documentado para ti** — 1 página: recepción → procedimiento → encargo → entrega | [`pilot-daily-flow.md`](./pilot-daily-flow.md) | — |
 
 **Criterio de salida:** Completas 1 encargo real de punta a punta (brief → docs → link entrega → cliente lo abre) en prod.
 

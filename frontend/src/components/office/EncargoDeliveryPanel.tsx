@@ -32,6 +32,7 @@ export default function EncargoDeliveryPanel({
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [label, setLabel] = useState("");
+  const [accessPin, setAccessPin] = useState("");
   const [expiryPreset, setExpiryPreset] = useState<ExpiryPreset>("30d");
   const [includeFinalReport, setIncludeFinalReport] = useState(hasFinalReport);
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>(() => documents.map((d) => d.id));
@@ -49,8 +50,9 @@ export default function EncargoDeliveryPanel({
       expiryPreset,
       includeFinalReport,
       documentIds: selectedDocIds,
+      accessPin: accessPin.trim() || undefined,
     }),
-    [label, expiryPreset, includeFinalReport, selectedDocIds],
+    [label, expiryPreset, includeFinalReport, selectedDocIds, accessPin],
   );
 
   const refresh = useCallback(async () => {
@@ -97,6 +99,7 @@ export default function EncargoDeliveryPanel({
     try {
       await api.office.deliveries.create(runId, createBody);
       setLabel("");
+      setAccessPin("");
       setConfirmedShare(false);
       await refresh();
     } finally {
@@ -173,6 +176,16 @@ export default function EncargoDeliveryPanel({
           onChange={(e) => setLabel(e.target.value)}
           placeholder={t("office.encargos.delivery.labelPlaceholder")}
         />
+
+        <Input
+          label={t("office.encargos.delivery.pinOptional")}
+          value={accessPin}
+          onChange={(e) => setAccessPin(e.target.value)}
+          placeholder={t("office.encargos.delivery.pinPlaceholder")}
+          type="password"
+          autoComplete="new-password"
+        />
+        <p className="office-encargo-delivery-hint">{t("office.encargos.delivery.pinHint")}</p>
 
         <label className="office-encargo-delivery-field">
           <span>{t("office.encargos.delivery.expiryLabel")}</span>
@@ -258,6 +271,7 @@ export default function EncargoDeliveryPanel({
                           date: new Date(item.expiresAt).toLocaleString(),
                         })}`
                       : null}
+                    {item.hasAccessPin ? ` · ${t("office.encargos.delivery.pinProtected")}` : null}
                     {item.viewCount > 0
                       ? ` · ${t("office.encargos.delivery.views", { count: item.viewCount })}`
                       : null}

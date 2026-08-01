@@ -799,6 +799,36 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   background: rgba(251, 191, 36, 0.12);
 }
 
+.public-delivery-pin-gate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 22rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--office-border, #e2e8f0);
+  border-radius: 0.5rem;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.public-delivery-pin-lead {
+  margin: 0;
+  color: var(--office-text-muted, #64748b);
+  font-size: 0.9375rem;
+}
+
+.public-delivery-pin-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.office-encargo-delivery-hint {
+  margin: -0.25rem 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--office-text-muted, #64748b);
+}
+
 @media (max-width: 768px) {
   .public-delivery-docs {
     grid-template-columns: 1fr;

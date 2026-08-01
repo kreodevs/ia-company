@@ -47,7 +47,7 @@
 ## Pendiente para 10/10 absoluto
 
 ### Seguridad
-- [ ] Contraseña / PIN opcional en enlace
+- [x] Contraseña / PIN opcional en enlace
 - [ ] Audit log exportable (CSV) de vistas
 - [ ] Retención automática post-revocación
 

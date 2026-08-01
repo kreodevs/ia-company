@@ -91,6 +91,7 @@ export async function officeRoutes(app: FastifyInstance) {
       expiryPreset?: string;
       includeFinalReport?: boolean;
       documentIds?: string[];
+      accessPin?: string | null;
     };
   }>("/office/encargos/:runId/deliveries", async (request, reply) => {
     try {

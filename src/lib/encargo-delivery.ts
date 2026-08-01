@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { EncargoDelivery, Prisma } from "@prisma/client";
+import { hashPassword, verifyPassword } from "./auth.js";
 import { prisma } from "./prisma.js";
 import { getOfficeEncargoDetail, type OfficeEncargoDetail } from "./office-encargos.js";
 import { getPlatformSettingsSync } from "./platform-settings.js";
@@ -22,6 +23,7 @@ export interface EncargoDeliverySummary {
   viewCount: number;
   recipientEmail: string | null;
   emailedAt: string | null;
+  hasAccessPin: boolean;
   createdAt: string;
   publicUrl: string;
 }
@@ -46,6 +48,8 @@ export interface PublicDeliveryPayload {
   label: string | null;
   expired: boolean;
   revoked: boolean;
+  pinRequired: boolean;
+  locked: boolean;
   branding: PublicDeliveryBranding;
   encargo: {
     title: string;
@@ -141,9 +145,39 @@ function toSummary(row: EncargoDelivery): EncargoDeliverySummary {
     viewCount: row.viewCount,
     recipientEmail: row.recipientEmail,
     emailedAt: row.emailedAt?.toISOString() ?? null,
+    hasAccessPin: Boolean(row.accessPinHash),
     createdAt: row.createdAt.toISOString(),
     publicUrl: deliveryPublicUrl(row.token),
   };
+}
+
+function normalizeAccessPin(pin: string | undefined | null): string | null {
+  const trimmed = pin?.trim();
+  if (!trimmed) return null;
+  if (trimmed.length < 4 || trimmed.length > 32) {
+    throw Object.assign(new Error("PIN must be 4–32 characters"), { statusCode: 400 });
+  }
+  return trimmed;
+}
+
+async function hashAccessPin(pin: string): Promise<string> {
+  return hashPassword(pin);
+}
+
+async function verifyAccessPin(row: EncargoDelivery, pin: string | undefined | null): Promise<boolean> {
+  if (!row.accessPinHash) return true;
+  const normalized = pin?.trim();
+  if (!normalized) return false;
+  return verifyPassword(normalized, row.accessPinHash);
+}
+
+export class DeliveryPinError extends Error {
+  readonly statusCode = 401;
+
+  constructor(message = "Invalid or missing PIN") {
+    super(message);
+    this.name = "DeliveryPinError";
+  }
 }
 
 async function assertRunInTenant(tenantId: string, runId: string): Promise<void> {
@@ -198,6 +232,7 @@ export async function createEncargoDelivery(
     includeFinalReport?: boolean;
     documentIds?: string[];
     createdByUserId?: string;
+    accessPin?: string | null;
   },
 ): Promise<EncargoDeliverySummary> {
   await assertRunInTenant(tenantId, runId);
@@ -215,6 +250,8 @@ export async function createEncargoDelivery(
   const documentIds = input.documentIds ?? [];
   const includeFinalReport = input.includeFinalReport ?? true;
   const snapshot = buildSnapshotFromDetail(detail, includeFinalReport, documentIds);
+  const accessPin = normalizeAccessPin(input.accessPin);
+  const accessPinHash = accessPin ? await hashAccessPin(accessPin) : null;
 
   const row = await prisma.encargoDelivery.create({
     data: {
@@ -227,6 +264,7 @@ export async function createEncargoDelivery(
       documentIds,
       contentSnapshot: snapshot as unknown as Prisma.InputJsonValue,
       createdByUserId: input.createdByUserId ?? null,
+      accessPinHash,
     },
   });
   return toSummary(row);
@@ -288,7 +326,10 @@ export async function sendEncargoDeliveryEmail(
     input.subject?.trim() ||
     `${branding.tenantName}: ${summary.label ?? "Entrega de encargo"}`;
   const intro = input.message?.trim() || "Te compartimos la entrega solicitada.";
-  const html = `<p>${intro}</p><p><strong>${branding.tenantName}</strong></p><p><a href="${summary.publicUrl}">${summary.publicUrl}</a></p><p style="font-size:12px;color:#64748b;">Este enlace es de solo lectura${summary.expiresAt ? ` y caduca el ${new Date(summary.expiresAt).toLocaleDateString()}` : ""}.</p>`;
+  const pinNote = row.accessPinHash
+    ? "<p><strong>Acceso protegido:</strong> el destinatario necesitará el PIN que compartiste por un canal seguro.</p>"
+    : "";
+  const html = `<p>${intro}</p><p><strong>${branding.tenantName}</strong></p>${pinNote}<p><a href="${summary.publicUrl}">${summary.publicUrl}</a></p><p style="font-size:12px;color:#64748b;">Este enlace es de solo lectura${summary.expiresAt ? ` y caduca el ${new Date(summary.expiresAt).toLocaleDateString()}` : ""}.</p>`;
 
   await sendRunNotificationEmail({ to: [input.to.trim()], subject, html });
 
@@ -326,6 +367,7 @@ function buildPayloadFromRow(
   branding: PublicDeliveryBranding,
   includeContent: boolean,
   snapshotOverride?: DeliveryContentSnapshot | null,
+  options?: { pinRequired?: boolean; locked?: boolean },
 ): PublicDeliveryPayload {
   const snapshot = snapshotOverride ?? readSnapshot(row.contentSnapshot);
   const encargo =
@@ -340,25 +382,41 @@ function buildPayloadFromRow(
       completedAt: null,
     } satisfies PublicDeliveryPayload["encargo"]);
 
+  const pinRequired = options?.pinRequired ?? Boolean(row.accessPinHash);
+  const locked = options?.locked ?? false;
+  const showContent = includeContent && !locked;
+
   return {
     label: row.label,
     expired: isExpired(row),
     revoked: row.revokedAt != null,
+    pinRequired,
+    locked,
     branding,
     encargo,
-    finalReport: includeContent ? (snapshot?.finalReport ?? null) : null,
-    documents: includeContent ? (snapshot?.documents ?? []) : [],
+    finalReport: showContent ? (snapshot?.finalReport ?? null) : null,
+    documents: showContent ? (snapshot?.documents ?? []) : [],
   };
 }
 
-export async function getPublicDeliveryByToken(token: string): Promise<PublicDeliveryPayload | null> {
-  const row = await prisma.encargoDelivery.findUnique({ where: { token } });
+async function resolveDeliveryRow(token: string): Promise<EncargoDelivery | null> {
+  return prisma.encargoDelivery.findUnique({ where: { token } });
+}
+
+export async function getPublicDeliveryByToken(
+  token: string,
+  accessPin?: string | null,
+): Promise<PublicDeliveryPayload | null> {
+  const row = await resolveDeliveryRow(token);
   if (!row) return null;
 
   const branding = toBrandingPayload(await getTenantDeliveryBranding(row.tenantId));
   const expired = isExpired(row);
   const revoked = row.revokedAt != null;
-  const includeContent = !expired && !revoked;
+  const pinRequired = Boolean(row.accessPinHash);
+  const pinOk = await verifyAccessPin(row, accessPin);
+  const locked = pinRequired && !pinOk;
+  const includeContent = !expired && !revoked && !locked;
 
   let snapshot = readSnapshot(row.contentSnapshot);
   if (!snapshot && includeContent) {
@@ -375,15 +433,40 @@ export async function getPublicDeliveryByToken(token: string): Promise<PublicDel
     await recordDeliveryView(row);
   }
 
-  return buildPayloadFromRow(row, branding, includeContent, snapshot);
+  return buildPayloadFromRow(row, branding, includeContent, snapshot, { pinRequired, locked });
 }
 
-async function resolveDeliveryPayloadForExport(token: string): Promise<{
+export async function unlockPublicDelivery(
+  token: string,
+  accessPin: string,
+): Promise<PublicDeliveryPayload> {
+  const row = await resolveDeliveryRow(token);
+  if (!row) throw Object.assign(new Error("Delivery link not found"), { statusCode: 404 });
+  if (row.revokedAt) throw Object.assign(new Error("Delivery link revoked"), { statusCode: 410 });
+  if (isExpired(row)) throw Object.assign(new Error("Delivery link expired"), { statusCode: 410 });
+  if (!row.accessPinHash) {
+    const payload = await getPublicDeliveryByToken(token);
+    if (!payload) throw Object.assign(new Error("Delivery link not found"), { statusCode: 404 });
+    return payload;
+  }
+  if (!(await verifyAccessPin(row, accessPin))) {
+    throw new DeliveryPinError();
+  }
+  const payload = await getPublicDeliveryByToken(token, accessPin);
+  if (!payload) throw Object.assign(new Error("Delivery link not found"), { statusCode: 404 });
+  return payload;
+}
+
+async function resolveDeliveryPayloadForExport(
+  token: string,
+  accessPin?: string | null,
+): Promise<{
   payload: PublicDeliveryPayload;
   branding: TenantDeliveryBrandingDto;
 } | null> {
-  const row = await prisma.encargoDelivery.findUnique({ where: { token } });
+  const row = await resolveDeliveryRow(token);
   if (!row || row.revokedAt || isExpired(row)) return null;
+  if (!(await verifyAccessPin(row, accessPin))) return null;
 
   let snapshot = readSnapshot(row.contentSnapshot);
   if (!snapshot) {
@@ -406,14 +489,20 @@ async function resolveDeliveryPayloadForExport(token: string): Promise<{
   return { payload, branding };
 }
 
-export async function getDeliveryExportHtml(token: string): Promise<string | null> {
-  const resolved = await resolveDeliveryPayloadForExport(token);
+export async function getDeliveryExportHtml(
+  token: string,
+  accessPin?: string | null,
+): Promise<string | null> {
+  const resolved = await resolveDeliveryPayloadForExport(token, accessPin);
   if (!resolved) return null;
   return buildDeliveryExportHtml(resolved.payload, resolved.branding);
 }
 
-export async function getDeliveryMarkdownExport(token: string): Promise<string | null> {
-  const resolved = await resolveDeliveryPayloadForExport(token);
+export async function getDeliveryMarkdownExport(
+  token: string,
+  accessPin?: string | null,
+): Promise<string | null> {
+  const resolved = await resolveDeliveryPayloadForExport(token, accessPin);
   if (!resolved) return null;
   return buildDeliveryMarkdownBundle(resolved.payload);
 }
@@ -436,6 +525,8 @@ export function previewDeliveryPayload(
     label: input.label?.trim() || null,
     expired: false,
     revoked: false,
+    pinRequired: false,
+    locked: false,
     branding: toBrandingPayload(branding),
     encargo: snapshot.encargo,
     finalReport: snapshot.finalReport,
