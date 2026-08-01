@@ -2,6 +2,16 @@
 
 Generate stunning Open Graph images via API — hosted on Cloudflare Workers, cached globally on R2, sub-100ms on cache hit.
 
+## Auto-Company vertical pack
+
+This product includes a **vertical pack** for one-click onboarding in the Office:
+
+- Manifest: [`vertical-pack.json`](vertical-pack.json)
+- Operator playbook: [`PLAYBOOK.md`](PLAYBOOK.md)
+- Apply from **Products → Vertical packs** in the app
+
+The pack registers SnapOG, clones pricing/launch/SEO/marketing workflows, and seeds the product profile with tier economics ($19 Pro / $49 Business).
+
 ## Quick Start
 
 ```bash

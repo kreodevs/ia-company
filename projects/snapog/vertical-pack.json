@@ -1,0 +1,70 @@
+{
+  "id": "snapog",
+  "version": 1,
+  "name": "SnapOG",
+  "tagline": "Open Graph image API — monetizable micro-SaaS on Cloudflare Workers",
+  "product": {
+    "slug": "snapog",
+    "name": "SnapOG",
+    "description": "Generate stunning Open Graph images via API — Cloudflare Workers + R2 cache, Stripe tiers.",
+    "phase": "growing"
+  },
+  "workflows": [
+    "pricing-and-monetization",
+    "product-launch",
+    "seo-review",
+    "marketing-sprint",
+    "feature-development",
+    "weekly-review"
+  ],
+  "presets": [
+    {
+      "presetId": "pricing-and-monetization",
+      "primary": true,
+      "taskTemplate": "Validate SnapOG Pro ($19/mo) and Business ($49/mo) tiers: unit economics, competitive anchors vs Bannerbear/Placid, and landing pricing copy.",
+      "deliverableHint": "Pricing model in docs/cfo/, tier comparison table, copy-ready pricing section for snapog.dev landing."
+    },
+    {
+      "presetId": "product-launch",
+      "primary": true,
+      "taskTemplate": "Execute SnapOG launch checklist: positioning vs OG-image APIs, landing copy, launch channels, and success metrics.",
+      "deliverableHint": "Launch brief in docs/product/, copy in docs/marketing/, checklist with owners in docs/operations/."
+    },
+    {
+      "presetId": "seo-review",
+      "primary": true,
+      "taskTemplate": "Audit SEO for snapog.dev landing: title, meta, H1, schema, internal links, and API docs discoverability.",
+      "deliverableHint": "Save audit as markdown in docs/research/ with at least 5 actionable fixes and before/after copy."
+    },
+    {
+      "presetId": "marketing-sprint",
+      "primary": true,
+      "taskTemplate": "Run a marketing sprint for SnapOG: positioning angle for indie devs, channel plan (PH, Twitter, dev communities), and one publish-ready asset.",
+      "deliverableHint": "Each agent saves deliverables under docs/{role}/ — final asset must be ready to post (not outline-only)."
+    },
+    {
+      "presetId": "feature-development",
+      "taskTemplate": "Ship one vertical feature slice for SnapOG — spec, implementation plan in projects/snapog/, and QA acceptance criteria.",
+      "deliverableHint": "Spec in docs/product/, implementation notes in docs/fullstack/ referencing projects/snapog/src/."
+    },
+    {
+      "presetId": "weekly-review",
+      "taskTemplate": "Weekly review for SnapOG: API usage metrics, revenue, blockers, and one prioritized growth experiment.",
+      "deliverableHint": "CEO summary + ops metrics in docs/operations/ and docs/ceo/."
+    }
+  ],
+  "profileSeed": {
+    "summary": "SnapOG — Open Graph image API on Cloudflare Workers with R2 cache and Stripe tiers.",
+    "valueProposition": "Generate stunning OG images via a simple GET API — sub-100ms on cache hit, global edge.",
+    "targetAudience": "Indie developers, bloggers, and SaaS founders who need OG images without design tools.",
+    "problemStatement": "Manual OG design is slow; competitors like Bannerbear and Placid are expensive at indie scale.",
+    "businessModel": "Freemium API SaaS: Free (100/mo), Pro $19/mo (10k), Business $49/mo (100k).",
+    "competitors": ["Bannerbear", "Placid", "og-image.vercel.app"],
+    "techStack": ["Cloudflare Workers", "Hono", "D1", "R2", "workers-og", "Stripe"],
+    "monetizationHypothesis": "Pro tier at $19/mo with watermark-free images and higher limits drives ramen profitability.",
+    "suggestedPhase": "growing",
+    "nextAction": "Run pricing-and-monetization preset, then product-launch for landing + Stripe checkout."
+  },
+  "playbookPath": "PLAYBOOK.md",
+  "defaultNextAction": "Apply SnapOG vertical pack complete — run pricing-and-monetization from the war room."
+}

@@ -381,6 +381,38 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get("/products/vertical-packs", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { listVerticalPacksForTenant } = await import("../../lib/vertical-packs.js");
+      return { packs: await listVerticalPacksForTenant(tenantId) };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { packId: string };
+    Body: { setFocus?: boolean; seedProfile?: boolean };
+  }>("/products/vertical-packs/:packId/apply", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { applyVerticalPack } = await import("../../lib/vertical-packs.js");
+      const result = await applyVerticalPack(tenantId, request.params.packId, {
+        setFocus: request.body?.setFocus,
+        seedProfile: request.body?.seedProfile,
+      });
+      await logAudit(request, "product.vertical_pack.apply", {
+        packId: result.packId,
+        productId: result.productId,
+        productSlug: result.productSlug,
+      });
+      return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.post<{
     Body: {
       slug: string;

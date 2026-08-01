@@ -82,6 +82,21 @@ export const products = {
     productDeleted: "Producto eliminado del registro.",
     productRegistered: "Producto registrado en el portfolio.",
     productBootstrapped: "Producto creado con workspace nuevo.",
+    productVerticalPackApplied: "Vertical pack aplicado — producto registrado con workflows.",
+  },
+  verticalPacks: {
+    title: "Vertical packs",
+    subtitle:
+      "Bundles producto + workflows desde projects/{slug}/. Un clic registra el producto, clona workflows y siembra el perfil.",
+    loading: "Cargando vertical packs…",
+    apply: "Aplicar pack",
+    applying: "Aplicando…",
+    applied: "En portfolio",
+    hasCode: "Código en workspace",
+    openWarRoom: "Abrir war room",
+    meta: "{{workflows}} workflows · {{presets}} presets · projects/{{slug}}/",
+    toastApplied: "{{name}} listo — workflows clonados y puesto en foco.",
+    toastFailed: "No se pudo aplicar el vertical pack.",
   },
   add: {
     title: "Añadir producto",

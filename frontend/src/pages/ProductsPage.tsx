@@ -15,6 +15,7 @@ import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import TabsBar from "../components/ui/TabsBar";
 import AddProductDialog from "../components/products/AddProductDialog";
+import VerticalPacksPanel from "../components/products/VerticalPacksPanel";
 
 type ProductsTab = "opportunities" | "active";
 
@@ -161,6 +162,8 @@ export default function ProductsPage() {
           });
         }}
       />
+
+      <VerticalPacksPanel onApplied={() => void load()} />
 
       <TabsBar
         activeId={activeTab}

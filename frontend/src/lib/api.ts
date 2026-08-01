@@ -646,6 +646,30 @@ export interface ProductLaunchOptions {
   agents: ProductLaunchOptionAgent[];
 }
 
+export interface VerticalPackListItem {
+  id: string;
+  version: number;
+  name: string;
+  tagline: string;
+  productSlug: string;
+  workflowCount: number;
+  presetCount: number;
+  hasCode: boolean;
+  playbookPath: string | null;
+  applied: boolean;
+  appliedProductId: string | null;
+}
+
+export interface ApplyVerticalPackResult {
+  productId: string;
+  productSlug: string;
+  productName: string;
+  packId: string;
+  workflowsEnsured: string[];
+  focusSet: boolean;
+  profileSeeded: boolean;
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -1564,6 +1588,16 @@ export const api = {
       request<{ workspaces: Array<{ slug: string; path: string; hasCode: boolean }> }>(
         "/products/importable",
       ),
+    verticalPacks: () =>
+      request<{ packs: VerticalPackListItem[] }>("/products/vertical-packs"),
+    applyVerticalPack: (
+      packId: string,
+      body?: { setFocus?: boolean; seedProfile?: boolean },
+    ) =>
+      request<ApplyVerticalPackResult>(`/products/vertical-packs/${packId}/apply`, {
+        method: "POST",
+        body: JSON.stringify(body ?? {}),
+      }),
     register: (body: {
       slug: string;
       name: string;
