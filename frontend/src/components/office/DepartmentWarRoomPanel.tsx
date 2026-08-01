@@ -10,9 +10,11 @@ import {
 } from "../../lib/war-room-live";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
+import Badge from "../ui/Badge";
 import WarRoomAgentSeat from "../war-room/WarRoomAgentSeat";
 import WarRoomHandoffOverlay from "../war-room/WarRoomHandoffOverlay";
 import WarRoomRunSelector from "../war-room/WarRoomRunSelector";
+import { shortTime } from "../war-room/war-room-shared";
 import type { DepartmentRoomAgent } from "./DepartmentRoomView";
 
 interface DepartmentWarRoomPanelProps {
@@ -47,6 +49,7 @@ export default function DepartmentWarRoomPanel({
   const watchRunId = searchParams.get("watchRun");
   const [data, setData] = useState<DepartmentTeam | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const refreshScheduler = useRef(createTeamRefreshScheduler(async () => refresh()));
   const { handoff, bindStreamHandler } = useWarRoomHandoff(data?.activeRun?.id, () =>
     refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS),
@@ -59,16 +62,23 @@ export default function DepartmentWarRoomPanel({
   }, [departmentSlug, orgUnitId, watchRunId]);
 
   const refresh = useCallback(async () => {
-    const team = await fetchTeam();
-    setData(team);
-    return team;
+    try {
+      const team = await fetchTeam();
+      setData(team);
+      setLoadError(null);
+      return team;
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : String(err));
+      setData(null);
+      return null;
+    }
   }, [fetchTeam]);
 
   useEffect(() => {
     refreshScheduler.current = createTeamRefreshScheduler(() => refresh());
     setLoading(true);
     refresh()
-      .catch(() => setData(null))
+      .catch(() => undefined)
       .finally(() => setLoading(false));
     return () => refreshScheduler.current.dispose();
   }, [refresh]);
@@ -127,43 +137,85 @@ export default function DepartmentWarRoomPanel({
     return <p className="office-empty">{t("warRoom.loading")}</p>;
   }
 
+  if (loadError) {
+    return (
+      <div className="office-dept-war-room-error-panel" role="alert">
+        <p className="office-dept-war-room-error-title">{t("warRoom.loadErrorTitle")}</p>
+        <p className="office-dept-war-room-error-body">{loadError}</p>
+        <button
+          type="button"
+          className="office-link-btn"
+          onClick={() => {
+            setLoading(true);
+            void refresh().finally(() => setLoading(false));
+          }}
+        >
+          {t("warRoom.retry")}
+        </button>
+      </div>
+    );
+  }
+
+  const recentRunsSection =
+    data && data.recentRuns.length > 0 ? (
+      <section className="office-dept-recent-runs">
+        <h3 className="office-dept-recent-runs-title">{t("warRoom.recentRuns")}</h3>
+        <ol className="office-dept-recent-runs-list">
+          {data.recentRuns.map((run) => (
+            <li key={run.id}>
+              <Link to={`/office/encargos/${run.id}`} className="office-dept-recent-run-row">
+                <span className="office-dept-recent-run-name">{formatWorkflowTitle(run.workflowName)}</span>
+                <span className="office-dept-recent-run-meta">
+                  {shortTime(run.startedAt)} · {run.totalTokens.toLocaleString()} tokens
+                </span>
+                <Badge>{run.status}</Badge>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ) : null;
+
   if (!data?.activeRun) {
     if (seats.length === 0) {
       return <p className="office-empty">{t("office.floor.noSpecialists")}</p>;
     }
     return (
-      <div className="office-dept-table">
-        <div className="office-dept-table-core" aria-hidden />
-        {seats.map((agent, index) => {
-          const { x, y } = positionOnCircle(index, Math.max(seats.length, 1), 38);
-          return (
-            <button
-              key={agent.id}
-              type="button"
-              className={`office-dept-seat office-dept-seat-${agent.status}`}
-              style={{ left: `${x}%`, top: `${y}%` }}
-              onClick={() => onSeatClick?.(agent)}
-              aria-label={agentDisplayLabel(agent, t)}
-            >
-              <div
-                className="office-dept-seat-avatar"
-                style={{ background: avatarGradient(agent.name) }}
-                data-pending={!agent.provisioned ? "true" : undefined}
+      <>
+        <div className="office-dept-table">
+          <div className="office-dept-table-core" aria-hidden />
+          {seats.map((agent, index) => {
+            const { x, y } = positionOnCircle(index, Math.max(seats.length, 1), 38);
+            return (
+              <button
+                key={agent.id}
+                type="button"
+                className={`office-dept-seat office-dept-seat-${agent.status}`}
+                style={{ left: `${x}%`, top: `${y}%` }}
+                onClick={() => onSeatClick?.(agent)}
+                aria-label={agentDisplayLabel(agent, t)}
               >
-                <span aria-hidden>{AGENT_EMOJI[agent.name] ?? "🧑‍💼"}</span>
-              </div>
-              <p className="office-dept-seat-name">{agentDisplayLabel(agent, t)}</p>
-              <p className="office-dept-seat-status">
-                {!agent.provisioned
-                  ? t("office.floor.agentPending")
-                  : agent.status === "busy"
-                    ? t("office.agents.busy")
-                    : t("office.agents.idle")}
-              </p>
-            </button>
-          );
-        })}
-      </div>
+                <div
+                  className="office-dept-seat-avatar"
+                  style={{ background: avatarGradient(agent.name) }}
+                  data-pending={!agent.provisioned ? "true" : undefined}
+                >
+                  <span aria-hidden>{AGENT_EMOJI[agent.name] ?? "🧑‍💼"}</span>
+                </div>
+                <p className="office-dept-seat-name">{agentDisplayLabel(agent, t)}</p>
+                <p className="office-dept-seat-status">
+                  {!agent.provisioned
+                    ? t("office.floor.agentPending")
+                    : agent.status === "busy"
+                      ? t("office.agents.busy")
+                      : t("office.agents.idle")}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+        {recentRunsSection}
+      </>
     );
   }
 
@@ -172,8 +224,27 @@ export default function DepartmentWarRoomPanel({
     workflowName: run.workflowName,
   }));
 
+  const activeRunAlert =
+    data.activeRun.errorMessage && !data.activeRun.errorMessage.startsWith("VETO:")
+      ? data.activeRun.errorMessage
+      : null;
+  const activeRunVeto = data.activeRun.errorMessage?.startsWith("VETO:")
+    ? data.activeRun.errorMessage
+    : null;
+
   return (
     <div className="office-dept-war-room-live">
+      {activeRunVeto ? (
+        <div className="office-dept-war-room-veto" role="alert">
+          <p className="office-dept-war-room-veto-title">{t("warRoom.vetoTitle")}</p>
+          <p className="office-dept-war-room-veto-body">{activeRunVeto}</p>
+        </div>
+      ) : null}
+      {activeRunAlert ? (
+        <div className="office-dept-war-room-error-panel" role="alert">
+          <p className="office-dept-war-room-error-body">{activeRunAlert}</p>
+        </div>
+      ) : null}
       <div className="office-dept-war-room-live-head">
         <div>
           <p className="office-dept-war-room-live-eyebrow">{t("office.floor.liveMeeting")}</p>
@@ -241,6 +312,7 @@ export default function DepartmentWarRoomPanel({
           ))}
         </div>
       </div>
+      {recentRunsSection}
     </div>
   );
 }

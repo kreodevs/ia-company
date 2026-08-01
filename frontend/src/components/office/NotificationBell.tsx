@@ -4,6 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { api, type TenantNotificationItem } from "../../lib/api";
+import {
+  displayNotificationBody,
+  displayNotificationTitle,
+} from "../../lib/notification-display";
 import { toast } from "../molecules/Sonner";
 import { cn } from "../../lib/utils";
 
@@ -24,11 +28,11 @@ function saveSeen(ids: Set<string>) {
   sessionStorage.setItem(SEEN_KEY, JSON.stringify([...ids].slice(-200)));
 }
 
-function maybeBrowserNotify(item: TenantNotificationItem) {
+function maybeBrowserNotify(item: TenantNotificationItem, language: string) {
   if (typeof window === "undefined" || !("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
-  const n = new Notification(item.title, {
-    body: item.body,
+  const n = new Notification(displayNotificationTitle(item, language), {
+    body: displayNotificationBody(item, language),
     tag: item.id,
   });
   if (item.href) {
@@ -40,7 +44,7 @@ function maybeBrowserNotify(item: TenantNotificationItem) {
 }
 
 export function useOfficeNotifications(enabled: boolean) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const seenRef = useRef(loadSeen());
   const initializedRef = useRef(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -63,8 +67,10 @@ export function useOfficeNotifications(enabled: boolean) {
         seenRef.current.add(item.id);
         saveSeen(seenRef.current);
         if (!item.readAt) {
-          toast(item.title, {
-            description: item.body,
+          const title = displayNotificationTitle(item, i18n.language);
+          const body = displayNotificationBody(item, i18n.language);
+          toast(title, {
+            description: body,
             action: item.href
               ? {
                   label: t("office.notifications.view"),
@@ -74,7 +80,7 @@ export function useOfficeNotifications(enabled: boolean) {
                 }
               : undefined,
           });
-          maybeBrowserNotify(item);
+          maybeBrowserNotify(item, i18n.language);
         }
       }
       if (!initializedRef.current) {
@@ -84,7 +90,7 @@ export function useOfficeNotifications(enabled: boolean) {
     } catch {
       // ignore polling errors
     }
-  }, [enabled, t]);
+  }, [enabled, t, i18n.language]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -111,7 +117,7 @@ export interface NotificationBellProps {
 }
 
 export default function NotificationBell({ enabled }: NotificationBellProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { unreadCount, items, open, setOpen, markRead, markAllRead } =
     useOfficeNotifications(enabled);
 
@@ -159,7 +165,7 @@ export default function NotificationBell({ enabled }: NotificationBellProps) {
                             setOpen(false);
                           }}
                         >
-                          <NotificationRow item={item} t={t} />
+                          <NotificationRow item={item} t={t} language={i18n.language} />
                         </Link>
                       ) : (
                         <div
@@ -169,7 +175,7 @@ export default function NotificationBell({ enabled }: NotificationBellProps) {
                           role="button"
                           tabIndex={0}
                         >
-                          <NotificationRow item={item} t={t} />
+                          <NotificationRow item={item} t={t} language={i18n.language} />
                         </div>
                       )}
                     </li>
@@ -207,15 +213,18 @@ export default function NotificationBell({ enabled }: NotificationBellProps) {
 function NotificationRow({
   item,
   t,
+  language,
 }: {
   item: TenantNotificationItem;
   t: (key: string) => string;
+  language: string;
 }) {
+  const isDepartmentReady = item.type === "department_run_completed";
   return (
     <>
-      <p className="office-notif-item-title">{item.title}</p>
-      <p className="office-notif-item-body">{item.body}</p>
-      <p className="office-notif-item-meta">
+      <p className="office-notif-item-title">{displayNotificationTitle(item, language)}</p>
+      <p className="office-notif-item-body">{displayNotificationBody(item, language)}</p>
+      <p className="office-notif-item-meta" data-dept-ready={isDepartmentReady ? "true" : undefined}>
         {t(`office.notifications.types.${item.type}`)} ·{" "}
         {new Date(item.createdAt).toLocaleString([], { hour: "2-digit", minute: "2-digit" })}
       </p>

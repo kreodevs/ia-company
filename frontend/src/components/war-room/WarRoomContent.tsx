@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Maximize2, MessageSquare, Minimize2 } from "lucide-react";
-import { api, type ProductTeam, type TenantProduct, type TeamAgent, type TeamAgentStatus } from "../../lib/api";
+import { api, type ProductTeam, type TenantProduct } from "../../lib/api";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import PageLoading from "../ui/PageLoading";
 import Badge from "../ui/Badge";
@@ -19,11 +19,9 @@ import WarRoomAgentSeat from "./WarRoomAgentSeat";
 import WarRoomHandoffOverlay from "./WarRoomHandoffOverlay";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import { shortTime } from "./war-room-shared";
-import { useWarRoomHandoff } from "../../lib/war-room-live";
+import { useWarRoomHandoff, useHeldAgentTeam } from "../../lib/war-room-live";
 
 const TEAM_REFRESH_MIN_MS = 2500;
-/** Keep active agent states visible long enough to read the war-room table. */
-const AGENT_STATUS_HOLD_MS = 2800;
 const STEP_EVENT_REFRESH_MS = 2800;
 const COORDINATOR_COLLAPSED_KEY = "war-room-coordinator-collapsed";
 
@@ -41,93 +39,6 @@ function writeCoordinatorCollapsed(collapsed: boolean): void {
   } catch {
     // ignore quota / private mode
   }
-}
-
-function statusPriority(status: TeamAgentStatus): number {
-  if (status === "thinking") return 3;
-  if (status === "queued") return 2;
-  return 1;
-}
-
-function useHeldAgentTeam(team: TeamAgent[]): TeamAgent[] {
-  const [display, setDisplay] = useState(team);
-  const teamRef = useRef(team);
-  teamRef.current = team;
-  const holdsRef = useRef(new Map<string, { status: TeamAgentStatus; currentTask: string | null; releaseAt: number }>());
-  const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
-
-  useEffect(() => {
-    setDisplay((prevDisplay) => {
-      const now = Date.now();
-      return team.map((agent) => {
-        const prev = prevDisplay.find((entry) => entry.id === agent.id) ?? agent;
-        const hold = holdsRef.current.get(agent.id);
-
-        if (hold && now < hold.releaseAt) {
-          if (statusPriority(agent.status) > statusPriority(hold.status)) {
-            holdsRef.current.delete(agent.id);
-            const timer = timersRef.current.get(agent.id);
-            if (timer) clearTimeout(timer);
-            timersRef.current.delete(agent.id);
-            return agent;
-          }
-          return {
-            ...agent,
-            status: hold.status,
-            currentTask: hold.currentTask ?? agent.currentTask,
-          };
-        }
-
-        if (statusPriority(prev.status) > statusPriority(agent.status)) {
-          const releaseAt = now + AGENT_STATUS_HOLD_MS;
-          holdsRef.current.set(agent.id, {
-            status: prev.status,
-            currentTask: prev.currentTask,
-            releaseAt,
-          });
-          const existing = timersRef.current.get(agent.id);
-          if (existing) clearTimeout(existing);
-          const agentId = agent.id;
-          const timer = setTimeout(() => {
-            timersRef.current.delete(agentId);
-            holdsRef.current.delete(agentId);
-            setDisplay((current) =>
-              current.map((entry) =>
-                entry.id === agentId ? teamRef.current.find((member) => member.id === agentId) ?? entry : entry,
-              ),
-            );
-          }, AGENT_STATUS_HOLD_MS);
-          timersRef.current.set(agent.id, timer);
-          return {
-            ...agent,
-            status: prev.status,
-            currentTask: prev.currentTask ?? agent.currentTask,
-          };
-        }
-
-        return agent;
-      });
-    });
-  }, [team]);
-
-  useEffect(() => {
-    if (team.length === 0) {
-      for (const timer of timersRef.current.values()) clearTimeout(timer);
-      timersRef.current.clear();
-      holdsRef.current.clear();
-      setDisplay([]);
-    }
-  }, [team.length]);
-
-  useEffect(() => {
-    return () => {
-      for (const timer of timersRef.current.values()) clearTimeout(timer);
-      timersRef.current.clear();
-      holdsRef.current.clear();
-    };
-  }, []);
-
-  return display;
 }
 
 function createTeamRefreshScheduler(refresh: () => Promise<unknown>) {

@@ -189,20 +189,12 @@ function buildTeamForRun(
   return rosterAgents.map((agent) => {
     const lastWork = lastWorkedAt.get(agent.id);
     let status: DepartmentTeamAgent["status"] = "idle";
+    const isLive = activeRun && ["RUNNING", "DELEGATED", "AWAITING_USER"].includes(activeRun.status);
     if (activeRun && activeRun.status === "PENDING") {
       status = "queued";
-    } else if (
-      activeRun &&
-      ["RUNNING", "DELEGATED"].includes(activeRun.status) &&
-      currentAgentId === agent.id
-    ) {
+    } else if (isLive && currentAgentId === agent.id) {
       status = "thinking";
-    } else if (
-      activeRun &&
-      ["RUNNING", "DELEGATED"].includes(activeRun.status) &&
-      !currentAgentId &&
-      lastWork
-    ) {
+    } else if (isLive && !currentAgentId && lastWork) {
       status = "thinking";
     }
     return {

@@ -30,6 +30,12 @@ export interface TenantNotificationDto {
   createdAt: string;
 }
 
+const LOCALE_SPLIT = "\n---\n";
+
+function bilingual(es: string, en: string): string {
+  return `${es}${LOCALE_SPLIT}${en}`;
+}
+
 function toDto(row: {
   id: string;
   type: string;
@@ -124,20 +130,95 @@ export async function markAllNotificationsRead(tenantId: string): Promise<number
 export function buildRunNotificationCopy(params: {
   status: ExecutionStatus;
   workflowName: string;
+  procedureLabel?: string;
+  departmentLabel?: string | null;
   totalCostUsd: number;
   totalTokens: number;
   errorMessage?: string | null;
 }): { title: string; body: string } {
+  const deptSuffix = params.departmentLabel ? ` · ${params.departmentLabel}` : "";
+  const procedurePrefix = params.procedureLabel ? `${params.procedureLabel}: ` : "";
+
   if (params.status === "COMPLETED") {
     return {
-      title: `${params.workflowName} completado`,
-      body: `La tarea terminó correctamente. Coste: $${params.totalCostUsd.toFixed(2)} · ${params.totalTokens.toLocaleString()} tokens.`,
+      title: bilingual(
+        `${params.workflowName} completado${deptSuffix}`,
+        `${params.workflowName} completed${deptSuffix}`,
+      ),
+      body: bilingual(
+        `${procedurePrefix}La tarea terminó correctamente. Coste: $${params.totalCostUsd.toFixed(2)} · ${params.totalTokens.toLocaleString()} tokens.`,
+        `${procedurePrefix}Task finished successfully. Cost: $${params.totalCostUsd.toFixed(2)} · ${params.totalTokens.toLocaleString()} tokens.`,
+      ),
+    };
+  }
+
+  const error =
+    params.errorMessage?.slice(0, 280) ??
+    "Revisa los logs del run para más detalle.";
+
+  return {
+    title: bilingual(
+      `${params.workflowName} falló${deptSuffix}`,
+      `${params.workflowName} failed${deptSuffix}`,
+    ),
+    body: bilingual(
+      `${procedurePrefix}${error}`,
+      `${procedurePrefix}${params.errorMessage?.slice(0, 280) ?? "Check run logs for details."}`,
+    ),
+  };
+}
+
+export function buildDepartmentReadyCopy(params: {
+  departmentLabel: string;
+  procedureLabel: string;
+  failed?: boolean;
+}): { title: string; body: string } {
+  if (params.failed) {
+    return {
+      title: bilingual(
+        `Departamento en pausa · ${params.departmentLabel}`,
+        `Department idle · ${params.departmentLabel}`,
+      ),
+      body: bilingual(
+        `${params.procedureLabel} falló y no quedan encargos activos en este departamento.`,
+        `${params.procedureLabel} failed and there are no active jobs left in this department.`,
+      ),
     };
   }
   return {
-    title: `${params.workflowName} falló`,
-    body: params.errorMessage?.slice(0, 280) ?? "Revisa los logs del run para más detalle.",
+    title: bilingual(
+      `Departamento listo · ${params.departmentLabel}`,
+      `Department ready · ${params.departmentLabel}`,
+    ),
+    body: bilingual(
+      `${params.procedureLabel} terminó. No quedan encargos activos en este departamento.`,
+      `${params.procedureLabel} finished. No active jobs remain in this department.`,
+    ),
   };
+}
+
+async function resolveDepartmentRosterNames(
+  tenantId: string,
+  deptContext: ReturnType<typeof resolveEncargoDepartmentContext>,
+  teamAgents: string[],
+): Promise<string[]> {
+  let rosterNames = teamAgents;
+  if (rosterNames.length === 0 && deptContext.departmentSlug) {
+    rosterNames =
+      VIRTUAL_OFFICE_DEPARTMENTS.find((d) => d.slug === deptContext.departmentSlug)?.agentNames ??
+      [];
+  }
+  if (rosterNames.length === 0 && deptContext.orgUnitId) {
+    const org = await prisma.orgUnit.findFirst({
+      where: { id: deptContext.orgUnitId, tenantId },
+      include: { template: { select: { definition: true } } },
+    });
+    if (org) {
+      const { suggestedAgentsFromOrgRecord } = await import("./org-context.js");
+      rosterNames = suggestedAgentsFromOrgRecord(org);
+    }
+  }
+  return rosterNames;
 }
 
 export async function notifyRunFinishedInApp(params: {
@@ -197,64 +278,62 @@ export async function notifyRunFinishedInApp(params: {
     workflowName: params.workflowName,
   });
 
-  const copy = buildRunNotificationCopy(params);
   const deptLabel = deptContext.orgUnitName ?? fields.departmentSlug ?? null;
-  const title = deptLabel
-    ? `${copy.title} · ${deptLabel}`
-    : copy.title;
-  const body = deptLabel
-    ? `${fields.procedureLabel}: ${copy.body}`
-    : copy.body;
-
   const warHref =
     departmentWarRoomHref({
       departmentSlug: deptContext.departmentSlug,
       orgUnitId: deptContext.orgUnitId,
+      runId: params.runId,
     }) ?? encargoHumanHref(params.runId);
+
+  const rosterNames = deptLabel
+    ? await resolveDepartmentRosterNames(params.tenantId, deptContext, teamAgents)
+    : [];
+
+  const remaining =
+    deptLabel && rosterNames.length > 0
+      ? await countActiveRunsForDepartment(params.tenantId, {
+          departmentSlug: deptContext.departmentSlug,
+          orgUnitId: deptContext.orgUnitId,
+          rosterNames,
+          excludeRunId: params.runId,
+        })
+      : 1;
+
+  const isLastDepartmentRun = Boolean(deptLabel && rosterNames.length > 0 && remaining === 0);
+
+  if (isLastDepartmentRun) {
+    const deptCopy = buildDepartmentReadyCopy({
+      departmentLabel: deptLabel!,
+      procedureLabel: fields.procedureLabel,
+      failed: params.status === "FAILED",
+    });
+    await createTenantNotification({
+      tenantId: params.tenantId,
+      type: "department_run_completed",
+      title: deptCopy.title,
+      body: deptCopy.body,
+      href: warHref,
+      runId: params.runId,
+    });
+    return;
+  }
+
+  const copy = buildRunNotificationCopy({
+    status: params.status,
+    workflowName: params.workflowName,
+    procedureLabel: fields.procedureLabel,
+    departmentLabel: deptLabel,
+    totalCostUsd: params.totalCostUsd,
+    totalTokens: params.totalTokens,
+    errorMessage: params.errorMessage,
+  });
 
   await createTenantNotification({
     tenantId: params.tenantId,
     type: params.status === "COMPLETED" ? "run_completed" : "run_failed",
-    title,
-    body,
-    href: encargoHumanHref(params.runId),
-    runId: params.runId,
-  });
-
-  if (params.status !== "COMPLETED" || !deptLabel) return;
-
-  let rosterNames = teamAgents;
-  if (rosterNames.length === 0 && deptContext.departmentSlug) {
-    rosterNames =
-      VIRTUAL_OFFICE_DEPARTMENTS.find((d) => d.slug === deptContext.departmentSlug)?.agentNames ??
-      [];
-  }
-  if (rosterNames.length === 0 && deptContext.orgUnitId) {
-    const org = await prisma.orgUnit.findFirst({
-      where: { id: deptContext.orgUnitId, tenantId: params.tenantId },
-      include: { template: { select: { definition: true } } },
-    });
-    if (org) {
-      const { suggestedAgentsFromOrgRecord } = await import("./org-context.js");
-      rosterNames = suggestedAgentsFromOrgRecord(org);
-    }
-  }
-  if (rosterNames.length === 0) return;
-
-  const remaining = await countActiveRunsForDepartment(params.tenantId, {
-    departmentSlug: deptContext.departmentSlug,
-    orgUnitId: deptContext.orgUnitId,
-    rosterNames,
-    excludeRunId: params.runId,
-  });
-
-  if (remaining > 0) return;
-
-  await createTenantNotification({
-    tenantId: params.tenantId,
-    type: "department_run_completed",
-    title: `Departamento listo · ${deptLabel}`,
-    body: `${fields.procedureLabel} terminó. No quedan encargos activos en este departamento.`,
+    title: copy.title,
+    body: copy.body,
     href: warHref,
     runId: params.runId,
   });

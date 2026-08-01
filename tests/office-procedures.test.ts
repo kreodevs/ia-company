@@ -59,6 +59,22 @@ describe("office-procedures", () => {
     assert.equal(grouped.get("engineering")?.[0]?.procedureLabel, "Feature Development");
   });
 
+  it("excludes org-assigned workflows from virtual department groups", () => {
+    const orgAssignedIds = new Set(["wf-org"]);
+    const procedures = [
+      { id: "wf-org", departmentSlug: "engineering" },
+      { id: "wf-virtual", departmentSlug: "engineering" },
+      { id: "wf-other", departmentSlug: "strategy" },
+    ];
+    const engineeringItems = procedures.filter((procedure) => {
+      if (procedure.departmentSlug !== "engineering") return false;
+      if (orgAssignedIds.has(procedure.id)) return false;
+      return true;
+    });
+    assert.equal(engineeringItems.length, 1);
+    assert.equal(engineeringItems[0]?.id, "wf-virtual");
+  });
+
   it("resolves encargo context for org unit and virtual departments", () => {
     const org = resolveEncargoDepartmentContext({
       teamAgents: ["fullstack-dhh"],

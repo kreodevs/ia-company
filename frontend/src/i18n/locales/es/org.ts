@@ -115,11 +115,11 @@ export const org = {
     createTitle: "Asistente de contratación",
     createHint:
       "Describe un puesto nuevo o deja que la IA lo proponga. Cada agente creado se suma al departamento automáticamente.",
-    incorporateTitle: "Incorporar agente de Equipo IA",
+    incorporateTitle: "Incorporar agente de la plantilla de especialistas",
     incorporateHint:
       "Elige un agente que ya exista en tu tenant. Puede estar en otro departamento — quedará también en este sin duplicarlo.",
     incorporateEmpty:
-      "No hay agentes fuera de esta plantilla. Crea uno nuevo o revisa Equipo IA.",
+      "No hay agentes fuera de esta plantilla. Crea uno nuevo o revisa Configuración → Plantilla de especialistas.",
     linkExisting: "Agente",
     linkExistingPlaceholder: "Elegir agente…",
     linkExistingOption: "{{role}} ({{name}})",

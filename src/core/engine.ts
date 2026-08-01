@@ -431,7 +431,6 @@ export class WorkflowExecutor {
         }
 
         sharedMemory = { ...sharedMemory };
-        delete sharedMemory.currentAgentId;
 
         await prisma.executionRun.update({
           where: { id: runId },

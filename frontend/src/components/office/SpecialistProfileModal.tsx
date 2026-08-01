@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Settings, X } from "lucide-react";
-import { api, type OfficeArchiveItem, type OfficeEncargoSummary } from "../../lib/api";
+import { api, type OfficeArchiveItem, type OfficeEncargoSummary, type TeamAgent } from "../../lib/api";
 import { encargoContextLine } from "../../lib/office-encargo-display";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import type { DepartmentRoomAgent } from "./DepartmentRoomView";
@@ -30,6 +30,31 @@ export default function SpecialistProfileModal({
   const prompt = t("office.specialists.assignPrompt", { name: label });
   const [recentEncargos, setRecentEncargos] = useState<OfficeEncargoSummary[]>([]);
   const [documents, setDocuments] = useState<OfficeArchiveItem[]>([]);
+  const [liveAgent, setLiveAgent] = useState<TeamAgent | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadTeam = async () => {
+      try {
+        const team = orgUnitId
+          ? await api.orgUnits.team(orgUnitId)
+          : departmentSlug
+            ? await api.office.departmentTeam(departmentSlug)
+            : null;
+        if (cancelled || !team) return;
+        const match = team.team.find((member) => member.name === agent.name || member.id === agent.id);
+        setLiveAgent(match ?? null);
+      } catch {
+        if (!cancelled) setLiveAgent(null);
+      }
+    };
+    void loadTeam();
+    const timer = window.setInterval(() => void loadTeam(), 8000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [agent.id, agent.name, departmentSlug, orgUnitId]);
 
   useEffect(() => {
     api.office
@@ -60,9 +85,11 @@ export default function SpecialistProfileModal({
 
   const statusLabel = useMemo(() => {
     if (!agent.provisioned) return t("office.floor.agentPending");
+    if (liveAgent?.status === "thinking") return t("office.agents.busy");
+    if (liveAgent?.status === "queued") return t("office.specialists.queued");
     if (agent.status === "busy") return t("office.agents.busy");
     return t("office.agents.idle");
-  }, [agent.provisioned, agent.status, t]);
+  }, [agent.provisioned, agent.status, liveAgent?.status, t]);
 
   return (
     <div className="office-specialist-modal-backdrop" role="presentation" onClick={onClose}>
@@ -103,6 +130,12 @@ export default function SpecialistProfileModal({
             <dt>{t("office.specialists.status")}</dt>
             <dd>{statusLabel}</dd>
           </div>
+          {liveAgent?.currentTask ? (
+            <div>
+              <dt>{t("office.specialists.currentTask")}</dt>
+              <dd>{liveAgent.currentTask}</dd>
+            </div>
+          ) : null}
           <div>
             <dt>{t("office.specialists.department")}</dt>
             <dd>{departmentTitle}</dd>

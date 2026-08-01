@@ -115,11 +115,11 @@ export const org = {
     createTitle: "Hiring assistant",
     createHint:
       "Describe a new role or let AI propose one. Each created agent is added to this department automatically.",
-    incorporateTitle: "Add agent from AI Team",
+    incorporateTitle: "Add agent from specialist templates",
     incorporateHint:
       "Pick an agent that already exists in your tenant. They may belong to another department — they will also join this one without being duplicated.",
     incorporateEmpty:
-      "No agents outside this roster. Create a new one or check AI Team.",
+      "No agents outside this roster. Create a new one or check Settings → Specialist templates.",
     linkExisting: "Agent",
     linkExistingPlaceholder: "Choose agent…",
     linkExistingOption: "{{role}} ({{name}})",

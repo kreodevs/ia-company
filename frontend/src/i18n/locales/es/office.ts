@@ -110,6 +110,7 @@ export const office = {
     agentPending: "Pendiente de crear",
     recentDocs: "Documentos recientes",
     viewArchive: "Ver archivo completo",
+    recentRuns: "Encargos recientes",
   },
   archive: {
     title: "Archivo",
@@ -405,6 +406,8 @@ export const office = {
     assignPrompt: "Quiero un encargo con {{name}} en este departamento.",
     recentEncargos: "Encargos recientes",
     noRecentEncargos: "Sin encargos recientes con este especialista.",
+    queued: "En cola",
+    currentTask: "Tarea actual",
     documents: "Documentos",
     noDocuments: "Sin documentos recientes de este especialista.",
   },

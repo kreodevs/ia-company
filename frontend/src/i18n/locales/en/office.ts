@@ -110,6 +110,7 @@ export const office = {
     agentPending: "Pending creation",
     recentDocs: "Recent documents",
     viewArchive: "View full archive",
+    recentRuns: "Recent jobs",
   },
   archive: {
     title: "Archive",
@@ -405,6 +406,8 @@ export const office = {
     assignPrompt: "I want a job with {{name}} in this department.",
     recentEncargos: "Recent jobs",
     noRecentEncargos: "No recent jobs with this specialist.",
+    queued: "Queued",
+    currentTask: "Current task",
     documents: "Documents",
     noDocuments: "No recent documents from this specialist.",
   },

@@ -194,21 +194,7 @@ export async function listGroupedProcedures(tenantId: string): Promise<{
   ]);
 
   const procedures = workflows.map(mapWorkflowToProcedure);
-  const assignedIds = new Set<string>();
-
-  const virtualGroups = VIRTUAL_OFFICE_DEPARTMENTS.map((def) => {
-    const items = procedures.filter((procedure) => {
-      if (procedure.departmentSlug !== def.slug) return false;
-      assignedIds.add(procedure.id);
-      return true;
-    });
-    return {
-      departmentSlug: def.slug,
-      orgUnitId: null,
-      orgUnitName: null,
-      items,
-    };
-  });
+  const orgAssignedIds = new Set<string>();
 
   const orgGroups = orgUnits.map((org) => {
     const staffAgentNames = suggestedAgentsFromOrgRecord(org);
@@ -216,7 +202,7 @@ export async function listGroupedProcedures(tenantId: string): Promise<{
     const items = workflows
       .filter((workflow) => {
         if (!workflowMatchesOrgUnit(workflow, staffAgentNames, defaultWorkflowName)) return false;
-        assignedIds.add(workflow.id);
+        orgAssignedIds.add(workflow.id);
         return true;
       })
       .map(mapWorkflowToProcedure);
@@ -227,6 +213,25 @@ export async function listGroupedProcedures(tenantId: string): Promise<{
       items,
     };
   });
+
+  const virtualGroups = VIRTUAL_OFFICE_DEPARTMENTS.map((def) => {
+    const items = procedures.filter((procedure) => {
+      if (procedure.departmentSlug !== def.slug) return false;
+      if (orgAssignedIds.has(procedure.id)) return false;
+      return true;
+    });
+    return {
+      departmentSlug: def.slug,
+      orgUnitId: null,
+      orgUnitName: null,
+      items,
+    };
+  });
+
+  const assignedIds = new Set([...orgAssignedIds]);
+  for (const group of virtualGroups) {
+    for (const item of group.items) assignedIds.add(item.id);
+  }
 
   const unassigned = procedures.filter((procedure) => !assignedIds.has(procedure.id));
 

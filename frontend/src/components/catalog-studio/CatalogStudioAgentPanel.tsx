@@ -272,7 +272,7 @@ export default function CatalogStudioAgentPanel({
                   {t("catalogStudio.linkedToOrg")}
                 </p>
               )}
-              <Button className="mt-3" variant="secondary" onClick={() => navigate("/ai-team?tab=agents")}>
+              <Button className="mt-3" variant="secondary" onClick={() => navigate("/settings/specialists")}>
                 {t("catalogStudio.viewAgents")}
               </Button>
             </Panel>

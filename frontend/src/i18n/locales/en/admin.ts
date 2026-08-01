@@ -84,13 +84,13 @@ export const admin = {
     defaultLlm: {
       title: "Shared LLM (all tenants)",
       subtitle:
-        "Register credentials for all providers below. «Default provider» only applies to agents that inherit; each agent can pick another in AI Team.",
+        "Register credentials for all providers below. «Default provider» only applies to agents that inherit; each agent can pick another in Settings → Specialist templates.",
       defaultProviderLabel: "Default provider (inheritance)",
       providersRegistryTitle: "Provider credentials",
       providersRegistryHint:
         "Set the API key for each provider you want to use. You do not pick just one — OpenRouter, TokenLab, Custom, and Replicate can all coexist.",
       perAgentHint:
-        "To assign a different provider per agent (e.g. Replicate for image gen only): AI Team → edit agent → Provider / Model kind.",
+        "To assign a different provider per agent (e.g. Replicate for image gen only): Settings → Specialist templates → edit agent → Provider / Model kind.",
       temperature: "Temperature",
       tokenlabSection: "TokenLab / LemonData",
       openrouterSection: "OpenRouter",

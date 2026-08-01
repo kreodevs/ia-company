@@ -84,13 +84,13 @@ export const admin = {
     defaultLlm: {
       title: "LLM compartido (todos los tenants)",
       subtitle:
-        "Registra credenciales de todos los proveedores abajo. El «proveedor por defecto» solo aplica a agentes que heredan; cada agente puede elegir otro en Equipo IA.",
+        "Registra credenciales de todos los proveedores abajo. El «proveedor por defecto» solo aplica a agentes que heredan; cada agente puede elegir otro en Configuración → Plantilla de especialistas.",
       defaultProviderLabel: "Proveedor por defecto (herencia)",
       providersRegistryTitle: "Credenciales de proveedores",
       providersRegistryHint:
         "Configura la API key de cada proveedor que quieras usar. No hace falta elegir uno solo — OpenRouter, TokenLab, Custom y Replicate pueden coexistir.",
       perAgentHint:
-        "Para asignar un proveedor distinto por agente (p. ej. Replicate solo en generación de imágenes): Equipo IA → editar agente → Proveedor / Tipo de modelo.",
+        "Para asignar un proveedor distinto por agente (p. ej. Replicate solo en generación de imágenes): Configuración → Plantilla de especialistas → editar agente → Proveedor / Tipo de modelo.",
       temperature: "Temperatura",
       tokenlabSection: "TokenLab / LemonData",
       openrouterSection: "OpenRouter",

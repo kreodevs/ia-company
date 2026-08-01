@@ -126,7 +126,7 @@ export default function CatalogStudioSkillPanel({ onApplied }: CatalogStudioSkil
           {done && (
             <Panel bodySize="sm">
               <p className="text-sm">{t("catalogStudio.appliedSkill")}</p>
-              <Button className="mt-3" variant="secondary" onClick={() => navigate("/ai-team?tab=skills")}>
+              <Button className="mt-3" variant="secondary" onClick={() => navigate("/settings/specialists")}>
                 {t("catalogStudio.viewSkills")}
               </Button>
             </Panel>
