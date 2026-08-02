@@ -124,6 +124,59 @@ html[data-theme="paperclip"] .office-eyebrow {
   align-items: start;
 }
 
+/* Home — chat column grows with sidebar height and remaining viewport */
+.office-page-home {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(
+    100dvh - var(--header-height, 3.75rem) - env(safe-area-inset-top, 0px) -
+      2 * clamp(1.25rem, 3vw, 2rem)
+  );
+}
+
+.office-page-home .office-grid {
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+@media (min-width: 1101px) {
+  .office-page-home .office-grid {
+    min-height: 28rem;
+  }
+}
+
+.office-page-home .office-chat-panel {
+  min-height: 100%;
+  height: auto;
+}
+
+.office-page-home .office-chat-panel .office-chat {
+  flex: 1;
+  min-height: 0;
+}
+
+.office-page-home .office-chat-messages {
+  flex: 1;
+  min-height: 16rem;
+  max-height: none;
+}
+
+@media (max-width: 1100px) {
+  .office-page-home {
+    min-height: 0;
+  }
+
+  .office-page-home .office-grid {
+    flex: none;
+  }
+
+  .office-page-home .office-chat-messages {
+    min-height: 14rem;
+    max-height: min(52dvh, 28rem);
+  }
+}
+
 @media (max-width: 1100px) {
   .office-grid {
     grid-template-columns: 1fr;

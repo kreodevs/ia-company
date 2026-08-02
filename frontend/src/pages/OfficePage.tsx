@@ -85,7 +85,7 @@ export default function OfficePage() {
   }
 
   return (
-    <div className="office-page">
+    <div className="office-page office-page-home">
       <header className="office-header">
         <div>
           <p className="office-eyebrow">{t("office.eyebrow")}</p>
