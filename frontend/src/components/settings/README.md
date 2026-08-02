@@ -4,7 +4,7 @@
 |-----------|---------|
 | `OrchestrationPlanPanel.tsx` | Tenant operations plan: presets (`on_demand`, `discovery_only`, `light_exploration`), fixed rules, cron/interval timing, conditions, **tenant timezone** (cron evaluated locally), **next/last run**, and skip diagnostics. Default is on-demand (no rules). Dynamic orchestrator mode remains available as an advanced option. |
 | `TenantSmtpSection.tsx` | Tenant SMTP for agent outbound email: host, credentials, allowlist, daily quota, test connection. Used in Settings → Integrations. |
-| `TenantMcpSettingsPanel.tsx` | MCP server registry: stdio commands, env secrets, tool sync, agent grants, read-only guardrails, **Validate with LLM** smoke test. Used in Settings → MCP servers. |
+| `TenantMcpSettingsPanel.tsx` | MCP server registry: stdio commands, env secrets, tool sync, agent grants, read-only guardrails, **Validate with LLM** smoke test. Synced tools list is a collapsible section (collapsed by default). Used in Settings → MCP servers. |
 | `TenantDeliveryBrandingPanel.tsx` | Client delivery branding: logo URL, primary color, footer, confidentiality notice, contact email. Used in Settings → Entrega cliente (`?tab=delivery`). |
 
 Used by `SettingsPage` (Schedules, Integrations, MCP, and Delivery tabs).

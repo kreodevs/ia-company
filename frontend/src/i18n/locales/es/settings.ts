@@ -108,6 +108,7 @@ export const settings = {
     validateFailed: "Incompatible con el LLM de plataforma",
     deleteConfirm: "¿Eliminar este servidor MCP y todas sus herramientas?",
     toolsCount: "{{count}} herramientas sincronizadas",
+    toolsToggle: "Ver herramientas ({{count}})",
   },
   usage: {
     title: "Uso mensual",

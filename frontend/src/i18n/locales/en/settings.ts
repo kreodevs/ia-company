@@ -109,6 +109,7 @@ export const settings = {
     validateFailed: "Not compatible with platform LLM",
     deleteConfirm: "Delete this MCP server and all synced tools?",
     toolsCount: "{{count}} tools synced",
+    toolsToggle: "Show tools ({{count}})",
   },
   usage: {
     title: "Monthly usage",

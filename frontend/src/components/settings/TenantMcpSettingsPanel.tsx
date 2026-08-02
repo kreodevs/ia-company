@@ -241,17 +241,28 @@ export default function TenantMcpSettingsPanel() {
                 </div>
               </div>
               {server.tools.length > 0 && (
-                <ul className="mt-2 flex flex-wrap gap-1">
-                  {server.tools.map((tool) => (
-                    <li
-                      key={tool.id}
-                      className="rounded-md bg-[var(--color-muted)]/30 px-2 py-0.5 text-xs"
-                      title={tool.description ?? undefined}
+                <details className="group mt-2">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] [&::-webkit-details-marker]:hidden">
+                    <span
+                      aria-hidden
+                      className="inline-block transition-transform group-open:rotate-90"
                     >
-                      {tool.name}
-                    </li>
-                  ))}
-                </ul>
+                      ▸
+                    </span>
+                    {t("settings.mcp.toolsToggle", { count: server.tools.length })}
+                  </summary>
+                  <ul className="mt-2 flex flex-wrap gap-1">
+                    {server.tools.map((tool) => (
+                      <li
+                        key={tool.id}
+                        className="rounded-md bg-[var(--color-muted)]/30 px-2 py-0.5 text-xs"
+                        title={tool.description ?? undefined}
+                      >
+                        {tool.name}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
               )}
             </article>
           ))}
