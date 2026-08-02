@@ -111,9 +111,8 @@ export const MARKETING_AGENCY_TEMPLATE: BusinessTemplateDefinition = {
     {
       name: "design-lead",
       role: "Design Lead",
-      systemPrompt:
-        "You are the Design Lead. Produce design briefs and UI/copy layout guidance using org tokens. End with JSON handoff.",
-      skillNames: ["frontend-design", "ui-ux-pro-max"],
+      systemPrompt: `You are the Design Lead for this department. Produce UX briefs, layout guidance, and Kreo PROTOTYPE previews (iframeUrl) using org design.md tokens. Follow skill kreo-ui — PROTOTYPE only: validate_ui_project_instructions → generate_ui_project; never pull_source_code_from_registry. You own the first visual pass; ui-duarte refines design system after human approval; fullstack-dhh implements DEV in projects/. End every reply with the platform consensus JSON handoff (consensusUpdate, nextAction, decisions, openQuestions, veto). Include iframeUrl and project slug when you generate a prototype.`,
+      skillNames: ["frontend-design", "ui-ux-pro-max", "kreo-ui"],
       artifactTypes: ["design"],
     },
     {
