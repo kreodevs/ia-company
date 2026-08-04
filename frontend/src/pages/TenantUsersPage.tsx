@@ -5,7 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
+import Panel from "../components/ui/Panel";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import EmptyState from "../components/ui/EmptyState";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
@@ -70,16 +72,23 @@ export default function TenantUsersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.settings"), to: "/settings" },
+              { label: t("nav.team") },
+            ]}
+          />
+        }
         title={t("team.title", { tenantName: activeTenant?.name ?? "" })}
         subtitle={t("team.subtitle", { slug: activeTenant?.slug ?? "" })}
       />
 
-      <Card>
+      <Panel title={t("team.inviteUser", { defaultValue: "Invite user" })} bodySize="sm">
         <form
           onSubmit={(e) => void handleCreate(e)}
           className="grid gap-4 md:grid-cols-2"
         >
-          <h2 className="md:col-span-2 font-semibold">{t("team.inviteUser")}</h2>
           <Input
             placeholder={t("common.email")}
             type="email"
@@ -122,10 +131,15 @@ export default function TenantUsersPage() {
             </p>
           )}
         </form>
-      </Card>
+      </Panel>
 
       {loading ? (
         <PageLoading message={t("common.loading")} />
+      ) : users.length === 0 ? (
+        <EmptyState
+          title={t("team.emptyTitle")}
+          description={t("team.emptyHint")}
+        />
       ) : (
         <>
           <ul className="grid gap-3 md:hidden">

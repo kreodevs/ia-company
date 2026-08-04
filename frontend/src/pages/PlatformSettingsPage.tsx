@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type PlatformSettings } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
@@ -12,6 +12,9 @@ import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import TabsBar from "../components/ui/TabsBar";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import Button from "../components/ui/Button";
 
 type PlatformSettingsTab = "general" | "llm" | "email" | "integrations" | "opencode";
 const VALID_TABS: PlatformSettingsTab[] = ["general", "llm", "email", "integrations", "opencode"];
@@ -82,18 +85,22 @@ export default function PlatformSettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="settings-page space-y-6">
       <PageHeader
         eyebrow={
-          <Link to="/admin" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.admin")}
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: t("nav.admin"), to: "/admin" },
+              { label: t("admin.platformSettings.title") },
+            ]}
+          />
         }
         title={t("admin.platformSettings.title")}
         subtitle={t("admin.platformSettings.subtitle")}
       />
 
       <TabsBar
+        sticky
         tabs={[
           { id: "general", label: t("admin.platformSettings.tabs.general") },
           { id: "llm", label: t("admin.platformSettings.tabs.llm") },
@@ -106,8 +113,7 @@ export default function PlatformSettingsPage() {
       />
 
       {activeTab === "general" && (
-        <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
-          <h2 className="font-semibold">{t("admin.platformSettings.general.title")}</h2>
+        <Panel title={t("admin.platformSettings.general.title")} bodySize="sm">
           <label className="block text-sm">
             {t("admin.platformSettings.general.publicUrl")}
             <input
@@ -163,15 +169,15 @@ export default function PlatformSettingsPage() {
               />
             </label>
           </div>
-        </section>
+        </Panel>
       )}
 
       {activeTab === "llm" && (
-        <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
-          <h2 className="font-semibold">{t("admin.platformSettings.defaultLlm.title")}</h2>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {t("admin.platformSettings.defaultLlm.subtitle")}
-          </p>
+        <Panel
+          title={t("admin.platformSettings.defaultLlm.title")}
+          subtitle={t("admin.platformSettings.defaultLlm.subtitle")}
+          bodySize="sm"
+        >
           <p className="rounded-lg border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/5 px-3 py-2 text-sm text-[var(--color-foreground)]">
             {t("admin.platformSettings.defaultLlm.perAgentHint")}
           </p>
@@ -368,12 +374,11 @@ export default function PlatformSettingsPage() {
               {llmTestResult}
             </pre>
           )}
-        </section>
+        </Panel>
       )}
 
       {activeTab === "email" && (
-        <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
-          <h2 className="font-semibold">{t("admin.platformSettings.email.title")}</h2>
+        <Panel title={t("admin.platformSettings.email.title")} bodySize="sm">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               {t("admin.platformSettings.email.resendApiKey")}
@@ -394,12 +399,11 @@ export default function PlatformSettingsPage() {
               />
             </label>
           </div>
-        </section>
+        </Panel>
       )}
 
       {activeTab === "integrations" && (
-        <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
-          <h2 className="font-semibold">{t("admin.platformSettings.github.title")}</h2>
+        <Panel title={t("admin.platformSettings.github.title")} bodySize="sm">
           <label className="block text-sm">
             {t("admin.platformSettings.github.token")}
             <input
@@ -413,15 +417,15 @@ export default function PlatformSettingsPage() {
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {t("admin.platformSettings.github.hint")}
           </p>
-        </section>
+        </Panel>
       )}
 
       {activeTab === "opencode" && (
-        <section className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5">
-          <h2 className="font-semibold">{t("admin.platformSettings.opencode.title")}</h2>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {t("admin.platformSettings.opencode.subtitle")}
-          </p>
+        <Panel
+          title={t("admin.platformSettings.opencode.title")}
+          subtitle={t("admin.platformSettings.opencode.subtitle")}
+          bodySize="sm"
+        >
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -465,16 +469,12 @@ export default function PlatformSettingsPage() {
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {t("admin.platformSettings.opencode.hint")}
           </p>
-        </section>
+        </Panel>
       )}
 
-      <button
-        disabled={saving}
-        onClick={() => void save()}
-        className="rounded-lg bg-[var(--color-primary)] px-6 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-      >
+      <Button disabled={saving} onClick={() => void save()} fullWidthMobile className="w-full sm:w-auto">
         {saving ? t("common.saving") : t("admin.platformSettings.save")}
-      </button>
+      </Button>
     </div>
   );
 }

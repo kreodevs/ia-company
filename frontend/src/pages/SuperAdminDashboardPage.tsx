@@ -8,7 +8,9 @@ import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import StatCard from "../components/ui/StatCard";
-import Card from "../components/ui/Card";
+import Panel from "../components/ui/Panel";
+import EmptyState from "../components/ui/EmptyState";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
@@ -118,6 +120,9 @@ export default function SuperAdminDashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs items={[{ label: t("nav.admin") }]} />
+        }
         title={t("admin.dashboard.title")}
         subtitle={t("common.signedInAs", {
           name: superAdmin?.name,
@@ -134,7 +139,7 @@ export default function SuperAdminDashboardPage() {
       />
 
       {needTenant && !activeTenant && (
-        <div className="rounded-lg border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-4 py-3 text-sm">
+        <div className="app-alert app-alert--warning" role="status">
           {t("admin.dashboard.needTenantBanner")}
         </div>
       )}
@@ -147,11 +152,11 @@ export default function SuperAdminDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <h2 className="font-semibold">{t("admin.dashboard.platformTemplates.title")}</h2>
-          <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-            {t("admin.dashboard.platformTemplates.subtitle")}
-          </p>
+        <Panel
+          title={t("admin.dashboard.platformTemplates.title")}
+          subtitle={t("admin.dashboard.platformTemplates.subtitle")}
+          bodySize="sm"
+        >
           <ul className="mt-4 space-y-1 text-sm">
             <li>
               {t("admin.dashboard.platformTemplates.agentTemplates", {
@@ -189,11 +194,10 @@ export default function SuperAdminDashboardPage() {
               {t("nav.workflows")}
             </Link>
           </div>
-        </Card>
+        </Panel>
 
-        <Card>
-          <h2 className="font-semibold">{t("admin.dashboard.createTenant.title")}</h2>
-          <form onSubmit={(e) => void handleCreateTenant(e)} className="mt-4 space-y-3">
+        <Panel title={t("admin.dashboard.createTenant.title")} bodySize="sm">
+          <form onSubmit={(e) => void handleCreateTenant(e)} className="space-y-3">
             <Input
               placeholder={t("admin.dashboard.createTenant.organizationName")}
               value={tenantName}
@@ -226,12 +230,13 @@ export default function SuperAdminDashboardPage() {
               {error}
             </p>
           )}
-        </Card>
+        </Panel>
       </div>
 
-      <Card>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-semibold">{t("admin.dashboard.tenants.title")}</h2>
+      <Panel
+        title={t("admin.dashboard.tenants.title")}
+        bodySize="sm"
+        actions={
           <div className="flex items-center gap-3 text-sm">
             <label className="flex items-center gap-1">
               <input
@@ -250,7 +255,15 @@ export default function SuperAdminDashboardPage() {
               {t("common.update")}
             </label>
           </div>
-        </div>
+        }
+      >
+        {dashboard.tenants.length === 0 ? (
+          <EmptyState
+            title={t("admin.dashboard.tenants.emptyTitle")}
+            description={t("admin.dashboard.tenants.emptyHint")}
+          />
+        ) : (
+        <>
         <ul className="grid gap-3 md:hidden">
           {dashboard.tenants.map((tenant) => (
             <li
@@ -337,10 +350,17 @@ export default function SuperAdminDashboardPage() {
             </tbody>
           </table>
         </div>
-      </Card>
+        </>
+        )}
+      </Panel>
 
-      <Card>
-        <h2 className="mb-4 font-semibold">{t("admin.dashboard.auditLog.title")}</h2>
+      <Panel title={t("admin.dashboard.auditLog.title")} bodySize="sm">
+        {auditLogs.length === 0 ? (
+          <EmptyState
+            title={t("admin.dashboard.auditLog.empty")}
+            description={t("admin.dashboard.auditLog.emptyHint")}
+          />
+        ) : (
         <div className="table-scroll">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
@@ -364,17 +384,11 @@ export default function SuperAdminDashboardPage() {
                   </td>
                 </tr>
               ))}
-              {auditLogs.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-6 text-[var(--color-muted-foreground)]">
-                    {t("admin.dashboard.auditLog.empty")}
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
-      </Card>
+        )}
+      </Panel>
     </div>
   );
 }

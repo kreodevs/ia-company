@@ -5,6 +5,8 @@ import { Download, Printer } from "lucide-react";
 import { api, type PublicDeliveryPayload } from "../lib/api";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
+import Card from "../components/ui/Card";
+import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
@@ -99,7 +101,7 @@ export default function PublicDeliveryPage() {
   if (!payload) {
     return (
       <div className="public-delivery-page">
-        <p className="public-delivery-empty">{t("office.encargos.delivery.publicNotFound")}</p>
+        <EmptyState title={t("office.encargos.delivery.publicNotFound")} />
       </div>
     );
   }
@@ -175,26 +177,28 @@ export default function PublicDeliveryPage() {
             : t("office.encargos.delivery.publicExpired")}
         </div>
       ) : locked ? (
-        <form className="public-delivery-pin-gate" onSubmit={submitPin}>
-          <p className="public-delivery-pin-lead">{t("office.encargos.delivery.pinRequired")}</p>
-          <Input
-            label={t("office.encargos.delivery.pinLabel")}
-            type="password"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={pinInput}
-            onChange={(e) => setPinInput(e.target.value)}
-            placeholder={t("office.encargos.delivery.pinPlaceholder")}
-          />
-          {pinError ? (
-            <p className="public-delivery-pin-error" role="alert">
-              {pinError}
-            </p>
-          ) : null}
-          <Button type="submit" disabled={unlocking || pinInput.trim().length < 4}>
-            {t("office.encargos.delivery.pinUnlock")}
-          </Button>
-        </form>
+        <Card className="public-delivery-pin-card auth-card">
+          <form className="public-delivery-pin-gate" onSubmit={submitPin}>
+            <p className="public-delivery-pin-lead">{t("office.encargos.delivery.pinRequired")}</p>
+            <Input
+              label={t("office.encargos.delivery.pinLabel")}
+              type="password"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={pinInput}
+              onChange={(e) => setPinInput(e.target.value)}
+              placeholder={t("office.encargos.delivery.pinPlaceholder")}
+            />
+            {pinError ? (
+              <p className="public-delivery-pin-error" role="alert">
+                {pinError}
+              </p>
+            ) : null}
+            <Button type="submit" disabled={unlocking || pinInput.trim().length < 4}>
+              {t("office.encargos.delivery.pinUnlock")}
+            </Button>
+          </form>
+        </Card>
       ) : (
         <>
           <div className="public-delivery-toolbar">
@@ -281,7 +285,7 @@ export default function PublicDeliveryPage() {
             ) : null}
 
             {!payload.finalReport && payload.documents.length === 0 ? (
-              <p className="public-delivery-empty">{t("office.encargos.delivery.publicEmpty")}</p>
+              <EmptyState title={t("office.encargos.delivery.publicEmpty")} />
             ) : null}
           </div>
         </>

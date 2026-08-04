@@ -7,6 +7,7 @@ import PageHeader from "../components/ui/PageHeader";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
 import EmptyState from "../components/ui/EmptyState";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import PageLoading from "../components/ui/PageLoading";
 import Badge from "../components/ui/Badge";
 
@@ -25,8 +26,11 @@ export default function OrgUnitsPage() {
   if (loading) return <PageLoading message={t("org.loading")} />;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs items={[{ label: t("nav.orgUnits"), to: "/org-units" }, { label: t("org.title") }]} />
+        }
         title={t("org.title")}
         subtitle={t("org.subtitle")}
         actions={

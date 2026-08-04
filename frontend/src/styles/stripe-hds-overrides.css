@@ -24,10 +24,17 @@ html[data-theme="letter"] [data-sidebar="true"] {
   border-color: var(--quiet-surface);
 }
 
-html[data-theme="letter"] .nav-link-active {
+html[data-theme="letter"] .nav-link-active,
+html[data-theme="letter"] .sidebar-link-active {
   background: var(--stripe-indigo-soft);
   color: var(--stripe-indigo);
   font-weight: 600;
+}
+
+html[data-theme="letter"] .sidebar-nav-badge {
+  background: rgba(255, 97, 24, 0.1);
+  border-color: rgba(255, 97, 24, 0.28);
+  color: #c2410c;
 }
 
 /* Primary buttons — subtle Stripe gradient */

@@ -14,6 +14,9 @@ import {
 } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import Button from "../components/ui/Button";
 import TabsBar from "../components/ui/TabsBar";
 import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPanel";
 import TenantSmtpSection from "../components/settings/TenantSmtpSection";
@@ -200,10 +203,22 @@ export default function SettingsPage() {
   if (loading) return <PageLoading message={t("settings.loading")} />;
 
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("settings.title")} />
+    <div className="settings-page space-y-6">
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.settings"), to: "/settings" },
+              { label: t("settings.title") },
+            ]}
+          />
+        }
+        title={t("settings.title")}
+        subtitle={t("settings.subtitle")}
+      />
 
       <TabsBar
+        sticky
         tabs={[
           { id: "general", label: t("settings.tabs.general") },
           { id: "llm", label: t("settings.tabs.llm") },
@@ -221,9 +236,8 @@ export default function SettingsPage() {
 
       {activeTab === "general" && (
         <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("settings.interests.heading")}</h2>
-        <div className="flex flex-col items-start justify-between gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm sm:flex-row sm:items-center">
+          <Panel title={t("settings.interests.heading")} bodySize="sm">
+        <div className="flex flex-col items-start justify-between gap-3 text-sm sm:flex-row sm:items-center">
           <div className="space-y-1">
             <p className="font-medium">{t("settings.interests.cardTitle")}</p>
             <p className="text-[var(--color-muted-foreground)]">
@@ -237,12 +251,11 @@ export default function SettingsPage() {
             {t("settings.interests.open")}
           </Link>
         </div>
-      </section>
+          </Panel>
 
           {usage && (
-            <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
-              <h2 className="font-semibold">{t("settings.usage.title")}</h2>
-              <p className="mt-2 text-[var(--color-muted-foreground)]">
+            <Panel title={t("settings.usage.title")} bodySize="sm">
+              <p className="text-sm text-[var(--color-muted-foreground)]">
                 {t("settings.usage.summary", {
                   runs: usage.runs,
                   tokens: usage.totalTokens.toLocaleString(),
@@ -250,19 +263,18 @@ export default function SettingsPage() {
                   since: new Date(usage.periodStart).toLocaleDateString(),
                 })}
               </p>
-            </section>
+            </Panel>
           )}
         </div>
       )}
 
       {activeTab === "llm" && (
+        <Panel title={t("settings.llm.title")} bodySize="sm">
         <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("settings.llm.title")}</h2>
         <p className="text-sm leading-relaxed text-[var(--color-muted-foreground)]">
           {t("settings.llm.platformManaged")}
         </p>
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-sm">
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)]/20 p-4 text-sm">
           <dl className="grid gap-3 sm:grid-cols-2">
             <div>
               <dt className="text-[var(--color-muted-foreground)]">{t("settings.llm.activeProvider")}</dt>
@@ -310,22 +322,16 @@ export default function SettingsPage() {
             />
           </label>
         </div>
-        <button
-          disabled={savingLlm}
-          onClick={() => void saveLlm()}
-          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-        >
+        <Button disabled={savingLlm} onClick={() => void saveLlm()}>
           {savingLlm ? t("common.saving") : t("settings.llm.save")}
-        </button>
-      </section>
+        </Button>
         </div>
+        </Panel>
       )}
 
       {activeTab === "opencode" && (
-        <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("opencode.settings.title")}</h2>
-            <p className="text-sm text-[var(--color-muted-foreground)]">{t("opencode.settings.subtitle")}</p>
+        <Panel title={t("opencode.settings.title")} subtitle={t("opencode.settings.subtitle")} bodySize="sm">
+          <div className="space-y-4">
             <p className="text-xs text-[var(--color-muted-foreground)]">{t("opencode.settings.tenantDefaultsHint")}</p>
             <p className="text-xs text-[var(--color-muted-foreground)]">{t("opencode.settings.productHint")}</p>
             {!opencode.platformEnabled ? (
@@ -429,32 +435,25 @@ export default function SettingsPage() {
               <p className="text-sm text-[var(--color-muted-foreground)]">{opencodeTestResult}</p>
             )}
             <div className="flex flex-wrap gap-2">
-              <button
-                disabled={savingOpencode || !opencode.platformEnabled}
-                onClick={() => void saveOpencode()}
-                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-              >
+              <Button disabled={savingOpencode || !opencode.platformEnabled} onClick={() => void saveOpencode()}>
                 {savingOpencode ? t("common.saving") : t("opencode.settings.save")}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
                 disabled={testingOpencode || !opencode.platformEnabled}
                 onClick={() => void testOpencode()}
-                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
               >
                 {testingOpencode ? t("common.loading") : t("opencode.settings.test")}
-              </button>
+              </Button>
             </div>
-          </section>
-        </div>
+          </div>
+        </Panel>
       )}
 
       {activeTab === "integrations" && (
         <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("settings.integrations.title")}</h2>
-            <p className="text-sm text-[var(--color-muted-foreground)]">
-              {t("settings.integrations.subtitle")}
-            </p>
+          <Panel title={t("settings.integrations.title")} subtitle={t("settings.integrations.subtitle")} bodySize="sm">
+          <div className="space-y-4">
             <p
               className={`text-xs ${integrations.githubConfigured ? "text-[var(--color-accent)]" : "text-[var(--color-muted-foreground)]"}`}
             >
@@ -483,22 +482,15 @@ export default function SettingsPage() {
               <p className="text-sm text-[var(--color-muted-foreground)]">{githubTestResult}</p>
             )}
             <div className="flex flex-wrap gap-2">
-              <button
-                disabled={savingIntegrations}
-                onClick={() => void saveIntegrations()}
-                className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-              >
+              <Button disabled={savingIntegrations} onClick={() => void saveIntegrations()}>
                 {savingIntegrations ? t("common.saving") : t("settings.integrations.save")}
-              </button>
-              <button
-                disabled={testingGithub}
-                onClick={() => void testGithub()}
-                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
-              >
+              </Button>
+              <Button variant="secondary" disabled={testingGithub} onClick={() => void testGithub()}>
                 {testingGithub ? t("common.loading") : t("settings.integrations.testGithub")}
-              </button>
+              </Button>
             </div>
-          </section>
+          </div>
+          </Panel>
 
           <TenantSmtpSection
             integrations={integrations}
@@ -515,9 +507,8 @@ export default function SettingsPage() {
       )}
 
       {activeTab === "limits" && (
+        <Panel title={t("settings.limits.title")} bodySize="sm">
         <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("settings.limits.title")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1 text-sm">
             <span>{t("settings.limits.maxRuns")}</span>
@@ -563,25 +554,16 @@ export default function SettingsPage() {
             />
           </label>
         </div>
-        <button
-          disabled={savingLimits}
-          onClick={() => void saveLimits()}
-          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-        >
+        <Button disabled={savingLimits} onClick={() => void saveLimits()}>
           {savingLimits ? t("common.saving") : t("settings.limits.save")}
-        </button>
-      </section>
-
+        </Button>
         </div>
+        </Panel>
       )}
 
       {activeTab === "notifications" && (
+        <Panel title={t("settings.notifications.title")} subtitle={t("settings.notifications.subtitle")} bodySize="sm">
         <div className="space-y-4">
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">{t("settings.notifications.title")}</h2>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {t("settings.notifications.subtitle")}
-        </p>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm">
             <span>{t("settings.webhookUrl")}</span>
@@ -642,16 +624,11 @@ export default function SettingsPage() {
             {t("settings.notifications.notifyInApp")}
           </label>
         </div>
-        <button
-          disabled={savingNotifications}
-          onClick={() => void saveNotifications()}
-          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-        >
+        <Button disabled={savingNotifications} onClick={() => void saveNotifications()}>
           {savingNotifications ? t("common.saving") : t("settings.notifications.save")}
-        </button>
-      </section>
-
+        </Button>
         </div>
+        </Panel>
       )}
 
       {activeTab === "schedules" && (

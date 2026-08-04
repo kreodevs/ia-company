@@ -10,6 +10,9 @@ import {
 } from "../lib/api";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
+import EmptyState from "../components/ui/EmptyState";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import PageHeader from "../components/ui/PageHeader";
 import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -119,11 +122,27 @@ export default function OfficeEncargoDetailPage() {
 
   if (!detail) {
     return (
-      <div className="office-page">
-        <p className="office-empty">{t("office.encargos.notFound")}</p>
-        <Link to="/office/encargos" className="office-link-btn mt-4 inline-flex">
-          {t("office.encargos.backToList")}
-        </Link>
+      <div className="office-page mx-auto max-w-6xl space-y-6">
+        <PageHeader
+          eyebrow={
+            <Breadcrumbs
+              items={[
+                { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
+                { label: t("office.encargos.backToList"), to: "/office/encargos" },
+              ]}
+            />
+          }
+          title={t("office.encargos.notFound")}
+        />
+        <EmptyState
+          title={t("office.encargos.notFound")}
+          description={t("office.encargos.backToList")}
+          action={
+            <Link to="/office/encargos" className="office-link-btn inline-flex">
+              {t("office.encargos.backToList")}
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -134,41 +153,38 @@ export default function OfficeEncargoDetailPage() {
 
   return (
     <div className="office-page office-encargo-detail">
-      <header className="office-header">
-        <div>
-          <p className="office-eyebrow">{t("office.encargos.detailEyebrow")}</p>
-          <h1 className="office-title">{detail.title}</h1>
-          {detail.request ? <p className="office-subtitle">{detail.request}</p> : null}
-          {detail.scopeLabelKey && detail.scopeLevel ? (
-            <div className="mt-2">
-              <RunScopeBadge
-                scope={{ level: detail.scopeLevel, labelKey: detail.scopeLabelKey }}
-              />
-            </div>
-          ) : null}
-        </div>
-        <div className="office-encargo-detail-actions">
-          <span className="office-encargo-phase" data-phase={detail.phase}>
-            {t(`office.encargos.phase.${detail.phase}`)}
-          </span>
-          <StatusBadge
-            status={detail.status}
-            label={t(`status.${detail.status}`, { defaultValue: detail.status })}
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
+              {
+                label: detail.departmentHref
+                  ? encargoDepartmentLabel(detail, t)
+                  : encargoDepartmentLabel(detail, t),
+                to: detail.departmentHref ?? undefined,
+              },
+              { label: detail.procedureLabel },
+            ]}
           />
-        </div>
-      </header>
-
-      <nav className="office-encargo-breadcrumb" aria-label={t("office.encargos.detailEyebrow")}>
-        <Link to="/office">{t("office.encargos.breadcrumbOffice")}</Link>
-        <span aria-hidden>→</span>
-        {detail.departmentHref ? (
-          <Link to={detail.departmentHref}>{encargoDepartmentLabel(detail, t)}</Link>
-        ) : (
-          <span>{encargoDepartmentLabel(detail, t)}</span>
-        )}
-        <span aria-hidden>→</span>
-        <span>{detail.procedureLabel}</span>
-      </nav>
+        }
+        title={detail.title}
+        subtitle={detail.request ?? undefined}
+        meta={
+          <>
+            {detail.scopeLabelKey && detail.scopeLevel ? (
+              <RunScopeBadge scope={{ level: detail.scopeLevel, labelKey: detail.scopeLabelKey }} />
+            ) : null}
+            <span className="office-encargo-phase" data-phase={detail.phase}>
+              {t(`office.encargos.phase.${detail.phase}`)}
+            </span>
+            <StatusBadge
+              status={detail.status}
+              label={t(`status.${detail.status}`, { defaultValue: detail.status })}
+            />
+          </>
+        }
+      />
 
       <div className="office-encargo-detail-toolbar">
         <Link to="/office/encargos" className="office-link-btn">

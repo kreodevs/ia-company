@@ -113,7 +113,7 @@ function SidebarNavLink({
       <Icon className="sidebar-link-icon" aria-hidden />
       <span className={cn("sidebar-link-label", collapsed && "sr-only")}>{label}</span>
       {!collapsed && badge != null && badge > 0 ? (
-        <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+        <span className="sidebar-nav-badge">
           {badge > 99 ? "99+" : badge}
         </span>
       ) : null}

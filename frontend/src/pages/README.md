@@ -6,11 +6,11 @@ Route-level screens for the Auto-Company frontend.
 
 | Route | Page | Description |
 |-------|------|-------------|
-| `/admin` | `SuperAdminDashboardPage` | Platform overview and tenants |
-| `/admin/settings` | `PlatformSettingsPage` | Platform config with tabs: General, LLM, Email, Integrations (GitHub), OpenCode |
-| `/admin/templates` | `PlatformTemplatesPage` | Agent and skill templates + sync to tenants |
-| `/admin/templates/workflows` | `PlatformWorkflowTemplatesPage` | Platform workflow templates (list/create) |
-| `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Visual editor for a platform workflow |
+| `/admin` | `SuperAdminDashboardPage` | Breadcrumbs, KPIs, secciones en `Panel`, `EmptyState` en tenants/audit |
+| `/admin/settings` | `PlatformSettingsPage` | Breadcrumbs, `TabsBar` sticky, tabs en `Panel`, botón guardar Kreo |
+| `/admin/templates` | `PlatformTemplatesPage` | Breadcrumbs, sync en `Panel`, `TabsBar` sticky, `EmptyState` |
+| `/admin/templates/workflows` | `PlatformWorkflowTemplatesPage` | Breadcrumbs, búsqueda en `Panel`, `EmptyState` |
+| `/admin/templates/workflows/:id` | `PlatformWorkflowEditorPage` | Breadcrumbs, metadata en `Panel`, canvas con tokens `--flow-canvas-*` |
 
 ## Tenant workspace
 
@@ -18,17 +18,17 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 
 | Route | Page |
 |-------|------|
-| `/` · `/office` | `OfficePage` — coordinador en contexto general; chat central crece con el viewport |
-| `/office/pendientes` | `PendingDecisionsPage` — bandeja Go/No-Go con pestañas Por aprobar / Aprobadas / Rechazadas |
-| `/office/encargos` | `OfficeEncargosPage` — lista con selección múltiple y borrado (incluye docs asociados) |
-| `/office/encargos/:runId` | `OfficeEncargoDetailPage` |
+| `/` · `/office` | `OfficePage` — coordinador en contexto general; KPIs enlazan a límites, encargos, pendientes, especialistas y productos; CTA a pendientes cuando hay decisiones |
+| `/office/encargos/:runId` | `OfficeEncargoDetailPage` — PageHeader + Breadcrumbs, paneles office |
+| `/office/pendientes` | `PendingDecisionsPage` — Breadcrumbs, filtros sticky, `EmptyState` |
+| `/office/archive` | `OfficeArchivePage` — filtros colapsables, `EmptyState` |
 | `/office/workflows` | redirect → `/settings/procedures` |
-| `/office/workflows/:id` | `WorkflowEditorPage` |
-| `/settings/procedures` | `ProceduresSettingsPage` — catálogo agrupado por departamento |
-| `/settings/specialists` | `AiTeamHubPage` — tabs Agentes, Habilidades, Catalog Studio |
+| `/office/workflows/:id` | `WorkflowEditorPage` — Breadcrumbs, panel ejecutar en `Panel`, canvas tokens |
+| `/settings/procedures` | `ProceduresSettingsPage` — PageHeader + Panel por grupo de procedimientos |
+| `/settings/specialists` | `AiTeamHubPage` — Breadcrumbs, `TabsBar` sticky, tabs Agentes/Habilidades/Studio |
 | `/ai-team` · `/agents` · `/skills` | redirect → `/settings/specialists` |
 | `/runs` | `RunsPage` |
-| `/runs/:id` | `RunDetailPage` |
+| `/runs/:id` | `RunDetailPage` — Breadcrumbs, logs/memoria en `Panel` |
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |
 | `/products` | `ProductsPage` | Oportunidades; **Añadir producto**; productos activos con enlaces a war room, código y **configuración** |
 | `/products/:id/settings` | `ProductSettingsPage` | Tabbed settings: general, intake, revenue, OpenCode |
@@ -37,7 +37,8 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |
 | `/products/:id/team` | `ProductTeamPage` | Redirige a `/war-room/:id` |
 | `/decisions` | redirect → `/office/pendientes` |
-| `/debug/decisions` | `DecisionsPage` | Vista debug con KPIs (depuración) |
-| `/consensus` | `ConsensusPage` | Consenso del tenant |
-| `/settings` | `SettingsPage` | LLM, **OpenCode**, notificaciones, límites, programaciones |
-| `/team` | `TenantUsersPage` |
+| `/debug/decisions` | `DecisionsPage` — Breadcrumbs, KPIs, tokens `--warning` en timeline |
+| `/consensus` | `ConsensusPage` | Consenso del tenant (Breadcrumbs + Panel) |
+| `/settings` | `SettingsPage` | Breadcrumbs, TabsBar sticky, secciones en Panel Kreo |
+| `/team` | `TenantUsersPage` — Breadcrumbs, invite en `Panel`, `EmptyState` |
+| `/help` · `/help/:slug` | `HelpPage` — Breadcrumbs, TOC sidebar sticky (`.help-sidebar-sticky`), contenido en `Panel` |

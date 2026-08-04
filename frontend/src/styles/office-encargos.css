@@ -156,6 +156,33 @@ html[data-theme="letter"] .office-encargo-card {
   color: var(--office-btn-muted-text);
 }
 
+.office-link-btn-emphasis {
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  color: var(--warning);
+  animation: office-link-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes office-link-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--warning) 25%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--warning) 8%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .office-link-btn-emphasis {
+    animation: none;
+  }
+}
+
+html[data-theme="letter"] .office-link-btn-emphasis {
+  color: #c2410c;
+}
+
 @media (max-width: 640px) {
   .office-encargos-filters {
     overflow-x: auto;
@@ -187,6 +214,26 @@ html[data-theme="letter"] .office-encargo-card {
   flex-wrap: wrap;
   gap: 0.45rem;
   margin-bottom: 1rem;
+}
+
+.office-inbox-filters-sticky {
+  position: sticky;
+  top: calc(var(--header-height, 3.75rem) + env(safe-area-inset-top, 0px));
+  z-index: 15;
+  padding-top: 0.25rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .office-inbox-filters-sticky {
+    background: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .office-encargos-filter {
@@ -783,6 +830,9 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   max-width: 56rem;
   margin: 0 auto;
   padding: 2rem 1.25rem 3rem;
+  --delivery-primary: var(--primary, #635bff);
+  color: var(--foreground);
+  background: var(--background);
 }
 
 .public-delivery-header h1 {
@@ -838,9 +888,9 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 }
 
 .public-delivery-tabs button.is-active {
-  background: var(--office-accent, #2563eb);
+  background: var(--delivery-primary);
   border-color: transparent;
-  color: #fff;
+  color: var(--primary-foreground, #fff);
 }
 
 .public-delivery-body {
@@ -879,20 +929,26 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 .public-delivery-empty {
   margin: 1.5rem 0 0;
   padding: 1rem 1.25rem;
-  border-radius: 0.5rem;
-  background: rgba(251, 191, 36, 0.12);
+  border-radius: var(--radius-lg, 0.5rem);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+  background: color-mix(in srgb, var(--warning) 12%, var(--card));
+  color: var(--foreground);
+}
+
+.public-delivery-pin-card {
+  max-width: 24rem;
+  margin: 1.5rem 0;
 }
 
 .public-delivery-pin-gate {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  max-width: 22rem;
-  margin: 1.5rem 0;
-  padding: 1.25rem;
-  border: 1px solid var(--office-border, #e2e8f0);
-  border-radius: 0.5rem;
-  background: rgba(148, 163, 184, 0.08);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .public-delivery-pin-lead {
@@ -903,7 +959,7 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 
 .public-delivery-pin-error {
   margin: 0;
-  color: #dc2626;
+  color: var(--destructive);
   font-size: 0.875rem;
 }
 
@@ -924,10 +980,6 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   .public-delivery-toc {
     flex-wrap: wrap;
   }
-}
-
-.public-delivery-page {
-  --delivery-primary: #2563eb;
 }
 
 .public-delivery-header-branded {
@@ -960,7 +1012,7 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
   border-left: 3px solid var(--delivery-primary);
-  background: rgba(37, 99, 235, 0.06);
+  background: color-mix(in srgb, var(--delivery-primary) 8%, var(--card));
   font-size: 0.875rem;
 }
 
@@ -999,7 +1051,7 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 .public-delivery-tabs button.is-active {
   background: var(--delivery-primary);
   border-color: transparent;
-  color: #fff;
+  color: var(--primary-foreground, #fff);
 }
 
 .office-encargo-delivery-form {

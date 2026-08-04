@@ -4,6 +4,7 @@ import AgentsPage from "../AgentsPage";
 import SkillsPage from "../SkillsPage";
 import PageHeader from "../../components/ui/PageHeader";
 import TabsBar from "../../components/ui/TabsBar";
+import Breadcrumbs from "../../components/ui/Breadcrumbs";
 import CatalogStudioAgentPanel from "../../components/catalog-studio/CatalogStudioAgentPanel";
 import CatalogStudioSkillPanel from "../../components/catalog-studio/CatalogStudioSkillPanel";
 
@@ -34,8 +35,19 @@ export default function AiTeamHubPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t("catalogStudio.title")} subtitle={t("catalogStudio.subtitle")} />
-      <TabsBar tabs={tabs} activeId={activeTab} onChange={(id: string) => setTab(id as AiTeamTab)} />
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.settings"), to: "/settings" },
+              { label: t("nav.specialistTemplates") },
+            ]}
+          />
+        }
+        title={t("catalogStudio.title")}
+        subtitle={t("catalogStudio.subtitle")}
+      />
+      <TabsBar sticky tabs={tabs} activeId={activeTab} onChange={(id: string) => setTab(id as AiTeamTab)} />
 
       {activeTab === "agents" && <AgentsPage embedded />}
       {activeTab === "skills" && <SkillsPage embedded />}

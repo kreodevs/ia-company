@@ -1,6 +1,7 @@
 export const settings = {
   loading: "Cargando configuración…",
   title: "Configuración del tenant",
+  subtitle: "LLM, integraciones, límites de uso, programaciones y marca de entregas al cliente.",
   tabs: {
     general: "General",
     llm: "LLM",

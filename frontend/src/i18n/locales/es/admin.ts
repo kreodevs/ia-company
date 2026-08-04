@@ -46,6 +46,8 @@ export const admin = {
       syncSuccess:
         "Sincronizado {{name}} ({{mode}}): +{{agentsAdded}} agentes, +{{skillsAdded}} skills, +{{workflowsAdded}} workflows",
       syncUpdated: " · actualizados {{count}}",
+      emptyTitle: "Aún no hay tenants",
+      emptyHint: "Crea tu primera organización con el formulario de arriba.",
     },
     auditLog: {
       title: "Registro de auditoría",
@@ -56,6 +58,7 @@ export const admin = {
         tenant: "Tenant",
       },
       empty: "Aún no hay eventos de auditoría.",
+      emptyHint: "Las acciones de plataforma aparecerán aquí conforme ocurran.",
       noTenant: "—",
     },
   },
@@ -183,6 +186,8 @@ export const admin = {
       created: 'Creada plantilla de agente "{{name}}"',
       saveTemplate: "Guardar plantilla de agente",
       saved: "Plantilla de agente guardada",
+      emptyTitle: "Sin plantillas de agente",
+      emptyHint: "Regenera desde .claude/ o crea una nueva plantilla.",
     },
     skills: {
       createTemplate: "+ Crear plantilla de skill",
@@ -190,6 +195,8 @@ export const admin = {
       created: 'Creada plantilla de skill "{{name}}"',
       saveTemplate: "Guardar plantilla de skill",
       saved: "Plantilla de skill guardada",
+      emptyTitle: "Sin plantillas de skill",
+      emptyHint: "Regenera desde .claude/ o crea una nueva plantilla.",
     },
     workflows: {
       title: "Plantillas de workflow",

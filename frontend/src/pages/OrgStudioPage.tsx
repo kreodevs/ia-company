@@ -6,6 +6,7 @@ import type { BusinessTemplateSummary, OrgStudioProposal } from "../lib/org-type
 import PageHeader from "../components/ui/PageHeader";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
 import SchemaDynamicForm from "../components/org/SchemaDynamicForm";
@@ -104,8 +105,19 @@ export default function OrgStudioPage() {
   if (loading) return <PageLoading message={t("org.studio.loading")} />;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
-      <PageHeader title={t("org.studio.title")} subtitle={t("org.studio.subtitle")} />
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.orgUnits"), to: "/org-units" },
+              { label: t("org.studio.title") },
+            ]}
+          />
+        }
+        title={t("org.studio.title")}
+        subtitle={t("org.studio.subtitle")}
+      />
 
       <Panel title={t("org.studio.step1")} bodySize="sm">
         <div className="space-y-4">

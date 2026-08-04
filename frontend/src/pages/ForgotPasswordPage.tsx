@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import AuthPageShell from "../components/ui/AuthPageShell";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -29,8 +30,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-md flex-col justify-center px-1 sm:px-4">
-      <Card className="shadow-lg shadow-black/20">
+    <AuthPageShell>
+      <Card className="auth-card">
         <h1 className="text-xl font-bold sm:text-2xl">{t("auth.forgotPassword.title")}</h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted-foreground)]">
           {t("auth.forgotPassword.subtitle")}
@@ -67,6 +68,6 @@ export default function ForgotPasswordPage() {
           </Link>
         </p>
       </Card>
-    </div>
+    </AuthPageShell>
   );
 }

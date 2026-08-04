@@ -1,35 +1,27 @@
-# Equipo IA (`/ai-team`)
+# Equipo IA (`/settings/specialists`)
 
-Hub del catálogo tenant: agentes, habilidades y **Catalog Studio** con LLM.
+Hub de plantillas de especialistas (agentes y skills) con Catalog Studio integrado.
 
-## Ruta
+## Rutas
 
-| Path | Componente |
-|------|------------|
-| `/ai-team` | `AiTeamHubPage` — tab Agentes (default) |
-| `/ai-team?tab=skills` | Listado + edición manual de skills |
-| `/ai-team?tab=create-agent` | Agent Studio (propose → aprobación humana → apply) |
-| `/ai-team?tab=create-skill` | Skill Studio |
+| Ruta | Contenido |
+|------|-----------|
+| `/settings/specialists` | `AiTeamHubPage` — tab Agentes (default) |
+| `/settings/specialists?tab=skills` | Listado + edición manual de skills |
+| `/settings/specialists?tab=create-agent` | Agent Studio (propose → aprobación humana → apply) |
+| `/settings/specialists?tab=create-skill` | Skill Studio |
 
-Redirects legacy: `/agents`, `/skills`, `/debug/agents`, `/debug/skills` → `/ai-team`.
+Redirects legacy: `/ai-team`, `/agents`, `/skills`, `/debug/agents`, `/debug/skills` → `/settings/specialists`.
 
-Query params for **Crear agente**: `?tab=create-agent&brief=…&orgUnitId=…` (links from dept detail and coordinator missing roles).
+## UX (auditoría P4)
 
-## Flujo Catalog Studio
+- `PageHeader` con `Breadcrumbs` (Settings → Specialist templates)
+- `TabsBar` con prop `sticky` para navegación entre tabs al hacer scroll
+- Tabs **Agentes** / **Habilidades** embeden `AgentsPage` / `SkillsPage` con `embedded`
+- Tabs **Crear agente** / **Crear habilidad** usan `CatalogStudioAgentPanel` / `CatalogStudioSkillPanel` (Panel Kreo)
 
-1. **Propose** — LLM propone reutilizar existente o draft nuevo (solo catálogo del tenant).
-2. **Munger** — pre-mortem automático; VETO bloquea apply.
-3. **Apply** — requiere `approved: true` explícito del humano; skills nuevas en agente requieren checkbox por nombre.
+## Archivos
 
-API: `POST /api/catalog-studio/{skills|agents}/propose|apply`.
+- `AiTeamHubPage.tsx` — tabs + embed de páginas hijas
 
-## Componentes
-
-- `AiTeamHubPage.tsx` — tabs + embed de `AgentsPage` / `SkillsPage`
-- `components/catalog-studio/CatalogStudioAgentPanel.tsx`
-- `components/catalog-studio/CatalogStudioSkillPanel.tsx`
-- `components/catalog-studio/MungerReviewPanel.tsx`
-
-## i18n
-
-Claves bajo `catalogStudio.*` en `frontend/src/i18n/locales/{es,en}/catalogStudio.ts`.
+Claves i18n bajo `catalogStudio.*` en `frontend/src/i18n/locales/{es,en}/catalogStudio.ts`.

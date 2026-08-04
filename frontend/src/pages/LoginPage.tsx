@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { translateApiError } from "../lib/translate-error";
+import AuthPageShell from "../components/ui/AuthPageShell";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -40,8 +41,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-md flex-col justify-center px-1 sm:px-4">
-      <div className="mb-6 text-center">
+    <AuthPageShell>
+      <div className="auth-page-brand">
         <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted-foreground)]">
           {t("common.appName")}
         </p>
@@ -53,8 +54,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <Card className="shadow-lg shadow-black/20">
-        <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-1">
+      <Card className="auth-card">
+        <div className="auth-mode-toggle mb-6">
           {(["tenant", "superadmin"] as LoginMode[]).map((m) => (
             <button
               key={m}
@@ -64,11 +65,7 @@ export default function LoginPage() {
                 setError(null);
               }}
               aria-pressed={mode === m}
-              className={`interactive min-h-11 rounded-md px-3 py-2 text-sm font-medium transition sm:min-h-9 ${
-                mode === m
-                  ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]"
-                  : "text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
-              }`}
+              className="auth-mode-toggle-btn interactive"
             >
               {m === "tenant" ? t("auth.login.organizationTab") : t("auth.login.superadminTab")}
             </button>
@@ -123,6 +120,6 @@ export default function LoginPage() {
           )}
         </form>
       </Card>
-    </div>
+    </AuthPageShell>
   );
 }

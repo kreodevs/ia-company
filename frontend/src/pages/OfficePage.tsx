@@ -101,6 +101,11 @@ export default function OfficePage() {
             <span aria-hidden>●</span>
             {t(`office.mode.${dashboard.mode}`)}
           </div>
+          {dashboard.stats.pendingDecisions > 0 ? (
+            <Link to="/office/pendientes" className="office-link-btn office-link-btn-emphasis">
+              {t("nav.pendientes")} ({dashboard.stats.pendingDecisions})
+            </Link>
+          ) : null}
           <Link to="/office/encargos" className="office-link-btn">
             {t("nav.encargos")}
           </Link>
@@ -123,47 +128,57 @@ export default function OfficePage() {
       )}
 
       <section className="office-hero-strip hero-strip">
-        <KpiCard
-          label={t("office.kpis.spend")}
-          value={`$${dashboard.usage.totalCostUsd.toFixed(2)}`}
-          delta={
-            dashboard.usage.limits.maxCostUsdPerMonth
-              ? t("office.kpis.spendLimit", {
-                  limit: dashboard.usage.limits.maxCostUsdPerMonth.toFixed(0),
-                })
-              : t("office.kpis.noLimit")
-          }
-          trend={spendPct > 80 ? "up" : "flat"}
-        />
-        <KpiCard
-          label={t("office.kpis.activeRuns")}
-          value={dashboard.stats.activeRuns}
-          trend={dashboard.stats.activeRuns > 0 ? "up" : "flat"}
-        />
-        <KpiCard
-          label={t("office.kpis.pendingDecisions")}
-          value={dashboard.stats.pendingDecisions}
-          trend={dashboard.stats.pendingDecisions > 0 ? "up" : "down"}
-        />
-        <KpiCard
-          label={t("office.kpis.agents")}
-          value={dashboard.stats.agentsTotal}
-          delta={`${dashboard.agents.filter((a) => a.status === "busy").length} ${t("office.agents.busy").toLowerCase()}`}
-        />
-        <KpiCard
-          label={t("office.kpis.roi")}
-          value={
-            portfolioRoi != null
-              ? `${portfolioRoi >= 0 ? "+" : ""}${portfolioRoi}%`
-              : "—"
-          }
-          delta={
-            portfolioRoi != null && portfolioRoi >= 0
-              ? t("office.kpis.roiPositive")
-              : t("office.kpis.roiNegative")
-          }
-          trend={portfolioRoi != null && portfolioRoi >= 0 ? "up" : "down"}
-        />
+        <Link to="/settings?tab=limits" className="kpi-card-link" title={t("nav.settings")}>
+          <KpiCard
+            label={t("office.kpis.spend")}
+            value={`$${dashboard.usage.totalCostUsd.toFixed(2)}`}
+            delta={
+              dashboard.usage.limits.maxCostUsdPerMonth
+                ? t("office.kpis.spendLimit", {
+                    limit: dashboard.usage.limits.maxCostUsdPerMonth.toFixed(0),
+                  })
+                : t("office.kpis.noLimit")
+            }
+            trend={spendPct > 80 ? "up" : "flat"}
+          />
+        </Link>
+        <Link to="/office/encargos" className="kpi-card-link" title={t("nav.encargos")}>
+          <KpiCard
+            label={t("office.kpis.activeRuns")}
+            value={dashboard.stats.activeRuns}
+            trend={dashboard.stats.activeRuns > 0 ? "up" : "flat"}
+          />
+        </Link>
+        <Link to="/office/pendientes" className="kpi-card-link" title={t("nav.pendientes")}>
+          <KpiCard
+            label={t("office.kpis.pendingDecisions")}
+            value={dashboard.stats.pendingDecisions}
+            trend={dashboard.stats.pendingDecisions > 0 ? "up" : "down"}
+          />
+        </Link>
+        <Link to="/settings/specialists" className="kpi-card-link" title={t("nav.specialistTemplates")}>
+          <KpiCard
+            label={t("office.kpis.agents")}
+            value={dashboard.stats.agentsTotal}
+            delta={`${dashboard.agents.filter((a) => a.status === "busy").length} ${t("office.agents.busy").toLowerCase()}`}
+          />
+        </Link>
+        <Link to="/products?tab=active" className="kpi-card-link" title={t("nav.products")}>
+          <KpiCard
+            label={t("office.kpis.roi")}
+            value={
+              portfolioRoi != null
+                ? `${portfolioRoi >= 0 ? "+" : ""}${portfolioRoi}%`
+                : "—"
+            }
+            delta={
+              portfolioRoi != null && portfolioRoi >= 0
+                ? t("office.kpis.roiPositive")
+                : t("office.kpis.roiNegative")
+            }
+            trend={portfolioRoi != null && portfolioRoi >= 0 ? "up" : "down"}
+          />
+        </Link>
       </section>
 
       <OfficeFloorPlan
@@ -301,7 +316,7 @@ export default function OfficePage() {
                   <div key={item.id} className="office-roi-item">
                     <div className="office-roi-header">
                       <p className="office-roi-name">{item.name}</p>
-                      <span style={{ fontSize: "0.68rem", color: "#64748b" }}>{item.phase}</span>
+                      <span className="office-roi-phase">{item.phase}</span>
                     </div>
                     <div className="office-roi-bar">
                       <div className="office-roi-bar-fill" style={{ width: `${progress}%` }} />
@@ -314,7 +329,7 @@ export default function OfficePage() {
                         {t("office.roi.revenue")}: ${item.revenueUsd.toFixed(2)}
                       </span>
                     </div>
-                    <p className="office-roi-stats" style={{ marginTop: "0.2rem" }}>
+                    <p className="office-roi-stats office-roi-stats-secondary">
                       {t("office.roi.runs", { count: item.runsCount })}
                       {item.roiPct != null ? ` · ROI ${item.roiPct >= 0 ? "+" : ""}${item.roiPct}%` : ""}
                     </p>

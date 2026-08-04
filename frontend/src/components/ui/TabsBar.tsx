@@ -13,15 +13,20 @@ export interface TabsBarProps {
   activeId: string;
   onChange: (id: string) => void;
   className?: string;
+  /** Pin tab row below the app header while scrolling long settings pages. */
+  sticky?: boolean;
 }
 
-export default function TabsBar({ tabs, activeId, onChange, className }: TabsBarProps) {
+export default function TabsBar({ tabs, activeId, onChange, className, sticky }: TabsBarProps) {
   return (
     <Tabs.Root value={activeId} onValueChange={onChange} className={cn("w-full", className)}>
       <Tabs.List
         role="tablist"
         aria-orientation="horizontal"
-        className="flex flex-wrap gap-[var(--spacing-md)] border-b border-[var(--border)]"
+        className={cn(
+          "flex flex-wrap gap-[var(--spacing-md)] border-b border-[var(--border)]",
+          sticky && "tabs-bar-sticky",
+        )}
       >
         {tabs.map((tab) => (
           <Tabs.Trigger

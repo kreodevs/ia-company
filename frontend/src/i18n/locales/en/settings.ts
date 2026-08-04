@@ -1,6 +1,7 @@
 export const settings = {
   loading: "Loading settings…",
   title: "Tenant Settings",
+  subtitle: "LLM, integrations, usage limits, schedules, and client delivery branding for your organization.",
   tabs: {
     general: "General",
     llm: "LLM",

@@ -129,6 +129,8 @@ export const office = {
     allAgents: "Todos los roles",
     allSources: "Todos los orígenes",
     resultCount: "{{shown}} de {{total}} documentos",
+    showFilters: "Mostrar filtros",
+    hideFilters: "Ocultar filtros",
     empty: "No hay documentos con estos filtros.",
     selectOne: "Selecciona un documento para previsualizarlo.",
     openEncargo: "Abrir encargo",

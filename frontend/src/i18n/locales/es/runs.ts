@@ -5,6 +5,8 @@ export const runs = {
     refresh: "Actualizar",
     autoRefresh: "Actualización automática cada 5 s mientras hay runs activos",
     emptyTitle: "Sin ejecuciones todavía",
+    emptyHint: "Lanza trabajo desde el coordinador de la Oficina o ejecuta un workflow para ver las ejecuciones aquí.",
+    emptyAction: "Ir a la Oficina",
     filters: {
       workflow: "Workflow",
       status: "Estado",

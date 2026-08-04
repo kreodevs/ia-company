@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ChevronDown } from "lucide-react";
 import { api, type OfficeArchiveItem, type OfficeArchiveResponse } from "../lib/api";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
+import EmptyState from "../components/ui/EmptyState";
 import Input from "../components/ui/Input";
 import { agentRoleLabelKey } from "../lib/office-visual";
 
@@ -24,6 +26,7 @@ export default function OfficeArchivePage() {
   const [agentName, setAgentName] = useState("");
   const [source, setSource] = useState<SourceFilter>("");
   const [search, setSearch] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const ou = searchParams.get("orgUnitId");
@@ -119,7 +122,17 @@ export default function OfficeArchivePage() {
         ) : null}
       </header>
 
-      <div className="office-archive-filters">
+      <button
+        type="button"
+        className="office-archive-filters-toggle interactive lg:hidden"
+        aria-expanded={filtersOpen}
+        onClick={() => setFiltersOpen((open) => !open)}
+      >
+        <ChevronDown className={`h-4 w-4 transition-transform ${filtersOpen ? "rotate-180" : ""}`} aria-hidden />
+        {filtersOpen ? t("office.archive.hideFilters") : t("office.archive.showFilters")}
+      </button>
+
+      <div className={`office-archive-filters ${filtersOpen ? "office-archive-filters-open" : ""}`}>
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -195,7 +208,7 @@ export default function OfficeArchivePage() {
       <div className="office-archive-layout">
         <section className="office-archive-list-panel">
           {items.length === 0 ? (
-            <p className="office-empty">{t("office.archive.empty")}</p>
+            <EmptyState title={t("office.archive.empty")} />
           ) : (
             <ul className="office-archive-list">
               {items.map((item) => (

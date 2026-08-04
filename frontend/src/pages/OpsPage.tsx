@@ -14,6 +14,7 @@ import Button from "../components/ui/Button";
 import Panel from "../components/ui/Panel";
 import KpiCard from "../components/ui/KpiCard";
 import StatusPill from "../components/ui/StatusPill";
+import EmptyState from "../components/ui/EmptyState";
 
 function workflowLabel(name: string, t: (key: string, options?: Record<string, unknown>) => string): string {
   const translated = t(`workflowDisplay.titles.${name}`, { defaultValue: "" });
@@ -268,7 +269,7 @@ export default function OpsPage() {
 
       <OrchestrationPreviewPanel />
 
-      {portfolio.recentRuns.length > 0 && (
+      {portfolio.recentRuns.length > 0 ? (
         <Panel
           title={t("ops.recentRuns.title")}
           actions={
@@ -296,6 +297,18 @@ export default function OpsPage() {
               </li>
             ))}
           </ul>
+        </Panel>
+      ) : (
+        <Panel title={t("ops.recentRuns.title")} bodySize="sm">
+          <EmptyState
+            title={t("ops.recentRuns.title")}
+            description={t("runs.list.emptyHint")}
+            action={
+              <Link to="/office">
+                <Button variant="secondary">{t("ops.goToOffice")}</Button>
+              </Link>
+            }
+          />
         </Panel>
       )}
 

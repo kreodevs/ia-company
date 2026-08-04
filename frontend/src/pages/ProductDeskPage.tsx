@@ -20,6 +20,7 @@ import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import TabsBar from "../components/ui/TabsBar";
 
 type DeskTab = "desk" | "roadmap" | "signals" | "playbooks";
 
@@ -504,15 +505,17 @@ export default function ProductDeskPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <Breadcrumbs
-        items={[
-          { label: t("products.title"), to: "/products" },
-          { label: product.name, to: `/war-room/${product.id}` },
-          { label: t("productDesk.title") },
-        ]}
-      />
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("products.title"), to: "/products" },
+              { label: product.name, to: `/war-room/${product.id}` },
+              { label: t("productDesk.title") },
+            ]}
+          />
+        }
         title={t("productDesk.title")}
         subtitle={t("productDesk.subtitle", { name: product.name })}
         actions={
@@ -535,22 +538,7 @@ export default function ProductDeskPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-2 border-b border-border pb-2">
-        {tabs.map((entry) => (
-          <button
-            key={entry.id}
-            type="button"
-            onClick={() => setTab(entry.id)}
-            className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-              tab === entry.id
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            {entry.label}
-          </button>
-        ))}
-      </div>
+      <TabsBar sticky tabs={tabs} activeId={tab} onChange={(id) => setTab(id as DeskTab)} />
 
       {tab === "desk" ? (
         <div className="grid gap-4 lg:grid-cols-2">

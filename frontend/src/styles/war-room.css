@@ -214,6 +214,37 @@ html[data-theme="letter"] .war-room {
   text-decoration: underline;
 }
 
+@media (max-width: 640px) {
+  .war-room-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .war-room-toolbar-label {
+    width: 100%;
+  }
+
+  .war-room-toolbar-select {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+
+  .war-room-toolbar-back,
+  .war-room-toolbar-link {
+    align-self: flex-start;
+    min-height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .war-room-toolbar-link {
+    margin-left: 0;
+  }
+}
+
 .war-room-product-link {
   display: inline-block;
   margin-top: 0.35rem;

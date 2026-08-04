@@ -5,6 +5,8 @@ export const runs = {
     refresh: "Refresh",
     autoRefresh: "Auto-refreshing every 5s while runs are active",
     emptyTitle: "No runs yet",
+    emptyHint: "Launch work from the Office coordinator or run a workflow to see executions here.",
+    emptyAction: "Go to Office",
     filters: {
       workflow: "Workflow",
       status: "Status",

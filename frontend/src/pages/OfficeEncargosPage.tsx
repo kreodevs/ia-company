@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ClipboardList, Crosshair, Trash2 } from "lucide-react";
+import { Crosshair, Trash2 } from "lucide-react";
 import { api, type OfficeEncargoPhase, type OfficeEncargoSummary } from "../lib/api";
 import type { OrgUnit } from "../lib/org-types";
 import {
@@ -13,6 +13,7 @@ import PageLoading from "../components/ui/PageLoading";
 import StatusBadge from "../components/ui/StatusBadge";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import Select from "../components/ui/Select";
+import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import Checkbox from "../components/atoms/Checkbox";
@@ -195,11 +196,14 @@ export default function OfficeEncargosPage() {
 
       {items.length === 0 ? (
         <div className="office-panel office-encargos-empty">
-          <ClipboardList className="mx-auto mb-3 h-10 w-10 text-sky-400/70" aria-hidden />
-          <p className="office-empty">{t("office.encargos.empty")}</p>
-          <Link to="/office" className="office-link-btn mt-4 inline-flex">
-            {t("office.encargos.startFirst")}
-          </Link>
+          <EmptyState
+            title={t("office.encargos.empty")}
+            action={
+              <Link to="/office" className="office-link-btn inline-flex">
+                {t("office.encargos.startFirst")}
+              </Link>
+            }
+          />
         </div>
       ) : (
         <>

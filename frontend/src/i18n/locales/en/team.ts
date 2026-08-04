@@ -17,4 +17,6 @@ export const team = {
   removeConfirm: "Remove this member? They will lose access immediately.",
   cannotRemoveSelf: "You cannot remove yourself.",
   lastAdmin: "Tenant must keep at least one admin.",
+  emptyTitle: "No team members yet",
+  emptyHint: "Invite a teammate using the form above.",
 } as const;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import WorkflowAiEnrichModal from "../components/workflows/WorkflowAiEnrichModal";
@@ -12,7 +12,8 @@ import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import Card from "../components/ui/Card";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
 
 export default function WorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -121,9 +122,12 @@ export default function WorkflowEditorPage() {
     <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
       <PageHeader
         eyebrow={
-          <Link to="/settings/procedures" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.procedures")}
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: t("nav.procedures"), to: "/settings/procedures" },
+              { label: workflow.name },
+            ]}
+          />
         }
         title={workflow.name}
         subtitle={workflow.description ?? undefined}
@@ -134,7 +138,7 @@ export default function WorkflowEditorPage() {
         }
       />
 
-      <Card className="space-y-3">
+      <Panel title={t("workflows.editor.executePanelTitle", { defaultValue: "Run workflow" })} bodySize="sm">
         <label className="flex min-h-11 items-center gap-3 text-sm">
           <input
             type="checkbox"
@@ -161,11 +165,11 @@ export default function WorkflowEditorPage() {
           onClick={() => void handleExecute()}
           disabled={executing}
           fullWidthMobile
-          className="w-full bg-[var(--color-accent)] text-black hover:opacity-90 sm:w-auto"
+          className="w-full sm:w-auto"
         >
           {executing ? t("common.starting") : t("workflows.editor.execute")}
         </Button>
-      </Card>
+      </Panel>
 
       <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
         <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />

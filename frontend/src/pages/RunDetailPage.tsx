@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
-import Card from "../components/ui/Card";
+import Panel from "../components/ui/Panel";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Button from "../components/ui/Button";
 import StatusBadge from "../components/ui/StatusBadge";
 import OpencodeRunPanel from "../components/opencode/OpencodeRunPanel";
@@ -92,9 +93,12 @@ export default function RunDetailPage() {
     <div className="space-y-6">
       <PageHeader
         eyebrow={
-          <Link to="/runs" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.runs")}
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: t("nav.runs"), to: "/runs" },
+              { label: run.workflow?.name ?? t("runs.detail.defaultTitle") },
+            ]}
+          />
         }
         title={run.workflow?.name ?? t("runs.detail.defaultTitle")}
         subtitle={t("runs.detail.statusLine", {
@@ -133,15 +137,13 @@ export default function RunDetailPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <h2 className="mb-3 font-semibold">{t("runs.detail.sharedMemory")}</h2>
+        <Panel title={t("runs.detail.sharedMemory")} bodySize="sm">
           <pre className="max-h-96 overflow-auto rounded-lg bg-[var(--color-background)] p-3 text-xs">
             {JSON.stringify(run.sharedMemory, null, 2)}
           </pre>
-        </Card>
+        </Panel>
 
-        <Card>
-          <h2 className="mb-3 font-semibold">{t("runs.detail.liveLog")}</h2>
+        <Panel title={t("runs.detail.liveLog")} bodySize="sm">
           <div ref={logRef} className="max-h-96 space-y-2 overflow-y-auto font-mono text-xs">
             {events.map((ev, i) => {
               const data = ev.data as Record<string, unknown>;
@@ -193,7 +195,7 @@ export default function RunDetailPage() {
             );
             })}
           </div>
-        </Card>
+        </Panel>
       </div>
     </div>
   );

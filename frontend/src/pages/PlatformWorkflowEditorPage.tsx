@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowCanvas from "../components/WorkflowCanvas";
 import { api, type Agent, type Workflow } from "../lib/api";
+import PageHeader from "../components/ui/PageHeader";
+import PageLoading from "../components/ui/PageLoading";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function PlatformWorkflowEditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -69,21 +75,34 @@ export default function PlatformWorkflowEditorPage() {
   };
 
   if (!workflow) {
-    return <p className="text-[var(--color-muted-foreground)]">{t("workflows.platformEditor.loading")}</p>;
+    return <PageLoading message={t("workflows.platformEditor.loading")} />;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1 space-y-2">
-          <Link
-            to="/admin/templates/workflows"
-            className="text-sm text-[var(--color-muted-foreground)] hover:underline"
-          >
-            ← {t("nav.backToWorkflows")}
-          </Link>
-          <input
-            className="mt-1 w-full max-w-xl rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-2xl font-bold"
+    <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.admin"), to: "/admin" },
+              { label: t("admin.templates.workflows.title"), to: "/admin/templates/workflows" },
+              { label: workflow.name },
+            ]}
+          />
+        }
+        title={workflow.name}
+        subtitle={t("workflows.platformEditor.globalTemplateHint")}
+        actions={
+          <Button variant="destructive" disabled={deleting} onClick={() => void handleDelete()} fullWidthMobile>
+            {deleting ? t("common.deleting") : t("workflows.platformEditor.deleteTemplate")}
+          </Button>
+        }
+      />
+
+      <Panel title={t("workflows.editor.metadataTitle", { defaultValue: "Workflow details" })} bodySize="sm">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Input
+            label={t("common.name")}
             value={workflow.name}
             onChange={(e) => setWorkflow({ ...workflow, name: e.target.value })}
             onBlur={() => {
@@ -95,35 +114,30 @@ export default function PlatformWorkflowEditorPage() {
                 .then(setWorkflow);
             }}
           />
-          <textarea
-            className="w-full max-w-xl rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
-            rows={2}
-            placeholder={t("workflows.platformEditor.descriptionPlaceholder")}
-            value={workflow.description ?? ""}
-            onChange={(e) => setWorkflow({ ...workflow, description: e.target.value })}
-            onBlur={() => {
-              void api.admin.templates
-                .updateWorkflow(workflow.id, {
-                  name: workflow.name,
-                  description: workflow.description ?? undefined,
-                })
-                .then(setWorkflow);
-            }}
-          />
-          <p className="text-xs text-[var(--color-muted-foreground)]">
-            {t("workflows.platformEditor.globalTemplateHint")}
-          </p>
+          <label className="block space-y-1.5 text-sm sm:col-span-2">
+            <span className="font-medium">{t("common.description")}</span>
+            <textarea
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+              rows={2}
+              placeholder={t("workflows.platformEditor.descriptionPlaceholder")}
+              value={workflow.description ?? ""}
+              onChange={(e) => setWorkflow({ ...workflow, description: e.target.value })}
+              onBlur={() => {
+                void api.admin.templates
+                  .updateWorkflow(workflow.id, {
+                    name: workflow.name,
+                    description: workflow.description ?? undefined,
+                  })
+                  .then(setWorkflow);
+              }}
+            />
+          </label>
         </div>
-        <button
-          onClick={() => void handleDelete()}
-          disabled={deleting}
-          className="rounded-lg border border-red-500/50 px-4 py-2 text-sm text-red-400 disabled:opacity-50"
-        >
-          {deleting ? t("common.deleting") : t("workflows.platformEditor.deleteTemplate")}
-        </button>
-      </div>
+      </Panel>
 
-      <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+      <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
+        <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+      </div>
     </div>
   );
 }

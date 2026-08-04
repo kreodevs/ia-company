@@ -219,7 +219,7 @@ export default function ProductSettingsPage() {
         }
       />
 
-      <TabsBar tabs={tabs} activeId={activeTab} onChange={(id) => setTab(id as ProductSettingsTab)} />
+      <TabsBar sticky tabs={tabs} activeId={activeTab} onChange={(id) => setTab(id as ProductSettingsTab)} />
 
       {activeTab === "general" && (
         <Panel title={t("products.settings.generalTitle")} subtitle={t("products.settings.generalSubtitle")}>

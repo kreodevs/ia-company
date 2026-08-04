@@ -8,6 +8,7 @@ import DepartmentRoomView from "../components/office/DepartmentRoomView";
 import DepartmentStaffPanel from "../components/org/DepartmentStaffPanel";
 import DepartmentSettingsPanel from "../components/org/DepartmentSettingsPanel";
 import TabsBar from "../components/ui/TabsBar";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
 import Button from "../components/ui/Button";
@@ -190,9 +191,19 @@ export default function OrgUnitDetailPage() {
   }
 
   const navigation = (
-    <div className="office-dept-tabs-wrap">
-      <TabsBar tabs={deptTabs} activeId={activeTab} onChange={(next) => setTab(next as DeptTab)} />
-    </div>
+    <>
+      <div className="office-dept-breadcrumbs">
+        <Breadcrumbs
+          items={[
+            { label: t("org.title"), to: "/org-units" },
+            { label: unit.name },
+          ]}
+        />
+      </div>
+      <div className="office-dept-tabs-wrap">
+        <TabsBar tabs={deptTabs} activeId={activeTab} onChange={(next) => setTab(next as DeptTab)} />
+      </div>
+    </>
   );
 
   return (

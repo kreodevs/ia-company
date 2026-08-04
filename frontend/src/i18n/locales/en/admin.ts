@@ -46,6 +46,8 @@ export const admin = {
       syncSuccess:
         "Synced {{name}} ({{mode}}): +{{agentsAdded}} agents, +{{skillsAdded}} skills, +{{workflowsAdded}} workflows",
       syncUpdated: " · updated {{count}}",
+      emptyTitle: "No tenants yet",
+      emptyHint: "Create your first organization using the form above.",
     },
     auditLog: {
       title: "Audit log",
@@ -56,6 +58,7 @@ export const admin = {
         tenant: "Tenant",
       },
       empty: "No audit events yet.",
+      emptyHint: "Platform actions will appear here as they occur.",
       noTenant: "—",
     },
   },
@@ -182,6 +185,8 @@ export const admin = {
       created: 'Created agent template "{{name}}"',
       saveTemplate: "Save agent template",
       saved: "Agent template saved",
+      emptyTitle: "No agent templates",
+      emptyHint: "Reseed from .claude/ or create a new template.",
     },
     skills: {
       createTemplate: "+ Create skill template",
@@ -189,6 +194,8 @@ export const admin = {
       created: 'Created skill template "{{name}}"',
       saveTemplate: "Save skill template",
       saved: "Skill template saved",
+      emptyTitle: "No skill templates",
+      emptyHint: "Reseed from .claude/ or create a new template.",
     },
     workflows: {
       title: "Workflow templates",

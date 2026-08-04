@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
+import AuthPageShell from "../components/ui/AuthPageShell";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -37,18 +38,20 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center text-sm text-[var(--color-muted-foreground)]">
-        {t("auth.resetPassword.missingToken")}{" "}
-        <Link to="/forgot-password" className="interactive text-[var(--color-primary)] hover:underline">
-          {t("auth.resetPassword.requestNewLink")}
-        </Link>
-      </div>
+      <AuthPageShell>
+        <p className="text-center text-sm text-[var(--color-muted-foreground)]">
+          {t("auth.resetPassword.missingToken")}{" "}
+          <Link to="/forgot-password" className="interactive text-[var(--color-primary)] hover:underline">
+            {t("auth.resetPassword.requestNewLink")}
+          </Link>
+        </p>
+      </AuthPageShell>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-md flex-col justify-center px-1 sm:px-4">
-      <Card className="shadow-lg shadow-black/20">
+    <AuthPageShell>
+      <Card className="auth-card">
         <h1 className="text-xl font-bold sm:text-2xl">{t("auth.resetPassword.title")}</h1>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
           <Input
@@ -78,6 +81,6 @@ export default function ResetPasswordPage() {
           </p>
         )}
       </Card>
-    </div>
+    </AuthPageShell>
   );
 }

@@ -13,6 +13,7 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 | `Card` | `molecules/Card` | |
 | `Panel` | `molecules/Card` | Keeps `app-panel-*` layout classes |
 | `PageHeader` | `molecules/PageHeader` | |
+| `AuthPageShell` | — | Centered auth layout (login, setup, password recovery) |
 | `PageLoading` | `atoms/Skeleton` | |
 | `EmptyState` | `molecules/EmptyState` | |
 | `StatCard` | `molecules/StatsCard` | |
@@ -21,7 +22,7 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 | `StatusBadge` | `atoms/StatusPill` | Run status mapping |
 | `ConfirmDialog` | `molecules/Dialog` (`AlertDialog`) | |
 | `Breadcrumbs` | `atoms/Breadcrumb` | React Router `to` links |
-| `TabsBar` | Radix tabs + Kreo underline tokens | Header-only tabs |
+| `TabsBar` | Radix tabs + Kreo underline tokens | Header-only tabs; optional `sticky` for long settings pages |
 | `MermaidDiagram` | `molecules/MermaidDiagram` | Prop `chart` → `code` |
 
 ## App-specific (not Kreo)

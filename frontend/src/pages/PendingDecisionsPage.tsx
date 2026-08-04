@@ -9,8 +9,9 @@ import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Panel from "../components/ui/Panel";
-import StatusPill from "../components/ui/StatusPill";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import EmptyState from "../components/ui/EmptyState";
+import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 
 type InboxTab = "pending" | "approved" | "rejected";
@@ -112,10 +113,21 @@ export default function PendingDecisionsPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <PageHeader title={t("pendientes.title")} subtitle={t("pendientes.subtitle")} />
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
+              { label: t("pendientes.title") },
+            ]}
+          />
+        }
+        title={t("pendientes.title")}
+        subtitle={t("pendientes.subtitle")}
+      />
 
       <div
-        className="office-encargos-filters"
+        className="office-encargos-filters office-inbox-filters-sticky"
         role="tablist"
         aria-label={t("pendientes.filterLabel")}
       >
@@ -163,7 +175,7 @@ export default function PendingDecisionsPage() {
                   <span
                     className={`absolute left-0 top-2 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
                       i === 0
-                        ? "border-amber-400 bg-amber-50 text-amber-700"
+                        ? "border-[color-mix(in_srgb,var(--warning)_55%,transparent)] bg-[color-mix(in_srgb,var(--warning)_12%,var(--card))] text-[var(--warning)]"
                         : "border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-muted-foreground)]"
                     }`}
                   >

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type Agent, type Skill, type TenantSummary } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import Button from "../components/ui/Button";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import TabsBar from "../components/ui/TabsBar";
+import Panel from "../components/ui/Panel";
+import EmptyState from "../components/ui/EmptyState";
 
 type Tab = "agents" | "skills";
 
@@ -180,9 +183,12 @@ export default function PlatformTemplatesPage() {
     <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
       <PageHeader
         eyebrow={
-          <Link to="/admin" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.admin")}
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: t("nav.admin"), to: "/admin" },
+              { label: t("admin.templates.title") },
+            ]}
+          />
         }
         title={t("admin.templates.title")}
         subtitle={t("admin.templates.subtitle")}
@@ -193,12 +199,12 @@ export default function PlatformTemplatesPage() {
         }
       />
 
-      <div className="shrink-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
-        <h2 className="font-semibold">{t("admin.templates.syncSection.title")}</h2>
-        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-          {t("admin.templates.syncSection.subtitle")}
-        </p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+      <Panel
+        title={t("admin.templates.syncSection.title")}
+        subtitle={t("admin.templates.syncSection.subtitle")}
+        bodySize="sm"
+      >
+        <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="radio"
@@ -217,22 +223,21 @@ export default function PlatformTemplatesPage() {
             />
             {t("admin.templates.syncSection.updateLabel")}
           </label>
-          <button
+          <Button
+            variant="secondary"
             disabled={syncLoading}
             onClick={() => void syncToAllTenants()}
-            className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm disabled:opacity-50"
           >
             {syncLoading ? t("common.syncing") : t("admin.templates.syncSection.syncAll")}
-          </button>
-          <button
+          </Button>
+          <Button
             disabled={syncLoading || selectedTenantIds.length === 0}
             onClick={() => void syncTenants(selectedTenantIds)}
-            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)] disabled:opacity-50"
           >
             {syncLoading
               ? t("common.syncing")
               : t("admin.templates.syncSection.syncSelected", { count: selectedTenantIds.length })}
-          </button>
+          </Button>
         </div>
         {tenants.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-3">
@@ -254,39 +259,40 @@ export default function PlatformTemplatesPage() {
             ))}
           </div>
         )}
-      </div>
+      </Panel>
 
       {message && (
-        <p className="shrink-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
+        <p className="shrink-0 app-alert app-alert--info px-4 py-2 text-sm" role="status">
           {message}
         </p>
       )}
 
-      <div className="flex shrink-0 flex-wrap gap-2">
-        {(["agents", "skills"] as Tab[]).map((tabKey) => (
-          <button
-            key={tabKey}
-            onClick={() => setTab(tabKey)}
-            className={`rounded-lg px-4 py-2 text-sm capitalize ${
-              tab === tabKey
-                ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]"
-                : "border border-[var(--color-border)]"
-            }`}
-          >
-            {t(`admin.templates.tabs.${tabKey}`)}
-          </button>
-        ))}
-      </div>
+      <TabsBar
+        sticky
+        tabs={(["agents", "skills"] as Tab[]).map((tabKey) => ({
+          id: tabKey,
+          label: t(`admin.templates.tabs.${tabKey}`),
+        }))}
+        activeId={tab}
+        onChange={(id) => setTab(id as Tab)}
+      />
 
       {tab === "agents" && (
         <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-2">
           <div className="flex min-h-0 flex-col gap-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => void createAgent()}
-              className="shrink-0 w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+              className="shrink-0 w-full border-dashed"
             >
               + {t("admin.templates.agents.createTemplate")}
-            </button>
+            </Button>
+            {agents.length === 0 ? (
+              <EmptyState
+                title={t("admin.templates.agents.emptyTitle")}
+                description={t("admin.templates.agents.emptyHint")}
+              />
+            ) : (
             <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {agents.map((agent) => (
                 <li key={agent.id}>
@@ -304,21 +310,19 @@ export default function PlatformTemplatesPage() {
                 </li>
               ))}
             </ul>
+            )}
           </div>
           {selectedAgent && (
-            <div className="flex min-h-0 flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+            <Panel title={selectedAgent.name} subtitle={selectedAgent.role} bodySize="sm" className="flex min-h-0 flex-col">
               <textarea
                 value={selectedAgent.systemPrompt}
                 onChange={(e) => setSelectedAgent({ ...selectedAgent, systemPrompt: e.target.value })}
-                className="min-h-0 flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
+                className="min-h-[280px] flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
               />
-              <button
-                onClick={() => void saveAgent()}
-                className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
-              >
+              <Button onClick={() => void saveAgent()} className="mt-3 shrink-0">
                 {t("admin.templates.agents.saveTemplate")}
-              </button>
-            </div>
+              </Button>
+            </Panel>
           )}
         </div>
       )}
@@ -326,12 +330,19 @@ export default function PlatformTemplatesPage() {
       {tab === "skills" && (
         <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-2">
           <div className="flex min-h-0 flex-col gap-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => void createSkill()}
-              className="shrink-0 w-full rounded-lg border border-dashed border-[var(--color-border)] px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+              className="shrink-0 w-full border-dashed"
             >
               + {t("admin.templates.skills.createTemplate")}
-            </button>
+            </Button>
+            {skills.length === 0 ? (
+              <EmptyState
+                title={t("admin.templates.skills.emptyTitle")}
+                description={t("admin.templates.skills.emptyHint")}
+              />
+            ) : (
             <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {skills.map((skill) => (
                 <li key={skill.id}>
@@ -348,21 +359,19 @@ export default function PlatformTemplatesPage() {
                 </li>
               ))}
             </ul>
+            )}
           </div>
           {selectedSkill && (
-            <div className="flex min-h-0 flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-5">
+            <Panel title={selectedSkill.name} bodySize="sm" className="flex min-h-0 flex-col">
               <textarea
                 value={selectedSkill.promptContent}
                 onChange={(e) => setSelectedSkill({ ...selectedSkill, promptContent: e.target.value })}
-                className="min-h-0 flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
+                className="min-h-[280px] flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-xs"
               />
-              <button
-                onClick={() => void saveSkill()}
-                className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm text-[var(--color-primary-foreground)]"
-              >
+              <Button onClick={() => void saveSkill()} className="mt-3 shrink-0">
                 {t("admin.templates.skills.saveTemplate")}
-              </button>
-            </div>
+              </Button>
+            </Panel>
           )}
         </div>
       )}

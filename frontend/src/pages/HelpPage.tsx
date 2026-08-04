@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Building2, ChevronDown, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
 import { injectHelpBackToTocLinks } from "../lib/help-markdown";
 import {
@@ -202,7 +204,18 @@ export default function HelpPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow={t("help.breadcrumb")} title={t("help.title")} subtitle={t("help.subtitle")} />
+      <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.help"), to: "/help" },
+              { label: article.title },
+            ]}
+          />
+        }
+        title={t("help.title")}
+        subtitle={t("help.subtitle")}
+      />
 
       <section aria-label={t("help.quickLinks")}>
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
@@ -256,7 +269,7 @@ export default function HelpPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
-        <aside className="order-2 space-y-3 lg:order-none lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:max-h-[calc(100dvh-var(--header-height)-2rem)] lg:space-y-2 lg:self-start lg:overflow-y-auto lg:pr-1">
+        <aside className="help-sidebar-sticky order-2 space-y-3 lg:order-none lg:space-y-2">
           <HelpNavToggle
             label={t("help.articles")}
             hint={
@@ -324,16 +337,15 @@ export default function HelpPage() {
           ) : null}
         </aside>
 
-        <div
-          ref={contentRef}
-          className="order-1 min-w-0 scroll-mt-28 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-6 sm:px-8 sm:py-8 lg:order-none"
-        >
-          <MarkdownDoc
-            content={articleContent}
-            tocId={getTocHeadingId(i18n.language)}
-            onSectionLink={scrollToHeading}
-          />
-        </div>
+        <Panel bodySize="flush" className="order-1 min-w-0 scroll-mt-28 lg:order-none">
+          <div ref={contentRef} className="px-4 py-6 sm:px-8 sm:py-8">
+            <MarkdownDoc
+              content={articleContent}
+              tocId={getTocHeadingId(i18n.language)}
+              onSectionLink={scrollToHeading}
+            />
+          </div>
+        </Panel>
       </div>
     </div>
   );

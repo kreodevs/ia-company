@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import { api, type Workflow } from "../lib/api";
@@ -7,6 +7,10 @@ import { formatWorkflowTitle } from "../lib/workflow-display";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import Panel from "../components/ui/Panel";
+import EmptyState from "../components/ui/EmptyState";
+import Button from "../components/ui/Button";
 
 export default function PlatformWorkflowTemplatesPage() {
   const navigate = useNavigate();
@@ -84,9 +88,13 @@ export default function PlatformWorkflowTemplatesPage() {
     <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
       <PageHeader
         eyebrow={
-          <Link to="/admin" className="interactive text-[var(--color-primary)] hover:underline">
-            ← {t("nav.admin")}
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: t("nav.admin"), to: "/admin" },
+              { label: t("admin.templates.title"), to: "/admin/templates" },
+              { label: t("admin.templates.workflows.title") },
+            ]}
+          />
         }
         title={t("admin.templates.workflows.title")}
         subtitle={t("admin.templates.workflows.subtitle")}
@@ -98,12 +106,12 @@ export default function PlatformWorkflowTemplatesPage() {
       />
 
       {message && (
-        <p className="shrink-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)] px-4 py-2 text-sm">
+        <p className="shrink-0 app-alert app-alert--info px-4 py-2 text-sm" role="status">
           {message}
         </p>
       )}
 
-      <div className="shrink-0 space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+      <Panel bodySize="sm">
         <div className="flex flex-col gap-2 lg:flex-row">
           <input
             value={workflowSearch}
@@ -121,30 +129,32 @@ export default function PlatformWorkflowTemplatesPage() {
                 if (e.key === "Enter") void createWorkflowTemplate();
               }}
             />
-            <button
+            <Button
               type="button"
               disabled={creatingWorkflow || !newWorkflowName.trim()}
               onClick={() => void createWorkflowTemplate()}
-              className="shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+              className="shrink-0"
             >
               {creatingWorkflow ? t("common.creating") : t("workflows.list.createAndEdit")}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Panel>
 
       {filteredWorkflows.length === 0 ? (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-card)]/40 px-6 py-12 text-center">
-          <p className="font-medium">
-            {workflows.length === 0
-              ? t("admin.templates.workflows.emptyTitle")
-              : t("workflows.list.emptySearchTitle")}
-          </p>
-          <p className="mt-2 max-w-md text-sm text-[var(--color-muted-foreground)]">
-            {workflows.length === 0
-              ? t("admin.templates.workflows.emptyTitleHint")
-              : t("workflows.list.emptySearchSubtitle")}
-          </p>
+        <div className="flex min-h-0 flex-1 flex-col justify-center">
+          <EmptyState
+            title={
+              workflows.length === 0
+                ? t("admin.templates.workflows.emptyTitle")
+                : t("workflows.list.emptySearchTitle")
+            }
+            description={
+              workflows.length === 0
+                ? t("admin.templates.workflows.emptyTitleHint")
+                : t("workflows.list.emptySearchSubtitle")
+            }
+          />
         </div>
       ) : (
         <ul className="grid min-h-0 flex-1 gap-4 overflow-y-auto pr-1 md:grid-cols-2 xl:grid-cols-3">

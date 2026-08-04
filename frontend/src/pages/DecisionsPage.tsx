@@ -10,6 +10,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Panel from "../components/ui/Panel";
 import KpiCard from "../components/ui/KpiCard";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
@@ -92,6 +93,14 @@ export default function DecisionsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.ops"), to: "/ops" },
+              { label: t("decisions.title") },
+            ]}
+          />
+        }
         title={t("decisions.title")}
         subtitle={t("decisions.subtitle")}
       />
@@ -154,7 +163,7 @@ export default function DecisionsPage() {
                 <span
                   className={`absolute left-0 top-2 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
                     i === 0
-                      ? "border-amber-400 bg-amber-50 text-amber-700"
+                      ? "border-[color-mix(in_srgb,var(--warning)_55%,transparent)] bg-[color-mix(in_srgb,var(--warning)_12%,var(--card))] text-[var(--warning)]"
                       : "border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-muted-foreground)]"
                   }`}
                 >

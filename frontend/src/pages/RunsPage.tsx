@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun, type Workflow } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
+import Panel from "../components/ui/Panel";
 import EmptyState from "../components/ui/EmptyState";
 import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
@@ -128,7 +129,8 @@ export default function RunsPage() {
         }
       />
 
-      <div className="mb-4 flex flex-wrap items-end gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+      <Panel title={t("runs.list.filters.workflow", { defaultValue: "Filters" })} bodySize="sm">
+      <div className="flex flex-wrap items-end gap-3">
         <label className="grid gap-1 text-sm">
           <span className="text-[var(--color-muted-foreground)]">
             {t("runs.list.filters.workflow", { defaultValue: "Workflow" })}
@@ -172,6 +174,7 @@ export default function RunsPage() {
           </p>
         )}
       </div>
+      </Panel>
 
       {error && (
         <div
@@ -183,7 +186,15 @@ export default function RunsPage() {
       )}
 
       {runs.length === 0 ? (
-        <EmptyState title={t("runs.list.emptyTitle", { defaultValue: "No runs yet" })} />
+        <EmptyState
+          title={t("runs.list.emptyTitle", { defaultValue: "No runs yet" })}
+          description={t("runs.list.emptyHint")}
+          action={
+            <Link to="/office">
+              <Button>{t("runs.list.emptyAction")}</Button>
+            </Link>
+          }
+        />
       ) : (
         <>
           <ul className="grid gap-3 md:hidden">

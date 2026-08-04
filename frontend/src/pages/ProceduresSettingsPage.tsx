@@ -7,8 +7,9 @@ import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import WorkflowAiStudioModal from "../components/workflows/WorkflowAiStudioModal";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
 import EmptyState from "../components/ui/EmptyState";
-import Card from "../components/ui/Card";
+import Panel from "../components/ui/Panel";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 
@@ -134,6 +135,14 @@ export default function ProceduresSettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow={
+          <Breadcrumbs
+            items={[
+              { label: t("nav.settings"), to: "/settings" },
+              { label: t("nav.procedures") },
+            ]}
+          />
+        }
         title={t("nav.procedures")}
         subtitle={t("office.procedures.settingsSubtitle")}
         meta={
@@ -143,16 +152,16 @@ export default function ProceduresSettingsPage() {
         }
       />
 
-      <Card padding="sm" className="border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5">
+      <Panel bodySize="sm" className="border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5">
         <p className="text-sm text-[var(--color-muted-foreground)]">
           {t("office.procedures.settingsHint")}{" "}
           <Link to="/org-units" className="text-[var(--color-primary)] underline">
             {t("nav.orgUnits")}
           </Link>
         </p>
-      </Card>
+      </Panel>
 
-      <Card padding="sm">
+      <Panel title={t("office.procedures.searchPlaceholder")} bodySize="sm">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
           <div className="min-w-0 flex-1">
             <Input
@@ -194,7 +203,7 @@ export default function ProceduresSettingsPage() {
             </Button>
           </div>
         </div>
-      </Card>
+      </Panel>
 
       <WorkflowAiStudioModal
         open={aiOpen}
@@ -214,14 +223,21 @@ export default function ProceduresSettingsPage() {
       ) : (
         <div className="space-y-8">
           {filteredGroups.map((group) => (
-            <section key={`${group.departmentSlug ?? "org"}-${group.orgUnitId ?? "virtual"}`}>
-              <div className="mb-3 flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-[var(--color-muted-foreground)]" aria-hidden />
-                <h2 className="text-sm font-semibold">{groupLabel(group, t)}</h2>
+            <Panel
+              key={`${group.departmentSlug ?? "org"}-${group.orgUnitId ?? "virtual"}`}
+              title={
+                <span className="inline-flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-[var(--color-muted-foreground)]" aria-hidden />
+                  {groupLabel(group, t)}
+                </span>
+              }
+              actions={
                 <span className="text-xs text-[var(--color-muted-foreground)]">
                   {t("office.procedures.groupCount", { count: group.items.length })}
                 </span>
-              </div>
+              }
+              bodySize="sm"
+            >
               <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {group.items.map((procedure) => (
                   <li key={procedure.id}>
@@ -235,17 +251,19 @@ export default function ProceduresSettingsPage() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Panel>
           ))}
 
           {filteredUnassigned.length > 0 ? (
-            <section>
-              <div className="mb-3 flex items-center gap-2">
-                <h2 className="text-sm font-semibold">{t("office.procedures.unassignedGroup")}</h2>
+            <Panel
+              title={t("office.procedures.unassignedGroup")}
+              actions={
                 <span className="text-xs text-[var(--color-muted-foreground)]">
                   {t("office.procedures.groupCount", { count: filteredUnassigned.length })}
                 </span>
-              </div>
+              }
+              bodySize="sm"
+            >
               <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {filteredUnassigned.map((procedure) => (
                   <li key={procedure.id}>
@@ -259,7 +277,7 @@ export default function ProceduresSettingsPage() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Panel>
           ) : null}
         </div>
       )}

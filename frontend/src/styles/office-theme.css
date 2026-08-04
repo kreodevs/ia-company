@@ -614,6 +614,15 @@ html[data-theme="paperclip"] .office-roi-item {
   color: #64748b;
 }
 
+.office-roi-stats-secondary {
+  margin-top: 0.2rem;
+}
+
+.office-roi-phase {
+  font-size: 0.68rem;
+  color: var(--office-muted-dim, #64748b);
+}
+
 .office-roi-link {
   font-size: 0.72rem;
   color: #38bdf8;
@@ -2060,6 +2069,10 @@ html[data-theme="letter"] .office-link-inline {
   border-bottom: 1px solid var(--office-dept-panel-border);
 }
 
+.office-dept-breadcrumbs {
+  padding: 0.5rem 1rem 0;
+}
+
 .office-dept-settings-panel {
   display: flex;
   flex-direction: column;
@@ -2309,10 +2322,45 @@ html[data-theme="letter"] .office-link-inline {
   color: var(--office-muted-dim);
 }
 
+.office-archive-filters-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid var(--office-border);
+  background: var(--office-filter-bg);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--office-link);
+}
+
 .office-archive-filters {
   display: grid;
   grid-template-columns: 1.4fr repeat(5, minmax(120px, 1fr));
   gap: 0.5rem;
+}
+
+@media (max-width: 1023px) {
+  .office-archive-filters-toggle {
+    display: inline-flex;
+  }
+
+  .office-archive-filters:not(.office-archive-filters-open) {
+    display: none;
+  }
+
+  .office-archive-filters.office-archive-filters-open {
+    display: grid;
+  }
+}
+
+@media (min-width: 1024px) {
+  .office-archive-filters {
+    display: grid;
+  }
 }
 
 @media (max-width: 1100px) {
