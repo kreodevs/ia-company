@@ -13,6 +13,8 @@ import guiaFlujosEs from "./guia-flujos.md?raw";
 import guiaFlujosEn from "./guia-flujos.en.md?raw";
 import guiaPilotoEs from "./guia-piloto.md?raw";
 import guiaPilotoEn from "./guia-piloto.en.md?raw";
+import guiaConfiguracionEs from "./guia-configuracion.md?raw";
+import guiaConfiguracionEn from "./guia-configuracion.en.md?raw";
 
 export interface HelpArticle {
   slug: string;
@@ -35,6 +37,11 @@ export const HELP_SLUG_REDIRECTS: Record<
     hashEn: "how-to-build-agents",
   },
   handoffs: { slug: "guia-equipo-ia", hashEs: "handoffs-y-flujo", hashEn: "handoffs-and-flow" },
+  decisiones: {
+    slug: "guia-oficina",
+    hashEs: "mis-pendientes",
+    hashEn: "my-pending-decisions",
+  },
 };
 
 interface HelpArticleMeta {
@@ -56,7 +63,7 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
   {
     slug: "guia-oficina",
     title: "Oficina y encargos",
-    description: "Coordinador, alcance dept./producto, Mis encargos, War room y archivo.",
+    description: "Coordinador, KPIs, Mis pendientes, Mis encargos, War room, OpenCode y archivo.",
     contentEs: guiaOficinaEs,
     contentEn: guiaOficinaEn,
   },
@@ -95,6 +102,13 @@ const HELP_ARTICLE_REGISTRY: HelpArticleMeta[] = [
     contentEs: guiaPilotoEs,
     contentEn: guiaPilotoEn,
   },
+  {
+    slug: "guia-configuracion",
+    title: "Configuración del tenant",
+    description: "LLM, OpenCode, integraciones, MCP, notificaciones, límites, programaciones, entrega y equipo humano.",
+    contentEs: guiaConfiguracionEs,
+    contentEn: guiaConfiguracionEn,
+  },
 ];
 
 const EN_TITLES: Record<string, { title: string; description: string }> = {
@@ -104,7 +118,7 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   },
   "guia-oficina": {
     title: "Office and jobs",
-    description: "Coordinator, dept./product scope, My jobs, War room, and archive.",
+    description: "Coordinator, KPIs, My pending, My jobs, War room, OpenCode, and archive.",
   },
   "guia-productos": {
     title: "Products",
@@ -125,6 +139,10 @@ const EN_TITLES: Record<string, { title: string; description: string }> = {
   "guia-piloto": {
     title: "Daily pilot workflow",
     description: "30–60 min/day routine: job → war room → client delivery with optional PIN.",
+  },
+  "guia-configuracion": {
+    title: "Tenant settings",
+    description: "LLM, OpenCode, integrations, MCP, notifications, limits, schedules, delivery, and human team.",
   },
 };
 

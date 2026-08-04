@@ -1,6 +1,6 @@
 # User manual — Your virtual office with AI agents
 
-Welcome. This manual is your **entry point**: quick start, platform map, and links to detailed topic guides. No programming or infrastructure knowledge required.
+Welcome. This manual is your **entry point**: quick start, platform map, and links to detailed topic guides. No programming or infrastructure required.
 
 ---
 
@@ -14,48 +14,49 @@ Welcome. This manual is your **entry point**: quick start, platform map, and lin
 
 ## Quick start (Office)
 
-If you just logged in, start here. In **five minutes** you can complete your first job.
+If you just signed in, start here. In **five minutes** you can complete your first job.
 
 ### Step 1 — Open the Office
 
-After **tenant** login, the app sends you to **Operations** (`/ops`). Open **Home** in the sidebar (`/office`) for the **Coordinator** chat, month KPIs, the department floor plan, and **Quick services**.
+After **tenant** login, the app lands on **Operations** (`/ops`). Open **Home** in the sidebar (`/office`) for the **Coordinator** chat, monthly KPIs, department floor plan, and **Quick services**.
 
-The mode pill on the Office shows **On demand**, **Scheduled tasks**, or **Autonomous mode** depending on active rules and any legacy Meta rules (`meta_dynamic`).
+The Office mode indicator shows **On demand**, **Scheduled tasks**, or **Autonomous mode** depending on active rules and any legacy Meta (`meta_dynamic`) rules.
 
 ### Step 2 — Say what you need
 
 Write in natural language, as you would to a project lead:
 
-- *“Research whether an invoicing SaaS for freelancers in Mexico makes sense”*
+- *“Research whether a invoicing SaaS for freelancers in Mexico makes sense”*
 - *“Draft three LinkedIn posts for our product launch”*
 - *“Review competitor X’s pricing proposal”*
 
-You can also use **Quick services**: ready-made templates (discovery, idea validation, feature sprint…) that seed the chat — edit before planning.
+You can also use **Quick services**: ready templates (discovery, idea validation, feature sprint…) that preload the chat — edit before planning.
 
-Click **Plan team** (or send and request a plan) so the Coordinator proposes team, deliverables, time, and cost.
+Click **Plan team** (or send and ask for a plan) so the Coordinator proposes team, deliverables, time, and cost.
 
 ### Step 3 — Narrow context (optional)
 
 | Where | What you control |
 |-------|------------------|
-| **Main Office** | **Department** selector — limits agents, `design.md`, and dept pipeline |
-| **Department room** (`/org-units/:id`) or product **War room** | **Scope** selector — general exploration vs. one product |
-| **Coordinator proposal** | Shows inferred scope (product name or “General exploration”) before approval |
+| **Main Office** | **Department** selector — limits agents, `design.md`, and dept. pipeline |
+| **Department room** (`/org-units/:id`) or **product War room** | **Scope** selector — general exploration vs. a specific product |
+| **Coordinator proposal** | Shows inferred scope (product name or “General exploration”) before approve |
 
-If the task fits a product but you have not picked one, the Coordinator may **ask** before proposing the plan.
+If the task fits a product but you have not picked one, the Coordinator may **ask you** before proposing the plan.
 
 ### Step 4 — Review and approve
 
-Click **Approve and run** — nothing executes without your OK. If roles are missing from your catalog, you will get links to create them under **AI team**.
+Click **Approve and run** — nothing runs without your OK. If roles are missing from your catalog, you will see links to create them under **Specialist templates** (`/settings/specialists`).
 
-### Step 5 — Track and collect
+### Step 5 — Follow and collect
 
-After approval, the app sends you to **War room** (with a product when applicable). You can also use:
+After approval, the app opens **War room** (with product when applicable). You can also use:
 
-- **My jobs** (`/office/encargos`) — summary, final report, and per-agent documents
+- **My jobs** (`/office/encargos`) — summary, final report, documents per agent
+- **My pending** (`/office/pendientes`) — GO/NO-GO decisions with sidebar badge
 - **Office archive** (`/office/archive`) — deliverables indexed by department/product
 
-> By default everything is **on demand**. Automatic schedules are optional (see Workflows guide).
+> By default everything is **on demand**. Automatic schedules are optional (see the Workflows guide).
 
 ```mermaid
 flowchart LR
@@ -63,24 +64,38 @@ flowchart LR
   B --> C[Approve]
   C --> D[Worker runs]
   D --> E[War room / My jobs]
+  D --> F[My pending]
 ```
 
 ---
 
 ## Platform map and guides
 
-Each topic has its **own guide** with diagrams and detail. Open it from **Articles** in Help or from the links below.
+Each topic has its **own guide** with diagrams and detail. Open from **Articles** in Help or the links below.
 
 ### Guides by topic
 
 | Topic | What you will find | Open |
 |-------|-------------------|------|
-| **Office and jobs** | Coordinator, scope, My jobs, War room, archive | [/help/guia-oficina](/help/guia-oficina) |
-| **Products** | Lifecycle, opportunities, per-product memory | [/help/guia-productos](/help/guia-productos) |
-| **Departments** | Org Studio, `design.md`, tokens, gallery | [/help/guia-departamentos](/help/guia-departamentos) |
-| **AI team and skills** | Agents, skills, building agents, and handoffs | [/help/guia-equipo-ia](/help/guia-equipo-ia) |
-| **Workflows and schedules** | Playbooks, schedules, Operations panel, and GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
+| **Office and jobs** | Coordinator, KPIs, My pending, My jobs, War room, OpenCode | [/help/guia-oficina](/help/guia-oficina) |
+| **Products** | Opportunities, active products, desk, per-product settings | [/help/guia-productos](/help/guia-productos) |
+| **Departments** | Org Studio, Staff, virtual rooms vs Org Units | [/help/guia-departamentos](/help/guia-departamentos) |
+| **Specialist templates** | Hire/configure roles and skills | [/help/guia-equipo-ia](/help/guia-equipo-ia) → `/settings/specialists` |
+| **Procedures** | Playbooks, AI Studio, schedules, Operations | [/help/guia-flujos](/help/guia-flujos) → `/settings/procedures` |
+| **Tenant settings** | LLM, integrations, MCP, human team, client delivery | [/help/guia-configuracion](/help/guia-configuracion) |
 | **Daily pilot workflow** | 30–60 min routine: job → client delivery | [/help/guia-piloto](/help/guia-piloto) |
+
+### Office navigation (main menu)
+
+| Entry | Route |
+|-------|------|
+| Home | `/office` |
+| **My pending** (badge) | `/office/pendientes` |
+| My jobs | `/office/encargos` |
+| Archive | `/office/archive` |
+| War room | `/war-room` |
+| Products | `/products` |
+| Departments | `/org-units` |
 
 ### How it fits together
 
@@ -96,21 +111,23 @@ flowchart TB
   P <-->|link| D
   P --> W[War room]
   W --> E[My jobs]
+  W --> I[My pending]
   D --> G[Artifact gallery]
 ```
 
-**Practical rule:** start with **Office + Products**. Add **departments** (Org Studio) when you need unified brand and dedicated teams. Use **workflows** for repeatable processes.
+**Practical rule:** start with **Office + Products**. Add **departments** (Org Studio) when you need unified brand and dedicated teams. Use **workflows** for repeatable processes. **Settings** when integrating GitHub, SMTP, or human team.
 
 ### Cross-cutting topics (summary)
 
 | Topic | Where in the app | Related guide |
 |-------|------------------|---------------|
 | Company memory | Debug office → Consensus (`/debug/consensus`) | [Products](/help/guia-productos) |
-| Per-product memory | Consensus (`/debug/products/:id/consensus`) or Product settings → link | [Products](/help/guia-productos) |
-| GO/NO-GO decisions | Debug office → Decisions (`/decisions`) or job detail | [Workflows](/help/guia-flujos) |
+| Product memory | Consensus (`/debug/products/:id/consensus`) or product Settings | [Products](/help/guia-productos) |
+| GO/NO-GO decisions | **My pending** (`/office/pendientes`) or job detail | [Office](/help/guia-oficina#my-pending-decisions) |
+| Decisions (advanced view) | Debug office → Decisions (`/debug/decisions`) | [Workflows](/help/guia-flujos) |
 | Operations / meta-orchestrator | Debug office → Operations (`/ops`) | [Workflows](/help/guia-flujos#operations-ops) |
-| LLM settings, limits, schedules | Settings tabs (tenant admin) | [Workflows](/help/guia-flujos) |
-| Human team and roles | Debug office → Team (admin) | — |
+| LLM, limits, schedules | Settings (`/settings`) — tenant admin | [Settings](/help/guia-configuracion) |
+| Human team and roles | Debug office → Team (`/debug/team`) | [Settings](/help/guia-configuracion#human-team) |
 
 ---
 
@@ -118,32 +135,36 @@ flowchart TB
 
 ### Do agents run things without my permission?
 
-Not in **on demand** mode. You always see a plan and click **Approve and run**. Automatic schedules are opt-in under **Settings → Schedules**.
+Not in **on demand** mode. You always see a plan and click **Approve and run**. Automatic schedules are opt-in under **Settings → Schedules** (`/settings?tab=schedules`).
 
 ### What is the difference between Office and War room?
 
 - **Office** — request and plan work (any scope).
-- **War room** — follow one **specific product** live (agents, runs, deliverable health, contextual chat).
+- **War room** — follow a **specific product** or the portfolio live (agents, runs, deliverable health, contextual chat).
 
-### Do I need a department to get started?
+### My pending vs Debug Decisions?
 
-No. **Office + Products** is enough. Departments created in Org Studio help with brand, artifacts, and specialized teams.
+**My pending** (`/office/pendientes`) is the daily inbox with badge. **Decisions** under debug (`/debug/decisions`) is an advanced view — it does not replace the inbox.
+
+### Do I need a department to start?
+
+No. **Office + Products** is enough. Departments created in Org Studio help with brand, artifacts, and dedicated teams.
 
 ### What is Munger and VETO?
 
-**Risk review** before applying proposals in Catalog Studio or Org Studio, or during runs with `critic-munger`. Serious flaws require adjustments before you can continue (or the run may stop).
+**Risk review** before applying proposals in Catalog Studio or Org Studio, or during runs with `critic-munger`. On serious failure you must adjust before continuing (or the run may stop).
 
 ### Where do I see AI spend?
 
-**Office** (month spend KPI) and **Settings → Limits**. Each job shows estimated cost before approval.
+**Office** (“Monthly spend” KPI) and **Settings → Limits** (`/settings?tab=limits`). Each job shows estimated cost before approval.
 
 ### What if a job fails?
 
-Check **My jobs** or **Debug → Runs**, read the error, adjust the brief, and retry. Ask your admin about limits and models if it keeps failing.
+**My jobs** or **Debug → Runs**, read the error, adjust the brief, retry. Review limits and models with your admin if it persists.
 
 ### How do I build a marketing or design agent?
 
-Read [/help/guia-equipo-ia#how-to-build-agents](/help/guia-equipo-ia#how-to-build-agents) and [/help/guia-equipo-ia#handoffs-and-flow](/help/guia-equipo-ia#handoffs-and-flow). Do not use invented JSON like `DesignHandoff` — the platform expects **consensus** handoff.
+Read [/help/guia-equipo-ia#cómo-construir-agentes](/help/guia-equipo-ia#cómo-construir-agentes) and [/help/guia-equipo-ia#handoffs-and-flow](/help/guia-equipo-ia#handoffs-and-flow). Do not invent JSON like `DesignHandoff` — the platform expects the **consensus** handoff.
 
 ---
 

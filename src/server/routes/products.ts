@@ -6,6 +6,10 @@ import { enqueueIdeaEvaluation } from "../../lib/evaluate-idea.js";
 import { backfillPipelineFromLastDiscovery } from "../../lib/convergence.js";
 import { filterActionablePipelineIdeas } from "../../lib/pipeline-utils.js";
 import {
+  autoEvaluatePendingPipelineIdeas,
+  enrichPipelineIdeasWithEvaluation,
+} from "../../lib/pipeline-idea-evaluation.js";
+import {
   bootstrapProduct,
   ensureDefaultProducts,
   ensureTenantCycleState,
@@ -65,6 +69,7 @@ export async function productRoutes(app: FastifyInstance) {
       const tenant = await prisma.tenant.findUniqueOrThrow({ where: { id: tenantId } });
       await ensureDefaultProducts(tenantId, tenant.slug);
       await backfillPipelineFromLastDiscovery(tenantId);
+      await autoEvaluatePendingPipelineIdeas(tenantId);
 
       const [products, ideas, cycle, lastDiscoveryRun] = await Promise.all([
         listTenantProducts(tenantId),
@@ -83,10 +88,12 @@ export async function productRoutes(app: FastifyInstance) {
 
       const focusProduct = products.find((product) => product.id === cycle.focusProductId) ?? null;
       const opencodeActiveByProductId = await getActiveOpencodeByProduct(tenantId);
+      const actionable = filterActionablePipelineIdeas(ideas, products);
+      const pipeline = await enrichPipelineIdeasWithEvaluation(tenantId, actionable);
 
       return {
         products,
-        pipeline: filterActionablePipelineIdeas(ideas, products),
+        pipeline,
         focusProduct,
         opencodeActiveByProductId,
         lastDiscoveryRun: lastDiscoveryRun

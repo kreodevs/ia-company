@@ -57,6 +57,16 @@ export default function ProductsPage() {
     void load();
   }, []);
 
+  useEffect(() => {
+    if (!overview?.pipeline.some((idea) => idea.evaluationPhase === "evaluating" || idea.evaluationPhase === "queued")) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      void load();
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [overview?.pipeline]);
+
   const setTab = (tab: ProductsTab) => {
     setSearchParams(tab === "opportunities" ? {} : { tab });
   };
@@ -133,7 +143,8 @@ export default function ProductsPage() {
     return <p className="text-[var(--color-muted-foreground)]">{t("products.loadFailed")}</p>;
   }
 
-  const pendingOpportunities = overview.pipeline.filter((idea) => idea.goNoGo === "pending");
+  const pendingOpportunities = overview.pipeline.filter((idea) => idea.goNoGo !== "no_go");
+  const readyForDecisionCount = overview.pipeline.filter((idea) => idea.evaluationPhase === "ready").length;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -198,7 +209,9 @@ export default function ProductsPage() {
           subtitle={t("products.opportunities.subtitle")}
           actions={
             <span className="text-xs text-[var(--color-muted-foreground)]">
-              {t("products.opportunities.count", { count: pendingOpportunities.length })}
+              {readyForDecisionCount > 0
+                ? t("products.opportunities.readyCount", { count: readyForDecisionCount })
+                : t("products.opportunities.count", { count: pendingOpportunities.length })}
             </span>
           }
           bodySize="sm"
@@ -287,6 +300,124 @@ export default function ProductsPage() {
   );
 }
 
+function OpportunityActions({
+  idea,
+  isEvaluating,
+  onEvaluate,
+  onReject,
+  onDelete,
+  t,
+}: {
+  idea: PipelineIdea;
+  isEvaluating: boolean;
+  onEvaluate: () => void;
+  onReject: () => void;
+  onDelete: () => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}) {
+  const phase = idea.evaluationPhase;
+
+  if (phase === "ready" && idea.decisionProposalId) {
+    return (
+      <>
+        <Link to="/office/pendientes">
+          <Button size="sm">{t("products.opportunities.reviewDecision")}</Button>
+        </Link>
+        {idea.evaluationRunId ? (
+          <Link to={`/runs/${idea.evaluationRunId}`}>
+            <Button variant="secondary" size="sm">
+              {t("products.opportunities.viewReports")}
+            </Button>
+          </Link>
+        ) : null}
+        <Button variant="ghost" size="sm" className="text-[var(--color-destructive)]" onClick={onReject}>
+          {t("products.opportunities.discard")}
+        </Button>
+      </>
+    );
+  }
+
+  if (phase === "evaluating" || phase === "queued") {
+    return (
+      <>
+        <Button disabled size="sm">
+          {phase === "queued"
+            ? t("products.opportunities.evaluationQueued")
+            : t("products.opportunities.evaluating")}
+        </Button>
+        {idea.evaluationRunId ? (
+          <Link to={`/runs/${idea.evaluationRunId}`}>
+            <Button variant="secondary" size="sm">
+              {t("products.opportunities.viewEvaluationRun")}
+            </Button>
+          </Link>
+        ) : null}
+      </>
+    );
+  }
+
+  if (phase === "failed") {
+    return (
+      <>
+        <Button disabled={isEvaluating} onClick={onEvaluate} size="sm">
+          {isEvaluating ? t("products.opportunities.evaluating") : t("products.opportunities.evaluate")}
+        </Button>
+        {idea.evaluationRunId ? (
+          <Link to={`/runs/${idea.evaluationRunId}`}>
+            <Button variant="secondary" size="sm">
+              {t("products.opportunities.viewReports")}
+            </Button>
+          </Link>
+        ) : null}
+        <Button variant="ghost" size="sm" className="text-[var(--color-destructive)]" onClick={onDelete}>
+          {t("products.opportunities.delete")}
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Button disabled={isEvaluating} onClick={onEvaluate} size="sm">
+        {isEvaluating ? t("products.opportunities.evaluating") : t("products.opportunities.evaluate")}
+      </Button>
+      <Button variant="ghost" size="sm" className="text-[var(--color-destructive)]" onClick={onReject}>
+        {t("products.opportunities.discard")}
+      </Button>
+      <Button variant="ghost" size="sm" className="text-[var(--color-destructive)]" onClick={onDelete}>
+        {t("products.opportunities.delete")}
+      </Button>
+    </>
+  );
+}
+
+function OpportunityHint({
+  idea,
+  t,
+}: {
+  idea: PipelineIdea;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}) {
+  if (idea.evaluationPhase === "ready") {
+    return (
+      <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">{t("products.opportunities.decisionHint")}</p>
+    );
+  }
+  if (idea.evaluationPhase === "evaluating" || idea.evaluationPhase === "queued") {
+    return (
+      <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
+        {t("products.opportunities.autoEvaluatingHint")}
+      </p>
+    );
+  }
+  if (idea.evaluationPhase === "failed") {
+    return (
+      <p className="mt-2 text-xs text-[var(--color-destructive)]">{t("products.opportunities.evaluationFailed")}</p>
+    );
+  }
+  return null;
+}
+
 function OpportunityRow({
   idea,
   isEvaluating,
@@ -332,8 +463,14 @@ function OpportunityRow({
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-medium">{idea.title}</span>
-            {idea.goNoGo === "go" && (
-              <StatusPill status="completed">{t("products.opportunities.approved")}</StatusPill>
+            {idea.evaluationPhase === "ready" && (
+              <StatusPill status="pending">{t("products.opportunities.readyForDecision")}</StatusPill>
+            )}
+            {(idea.evaluationPhase === "evaluating" || idea.evaluationPhase === "queued") && (
+              <StatusPill status="running">{t("products.opportunities.approved")}</StatusPill>
+            )}
+            {idea.evaluationPhase === "failed" && (
+              <StatusPill status="cancelled">{t("products.opportunities.evaluationFailed")}</StatusPill>
             )}
             {idea.interestScore > 0 && (
               <span className="text-[10px] font-semibold uppercase text-[var(--color-muted-foreground)]">
@@ -347,34 +484,17 @@ function OpportunityRow({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Button disabled={isEvaluating} onClick={onEvaluate} size="sm">
-            {isEvaluating ? t("products.opportunities.evaluating") : t("products.opportunities.evaluate")}
-          </Button>
-          {idea.goNoGo !== "no_go" && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-[var(--color-destructive)]"
-                onClick={() => setConfirmReject(true)}
-              >
-                {t("products.opportunities.discard")}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-[var(--color-destructive)]"
-                onClick={() => setConfirmDelete(true)}
-              >
-                {t("products.opportunities.delete")}
-              </Button>
-            </>
-          )}
+          <OpportunityActions
+            idea={idea}
+            isEvaluating={isEvaluating}
+            onEvaluate={onEvaluate}
+            onReject={() => setConfirmReject(true)}
+            onDelete={() => setConfirmDelete(true)}
+            t={t}
+          />
         </div>
       </div>
-      {idea.goNoGo === "pending" && (
-        <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">{t("products.opportunities.noGoHint")}</p>
-      )}
+      <OpportunityHint idea={idea} t={t} />
 
       <ConfirmDialog
         open={confirmReject}

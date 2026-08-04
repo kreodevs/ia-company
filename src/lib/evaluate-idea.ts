@@ -10,7 +10,11 @@ import {
 import { getTenantInterestCategories } from "./tenant-interests.js";
 import { WORKFLOW_NAMES } from "./workflow-names.js";
 
-export async function enqueueIdeaEvaluation(tenantId: string, ideaId: string): Promise<string> {
+export async function enqueueIdeaEvaluation(
+  tenantId: string,
+  ideaId: string,
+  source: "auto" | "manual" = "manual",
+): Promise<string> {
   const idea = await prisma.pipelineIdea.findFirst({
     where: { id: ideaId, tenantId },
   });
@@ -39,7 +43,11 @@ export async function enqueueIdeaEvaluation(tenantId: string, ideaId: string): P
   const initialMemory = mergeConsensusIntoMemory(consensus, {
     task: `Evaluate idea "${idea.title}": ${idea.description ?? ""}`.trim(),
     pipelineIdea: idea.title,
-    metaReason: `Human approved idea: ${idea.title}`,
+    pipelineIdeaId: idea.id,
+    metaReason:
+      source === "auto"
+        ? `Auto-evaluating pipeline idea: ${idea.title}`
+        : `Human approved idea: ${idea.title}`,
     cycleNumber: cycle.cycleNumber,
     companyPhase: consensus?.companyPhase ?? cycle.phase,
   });

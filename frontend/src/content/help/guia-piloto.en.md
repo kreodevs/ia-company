@@ -1,6 +1,6 @@
 # Guide — Daily pilot workflow
 
-How to run **your company** on the platform in **30–60 minutes per day** while you have another job: from the front desk to client delivery, without technical workarounds.
+How to run **your company** on the platform in **30–60 minutes per day** while holding another job: from intake to client delivery, without technical shortcuts.
 
 > For screen-by-screen detail, combine this guide with [Office and jobs](/help/guia-oficina).
 
@@ -10,9 +10,10 @@ How to run **your company** on the platform in **30–60 minutes per day** while
 
 1. [Daily routine](#daily-routine)
 2. [Step-by-step flow](#step-by-step-flow)
-3. [Weekly checklist](#weekly-checklist)
-4. [Useful shortcuts](#useful-shortcuts)
-5. [When something fails](#when-something-fails)
+3. [Client delivery](#client-delivery)
+4. [Weekly checklist](#weekly-checklist)
+5. [Useful shortcuts](#useful-shortcuts)
+6. [When something fails](#when-something-fails)
 
 ---
 
@@ -20,97 +21,134 @@ How to run **your company** on the platform in **30–60 minutes per day** while
 
 | When | Action | Where |
 |------|--------|-------|
-| **Start** | Review active jobs and notifications | **Home** (`/office`) → **My jobs** |
+| **Start** | Review active jobs, pending decisions, notifications | **Home** (`/office`) → KPIs and bell |
 | **Brief** | Define or refine the job with the coordinator | Office chat or department room |
-| **Launch** | Approve brief and run a procedure | Department → **Procedures** → **Use** |
-| **Follow-up** | Watch the live meeting (handoffs, Munger veto) | Meeting room or **War room** |
-| **Close** | Review documents and final summary | Job detail → Documents / Summary |
+| **Launch** | Approve brief and run procedure | Department → **Procedures** → **Use** |
+| **Follow-up** | Watch live (handoffs, Munger veto, OpenCode) | **War room** (`?run=` when several runs) |
+| **GO/NO-GO** | Resolve pending proposals | **My pending** (`/office/pendientes`) |
+| **Close** | Review documents and final summary | Job page → Documents / Summary |
 | **Deliver** | Create link (optional PIN) and send to client | **Delivered** job → **Client delivery** |
-| **Wrap** | Log revenue if applicable | **Product** page (revenue / notes) |
+| **Wrap** | Log revenue if applicable | Product settings → Revenue |
 
 ```mermaid
 flowchart LR
   A[Office / Coordinator] --> B[Approve job]
   B --> C[Live war room]
   C --> D[Documents + summary]
-  D --> E[Client link]
-  E --> F[First-open notification]
+  D --> E[Link /d/token]
+  E --> F[Open notification]
 ```
 
 ---
 
 ## Step-by-step flow
 
-### 1. Reception — define the work
+### 1. Intake — define the work
 
-1. Open **Home** (`/office`) or the right department (Strategy, Engineering…).
+1. Open **Home** (`/office`) or the right department (virtual `/office/departments/:slug` or Org Unit `/org-units/:id`).
 2. Open the **Coordinator** and describe the job in natural language:
    - What you need (report, feature, repo analysis, commercial proposal…)
-   - Product or scope (company-wide / specific product)
+   - Which product or scope (company / specific product)
    - Deadline or constraints
 3. Review the synthesized **brief** before **Approve and run**.
 
 See also: [Coordinator and scope](/help/guia-oficina#coordinator-and-scope).
 
-### 2. Launch a procedure
+### 2. Launch procedure
 
-1. In the department room, open **Department procedures**.
-2. Pick a procedure (e.g. idea evaluation, feature development).
+1. In the department room, **Department procedures** panel.
+2. Pick the procedure (e.g. idea evaluation, feature development).
 3. Confirm scope, team, and LLM budget if shown.
-4. The job appears under **My jobs** (`/office/encargos`).
+4. The job appears in **My jobs** (`/office/encargos`).
+
+Admin catalog: `/settings/procedures`.
 
 ### 3. Live follow-up
 
-| View | When to use it |
-|------|----------------|
+| View | When to use |
+|------|-------------|
 | **Product war room** (`/war-room/:productId`) | Tactical ring + side coordinator |
-| **General war room** (`/war-room`) | Full portfolio |
-| **Department room** | Dept/procedure context; multiple runs with `?watchRun=` |
+| **General war room** (`/war-room`) | Full portfolio — several products |
+| **Department room** | Dept/procedure context; focus run with `?run=<runId>` |
 
-If **Munger issues a VETO**, the job is **cancelled** — read the reason on the job page before relaunching with more context.
+If **Munger issues VETO**, the job is **cancelled** — read the reason on the job page before relaunching with more context.
+
+If the run enters **Delegated to OpenCode** or **Awaiting decision**, act from War room or job detail — see [OpenCode for operators](/help/guia-oficina#opencode-for-operators).
 
 ### 4. Review deliverables
 
-1. Open the job from **My jobs**.
-2. Tabs **Final summary** and **Team documents**.
-3. **Office archive** (`/office/archive`) — filter by department, product, or role.
+1. Open the job in **My jobs**.
+2. **Final summary** and **Team documents** tabs.
+3. **Office archive** (`/office/archive`) — filters by department, product, or role.
 
-### 5. Deliver to an external client
+### 5. External client delivery
 
-When the job is **Delivered**:
-
-1. **Client delivery** section on the job page.
-2. Pick documents, link expiry, and **preview**.
-3. *(Recommended)* Set an **access PIN** and share it on another channel (SMS, WhatsApp).
-4. **Copy link** or **Send email** from the panel.
-5. You get a notification when the client **opens the link for the first time**.
-
-Link branding: **Settings** → **Client delivery** tab (`/settings?tab=delivery`).
+See dedicated section [Client delivery](#client-delivery).
 
 ### 6. Log revenue
 
-On the linked product, record **revenue** or closing notes when you get paid — manual is fine at first. See [Products](/help/guia-productos).
+On the linked product → **Settings** → **Revenue** tab (`/products/:id/settings?tab=revenue`). See [Products](/help/guia-productos).
+
+---
+
+## Client delivery
+
+When the job is **Delivered**, the **Client delivery** section on the job page (`/office/encargos/:runId`) lets you share results outside the platform.
+
+### Create link
+
+1. Select documents to include and whether to add the **Final report**.
+2. Pick expiry: never, 7, 30, or 90 days.
+3. *(Recommended)* Set an **Access PIN** — share it on another channel (SMS, WhatsApp).
+4. Confirm you understand content will leave the tenant.
+5. Optional **Preview** before publishing.
+6. **Create link** — you get public URL `/d/:token`.
+
+### Share
+
+| Method | Detail |
+|--------|--------|
+| **Copy link** | URL ready to paste |
+| **Send email** | Form with recipient and optional message (requires SMTP in Settings) |
+| **Revoke / rotate** | Invalidate or regenerate token on existing links |
+
+### Public view `/d/:token`
+
+The client sees a tenant-branded page (logo, color, contact, legal notice):
+
+- **Summary** and **Documents** tabs per inclusion
+- PIN unlock screen when configured
+- Expired or revoked links show a clear message
+- `noindex` — not indexed by search engines
+
+You get an **in-app notification** (and email if configured) when the client **opens the link for the first time**.
+
+### Branding
+
+Customize logo, primary color, contact email, footer, and confidentiality notice under **Settings → Client delivery** (`/settings?tab=delivery`). See [/help/guia-configuracion](/help/guia-configuracion).
 
 ---
 
 ## Weekly checklist
 
 - [ ] At least **1 job** completed with visible documents
-- [ ] **0 Munger vetoes** left unread
-- [ ] **1 external delivery** tested (you can be the client)
-- [ ] **1 UX friction** noted for the next week
+- [ ] **My pending** at zero (or every NO-GO reviewed with reason)
+- [ ] **0 Munger vetoes** left unexplained
+- [ ] **1 external delivery** tested (you can be the client at `/d/:token`)
+- [ ] **1 UX friction** noted for next week
 
 ---
 
 ## Useful shortcuts
 
 | Need | Route |
-|------|-------|
+|------|------|
 | Active jobs | `/office/encargos` |
+| GO/NO-GO decisions | `/office/pendientes` |
 | Document archive | `/office/archive` |
 | General war room | `/war-room` |
 | Delivery branding | `/settings?tab=delivery` |
-| Procedures (admin) | `/settings?tab=procedures` |
+| Procedures (admin) | `/settings/procedures` |
 | Help center | `/help/guia-piloto` |
 
 ---
@@ -120,9 +158,10 @@ On the linked product, record **revenue** or closing notes when you get paid —
 | Symptom | What to do |
 |---------|------------|
 | Job completed, empty documents | Open job detail and check the report; confirm the job had a linked **product**. See [My jobs](/help/guia-oficina#my-jobs). |
-| Munger VETO | Read the error on the job page; adjust brief or inputs and relaunch. |
-| Client cannot open delivery | Check link expiry or revocation; resend the **PIN** on another channel. |
-| Job stuck | Refresh **My jobs**; if it persists, contact your platform administrator. |
+| Munger VETO | Read the error on the job page; adjust brief or data and relaunch. |
+| Client does not open delivery | Check link expiry or revocation; resend **PIN** on another channel. |
+| `/d/:token` asks for PIN | PIN is not in the URL — send separately. Browser may remember it for the session. |
+| Job stuck | Check OpenCode (delegation) or refresh **My jobs**; if it persists, contact your platform admin. |
 
 ---
 
@@ -133,4 +172,5 @@ On the linked product, record **revenue** or closing notes when you get paid —
 | Office, coordinator, war room | [/help/guia-oficina](/help/guia-oficina) |
 | Products and revenue | [/help/guia-productos](/help/guia-productos) |
 | Department procedures | [/help/guia-flujos](/help/guia-flujos) |
+| Tenant settings | [/help/guia-configuracion](/help/guia-configuracion) |
 | Full manual | [/help/guia-completa](/help/guia-completa) |

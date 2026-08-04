@@ -11,11 +11,12 @@ Each article has Spanish (`*.md`) and English (`*.en.md`) bodies. Title and desc
 | Slug | ES title | Topic |
 |------|----------|-------|
 | `guia-completa` | Manual de usuario | Hub: inicio rápido + mapa + FAQ |
-| `guia-oficina` | Oficina y encargos | Coordinator, jobs, war room, archive |
-| `guia-productos` | Productos | Phases, consensus, desk |
-| `guia-departamentos` | Departamentos | Org Studio, design.md, gallery |
+| `guia-oficina` | Oficina y encargos | Coordinator, KPIs, My pending, jobs, war room, OpenCode |
+| `guia-productos` | Productos | Opportunities, phases, desk, product settings |
+| `guia-departamentos` | Departamentos | Org Studio, staff, virtual rooms vs Org Units, design.md |
 | `guia-equipo-ia` | Plantilla de especialistas y habilidades | Agents, skills, Catalog Studio, building agents, handoffs |
-| `guia-flujos` | Procedimientos y programaciones | Department procedures, schedules, Operations `/ops`, GO/NO-GO |
+| `guia-flujos` | Procedimientos y programaciones | Procedures, AI Studio, schedules, Operations `/ops`, GO/NO-GO |
+| `guia-configuracion` | Configuración del tenant | Settings tabs, interests, human team, GitHub/SMTP, MCP |
 | `guia-piloto` | Flujo diario piloto | 30–60 min/day routine: job → war room → client delivery |
 
 Default route: `/help` → `/help/guia-completa`.
@@ -29,6 +30,7 @@ Old micro-article URLs redirect in `HelpPage` via `HELP_SLUG_REDIRECTS`:
 | `guia-operaciones` | `guia-flujos#operaciones-ops` |
 | `como-construir-agentes` | `guia-equipo-ia#cómo-construir-agentes` |
 | `handoffs` | `guia-equipo-ia#handoffs-y-flujo` |
+| `decisiones` | `guia-oficina#mis-pendientes` |
 
 Within each guide, `##` headings become anchor links in **En este artículo** (scroll within one full document — not separate pages per section).
 
@@ -36,10 +38,13 @@ Within each guide, `##` headings become anchor links in **En este artículo** (s
 
 ## Navigation notes (for authors)
 
-- **Debug office section** (sidebar `nav.sectionDebugOffice`): Runs, Consensus, Ops, Decisions — tenant admins also see Team and Settings here.
+- **Office section** (sidebar `nav.sectionOffice`): Home, **My pending** (`/office/pendientes`, badge), My jobs, Archive, War room, Products, Org Units.
+- **Debug office section** (`nav.sectionDebugOffice`): Runs, Consensus, Ops, Decisions (`/debug/decisions`) — tenant admins also see Team and Settings here.
+- **GO/NO-GO inbox (operators):** `/office/pendientes` — not `/debug/decisions`. Legacy `/decisions` redirects to My pending.
+- **Procedures catalog:** `/settings/procedures` (not `?tab=procedures`).
+- **War room run focus:** `?run=<runId>` (not `?watchRun=`).
 - **Product consensus** route: `/debug/products/:productId/consensus` (not under Products in main nav).
 - **Tenant login** redirects to `/ops`; Office home is `/office` (sidebar **Inicio** / **Home**).
-- **Decisions** also at `/decisions` (alias of debug route).
 - **Schedule rules:** only `fixed` workflow — API rejects new `meta_dynamic` (400). Legacy Meta rules may still display in Ops.
 
 ## Mermaid in preview
@@ -65,7 +70,7 @@ Prefer adding `##` sections to an existing guide rather than creating a new arti
 
 ## Mobile UX
 
-- **Guías por tema** chip strip (below quick links) lists all 7 guides on mobile/tablet.
+- **Guías por tema** chip strip (below quick links) lists all 8 guides on mobile/tablet.
 - **Artículos** sidebar stays expanded by default on small screens.
 - Help icon (book) in the top bar on viewports &lt; 1024px.
 

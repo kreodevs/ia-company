@@ -1,17 +1,19 @@
 # Guía — Departamentos
 
-Crear departamentos con Org Studio, `design.md`, tokens y galería de artefactos.
+Crear departamentos con Org Studio, `design.md`, tokens, galería y plantilla de personal.
 
 ---
 
 ## Tabla de contenidos
 
 1. [Dos tipos de «departamento»](#dos-tipos-de-departamento)
-2. [Org Studio](#org-studio)
-3. [design.md y tokens](#designmd-y-tokens)
-4. [Galería de artefactos](#galería-de-artefactos)
-5. [Plantillas de negocio](#plantillas-de-negocio)
-6. [Preguntas frecuentes](#preguntas-frecuentes)
+2. [Salas virtuales vs Org Units](#salas-virtuales-vs-org-units)
+3. [Org Studio](#org-studio)
+4. [Pestaña Personal (staff)](#pestaña-personal-staff)
+5. [design.md y tokens](#designmd-y-tokens)
+6. [Galería de artefactos](#galería-de-artefactos)
+7. [Plantillas de negocio](#plantillas-de-negocio)
+8. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -22,7 +24,37 @@ Crear departamentos con Org Studio, `design.md`, tokens y galería de artefactos
 | **Salas virtuales** | Plano de la Oficina (Strategy, Product, Engineering…) | Agrupación visual de agentes de plataforma — no tienen `design.md` propio |
 | **Org Units** | **Departamentos** (`/org-units`) creados en Org Studio | Departamentos reales con marca, agentes, work items y galería |
 
-Esta guía cubre los **Org Units**. Para pedir trabajo con contexto de dept., usa el selector en la Oficina o abre la sala del departamento.
+Esta guía cubre los **Org Units** en detalle y contrasta con las salas virtuales.
+
+---
+
+## Salas virtuales vs Org Units
+
+```mermaid
+flowchart TB
+  subgraph virtual [Salas virtuales]
+    V1["/office/departments/strategy"]
+    V2["/office/departments/engineering"]
+  end
+  subgraph org [Org Units]
+    O1["/org-units/:id"]
+    O2[Org Studio]
+  end
+  FP[Plano Oficina] --> virtual
+  FP -->|Crear en Org Studio| O2
+  O2 --> O1
+```
+
+| Aspecto | Sala virtual | Org Unit |
+|---------|--------------|----------|
+| Ruta | `/office/departments/:slug` | `/org-units/:id` |
+| Origen | Plano fijo de la Oficina | Creado en Org Studio |
+| `design.md` | No | Sí — sincronizado a `projects/_org/{slug}/` |
+| Galería de artefactos | No | Sí |
+| Pestaña Personal | No | Sí — roster y contratación |
+| Procedimientos dept. | Lista procedimientos de plataforma del área | Procedimientos vinculados al Org Unit |
+
+Para pedir trabajo con contexto de marca real, usa un **Org Unit**. Las salas virtuales sirven para explorar agentes de plataforma por disciplina (estrategia, ingeniería, etc.).
 
 ---
 
@@ -53,6 +85,28 @@ Si Munger emite VETO, no puedes aplicar hasta ajustar la propuesta.
 
 ---
 
+## Pestaña Personal (staff)
+
+Ruta: ficha del departamento → pestaña **Personal** (`/org-units/:id?tab=staff`).
+
+Gestiona el **roster** de agentes asignados al Org Unit:
+
+| Sección | Función |
+|---------|---------|
+| **Miembros actuales** | Nombre, rol, estado (idle/busy en vivo), si está provisionado en plantilla |
+| **Vacantes** | Puestos definidos en la plantilla del dept. sin agente creado aún |
+| **Contratar** | Modo *Crear puesto* — brief a Catalog Studio para nuevo agente |
+| **Incorporar** | Vincular agente existente de la plantilla al departamento |
+| **Desvincular** | Quitar agente del roster sin borrarlo del tenant |
+
+Sub-pestañas **Contratar / Incorporar** vía `?tab=staff&hire=create` o `hire=incorporate`.
+
+Desde vacantes puedes lanzar briefs pre-rellenados («contratar copy-manager para departamento X»). Tras crear el agente, vuelve a Personal para confirmar que aparece como **provisionado**.
+
+> Contratar agentes IA en detalle: [/help/guia-equipo-ia](/help/guia-equipo-ia).
+
+---
+
 ## design.md y tokens
 
 Cada Org Unit tiene:
@@ -77,7 +131,7 @@ Ruta: departamento → **Configuración** → **Design & artifacts** (componente
 - Filtrar por estado: borrador, aprobado, publicado
 - Origen: output de runs completados con producto vinculado al departamento
 
-La sala del departamento también muestra artefactos recientes en el panel lateral.
+La sala del departamento (pestaña **Sala**) también muestra artefactos recientes en el panel lateral.
 
 ---
 
@@ -108,8 +162,12 @@ Desde `/org-units/:id` puedes **lanzar trabajo del departamento** con tarea libr
 
 ### ¿Las salas del plano (Strategy, Engineering…) son Org Units?
 
-No. Son **salas virtuales** de agentes de plataforma. Los Org Units reales se crean en Org Studio y aparecen en **Departamentos**.
+No. Son **salas virtuales** en `/office/departments/:slug`. Los Org Units reales se crean en Org Studio y aparecen en **Departamentos** (`/org-units`).
 
 ### ¿Puedo editar design.md sin Org Studio?
 
 Sí — ficha del departamento → **Configuración** → *Design & artifacts*. Los cambios se sincronizan al workspace `projects/_org/{slug}/`.
+
+### ¿Personal vs Plantilla de especialistas?
+
+**Personal** (`/org-units/:id?tab=staff`) — qué agentes pertenecen a *este* departamento. **Plantilla de especialistas** (`/settings/specialists`) — catálogo global de agentes del tenant.

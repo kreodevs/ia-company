@@ -389,6 +389,9 @@ export interface PipelineIdea {
   interestScore: number;
   goNoGo: GoNoGoDecision;
   createdAt: string;
+  evaluationPhase?: "queued" | "evaluating" | "ready" | "failed" | null;
+  evaluationRunId?: string | null;
+  decisionProposalId?: string | null;
 }
 
 export interface InterestCategory {

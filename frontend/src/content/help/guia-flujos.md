@@ -8,10 +8,12 @@ Playbooks de agentes en cadena y reglas opcionales en timer.
 
 1. [Qué es un flujo](#qué-es-un-flujo)
 2. [Crear y ejecutar](#crear-y-ejecutar)
-3. [Programaciones (opcional)](#programaciones-opcional)
-4. [Operaciones (/ops)](#operaciones-ops)
-5. [Decisiones GO / NO-GO](#decisiones-go--no-go)
-6. [Preguntas frecuentes](#preguntas-frecuentes)
+3. [Workflow AI Studio](#workflow-ai-studio)
+4. [Programaciones (opcional)](#programaciones-opcional)
+5. [Operaciones (/ops)](#operaciones-ops)
+6. [Mis pendientes vs Decisiones (debug)](#mis-pendientes-vs-decisiones-debug)
+7. [Decisiones GO / NO-GO](#decisiones-go--no-go)
+8. [Preguntas frecuentes](#preguntas-frecuentes)
 
 ---
 
@@ -48,6 +50,24 @@ Los procedimientos de plataforma (evaluación de producto, launch, pricing…) s
 Desde la **Oficina**, el Coordinador puede elegir un flujo en encargos complejos o servicios rápidos (p. ej. `idea-validation` → `new-product-evaluation`).
 
 > Los encargos aprobados desde la Oficina aparecen en **Mis encargos**; las ejecuciones manuales del editor aparecen en **Ejecuciones**.
+
+---
+
+## Workflow AI Studio
+
+Ruta: **Procedimientos** (`/settings/procedures`) → botón **AI Studio** (modal).
+
+Herramienta para **diseñar procedimientos nuevos** con ayuda de IA sin dibujar el grafo a mano desde cero:
+
+1. Describe en lenguaje natural qué proceso necesitas (p. ej. «Onboarding de cliente B2B con research, copy y diseño»).
+2. La IA propone secuencia de agentes, skills nuevas y revisión **Munger**.
+3. Si Munger bloquea, ajusta el brief o responde preguntas de clarificación.
+4. Aprueba agentes/skills nuevas con checkboxes.
+5. **Aplicar** crea el workflow y te lleva al editor visual (`/office/workflows/:id`).
+
+El brief inicial puede guardarse como semilla de tarea al ejecutar el procedimiento.
+
+> Editar procedimientos existentes: mismo catálogo en `/settings/procedures` o panel **Procedimientos del departamento** en cada sala Org Unit.
 
 ---
 
@@ -175,7 +195,7 @@ El botón de ejecución se **deshabilita** cuando el meta-ciclo está bloqueado 
 #### Alertas
 
 - **Meta cycle en pausa** — bloqueo al lanzar programación: run activo o decisiones humanas pendientes. Enlaces a **Decisiones** o **Ejecuciones** según el código de bloqueo.
-- **Decisiones pendientes** — recordatorio independiente con enlace a `/decisions`.
+- **Decisiones pendientes** — recordatorio independiente con enlace a **Mis pendientes** (`/office/pendientes`).
 - **Productos y oportunidades** — atajo a **Productos** cuando hay pipeline o productos activos.
 
 #### Banner de fase y stepper
@@ -296,7 +316,7 @@ Presets de ejemplo (ver **Programaciones** arriba):
 
 | Código | Mensaje típico | Acción |
 |--------|----------------|--------|
-| `PENDING_DECISIONS` | Decisiones GO/NO-GO pendientes | `/decisions` |
+| `PENDING_DECISIONS` | Decisiones GO/NO-GO pendientes | `/office/pendientes` |
 | `ACTIVE_RUN` | Workflow ya en ejecución | `/runs` |
 
 > Las decisiones pendientes **no bloquean** encargos manuales desde la Oficina; solo afectan al meta-ciclo y a reglas con condición `noPendingDecisions`.
@@ -383,7 +403,7 @@ Comprueba: (1) regla **activa**, (2) worker en marcha en el entorno, (3) no hay 
 
 #### Todo aparece «Omitido: Human decisions pending»
 
-Revisa **Decisiones** (`/decisions`). Hasta resolver propuestas GO/NO-GO, las reglas con `noPendingDecisions` no disparan.
+Revisa **Mis pendientes** (`/office/pendientes`). Hasta resolver propuestas GO/NO-GO, las reglas con `noPendingDecisions` no disparan.
 
 #### Cambié el intervalo pero la «Próxima» no cuadra
 
@@ -403,6 +423,19 @@ Operaciones no gestiona el pipeline ni el foco de producto en detalle — usa at
 |------|------|
 | Crear/editar workflows, canvas, presets, condiciones avanzadas | [Flujos y programaciones](/help/guia-flujos) |
 | KPIs, preview 7 días, pausar/ejecutar reglas ya creadas | Esta guía (Operaciones) |
+
+---
+
+## Mis pendientes vs Decisiones (debug)
+
+| Vista | Ruta | Audiencia | Uso |
+|-------|------|-----------|-----|
+| **Mis pendientes** | `/office/pendientes` | Operador diario | Inbox GO/NO-GO — aprobar, rechazar, pivot, evidencia |
+| **Decisiones (debug)** | `/debug/decisions` | Admin / auditoría | Vista avanzada con KPIs agregados — no sustituye el inbox |
+
+La ruta legacy `/decisions` redirige a **Mis pendientes**. El badge del menú Oficina refleja el conteo de pendientes.
+
+Para el flujo operativo completo del inbox, ver [Mis pendientes](/help/guia-oficina#mis-pendientes).
 
 ---
 
@@ -426,8 +459,9 @@ Workflow **`new-product-evaluation`**: tras el run, si Munger no vetó, se crea 
 
 Aprueba, rechaza o pivot en:
 
-- **Depuración → Decisiones** (`/decisions`)
+- **Mis pendientes** (`/office/pendientes`) — inbox principal
 - Detalle del **encargo** (`/office/encargos/:runId`)
+- Vista avanzada opcional: **Depuración → Decisiones** (`/debug/decisions`)
 
 Hasta que apruebes, el producto no avanza a fase `building` automáticamente por este camino.
 

@@ -243,6 +243,14 @@ export async function addPipelineIdeas(
       }),
     );
   }
+
+  if (created.length > 0) {
+    const { autoEvaluatePipelineIdeaIfNeeded } = await import("./pipeline-idea-evaluation.js");
+    for (const row of created) {
+      void autoEvaluatePipelineIdeaIfNeeded(tenantId, row.id).catch(() => undefined);
+    }
+  }
+
   return created;
 }
 

@@ -255,66 +255,93 @@ export async function processConvergenceAfterRun(
   const productSlugResolved =
     asString(enriched.productSlug) ?? slugifyProductName(asString(enriched.productName) ?? "");
   const productName = asString(enriched.productName);
+  const pipelineIdeaId = asString((memory as Record<string, unknown>).pipelineIdeaId);
+  const pipelineIdeaTitle = asString((memory as Record<string, unknown>).pipelineIdea);
 
-  if (goNoGo === "go" && productSlugResolved && productName) {
+  if (workflowName === WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION) {
     const ideas = await listPipelineIdeas(tenantId);
-    const candidate = ideas.find(
-      (i) => i.goNoGo === "pending" && slugifyProductName(i.title) === productSlugResolved,
-    ) ?? ideas[0];
+    const candidate =
+      (pipelineIdeaId ? ideas.find((i) => i.id === pipelineIdeaId) : undefined) ??
+      (pipelineIdeaTitle ? ideas.find((i) => i.title === pipelineIdeaTitle) : undefined) ??
+      (productSlugResolved
+        ? ideas.find((i) => slugifyProductName(i.title) === productSlugResolved)
+        : undefined) ??
+      ideas[0];
 
-    if (workflowName === WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION) {
+    if (candidate) {
       const agentOutputs = Array.isArray(memory._history)
         ? memory._history.map((h) => ({ agentName: h.agentName, output: h.output }))
         : [];
       const veto = agentOutputs
         .flatMap((a) => extractVetoFromText(a.output))
         .find((v) => v.by === "critic-munger");
-      const recommended = veto ? ("no_go" as const) : ("go" as const);
-      const fallback = asString(enriched.rationale) ?? productName;
+      const parsed = goNoGo === "no_go" ? ("no_go" as const) : goNoGo === "go" ? ("go" as const) : null;
+      const recommended = veto ? ("no_go" as const) : (parsed ?? ("go" as const));
+      const fallback =
+        asString(enriched.rationale) ?? productName ?? pipelineIdeaTitle ?? candidate.title;
       const { rationale, evidence } = buildRationaleFromMemory(
         agentOutputs,
         recommended,
         fallback,
       );
-      if (candidate) {
-        await createDecisionProposal({
-          tenantId,
-          ideaId: candidate.id,
-          runId,
-          workflowName,
-          recommended,
-          rationale,
-          evidence,
-        });
-        if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "pending");
+      await createDecisionProposal({
+        tenantId,
+        ideaId: candidate.id,
+        runId,
+        workflowName,
+        recommended,
+        rationale,
+        evidence,
+      });
+      if (candidate.description == null || candidate.description.trim() === "") {
+        const summary = asString(enriched.productDescription) ?? asString(enriched.summary);
+        if (summary?.trim()) {
+          await prisma.pipelineIdea.update({
+            where: { id: candidate.id },
+            data: { description: summary.trim() },
+          });
+        }
       }
-    } else {
-      const building = await countBuildingProducts(tenantId);
-      const existing = await getProductBySlug(tenantId, productSlugResolved);
-      if (!existing && building < 2) {
-        const product = await bootstrapProduct({
-          tenantId,
-          slug: productSlugResolved,
-          name: productName,
-          description: asString(enriched.productDescription),
-        });
-        await setFocusProduct(tenantId, product.id);
-        await updateCompanyPhase(tenantId, "building");
-      } else if (existing) {
-        await upsertTenantProduct({
-          tenantId,
-          slug: productSlugResolved,
-          name: productName,
-          phase: "building",
-          goNoGo: "go",
-        });
-        await setFocusProduct(tenantId, existing.id);
-      }
-      if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "go");
     }
+  } else if (goNoGo === "go" && productSlugResolved && productName) {
+    const ideas = await listPipelineIdeas(tenantId);
+    const candidate =
+      (pipelineIdeaId ? ideas.find((i) => i.id === pipelineIdeaId) : undefined) ??
+      (pipelineIdeaTitle ? ideas.find((i) => i.title === pipelineIdeaTitle) : undefined) ??
+      ideas.find(
+        (i) => i.goNoGo === "pending" && slugifyProductName(i.title) === productSlugResolved,
+      ) ??
+      ideas[0];
+
+    const building = await countBuildingProducts(tenantId);
+    const existing = await getProductBySlug(tenantId, productSlugResolved);
+    if (!existing && building < 2) {
+      const product = await bootstrapProduct({
+        tenantId,
+        slug: productSlugResolved,
+        name: productName,
+        description: asString(enriched.productDescription),
+      });
+      await setFocusProduct(tenantId, product.id);
+      await updateCompanyPhase(tenantId, "building");
+    } else if (existing) {
+      await upsertTenantProduct({
+        tenantId,
+        slug: productSlugResolved,
+        name: productName,
+        phase: "building",
+        goNoGo: "go",
+      });
+      await setFocusProduct(tenantId, existing.id);
+    }
+    if (candidate) await markIdeaGoNoGo(candidate.id, "go");
   } else if (goNoGo === "no_go") {
     const ideas = await listPipelineIdeas(tenantId);
-    if (ideas[0]) await markIdeaGoNoGo(ideas[0].id, "no_go");
+    const candidate =
+      (pipelineIdeaId ? ideas.find((i) => i.id === pipelineIdeaId) : undefined) ??
+      (pipelineIdeaTitle ? ideas.find((i) => i.title === pipelineIdeaTitle) : undefined) ??
+      ideas[0];
+    if (candidate) await markIdeaGoNoGo(candidate.id, "no_go");
     await updateCompanyPhase(tenantId, "exploring");
   }
 
@@ -333,7 +360,7 @@ export async function processConvergenceAfterRun(
   if (workflowName === WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY) {
     await updateCompanyPhase(tenantId, topIdeas.length ? "validating" : "exploring");
   } else if (workflowName === WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION) {
-    await updateCompanyPhase(tenantId, goNoGo === "go" ? "building" : "validating");
+    await updateCompanyPhase(tenantId, "validating");
   } else if (workflowName === WORKFLOW_NAMES.FEATURE_DEVELOPMENT) {
     await updateCompanyPhase(tenantId, "building");
   } else if (

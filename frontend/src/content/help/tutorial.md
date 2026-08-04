@@ -53,6 +53,7 @@ Pulsa **Aprobar y ejecutar** — nada corre sin tu OK. Si faltan roles en tu cat
 Tras aprobar, la app te lleva a **War room** (con producto si aplica). También puedes usar:
 
 - **Mis encargos** (`/office/encargos`) — resumen, informe final y documentos por agente
+- **Mis pendientes** (`/office/pendientes`) — decisiones GO/NO-GO con badge en el menú
 - **Archivo de la Oficina** (`/office/archive`) — entregables indexados por departamento/producto
 
 > Por defecto todo es **bajo demanda**. Las programaciones automáticas son opcionales (ver guía de Flujos).
@@ -63,6 +64,7 @@ flowchart LR
   B --> C[Aprobar]
   C --> D[Worker ejecuta]
   D --> E[War room / Mis encargos]
+  D --> F[Mis pendientes]
 ```
 
 ---
@@ -75,13 +77,25 @@ Cada tema tiene su **guía propia** con diagramas y detalle. Ábrela desde **Art
 
 | Tema | Qué encontrarás | Abrir |
 |------|-----------------|-------|
-| **Oficina y encargos** | Coordinador, alcance, Mis encargos, War room, archivo | [/help/guia-oficina](/help/guia-oficina) |
-| **Productos** | Ciclo de vida, oportunidades, memoria por producto | [/help/guia-productos](/help/guia-productos) |
-| **Departamentos** | Org Studio, `design.md`, tokens, galería | [/help/guia-departamentos](/help/guia-departamentos) |
+| **Oficina y encargos** | Coordinador, KPIs, Mis pendientes, Mis encargos, War room, OpenCode | [/help/guia-oficina](/help/guia-oficina) |
+| **Productos** | Oportunidades, activos, desk, configuración por producto | [/help/guia-productos](/help/guia-productos) |
+| **Departamentos** | Org Studio, Personal, salas virtuales vs Org Units | [/help/guia-departamentos](/help/guia-departamentos) |
 | **Plantilla de especialistas** | Contratar/configurar roles y skills | [/help/guia-equipo-ia](/help/guia-equipo-ia) → `/settings/specialists` |
-| **Procedimientos por departamento** | Editar rutinas de trabajo | `/settings/procedures` o dentro de cada sala |
-| **Flujos y programaciones** | Playbooks, programaciones, panel Operaciones y GO/NO-GO | [/help/guia-flujos](/help/guia-flujos) |
+| **Procedimientos** | Playbooks, AI Studio, programaciones, Operaciones | [/help/guia-flujos](/help/guia-flujos) → `/settings/procedures` |
+| **Configuración tenant** | LLM, integraciones, MCP, equipo humano, entrega cliente | [/help/guia-configuracion](/help/guia-configuracion) |
 | **Flujo diario piloto** | Rutina 30–60 min: encargo → entrega al cliente | [/help/guia-piloto](/help/guia-piloto) |
+
+### Navegación Oficina (menú principal)
+
+| Entrada | Ruta |
+|---------|------|
+| Inicio | `/office` |
+| **Mis pendientes** (badge) | `/office/pendientes` |
+| Mis encargos | `/office/encargos` |
+| Archivo | `/office/archive` |
+| War room | `/war-room` |
+| Productos | `/products` |
+| Departamentos | `/org-units` |
 
 ### Cómo encaja todo
 
@@ -97,21 +111,23 @@ flowchart TB
   P <-->|vinculo| D
   P --> W[War room]
   W --> E[Mis encargos]
+  W --> I[Mis pendientes]
   D --> G[Galería artefactos]
 ```
 
-**Regla práctica:** empieza con **Oficina + Productos**. Añade **departamentos** (Org Studio) cuando necesites marca unificada y equipos dedicados. Usa **flujos** para procesos que repites.
+**Regla práctica:** empieza con **Oficina + Productos**. Añade **departamentos** (Org Studio) cuando necesites marca unificada y equipos dedicados. Usa **flujos** para procesos que repites. **Configuración** cuando integres GitHub, SMTP o equipo humano.
 
 ### Temas transversales (resumen)
 
 | Tema | Dónde en la app | Guía relacionada |
 |------|-----------------|------------------|
 | Memoria de compañía | Oficina de depuración → Consenso (`/debug/consensus`) | [Productos](/help/guia-productos) |
-| Memoria por producto | Consenso (`/debug/products/:id/consensus`) o Configuración del producto → enlace | [Productos](/help/guia-productos) |
-| Decisiones GO/NO-GO | Oficina de depuración → Decisiones (`/decisions`) o detalle del encargo | [Flujos](/help/guia-flujos) |
+| Memoria por producto | Consenso (`/debug/products/:id/consensus`) o Configuración del producto | [Productos](/help/guia-productos) |
+| Decisiones GO/NO-GO | **Mis pendientes** (`/office/pendientes`) o detalle del encargo | [Oficina](/help/guia-oficina#mis-pendientes) |
+| Decisiones (vista avanzada) | Oficina de depuración → Decisiones (`/debug/decisions`) | [Flujos](/help/guia-flujos) |
 | Operaciones / meta-orchestrator | Oficina de depuración → Operaciones (`/ops`) | [Flujos](/help/guia-flujos#operaciones-ops) |
-| Configuración LLM, límites, programaciones | Configuración → pestañas (admin tenant) | [Flujos](/help/guia-flujos) |
-| Equipo humano y roles | Oficina de depuración → Equipo (admin) | — |
+| Configuración LLM, límites, programaciones | Configuración (`/settings`) — admin tenant | [Configuración](/help/guia-configuracion) |
+| Equipo humano y roles | Oficina de depuración → Equipo (`/debug/team`) | [Configuración](/help/guia-configuracion#equipo-humano) |
 
 ---
 
@@ -119,12 +135,16 @@ flowchart TB
 
 ### ¿Los agentes ejecutan cosas sin mi permiso?
 
-No, en modo **bajo demanda**. Siempre ves un plan y pulsas **Aprobar y ejecutar**. Las programaciones automáticas son opt-in en **Configuración → Programaciones**.
+No, en modo **bajo demanda**. Siempre ves un plan y pulsas **Aprobar y ejecutar**. Las programaciones automáticas son opt-in en **Configuración → Programaciones** (`/settings?tab=schedules`).
 
 ### ¿Cuál es la diferencia entre Oficina y War room?
 
 - **Oficina** — pedir y planificar trabajo (cualquier alcance).
-- **War room** — seguir un **producto concreto** en vivo (agentes, runs, salud de entregables, chat contextualizado).
+- **War room** — seguir un **producto concreto** o el portfolio en vivo (agentes, runs, salud de entregables, chat contextualizado).
+
+### ¿Mis pendientes o Decisiones en depuración?
+
+**Mis pendientes** (`/office/pendientes`) es el inbox diario con badge. **Decisiones** en depuración (`/debug/decisions`) es vista avanzada — no sustituye el inbox.
 
 ### ¿Necesito un departamento para empezar?
 
@@ -136,7 +156,7 @@ Revisión de **riesgos** antes de aplicar propuestas en Catalog Studio u Org Stu
 
 ### ¿Dónde veo cuánto gasté en IA?
 
-**Oficina** (KPI «Gasto del mes») y **Configuración → Límites**. Cada encargo muestra coste estimado antes de aprobar.
+**Oficina** (KPI «Gasto del mes») y **Configuración → Límites** (`/settings?tab=limits`). Cada encargo muestra coste estimado antes de aprobar.
 
 ### ¿Qué hago si un encargo falla?
 

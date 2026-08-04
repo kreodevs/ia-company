@@ -8,10 +8,12 @@ Agent playbooks in sequence and optional timer rules.
 
 1. [What is a workflow](#what-is-a-workflow)
 2. [Create and run](#create-and-run)
-3. [Schedules (optional)](#schedules-optional)
-4. [Operations (/ops)](#operations-ops)
-5. [GO / NO-GO decisions](#go--no-go-decisions)
-6. [Frequently asked questions](#frequently-asked-questions)
+3. [Workflow AI Studio](#workflow-ai-studio)
+4. [Schedules (optional)](#schedules-optional)
+5. [Operations (/ops)](#operations-ops)
+6. [My pending vs Decisions (debug)](#my-pending-vs-decisions-debug)
+7. [GO / NO-GO decisions](#go--no-go-decisions)
+8. [Frequently asked questions](#frequently-asked-questions)
 
 ---
 
@@ -48,6 +50,24 @@ Platform procedures (product evaluation, launch, pricing…) are **ensured on th
 From the **Office**, the Coordinator may pick a workflow for complex jobs or quick services (e.g. `idea-validation` → `new-product-evaluation`).
 
 > Jobs approved from the Office appear under **My jobs**; manual editor runs appear under **Runs**.
+
+---
+
+## Workflow AI Studio
+
+Route: **Procedures** (`/settings/procedures`) → **AI Studio** button (modal).
+
+Tool to **design new procedures** with AI help without drawing the graph from scratch:
+
+1. Describe the process in natural language (e.g. “B2B client onboarding with research, copy, and design”).
+2. AI proposes agent sequence, new skills, and **Munger** review.
+3. If Munger blocks, adjust the brief or answer clarifying questions.
+4. Approve new agents/skills with checkboxes.
+5. **Apply** creates the workflow and opens the visual editor (`/office/workflows/:id`).
+
+The initial brief can be stored as the task seed when running the procedure.
+
+> Edit existing procedures: same catalog at `/settings/procedures` or **Department procedures** in each Org Unit room.
 
 ---
 
@@ -177,7 +197,7 @@ The run button is **disabled** when the meta cycle is blocked (pending decisions
 #### Alerts
 
 - **Meta cycle paused** — blocks scheduled launch: active run or pending human decisions. Links to **Decisions** or **Runs** by block code.
-- **Pending decisions** — standalone reminder with link to `/decisions`.
+- **Pending decisions** — standalone reminder with link to **My pending** (`/office/pendientes`).
 - **Products and opportunities** — shortcut to **Products** when pipeline or products exist.
 
 #### Phase banner and stepper
@@ -298,7 +318,7 @@ Example presets (see **Schedules** above):
 
 | Code | Typical message | Action |
 |------|-----------------|--------|
-| `PENDING_DECISIONS` | GO/NO-GO decisions pending | `/decisions` |
+| `PENDING_DECISIONS` | GO/NO-GO decisions pending | `/office/pendientes` |
 | `ACTIVE_RUN` | Workflow already running | `/runs` |
 
 > Pending decisions **do not block** manual Office jobs; they affect the meta cycle and rules with `noPendingDecisions`.
@@ -385,7 +405,7 @@ Check: (1) rule **enabled**, (2) worker running in the environment, (3) no **act
 
 #### Everything shows “Skipped: Human decisions pending”
 
-Open **Decisions** (`/decisions`). Until GO/NO-GO proposals are resolved, rules with `noPendingDecisions` will not fire.
+Open **My pending** (`/office/pendientes`). Until GO/NO-GO proposals are resolved, rules with `noPendingDecisions` will not fire.
 
 #### I changed the interval but “Next” looks wrong
 
@@ -405,6 +425,19 @@ Operations does not manage pipeline or focus in detail — it links to **Product
 |-------|-------|
 | Create/edit workflows, canvas, presets, advanced conditions | [Workflows and schedules](/help/guia-flujos) |
 | KPIs, 7-day preview, pause/run existing rules | This guide (Operations) |
+
+---
+
+## My pending vs Decisions (debug)
+
+| View | Route | Audience | Use |
+|------|------|----------|-----|
+| **My pending** | `/office/pendientes` | Daily operator | GO/NO-GO inbox — approve, reject, pivot, evidence |
+| **Decisions (debug)** | `/debug/decisions` | Admin / audit | Advanced view with aggregated KPIs — not the inbox |
+
+Legacy `/decisions` redirects to **My pending**. The Office menu badge reflects pending count.
+
+For full inbox flow, see [My pending decisions](/help/guia-oficina#my-pending-decisions).
 
 ---
 
@@ -428,8 +461,9 @@ Workflow **`new-product-evaluation`**: after the run, if Munger did not veto, a 
 
 Approve, reject, or pivot in:
 
-- **Debug → Decisions** (`/decisions`)
+- **My pending** (`/office/pendientes`) — main inbox
 - **Job detail** (`/office/encargos/:runId`)
+- Optional advanced view: **Debug → Decisions** (`/debug/decisions`)
 
 Until you approve, the product does not automatically advance to `building` through this path.
 
