@@ -6,8 +6,8 @@ Stack for production: **PostgreSQL + Redis + API + Worker + Web (nginx)**.
 
 | Service | Image / build | Port | Role |
 |---------|---------------|------|------|
-| `postgres` | `postgres:16-alpine` | internal | Database |
-| `redis` | `redis:7-alpine` | internal | BullMQ job queue |
+| `postgres` | `public.ecr.aws/docker/library/postgres:16-alpine` | internal | Database |
+| `redis` | `public.ecr.aws/docker/library/redis:7-alpine` | internal | BullMQ job queue |
 | `api` | `docker/api/Dockerfile` | internal `:3001` | Node API + Prisma (uses `npm run build:server`, not full monorepo build) |
 | `worker` | same as `api` | internal | Workflow executor + autonomous scheduler |
 | `web` | `docker/web/Dockerfile` | internal `:80` (Dokploy domain) | SPA + reverse proxy `/api` → api |
@@ -33,6 +33,14 @@ Open `http://localhost:8080` → `/setup` to create superadmin.
 4. Deploy. **Do not** publish host ports — add a **Domain** in Dokploy → service `web`, port `80`, path `/`.
 5. First visit: `/setup` (superadmin) → `/admin` → create tenant + owner user.
 6. Tenant users sign in at `/login` → tab **Organization**.
+
+## Troubleshooting deploy
+
+### `TLS handshake timeout` pulling `node` / `nginx` / `postgres`
+
+Some Dokploy hosts cannot reach Docker Hub reliably. This repo uses the **AWS ECR Public** mirror of Docker Official Images (`public.ecr.aws/docker/library/...`) in `docker-compose.yml` and Dockerfiles.
+
+If pulls still fail: retry the deploy, or on the server run `docker pull public.ecr.aws/docker/library/node:20-alpine` once, then redeploy.
 
 ## Email (Resend)
 

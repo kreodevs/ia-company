@@ -1,7 +1,7 @@
-# syntax=docker/dockerfile:1
 # Frontend is an npm workspace — lockfile lives at repo root.
+# Base images from AWS ECR Public (Docker Library mirror).
 
-FROM node:20-alpine AS builder
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 COPY frontend/package.json ./frontend/
@@ -12,7 +12,7 @@ ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
-FROM nginx:1.27-alpine AS runner
+FROM public.ecr.aws/docker/library/nginx:1.27-alpine AS runner
 RUN apk add --no-cache wget
 COPY docker/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
