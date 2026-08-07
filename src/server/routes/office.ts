@@ -361,11 +361,13 @@ export async function officeRoutes(app: FastifyInstance) {
       orgUnitId?: string;
       serviceId?: string;
       requestPlan?: boolean;
+      parentRunId?: string;
     };
   }>("/office/chat", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { messages, productId, orgUnitId, serviceId, requestPlan } = request.body ?? {};
+      const { messages, productId, orgUnitId, serviceId, requestPlan, parentRunId } =
+        request.body ?? {};
       if (!messages?.length) {
         return reply.status(400).send({ error: "messages is required" });
       }
@@ -375,6 +377,7 @@ export async function officeRoutes(app: FastifyInstance) {
         orgUnitId,
         serviceId,
         requestPlan,
+        parentRunId,
       });
     } catch (err) {
       return handleRouteError(reply, err);
@@ -416,12 +419,21 @@ export async function officeRoutes(app: FastifyInstance) {
       agentIds?: string[];
       workflowId?: string;
       presetId?: string;
+      parentRunId?: string;
     };
   }>("/office/tasks/execute", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { request: taskRequest, productId, orgUnitId, serviceId, agentIds, workflowId, presetId } =
-        request.body ?? {};
+      const {
+        request: taskRequest,
+        productId,
+        orgUnitId,
+        serviceId,
+        agentIds,
+        workflowId,
+        presetId,
+        parentRunId,
+      } = request.body ?? {};
       if (!taskRequest?.trim()) {
         return reply.status(400).send({ error: "request is required" });
       }
@@ -433,6 +445,7 @@ export async function officeRoutes(app: FastifyInstance) {
         agentIds,
         workflowId,
         presetId,
+        parentRunId,
       });
 
       await createTenantNotification({

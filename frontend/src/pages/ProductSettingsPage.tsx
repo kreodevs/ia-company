@@ -58,10 +58,13 @@ export default function ProductSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [intakeBusy, setIntakeBusy] = useState(false);
+  const [webRefreshBusy, setWebRefreshBusy] = useState(false);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [githubRepoUrl, setGithubRepoUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [pricingPageUrl, setPricingPageUrl] = useState("");
   const [orgUnitId, setOrgUnitId] = useState("");
   const [workItemKind, setWorkItemKind] = useState("product");
   const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
@@ -98,6 +101,8 @@ export default function ProductSettingsPage() {
         setName(found.name);
         setDescription(found.description ?? "");
         setGithubRepoUrl(found.githubRepoUrl ?? "");
+        setWebsiteUrl(found.websiteUrl ?? "");
+        setPricingPageUrl(found.pricingPageUrl ?? "");
         setOrgUnitId(found.orgUnitId ?? "");
         setWorkItemKind(found.workItemKind ?? "product");
       }
@@ -116,10 +121,12 @@ export default function ProductSettingsPage() {
       name.trim() !== product.name ||
       description.trim() !== (product.description ?? "") ||
       githubRepoUrl.trim() !== (product.githubRepoUrl ?? "") ||
+      websiteUrl.trim() !== (product.websiteUrl ?? "") ||
+      pricingPageUrl.trim() !== (product.pricingPageUrl ?? "") ||
       orgUnitId !== (product.orgUnitId ?? "") ||
       workItemKind !== (product.workItemKind ?? "product")
     );
-  }, [product, name, description, githubRepoUrl, orgUnitId, workItemKind]);
+  }, [product, name, description, githubRepoUrl, websiteUrl, pricingPageUrl, orgUnitId, workItemKind]);
 
   const save = async () => {
     if (!productId || !product) return;
@@ -129,6 +136,8 @@ export default function ProductSettingsPage() {
         name: name.trim(),
         description: description.trim() || undefined,
         githubRepoUrl: githubRepoUrl.trim() || undefined,
+        websiteUrl: websiteUrl.trim() || null,
+        pricingPageUrl: pricingPageUrl.trim() || null,
         orgUnitId: orgUnitId || null,
         workItemKind: workItemKind as "product" | "client" | "campaign" | "project",
       });
@@ -136,6 +145,8 @@ export default function ProductSettingsPage() {
       setName(updated.name);
       setDescription(updated.description ?? "");
       setGithubRepoUrl(updated.githubRepoUrl ?? "");
+      setWebsiteUrl(updated.websiteUrl ?? "");
+      setPricingPageUrl(updated.pricingPageUrl ?? "");
       setOrgUnitId(updated.orgUnitId ?? "");
       setWorkItemKind(updated.workItemKind ?? "product");
       toast.success(t("products.settings.saved"));
@@ -143,6 +154,24 @@ export default function ProductSettingsPage() {
       toast.error(translateApiError(err, t, "common.saveFailed"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const refreshWebContext = async () => {
+    if (!productId) return;
+    setWebRefreshBusy(true);
+    try {
+      const { product: updated } = await api.products.refreshWebContext(productId);
+      setProduct(updated);
+      if (updated.webSnapshotHasError) {
+        toast.error(t("products.settings.webContextRefreshPartial"));
+      } else {
+        toast.success(t("products.settings.webContextRefreshed"));
+      }
+    } catch (err) {
+      toast.error(translateApiError(err, t, "products.settings.webContextRefreshFailed"));
+    } finally {
+      setWebRefreshBusy(false);
     }
   };
 
@@ -252,6 +281,53 @@ export default function ProductSettingsPage() {
                 </Link>
               </p>
             </div>
+            <div>
+              <Input
+                label={t("products.settings.websiteUrlLabel")}
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="https://ejemplo.com"
+                disabled={saving}
+              />
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.websiteUrlHint")}
+              </p>
+            </div>
+            <div>
+              <Input
+                label={t("products.settings.pricingPageUrlLabel")}
+                value={pricingPageUrl}
+                onChange={(e) => setPricingPageUrl(e.target.value)}
+                placeholder="https://ejemplo.com/pricing"
+                disabled={saving}
+              />
+              <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.pricingPageUrlHint")}
+              </p>
+            </div>
+            {(websiteUrl.trim() || pricingPageUrl.trim()) && (
+              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/30 p-3">
+                <p className="text-xs text-[var(--color-muted-foreground)]">
+                  {product.webSnapshotFetchedAt
+                    ? t("products.settings.webContextLastFetch", {
+                        date: new Date(product.webSnapshotFetchedAt).toLocaleString(),
+                      })
+                    : t("products.settings.webContextNotFetched")}
+                  {product.webSnapshotHasError ? ` ${t("products.settings.webContextFetchError")}` : ""}
+                </p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="mt-2"
+                  disabled={webRefreshBusy || saving}
+                  onClick={() => void refreshWebContext()}
+                >
+                  {webRefreshBusy
+                    ? t("products.settings.webContextRefreshing")
+                    : t("products.settings.webContextRefresh")}
+                </Button>
+              </div>
+            )}
             <div>
               <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
                 {t("products.settings.orgUnitLabel")}

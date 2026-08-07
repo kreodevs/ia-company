@@ -27,6 +27,7 @@ import {
   agentNamesFromWorkflowSteps,
   officeLaunchMemoryFields,
 } from "./office-run-department.js";
+import { loadPriorRunContext } from "./prior-run-context.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -599,6 +600,7 @@ export interface ExecuteOfficeTaskInput {
   agentIds?: string[];
   workflowId?: string;
   presetId?: string;
+  parentRunId?: string;
 }
 
 export async function executeOfficeTask(
@@ -619,6 +621,13 @@ export async function executeOfficeTask(
     input.serviceId ?? plan.serviceId,
   );
   const orgCtx = input.orgUnitId ? await loadOrgUnitContext(tenantId, input.orgUnitId) : null;
+  const priorRun = input.parentRunId
+    ? await loadPriorRunContext(tenantId, input.parentRunId)
+    : null;
+  const revisionMemory = priorRun?.memoryFields ?? {};
+  const revisionNote = priorRun
+    ? `Corrección del encargo «${priorRun.title}» (${priorRun.runId}). Respeta las exclusiones del fundador.`
+    : "Task dispatched from Office dashboard";
 
   if (orgCtx && !input.workflowId && !input.agentIds?.length) {
     return launchOrgUnitWork(tenantId, input.orgUnitId!, {
@@ -629,7 +638,7 @@ export async function executeOfficeTask(
   }
 
   const productId = input.productId ?? plan.productId ?? undefined;
-  const orgMemory = orgCtx ? orgContextToInitialMemory(orgCtx) : {};
+  const orgMemory = { ...(orgCtx ? orgContextToInitialMemory(orgCtx) : {}), ...revisionMemory };
   const withOrgMemory = (mem: Record<string, unknown>) => ({ ...mem, ...orgMemory });
 
   const withProduct = (result: { runId: string; workflowId: string; workflowName: string }) => ({
@@ -690,7 +699,7 @@ export async function executeOfficeTask(
         officeLaunchMemoryFields({
           task,
           teamAgentNames,
-          coordinatorNote: "Task dispatched from Office dashboard",
+          coordinatorNote: revisionNote,
         }),
       ),
     });

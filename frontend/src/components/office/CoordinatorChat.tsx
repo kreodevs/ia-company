@@ -22,6 +22,7 @@ interface CoordinatorChatProps {
   orgUnitId?: string;
   serviceId?: string | null;
   workflowId?: string | null;
+  parentRunId?: string;
   initialUserMessage?: string | null;
   welcomeMessageKey?: string;
   onPlanChange?: (plan: OfficeTaskPlan | null) => void;
@@ -33,6 +34,7 @@ function CoordinatorChatLegacy({
   orgUnitId,
   serviceId,
   workflowId,
+  parentRunId,
   initialUserMessage,
   welcomeMessageKey,
   onPlanChange,
@@ -80,6 +82,7 @@ function CoordinatorChatLegacy({
         orgUnitId: orgUnitId || undefined,
         serviceId: serviceId ?? undefined,
         requestPlan,
+        parentRunId,
       });
       setMessages([...nextMessages, { role: "assistant", content: response.reply }]);
       setPlan(response.plan);
@@ -111,6 +114,7 @@ function CoordinatorChatLegacy({
         workflowId: workflowId ?? plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
+        parentRunId,
       });
       onExecuted?.(result.runId);
       const warProductId = productId || result.productId || undefined;
@@ -159,6 +163,7 @@ function CoordinatorChatStream({
   orgUnitId,
   serviceId,
   workflowId,
+  parentRunId,
   initialUserMessage,
   welcomeMessageKey,
   onPlanChange,
@@ -178,6 +183,7 @@ function CoordinatorChatStream({
     orgUnitId: orgUnitId || undefined,
     serviceId: serviceId ?? undefined,
     workflowId: workflowId ?? undefined,
+    parentRunId: parentRunId || undefined,
   });
 
   scopeRef.current = {
@@ -185,6 +191,7 @@ function CoordinatorChatStream({
     orgUnitId: orgUnitId || undefined,
     serviceId: serviceId ?? undefined,
     workflowId: workflowId ?? undefined,
+    parentRunId: parentRunId || undefined,
   };
 
   const connection = useMemo(
@@ -258,6 +265,7 @@ function CoordinatorChatStream({
         workflowId: workflowId ?? plan.workflowId ?? undefined,
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
+        parentRunId,
       });
       onExecuted?.(result.runId);
       const warProductId = productId || result.productId || undefined;

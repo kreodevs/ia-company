@@ -306,11 +306,15 @@ export interface TenantProduct {
   workItemKind?: WorkItemKind;
   githubRepoUrl?: string | null;
   githubDefaultBranch?: string | null;
+  websiteUrl?: string | null;
+  pricingPageUrl?: string | null;
   intakeStatus?: ProductIntakeStatus | null;
   intakeRunId?: string | null;
   stripeWebhookConfigured?: boolean;
   revenueLastSyncedAt?: string | null;
   revenueSource?: string | null;
+  webSnapshotFetchedAt?: string | null;
+  webSnapshotHasError?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -1588,6 +1592,8 @@ export const api = {
         goNoGo?: GoNoGoDecision;
         revenueUsd?: number;
         githubRepoUrl?: string | null;
+        websiteUrl?: string | null;
+        pricingPageUrl?: string | null;
         stripeWebhookSecret?: string | null;
         orgUnitId?: string | null;
         workItemKind?: WorkItemKind;
@@ -1599,6 +1605,10 @@ export const api = {
       }),
     revenueSettings: (id: string) =>
       request<ProductRevenueSettings>(`/products/${id}/revenue-settings`),
+    refreshWebContext: (id: string) =>
+      request<{ product: TenantProduct; snapshots: unknown }>(`/products/${id}/refresh-web-context`, {
+        method: "POST",
+      }),
     metrics: (id: string) => request<ProductMetricsSnapshot>(`/products/${id}/metrics`),
     pipelineDecision: (id: string, decision: GoNoGoDecision) =>
       request<PipelineIdea>(`/products/pipeline/${id}`, {
@@ -1906,6 +1916,7 @@ export const api = {
       orgUnitId?: string;
       serviceId?: string;
       requestPlan?: boolean;
+      parentRunId?: string;
     }) =>
       request<CoordinatorChatResponse>("/office/chat", {
         method: "POST",
@@ -1935,6 +1946,7 @@ export const api = {
       agentIds?: string[];
       workflowId?: string;
       presetId?: string;
+      parentRunId?: string;
     }) =>
       request<{ runId: string; workflowId: string; workflowName: string; productId: string | null }>(
         "/office/tasks/execute",

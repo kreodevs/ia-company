@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { CompanyPhase, GoNoGoDecision, ProductPhase } from "@prisma/client";
+import type { CompanyPhase, GoNoGoDecision, ProductPhase, Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "../../lib/audit.js";
 import { enqueueIdeaEvaluation } from "../../lib/evaluate-idea.js";
@@ -38,6 +38,11 @@ import {
   serializeTenantProductForClient,
 } from "../../lib/product-serializer.js";
 import { getProductMetrics } from "../../lib/product-metrics.js";
+import { assertValidProductUrlField, normalizeProductUrl } from "../../lib/product-urls.js";
+import {
+  clearProductWebSnapshotsMetadata,
+  loadOrRefreshProductWebSnapshots,
+} from "../../lib/product-web-snapshot.js";
 import { ensureWaitlistApiKey } from "../../lib/product-waitlist.js";
 
 export async function productRoutes(app: FastifyInstance) {
@@ -143,6 +148,8 @@ export async function productRoutes(app: FastifyInstance) {
       goNoGo?: GoNoGoDecision;
       revenueUsd?: number;
       githubRepoUrl?: string | null;
+      websiteUrl?: string | null;
+      pricingPageUrl?: string | null;
       stripeWebhookSecret?: string | null;
       orgUnitId?: string | null;
       workItemKind?: "product" | "client" | "campaign" | "project";
@@ -158,8 +165,33 @@ export async function productRoutes(app: FastifyInstance) {
       const phaseChanged = request.body?.phase && request.body.phase !== existing.phase;
       const goNoGoChanged = request.body?.goNoGo && request.body.goNoGo !== existing.goNoGo;
 
-      const { stripeWebhookSecret, orgUnitId, ...bodyRest } = request.body ?? {};
+      const { stripeWebhookSecret, orgUnitId, websiteUrl, pricingPageUrl, ...bodyRest } =
+        request.body ?? {};
       const data: Record<string, unknown> = { ...bodyRest };
+
+      if (websiteUrl !== undefined) {
+        data.websiteUrl =
+          websiteUrl === null || websiteUrl === ""
+            ? null
+            : assertValidProductUrlField("website", websiteUrl);
+      }
+      if (pricingPageUrl !== undefined) {
+        data.pricingPageUrl =
+          pricingPageUrl === null || pricingPageUrl === ""
+            ? null
+            : assertValidProductUrlField("pricing page", pricingPageUrl);
+      }
+
+      const websiteChanged =
+        websiteUrl !== undefined &&
+        normalizeProductUrl(websiteUrl ?? "") !== normalizeProductUrl(existing.websiteUrl ?? "");
+      const pricingChanged =
+        pricingPageUrl !== undefined &&
+        normalizeProductUrl(pricingPageUrl ?? "") !==
+          normalizeProductUrl(existing.pricingPageUrl ?? "");
+      if (websiteChanged || pricingChanged) {
+        data.metadata = clearProductWebSnapshotsMetadata(existing.metadata) as Prisma.InputJsonValue;
+      }
 
       if (orgUnitId !== undefined) {
         if (orgUnitId === null || orgUnitId === "") {
@@ -224,6 +256,35 @@ export async function productRoutes(app: FastifyInstance) {
         await logAudit(request, "product.update", { productId: product.id });
       }
       return serializeTenantProductForClient(product);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string } }>("/products/:id/refresh-web-context", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const product = await prisma.tenantProduct.findFirst({
+        where: { id: request.params.id, tenantId },
+        select: { id: true, metadata: true, websiteUrl: true, pricingPageUrl: true },
+      });
+      if (!product) return reply.status(404).send({ error: "Product not found" });
+      if (!product.websiteUrl?.trim() && !product.pricingPageUrl?.trim()) {
+        return reply.status(400).send({ error: "Configure website or pricing URL first" });
+      }
+
+      await prisma.tenantProduct.update({
+        where: { id: product.id },
+        data: { metadata: clearProductWebSnapshotsMetadata(product.metadata) as Prisma.InputJsonValue },
+      });
+
+      const snapshots = await loadOrRefreshProductWebSnapshots(tenantId, product.id, { force: true });
+      const updated = await prisma.tenantProduct.findUniqueOrThrow({ where: { id: product.id } });
+      await logAudit(request, "product.refreshWebContext", { productId: product.id });
+      return {
+        product: serializeTenantProductForClient(updated),
+        snapshots,
+      };
     } catch (err) {
       return handleRouteError(reply, err);
     }

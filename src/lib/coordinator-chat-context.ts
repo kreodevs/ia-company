@@ -4,6 +4,7 @@ import { prisma } from "./prisma.js";
 import { getTenantMonthlyUsage } from "./usage-limits.js";
 import { loadOrgUnitContext } from "./org-context.js";
 import { listTenantProducts } from "./product-registry.js";
+import { buildProductContextBlock, loadPriorRunContext } from "./prior-run-context.js";
 
 const REPO_ROOT =
   process.env.NODE_ENV === "production" ? process.cwd() : resolve(import.meta.dirname, "../..");
@@ -117,6 +118,7 @@ export interface CoordinatorChatScope {
   orgUnitId?: string;
   serviceId?: string;
   requestPlan?: boolean;
+  parentRunId?: string;
 }
 
 function buildStreamToolsBlock(requestPlan?: boolean): string {
@@ -138,10 +140,12 @@ export async function buildCoordinatorSystemPrompt(
   tenantId: string,
   scope: CoordinatorChatScope,
 ): Promise<string> {
-  const [systemBase, usage, products] = await Promise.all([
+  const [systemBase, usage, products, productContext, priorRun] = await Promise.all([
     loadCoordinatorSystemPrompt(tenantId),
     getTenantMonthlyUsage(tenantId),
     listTenantProducts(tenantId),
+    buildProductContextBlock(tenantId, scope.productId),
+    scope.parentRunId ? loadPriorRunContext(tenantId, scope.parentRunId) : Promise.resolve(null),
   ]);
 
   const scopeBlock = await buildScopeBlock(tenantId, scope.productId, scope.orgUnitId, products);
@@ -152,6 +156,8 @@ export async function buildCoordinatorSystemPrompt(
     buildChatContextBlock(usage),
     "",
     scopeBlock,
+    ...(productContext ? ["", productContext] : []),
+    ...(priorRun ? ["", priorRun.coordinatorBlock] : []),
     "",
     "## Modo conversación",
     "Responde en español salvo que el fundador escriba en otro idioma.",
@@ -179,5 +185,9 @@ export function parseCoordinatorStreamScope(
         ? forwardedProps.serviceId
         : undefined,
     requestPlan: forwardedProps.requestPlan === true,
+    parentRunId:
+      typeof forwardedProps.parentRunId === "string" && forwardedProps.parentRunId.trim()
+        ? forwardedProps.parentRunId
+        : undefined,
   };
 }

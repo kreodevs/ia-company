@@ -132,6 +132,7 @@ export async function chatWithCoordinator(
     orgUnitId: input.orgUnitId,
     serviceId: input.serviceId,
     requestPlan: input.requestPlan,
+    parentRunId: input.parentRunId,
   };
 
   const [system, llmConfig] = await Promise.all([

@@ -51,6 +51,7 @@ import {
   buildProductProfilePromptSection,
   parseProductProfile,
 } from "../lib/product-profile.js";
+import { buildProductWebUrlsPromptSection } from "../lib/product-urls.js";
 import {
   FULLSTACK_AGENT_NAME,
   resolveFullstackStepOrder,
@@ -1166,6 +1167,34 @@ export function compileSystemPrompt(
     }
     if (typeof sharedMemory.githubRepoUrl === "string" && sharedMemory.githubRepoUrl.trim()) {
       sections.push(`\n### GitHub repository\n${sharedMemory.githubRepoUrl.trim()}`);
+    }
+    const webUrls =
+      typeof sharedMemory.websiteUrl === "string" || typeof sharedMemory.pricingPageUrl === "string"
+        ? buildProductWebUrlsPromptSection({
+            websiteUrl:
+              typeof sharedMemory.websiteUrl === "string" ? sharedMemory.websiteUrl : null,
+            pricingPageUrl:
+              typeof sharedMemory.pricingPageUrl === "string" ? sharedMemory.pricingPageUrl : null,
+          })
+        : "";
+    if (webUrls.trim()) {
+      sections.push(`\n${webUrls}`);
+    }
+    if (typeof sharedMemory.productWebsiteSnapshot === "string" && sharedMemory.productWebsiteSnapshot.trim()) {
+      const url =
+        typeof sharedMemory.productWebsiteUrl === "string" ? sharedMemory.productWebsiteUrl.trim() : "";
+      sections.push(
+        `\n### Website content (fetched)\n${url ? `URL: ${url}\n\n` : ""}${sharedMemory.productWebsiteSnapshot.trim()}`,
+      );
+    }
+    if (typeof sharedMemory.productPricingSnapshot === "string" && sharedMemory.productPricingSnapshot.trim()) {
+      const url =
+        typeof sharedMemory.productPricingPageUrl === "string"
+          ? sharedMemory.productPricingPageUrl.trim()
+          : "";
+      sections.push(
+        `\n### Published pricing (fetched — authoritative)\n${url ? `URL: ${url}\n\n` : ""}${sharedMemory.productPricingSnapshot.trim()}\n\nDo not invent tiers or prices that contradict the above.`,
+      );
     }
   }
 

@@ -31,7 +31,7 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 | `/runs/:id` | `RunDetailPage` — Breadcrumbs, logs/memoria en `Panel` |
 | `/ops` | `OpsPage` | Ciclo meta, KPIs, **programaciones**, stepper de fases, ejecuciones recientes |
 | `/products` | `ProductsPage` | Oportunidades; **Añadir producto**; productos activos con enlaces a war room, código y **configuración** |
-| `/products/:id/settings` | `ProductSettingsPage` | Tabbed settings: general, intake, revenue, OpenCode |
+| `/products/:id/settings` | `ProductSettingsPage` | Tabbed settings: general (incl. website + pricing URLs), intake, revenue, OpenCode |
 | `/war-room/:productId` | `WarRoomPage` | War room táctico + **chat del coordinador** (encargos bajo demanda) |
 | `/debug/products/:id/consensus` | `ProductConsensusPage` | Memoria técnica del producto (solo depuración) |
 | `/products/:id/code` | `ProductCodePage` | Código en workspace |

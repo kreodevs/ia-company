@@ -29,6 +29,10 @@ import {
   attachScopeContract,
   buildProductScopeContract,
 } from "./scope-contract.js";
+import {
+  loadOrRefreshProductWebSnapshots,
+  productWebSnapshotMemoryFields,
+} from "./product-web-snapshot.js";
 
 export type { ProductWorkPreset, ProductWorkPresetCategory };
 export { PRIMARY_PRODUCT_PRESET_IDS, PRODUCT_WORK_PRESETS };
@@ -238,6 +242,8 @@ export async function launchProductWork(
       phase: true,
       description: true,
       githubRepoUrl: true,
+      websiteUrl: true,
+      pricingPageUrl: true,
       metadata: true,
       orgUnitId: true,
     },
@@ -276,6 +282,14 @@ export async function launchProductWork(
   const profile = await loadProductProfile(product.id);
   const profileMemory = productProfileToInitialMemory(product, profile);
 
+  let webMemory: Record<string, unknown> = {};
+  try {
+    const snapshots = await loadOrRefreshProductWebSnapshots(tenantId, product.id);
+    webMemory = productWebSnapshotMemoryFields(snapshots);
+  } catch {
+    // Non-fatal
+  }
+
   const consensusMemory = await loadProductConsensusInitialMemory(tenantId, product.id, {
     ...(taskText
       ? {
@@ -291,6 +305,7 @@ export async function launchProductWork(
     focusProductName: product.name,
     productId: product.id,
     ...profileMemory,
+    ...webMemory,
   });
 
   let orgMemory: Record<string, unknown> = input.orgContext ?? {};

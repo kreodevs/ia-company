@@ -510,4 +510,17 @@ export const office = {
     documents: "Documents",
     noDocuments: "No recent documents from this specialist.",
   },
+  revision: {
+    title: "Request revision",
+    subtitle:
+      "Explain what went wrong or what's missing. I'll open Office with this job's context so the team can redo it without starting from scratch.",
+    feedbackLabel: "Your feedback",
+    feedbackPlaceholder:
+      "E.g. Don't redo pricing — we already have tiers at https://…. Focus only on B2B acquisition channels.",
+    submit: "Redo with corrections",
+    welcome:
+      "You're revising a prior job. I'll review your feedback and propose an adjusted plan — tell me if anything is missing before we run.",
+    initialMessage: "Revision of prior job (ID {{runId}}).",
+    initialMessageWithTitle: "Revision of job «{{title}}» (ID {{runId}}).",
+  },
 } as const;

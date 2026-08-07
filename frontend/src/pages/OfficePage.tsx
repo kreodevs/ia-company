@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
   api,
   type OfficeDashboard,
@@ -19,6 +19,7 @@ import KpiCard from "../components/ui/KpiCard";
 
 export default function OfficePage() {
   const { t } = useTranslation();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [dashboard, setDashboard] = useState<OfficeDashboard | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,25 @@ export default function OfficePage() {
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [chatSeed, setChatSeed] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const revisionContext = useMemo(() => {
+    const parentRunId = searchParams.get("parentRunId")?.trim() || undefined;
+    const productId = searchParams.get("productId")?.trim() || undefined;
+    const state = location.state as { revisionFeedback?: string; encargoTitle?: string } | null;
+    const feedback = state?.revisionFeedback?.trim();
+    if (!parentRunId || !feedback) {
+      return { parentRunId, productId, initialMessage: null as string | null };
+    }
+    const title = state?.encargoTitle?.trim();
+    const header = title
+      ? t("office.revision.initialMessageWithTitle", { title, runId: parentRunId })
+      : t("office.revision.initialMessage", { runId: parentRunId });
+    return {
+      parentRunId,
+      productId,
+      initialMessage: `${header}\n\n${feedback}`,
+    };
+  }, [location.state, searchParams, t]);
 
   const refresh = useCallback(async () => {
     const [dash, units] = await Promise.all([
@@ -48,6 +68,12 @@ export default function OfficePage() {
     const fromUrl = searchParams.get("orgUnitId");
     if (fromUrl) setOrgUnitId(fromUrl);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (revisionContext.initialMessage) {
+      setChatSeed(revisionContext.initialMessage);
+    }
+  }, [revisionContext.initialMessage]);
 
   useEffect(() => {
     if (dashboard) {
@@ -268,10 +294,15 @@ export default function OfficePage() {
             </p>
           </div>
           <CoordinatorChat
-            key={chatSeed ?? "default"}
+            key={chatSeed ?? revisionContext.parentRunId ?? "default"}
             orgUnitId={orgUnitId || undefined}
+            productId={revisionContext.productId}
+            parentRunId={revisionContext.parentRunId}
             serviceId={serviceId}
             initialUserMessage={chatSeed}
+            welcomeMessageKey={
+              revisionContext.parentRunId ? "office.revision.welcome" : undefined
+            }
             onExecuted={() => void refresh()}
           />
         </section>

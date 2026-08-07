@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { api, type TenantSummary } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,6 +9,12 @@ export default function TenantImpersonationSelect() {
   const [tenants, setTenants] = useState<TenantSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  async function handleChange(tenantId: string | null) {
+    await impersonate(tenantId);
+    navigate(tenantId ? "/office" : "/admin");
+  }
 
   useEffect(() => {
     if (!isSuperAdmin) return;
@@ -35,7 +42,7 @@ export default function TenantImpersonationSelect() {
         id="tenant-select"
         disabled={loading}
         value={activeTenant?.id ?? ""}
-        onChange={(e) => void impersonate(e.target.value || null)}
+        onChange={(e) => void handleChange(e.target.value || null)}
         className="max-w-[9rem] rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-2 py-1.5 text-sm sm:max-w-[220px] sm:px-3"
       >
         <option value="">{t("admin.impersonation.superadminView")}</option>

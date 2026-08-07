@@ -510,4 +510,17 @@ export const office = {
     documents: "Documentos",
     noDocuments: "Sin documentos recientes de este especialista.",
   },
+  revision: {
+    title: "Corregir entrega",
+    subtitle:
+      "Indica qué salió mal o qué falta. Te llevo a la Oficina con el contexto de este encargo para rehacerlo sin empezar de cero.",
+    feedbackLabel: "Tu retroalimentación",
+    feedbackPlaceholder:
+      "Ej.: No rehagas pricing — ya tenemos tiers en https://…. Enfócate solo en canales de adquisición B2B.",
+    submit: "Rehacer con correcciones",
+    welcome:
+      "Veo que quieres corregir un encargo anterior. Revisaré tu feedback y propondré un plan ajustado — dime si falta algo antes de ejecutar.",
+    initialMessage: "Corrección del encargo anterior (ID {{runId}}).",
+    initialMessageWithTitle: "Corrección del encargo «{{title}}» (ID {{runId}}).",
+  },
 } as const;

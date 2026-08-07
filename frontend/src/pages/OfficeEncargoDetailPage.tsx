@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Bug, Check, Crosshair, FileText, Sparkles, X } from "lucide-react";
+import { ArrowRight, Bug, Check, Crosshair, FileText, MessageSquare, Sparkles, X } from "lucide-react";
 import {
   api,
   type OfficeEncargoDetail,
@@ -16,6 +16,7 @@ import PageHeader from "../components/ui/PageHeader";
 import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import { Textarea } from "../components/atoms/Textarea";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
@@ -44,6 +45,7 @@ function decisionStatusPill(status: OfficeEncargoDecisionProposal["status"]): st
 
 export default function OfficeEncargoDetailPage() {
   const { runId } = useParams<{ runId: string }>();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const actorEmail = useDecisionActorEmail();
   const [detail, setDetail] = useState<OfficeEncargoDetail | null>(null);
@@ -53,6 +55,7 @@ export default function OfficeEncargoDetailPage() {
   const [decisionBusy, setDecisionBusy] = useState(false);
   const [pivotOpen, setPivotOpen] = useState(false);
   const [pivotText, setPivotText] = useState("");
+  const [revisionFeedback, setRevisionFeedback] = useState("");
 
   const refresh = useCallback(async () => {
     if (!runId) return;
@@ -114,6 +117,18 @@ export default function OfficeEncargoDetailPage() {
     );
     setPivotOpen(false);
     setPivotText("");
+  };
+
+  const submitRevision = () => {
+    if (!runId || !revisionFeedback.trim()) return;
+    const params = new URLSearchParams({ parentRunId: runId });
+    if (detail?.productId) params.set("productId", detail.productId);
+    navigate(`/office?${params.toString()}`, {
+      state: {
+        revisionFeedback: revisionFeedback.trim(),
+        encargoTitle: detail?.title,
+      },
+    });
   };
 
   if (loading) {
@@ -246,6 +261,34 @@ export default function OfficeEncargoDetailPage() {
         hasFinalReport={Boolean(detail.finalReport)}
         enabled={detail.phase === "delivered"}
       />
+
+      {detail.phase === "delivered" || detail.phase === "failed" ? (
+        <section className="office-panel office-encargo-revision-panel">
+          <h2 className="office-panel-title">
+            <MessageSquare className="h-4 w-4" aria-hidden />
+            {t("office.revision.title")}
+          </h2>
+          <p className="office-panel-subtitle">{t("office.revision.subtitle")}</p>
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-[var(--color-foreground)]">
+              {t("office.revision.feedbackLabel")}
+            </span>
+            <Textarea
+              value={revisionFeedback}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setRevisionFeedback(e.target.value)
+              }
+              placeholder={t("office.revision.feedbackPlaceholder")}
+              rows={5}
+            />
+          </label>
+          <div className="office-encargo-revision-actions">
+            <Button disabled={!revisionFeedback.trim()} onClick={submitRevision}>
+              {t("office.revision.submit")}
+            </Button>
+          </div>
+        </section>
+      ) : null}
 
       {showNextPanel ? (
         <section className="office-panel office-encargo-next-panel">

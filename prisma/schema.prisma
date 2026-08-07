@@ -362,6 +362,8 @@ model TenantProduct {
   lastRunId          String?
   githubRepoUrl      String?
   githubDefaultBranch String?
+  websiteUrl         String?
+  pricingPageUrl     String?
   metadata           Json?
   intakeStatus       ProductIntakeStatus @default(skipped)
   intakeRunId        String?

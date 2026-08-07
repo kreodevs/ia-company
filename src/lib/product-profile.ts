@@ -314,6 +314,8 @@ export function productProfileToInitialMemory(
     description: string | null;
     phase: ProductPhase;
     githubRepoUrl: string | null;
+    websiteUrl?: string | null;
+    pricingPageUrl?: string | null;
     metadata: unknown;
   },
   profile: ProductProfile | null,
@@ -322,6 +324,8 @@ export function productProfileToInitialMemory(
     productDescription: product.description ?? profile?.summary ?? "",
     productPhase: product.phase,
     githubRepoUrl: product.githubRepoUrl,
+    websiteUrl: product.websiteUrl ?? null,
+    pricingPageUrl: product.pricingPageUrl ?? null,
   };
   if (profile) {
     base.productProfile = profile;
