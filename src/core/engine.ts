@@ -52,6 +52,7 @@ import {
   parseProductProfile,
 } from "../lib/product-profile.js";
 import { buildProductWebUrlsPromptSection } from "../lib/product-urls.js";
+import { agentHasGitTools } from "../lib/agent-tool-policy.js";
 import {
   FULLSTACK_AGENT_NAME,
   resolveFullstackStepOrder,
@@ -680,6 +681,7 @@ export class WorkflowExecutor {
       productId,
       githubToken: tenantCtx.githubToken,
       agentId: agent.id,
+      agentName: agent.name,
       toolMode,
       sharedMemory,
       onLog: (message: string, payload?: Record<string, unknown>) => {
@@ -1253,8 +1255,11 @@ export function compileSystemPrompt(
       "\n## Tool Usage\nRead-only mode: review the OpenCode result using read_file and list_dir. Do not modify code in this workspace.",
     );
   } else {
+    const gitHint = agentHasGitTools(agent.name)
+      ? " You may also use git_status and git_commit when persisting code changes."
+      : " Do not use git commit, git add, or git push — save deliverables with write_file under your docs folder.";
     sections.push(
-      "\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir. Respect safety limits.",
+      `\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir.${gitHint} Respect safety limits.`,
     );
   }
 

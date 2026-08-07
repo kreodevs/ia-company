@@ -160,6 +160,7 @@ export const products = {
     pricingPageUrlLabel: "Página de pricing (opcional)",
     pricingPageUrlHint:
       "Fuente autoritativa de tiers y precios. Si es la misma URL que el sitio web, puedes repetirla — solo se lee una vez.",
+    webContextSaveFirst: "Guarda los cambios para activar la lectura de la web.",
     webContextNotFetched: "Aún no se ha leído la web. Se actualiza al planear/ejecutar encargos o con el botón de abajo.",
     webContextLastFetch: "Última lectura: {{date}}",
     webContextFetchError: "(hubo errores en alguna URL)",

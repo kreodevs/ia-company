@@ -6,6 +6,13 @@ type ChatMessagesInput = Array<{ role: string; parts: any[] }>;
 
 type StreamMessage = ChatMessagesInput[number];
 
+function findLastUserMessageIndex(messages: ChatMessagesInput): number {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i]?.role === "user") return i;
+  }
+  return -1;
+}
+
 export function messageTextParts(message: StreamMessage): string {
   return message.parts
     .filter((part) => part.type === "text" && typeof part.content === "string")
@@ -20,7 +27,8 @@ export interface PendingProposalApproval {
 }
 
 export function findPendingProposalApproval(messages: ChatMessagesInput): PendingProposalApproval | null {
-  for (let i = messages.length - 1; i >= 0; i--) {
+  const afterUserIdx = findLastUserMessageIndex(messages);
+  for (let i = messages.length - 1; i > afterUserIdx; i--) {
     const message = messages[i];
     if (message?.role !== "assistant") continue;
     for (const part of message.parts) {
@@ -45,7 +53,11 @@ export function findPendingProposalApproval(messages: ChatMessagesInput): Pendin
 }
 
 export function findCompletedOfficePlan(messages: ChatMessagesInput): OfficeTaskPlan | null {
-  for (let i = messages.length - 1; i >= 0; i--) {
+  // While a proposal awaits HITL approval, hide any previously completed plan.
+  if (findPendingProposalApproval(messages)) return null;
+
+  const afterUserIdx = findLastUserMessageIndex(messages);
+  for (let i = messages.length - 1; i > afterUserIdx; i--) {
     const message = messages[i];
     if (message?.role !== "assistant") continue;
     for (const part of message.parts) {

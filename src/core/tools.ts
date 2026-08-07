@@ -6,6 +6,11 @@ import { tool } from "ai";
 import { z } from "zod";
 import type { ToolExecutionContext } from "../types/index.js";
 import { assertShellCommandAllowed } from "../lib/shell-policy.js";
+import {
+  agentHasGitTools,
+  isGitWriteShellCommand,
+  shellGitWriteBlockedMessage,
+} from "../lib/agent-tool-policy.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -41,6 +46,14 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         .describe("Working directory relative to workspace root"),
     }),
     execute: async ({ command, cwd }) => {
+      if (!agentHasGitTools(ctx.agentName) && isGitWriteShellCommand(command)) {
+        return {
+          stdout: "",
+          stderr: shellGitWriteBlockedMessage(ctx.agentName),
+          exitCode: 1,
+        };
+      }
+
       assertShellCommandAllowed(command);
 
       const workDir = cwd
@@ -188,12 +201,23 @@ export function createAgentTools(ctx: ToolExecutionContext) {
   });
 
   const git_commit = tool({
-    description: "Stage all changes and create a git commit in the workspace",
+    description:
+      "Stage all changes and create a git commit in the workspace. Always pass a non-empty `message` describing the change.",
     parameters: z.object({
-      message: z.string().describe("Commit message"),
+      message: z
+        .string()
+        .optional()
+        .describe("Required commit message (imperative mood, e.g. \"docs: add market scan for MemorIA\")."),
     }),
     execute: async ({ message }) => {
-      if (!message.trim()) throw new Error("Commit message required");
+      if (!message?.trim()) {
+        return {
+          stdout: "",
+          stderr:
+            "git_commit failed: `message` is required. Call git_commit again with { message: \"descriptive commit message\" }.",
+          exitCode: 1,
+        };
+      }
       await runShell(ctx, "git add -A", ctx.workspaceRoot);
       const result = await runShell(
         ctx,
@@ -348,11 +372,12 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     read_file: allTools.read_file,
     write_file: allTools.write_file,
     list_dir: allTools.list_dir,
-    git_status: allTools.git_status,
-    git_commit: allTools.git_commit,
     npm_run: allTools.npm_run,
     wrangler_deploy: allTools.wrangler_deploy,
     send_email: allTools.send_email,
+    ...(agentHasGitTools(ctx.agentName)
+      ? { git_status: allTools.git_status, git_commit: allTools.git_commit }
+      : {}),
   };
 
   return base;

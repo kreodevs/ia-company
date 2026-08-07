@@ -2,7 +2,7 @@
 
 | Component | Role |
 |-----------|------|
-| `CoordinatorChat` | Chat streaming (TanStack AI SSE) + HITL plan approval + execute encargos; legacy REST via `frontend/src/lib/office-chat-config.ts` |
+| `CoordinatorChat` | Chat streaming (TanStack AI SSE) + HITL plan approval + execute encargos; shows **one** proposal card per turn (scoped to the latest user message); legacy REST via `frontend/src/lib/office-chat-config.ts` |
 | `OfficeFloorPlan` | Virtual office floor — departments, reception, busy/idle (letter theme: white cards on pale gradient) |
 | `DepartmentRoomView` | Shared department room — scope select (general/product), meeting table, **coordinator chat**, **department procedures**, extras slot |
 | `DepartmentProceduresPanel` | Manual **procedimientos** (workflows) + **procedimientos programados** (AutonomousSchedule rules) for a virtual or custom department; **Usar** pre-fills the coordinator |

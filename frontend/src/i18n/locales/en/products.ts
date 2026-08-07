@@ -160,6 +160,7 @@ export const products = {
     pricingPageUrlLabel: "Pricing page (optional)",
     pricingPageUrlHint:
       "Authoritative source for tiers and prices. If it's the same as the website URL, you can repeat it — we only fetch once.",
+    webContextSaveFirst: "Save your changes to enable web fetching.",
     webContextNotFetched: "Web not fetched yet. Refreshes when planning/running jobs, or use the button below.",
     webContextLastFetch: "Last fetch: {{date}}",
     webContextFetchError: "(some URLs failed)",

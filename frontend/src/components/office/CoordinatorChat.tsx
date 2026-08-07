@@ -16,6 +16,17 @@ import TeamProposalCard from "./TeamProposalCard";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 const WELCOME_KEY = "office.chat.welcome";
+const INITIAL_SEND_DEDUPE_MS = 3_000;
+
+function shouldSendInitialMessage(dedupeKey: string): boolean {
+  if (typeof sessionStorage === "undefined") return true;
+  const storageKey = `ac.office.initial.${dedupeKey}`;
+  const last = sessionStorage.getItem(storageKey);
+  const now = Date.now();
+  if (last && now - Number(last) < INITIAL_SEND_DEDUPE_MS) return false;
+  sessionStorage.setItem(storageKey, String(now));
+  return true;
+}
 
 interface CoordinatorChatProps {
   productId?: string;
@@ -95,9 +106,11 @@ function CoordinatorChatLegacy({
   };
 
   useEffect(() => {
-    if (initialUserMessage?.trim()) {
-      void send(initialUserMessage, true);
-    }
+    if (seeded.current || !initialUserMessage?.trim()) return;
+    seeded.current = true;
+    const dedupeKey = `${parentRunId ?? "default"}::${initialUserMessage.trim()}`;
+    if (!shouldSendInitialMessage(dedupeKey)) return;
+    void send(initialUserMessage, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -140,9 +153,11 @@ function CoordinatorChatLegacy({
       setInput={setInput}
       onSend={() => void send(input)}
       onRequestPlan={() => void send(input, true)}
-      plan={plan}
-      onExecutePlan={() => void executePlan()}
-      executing={executing}
+      planFooter={
+        plan && !executing ? (
+          <TeamProposalCard plan={plan} onExecute={() => void executePlan()} executing={executing} compact />
+        ) : null
+      }
     >
       {messages.map((msg, i) => (
         <div key={`${msg.role}-${i}`} className={`office-chat-bubble office-chat-bubble-${msg.role}`}>
@@ -248,6 +263,8 @@ function CoordinatorChatStream({
   useEffect(() => {
     if (seeded.current || !initialUserMessage?.trim()) return;
     seeded.current = true;
+    const dedupeKey = `${parentRunId ?? "default"}::${initialUserMessage.trim()}`;
+    if (!shouldSendInitialMessage(dedupeKey)) return;
     void send(initialUserMessage, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -293,9 +310,48 @@ function CoordinatorChatStream({
       setInput={setInput}
       onSend={() => void send(input)}
       onRequestPlan={() => void send(input, true)}
-      plan={plan}
-      onExecutePlan={() => void executePlan()}
-      executing={executing}
+      planFooter={
+        <>
+          {pendingApproval && (
+            <div className="office-chat-approval">
+              <p className="office-chat-approval-title">{t("office.chat.approveProposalTitle")}</p>
+              {pendingApproval.rationale ? (
+                <p className="office-chat-approval-rationale">{pendingApproval.rationale}</p>
+              ) : null}
+              {pendingApproval.taskBrief ? (
+                <pre className="office-chat-approval-brief">{pendingApproval.taskBrief}</pre>
+              ) : null}
+              <div className="office-chat-approval-actions">
+                <Button
+                  variant="secondary"
+                  disabled={isLoading}
+                  onClick={() =>
+                    void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: false })
+                  }
+                >
+                  {t("office.chat.rejectProposal")}
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  onClick={() =>
+                    void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: true })
+                  }
+                >
+                  {t("office.chat.approveProposal")}
+                </Button>
+              </div>
+            </div>
+          )}
+          {plan && !executing && !pendingApproval ? (
+            <TeamProposalCard
+              plan={plan}
+              onExecute={() => void executePlan()}
+              executing={executing}
+              compact
+            />
+          ) : null}
+        </>
+      }
     >
       {messages.map((msg) => {
         const text = messageTextParts(msg);
@@ -325,37 +381,6 @@ function CoordinatorChatStream({
           </ol>
         </div>
       )}
-
-      {pendingApproval && (
-        <div className="office-chat-approval">
-          <p className="office-chat-approval-title">{t("office.chat.approveProposalTitle")}</p>
-          {pendingApproval.rationale ? (
-            <p className="office-chat-approval-rationale">{pendingApproval.rationale}</p>
-          ) : null}
-          {pendingApproval.taskBrief ? (
-            <pre className="office-chat-approval-brief">{pendingApproval.taskBrief}</pre>
-          ) : null}
-          <div className="office-chat-approval-actions">
-            <Button
-              variant="secondary"
-              disabled={isLoading}
-              onClick={() =>
-                void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: false })
-              }
-            >
-              {t("office.chat.rejectProposal")}
-            </Button>
-            <Button
-              disabled={isLoading}
-              onClick={() =>
-                void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: true })
-              }
-            >
-              {t("office.chat.approveProposal")}
-            </Button>
-          </div>
-        </div>
-      )}
     </CoordinatorChatShell>
   );
 }
@@ -368,9 +393,7 @@ interface CoordinatorChatShellProps {
   setInput: (value: string) => void;
   onSend: () => void;
   onRequestPlan: () => void;
-  plan: OfficeTaskPlan | null;
-  onExecutePlan: () => void;
-  executing: boolean;
+  planFooter?: ReactNode;
   children: ReactNode;
 }
 
@@ -382,9 +405,7 @@ function CoordinatorChatShell({
   setInput,
   onSend,
   onRequestPlan,
-  plan,
-  onExecutePlan,
-  executing,
+  planFooter,
   children,
 }: CoordinatorChatShellProps) {
   const { t } = useTranslation();
@@ -403,6 +424,7 @@ function CoordinatorChatShell({
 
       <div className="office-chat-messages" ref={scrollRef}>
         {children}
+        {planFooter}
         {busy && (
           <div className="office-chat-bubble office-chat-bubble-assistant office-chat-typing">
             <span className="office-chat-bubble-avatar" aria-hidden>
@@ -416,10 +438,6 @@ function CoordinatorChatShell({
           </div>
         )}
       </div>
-
-      {plan && !executing && (
-        <TeamProposalCard plan={plan} onExecute={onExecutePlan} executing={executing} compact />
-      )}
 
       {error && <p className="office-chat-error">{error}</p>}
 

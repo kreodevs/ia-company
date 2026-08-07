@@ -128,6 +128,12 @@ export default function ProductSettingsPage() {
     );
   }, [product, name, description, githubRepoUrl, websiteUrl, pricingPageUrl, orgUnitId, workItemKind]);
 
+  const savedWebsiteUrl = product?.websiteUrl?.trim() ?? "";
+  const savedPricingPageUrl = product?.pricingPageUrl?.trim() ?? "";
+  const webUrlsDirty =
+    websiteUrl.trim() !== savedWebsiteUrl || pricingPageUrl.trim() !== savedPricingPageUrl;
+  const savedWebUrlsConfigured = Boolean(savedWebsiteUrl || savedPricingPageUrl);
+
   const save = async () => {
     if (!productId || !product) return;
     setSaving(true);
@@ -305,7 +311,12 @@ export default function ProductSettingsPage() {
                 {t("products.settings.pricingPageUrlHint")}
               </p>
             </div>
-            {(websiteUrl.trim() || pricingPageUrl.trim()) && (
+            {(websiteUrl.trim() || pricingPageUrl.trim()) && webUrlsDirty && (
+              <p className="rounded-lg border border-dashed border-[var(--color-border)] px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
+                {t("products.settings.webContextSaveFirst")}
+              </p>
+            )}
+            {savedWebUrlsConfigured && !webUrlsDirty && (
               <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/30 p-3">
                 <p className="text-xs text-[var(--color-muted-foreground)]">
                   {product.webSnapshotFetchedAt

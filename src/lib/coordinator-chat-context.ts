@@ -126,6 +126,7 @@ function buildStreamToolsBlock(requestPlan?: boolean): string {
     "## Herramientas",
     "- `ask_clarifying_questions`: úsala cuando falte contexto (1–4 preguntas concretas). No propongas equipo hasta tener respuestas.",
     "- `propose_office_task`: úsala cuando el brief esté listo. Incluye un taskBrief consolidado (markdown breve con **Objetivo:**).",
+    "- Llama `propose_office_task` **como máximo una vez** por respuesta del coordinador.",
     "- Nunca digas que ya ejecutaste algo — solo propones; el fundador aprueba en la UI.",
   ];
   if (requestPlan) {
