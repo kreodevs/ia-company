@@ -6,7 +6,7 @@ const MAX_STRING_FIELD_CHARS = 4_000;
 
 function truncateText(value: string, maxChars: number): string {
   if (value.length <= maxChars) return value;
-  return `${value.slice(0, maxChars)}\n\n… [truncated ${value.length - maxChars} chars — use read_file on consensus.md for full context]`;
+  return `${value.slice(0, maxChars)}\n\n… [older consensus revisions omitted from prompt — use the \`consensus\` field in Shared Workflow Memory as authoritative for this run]`;
 }
 
 function sanitizeStringField(value: unknown): unknown {

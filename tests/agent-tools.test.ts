@@ -60,4 +60,31 @@ describe("agent tools", () => {
     assert.equal(result.exitCode, 1);
     assert.match(result.stderr, /write_file/i);
   });
+
+  it("read_file accepts file_path alias used by some LLMs", async () => {
+    const workspaceRoot = mkdtempSync(join(tmpdir(), "ac-tools-"));
+    const { writeFile: writeFileFs, mkdir: mkdirFs } = await import("node:fs/promises");
+    await mkdirFs(workspaceRoot, { recursive: true });
+    await writeFileFs(join(workspaceRoot, "consensus.md"), "# on disk only", "utf-8");
+
+    const tools = createAgentTools({
+      ...testToolContext(workspaceRoot, "research-thompson"),
+      sharedMemory: { consensus: "# from shared memory" },
+    });
+    assert.doesNotThrow(() => tools.read_file.parameters.parse({ file_path: "consensus.md" }));
+
+    const result = await tools.read_file.execute({ file_path: "consensus.md" });
+    assert.equal(result.path, "consensus.md");
+    assert.equal(result.source, "shared_workflow_memory");
+    assert.match(result.content ?? "", /from shared memory/);
+    assert.doesNotMatch(result.content ?? "", /on disk only/);
+  });
+
+  it("read_file on consensus.md without shared memory returns guidance", async () => {
+    const workspaceRoot = mkdtempSync(join(tmpdir(), "ac-tools-"));
+    const tools = createAgentTools(testToolContext(workspaceRoot, "research-thompson"));
+    const result = await tools.read_file.execute({ path: "consensus.md" });
+    assert.equal(result.missing, true);
+    assert.match(result.error ?? "", /Shared Workflow Memory/i);
+  });
 });

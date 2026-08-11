@@ -1259,17 +1259,17 @@ export function compileSystemPrompt(
       ? " You may also use git_status and git_commit when persisting code changes."
       : " Do not use git commit, git add, or git push — save deliverables with write_file under your docs folder.";
     sections.push(
-      `\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir.${gitHint} Respect safety limits.`,
+      `\n## Tool Usage\nYou may use run_shell_command, read_file, write_file, and list_dir.${gitHint} For file tools use the \`path\` argument (e.g. \`docs/research/report.md\`). Do **not** read \`consensus.md\` — use Shared Workflow Memory. Respect safety limits.`,
     );
   }
 
   if (workspace?.productSlug && !companyScoped) {
     sections.push(
-      `\n## Product Consensus (${workspace.productSlug})\nYour handoff is appended to **${workspace.productSlug}'s** product consensus (one revision per step). Read \`consensus.md\` at the workspace root for full prior context; use the JSON memory above for the most recent state. Tenant-level (company) consensus is separate and only tracks cycle strategy / pipeline.`,
+      `\n## Product Consensus (${workspace.productSlug})\nYour handoff is appended to **${workspace.productSlug}'s** product consensus (one revision per step). **Authoritative context for this run:** the \`consensus\` field in Shared Workflow Memory below (loaded from PostgreSQL at launch). Do **not** call \`read_file\` on \`consensus.md\` — it is only a human/export mirror.`,
     );
   } else {
     sections.push(
-      "\n## Consensus File\nTenant (company) consensus lives at `consensus.md` in the workspace root (also in Shared Workflow Memory). Prefer the JSON memory when present; use read_file on `consensus.md` only if you need the full document.",
+      "\n## Consensus File\n**Authoritative for this run:** the `consensus` field in Shared Workflow Memory (from PostgreSQL). `consensus.md` in the workspace is a human/export mirror only — agents must not read it.",
     );
   }
 

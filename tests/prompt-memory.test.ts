@@ -42,5 +42,5 @@ test("prepareSharedMemoryForPrompt unwraps STUCK and truncates consensus", () =>
   });
   assert.equal(prepared.task, "Define the first product");
   assert.equal(prepared.nextAction, "Define the first product");
-  assert.match(String(prepared.consensus), /truncated 8000 chars/);
+  assert.match(String(prepared.consensus), /older consensus revisions omitted/);
 });

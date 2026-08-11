@@ -61,7 +61,7 @@ This folder is the **tenant sandbox root** for Auto-Company platform runs.
 
 | Path | Purpose |
 |------|---------|
-| \`consensus.md\` | Shared cycle memory (also in the UI) |
+| \`consensus.md\` | Human-readable mirror of product/tenant memory (agents use Shared Workflow Memory instead) |
 | \`docs/research/\` | Market research and opportunity briefs |
 | \`docs/company/\` | **Company-level** runs (discovery, weekly review) — not tied to one product |
 | \`docs/ceo/\`, \`docs/product/\`, … | Deliverables per agent role |
@@ -113,7 +113,7 @@ export function buildWorkspacePromptSection(options: {
 ## Workspace (company-level run)
 Your workspace root is the **tenant sandbox** — this run is **not** scoped to a single product.
 - Save deliverables under \`docs/company/<role>/\` (e.g. \`docs/company/research/\`).
-- \`consensus.md\` — tenant (company) memory for cycles and pipeline.
+- \`consensus.md\` — human/export mirror of tenant memory (do **not** read during agent runs).
 - \`portfolio.md\` — registered products; do not confuse this run with operating one product.
 - Product code repos are sibling folders: \`../{product-slug}/\` — only read if explicitly needed.
 `.trim();
@@ -124,8 +124,7 @@ Your workspace root is the **tenant sandbox** — this run is **not** scoped to 
 ## Workspace (product run)
 Your workspace root **is** the product repository for **${options.productName ?? options.productSlug}** (\`${options.productSlug}\`).
 - Use \`.\` for the product root — ship code here (package.json, src/, etc.).
-- Read \`consensus.md\` at the workspace root for cycle context.
-- Do **not** look for \`projects/${options.productSlug}/\` — you are already inside it.
+- **Do not** call \`read_file\` on \`consensus.md\` — context is injected in Shared Workflow Memory (\`consensus\` field).
 - Agent docs for this cycle: write under \`docs/<role>/\` relative to this root if needed.
 `.trim();
   }
@@ -133,7 +132,7 @@ Your workspace root **is** the product repository for **${options.productName ??
   return `
 ## Workspace (tenant sandbox)
 Your workspace root is the **tenant sandbox** (platform path \`projects/{tenant-slug}/\`), not the monorepo root.
-- \`consensus.md\` — shared memory for this cycle
+- \`consensus.md\` — human/export mirror only (agents: use Shared Workflow Memory \`consensus\`)
 - \`docs/research/\`, \`docs/ceo/\`, \`docs/product/\`, … — save deliverables here (see agent role)
 - \`portfolio.md\` — summary of registered products and sibling workspace paths
 - **There is no \`projects/\` folder inside this workspace.** Never call list_dir on \`projects\`.

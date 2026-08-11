@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { access, readdir, readFile, writeFile, mkdir } from "node:fs/promises";
-import { dirname, join, normalize, resolve } from "node:path";
+import { dirname, join, normalize, resolve, basename } from "node:path";
 import { promisify } from "node:util";
 import { tool } from "ai";
 import { z } from "zod";
@@ -15,6 +15,33 @@ import {
 const execFileAsync = promisify(execFile);
 
 const BLOCKED_PATHS = [".git/config", ".env", "node_modules/.cache"];
+const CONSENSUS_MIRROR_FILENAME = "consensus.md";
+
+/** LLMs often send OpenAI-style `file_path` / `directory` instead of our `path`. */
+function resolveWorkspacePathArg(input: {
+  path?: string;
+  file_path?: string;
+  directory?: string;
+  dir?: string;
+}): string | null {
+  const candidates = [input.path, input.file_path, input.directory, input.dir];
+  for (const value of candidates) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
+
+function missingPathToolResult(
+  toolName: string,
+  example: string,
+): { path: string; missing: true; error: string } {
+  return {
+    path: "",
+    missing: true,
+    error: `${toolName} requires \`path\`${toolName === "read_file" || toolName === "write_file" ? " (alias: file_path)" : ""}. Example: ${example}`,
+  };
+}
 
 function resolveSafePath(workspaceRoot: string, relativePath: string): string {
   const root = resolve(workspaceRoot);
@@ -92,22 +119,48 @@ export function createAgentTools(ctx: ToolExecutionContext) {
   const read_file = tool({
     description: "Read a text file from the workspace",
     parameters: z.object({
-      path: z.string().describe("File path relative to workspace root"),
+      path: z.string().optional().describe("File path relative to workspace root"),
+      file_path: z.string().optional().describe("Alias for path"),
       maxBytes: z.number().optional().default(100_000),
     }),
-    execute: async ({ path, maxBytes }) => {
-      const fullPath = resolveSafePath(ctx.workspaceRoot, path);
-      log(`read: ${path}`);
+    execute: async ({ path, file_path, maxBytes }) => {
+      const resolvedPath = resolveWorkspacePathArg({ path, file_path });
+      if (!resolvedPath) {
+        return missingPathToolResult("read_file", '{ "path": "docs/research/report.md" }');
+      }
+
+      if (basename(resolvedPath) === CONSENSUS_MIRROR_FILENAME) {
+        const fromMemory =
+          typeof ctx.sharedMemory?.consensus === "string" ? ctx.sharedMemory.consensus.trim() : "";
+        if (fromMemory) {
+          log(`read: ${resolvedPath} (from shared memory)`);
+          return {
+            path: resolvedPath,
+            content: fromMemory.slice(0, maxBytes),
+            source: "shared_workflow_memory",
+            note: "consensus.md is a human mirror only. Shared Workflow Memory is authoritative for this run.",
+          };
+        }
+        return {
+          path: resolvedPath,
+          missing: true,
+          error:
+            "Do not read consensus.md during agent runs. Use the `consensus` field in Shared Workflow Memory.",
+        };
+      }
+
+      const fullPath = resolveSafePath(ctx.workspaceRoot, resolvedPath);
+      log(`read: ${resolvedPath}`);
       try {
         const content = await readFile(fullPath, "utf-8");
-        return { path, content: content.slice(0, maxBytes) };
+        return { path: resolvedPath, content: content.slice(0, maxBytes) };
       } catch (err: unknown) {
         const error = err as NodeJS.ErrnoException;
         if (error.code === "ENOENT") {
           return {
-            path,
+            path: resolvedPath,
             missing: true,
-            error: `File not found: ${path}. See README.md and portfolio.md in the workspace root.`,
+            error: `File not found: ${resolvedPath}. See README.md and portfolio.md in the workspace root.`,
           };
         }
         throw err;
@@ -118,27 +171,36 @@ export function createAgentTools(ctx: ToolExecutionContext) {
   const write_file = tool({
     description: "Write or overwrite a text file in the workspace",
     parameters: z.object({
-      path: z.string().describe("File path relative to workspace root"),
+      path: z.string().optional().describe("File path relative to workspace root"),
+      file_path: z.string().optional().describe("Alias for path"),
       content: z.string().describe("File content to write"),
     }),
-    execute: async ({ path, content }) => {
-      const fullPath = resolveSafePath(ctx.workspaceRoot, path);
+    execute: async ({ path, file_path, content }) => {
+      const resolvedPath = resolveWorkspacePathArg({ path, file_path });
+      if (!resolvedPath) {
+        return missingPathToolResult("write_file", '{ "path": "docs/research/report.md", "content": "..." }');
+      }
+      const fullPath = resolveSafePath(ctx.workspaceRoot, resolvedPath);
       await mkdir(dirname(fullPath), { recursive: true });
-      log(`write: ${path}`, { bytes: content.length });
+      log(`write: ${resolvedPath}`, { bytes: content.length });
       await writeFile(fullPath, content, "utf-8");
-      return { path, bytesWritten: Buffer.byteLength(content, "utf-8") };
+      return { path: resolvedPath, bytesWritten: Buffer.byteLength(content, "utf-8") };
     },
   });
 
   const list_dir = tool({
     description: "List files and directories in a workspace path",
     parameters: z.object({
-      path: z.string().default(".").describe("Directory relative to workspace root"),
+      path: z.string().optional().describe("Directory relative to workspace root"),
+      file_path: z.string().optional().describe("Alias for path"),
+      directory: z.string().optional().describe("Alias for path"),
+      dir: z.string().optional().describe("Alias for path"),
       recursive: z.boolean().optional().default(false),
     }),
-    execute: async ({ path, recursive }) => {
-      const fullPath = resolveSafePath(ctx.workspaceRoot, path);
-      log(`list: ${path}`);
+    execute: async ({ path, file_path, directory, dir, recursive }) => {
+      const resolvedPath = resolveWorkspacePathArg({ path, file_path, directory, dir }) ?? ".";
+      const fullPath = resolveSafePath(ctx.workspaceRoot, resolvedPath);
+      log(`list: ${resolvedPath}`);
 
       try {
         await access(fullPath);
@@ -146,13 +208,13 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         const error = err as NodeJS.ErrnoException;
         if (error.code === "ENOENT") {
           return {
-            path,
+            path: resolvedPath,
             entries: [],
             missing: true,
             hint:
-              path === "projects" || path.startsWith("projects/")
+              resolvedPath === "projects" || resolvedPath.startsWith("projects/")
                 ? "There is no projects/ folder inside the tenant workspace. Product repos are sibling folders (../{slug}/) or the workspace root is already a product repo."
-                : `Directory not found: ${path}. List '.' or read README.md / portfolio.md.`,
+                : `Directory not found: ${resolvedPath}. List '.' or read README.md / portfolio.md.`,
           };
         }
         throw err;
@@ -161,7 +223,7 @@ export function createAgentTools(ctx: ToolExecutionContext) {
       if (!recursive) {
         const entries = await readdir(fullPath, { withFileTypes: true });
         return {
-          path,
+          path: resolvedPath,
           entries: entries.map((e) => ({
             name: e.name,
             type: e.isDirectory() ? "directory" : "file",
@@ -186,8 +248,8 @@ export function createAgentTools(ctx: ToolExecutionContext) {
         }
       }
 
-      await walk(fullPath, path === "." ? "" : path);
-      return { path, entries: results.slice(0, 500) };
+      await walk(fullPath, resolvedPath === "." ? "" : resolvedPath);
+      return { path: resolvedPath, entries: results.slice(0, 500) };
     },
   });
 
