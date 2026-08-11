@@ -7,7 +7,6 @@ import { api, type CoordinatorChatMessage, type OfficeTaskPlan } from "../../lib
 import {
   findClarifyingQuestions,
   findCompletedOfficePlan,
-  findPendingProposalApproval,
   messageTextParts,
 } from "../../lib/coordinator-chat-stream";
 import { getOfficeChatMode, officeChatConfig } from "../../lib/office-chat-config";
@@ -221,7 +220,7 @@ function CoordinatorChatStream({
     [],
   );
 
-  const { messages, sendMessage, isLoading, error: streamError, addToolApprovalResponse } = useChat({
+  const { messages, sendMessage, isLoading, error: streamError } = useChat({
     connection,
     initialMessages: [
       {
@@ -233,7 +232,6 @@ function CoordinatorChatStream({
     onError: (err) => setError(err.message),
   });
 
-  const pendingApproval = findPendingProposalApproval(messages);
   const clarifying = findClarifyingQuestions(messages);
   const plan = findCompletedOfficePlan(messages);
 
@@ -243,7 +241,7 @@ function CoordinatorChatStream({
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, plan, pendingApproval, clarifying]);
+  }, [messages, plan, clarifying]);
 
   const send = async (text: string, requestPlan = false) => {
     const trimmed = text.trim();
@@ -311,46 +309,14 @@ function CoordinatorChatStream({
       onSend={() => void send(input)}
       onRequestPlan={() => void send(input, true)}
       planFooter={
-        <>
-          {pendingApproval && (
-            <div className="office-chat-approval">
-              <p className="office-chat-approval-title">{t("office.chat.approveProposalTitle")}</p>
-              {pendingApproval.rationale ? (
-                <p className="office-chat-approval-rationale">{pendingApproval.rationale}</p>
-              ) : null}
-              {pendingApproval.taskBrief ? (
-                <pre className="office-chat-approval-brief">{pendingApproval.taskBrief}</pre>
-              ) : null}
-              <div className="office-chat-approval-actions">
-                <Button
-                  variant="secondary"
-                  disabled={isLoading}
-                  onClick={() =>
-                    void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: false })
-                  }
-                >
-                  {t("office.chat.rejectProposal")}
-                </Button>
-                <Button
-                  disabled={isLoading}
-                  onClick={() =>
-                    void addToolApprovalResponse({ id: pendingApproval.approvalId, approved: true })
-                  }
-                >
-                  {t("office.chat.approveProposal")}
-                </Button>
-              </div>
-            </div>
-          )}
-          {plan && !executing && !pendingApproval ? (
-            <TeamProposalCard
-              plan={plan}
-              onExecute={() => void executePlan()}
-              executing={executing}
-              compact
-            />
-          ) : null}
-        </>
+        plan && !executing ? (
+          <TeamProposalCard
+            plan={plan}
+            onExecute={() => void executePlan()}
+            executing={executing}
+            compact
+          />
+        ) : null
       }
     >
       {messages.map((msg) => {

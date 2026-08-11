@@ -68,7 +68,6 @@ export const proposeOfficeTaskDef = toolDefinition({
     rationale: z.string().min(8).describe("Por qué este equipo y entregable"),
   }),
   outputSchema: officeTaskPlanSchema,
-  needsApproval: true,
 });
 
 export function createCoordinatorChatTools() {

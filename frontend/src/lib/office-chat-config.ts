@@ -2,7 +2,7 @@
 export type OfficeChatMode = "stream" | "legacy";
 
 export const officeChatConfig = {
-  /** Default transport: TanStack AI SSE with tools + HITL. */
+  /** Default transport: TanStack AI SSE with coordinator tools. */
   defaultMode: "stream" satisfies OfficeChatMode,
   /** Allow persisting mode override in localStorage. */
   persistModePreference: true,
