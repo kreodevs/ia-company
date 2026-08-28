@@ -46,3 +46,6 @@ venv/
 
 # Workspace projects runtime artifacts
 projects/**/node_modules/
+
+# Kreo sync generated output
+scripts/kreo-sync-results.json
