@@ -1,13 +1,13 @@
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { forwardRef, type ComponentPropsWithoutRef } from 'react'
 
-export interface InputTextProps extends ComponentPropsWithoutRef<"input"> {
-  error?: boolean;
-  fullWidth?: boolean;
-  label?: string;
+export interface InputTextProps extends ComponentPropsWithoutRef<'input'> {
+  error?: boolean
+  fullWidth?: boolean
+  label?: string
 }
 
 export const InputText = forwardRef<HTMLInputElement, InputTextProps>(
-  ({ error, fullWidth, label, className = "", id, ...props }, ref) => {
+  ({ error, fullWidth, label, className = '', id, ...props }, ref) => {
     const baseStyles = `
       flex h-10 rounded-[var(--radius)]
       border border-[var(--input-border)]
@@ -18,15 +18,15 @@ export const InputText = forwardRef<HTMLInputElement, InputTextProps>(
       focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--ring-offset)] focus:border-[var(--input-focus)]
       disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--muted)]
       file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[var(--foreground)]
-    `;
+    `
 
     const errorStyles = error
-      ? "border-[var(--destructive)] focus:ring-[var(--destructive)]"
-      : "";
+      ? 'border-[var(--destructive)] focus:ring-[var(--destructive)]'
+      : ''
 
-    const widthStyles = fullWidth ? "w-full" : "";
+    const widthStyles = fullWidth ? 'w-full' : ''
 
-    const resolvedId = id ?? (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
+    const resolvedId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
 
     const input = (
       <input
@@ -35,21 +35,24 @@ export const InputText = forwardRef<HTMLInputElement, InputTextProps>(
         className={`${baseStyles} ${errorStyles} ${widthStyles} ${className}`.trim()}
         {...props}
       />
-    );
+    )
 
-    if (!label) return input;
+    if (!label) return input
 
     return (
       <div className="flex flex-col gap-[var(--spacing-xs)]">
-        <label htmlFor={resolvedId} className="text-sm font-medium text-[var(--foreground)]">
+        <label
+          htmlFor={resolvedId}
+          className="text-sm font-medium text-[var(--foreground)]"
+        >
           {label}
         </label>
         {input}
       </div>
-    );
-  },
-);
+    )
+  }
+)
 
-InputText.displayName = "InputText";
+InputText.displayName = 'InputText'
 
-export default InputText;
+export default InputText

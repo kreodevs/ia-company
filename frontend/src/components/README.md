@@ -2,6 +2,25 @@
 
 UI built with **Kreo registry components** styled via the **Paperclip Dark Warm** design system (`../DESIGN-PAPERCLIP.md`).
 
+## Kreo registry sync (2026-08-28)
+
+Synced via MCP `user-kreo` (`upgrade_component` + dependency pulls). Skipped local-only files: `CalendarPrimitive.tsx`, `mermaidRepairUtils.ts`, `mermaidRenderUtils.ts`, `markdownEditorWysiwygTheme.css`.
+
+**Major changes:**
+
+- **Button** — `asChild` support (Radix-style composition via `cloneElement`), `loading` prop with spinner
+- **DataTable** — column pinning, resizing, reorder (`@dnd-kit`), virtualized rows, bulk actions (`BulkActionBar`)
+- **DynamicForm** — new field types: `number-field`, `phone`, `cascader`; loading/submitting skeleton states
+- **Calendar** — month/year picker views, `DateRangePicker`, time section
+- **Checkbox / MultiSelect / Switch** — Radix primitives, improved a11y tokens
+- **MermaidDiagram** — fullscreen mode, auto-repair hook
+- **DashboardKPI** — loading skeleton, `reverseTrend`, custom trend icons
+- **New pulled components:** `BulkActionBar`, `PhoneInput`, `Cascader`, `NumberField`, `Command`, `InputGroup`
+
+**Kept local (not overwritten):** `Sonner.tsx` (ThemeContext integration), `MarkdownEditorWysiwyg.tsx` (inline prose classes).
+
+**New npm deps:** `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`, `cmdk`
+
 ## Structure
 
 | Layer | Path | Purpose |
@@ -44,3 +63,5 @@ Stripe HDS Light (`letter`, default), Paperclip Warm (`paperclip`), and Slash �
 ## Dependencies
 
 - `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`, `sonner`
+- `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` (DataTable column reorder)
+- `cmdk` (Command palette / PhoneInput country search)

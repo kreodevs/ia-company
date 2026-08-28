@@ -1,31 +1,31 @@
-import { forwardRef } from "react";
+import { forwardRef } from 'react'
 
 export interface SkeletonProps {
-  variant?: "rounded" | "circular";
-  width?: string | number;
-  height?: string | number;
-  animation?: "pulse" | "none";
-  className?: string;
+  variant?: 'rounded' | 'circular'
+  width?: string | number
+  height?: string | number
+  animation?: 'pulse' | 'none'
+  className?: string
 }
 
-const animationClasses: Record<NonNullable<SkeletonProps["animation"]>, string> = {
-  pulse: "animate-pulse",
-  none: "",
-};
+const animationClasses: Record<NonNullable<SkeletonProps['animation']>, string> = {
+  pulse: 'animate-pulse',
+  none: '',
+}
 
-const variantClasses: Record<NonNullable<SkeletonProps["variant"]>, string> = {
-  rounded: "rounded-[var(--radius)]",
-  circular: "rounded-full",
-};
+const variantClasses: Record<NonNullable<SkeletonProps['variant']>, string> = {
+  rounded: 'rounded-[var(--radius)]',
+  circular: 'rounded-full',
+}
 
 export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
   (
     {
-      variant = "rounded",
-      animation = "pulse",
+      variant = 'rounded',
+      animation = 'pulse',
       width,
       height,
-      className = "",
+      className = '',
     },
     ref,
   ) => {
@@ -34,14 +34,14 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
         ref={ref}
         className={`bg-[var(--muted)] ${animationClasses[animation]} ${variantClasses[variant]} ${className}`}
         style={{
-          width: width ?? "100%",
-          height: height ?? "1rem",
+          width: width ?? '100%',
+          height: height ?? '1rem',
         }}
       />
-    );
+    )
   },
-);
+)
 
-Skeleton.displayName = "Skeleton";
+Skeleton.displayName = 'Skeleton'
 
-export default Skeleton;
+export default Skeleton

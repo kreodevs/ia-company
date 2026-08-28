@@ -1,62 +1,59 @@
-import { forwardRef, useId } from "react";
-import { cn } from "@/lib/utils";
-import { Switch } from "../atoms/Switch";
-import { Label } from "../atoms/Label";
+import { forwardRef, useId } from 'react'
+import { cn } from '@/lib/utils'
+import { Switch } from '../atoms/Switch'
+import { Label } from '../atoms/Label'
 
-export type LegacyRoleFlagKey = "admin" | "sales" | "warehouse";
-export type LegacyRoleFlags = Record<LegacyRoleFlagKey, boolean>;
+export type LegacyRoleFlagKey = 'admin' | 'sales' | 'warehouse'
+export type LegacyRoleFlags = Record<LegacyRoleFlagKey, boolean>
 
 export interface RoleFlagDefinition {
-  key: LegacyRoleFlagKey;
-  label: string;
-  description?: string;
+  key: LegacyRoleFlagKey
+  label: string
+  description?: string
 }
 
 const DEFAULT_FLAGS: RoleFlagDefinition[] = [
-  { key: "admin", label: "Administrador" },
-  { key: "sales", label: "Ventas" },
-  { key: "warehouse", label: "Almacén" },
-];
+  { key: 'admin', label: 'Administrador' },
+  { key: 'sales', label: 'Ventas' },
+  { key: 'warehouse', label: 'Almacén' },
+]
 
 export interface RoleFlagsGroupProps {
-  value: LegacyRoleFlags;
-  onChange: (value: LegacyRoleFlags) => void;
-  disabled?: boolean;
-  readOnly?: boolean;
-  layout?: "inline" | "stacked";
-  flags?: RoleFlagDefinition[];
-  className?: string;
-  name?: string;
+  value: LegacyRoleFlags
+  onChange: (value: LegacyRoleFlags) => void
+  disabled?: boolean
+  readOnly?: boolean
+  layout?: 'inline' | 'stacked'
+  flags?: RoleFlagDefinition[]
+  className?: string
+  name?: string
 }
 
-export const RoleFlagsGroup = forwardRef<
-  HTMLFieldSetElement | HTMLDivElement,
-  RoleFlagsGroupProps
->(
+export const RoleFlagsGroup = forwardRef<HTMLFieldSetElement | HTMLDivElement, RoleFlagsGroupProps>(
   (
     {
       value,
       onChange,
       disabled = false,
       readOnly = false,
-      layout = "inline",
+      layout = 'inline',
       flags = DEFAULT_FLAGS,
       className,
       name,
     },
-    ref,
+    ref
   ) => {
-    const baseId = useId();
-    const isDisabled = disabled || readOnly;
+    const baseId = useId()
+    const isDisabled = disabled || readOnly
 
     const handleToggle = (key: LegacyRoleFlagKey, checked: boolean) => {
-      if (isDisabled) return;
-      onChange({ ...value, [key]: checked });
-    };
+      if (isDisabled) return
+      onChange({ ...value, [key]: checked })
+    }
 
     const renderInlineFlag = (flag: RoleFlagDefinition) => {
-      const id = `${baseId}-${flag.key}`;
-      const descId = flag.description ? `${id}-desc` : undefined;
+      const id = `${baseId}-${flag.key}`
+      const descId = flag.description ? `${id}-desc` : undefined
 
       return (
         <div key={flag.key} className="flex items-center gap-[var(--spacing-sm)]">
@@ -79,12 +76,12 @@ export const RoleFlagsGroup = forwardRef<
             )}
           </div>
         </div>
-      );
-    };
+      )
+    }
 
     const renderStackedFlag = (flag: RoleFlagDefinition) => {
-      const id = `${baseId}-${flag.key}`;
-      const descId = flag.description ? `${id}-desc` : undefined;
+      const id = `${baseId}-${flag.key}`
+      const descId = flag.description ? `${id}-desc` : undefined
 
       return (
         <div
@@ -110,17 +107,17 @@ export const RoleFlagsGroup = forwardRef<
             aria-describedby={descId}
           />
         </div>
-      );
-    };
+      )
+    }
 
-    if (layout === "stacked") {
+    if (layout === 'stacked') {
       return (
         <fieldset
           ref={ref as React.Ref<HTMLFieldSetElement>}
           disabled={disabled}
           className={cn(
-            "border border-[var(--border)] rounded-[var(--radius)] p-[var(--spacing-md)] bg-[var(--background)]",
-            className,
+            'border border-[var(--border)] rounded-[var(--radius)] p-[var(--spacing-md)] bg-[var(--background)]',
+            className
           )}
         >
           <legend className="px-[var(--spacing-xs)] text-sm font-semibold text-[var(--foreground)]">
@@ -128,7 +125,7 @@ export const RoleFlagsGroup = forwardRef<
           </legend>
           <div className="mt-[var(--spacing-sm)]">{flags.map(renderStackedFlag)}</div>
         </fieldset>
-      );
+      )
     }
 
     return (
@@ -136,14 +133,14 @@ export const RoleFlagsGroup = forwardRef<
         ref={ref as React.Ref<HTMLDivElement>}
         role="group"
         aria-label="Roles"
-        className={cn("flex flex-wrap gap-[var(--spacing-lg)]", className)}
+        className={cn('flex flex-wrap gap-[var(--spacing-lg)]', className)}
       >
         {flags.map(renderInlineFlag)}
       </div>
-    );
-  },
-);
+    )
+  }
+)
 
-RoleFlagsGroup.displayName = "RoleFlagsGroup";
+RoleFlagsGroup.displayName = 'RoleFlagsGroup'
 
-export default RoleFlagsGroup;
+export default RoleFlagsGroup
