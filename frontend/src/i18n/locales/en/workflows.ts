@@ -75,6 +75,11 @@ export const workflows = {
     agentNodeLabel: "Agent",
     addAgentNode: "+ Add agent node…",
     saveWorkflow: "Save workflow",
+    editNode: "Edit step",
+    nodeAgent: "Agent",
+    nodeLabel: "Step label",
+    deleteNode: "Delete step",
+    editHint: "Drag to reposition. Connect handles to define order. Delete or Backspace removes the selected step.",
   },
   card: {
     openEditor: "Open editor",

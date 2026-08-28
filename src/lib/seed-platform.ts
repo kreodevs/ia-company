@@ -95,6 +95,9 @@ function inferSkillsForAgent(slug: string): string[] {
     "cfo-campbell": ["financial-unit-economics", "startup-financial-modeling"],
     "research-thompson": ["deep-research", "competitive-intelligence-analyst"],
     "coordinator-chief": ["team", "product-strategist", "tenant-email-outbound", "tenant-mcp-tools"],
+    "copy-manager": ["content-strategy", "seo-content-strategist"],
+    "community-manager": ["community-led-growth", "ph-community-outreach"],
+    "marketing-strategist": ["content-strategy", "seo-content-strategist"],
   };
   return map[slug] ?? [];
 }
@@ -365,9 +368,13 @@ async function upsertPlatformWorkflow(
   await client.workflowStep.deleteMany({ where: { workflowId: workflow.id } });
 
   const stepIds: string[] = [];
+  const skippedSteps: string[] = [];
   for (let i = 0; i < wf.steps.length; i++) {
     const agentId = wf.agentByName.get(wf.steps[i]);
-    if (!agentId) continue;
+    if (!agentId) {
+      skippedSteps.push(wf.steps[i]);
+      continue;
+    }
 
     const step = await client.workflowStep.create({
       data: {
@@ -382,6 +389,12 @@ async function upsertPlatformWorkflow(
       },
     });
     stepIds.push(step.id);
+  }
+
+  if (skippedSteps.length > 0) {
+    console.warn(
+      `[seed-platform] Workflow "${wf.name}" skipped missing agents: ${skippedSteps.join(", ")}`,
+    );
   }
 
   for (let i = 0; i < stepIds.length - 1; i++) {

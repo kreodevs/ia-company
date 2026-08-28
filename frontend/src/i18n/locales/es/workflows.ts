@@ -75,6 +75,11 @@ export const workflows = {
     agentNodeLabel: "Agente",
     addAgentNode: "+ Añadir nodo de agente…",
     saveWorkflow: "Guardar workflow",
+    editNode: "Editar paso",
+    nodeAgent: "Agente",
+    nodeLabel: "Etiqueta del paso",
+    deleteNode: "Eliminar paso",
+    editHint: "Arrastra para mover. Conecta los handles para definir el orden. Supr o Delete elimina el paso seleccionado.",
   },
   card: {
     openEditor: "Abrir editor",

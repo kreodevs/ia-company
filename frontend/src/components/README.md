@@ -39,6 +39,7 @@ Synced via MCP `user-kreo` (`upgrade_component` + dependency pulls). Skipped loc
 | Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
 | Layout | `AppHeader.tsx` | Fixed top bar (tenant, theme, language, logout); solid at top, translucent + blur on scroll |
 | Layout | `AuthPageShell.tsx` | Unauthenticated pages: gradient backdrop + centered card column |
+| Workflows | `WorkflowCanvas.tsx` | React Flow editor: floating toolbar (add/save), node panel (agent, label, delete), drag/connect/delete key |
 
 ## Themes
 
