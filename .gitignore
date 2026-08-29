@@ -49,3 +49,4 @@ projects/**/node_modules/
 
 # Kreo sync generated output
 scripts/kreo-sync-results.json
+scripts/kreo-pull-flow-support.mjs
