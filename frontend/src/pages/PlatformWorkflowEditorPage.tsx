@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import WorkflowCanvas from "../components/WorkflowCanvas";
+import WorkflowFlowEditor from "../components/workflows/WorkflowFlowEditor";
 import { api, type Agent, type Workflow } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
 import PageLoading from "../components/ui/PageLoading";
@@ -136,7 +136,7 @@ export default function PlatformWorkflowEditorPage() {
       </Panel>
 
       <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
-        <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+        <WorkflowFlowEditor workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
       </div>
     </div>
   );

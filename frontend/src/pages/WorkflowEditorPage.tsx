@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import WorkflowCanvas from "../components/WorkflowCanvas";
+import WorkflowFlowEditor from "../components/workflows/WorkflowFlowEditor";
 import WorkflowAiEnrichModal from "../components/workflows/WorkflowAiEnrichModal";
 import { api, type Agent, type TenantConsensus, type Workflow } from "../lib/api";
 import {
@@ -172,7 +172,13 @@ export default function WorkflowEditorPage() {
       </Panel>
 
       <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
-        <WorkflowCanvas workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
+        <WorkflowFlowEditor
+          workflow={workflow}
+          agents={agents}
+          onSave={handleSave}
+          saving={saving}
+          showExecute
+        />
       </div>
 
       <WorkflowAiEnrichModal

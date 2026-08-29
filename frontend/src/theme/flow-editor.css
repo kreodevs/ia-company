@@ -1,0 +1,14 @@
+/* Kreo FlowEditor canvas tokens — aliases to app theme */
+.react-flow {
+  --xy-background-color: var(--flow-canvas-bg, var(--color-background));
+}
+
+.react-flow__controls button {
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.react-flow__controls button:hover {
+  background: var(--secondary);
+}

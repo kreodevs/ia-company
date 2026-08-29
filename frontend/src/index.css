@@ -785,7 +785,8 @@ html[data-sidebar-collapsed="true"] .app-sidebar {
 }
 
 .react-flow__node-agent.selected {
-  border-color: var(--flow-node-selected-border);
+  border-color: var(--flow-node-selected-border, var(--color-primary));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
 
 .markdown-doc h1,

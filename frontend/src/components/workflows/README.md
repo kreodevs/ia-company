@@ -1,26 +1,17 @@
-# Workflow components
+# Workflow UI
 
-## `WorkflowAiStudioModal`
+| Component | Purpose |
+|-----------|---------|
+| `WorkflowFlowEditor.tsx` | Kreo **FlowEditor** wrapper — palette flotante, inspector derecho, undo/redo, preset `auto-company` |
+| `WorkflowCanvas.tsx` | Legacy React Flow (deprecado — sustituido por FlowEditor) |
 
-Modal launched from **Flujos** → **Crear con IA**. Body scrolls inside the shared `Dialog` (max 90vh) when the proposal is long (steps, gaps, Munger veto).
+## FlowEditor integration
 
-Munger pre-mortem receives **newAgents**, **newSkills**, and **gaps** — it must not veto for capabilities the proposal already plans to create. If gaps are fully covered by planned catalog additions, a mistaken veto is auto-cleared.
+- Preset: `frontend/src/presets/auto-company.ts`
+- Adaptador legacy steps ↔ grafo: `frontend/src/lib/workflow-flow-adapter.ts`
+- Kreo organisms: `frontend/src/components/organisms/Flow*.tsx`, `flowEditor*.ts`
 
-- `POST /catalog-studio/workflows/propose` — design or ask clarifying questions
-- `POST /catalog-studio/workflows/apply` — create approved agents/skills + workflow graph
+Used in:
 
-After apply, navigates to `/office/workflows/:id`.
-
-## `WorkflowAiEnrichModal`
-
-Launched from the workflow editor (**Enriquecer con IA**). Updates an **existing** graph in place.
-
-- `POST /catalog-studio/workflows/enrich/propose` — brief + current graph → proposal + **impact report**
-- `GET /catalog-studio/workflows/:workflowId/impact` — references (schedules, org units, coordinator services, presets) and risk messages
-- `POST /catalog-studio/workflows/enrich/apply` — persist enrichment; optional `allowRename` when the slug changes
-
-Impact panel clarifies: **other flows are not deleted**, but anything referencing this procedure will run the enriched version.
-
-## `WorkflowImpactPanel`
-
-Renders references and severity-coded risks from `WorkflowImpactReport`.
+- `/admin/templates/workflows/:id` (`PlatformWorkflowEditorPage`)
+- `/settings/procedures/...` workflow editor (`WorkflowEditorPage`)

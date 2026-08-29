@@ -79,6 +79,7 @@ export const workflows = {
     nodeAgent: "Agent",
     nodeLabel: "Step label",
     deleteNode: "Delete step",
+    selectStepHint: "Click a step on the canvas to edit agent, label, or delete it.",
     editHint: "Drag to reposition. Connect handles to define order. Delete or Backspace removes the selected step.",
   },
   card: {

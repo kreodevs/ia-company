@@ -3,7 +3,6 @@ import {
   Controls,
   Handle,
   MiniMap,
-  Panel,
   Position,
   ReactFlow,
   addEdge,
@@ -200,76 +199,62 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
   );
 
   return (
-    <div className="workflow-canvas-shell h-[min(420px,55vh)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--flow-canvas-bg,var(--color-background))] sm:h-[500px] lg:h-[600px]">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onSelectionChange={({ nodes: selectedNodes }) => {
-          setSelectedNodeId(selectedNodes.length === 1 ? selectedNodes[0]!.id : null);
-        }}
-        nodeTypes={nodeTypes}
-        nodesDraggable
-        nodesConnectable
-        elementsSelectable
-        deleteKeyCode={["Backspace", "Delete"]}
-        fitView
-        colorMode={flowColorMode}
-      >
-        <Panel
-          position="top-left"
-          className="flex max-w-[calc(100%-1rem)] flex-wrap items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/95 p-2 shadow-sm backdrop-blur-sm"
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+        <select
+          className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm sm:min-w-[220px] sm:flex-none"
+          defaultValue=""
+          onChange={(e) => {
+            if (e.target.value) {
+              addAgentNode(e.target.value);
+              e.target.value = "";
+            }
+          }}
         >
-          <select
-            className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm sm:min-w-[220px] sm:flex-none"
-            defaultValue=""
-            onChange={(e) => {
-              if (e.target.value) {
-                addAgentNode(e.target.value);
-                e.target.value = "";
-              }
-            }}
-          >
-            <option value="">{t("workflows.canvas.addAgentNode")}</option>
-            {agents.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
-          >
-            {saving ? t("common.saving") : t("workflows.canvas.saveWorkflow")}
-          </button>
-        </Panel>
+          <option value="">{t("workflows.canvas.addAgentNode")}</option>
+          {agents.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] disabled:opacity-50"
+        >
+          {saving ? t("common.saving") : t("workflows.canvas.saveWorkflow")}
+        </button>
+      </div>
 
-        {selectedNode && (
-          <Panel
-            position="top-right"
-            className="w-[min(100%,18rem)] space-y-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]/95 p-3 shadow-sm backdrop-blur-sm"
-          >
-            <div className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-              {t("workflows.canvas.editNode")}
+      <div
+        className={`rounded-xl border p-3 transition-colors ${
+          selectedNode
+            ? "border-[var(--color-primary)]/40 bg-[var(--color-primary)]/5"
+            : "border-dashed border-[var(--color-border)] bg-[var(--color-muted)]/20"
+        }`}
+      >
+        {selectedNode ? (
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <div className="space-y-1">
+              <div className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
+                {t("workflows.canvas.editNode")}
+              </div>
+              <label className="block space-y-1 text-sm">
+                <span className="font-medium">{t("workflows.canvas.nodeAgent")}</span>
+                <select
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                  value={selectedNode.data.agentId}
+                  onChange={(e) => updateSelectedAgent(e.target.value)}
+                >
+                  {agents.map((agent) => (
+                    <option key={agent.id} value={agent.id}>
+                      {agent.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
-            <label className="block space-y-1 text-sm">
-              <span className="font-medium">{t("workflows.canvas.nodeAgent")}</span>
-              <select
-                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
-                value={selectedNode.data.agentId}
-                onChange={(e) => updateSelectedAgent(e.target.value)}
-              >
-                {agents.map((agent) => (
-                  <option key={agent.id} value={agent.id}>
-                    {agent.name}
-                  </option>
-                ))}
-              </select>
-            </label>
             <label className="block space-y-1 text-sm">
               <span className="font-medium">{t("workflows.canvas.nodeLabel")}</span>
               <input
@@ -281,22 +266,44 @@ export default function WorkflowCanvas({ workflow, agents, onSave, saving }: Wor
             <button
               type="button"
               onClick={deleteSelectedNode}
-              className="w-full rounded-lg border border-[var(--color-destructive)] px-3 py-2 text-sm font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10"
+              className="h-10 rounded-lg border border-[var(--color-destructive)] px-4 text-sm font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10 sm:h-auto sm:py-2"
             >
               {t("workflows.canvas.deleteNode")}
             </button>
-            <p className="text-xs text-[var(--color-muted-foreground)]">{t("workflows.canvas.editHint")}</p>
-          </Panel>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t("workflows.canvas.selectStepHint")}</p>
         )}
+        <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">{t("workflows.canvas.editHint")}</p>
+      </div>
 
-        <Background gap={20} color="var(--flow-grid-color, var(--color-border))" />
-        <Controls className="!bottom-2 !left-2 sm:!bottom-4 sm:!left-4" />
-        <MiniMap
-          className="!hidden sm:!block"
-          nodeColor="var(--flow-minimap-node, var(--color-primary))"
-          maskColor="var(--flow-minimap-mask, rgb(0 0 0 / 0.6))"
-        />
-      </ReactFlow>
+      <div className="workflow-canvas-shell h-[min(420px,55vh)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--flow-canvas-bg,var(--color-background))] sm:h-[500px] lg:h-[600px]">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+          onPaneClick={() => setSelectedNodeId(null)}
+          onNodesDelete={() => setSelectedNodeId(null)}
+          nodeTypes={nodeTypes}
+          nodesDraggable
+          nodesConnectable
+          elementsSelectable
+          deleteKeyCode={["Backspace", "Delete"]}
+          fitView
+          colorMode={flowColorMode}
+        >
+          <Background gap={20} color="var(--flow-grid-color, var(--color-border))" />
+          <Controls className="!bottom-2 !left-2 sm:!bottom-4 sm:!left-4" />
+          <MiniMap
+            className="!hidden sm:!block"
+            nodeColor="var(--flow-minimap-node, var(--color-primary))"
+            maskColor="var(--flow-minimap-mask, rgb(0 0 0 / 0.6))"
+          />
+        </ReactFlow>
+      </div>
     </div>
   );
 }

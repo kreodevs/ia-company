@@ -79,6 +79,7 @@ export const workflows = {
     nodeAgent: "Agente",
     nodeLabel: "Etiqueta del paso",
     deleteNode: "Eliminar paso",
+    selectStepHint: "Haz clic en un paso del canvas para editar agente, etiqueta o eliminarlo.",
     editHint: "Arrastra para mover. Conecta los handles para definir el orden. Supr o Delete elimina el paso seleccionado.",
   },
   card: {
