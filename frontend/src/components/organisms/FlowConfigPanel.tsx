@@ -1,13 +1,17 @@
 import { useCallback, useMemo } from 'react'
-import type { Node } from '@xyflow/react'
+import type { Edge, Node } from '@xyflow/react'
 import { Copy, Loader2, Play, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/atoms/Button'
 import { InputText } from '@/components/atoms/InputText'
+import { Switch } from '@/components/atoms/Switch'
 import { Textarea } from '@/components/atoms/Textarea'
+import { buildRunAgentIOSummary, getUpstreamAgentNodes } from '@/lib/flowStepIO'
 import { FlowExpressionBuilder } from './FlowExpressionBuilder'
+import { FlowStepIOPanel } from './FlowStepIOPanel'
 import type {
   FlowConfigField,
+  FlowConfigFieldGroup,
   FlowDataSources,
   FlowI18n,
   FlowNodeExecutionStatus,
@@ -18,11 +22,13 @@ import { getFlowConfigFields } from './flowEditorUtils'
 
 export interface FlowConfigPanelProps {
   node: Node
+  nodes?: Node[]
+  edges?: Edge[]
   actionConfigFields?: Record<string, FlowConfigField[]>
   triggerVariables?: FlowTriggerVariable[]
   dataSources?: FlowDataSources
   i18n?: FlowI18n
-  onUpdateParam: (key: string, value: string | number) => void
+  onUpdateParam: (key: string, value: string | number | boolean) => void
   onClose: () => void
   onDelete?: () => void
   onDuplicate?: () => void
@@ -35,6 +41,8 @@ export interface FlowConfigPanelProps {
 
 export function FlowConfigPanel({
   node,
+  nodes = [],
+  edges = [],
   actionConfigFields,
   triggerVariables = [],
   dataSources = {},
@@ -102,8 +110,178 @@ export function FlowConfigPanel({
   )
 
   const scalarFields = configFields.filter(
-    (f) => f.type !== 'datasource' && (semanticType !== 'condition' || !['field', 'operator', 'value'].includes(f.key)),
+    (f) =>
+      f.type !== 'datasource'
+      && f.type !== 'boolean'
+      && (semanticType !== 'condition' || !['field', 'operator', 'value'].includes(f.key)),
   )
+
+  const booleanFields = configFields.filter((f) => f.type === 'boolean')
+
+  const groupTitles: Record<FlowConfigFieldGroup, string> = {
+    general: i18n?.configGroupGeneral ?? 'General',
+    input: i18n?.configGroupInput ?? 'Ajustar entrada',
+    output: i18n?.configGroupOutput ?? 'Ajustar salida',
+  }
+
+  const fieldsByGroup = useMemo(() => {
+    const groups: Record<FlowConfigFieldGroup, FlowConfigField[]> = {
+      general: [],
+      input: [],
+      output: [],
+    }
+    for (const field of [...scalarFields, ...booleanFields]) {
+      const group = field.group ?? 'general'
+      groups[group].push(field)
+    }
+    return groups
+  }, [booleanFields, scalarFields])
+
+  const runAgentIOSummary = useMemo(() => {
+    if (action !== 'run_agent') return null
+    const upstream = getUpstreamAgentNodes(node.id, nodes, edges)
+    return buildRunAgentIOSummary(params, upstream, triggerVariables)
+  }, [action, edges, node.id, nodes, params, triggerVariables])
+
+  const insertVariables = useMemo(() => {
+    if (action !== 'run_agent') return triggerVariables
+    const upstream = getUpstreamAgentNodes(node.id, nodes, edges)
+    const upstreamVars: FlowTriggerVariable[] = upstream.map((upstreamNode) => {
+      const upParams = (upstreamNode.data as Record<string, unknown>).params as Record<string, unknown> | undefined
+      const upAgentId = String(upParams?.agentId ?? upstreamNode.data.label ?? upstreamNode.id)
+      const memoryKey = String(upParams?.memoryKey ?? '').trim() || upAgentId
+      return {
+        path: memoryKey,
+        label: String((upstreamNode.data as Record<string, unknown>).label ?? upAgentId),
+        description: 'Salida del paso anterior',
+        example: memoryKey,
+      }
+    })
+    const seen = new Set<string>()
+    return [...triggerVariables, ...upstreamVars].filter((v) => {
+      if (seen.has(v.path)) return false
+      seen.add(v.path)
+      return true
+    })
+  }, [action, edges, node.id, nodes, triggerVariables])
+
+  const renderScalarField = (field: FlowConfigField) => (
+    <div key={field.key} className="space-y-[var(--spacing-xs)]">
+      <label className="text-[11px] font-medium text-[var(--foreground)]" htmlFor={`flow-field-${field.key}`}>
+        {field.label}
+      </label>
+      {field.helpText ? (
+        <p className="text-[9px] leading-snug text-[var(--foreground-muted)]">{field.helpText}</p>
+      ) : null}
+      {field.type === 'textarea' ? (
+        <Textarea
+          id={`flow-field-${field.key}`}
+          value={String(params[field.key] ?? field.defaultValue ?? '')}
+          onChange={(e) => onUpdateParam(field.key, e.target.value)}
+          placeholder={field.placeholder}
+          rows={3}
+          data-field-key={field.key}
+          readOnly={readOnly}
+          disabled={readOnly}
+          className="font-mono text-xs"
+        />
+      ) : field.type === 'select' ? (
+        <select
+          id={`flow-field-${field.key}`}
+          value={String(params[field.key] ?? field.defaultValue ?? '')}
+          onChange={(e) => onUpdateParam(field.key, e.target.value)}
+          disabled={readOnly}
+          className="w-full cursor-pointer rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)] px-[var(--spacing-sm)] py-[var(--spacing-xs)] text-xs text-[var(--foreground)] focus:border-[var(--input-focus)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
+        >
+          <option value="">—</option>
+          {field.options?.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <InputText
+          id={`flow-field-${field.key}`}
+          type={field.type === 'number' ? 'number' : 'text'}
+          value={String(params[field.key] ?? field.defaultValue ?? '')}
+          onChange={(e) =>
+            onUpdateParam(field.key, field.type === 'number' ? Number(e.target.value) : e.target.value)
+          }
+          placeholder={field.placeholder}
+          data-field-key={field.key}
+          disabled={readOnly}
+          fullWidth
+        />
+      )}
+    </div>
+  )
+
+  const renderBooleanField = (field: FlowConfigField) => {
+    const checked = params[field.key] !== undefined ? Boolean(params[field.key]) : Boolean(field.defaultValue)
+    return (
+      <div key={field.key} className="flex items-start justify-between gap-[var(--spacing-sm)] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--background)]/50 px-[var(--spacing-sm)] py-[var(--spacing-xs)]">
+        <div className="min-w-0 flex-1">
+          <label className="text-[11px] font-medium text-[var(--foreground)]" htmlFor={`flow-field-${field.key}`}>
+            {field.label}
+          </label>
+          {field.helpText ? (
+            <p className="mt-[1px] text-[9px] leading-snug text-[var(--foreground-muted)]">{field.helpText}</p>
+          ) : null}
+        </div>
+        <Switch
+          id={`flow-field-${field.key}`}
+          checked={checked}
+          onCheckedChange={(value) => onUpdateParam(field.key, value)}
+          disabled={readOnly}
+          aria-label={field.label}
+        />
+      </div>
+    )
+  }
+
+  const renderFieldGroup = (group: FlowConfigFieldGroup) => {
+    const fields = fieldsByGroup[group]
+    if (fields.length === 0) return null
+
+    const scalar = fields.filter((f) => f.type !== 'boolean')
+    const toggles = fields.filter((f) => f.type === 'boolean')
+
+    return (
+      <div key={group} className="space-y-[var(--spacing-sm)]">
+        {action === 'run_agent' && group !== 'general' ? (
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
+            {groupTitles[group]}
+          </p>
+        ) : null}
+        {toggles.map(renderBooleanField)}
+        {scalar.map(renderScalarField)}
+        {group === 'input'
+          && semanticType !== 'trigger'
+          && insertVariables.length > 0
+          && templateFields.some((f) => f.group === 'input' || f.key === 'customPrompt') ? (
+            <div className="space-y-[var(--spacing-xs)]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
+                {i18n?.insertVariable ?? 'Insert variable'}
+              </p>
+              <div className="flex flex-wrap gap-[var(--spacing-xs)]">
+                {insertVariables.map((v) => (
+                  <button
+                    key={v.path}
+                    type="button"
+                    onClick={() => insertVariable(v.path)}
+                    title={`${v.label} — e.g. ${v.example ?? v.path}`}
+                    className="cursor-pointer rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-[var(--spacing-sm)] py-[2px] font-mono text-[9px] text-[var(--primary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/20 focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  >
+                    {`{{${v.path}}}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+      </div>
+    )
+  }
 
   return (
     <div
@@ -167,6 +345,8 @@ export function FlowConfigPanel({
         </Button>
       )}
 
+      {runAgentIOSummary ? <FlowStepIOPanel summary={runAgentIOSummary} i18n={i18n} /> : null}
+
       {semanticType === 'trigger' && triggerVariables.length > 0 && (
         <div className="space-y-[var(--spacing-sm)]">
           <p className="text-[11px] font-semibold text-[var(--foreground)]">
@@ -192,27 +372,6 @@ export function FlowConfigPanel({
           onUpdate={onUpdateParam}
           readOnly={readOnly}
         />
-      )}
-
-      {semanticType !== 'trigger' && triggerVariables.length > 0 && templateFields.length > 0 && (
-        <div className="space-y-[var(--spacing-xs)]">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
-            {i18n?.insertVariable ?? 'Insert variable'}
-          </p>
-          <div className="flex flex-wrap gap-[var(--spacing-xs)]">
-            {triggerVariables.map((v) => (
-              <button
-                key={v.path}
-                type="button"
-                onClick={() => insertVariable(v.path)}
-                title={`${v.label} — e.g. ${v.example}`}
-                className="cursor-pointer rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-[var(--spacing-sm)] py-[2px] font-mono text-[9px] text-[var(--primary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/20 focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-              >
-                {`{{${v.path}}}`}
-              </button>
-            ))}
-          </div>
-        </div>
       )}
 
       {datasourceGroups.map(({ field, key, label, options }) => (
@@ -258,54 +417,40 @@ export function FlowConfigPanel({
         </p>
       )}
 
-      {scalarFields.map((field) => (
-        <div key={field.key} className="space-y-[var(--spacing-xs)]">
-          <label className="text-[11px] font-medium text-[var(--foreground)]" htmlFor={`flow-field-${field.key}`}>
-            {field.label}
-          </label>
-          {field.type === 'textarea' ? (
-            <Textarea
-              id={`flow-field-${field.key}`}
-              value={String(params[field.key] ?? field.defaultValue ?? '')}
-              onChange={(e) => onUpdateParam(field.key, e.target.value)}
-              placeholder={field.placeholder}
-              rows={3}
-              data-field-key={field.key}
-              readOnly={readOnly}
-              disabled={readOnly}
-              className="font-mono text-xs"
-            />
-          ) : field.type === 'select' ? (
-            <select
-              id={`flow-field-${field.key}`}
-              value={String(params[field.key] ?? field.defaultValue ?? '')}
-              onChange={(e) => onUpdateParam(field.key, e.target.value)}
-              disabled={readOnly}
-              className="w-full cursor-pointer rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)] px-[var(--spacing-sm)] py-[var(--spacing-xs)] text-xs text-[var(--foreground)] focus:border-[var(--input-focus)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
-            >
-              <option value="">—</option>
-              {field.options?.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <InputText
-              id={`flow-field-${field.key}`}
-              type={field.type === 'number' ? 'number' : 'text'}
-              value={String(params[field.key] ?? field.defaultValue ?? '')}
-              onChange={(e) =>
-                onUpdateParam(field.key, field.type === 'number' ? Number(e.target.value) : e.target.value)
-              }
-              placeholder={field.placeholder}
-              data-field-key={field.key}
-              disabled={readOnly}
-              fullWidth
-            />
-          )}
-        </div>
-      ))}
+      {action === 'run_agent' ? (
+        <>
+          {renderFieldGroup('general')}
+          {renderFieldGroup('input')}
+          {renderFieldGroup('output')}
+        </>
+      ) : (
+        <>
+          {(['general', 'input', 'output'] as FlowConfigFieldGroup[]).map(renderFieldGroup)}
+          {semanticType !== 'trigger'
+            && triggerVariables.length > 0
+            && templateFields.length > 0
+            && !fieldsByGroup.input.length ? (
+              <div className="space-y-[var(--spacing-xs)]">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
+                  {i18n?.insertVariable ?? 'Insert variable'}
+                </p>
+                <div className="flex flex-wrap gap-[var(--spacing-xs)]">
+                  {triggerVariables.map((v) => (
+                    <button
+                      key={v.path}
+                      type="button"
+                      onClick={() => insertVariable(v.path)}
+                      title={`${v.label} — e.g. ${v.example ?? v.path}`}
+                      className="cursor-pointer rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-[var(--spacing-sm)] py-[2px] font-mono text-[9px] text-[var(--primary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/20 focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                    >
+                      {`{{${v.path}}}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+        </>
+      )}
 
       {Object.keys(params).length > 0 && (
         <details>

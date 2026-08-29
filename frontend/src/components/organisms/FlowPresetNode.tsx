@@ -13,6 +13,7 @@ import {
 import type { FlowNodeData, FlowSemanticType } from './flowEditorTypes'
 import { resolveFlowIcon } from './flowEditorIcons'
 import { summarizeNodeParams } from './flowEditorUtils'
+import { summarizeRunAgentNodeIO } from '@/lib/flowStepIO'
 import { FlowNodeShell } from './FlowNodeShell'
 import { useFlowEditorContext, useFlowNodePreset } from './flowEditorContext'
 
@@ -37,7 +38,10 @@ function FlowPresetNodeInner({ id, data, selected, semanticType }: NodeProps & {
       ? resolveFlowIcon(action, nodeData.icon, ctx?.actionIcons)
       : (SEMANTIC_ICONS[semanticType] ?? Play)
 
-  const paramPreview = summarizeNodeParams(nodeData.params, semanticType === 'condition' ? 3 : 2)
+  const paramPreview =
+    action === 'run_agent'
+      ? summarizeRunAgentNodeIO(nodeData.params)
+      : summarizeNodeParams(nodeData.params, semanticType === 'condition' ? 3 : 2)
   const executeLabel = preset.executeLabel ?? ctx?.i18n.executeLabels?.[semanticType] ?? 'Test'
 
   const sourceHandles = preset.sourceHandles?.map((handle) => ({

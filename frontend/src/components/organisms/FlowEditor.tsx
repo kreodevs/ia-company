@@ -342,7 +342,7 @@ function FlowEditorInner({
   )
 
   const updateParam = useCallback(
-    (key: string, value: string | number) => {
+    (key: string, value: string | number | boolean) => {
       if (!selectedNodeId || readOnly) return
       setNodes((nds) =>
         nds.map((n) => {
@@ -675,6 +675,8 @@ function FlowEditorInner({
           {selectedNode && (
             <FlowConfigPanel
               node={selectedNode}
+              nodes={nodes}
+              edges={edges}
               actionConfigFields={actionConfigFields}
               triggerVariables={triggerVariables}
               dataSources={dataSources}

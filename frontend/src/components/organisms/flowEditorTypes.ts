@@ -48,6 +48,8 @@ export interface FlowPaletteGroup {
   items: FlowPaletteItem[];
 }
 
+export type FlowConfigFieldGroup = "general" | "input" | "output";
+
 export interface FlowConfigField {
   key: string;
   label: string;
@@ -59,6 +61,9 @@ export interface FlowConfigField {
   dataSourceKey?: string;
   dataSourceLabel?: string;
   mapsTo?: string;
+  /** Groups fields in the config panel (run_agent input/output tuning). */
+  group?: FlowConfigFieldGroup;
+  helpText?: string;
 }
 
 export interface FlowHandleDefinition {
@@ -124,6 +129,14 @@ export interface FlowI18n {
   deleteNode?: string;
   executeLabels?: Partial<Record<FlowSemanticType, string>>;
   dataSourceLabels?: Record<string, string>;
+  stepIOHint?: string;
+  stepInputsTitle?: string;
+  stepInputsHint?: string;
+  stepOutputsTitle?: string;
+  stepOutputsHint?: string;
+  configGroupGeneral?: string;
+  configGroupInput?: string;
+  configGroupOutput?: string;
 }
 
 export interface FlowEditorPreset {
