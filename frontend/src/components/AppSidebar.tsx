@@ -28,10 +28,10 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Button from "./ui/Button";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { usePendingDecisionsCount } from "../hooks/usePendingDecisionsCount";
 import ThemeSwitcher from "./ThemeSwitcher";
 import OfficeSpendWidget from "./office/OfficeSpendWidget";
 import { useAuth } from "../context/AuthContext";
-import { api } from "../lib/api";
 import {
   flattenNavItems,
   getStoredSidebarCollapsed,
@@ -317,26 +317,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     document.documentElement.dataset.sidebarCollapsed = collapsed ? "true" : "false";
   }, [collapsed]);
 
-  const [pendingDecisions, setPendingDecisions] = useState(0);
-
-  useEffect(() => {
-    if (!showTenantNav) {
-      setPendingDecisions(0);
-      return;
-    }
-    let cancelled = false;
-    api.office
-      .dashboard()
-      .then((dashboard) => {
-        if (!cancelled) setPendingDecisions(dashboard.stats.pendingDecisions);
-      })
-      .catch(() => {
-        if (!cancelled) setPendingDecisions(0);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [showTenantNav, activeTenant?.id]);
+  const pendingDecisions = usePendingDecisionsCount(showTenantNav);
 
   const sections = useMemo(() => {
     const result: NavSection[] = [];

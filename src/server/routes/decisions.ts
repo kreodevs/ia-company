@@ -11,6 +11,7 @@ import {
   getDecisionProposal,
   getDecisionProposalEnriched,
   listDecisionProposalsEnriched,
+  countPendingProposals,
 } from "../../lib/decision-proposals.js";
 import { mergeConsensusIntoMemory } from "../../lib/consensus.js";
 import { convergencePromptSection } from "../../lib/convergence.js";
@@ -38,6 +39,16 @@ export async function decisionRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       return listDecisionProposalsEnriched(tenantId);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get("/decisions/pending-count", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const count = await countPendingProposals(tenantId);
+      return { count };
     } catch (err) {
       return handleRouteError(reply, err);
     }

@@ -14,6 +14,7 @@ import EmptyState from "../components/ui/EmptyState";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import DecisionExecutiveSummary from "../components/decisions/DecisionExecutiveSummary";
+import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
 
 type InboxTab = "pending" | "approved" | "rejected";
 
@@ -61,7 +62,10 @@ export default function PendingDecisionsPage() {
     api.decisions
       .list()
       .then(setProposals)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        notifyPendingDecisionsChanged();
+      });
 
   useEffect(() => {
     refresh();

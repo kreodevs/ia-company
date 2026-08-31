@@ -2003,6 +2003,7 @@ export const api = {
   },
   decisions: {
     list: () => request<DecisionProposal[]>("/decisions"),
+    pendingCount: () => request<{ count: number }>("/decisions/pending-count"),
     get: (id: string) => request<DecisionProposal>(`/decisions/${id}`),
     documents: (id: string) =>
       request<{ documents: OfficeEncargoDocument[] }>(`/decisions/${id}/documents`),

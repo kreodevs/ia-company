@@ -15,6 +15,7 @@ import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import DecisionExecutiveSummary from "../components/decisions/DecisionExecutiveSummary";
+import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
 
 function statusLabel(t: (k: string) => string, s: DecisionStatus): string {
   const key = `decisions.status.${s}`;
@@ -51,7 +52,10 @@ export default function DecisionsPage() {
     api.decisions
       .list()
       .then(setProposals)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        notifyPendingDecisionsChanged();
+      });
 
   useEffect(() => {
     refresh();

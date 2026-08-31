@@ -22,6 +22,7 @@ import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
+import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
 import {
   encargoDepartmentLabel,
   encargoTeamLabels,
@@ -105,6 +106,7 @@ export default function OfficeEncargoDetailPage() {
     try {
       await fn();
       await refresh();
+      notifyPendingDecisionsChanged();
     } finally {
       setDecisionBusy(false);
     }
