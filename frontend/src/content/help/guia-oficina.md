@@ -177,7 +177,7 @@ Lista encargos con fases: en cola, en progreso, entregado, fallido, cancelado. C
 - **Informe final** y pestaña **Documentos** (markdown por agente)
 - **Entrega al cliente** cuando el encargo está entregado (ver [Flujo piloto](/help/guia-piloto#entrega-al-cliente))
 
-Para auditar calidad de handoffs (JSON estructurado, archivos en disco), usa **War room → Salud de entregables** o **Consenso del producto → último run** — no la lista de encargos.
+Para auditar calidad de handoffs (JSON estructurado, archivos en disco), usa **Entregas del producto** → expandir encargo, o **Consenso del producto → último run** — no solo la lista de encargos.
 
 Si un paso no dejó archivo en `docs/{rol}/`, revisa **Consenso del producto → Revisiones** — ahí quedan los handoffs JSON parseados.
 
@@ -187,13 +187,13 @@ Si un paso no dejó archivo en `docs/{rol}/`, revisa **Consenso del producto →
 
 Ruta: **War room** (`/war-room` o `/war-room/:productId`).
 
-Vista táctica **mientras el equipo trabaja**:
+Vista táctica **mientras el equipo trabaja** (no es el archivo de resultados — usa **Entregas** del producto para eso):
 
 - Estado por agente y paso del flujo
 - Selector de run activo — conserva `?run=<runId>` al cambiar de producto
 - KPIs, panel OpenCode, banner de veto Munger
-- **Salud de entregables** (diagnóstico del último run)
 - Chat del Coordinador contextualizado al producto (en vista por producto)
+- Enlace destacado a **Entregas** (`/products/:id/entregas`) para informes y documentos finales
 
 Tras **Aprobar y ejecutar** desde la Oficina, la navegación te lleva aquí automáticamente cuando hay producto en scope.
 

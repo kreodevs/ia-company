@@ -274,7 +274,17 @@ export default function OfficeEncargosPage() {
                         <span className="office-encargo-context-chip">{encargoContextLine(item, t)}</span>
                       </div>
                       <div className="office-encargo-card-meta">
-                        {item.productName ? <span>{item.productName}</span> : null}
+                        {item.productName && item.productId ? (
+                          <Link
+                            to={`/products/${item.productId}/entregas`}
+                            className="hover:text-[var(--color-primary)] hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {item.productName}
+                          </Link>
+                        ) : item.productName ? (
+                          <span>{item.productName}</span>
+                        ) : null}
                         <span>
                           {new Date(item.completedAt ?? item.createdAt).toLocaleString([], {
                             month: "short",

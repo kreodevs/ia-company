@@ -27,6 +27,7 @@ import OrgStudioPage from "./pages/OrgStudioPage";
 import OrgUnitDetailPage from "./pages/OrgUnitDetailPage";
 import ProductSettingsPage from "./pages/ProductSettingsPage";
 import ProductDeskPage from "./pages/ProductDeskPage";
+import ProductDeliveriesPage from "./pages/ProductDeliveriesPage";
 import ProductConsensusPage from "./pages/ProductConsensusPage";
 import ProductTeamPage from "./pages/ProductTeamPage";
 import WarRoomPage from "./pages/WarRoomPage";
@@ -133,6 +134,7 @@ function AppShell() {
               <Route path="products/:productId/consensus" element={<RedirectProductConsensus />} />
               <Route path="products/:productId/settings" element={<ProductSettingsPage />} />
               <Route path="products/:productId/desk" element={<ProductDeskPage />} />
+              <Route path="products/:productId/entregas" element={<ProductDeliveriesPage />} />
               <Route path="products/:productId/code" element={<ProductCodePage />} />
               <Route path="products/:productId/team" element={<ProductTeamPage />} />
               <Route path="settings" element={<SettingsPage />} />

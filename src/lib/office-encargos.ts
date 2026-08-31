@@ -327,10 +327,13 @@ export async function listOfficeEncargos(
     phase?: OfficeEncargoPhase;
     departmentSlug?: string;
     orgUnitId?: string;
+    productId?: string;
   } = {},
 ): Promise<{ items: OfficeEncargoSummary[] }> {
   const limit = Math.min(100, Math.max(1, options.limit ?? 50));
-  const hasScopeFilter = Boolean(options.phase || options.departmentSlug || options.orgUnitId);
+  const hasScopeFilter = Boolean(
+    options.phase || options.departmentSlug || options.orgUnitId || options.productId,
+  );
   const fetchLimit = hasScopeFilter ? Math.min(100, limit * 4) : limit;
   const scopeWhere = options.orgUnitId
     ? buildDepartmentRunScopeWhere({ orgUnitId: options.orgUnitId })
@@ -377,6 +380,9 @@ export async function listOfficeEncargos(
   }
   if (options.orgUnitId) {
     items = items.filter((item) => item.orgUnitId === options.orgUnitId);
+  }
+  if (options.productId) {
+    items = items.filter((item) => item.productId === options.productId);
   }
 
   return { items: items.slice(0, limit) };

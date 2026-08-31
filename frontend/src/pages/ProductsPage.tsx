@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FileText, Focus, PlayCircle, Plus, Settings2, Target } from "lucide-react";
+import { FileText, Focus, Package, PlayCircle, Plus, Settings2, Target } from "lucide-react";
 import { api, type OpencodeActiveInfo, type PipelineIdea, type ProductsOverview, type TenantProduct } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
@@ -632,8 +632,15 @@ function ActiveProductCard({
 
         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
           <Link
-            to={`/war-room/${product.id}`}
+            to={`/products/${product.id}/entregas`}
             className="interactive inline-flex items-center gap-1.5 rounded-md border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-2.5 py-1.5 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+          >
+            <Package className="h-3.5 w-3.5" aria-hidden />
+            {t("products.active.deliveries")}
+          </Link>
+          <Link
+            to={`/war-room/${product.id}`}
+            className="interactive inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs hover:border-[var(--color-primary)]/40"
           >
             <Target className="h-3.5 w-3.5" aria-hidden />
             {t("products.active.warRoom")}
@@ -654,7 +661,7 @@ function ActiveProductCard({
           </Link>
           {product.lastRunId ? (
             <Link
-              to={`/office/encargos/${product.lastRunId}`}
+              to={`/products/${product.id}/entregas`}
               className="interactive inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs hover:border-[var(--color-primary)]/40"
             >
               <PlayCircle className="h-3.5 w-3.5" aria-hidden />

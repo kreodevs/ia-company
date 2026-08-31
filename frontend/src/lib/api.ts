@@ -812,6 +812,38 @@ export interface OfficeEncargoSummary {
   scopeLabelKey?: string | null;
 }
 
+export type ProductDeliveriesAttentionKind = "decision" | "failed" | "opencode" | "desk";
+
+export interface ProductDeliveriesAttentionItem {
+  kind: ProductDeliveriesAttentionKind;
+  title: string;
+  subtitle: string | null;
+  runId: string | null;
+  deskItemId: string | null;
+  decisionProposalId: string | null;
+}
+
+export interface ProductDeliveriesOverview {
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    phase: string;
+  };
+  stats: {
+    total: number;
+    inProgress: number;
+    delivered: number;
+    failed: number;
+    attentionCount: number;
+  };
+  attention: ProductDeliveriesAttentionItem[];
+  inProgress: OfficeEncargoSummary[];
+  delivered: OfficeEncargoSummary[];
+  failed: OfficeEncargoSummary[];
+  deskForYou: DeskItemDto[];
+}
+
 export interface OfficeProcedureSummary {
   id: string;
   name: string;
@@ -1692,6 +1724,8 @@ export const api = {
     },
     agentDocs: (id: string) => request<ProductAgentDocsIndex>(`/products/${id}/agent-docs`),
     lastRun: (id: string) => request<ProductLastRunTrace>(`/products/${id}/last-run`),
+    deliveriesOverview: (id: string) =>
+      request<ProductDeliveriesOverview>(`/products/${id}/deliveries-overview`),
     code: {
       tree: (id: string, path = "") =>
         request<{ path: string; entries: ProductTreeEntry[] }>(
@@ -1799,12 +1833,14 @@ export const api = {
       phase?: OfficeEncargoPhase;
       departmentSlug?: string;
       orgUnitId?: string;
+      productId?: string;
     }) => {
       const q = new URLSearchParams();
       if (params?.limit) q.set("limit", String(params.limit));
       if (params?.phase) q.set("phase", params.phase);
       if (params?.departmentSlug) q.set("departmentSlug", params.departmentSlug);
       if (params?.orgUnitId) q.set("orgUnitId", params.orgUnitId);
+      if (params?.productId) q.set("productId", params.productId);
       const qs = q.toString();
       return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
     },

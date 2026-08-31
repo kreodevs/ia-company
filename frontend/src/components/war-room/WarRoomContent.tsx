@@ -11,7 +11,6 @@ import OpencodeHistoryPanel from "../opencode/OpencodeHistoryPanel";
 import OpencodeRunPanel from "../opencode/OpencodeRunPanel";
 import CoordinatorChat from "../office/CoordinatorChat";
 import DeliverableHealthBanner from "./DeliverableHealthBanner";
-import ProductHealthPanel from "./ProductHealthPanel";
 import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 import WarRoomRunSelector from "./WarRoomRunSelector";
@@ -118,6 +117,9 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
           <span className="war-room-pill war-room-pill-duty">
             {t("warRoom.onDuty", { count: onDuty.length })}
           </span>
+          <Link to={`/products/${data.product.id}/entregas`} className="war-room-pill war-room-pill-link">
+            {t("productDeliveries.title")}
+          </Link>
           <Link to={`/products/${data.product.id}/desk`} className="war-room-pill war-room-pill-link">
             {t("productDesk.title")}
           </Link>
@@ -134,19 +136,27 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
 
       <ProductMetricsStrip metrics={data.metrics} productId={productId} />
 
-      <ProductHealthPanel
-        trace={data.lastRunTrace}
-        productId={productId}
-        activeRunStatus={data.activeRun?.status ?? null}
-      />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+        <div>
+          <p className="text-sm font-medium">{t("warRoom.deliveriesHintTitle")}</p>
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t("warRoom.deliveriesHintBody")}</p>
+        </div>
+        <Link
+          to={`/products/${productId}/entregas`}
+          className="interactive shrink-0 rounded-md border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+        >
+          {t("productDeliveries.title")} →
+        </Link>
+      </div>
 
       {!["ok", "run_in_progress"].includes(data.lastRunTrace?.diagnosis ?? "") &&
-        data.lastRunTrace?.diagnosis !== "munger_veto" && (
+        data.lastRunTrace?.diagnosis !== "munger_veto" &&
+        !data.activeRun && (
           <DeliverableHealthBanner
             trace={data.lastRunTrace}
             productId={productId}
             hideDuringActiveRun
-            activeRunStatus={data.activeRun?.status ?? null}
+            activeRunStatus={null}
           />
         )}
 

@@ -166,21 +166,49 @@ Prominent link to **Product consensus** from the header.
 
 ---
 
+## Product deliveries
+
+Route: **Deliveries** (`/products/:id/entregas`).
+
+Unified **outcome** view per product — one place to collect what each encargo produced:
+
+| Zone | Content |
+|------|---------|
+| **Needs your attention** | GO/NO-GO decisions, failed encargos, OpenCode waiting, desk “For you” items |
+| **In progress** | Active encargos with link to live war room |
+| **Delivered** | History with final report, per-agent documents, and client delivery |
+
+Expand any delivery for the **final report** and **documents** without leaving the page. War room is for **live** monitoring only.
+
+### Related shortcuts
+
+| View | Route | Use |
+|------|------|-----|
+| **War room** | `/war-room/:id` | Live progress and chat (not the results archive) |
+| **Desk** | `/products/:id/desk` | Operational kanban and playbooks |
+| **Consensus** | `/debug/products/:id/consensus` | Deep memory and technical traces |
+| **Code** | `/products/:id/code` | Workspace + OpenCode history |
+
+---
+
 ## War room and launching work
 
 | View | Route | Use |
 |------|------|-----|
-| **War room** | `/war-room/:id` | Live progress, deliverable health, chat |
+| **Deliveries** | `/products/:id/entregas` | **Outcomes** — reports, docs, pending decisions |
+| **War room** | `/war-room/:id` | Live progress and Coordinator chat |
 | **Code** | `/products/:id/code` | Workspace explorer + OpenCode history |
 | **Team** | `/products/:id/team` | Active agents on the product |
 
 Ways to launch work:
 
-- **War room** or **department room** → product scope + Coordinator.
+- **Deliveries** or **War room** → “Request work” opens the Coordinator with product context.
 - **Office** → Coordinator infers product from brief or asks; quick services with focus product too.
 - **Department** → “Launch work” + linked product (`/org-units/:id`).
 - **Desk** → dispatch item or run playbook.
 - **Workflows** → run from editor with tenant consensus or seed naming the slug.
+
+Collect results in the product’s **Deliveries** view. **My encargos** (`/office/encargos`) remains the tenant-wide inbox for all products.
 
 The worker loads product consensus into shared memory before the first agent when the job is linked to that product.
 

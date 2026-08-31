@@ -65,7 +65,7 @@ Badge en la pestaña: total de oportunidades o cuántas **listas para decidir**.
 Productos registrados con fase (`queued`, `evaluating`, `building`, `launching`, `growing`, `paused`, `archived`):
 
 - **En foco** — producto prioritario para War room y meta-orchestrator
-- Enlaces rápidos: Escritorio, War room, Configuración, Consenso
+- Enlaces rápidos: **Entregas**, War room, Escritorio, Configuración, Consenso
 - Indicador **OpenCode activo** si hay delegación en curso (enlace al run)
 
 ### Vertical packs
@@ -166,21 +166,49 @@ Enlace destacado al **Consenso del producto** desde la cabecera.
 
 ---
 
+## Entregas del producto
+
+Ruta: **Entregas** (`/products/:id/entregas`).
+
+Vista unificada de **resultados** por producto — un solo sitio para recoger lo que salió de cada encargo:
+
+| Zona | Contenido |
+|------|-----------|
+| **Requiere tu atención** | Decisiones GO/NO-GO, encargos fallidos, OpenCode en espera, items del escritorio «Para ti» |
+| **En curso** | Encargos activos con enlace al war room en vivo |
+| **Entregado** | Historial con informe final, documentos por agente y entrega al cliente |
+
+Desde cada entrega puedes expandir el **informe final** y los **documentos** sin salir de la página. El war room queda solo para **seguimiento en vivo**.
+
+### Atajos relacionados
+
+| Vista | Ruta | Uso |
+|-------|------|-----|
+| **War room** | `/war-room/:id` | Progreso en vivo y chat (no archivo de resultados) |
+| **Escritorio** | `/products/:id/desk` | Kanban operativo y playbooks |
+| **Consenso** | `/debug/products/:id/consensus` | Memoria profunda y trazas técnicas |
+| **Código** | `/products/:id/code` | Workspace + historial OpenCode |
+
+---
+
 ## War room y lanzar trabajo
 
 | Vista | Ruta | Uso |
 |-------|------|-----|
-| **War room** | `/war-room/:id` | Progreso en vivo, salud de entregables, chat |
+| **Entregas** | `/products/:id/entregas` | **Resultados** — informes, docs, decisiones pendientes |
+| **War room** | `/war-room/:id` | Progreso en vivo y chat del Coordinador |
 | **Código** | `/products/:id/code` | Explorador del workspace + historial OpenCode |
 | **Equipo** | `/products/:id/team` | Agentes activos en el producto |
 
 Formas de lanzar trabajo:
 
-- **War room** o **sala de departamento** → selector de alcance «producto» + Coordinador.
+- **Entregas** o **War room** → «Pedir trabajo» abre el Coordinador con el producto en contexto.
 - **Oficina** → el Coordinador infiere producto del brief o pregunta; también servicios rápidos con producto en foco.
 - **Departamento** → «Lanzar trabajo» + producto vinculado (`/org-units/:id`).
 - **Escritorio** → despachar item o ejecutar playbook.
 - **Flujos** → ejecutar desde el editor con consenso tenant o semilla que nombre el slug.
+
+Recoge resultados siempre en **Entregas** del producto. **Mis encargos** (`/office/encargos`) sigue siendo la bandeja global de todos los productos.
 
 El worker carga el consenso del producto en memoria compartida antes del primer agente cuando el encargo está vinculado a ese producto.
 

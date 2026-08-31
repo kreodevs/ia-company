@@ -63,6 +63,12 @@ export default function DeliverableHealthBanner({
           )}
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium">
             <Link
+              to={`/products/${productId}/entregas`}
+              className="text-[var(--color-primary)] hover:underline"
+            >
+              {t("productDeliveries.title")}
+            </Link>
+            <Link
               to={`/products/${productId}/consensus`}
               className="text-[var(--color-primary)] hover:underline"
             >

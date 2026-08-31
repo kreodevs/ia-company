@@ -733,6 +733,18 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Params: { id: string } }>("/products/:id/deliveries-overview", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { getProductDeliveriesOverview } = await import("../../lib/product-deliveries-overview.js");
+      const overview = await getProductDeliveriesOverview(tenantId, request.params.id);
+      if (!overview) return reply.status(404).send({ error: "Product not found" });
+      return overview;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { id: string } }>("/products/:id/agent-docs", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);

@@ -16,6 +16,7 @@ import { ops } from "./ops";
 import { pendientes } from "./pendientes";
 import { phase } from "./phase";
 import { productDesk } from "./productDesk";
+import { productDeliveries } from "./productDeliveries";
 import { products } from "./products";
 import { productWork } from "./productWork";
 import { runs } from "./runs";
@@ -40,6 +41,7 @@ export const en = {
   opencode,
   products,
   productDesk,
+  productDeliveries,
   productWork,
   settings,
   team,

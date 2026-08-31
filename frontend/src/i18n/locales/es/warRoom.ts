@@ -14,6 +14,8 @@ export const warRoom = {
   onDuty: "De turno: {{count}}",
   viewCode: "Ver código →",
   settings: "Configuración",
+  deliveriesHintTitle: "Informes y documentos finales",
+  deliveriesHintBody: "Los resultados de cada encargo viven en Entregas — el war room es solo para seguimiento en vivo.",
   radar: "Radar de ideas",
   radarEmpty: "No hay ideas en el pipeline.",
   radarScore: "interés {{score}}",

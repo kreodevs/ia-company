@@ -44,12 +44,20 @@ export async function officeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
   app.addHook("preHandler", app.requireTenantContext);
 
-  app.get<{ Querystring: { limit?: string; phase?: string; departmentSlug?: string; orgUnitId?: string } }>(
+  app.get<{
+    Querystring: {
+      limit?: string;
+      phase?: string;
+      departmentSlug?: string;
+      orgUnitId?: string;
+      productId?: string;
+    };
+  }>(
     "/office/encargos",
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const { limit, phase, departmentSlug, orgUnitId } = request.query;
+        const { limit, phase, departmentSlug, orgUnitId, productId } = request.query;
         const validPhases = ["queued", "in_progress", "delivered", "failed", "cancelled"] as const;
         const phaseFilter = validPhases.includes(phase as (typeof validPhases)[number])
           ? (phase as (typeof validPhases)[number])
@@ -59,6 +67,7 @@ export async function officeRoutes(app: FastifyInstance) {
           phase: phaseFilter,
           departmentSlug,
           orgUnitId,
+          productId,
         });
       } catch (err) {
         return handleRouteError(reply, err);

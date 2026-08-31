@@ -55,6 +55,7 @@ export const products = {
     status: "Estado",
     viewLastRun: "Última ejecución",
     warRoom: "War room",
+    deliveries: "Entregas",
     orgUnitBadge: "Dept: {{name}}",
     code: "Código",
     settings: "Configuración",
