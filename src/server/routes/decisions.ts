@@ -9,7 +9,8 @@ import {
   attachDrilldownRun,
   cancelProposal,
   getDecisionProposal,
-  listDecisionProposals,
+  getDecisionProposalEnriched,
+  listDecisionProposalsEnriched,
 } from "../../lib/decision-proposals.js";
 import { mergeConsensusIntoMemory } from "../../lib/consensus.js";
 import { convergencePromptSection } from "../../lib/convergence.js";
@@ -36,7 +37,7 @@ export async function decisionRoutes(app: FastifyInstance) {
   app.get("/decisions", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      return listDecisionProposals(tenantId);
+      return listDecisionProposalsEnriched(tenantId);
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -45,7 +46,7 @@ export async function decisionRoutes(app: FastifyInstance) {
   app.get<{ Params: { id: string } }>("/decisions/:id", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const proposal = await getDecisionProposal(request.params.id, tenantId);
+      const proposal = await getDecisionProposalEnriched(request.params.id, tenantId);
       if (!proposal) return reply.status(404).send({ error: "Proposal not found" });
       return proposal;
     } catch (err) {

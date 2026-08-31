@@ -1,5 +1,7 @@
 import type { DecisionStatus, GoNoGoDecision } from "@prisma/client";
 import { prisma } from "./prisma.js";
+import { resolveFinalReportFromMemory } from "./office-encargos.js";
+import type { SharedMemory } from "../types/index.js";
 import {
   bootstrapProduct,
   countBuildingProducts,
@@ -17,6 +19,16 @@ export interface ProposalEvidence {
   summary: string;
   field?: string;
 }
+
+export type DecisionEncargoSummaryKind = "summary" | "agent" | "none";
+
+type DecisionProposalRow = Awaited<ReturnType<typeof listDecisionProposals>>[number];
+
+export type DecisionProposalEnriched = Omit<DecisionProposalRow, "evidence"> & {
+  evidence: ProposalEvidence[];
+  encargoSummary: string | null;
+  encargoSummaryKind: DecisionEncargoSummaryKind;
+};
 
 export interface ProposalInput {
   tenantId: string;
@@ -38,6 +50,57 @@ export async function listDecisionProposals(
     orderBy: { createdAt: "desc" },
     include: { idea: true },
   });
+}
+
+export async function listDecisionProposalsEnriched(
+  tenantId: string,
+  status?: DecisionStatus,
+): Promise<DecisionProposalEnriched[]> {
+  const proposals = await listDecisionProposals(tenantId, status);
+  return enrichProposalsWithEncargoSummary(tenantId, proposals);
+}
+
+async function enrichProposalsWithEncargoSummary(
+  tenantId: string,
+  proposals: Awaited<ReturnType<typeof listDecisionProposals>>,
+): Promise<DecisionProposalEnriched[]> {
+  const runIds = proposals.map((p) => p.runId).filter((id): id is string => Boolean(id));
+
+  const runs =
+    runIds.length > 0
+      ? await prisma.executionRun.findMany({
+          where: { tenantId, id: { in: runIds } },
+          select: { id: true, sharedMemory: true },
+        })
+      : [];
+  const memoryByRunId = new Map(runs.map((run) => [run.id, run.sharedMemory]));
+
+  return proposals.map((proposal) => {
+    const memory = proposal.runId ? memoryByRunId.get(proposal.runId) : null;
+    const encargo =
+      memory && typeof memory === "object"
+        ? resolveFinalReportFromMemory(memory as SharedMemory)
+        : { text: null, finalReportKind: "none" as const };
+
+    return {
+      ...proposal,
+      evidence: (Array.isArray(proposal.evidence)
+        ? proposal.evidence
+        : []) as unknown as ProposalEvidence[],
+      encargoSummary: encargo.text,
+      encargoSummaryKind: encargo.finalReportKind,
+    };
+  });
+}
+
+export async function getDecisionProposalEnriched(
+  id: string,
+  tenantId: string,
+): Promise<DecisionProposalEnriched | null> {
+  const proposal = await getDecisionProposal(id, tenantId);
+  if (!proposal) return null;
+  const [enriched] = await enrichProposalsWithEncargoSummary(tenantId, [proposal]);
+  return enriched ?? null;
 }
 
 export async function getDecisionProposal(id: string, tenantId: string) {

@@ -11,7 +11,17 @@ export const decisions = {
     "{{count}} proposal(s) waiting for your call. Approve, request more research, or reject.",
   historyHeading: "History ({{count}})",
   rationale: "Rationale",
-  evidence: "Evidence ({{count}})",
+  recommendationLabel: "Team recommendation",
+  encargoSummaryTitle: "Job summary",
+  encargoSummarySubtitle:
+    "Consolidated synthesis from the team's work — open the reports below for per-agent detail.",
+  encargoSummaryFallback:
+    "Synthesized summary unavailable — showing the lead agent report instead.",
+  encargoSummaryEmpty:
+    "The job summary will appear here when the team finishes the work.",
+  evidenceExtractsTitle: "Team excerpts",
+  evidenceExtractsSubtitle:
+    "Quick read per agent — open each report below for the full document.",
   evidenceAuthors: "Team reports ({{count}})",
   viewDocument: "View {{name}}'s report",
   documentLoading: "Loading reports…",

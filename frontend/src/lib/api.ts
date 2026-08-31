@@ -473,6 +473,8 @@ export interface DecisionProposal {
   createdAt: string;
   updatedAt: string;
   idea: PipelineIdea;
+  encargoSummary?: string | null;
+  encargoSummaryKind?: "summary" | "agent" | "none" | null;
 }
 
 export type TeamAgentStatus = "idle" | "thinking" | "queued";

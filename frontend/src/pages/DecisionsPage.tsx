@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Check, ChevronRight, GitBranch, History, ScrollText, Sparkles, X } from "lucide-react";
+import { Check, ChevronRight, GitBranch, History, Sparkles, X } from "lucide-react";
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import PageHeader from "../components/ui/PageHeader";
@@ -14,6 +14,7 @@ import Breadcrumbs from "../components/ui/Breadcrumbs";
 import StatusPill from "../components/ui/StatusPill";
 import EmptyState from "../components/ui/EmptyState";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
+import DecisionExecutiveSummary from "../components/decisions/DecisionExecutiveSummary";
 
 function statusLabel(t: (k: string) => string, s: DecisionStatus): string {
   const key = `decisions.status.${s}`;
@@ -194,13 +195,14 @@ export default function DecisionsPage() {
                     )}
                   </div>
 
-                  <div className="mt-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-                    <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                      <ScrollText className="h-3 w-3" aria-hidden />
-                      {t("decisions.rationale")}
-                    </p>
-                    <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">{p.rationale}</p>
-                  </div>
+                  <DecisionExecutiveSummary
+                    recommended={p.recommended}
+                    rationale={p.rationale}
+                    encargoSummary={p.encargoSummary}
+                    encargoSummaryKind={p.encargoSummaryKind}
+                    evidence={p.evidence}
+                    ideaTitle={p.idea.title}
+                  />
 
                   {p.evidence.length > 0 && (
                     <DecisionEvidencePanel

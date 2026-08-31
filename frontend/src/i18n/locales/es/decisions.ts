@@ -11,7 +11,17 @@ export const decisions = {
     "{{count}} propuesta(s) esperando tu llamada. Aprueba, pide más investigación o rechaza.",
   historyHeading: "Historial ({{count}})",
   rationale: "Justificación",
-  evidence: "Evidencia ({{count}})",
+  recommendationLabel: "Recomendación del equipo",
+  encargoSummaryTitle: "Resumen del encargo",
+  encargoSummarySubtitle:
+    "Síntesis consolidada del trabajo del equipo — abre los informes abajo para el detalle por agente.",
+  encargoSummaryFallback:
+    "Resumen sintetizado no disponible — mostrando el informe principal del agente.",
+  encargoSummaryEmpty:
+    "El resumen del encargo aparecerá aquí cuando el equipo termine el trabajo.",
+  evidenceExtractsTitle: "Extractos del equipo",
+  evidenceExtractsSubtitle:
+    "Vista rápida por agente — abre cada informe abajo para leer el documento completo.",
   evidenceAuthors: "Informes del equipo ({{count}})",
   viewDocument: "Ver informe de {{name}}",
   documentLoading: "Cargando informes…",

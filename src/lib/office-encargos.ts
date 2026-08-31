@@ -236,6 +236,32 @@ export function resolveFinalReportPreviewFromMemory(memory: SharedMemory): {
   return { reportPreview: null, finalReportKind: "none" };
 }
 
+/** Full final report text from shared memory only (no document scan). */
+export function resolveFinalReportFromMemory(memory: SharedMemory): {
+  text: string | null;
+  finalReportKind: "summary" | "agent" | "none";
+} {
+  const runSummary = readMemoryString(memory, "runSummary");
+  if (runSummary) {
+    return { text: runSummary, finalReportKind: "summary" };
+  }
+
+  const history = Array.isArray(memory._history) ? memory._history : [];
+  for (let i = history.length - 1; i >= 0; i--) {
+    const step = history[i]!;
+    const raw = typeof step.output === "string" ? step.output : "";
+    if (!raw.trim()) continue;
+    const stepOrder = step.stepOrder ?? i + 1;
+    const handoff = extractHandoffFromAgentOutput(raw, step.agentName, stepOrder);
+    const content = handoff.content.trim();
+    if (content) {
+      return { text: content, finalReportKind: "agent" };
+    }
+  }
+
+  return { text: null, finalReportKind: "none" };
+}
+
 export async function enrichEncargosWithReportPreview(
   tenantId: string,
   items: OfficeEncargoSummary[],
