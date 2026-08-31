@@ -1,6 +1,10 @@
 import { prisma } from "./prisma.js";
 import { getProductDeskBoard, type DeskItemDto } from "./product-desk.js";
-import { listOfficeEncargos, type OfficeEncargoSummary } from "./office-encargos.js";
+import {
+  enrichEncargosWithReportPreview,
+  listOfficeEncargos,
+  type OfficeEncargoSummary,
+} from "./office-encargos.js";
 
 export type ProductDeliveriesAttentionKind =
   | "decision"
@@ -58,8 +62,15 @@ export async function getProductDeliveriesOverview(
   const inProgress = encargos.filter(
     (item) => item.phase === "queued" || item.phase === "in_progress",
   );
-  const delivered = encargos.filter((item) => item.phase === "delivered");
-  const failed = encargos.filter((item) => item.phase === "failed");
+  const finished = encargos.filter((item) => item.phase === "delivered" || item.phase === "failed");
+  const enrichedFinished = await enrichEncargosWithReportPreview(tenantId, finished);
+  const enrichedById = new Map(enrichedFinished.map((item) => [item.id, item]));
+  const delivered = encargos
+    .filter((item) => item.phase === "delivered")
+    .map((item) => enrichedById.get(item.id) ?? item);
+  const failed = encargos
+    .filter((item) => item.phase === "failed")
+    .map((item) => enrichedById.get(item.id) ?? item);
   const deskForYou = deskBoard.forYou;
 
   const runIds = encargos.map((item) => item.id);

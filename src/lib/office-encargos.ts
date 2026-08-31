@@ -43,6 +43,9 @@ export interface OfficeEncargoSummary {
   scopeLevel: "company" | "product" | "department" | null;
   scopeIntent: string | null;
   scopeLabelKey: string | null;
+  /** Truncated final report for list/preview surfaces (deliveries overview). */
+  reportPreview?: string | null;
+  finalReportKind?: "summary" | "agent" | "none" | null;
 }
 
 export interface OfficeEncargoDocument {
@@ -191,6 +194,72 @@ export function resolveFinalReport(
   const runSummary = readMemoryString(memory, "runSummary");
   if (runSummary) return runSummary;
   return pickFinalReport(documents, revisions);
+}
+
+const REPORT_PREVIEW_MAX_CHARS = 320;
+
+function truncateReportPreview(text: string): string {
+  const normalized = text.trim().replace(/\s+/g, " ");
+  if (normalized.length <= REPORT_PREVIEW_MAX_CHARS) return normalized;
+  return `${normalized.slice(0, REPORT_PREVIEW_MAX_CHARS)}…`;
+}
+
+/** Lightweight preview from shared memory only (no document scan). */
+export function resolveFinalReportPreviewFromMemory(memory: SharedMemory): {
+  reportPreview: string | null;
+  finalReportKind: "summary" | "agent" | "none";
+} {
+  const runSummary = readMemoryString(memory, "runSummary");
+  if (runSummary) {
+    return {
+      reportPreview: truncateReportPreview(runSummary),
+      finalReportKind: "summary",
+    };
+  }
+
+  const history = Array.isArray(memory._history) ? memory._history : [];
+  for (let i = history.length - 1; i >= 0; i--) {
+    const step = history[i]!;
+    const raw = typeof step.output === "string" ? step.output : "";
+    if (!raw.trim()) continue;
+    const stepOrder = step.stepOrder ?? i + 1;
+    const handoff = extractHandoffFromAgentOutput(raw, step.agentName, stepOrder);
+    const content = handoff.content.trim();
+    if (content) {
+      return {
+        reportPreview: truncateReportPreview(content),
+        finalReportKind: "agent",
+      };
+    }
+  }
+
+  return { reportPreview: null, finalReportKind: "none" };
+}
+
+export async function enrichEncargosWithReportPreview(
+  tenantId: string,
+  items: OfficeEncargoSummary[],
+): Promise<OfficeEncargoSummary[]> {
+  const targetIds = items
+    .filter((item) => item.phase === "delivered" || item.phase === "failed")
+    .map((item) => item.id);
+  if (targetIds.length === 0) return items;
+
+  const runs = await prisma.executionRun.findMany({
+    where: { tenantId, id: { in: targetIds } },
+    select: { id: true, sharedMemory: true },
+  });
+  const memoryByRunId = new Map(runs.map((run) => [run.id, run.sharedMemory]));
+
+  return items.map((item) => {
+    if (item.phase !== "delivered" && item.phase !== "failed") return item;
+    const memory = memoryByRunId.get(item.id);
+    if (!memory || typeof memory !== "object") {
+      return { ...item, reportPreview: null, finalReportKind: "none" };
+    }
+    const preview = resolveFinalReportPreviewFromMemory(memory as SharedMemory);
+    return { ...item, ...preview };
+  });
 }
 
 async function countDocumentsForRun(

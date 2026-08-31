@@ -14,7 +14,12 @@ API: `GET /products/:id/deliveries-overview` + `GET /office/encargos?productId=`
 Sections:
 
 1. **Requires your attention** — GO/NO-GO, failed runs, OpenCode gates, desk “for you”
-2. **In progress** — live encargos with war room link
-3. **Delivered** — expandable history with reports and documents
+2. **In progress** — live encargos with war room link (no summary until delivered)
+3. **Delivered** — report preview on each card, first item expanded by default
+
+Each delivered card shows:
+- **Resumen** preview (synthesized `runSummary` or lead-agent fallback)
+- Badge: synthesized vs agent fallback vs pending
+- Expand → **Resumen del encargo** tab + **Documentos por agente** tab
 
 War room remains for **live** monitoring only; final results live here.

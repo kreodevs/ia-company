@@ -246,8 +246,13 @@ export default function ProductDeliveriesPage() {
           <EmptyState title={t("productDeliveries.delivered.empty")} />
         ) : (
           <ul className="space-y-3">
-            {delivered.map((item) => (
-              <ProductDeliveryEncargoCard key={item.id} item={item} productId={productId} />
+            {delivered.map((item, index) => (
+              <ProductDeliveryEncargoCard
+                key={item.id}
+                item={item}
+                productId={productId}
+                defaultExpanded={index === 0}
+              />
             ))}
             {showFailed
               ? failed.map((item) => (

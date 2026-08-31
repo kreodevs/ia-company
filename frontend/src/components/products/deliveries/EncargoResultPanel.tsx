@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { api, type OfficeEncargoDetail, type OfficeEncargoDocument } from "../../../lib/api";
+import {
+  api,
+  type OfficeEncargoDetail,
+  type OfficeEncargoDocument,
+  type OfficeEncargoPhase,
+} from "../../../lib/api";
 import RichMarkdownView from "../../ui/RichMarkdownView";
 import PageLoading from "../../ui/PageLoading";
 import TabsBar from "../../ui/TabsBar";
@@ -11,9 +16,11 @@ type ResultTab = "final" | "documents";
 export default function EncargoResultPanel({
   runId,
   enabled,
+  phase,
 }: {
   runId: string;
   enabled: boolean;
+  phase?: OfficeEncargoPhase;
 }) {
   const { t } = useTranslation();
   const [detail, setDetail] = useState<OfficeEncargoDetail | null>(null);
@@ -43,9 +50,8 @@ export default function EncargoResultPanel({
 
   useEffect(() => {
     if (!detail) return;
-    if (detail.finalReport) setTab("final");
-    else if (detail.documents.length) setTab("documents");
-  }, [detail?.id, detail?.finalReport, detail?.documents.length]);
+    setTab("final");
+  }, [detail?.id]);
 
   if (!enabled) return null;
 
@@ -59,17 +65,37 @@ export default function EncargoResultPanel({
     );
   }
 
+  const effectivePhase = phase ?? detail.phase;
+  const inFlight = effectivePhase === "queued" || effectivePhase === "in_progress";
   const showFinal = tab === "final";
   const markdown = showFinal ? detail.finalReport : (selectedDoc?.markdown ?? "");
   const showDocSidebar = tab === "documents" && documents.length > 0;
 
   return (
     <div className="space-y-4 border-t border-[var(--color-border)] pt-4">
+      {inFlight ? (
+        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/20 px-3 py-2 text-sm text-[var(--color-muted-foreground)]">
+          {t("productDeliveries.card.inProgressSummary")}
+        </p>
+      ) : (
+        <div className="space-y-1">
+          <p className="text-sm font-medium">{t("office.encargos.finalReportTitle")}</p>
+          <p className="text-xs text-[var(--color-muted-foreground)]">
+            {t("office.encargos.finalReportSubtitle")}
+          </p>
+          {detail.finalReportKind === "agent" ? (
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              {t("office.encargos.finalReportFallbackNote")}
+            </p>
+          ) : null}
+        </div>
+      )}
+
       <TabsBar
         activeId={tab}
         onChange={(id) => setTab(id as ResultTab)}
         tabs={[
-          { id: "final", label: t("productDeliveries.card.finalReport") },
+          { id: "final", label: t("productDeliveries.card.summaryTab") },
           {
             id: "documents",
             label: t("productDeliveries.card.documentsTab"),
@@ -97,8 +123,11 @@ export default function EncargoResultPanel({
                       : "border-[var(--color-border)] hover:border-[var(--color-primary)]/30"
                   }`}
                 >
-                  <span className="block font-medium">{doc.agentName}</span>
+                  <span className="block font-medium">{doc.agentName.replace(/-/g, " ")}</span>
                   <span className="text-[var(--color-muted-foreground)]">{doc.title}</span>
+                  <span className="mt-0.5 block text-[10px] uppercase text-[var(--color-muted-foreground)]">
+                    {t(`office.encargos.docKind.${doc.kind}`)}
+                  </span>
                 </button>
               </li>
             ))}
@@ -106,14 +135,23 @@ export default function EncargoResultPanel({
         ) : null}
 
         <div className="min-w-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4">
-          {markdown ? (
+          {inFlight && showFinal ? (
+            <p className="text-sm text-[var(--color-muted-foreground)]">
+              {t("office.encargos.finalReportEmpty")}
+            </p>
+          ) : markdown ? (
             <RichMarkdownView
               value={markdown}
-              emptyMessage={t("productDeliveries.card.noFinalReport")}
+              emptyMessage={
+                showFinal ? t("office.encargos.finalReportEmpty") : t("office.encargos.documentEmpty")
+              }
+              ariaLabel={
+                showFinal ? t("office.encargos.finalReportTitle") : (selectedDoc?.title ?? "")
+              }
             />
           ) : (
             <p className="text-sm text-[var(--color-muted-foreground)]">
-              {t("productDeliveries.card.noFinalReport")}
+              {showFinal ? t("office.encargos.finalReportEmpty") : t("office.encargos.documentEmpty")}
             </p>
           )}
         </div>

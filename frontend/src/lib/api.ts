@@ -810,6 +810,8 @@ export interface OfficeEncargoSummary {
   scopeLevel?: "company" | "product" | "department" | null;
   scopeIntent?: string | null;
   scopeLabelKey?: string | null;
+  reportPreview?: string | null;
+  finalReportKind?: "summary" | "agent" | "none" | null;
 }
 
 export type ProductDeliveriesAttentionKind = "decision" | "failed" | "opencode" | "desk";
