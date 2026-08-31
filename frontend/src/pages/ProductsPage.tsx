@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FileText, Focus, PlayCircle, Plus, Settings2, Target } from "lucide-react";
@@ -39,33 +39,29 @@ export default function ProductsPage() {
   const activeTab: ProductsTab =
     searchParams.get("tab") === "active" ? "active" : "opportunities";
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const [nextOverview, units] = await Promise.all([
-        api.products.overview(),
-        api.orgUnits.list().catch(() => []),
-      ]);
-      setOverview(nextOverview);
-      setOrgUnitNames(Object.fromEntries(units.map((u) => [u.id, u.name])));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const refresh = useCallback(async () => {
+    const [nextOverview, units] = await Promise.all([
+      api.products.overview(),
+      api.orgUnits.list().catch(() => []),
+    ]);
+    setOverview(nextOverview);
+    setOrgUnitNames(Object.fromEntries(units.map((u) => [u.id, u.name])));
+  }, []);
 
   useEffect(() => {
-    void load();
-  }, []);
+    setLoading(true);
+    refresh()
+      .catch(() => setOverview(null))
+      .finally(() => setLoading(false));
+  }, [refresh]);
 
   useEffect(() => {
     if (!overview?.pipeline.some((idea) => idea.evaluationPhase === "evaluating" || idea.evaluationPhase === "queued")) {
       return;
     }
-    const timer = window.setInterval(() => {
-      void load();
-    }, 8000);
+    const timer = window.setInterval(() => void refresh(), 8000);
     return () => window.clearInterval(timer);
-  }, [overview?.pipeline]);
+  }, [overview?.pipeline, refresh]);
 
   const setTab = (tab: ProductsTab) => {
     setSearchParams(tab === "opportunities" ? {} : { tab });
@@ -76,7 +72,7 @@ export default function ProductsPage() {
     try {
       const { runId } = await api.products.evaluateIdea(ideaId);
       toast.success(t("products.toast.evaluateStarted"));
-      await load();
+      await refresh();
       navigate(`/runs/${runId}`);
     } catch (err) {
       toast.error(translateApiError(err, t, "products.toast.evaluateFailed"));
@@ -89,7 +85,7 @@ export default function ProductsPage() {
     try {
       await api.products.pipelineDecision(ideaId, "no_go");
       toast.success(t("products.toast.noGoDone"));
-      await load();
+      await refresh();
     } catch (err) {
       toast.error(translateApiError(err, t, "common.saveFailed"));
     }
@@ -99,7 +95,7 @@ export default function ProductsPage() {
     try {
       await api.products.deletePipelineIdea(ideaId);
       toast.success(t("products.toast.ideaDeleted"));
-      await load();
+      await refresh();
     } catch (err) {
       toast.error(translateApiError(err, t, "common.deleteFailed"));
     }
@@ -109,7 +105,7 @@ export default function ProductsPage() {
     try {
       await api.products.cancel(productId);
       toast.success(t("products.toast.productCancelled"));
-      await load();
+      await refresh();
     } catch (err) {
       toast.error(translateApiError(err, t, "common.saveFailed"));
     }
@@ -119,7 +115,7 @@ export default function ProductsPage() {
     try {
       await api.products.delete(productId);
       toast.success(t("products.toast.productDeleted"));
-      await load();
+      await refresh();
     } catch (err) {
       toast.error(translateApiError(err, t, "common.deleteFailed"));
     }
@@ -129,7 +125,7 @@ export default function ProductsPage() {
     try {
       await api.products.focus(product.id);
       toast.success(t("products.toast.focusSet", { name: product.name }));
-      await load();
+      await refresh();
     } catch (err) {
       toast.error(translateApiError(err, t, "common.saveFailed"));
     }
@@ -166,7 +162,7 @@ export default function ProductsPage() {
           toast.success(
             t(mode === "bootstrap" ? "products.toast.productBootstrapped" : "products.toast.productRegistered"),
           );
-          void load().then(() => {
+          void refresh().then(() => {
             setTab("active");
             const runQuery = meta?.intakeRunId ? `?run=${meta.intakeRunId}` : "";
             navigate(`/war-room/${product.id}${runQuery}`);
@@ -174,7 +170,7 @@ export default function ProductsPage() {
         }}
       />
 
-      <VerticalPacksPanel onApplied={() => void load()} />
+      <VerticalPacksPanel onApplied={() => void refresh()} />
 
       <TabsBar
         activeId={activeTab}
@@ -288,7 +284,7 @@ export default function ProductsPage() {
                   onFocus={() => void focusProduct(product)}
                   onCancel={() => cancelProduct(product.id)}
                   onDelete={() => deleteProduct(product.id)}
-                  onChange={() => void load()}
+                  onChange={() => void refresh()}
                   t={t}
                 />
               ))}
