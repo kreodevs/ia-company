@@ -57,6 +57,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
+  "/office/trabajo": ClipboardList,
   "/office/encargos": ClipboardList,
   "/office/archive": Archive,
   "/office/pendientes": Inbox,
@@ -354,8 +355,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionOffice",
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
-          { to: "/office/pendientes", labelKey: "nav.pendientes", badge: pendingDecisions },
-          { to: "/office/encargos", labelKey: "nav.encargos" },
+          { to: "/office/trabajo", labelKey: "nav.trabajo", badge: pendingDecisions },
           { to: "/office/archive", labelKey: "nav.archive" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },

@@ -47,11 +47,19 @@ function parseInboxTab(value: string | null): InboxTab {
   return "pending";
 }
 
-export default function PendingDecisionsPage() {
+export default function PendingDecisionsPage({
+  embedded = false,
+  inboxTab: controlledInboxTab,
+  onInboxTabChange,
+}: {
+  embedded?: boolean;
+  inboxTab?: InboxTab;
+  onInboxTabChange?: (tab: InboxTab) => void;
+} = {}) {
   const { t } = useTranslation();
   const actorEmail = useDecisionActorEmail();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab = parseInboxTab(searchParams.get("tab"));
+  const tab = controlledInboxTab ?? parseInboxTab(searchParams.get("tab"));
   const [proposals, setProposals] = useState<DecisionProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
@@ -111,25 +119,31 @@ export default function PendingDecisionsPage() {
     tab === "pending" ? pending : tab === "approved" ? approved : rejected;
 
   const setTab = (next: InboxTab) => {
+    if (onInboxTabChange) {
+      onInboxTabChange(next);
+      return;
+    }
     setSearchParams(next === "pending" ? {} : { tab: next }, { replace: true });
   };
 
   if (loading) return <PageLoading message={t("decisions.loading")} />;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <PageHeader
-        eyebrow={
-          <Breadcrumbs
-            items={[
-              { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
-              { label: t("pendientes.title") },
-            ]}
-          />
-        }
-        title={t("pendientes.title")}
-        subtitle={t("pendientes.subtitle")}
-      />
+    <div className={`mx-auto max-w-6xl space-y-6 ${embedded ? "office-trabajo-pendientes-embedded" : ""}`}>
+      {!embedded ? (
+        <PageHeader
+          eyebrow={
+            <Breadcrumbs
+              items={[
+                { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
+                { label: t("pendientes.title") },
+              ]}
+            />
+          }
+          title={t("pendientes.title")}
+          subtitle={t("pendientes.subtitle")}
+        />
+      ) : null}
 
       <div
         className="office-encargos-filters office-inbox-filters-sticky"

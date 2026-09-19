@@ -3078,3 +3078,71 @@ html[data-theme="letter"] .office-link-inline {
 .office-page-home .office-hero-strip {
   display: none;
 }
+
+/* —— Oleada 2: unified work hub —— */
+
+.office-trabajo-page {
+  max-width: 1280px;
+}
+
+.office-trabajo-tabs {
+  margin-bottom: 1rem;
+}
+
+.office-trabajo-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.office-trabajo-layout-split {
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .office-trabajo-layout-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.office-trabajo-list {
+  min-width: 0;
+}
+
+.office-trabajo-live {
+  position: sticky;
+  top: 1rem;
+}
+
+.office-encargos-embedded .office-encargos-filters-row {
+  margin-bottom: 0.75rem;
+}
+
+.office-encargo-card-highlight {
+  outline: 2px solid var(--primary, #c9a227);
+  outline-offset: 2px;
+}
+
+.office-encargo-live-panel {
+  margin-bottom: 1rem;
+}
+
+.office-encargo-live-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.office-encargo-live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.office-trabajo-pendientes-embedded {
+  max-width: none;
+}

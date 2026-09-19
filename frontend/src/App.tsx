@@ -13,14 +13,13 @@ import HelpPage from "./pages/HelpPage";
 import OfficePage from "./pages/OfficePage";
 import OfficeDepartmentPage from "./pages/OfficeDepartmentPage";
 import OfficeArchivePage from "./pages/OfficeArchivePage";
-import OfficeEncargosPage from "./pages/OfficeEncargosPage";
+import OfficeTrabajoPage from "./pages/OfficeTrabajoPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
 import PublicDeliveryPage from "./pages/PublicDeliveryPage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
 import ConsensusPage from "./pages/ConsensusPage";
 import DecisionsPage from "./pages/DecisionsPage";
-import PendingDecisionsPage from "./pages/PendingDecisionsPage";
 import ProductCodePage from "./pages/ProductCodePage";
 import OrgUnitsPage from "./pages/OrgUnitsPage";
 import OrgStudioPage from "./pages/OrgStudioPage";
@@ -97,8 +96,9 @@ function AppShell() {
               <Route path="office" element={<OfficePage />} />
               <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
               <Route path="office/archive" element={<OfficeArchivePage />} />
-              <Route path="office/encargos" element={<OfficeEncargosPage />} />
-              <Route path="office/pendientes" element={<PendingDecisionsPage />} />
+              <Route path="office/trabajo" element={<OfficeTrabajoPage />} />
+              <Route path="office/encargos" element={<Navigate to="/office/trabajo?tab=todos" replace />} />
+              <Route path="office/pendientes" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="office/workflows" element={<Navigate to="/settings/procedures" replace />} />
@@ -129,7 +129,7 @@ function AppShell() {
               <Route path="org-studio" element={<OrgStudioPage />} />
               <Route path="war-room" element={<WarRoomPage />} />
               <Route path="war-room/:productId" element={<WarRoomPage />} />
-              <Route path="decisions" element={<Navigate to="/office/pendientes" replace />} />
+              <Route path="decisions" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
               <Route path="consensus" element={<Navigate to="/debug/consensus" replace />} />
               <Route path="products/:productId/consensus" element={<RedirectProductConsensus />} />
               <Route path="products/:productId/settings" element={<ProductSettingsPage />} />

@@ -34,20 +34,37 @@ export default function OfficePage() {
   const revisionContext = useMemo(() => {
     const parentRunId = searchParams.get("parentRunId")?.trim() || undefined;
     const productId = searchParams.get("productId")?.trim() || undefined;
-    const state = location.state as { revisionFeedback?: string; encargoTitle?: string } | null;
+    const state = location.state as {
+      revisionFeedback?: string;
+      encargoTitle?: string;
+      deskCoordinatorSeed?: string;
+      deskItemTitle?: string;
+    } | null;
     const feedback = state?.revisionFeedback?.trim();
-    if (!parentRunId || !feedback) {
-      return { parentRunId, productId, initialMessage: null as string | null };
+    if (feedback && parentRunId) {
+      const title = state?.encargoTitle?.trim();
+      const header = title
+        ? t("office.revision.initialMessageWithTitle", { title, runId: parentRunId })
+        : t("office.revision.initialMessage", { runId: parentRunId });
+      return {
+        parentRunId,
+        productId,
+        initialMessage: `${header}\n\n${feedback}`,
+      };
     }
-    const title = state?.encargoTitle?.trim();
-    const header = title
-      ? t("office.revision.initialMessageWithTitle", { title, runId: parentRunId })
-      : t("office.revision.initialMessage", { runId: parentRunId });
-    return {
-      parentRunId,
-      productId,
-      initialMessage: `${header}\n\n${feedback}`,
-    };
+    const deskSeed = state?.deskCoordinatorSeed?.trim();
+    if (deskSeed) {
+      const deskTitle = state?.deskItemTitle?.trim();
+      const header = deskTitle
+        ? t("office.deskBridge.initialMessageWithTitle", { title: deskTitle })
+        : t("office.deskBridge.initialMessage");
+      return {
+        parentRunId,
+        productId,
+        initialMessage: `${header}\n\n${deskSeed}`,
+      };
+    }
+    return { parentRunId, productId, initialMessage: null as string | null };
   }, [location.state, searchParams, t]);
 
   const resolvedProductId = useMemo(() => {
@@ -146,12 +163,12 @@ export default function OfficePage() {
             {t(`office.mode.${dashboard.mode}`)}
           </div>
           {dashboard.stats.pendingDecisions > 0 ? (
-            <Link to="/office/pendientes" className="office-link-btn office-link-btn-emphasis">
-              {t("nav.pendientes")} ({dashboard.stats.pendingDecisions})
-            </Link>
+          <Link to="/office/trabajo?tab=pendientes" className="office-link-btn office-link-btn-emphasis">
+            {t("nav.trabajo")} ({dashboard.stats.pendingDecisions})
+          </Link>
           ) : null}
-          <Link to="/office/encargos" className="office-link-btn">
-            {t("nav.encargos")}
+          <Link to="/office/trabajo" className="office-link-btn">
+            {t("nav.trabajo")}
           </Link>
           <Link to="/office/archive" className="office-link-btn">
             {t("office.archive.title")}
@@ -259,8 +276,8 @@ export default function OfficePage() {
                 })}
               </ul>
             )}
-            <Link to="/office/encargos" className="office-roi-link">
-              {t("nav.encargos")} →
+            <Link to="/office/trabajo" className="office-roi-link">
+              {t("nav.trabajo")} →
             </Link>
           </div>
         </aside>

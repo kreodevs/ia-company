@@ -31,15 +31,40 @@ const PHASE_FILTERS: Array<OfficeEncargoPhase | "all"> = [
 
 const ACTIVE_ENCARGO_STATUSES = new Set(["RUNNING", "DELEGATED", "AWAITING_USER"]);
 
+export type EncargosPageMode = OfficeEncargoPhase | "all" | "active" | "closed";
+
+export interface OfficeEncargosPageProps {
+  embedded?: boolean;
+  fixedPhase?: EncargosPageMode;
+  hidePhaseFilters?: boolean;
+  highlightRunId?: string | null;
+  onHighlightRun?: (runId: string) => void;
+}
+
 function isEncargoDeletable(item: OfficeEncargoSummary): boolean {
   return !ACTIVE_ENCARGO_STATUSES.has(item.status);
 }
 
-export default function OfficeEncargosPage() {
+function matchesFixedPhase(item: OfficeEncargoSummary, fixedPhase?: EncargosPageMode): boolean {
+  if (!fixedPhase || fixedPhase === "all") return true;
+  if (fixedPhase === "active") return item.phase === "in_progress" || item.phase === "queued";
+  if (fixedPhase === "closed") return item.phase === "cancelled" || item.phase === "failed";
+  return item.phase === fixedPhase;
+}
+
+export default function OfficeEncargosPage({
+  embedded = false,
+  fixedPhase,
+  hidePhaseFilters = false,
+  highlightRunId,
+  onHighlightRun,
+}: OfficeEncargosPageProps = {}) {
   const { t } = useTranslation();
   const [items, setItems] = useState<OfficeEncargoSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [phase, setPhase] = useState<OfficeEncargoPhase | "all">("all");
+  const [phase, setPhase] = useState<OfficeEncargoPhase | "all">(
+    fixedPhase && fixedPhase !== "active" && fixedPhase !== "closed" ? fixedPhase : "all",
+  );
   const [departmentSlug, setDepartmentSlug] = useState("");
   const [orgUnitId, setOrgUnitId] = useState("");
   const [orgUnits, setOrgUnits] = useState<OrgUnit[]>([]);
@@ -52,19 +77,26 @@ export default function OfficeEncargosPage() {
   }, []);
 
   const refresh = useCallback(async () => {
+    const apiPhase =
+      fixedPhase === "active" || fixedPhase === "closed" || fixedPhase === "all"
+        ? undefined
+        : fixedPhase ?? (phase === "all" ? undefined : phase);
     const res = await api.office.encargos({
       limit: 50,
-      phase: phase === "all" ? undefined : phase,
+      phase: apiPhase,
       departmentSlug: departmentSlug || undefined,
       orgUnitId: orgUnitId || undefined,
     });
-    setItems(res.items);
+    const filtered = fixedPhase
+      ? res.items.filter((item) => matchesFixedPhase(item, fixedPhase))
+      : res.items;
+    setItems(filtered);
     setSelectedIds((prev) => {
       const valid = new Set(res.items.map((item) => item.id));
       const next = new Set([...prev].filter((id) => valid.has(id)));
       return next.size === prev.size ? prev : next;
     });
-  }, [phase, departmentSlug, orgUnitId]);
+  }, [fixedPhase, phase, departmentSlug, orgUnitId]);
 
   useEffect(() => {
     setLoading(true);
@@ -133,34 +165,40 @@ export default function OfficeEncargosPage() {
     return <PageLoading message={t("office.encargos.loading")} />;
   }
 
+  const showPhaseFilters = !hidePhaseFilters && !fixedPhase;
+
   return (
-    <div className="office-page office-encargos-page">
-      <header className="office-header">
-        <div>
-          <p className="office-eyebrow">{t("office.encargos.eyebrow")}</p>
-          <h1 className="office-title">{t("office.encargos.title")}</h1>
-          <p className="office-subtitle">{t("office.encargos.subtitle")}</p>
-        </div>
-        <Link to="/office" className="office-link-btn">
-          {t("office.encargos.backToOffice")}
-        </Link>
-      </header>
+    <div className={`office-page office-encargos-page ${embedded ? "office-encargos-embedded" : ""}`}>
+      {!embedded ? (
+        <header className="office-header">
+          <div>
+            <p className="office-eyebrow">{t("office.encargos.eyebrow")}</p>
+            <h1 className="office-title">{t("office.encargos.title")}</h1>
+            <p className="office-subtitle">{t("office.encargos.subtitle")}</p>
+          </div>
+          <Link to="/office" className="office-link-btn">
+            {t("office.encargos.backToOffice")}
+          </Link>
+        </header>
+      ) : null}
 
       <div className="office-encargos-filters-row">
-        <div className="office-encargos-filters" role="tablist" aria-label={t("office.encargos.filterLabel")}>
-          {PHASE_FILTERS.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              role="tab"
-              aria-selected={phase === filter}
-              className={`office-encargos-filter ${phase === filter ? "office-encargos-filter-active" : ""}`}
-              onClick={() => setPhase(filter)}
-            >
-              {t(`office.encargos.phase.${filter}`)}
-            </button>
-          ))}
-        </div>
+        {showPhaseFilters ? (
+          <div className="office-encargos-filters" role="tablist" aria-label={t("office.encargos.filterLabel")}>
+            {PHASE_FILTERS.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                role="tab"
+                aria-selected={phase === filter}
+                className={`office-encargos-filter ${phase === filter ? "office-encargos-filter-active" : ""}`}
+                onClick={() => setPhase(filter)}
+              >
+                {t(`office.encargos.phase.${filter}`)}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <Select
           value={departmentSlug}
           onChange={(value) => {
@@ -251,7 +289,16 @@ export default function OfficeEncargosPage() {
                         aria-hidden
                       />
                     )}
-                    <Link to={`/office/encargos/${item.id}`} className="office-encargo-card interactive">
+                    <Link
+                      to={`/office/encargos/${item.id}`}
+                      className={`office-encargo-card interactive ${highlightRunId === item.id ? "office-encargo-card-highlight" : ""}`}
+                      onClick={(event) => {
+                        if (onHighlightRun) {
+                          event.preventDefault();
+                          onHighlightRun(item.id);
+                        }
+                      }}
+                    >
                       <div className="office-encargo-card-head">
                         <span className="office-encargo-phase" data-phase={item.phase}>
                           {t(`office.encargos.phase.${item.phase}`)}

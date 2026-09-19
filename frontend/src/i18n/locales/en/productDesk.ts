@@ -8,6 +8,7 @@ export const productDesk = {
   archive: "Archive",
   sendTo: "Send to {{name}}",
   sendToSuggested: "Send to suggested agent",
+  sendToCoordinator: "Send to coordinator",
   dispatched: "Run dispatched to {{agent}}.",
   viewRun: "View run",
   eligibleCount: "{{count}} agent(s) can take this",

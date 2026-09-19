@@ -20,6 +20,7 @@ import { Textarea } from "../components/atoms/Textarea";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
+import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
@@ -204,7 +205,7 @@ export default function OfficeEncargoDetailPage() {
       />
 
       <div className="office-encargo-detail-toolbar">
-        <Link to="/office/encargos" className="office-link-btn">
+        <Link to="/office/trabajo" className="office-link-btn">
           {t("office.encargos.backToList")}
         </Link>
         {detail.warRoomHref ? (
@@ -218,6 +219,18 @@ export default function OfficeEncargoDetailPage() {
           {t("office.encargos.openDebug")}
         </Link>
       </div>
+
+      <OfficeEncargoLivePanel
+        runId={detail.id}
+        title={detail.title}
+        phase={detail.phase}
+        departmentSlug={detail.departmentSlug}
+        orgUnitId={detail.orgUnitId}
+        productId={detail.productId}
+        productName={detail.productName}
+        warRoomHref={detail.warRoomHref}
+        teamAgents={detail.teamAgents}
+      />
 
       <dl className="office-encargo-detail-meta">
         <div>

@@ -35,7 +35,9 @@ Two login modes at `/login`:
 | `/office` | `OfficePage` | Oficina — planta virtual, recepción/coordinador, archivo reciente, pulso colapsable |
 | `/office/departments/:slug` | `OfficeDepartmentPage` | Sala de departamento virtual (estrategia, ingeniería, …) |
 | `/office/archive` | `OfficeArchivePage` | Hub documental — encargos, workspace, artefactos |
-| `/office/encargos` | `OfficeEncargosPage` | Inbox de encargos |
+| `/office/trabajo` | `OfficeTrabajoPage` | Hub unificado — activos, pendientes, entregados (Oleada 2) |
+| `/office/encargos` | redirect → `/office/trabajo` | Alias legacy |
+| `/office/pendientes` | redirect → `/office/trabajo?tab=pendientes` | Alias legacy |
 | `/office/workflows/:id` | `WorkflowEditorPage` | React Flow canvas — drag agents, connect nodes, save & execute |
 | `/runs` | `RunsPage` | Historical execution runs with token/cost metrics |
 | `/runs/:id` | `RunDetailPage` | SSE live log stream, shared memory, cancel run |

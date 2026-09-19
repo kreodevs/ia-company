@@ -10,6 +10,15 @@ import {
   messageTextParts,
 } from "../../lib/coordinator-chat-stream";
 import { getOfficeChatMode, officeChatConfig } from "../../lib/office-chat-config";
+import {
+  coordinatorThreadScopeKey,
+  loadCoordinatorThread,
+  saveCoordinatorThread,
+} from "../../lib/coordinator-chat-memory";
+import {
+  resolveCoordinatorExecutePath,
+  type CoordinatorExecuteRedirect,
+} from "../../lib/coordinator-execute-nav";
 import Button from "../ui/Button";
 import TeamProposalCard from "./TeamProposalCard";
 
@@ -37,6 +46,8 @@ interface CoordinatorChatProps {
   welcomeMessageKey?: string;
   onPlanChange?: (plan: OfficeTaskPlan | null) => void;
   onExecuted?: (runId: string) => void;
+  /** Where to navigate after execute. Default `auto`: war room if product, else trabajo hub. */
+  executeRedirect?: CoordinatorExecuteRedirect;
 }
 
 function CoordinatorChatLegacy({
@@ -49,10 +60,12 @@ function CoordinatorChatLegacy({
   welcomeMessageKey,
   onPlanChange,
   onExecuted,
+  executeRedirect = "auto",
 }: CoordinatorChatProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const welcomeKey = welcomeMessageKey ?? WELCOME_KEY;
+  const threadScopeKey = coordinatorThreadScopeKey(productId, orgUnitId);
   const [messages, setMessages] = useState<CoordinatorChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [plan, setPlan] = useState<OfficeTaskPlan | null>(null);
@@ -65,8 +78,18 @@ function CoordinatorChatLegacy({
   useEffect(() => {
     if (seeded.current) return;
     seeded.current = true;
+    const stored = loadCoordinatorThread(threadScopeKey);
+    if (stored.length > 0) {
+      setMessages(stored);
+      return;
+    }
     setMessages([{ role: "assistant", content: t(welcomeKey) }]);
-  }, [t, welcomeKey]);
+  }, [t, threadScopeKey, welcomeKey]);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    saveCoordinatorThread(threadScopeKey, messages);
+  }, [messages, threadScopeKey]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -129,13 +152,13 @@ function CoordinatorChatLegacy({
         parentRunId,
       });
       onExecuted?.(result.runId);
-      const warProductId = productId || result.productId || undefined;
-      const runQuery = `run=${encodeURIComponent(result.runId)}`;
-      if (warProductId) {
-        navigate(`/war-room/${warProductId}?${runQuery}`);
-      } else {
-        navigate(`/war-room?${runQuery}`);
-      }
+      const path = resolveCoordinatorExecutePath({
+        runId: result.runId,
+        productId,
+        resultProductId: result.productId,
+        redirect: executeRedirect,
+      });
+      if (path) navigate(path);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("office.task.error"));
     } finally {
@@ -182,10 +205,12 @@ function CoordinatorChatStream({
   welcomeMessageKey,
   onPlanChange,
   onExecuted,
+  executeRedirect = "auto",
 }: CoordinatorChatProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const welcomeKey = welcomeMessageKey ?? WELCOME_KEY;
+  const threadScopeKey = coordinatorThreadScopeKey(productId, orgUnitId);
   const [input, setInput] = useState("");
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -231,6 +256,16 @@ function CoordinatorChatStream({
     ],
     onError: (err) => setError(err.message),
   });
+
+  useEffect(() => {
+    const serialized: CoordinatorChatMessage[] = messages
+      .map((msg) => ({
+        role: (msg.role === "user" ? "user" : "assistant") as CoordinatorChatMessage["role"],
+        content: messageTextParts(msg),
+      }))
+      .filter((msg) => msg.content.trim());
+    if (serialized.length > 0) saveCoordinatorThread(threadScopeKey, serialized);
+  }, [messages, threadScopeKey]);
 
   const clarifying = findClarifyingQuestions(messages);
   const plan = findCompletedOfficePlan(messages);
@@ -283,13 +318,13 @@ function CoordinatorChatStream({
         parentRunId,
       });
       onExecuted?.(result.runId);
-      const warProductId = productId || result.productId || undefined;
-      const runQuery = `run=${encodeURIComponent(result.runId)}`;
-      if (warProductId) {
-        navigate(`/war-room/${warProductId}?${runQuery}`);
-      } else {
-        navigate(`/war-room?${runQuery}`);
-      }
+      const path = resolveCoordinatorExecutePath({
+        runId: result.runId,
+        productId,
+        resultProductId: result.productId,
+        redirect: executeRedirect,
+      });
+      if (path) navigate(path);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("office.task.error"));
     } finally {

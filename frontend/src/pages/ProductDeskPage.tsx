@@ -37,6 +37,7 @@ function DeskItemCard({
   onArchive,
   onDispatch,
   onRunPlaybook,
+  onSendToCoordinator,
   busy,
 }: {
   item: DeskItemDto;
@@ -45,6 +46,7 @@ function DeskItemCard({
   onArchive?: (id: string) => void;
   onDispatch?: (id: string, agentId?: string) => void;
   onRunPlaybook?: (playbookId: string) => void;
+  onSendToCoordinator?: (item: DeskItemDto) => void;
   busy: string | null;
 }) {
   const { t } = useTranslation();
@@ -79,6 +81,16 @@ function DeskItemCard({
 
       {zone === "forYou" ? (
         <div className="flex flex-wrap gap-2 pt-1">
+          {onSendToCoordinator ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={isBusy}
+              onClick={() => onSendToCoordinator(item)}
+            >
+              {t("productDesk.sendToCoordinator")}
+            </Button>
+          ) : null}
           {isRecommendation && playbookId ? (
             <Button size="sm" disabled={isBusy} onClick={() => onRunPlaybook?.(playbookId)}>
               <Play className="h-3.5 w-3.5 mr-1" />
@@ -99,6 +111,16 @@ function DeskItemCard({
 
       {zone === "ready" ? (
         <div className="space-y-2 pt-1">
+          {onSendToCoordinator ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={isBusy}
+              onClick={() => onSendToCoordinator(item)}
+            >
+              {t("productDesk.sendToCoordinator")}
+            </Button>
+          ) : null}
           {item.eligibleAgents.length > 0 ? (
             <p className="text-xs text-muted-foreground">
               {t("productDesk.eligibleCount", { count: item.eligibleAgents.length })}
@@ -137,6 +159,7 @@ function DeskZone({
   onArchive,
   onDispatch,
   onRunPlaybook,
+  onSendToCoordinator,
   busy,
 }: {
   title: string;
@@ -147,6 +170,7 @@ function DeskZone({
   onArchive?: (id: string) => void;
   onDispatch?: (id: string, agentId?: string) => void;
   onRunPlaybook?: (playbookId: string) => void;
+  onSendToCoordinator?: (item: DeskItemDto) => void;
   busy: string | null;
 }) {
   return (
@@ -168,6 +192,7 @@ function DeskZone({
               onArchive={onArchive}
               onDispatch={onDispatch}
               onRunPlaybook={onRunPlaybook}
+              onSendToCoordinator={onSendToCoordinator}
               busy={busy}
             />
           ))}
@@ -425,12 +450,24 @@ export default function ProductDeskPage() {
     try {
       const result = await api.products.dispatchDeskItem(productId, deskItemId, agentId);
       toast.success(t("productDesk.dispatched", { agent: result.agentName }));
-      navigate(`/war-room/${productId}?run=${result.runId}`);
+      navigate(`/office/trabajo?tab=activos&run=${result.runId}`);
     } catch (err) {
       toast.error(translateApiError(err, t, "common.requestFailed"));
     } finally {
       setBusy(null);
     }
+  };
+
+  const handleSendToCoordinator = (item: DeskItemDto) => {
+    if (!productId) return;
+    const prompt = [item.title, item.previewText].filter(Boolean).join("\n\n");
+    const params = new URLSearchParams({ productId });
+    navigate(`/office?${params.toString()}`, {
+      state: {
+        deskCoordinatorSeed: prompt,
+        deskItemTitle: item.title,
+      },
+    });
   };
 
   const handleLaunchPlaybook = async (playbookId: string) => {
@@ -550,6 +587,7 @@ export default function ProductDeskPage() {
             onApprove={handleApprove}
             onArchive={handleArchive}
             onRunPlaybook={handleLaunchPlaybook}
+            onSendToCoordinator={handleSendToCoordinator}
             busy={busy}
           />
           <DeskZone
@@ -558,6 +596,7 @@ export default function ProductDeskPage() {
             items={board.ready}
             zone="ready"
             onDispatch={handleDispatch}
+            onSendToCoordinator={handleSendToCoordinator}
             busy={busy}
           />
           <DeskZone
@@ -565,6 +604,7 @@ export default function ProductDeskPage() {
             empty={t("productDesk.zones.inProgressEmpty")}
             items={board.inProgress}
             zone="inProgress"
+            onSendToCoordinator={handleSendToCoordinator}
             busy={busy}
           />
           <DeskZone
@@ -572,6 +612,7 @@ export default function ProductDeskPage() {
             empty={t("productDesk.zones.recentEmpty")}
             items={board.recent}
             zone="recent"
+            onSendToCoordinator={handleSendToCoordinator}
             busy={busy}
           />
         </div>

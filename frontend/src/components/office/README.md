@@ -2,7 +2,8 @@
 
 | Component | Role |
 |-----------|------|
-| `CoordinatorChat` | Chat streaming (TanStack AI SSE) + single proposal card (`Aprobar y ejecutar`); legacy REST via `frontend/src/lib/office-chat-config.ts` |
+| `OfficeEncargoLivePanel` | Embeddable live war-room table for an encargo (trabajo hub + detail) |
+| `CoordinatorChat` | Chat streaming; `executeRedirect` auto → war room (product) or `/office/trabajo` (general); thread memory in localStorage |
 | `OfficeFloorPlan` | Virtual office floor — departments, reception, busy/idle (letter theme: white cards on pale gradient) |
 | `OfficeScopeBar` | Product + org-unit scope selectors on the home office (`/office`) |
 | `OfficePulseDrawer` | Collapsible KPI strip (Kreo `DashboardKPI`) — metrics hidden by default on home |
@@ -23,6 +24,8 @@
 
 - Reception card opens `OfficeReceptionOverlay` or scrolls to inline chat.
 - Debug sidebar links require **Modo avanzado** in Settings → General (`frontend/src/lib/advanced-mode.ts`).
+
+Pages: `OfficeTrabajoPage` at `/office/trabajo` — unified work hub (Oleada 2). Legacy `/office/encargos` and `/office/pendientes` redirect here.
 
 Pages: `OfficeArchivePage` at `/office/archive` — unified document hub.
 

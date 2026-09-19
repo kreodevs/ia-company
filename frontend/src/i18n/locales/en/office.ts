@@ -33,6 +33,30 @@ export const office = {
     empty: "No documents yet. Complete a job to see deliverables here.",
     viewAll: "View full archive",
   },
+  trabajo: {
+    eyebrow: "Work hub",
+    title: "My work",
+    subtitle: "Active jobs, decisions awaiting you, and deliveries — in one place.",
+    backToOffice: "Back to office",
+    tabsLabel: "Filter work",
+    tabs: {
+      activos: "Active",
+      pendientes: "Pending",
+      entregados: "Delivered",
+      cancelados: "Cancelled / failed",
+      todos: "All",
+    },
+    live: {
+      title: "Live meeting",
+      noScope: "This job has no meeting room scope. Open the detail page to track progress.",
+      viewDetail: "Full job detail",
+      openWarRoom: "Full war room",
+    },
+  },
+  deskBridge: {
+    initialMessage: "I want to commission this from the product desk:",
+    initialMessageWithTitle: "I want to commission «{{title}}» from the product desk:",
+  },
   kpis: {
     spend: "Spend this month",
     spendLimit: "of ${{limit}}",

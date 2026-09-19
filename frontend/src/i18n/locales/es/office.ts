@@ -33,6 +33,30 @@ export const office = {
     empty: "Sin documentos aún. Completa un encargo para ver entregables aquí.",
     viewAll: "Ver archivo completo",
   },
+  trabajo: {
+    eyebrow: "Centro de trabajo",
+    title: "Mi trabajo",
+    subtitle: "Encargos activos, pendientes de tu OK y entregas — en un solo lugar.",
+    backToOffice: "Volver a la oficina",
+    tabsLabel: "Filtrar trabajo",
+    tabs: {
+      activos: "Activos",
+      pendientes: "Pendientes",
+      entregados: "Entregados",
+      cancelados: "Cancelados / fallidos",
+      todos: "Todos",
+    },
+    live: {
+      title: "Reunión en vivo",
+      noScope: "Este encargo no tiene sala de juntas asignada. Abre la ficha para ver el progreso.",
+      viewDetail: "Ver ficha completa",
+      openWarRoom: "War room completa",
+    },
+  },
+  deskBridge: {
+    initialMessage: "Quiero encargar esto al equipo desde el desk del producto:",
+    initialMessageWithTitle: "Quiero encargar «{{title}}» al equipo desde el desk del producto:",
+  },
   kpis: {
     spend: "Gasto del mes",
     spendLimit: "de ${{limit}}",
