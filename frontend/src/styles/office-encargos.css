@@ -1150,3 +1150,125 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   border: none;
   background: transparent;
 }
+
+/* —— Oleada 5: delivery wizard + revenue loop —— */
+
+.office-delivery-wizard-steps {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.office-delivery-wizard-step button {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--office-border, #334155);
+  background: transparent;
+  color: var(--office-muted, #94a3b8);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.office-delivery-wizard-step-active button {
+  border-color: var(--color-primary, #d4a017);
+  color: var(--office-text, #f8fafc);
+}
+
+.office-delivery-wizard-step-done button {
+  color: var(--office-text, #e2e8f0);
+}
+
+.office-delivery-wizard-step span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: var(--office-border, #334155);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.office-delivery-wizard-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.office-encargo-post-delivery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.office-encargo-revenue-form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+
+.office-encargo-revenue-recorded {
+  font-size: 0.9rem;
+  color: var(--color-success, #22c55e);
+}
+
+.office-encargo-share-link {
+  color: var(--color-primary, #d4a017);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.office-notif-item-meta[data-delivery-viewed="true"] {
+  color: var(--color-primary, #d4a017);
+}
+
+.office-dept-playbooks {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--office-border, #334155);
+}
+
+.office-dept-playbooks-list {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.office-dept-playbook-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--office-border, #334155);
+}
+
+.office-dept-playbook-emoji {
+  font-size: 1.25rem;
+}
+
+.office-dept-playbook-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.office-dept-playbook-label {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.office-dept-playbook-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  color: var(--office-muted, #94a3b8);
+}

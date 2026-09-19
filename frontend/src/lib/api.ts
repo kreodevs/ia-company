@@ -679,6 +679,26 @@ export interface ApplyVerticalPackResult {
   profileSeeded: boolean;
 }
 
+export interface VerticalPackPlaybook {
+  markdown: string;
+  packId: string;
+  productSlug: string;
+}
+
+export interface DepartmentPlaybookSummary {
+  serviceId: string;
+  labelKey: string;
+  descKey: string;
+  emoji: string;
+  deliverableKey: string;
+  workflowName: string | null;
+  procedureLabel: string | null;
+  stepCount: number | null;
+  estimatedCostUsd: { min: number; max: number };
+  estimatedMinutes: { min: number; max: number };
+  examplePromptKey: string;
+}
+
 export interface OpsPortfolio {
   companyPhase: CompanyPhase;
   cycleNumber: number;
@@ -747,6 +767,8 @@ export interface OfficeTaskPlan {
   estimatedMinutes: { min: number; max: number };
   mode: "workflow" | "team" | "single";
   serviceId: string | null;
+  procedureLabel: string | null;
+  stepCount: number | null;
 }
 
 export interface OfficeActivityItem {
@@ -916,6 +938,8 @@ export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   decisionProposal: OfficeEncargoDecisionProposal | null;
   debugHref: string;
   warRoomHref: string | null;
+  linkedRevenueUsd: number | null;
+  linkedRevenueAt: string | null;
 }
 
 export interface EncargoDeliverySummary {
@@ -1151,7 +1175,9 @@ export type TenantNotificationType =
   | "run_failed"
   | "decision_pending"
   | "task_started"
-  | "department_run_completed";
+  | "department_run_completed"
+  | "delivery_viewed"
+  | "playbook_suggestion";
 
 export interface TenantNotificationItem {
   id: string;
@@ -1672,6 +1698,8 @@ export const api = {
         method: "POST",
         body: JSON.stringify(body ?? {}),
       }),
+    verticalPackPlaybook: (packId: string) =>
+      request<VerticalPackPlaybook>(`/products/vertical-packs/${packId}/playbook`),
     register: (body: {
       slug: string;
       name: string;
@@ -1852,6 +1880,10 @@ export const api = {
       request<OfficeDepartmentProceduresResponse>(
         `/office/departments/${encodeURIComponent(departmentSlug)}/procedures`,
       ),
+    departmentPlaybooks: (departmentSlug: string) =>
+      request<{ items: DepartmentPlaybookSummary[] }>(
+        `/office/departments/${encodeURIComponent(departmentSlug)}/playbooks`,
+      ),
     createDepartmentProcedure: (
       departmentSlug: string,
       body: { name: string; description?: string | null },
@@ -1876,6 +1908,14 @@ export const api = {
         "/office/procedures",
       ),
     encargo: (runId: string) => request<OfficeEncargoDetail>(`/office/encargos/${runId}`),
+    recordEncargoRevenue: (
+      runId: string,
+      body: { amountUsd: number; note?: string },
+    ) =>
+      request<{ revenueUsd: number; eventId: string }>(`/office/encargos/${runId}/revenue`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     bulkDeleteEncargos: (ids: string[]) =>
       request<{ deleted: string[]; skipped: Array<{ id: string; reason: string }>; filesRemoved: number }>(
         "/office/encargos/bulk-delete",

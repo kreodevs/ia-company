@@ -18,6 +18,22 @@ test("discoverVerticalPacks finds snapog manifest", async () => {
   assert.ok(snapog.presets.some((p) => p.presetId === "pricing-and-monetization"));
 });
 
+test("discoverVerticalPacks includes oleada 5 verticals", async () => {
+  clearVerticalPackCache();
+  const packs = await discoverVerticalPacks();
+  const ids = packs.map((p) => p.id);
+  assert.ok(ids.includes("market-intel"));
+  assert.ok(ids.includes("repo-audit"));
+});
+
+test("readVerticalPackPlaybook loads market-intel PLAYBOOK.md", async () => {
+  clearVerticalPackCache();
+  const { readVerticalPackPlaybook } = await import("../src/lib/vertical-packs.js");
+  const playbook = await readVerticalPackPlaybook("market-intel");
+  assert.ok(playbook);
+  assert.match(playbook!.markdown, /Market Intel/i);
+});
+
 test("getVerticalPackById loads snapog by id", async () => {
   clearVerticalPackCache();
   const pack = await getVerticalPackById("snapog");

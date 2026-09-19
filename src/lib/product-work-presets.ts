@@ -1,6 +1,12 @@
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 
-export type ProductWorkPresetCategory = "marketing" | "launch" | "build" | "business" | "ops";
+export type ProductWorkPresetCategory =
+  | "marketing"
+  | "launch"
+  | "build"
+  | "business"
+  | "ops"
+  | "research";
 
 export interface ProductWorkPreset {
   id: string;
@@ -22,6 +28,34 @@ export const PRIMARY_PRODUCT_PRESET_IDS = [
 ] as const;
 
 export const PRODUCT_WORK_PRESETS: ProductWorkPreset[] = [
+  {
+    id: "opportunity-discovery",
+    workflowName: WORKFLOW_NAMES.OPPORTUNITY_DISCOVERY,
+    category: "research",
+    agentCount: 4,
+    taskTemplate:
+      "Scan market demand for this product niche — competitors, pricing anchors, and ranked opportunities with evidence.",
+    deliverableHint:
+      "Market report in docs/research/ with competitor table and 3 monetizable angles.",
+  },
+  {
+    id: "research-drilldown",
+    workflowName: WORKFLOW_NAMES.RESEARCH_DRILLDOWN,
+    category: "research",
+    agentCount: 3,
+    taskTemplate:
+      "Deep-dive the top opportunity — validate demand, risks, and a 2-week validation plan.",
+    deliverableHint: "Drilldown memo in docs/research/ plus decision brief in docs/ceo/.",
+  },
+  {
+    id: "new-product-evaluation",
+    workflowName: WORKFLOW_NAMES.NEW_PRODUCT_EVALUATION,
+    category: "research",
+    agentCount: 6,
+    taskTemplate:
+      "Full GO/NO-GO evaluation — Munger pre-mortem, unit economics sketch, and recommendation.",
+    deliverableHint: "GO/NO-GO pack across docs/research/, docs/critic/, docs/cfo/.",
+  },
   {
     id: "seo-review",
     workflowName: WORKFLOW_NAMES.SEO_REVIEW,

@@ -237,11 +237,16 @@ function NotificationRow({
   language: string;
 }) {
   const isDepartmentReady = item.type === "department_run_completed";
+  const isDeliveryViewed = item.type === "delivery_viewed";
   return (
     <>
       <p className="office-notif-item-title">{displayNotificationTitle(item, language)}</p>
       <p className="office-notif-item-body">{displayNotificationBody(item, language)}</p>
-      <p className="office-notif-item-meta" data-dept-ready={isDepartmentReady ? "true" : undefined}>
+      <p
+        className="office-notif-item-meta"
+        data-dept-ready={isDepartmentReady ? "true" : undefined}
+        data-delivery-viewed={isDeliveryViewed ? "true" : undefined}
+      >
         {t(`office.notifications.types.${item.type}`)} ·{" "}
         {new Date(item.createdAt).toLocaleString([], { hour: "2-digit", minute: "2-digit" })}
       </p>

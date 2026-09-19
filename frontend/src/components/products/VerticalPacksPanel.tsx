@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Box, CheckCircle2, Loader2 } from "lucide-react";
+import { BookOpen, Box, CheckCircle2, Loader2 } from "lucide-react";
 import { api, type VerticalPackListItem } from "../../lib/api";
 import { translateApiError } from "../../lib/translate-error";
 import { toast } from "../molecules/Sonner";
 import Button from "../ui/Button";
 import Panel from "../ui/Panel";
 import StatusPill from "../ui/StatusPill";
+import RichMarkdownView from "../ui/RichMarkdownView";
+import { Dialog } from "../molecules/Dialog";
 
 export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => void }) {
   const { t } = useTranslation();
@@ -16,6 +18,10 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [playbookOpen, setPlaybookOpen] = useState(false);
+  const [playbookMarkdown, setPlaybookMarkdown] = useState("");
+  const [playbookTitle, setPlaybookTitle] = useState("");
+  const [playbookLoading, setPlaybookLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -47,6 +53,22 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
       toast.error(translateApiError(err, t, "products.verticalPacks.toastFailed"));
     } finally {
       setApplyingId(null);
+    }
+  };
+
+  const viewPlaybook = async (pack: VerticalPackListItem) => {
+    if (!pack.playbookPath) return;
+    setPlaybookTitle(pack.name);
+    setPlaybookOpen(true);
+    setPlaybookLoading(true);
+    try {
+      const data = await api.products.verticalPackPlaybook(pack.id);
+      setPlaybookMarkdown(data.markdown);
+    } catch {
+      setPlaybookMarkdown("");
+      toast.error(t("products.verticalPacks.playbookFailed"));
+    } finally {
+      setPlaybookLoading(false);
     }
   };
 
@@ -108,6 +130,12 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap gap-2">
+                {pack.playbookPath ? (
+                  <Button variant="ghost" size="sm" onClick={() => void viewPlaybook(pack)}>
+                    <BookOpen className="mr-1 h-3.5 w-3.5" aria-hidden />
+                    {t("products.verticalPacks.viewPlaybook")}
+                  </Button>
+                ) : null}
                 {pack.applied && pack.appliedProductId ? (
                   <Button
                     variant="secondary"
@@ -132,6 +160,19 @@ export default function VerticalPacksPanel({ onApplied }: { onApplied?: () => vo
           </li>
         ))}
       </ul>
+      <Dialog
+        visible={playbookOpen}
+        onHide={() => setPlaybookOpen(false)}
+        title={playbookTitle}
+        description={t("products.verticalPacks.playbookSubtitle")}
+        size="lg"
+      >
+        {playbookLoading ? (
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t("products.verticalPacks.loading")}</p>
+        ) : (
+          <RichMarkdownView value={playbookMarkdown} emptyMessage={t("products.verticalPacks.playbookEmpty")} />
+        )}
+      </Dialog>
     </Panel>
   );
 }

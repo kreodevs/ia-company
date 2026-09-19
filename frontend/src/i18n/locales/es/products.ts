@@ -108,6 +108,10 @@ export const products = {
     toastFailed: "No se pudo aplicar el vertical pack.",
     loadFailed: "No se pudieron cargar los vertical packs del servidor.",
     empty: "Aún no hay vertical packs registrados en este servidor.",
+    viewPlaybook: "Playbook operador",
+    playbookSubtitle: "Cómo operar este vertical tras aplicar el pack.",
+    playbookFailed: "No se pudo cargar el playbook.",
+    playbookEmpty: "No hay contenido de playbook.",
   },
   add: {
     title: "Añadir producto",

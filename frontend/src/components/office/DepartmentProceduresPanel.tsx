@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarClock, GitBranch, Link2, Play, Plus, Settings2 } from "lucide-react";
 import {
   api,
+  type DepartmentPlaybookSummary,
   type OfficeProcedureSummary,
   type OfficeScheduledProcedureSummary,
   type Workflow,
@@ -120,6 +121,8 @@ export default function DepartmentProceduresPanel({
   const [linking, setLinking] = useState(false);
   const [allWorkflows, setAllWorkflows] = useState<Workflow[]>([]);
   const [linkWorkflowId, setLinkWorkflowId] = useState("");
+  const [playbooks, setPlaybooks] = useState<DepartmentPlaybookSummary[]>([]);
+  const [playbooksLoading, setPlaybooksLoading] = useState(false);
 
   const loadProcedures = useCallback(async () => {
     setLoading(true);
@@ -142,6 +145,29 @@ export default function DepartmentProceduresPanel({
   useEffect(() => {
     void loadProcedures();
   }, [loadProcedures]);
+
+  useEffect(() => {
+    if (!departmentSlug) {
+      setPlaybooks([]);
+      return;
+    }
+    let cancelled = false;
+    setPlaybooksLoading(true);
+    api.office
+      .departmentPlaybooks(departmentSlug)
+      .then((data) => {
+        if (!cancelled) setPlaybooks(data.items);
+      })
+      .catch(() => {
+        if (!cancelled) setPlaybooks([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPlaybooksLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [departmentSlug]);
 
   const linkedIds = useMemo(() => new Set(items.map((item) => item.id)), [items]);
 
@@ -232,6 +258,63 @@ export default function DepartmentProceduresPanel({
           </div>
           {procedureActions}
         </div>
+
+        {departmentSlug ? (
+          <div className="office-dept-playbooks">
+            <h3 className="office-dept-playbooks-title">{t("office.procedures.playbooksTitle")}</h3>
+            <p className="office-dept-procedures-subtitle">{t("office.procedures.playbooksSubtitle")}</p>
+            {playbooksLoading ? (
+              <p className="office-empty">{t("office.procedures.playbooksLoading")}</p>
+            ) : playbooks.length === 0 ? (
+              <p className="office-empty">{t("office.procedures.playbooksEmpty")}</p>
+            ) : (
+              <ul className="office-dept-playbooks-list">
+                {playbooks.map((playbook) => {
+                  const labelKey = playbook.labelKey;
+                  const label = t(labelKey as "office.serviceTemplates.marketScan.label");
+                  const promptKey = playbook.examplePromptKey;
+                  const prompt =
+                    t(promptKey as "office.serviceTemplates.marketScan.example") !== promptKey
+                      ? t(promptKey as "office.serviceTemplates.marketScan.example")
+                      : t("office.procedures.defaultPrompt", {
+                          name: playbook.procedureLabel ?? label,
+                        });
+                  return (
+                    <li key={playbook.serviceId} className="office-dept-playbook-card">
+                      <span className="office-dept-playbook-emoji" aria-hidden>
+                        {playbook.emoji}
+                      </span>
+                      <div className="office-dept-playbook-main">
+                        <p className="office-dept-playbook-label">{label}</p>
+                        <p className="office-dept-playbook-meta">
+                          {playbook.stepCount != null
+                            ? t("office.procedures.stepCount", { count: playbook.stepCount })
+                            : null}
+                          {playbook.stepCount != null ? " · " : null}
+                          ${playbook.estimatedCostUsd.min.toFixed(2)}–$
+                          {playbook.estimatedCostUsd.max.toFixed(2)}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() =>
+                          onUseProcedure({
+                            workflowId: "",
+                            serviceId: playbook.serviceId,
+                            prompt,
+                          })
+                        }
+                      >
+                        {t("office.procedures.playbooksUse")}
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        ) : null}
 
         {loading ? (
           <p className="office-empty">{t("office.procedures.loading")}</p>

@@ -21,7 +21,7 @@ import {
 } from "./github-repo.js";
 import { resolveTenantGithubToken } from "./tenant-integrations.js";
 import { buildOfficeDepartmentRooms, type OfficeDepartmentRoom } from "./office-departments.js";
-import { enrichDepartmentProcedureCounts } from "./office-procedures.js";
+import { enrichDepartmentProcedureCounts, formatProcedureLabel } from "./office-procedures.js";
 import { encargoActivityFields } from "./office-encargos.js";
 import {
   agentNamesFromWorkflowSteps,
@@ -81,6 +81,8 @@ export interface OfficeTaskPlan {
   estimatedMinutes: { min: number; max: number };
   mode: "workflow" | "team" | "single";
   serviceId: string | null;
+  procedureLabel: string | null;
+  stepCount: number | null;
 }
 
 export interface OfficeActivityItem {
@@ -349,14 +351,26 @@ const MATCH_RULES: MatchRule[] = [
   },
 ];
 
-function estimateCost(agentCount: number): { min: number; max: number } {
+function estimateCost(agentCount: number, service?: OfficeServiceTemplate): { min: number; max: number } {
+  if (service) {
+    return {
+      min: Math.round(agentCount * service.costPerAgentUsd * 0.75 * 100) / 100,
+      max: Math.round(agentCount * service.costPerAgentUsd * 1.35 * 100) / 100,
+    };
+  }
   return {
     min: Math.round(agentCount * COST_PER_AGENT.min * 100) / 100,
     max: Math.round(agentCount * COST_PER_AGENT.max * 100) / 100,
   };
 }
 
-function estimateMinutes(agentCount: number): { min: number; max: number } {
+function estimateMinutes(agentCount: number, service?: OfficeServiceTemplate): { min: number; max: number } {
+  if (service) {
+    return {
+      min: agentCount * Math.max(3, service.minutesPerAgent - 2),
+      max: agentCount * (service.minutesPerAgent + 3),
+    };
+  }
   return {
     min: agentCount * MINUTES_PER_AGENT.min,
     max: agentCount * MINUTES_PER_AGENT.max,
@@ -550,17 +564,25 @@ export async function planOfficeTask(
 
   let workflowId: string | null = null;
   let workflowName: string | null = service.workflowName ?? null;
+  let stepCount: number | null = service.agentNames.length;
 
   if (service.workflowName) {
+    const ensured = await ensurePlatformWorkflowOnTenant(tenantId, service.workflowName);
     const wf =
-      (await ensurePlatformWorkflowOnTenant(tenantId, service.workflowName)) ??
+      ensured ??
       (await prisma.workflow.findFirst({
         where: { tenantId, name: service.workflowName },
         select: { id: true, name: true },
       }));
     workflowId = wf?.id ?? null;
     workflowName = wf?.name ?? service.workflowName;
+    if (wf?.id) {
+      const count = await prisma.workflowStep.count({ where: { workflowId: wf.id } });
+      stepCount = count > 0 ? count : stepCount;
+    }
   }
+
+  const procedureLabel = workflowName ? formatProcedureLabel(workflowName) : null;
 
   const product = options.productId
     ? (scopedProducts.find((p) => p.id === options.productId) ??
@@ -585,10 +607,12 @@ export async function planOfficeTask(
     productId: product?.id ?? null,
     productName: product?.name ?? null,
     deliverableKey: service.deliverableKey,
-    estimatedCostUsd: estimateCost(agentCount),
-    estimatedMinutes: estimateMinutes(agentCount),
+    estimatedCostUsd: estimateCost(agentCount, service),
+    estimatedMinutes: estimateMinutes(agentCount, service),
     mode,
     serviceId: service.id,
+    procedureLabel,
+    stepCount,
   };
 }
 

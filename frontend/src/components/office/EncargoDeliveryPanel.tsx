@@ -17,6 +17,7 @@ interface EncargoDeliveryPanelProps {
   documents: OfficeEncargoDocument[];
   hasFinalReport: boolean;
   enabled: boolean;
+  wizard?: boolean;
 }
 
 type ExpiryPreset = "never" | "7d" | "30d" | "90d";
@@ -26,8 +27,10 @@ export default function EncargoDeliveryPanel({
   documents,
   hasFinalReport,
   enabled,
+  wizard = false,
 }: EncargoDeliveryPanelProps) {
   const { t } = useTranslation();
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
   const [items, setItems] = useState<EncargoDeliverySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -156,13 +159,40 @@ export default function EncargoDeliveryPanel({
   const canCreate =
     confirmedShare && (includeFinalReport || selectedDocIds.length > 0) && !busy;
 
+  const wizardSteps = [
+    { id: 1 as const, label: t("office.encargos.delivery.wizardStepDocs") },
+    { id: 2 as const, label: t("office.encargos.delivery.wizardStepAccess") },
+    { id: 3 as const, label: t("office.encargos.delivery.wizardStepShare") },
+  ];
+
+  const showDocs = !wizard || wizardStep === 1;
+  const showAccess = !wizard || wizardStep === 2;
+  const showShare = !wizard || wizardStep === 3;
+
   return (
-    <section className="office-panel office-encargo-delivery-panel">
+    <section className="office-panel office-encargo-delivery-panel" id="encargo-delivery">
       <h2 className="office-panel-title">
         <Link2 className="h-4 w-4" aria-hidden />
         {t("office.encargos.delivery.title")}
       </h2>
       <p className="office-panel-subtitle">{t("office.encargos.delivery.subtitle")}</p>
+
+      {wizard ? (
+        <ol className="office-delivery-wizard-steps" aria-label={t("office.encargos.delivery.wizardLabel")}>
+          {wizardSteps.map((step) => (
+            <li
+              key={step.id}
+              className={`office-delivery-wizard-step ${wizardStep === step.id ? "office-delivery-wizard-step-active" : ""} ${wizardStep > step.id ? "office-delivery-wizard-step-done" : ""}`}
+            >
+              <button type="button" onClick={() => setWizardStep(step.id)}>
+                <span>{step.id}</span>
+                {step.label}
+              </button>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+
       <p className="office-encargo-delivery-settings-link">
         <Link to="/settings?tab=delivery" className="office-link-btn">
           {t("office.encargos.delivery.editBranding")}
@@ -170,6 +200,8 @@ export default function EncargoDeliveryPanel({
       </p>
 
       <div className="office-encargo-delivery-form">
+        {showAccess ? (
+          <>
         <Input
           label={t("office.encargos.delivery.labelOptional")}
           value={label}
@@ -199,8 +231,10 @@ export default function EncargoDeliveryPanel({
             <option value="never">{t("office.encargos.delivery.expiryNever")}</option>
           </select>
         </label>
+          </>
+        ) : null}
 
-        {hasFinalReport ? (
+        {showDocs && hasFinalReport ? (
           <label className="office-encargo-delivery-check">
             <input
               type="checkbox"
@@ -211,7 +245,7 @@ export default function EncargoDeliveryPanel({
           </label>
         ) : null}
 
-        {documents.length > 0 ? (
+        {showDocs && documents.length > 0 ? (
           <fieldset className="office-encargo-delivery-docs">
             <legend>{t("office.encargos.delivery.documentsField")}</legend>
             {documents.map((doc) => (
@@ -227,6 +261,8 @@ export default function EncargoDeliveryPanel({
           </fieldset>
         ) : null}
 
+        {showShare ? (
+          <>
         <label className="office-encargo-delivery-check office-encargo-delivery-legal">
           <input
             type="checkbox"
@@ -245,6 +281,24 @@ export default function EncargoDeliveryPanel({
             {t("office.encargos.delivery.create")}
           </Button>
         </div>
+          </>
+        ) : null}
+
+        {wizard && wizardStep < 3 ? (
+          <div className="office-delivery-wizard-nav">
+            {wizardStep > 1 ? (
+              <Button size="sm" variant="ghost" onClick={() => setWizardStep((s) => (s - 1) as 1 | 2 | 3)}>
+                {t("common.back")}
+              </Button>
+            ) : null}
+            <Button
+              size="sm"
+              onClick={() => setWizardStep((s) => Math.min(3, s + 1) as 1 | 2 | 3)}
+            >
+              {t("common.next")}
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {loading ? (

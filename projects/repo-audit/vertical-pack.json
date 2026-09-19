@@ -1,0 +1,49 @@
+{
+  "id": "repo-audit",
+  "version": 1,
+  "name": "Repo Audit",
+  "tagline": "Technical repository audit and architecture review — sellable engineering vertical",
+  "product": {
+    "slug": "repo-audit",
+    "name": "Repo Audit",
+    "description": "GitHub repository analysis, architecture review, and remediation roadmap for client engineering engagements.",
+    "phase": "discovery"
+  },
+  "workflows": [
+    "feature-development",
+    "weekly-review",
+    "seo-review"
+  ],
+  "presets": [
+    {
+      "presetId": "feature-development",
+      "primary": true,
+      "taskTemplate": "Audit GitHub repo {{repoUrl}} — architecture, code quality, security hotspots, and prioritized remediation roadmap.",
+      "deliverableHint": "ADR + audit report in docs/cto/ and docs/fullstack/ with executive summary for client delivery."
+    },
+    {
+      "presetId": "weekly-review",
+      "taskTemplate": "Weekly review for active repo-audit engagements — open findings, client follow-ups, and billable status.",
+      "deliverableHint": "Ops checklist in docs/operations/ with owners and due dates."
+    },
+    {
+      "presetId": "seo-review",
+      "taskTemplate": "If the repo ships a public docs site or landing — audit SEO discoverability and technical SEO blockers.",
+      "deliverableHint": "SEO audit in docs/research/ with copy-ready fixes."
+    }
+  ],
+  "profileSeed": {
+    "summary": "Repo Audit — sell technical due diligence and architecture reviews as fixed-fee encargos.",
+    "valueProposition": "Structured multi-agent repo analysis with deliverables clients can forward to their board.",
+    "targetAudience": "PE firms, acquirers, CTOs evaluating acquisitions, and teams before major refactors.",
+    "problemStatement": "Ad-hoc code reviews miss architecture, ops, and quality dimensions; consultants lack repeatable agent playbooks.",
+    "businessModel": "Fixed audit ($2k–$10k) by repo size; rush tier +50%.",
+    "competitors": ["Manual consulting shops", "SonarQube reports", "Big-4 tech due diligence"],
+    "techStack": ["GitHub API", "Static analysis", "Architecture review templates"],
+    "monetizationHypothesis": "First audit → retainer for remediation sprints via feature-development preset.",
+    "suggestedPhase": "discovery",
+    "nextAction": "Commission repo-analysis from Ingeniería with a GitHub URL, deliver via encargo link, record revenue."
+  },
+  "playbookPath": "PLAYBOOK.md",
+  "defaultNextAction": "Apply Repo Audit pack — run repo-analysis service from Office with a public GitHub URL."
+}

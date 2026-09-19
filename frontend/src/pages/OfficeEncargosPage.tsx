@@ -358,6 +358,10 @@ export default function OfficeEncargosPage({
                             <Crosshair className="h-3.5 w-3.5" aria-hidden />
                             {t("office.encargos.watchWarRoom")}
                           </span>
+                        ) : item.phase === "delivered" ? (
+                          <span className="office-encargo-share-link">
+                            {t("office.encargos.shareWithClient")}
+                          </span>
                         ) : null}
                       </div>
                     </Link>

@@ -55,6 +55,84 @@ export async function recordProductRevenue(input: {
   return { revenueUsd };
 }
 
+export async function recordEncargoRevenue(input: {
+  productId: string;
+  tenantId: string;
+  runId: string;
+  amountUsd: number;
+  note?: string;
+}): Promise<{ revenueUsd: number; eventId: string }> {
+  if (!Number.isFinite(input.amountUsd) || input.amountUsd <= 0) {
+    throw new Error("Revenue amount must be greater than zero");
+  }
+
+  const run = await prisma.executionRun.findFirst({
+    where: { id: input.runId, tenantId: input.tenantId },
+    select: { id: true, productId: true },
+  });
+  if (!run) throw new Error("Encargo not found");
+  if (run.productId !== input.productId) {
+    throw new Error("Encargo does not belong to this product");
+  }
+
+  const stripeEventId = `encargo:${input.runId}`;
+  const existing = await prisma.productRevenueEvent.findUnique({
+    where: { stripeEventId },
+    select: { id: true },
+  });
+  if (existing) {
+    throw new Error("Revenue already recorded for this encargo");
+  }
+
+  const event = await prisma.productRevenueEvent.create({
+    data: {
+      productId: input.productId,
+      stripeEventId,
+      amountUsd: Math.round(input.amountUsd * 100) / 100,
+      eventType: "encargo.manual",
+      runId: input.runId,
+    },
+  });
+
+  const { revenueUsd } = await recordProductRevenue({
+    productId: input.productId,
+    tenantId: input.tenantId,
+    amountUsd: event.amountUsd,
+    source: input.note?.trim()
+      ? `encargo:${input.runId}:${input.note.trim().slice(0, 80)}`
+      : `encargo:${input.runId}`,
+  });
+
+  try {
+    const { recordProductSignal } = await import("./product-signals.js");
+    await recordProductSignal({
+      tenantId: input.tenantId,
+      productId: input.productId,
+      kind: "revenue_received",
+      title: `Encargo revenue ($${event.amountUsd})`,
+      amountUsd: event.amountUsd,
+      payload: { runId: input.runId, eventType: "encargo.manual" },
+    });
+  } catch (err) {
+    console.warn("[revenue] encargo signal sync failed:", err);
+  }
+
+  return { revenueUsd, eventId: event.id };
+}
+
+export async function getEncargoLinkedRevenue(runId: string): Promise<{
+  amountUsd: number | null;
+  recordedAt: string | null;
+}> {
+  const event = await prisma.productRevenueEvent.findFirst({
+    where: { runId },
+    orderBy: { createdAt: "desc" },
+    select: { amountUsd: true, createdAt: true },
+  });
+  if (!event) return { amountUsd: null, recordedAt: null };
+  return { amountUsd: event.amountUsd, recordedAt: event.createdAt.toISOString() };
+}
+
 /** Parse Stripe webhook payload and update product revenue when applicable. */
 export async function ingestStripeWebhook(input: {
   productId: string;

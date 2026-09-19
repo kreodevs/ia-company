@@ -86,6 +86,37 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
+  app.post<{ Params: { runId: string }; Body: { amountUsd?: number; note?: string } }>(
+    "/office/encargos/:runId/revenue",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const amountUsd = Number(request.body?.amountUsd);
+        if (!Number.isFinite(amountUsd) || amountUsd <= 0) {
+          return reply.status(400).send({ error: "amountUsd must be greater than zero" });
+        }
+
+        const detail = await getOfficeEncargoDetail(tenantId, request.params.runId);
+        if (!detail) return reply.status(404).send({ error: "Encargo not found" });
+        if (!detail.productId) {
+          return reply.status(400).send({ error: "Encargo has no linked product for revenue" });
+        }
+
+        const { recordEncargoRevenue } = await import("../../lib/product-revenue.js");
+        const result = await recordEncargoRevenue({
+          tenantId,
+          productId: detail.productId,
+          runId: request.params.runId,
+          amountUsd,
+          note: request.body?.note,
+        });
+        return reply.status(201).send(result);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
   app.post<{ Body: { ids?: string[] } }>("/office/encargos/bulk-delete", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
@@ -240,6 +271,19 @@ export async function officeRoutes(app: FastifyInstance) {
       try {
         const tenantId = requireImpersonatedTenant(request);
         return listProceduresForVirtualDepartment(tenantId, request.params.slug);
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { slug: string } }>(
+    "/office/departments/:slug/playbooks",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const { listDefaultPlaybooksForDepartment } = await import("../../lib/department-playbooks.js");
+        return { items: await listDefaultPlaybooksForDepartment(tenantId, request.params.slug) };
       } catch (err) {
         return handleRouteError(reply, err);
       }

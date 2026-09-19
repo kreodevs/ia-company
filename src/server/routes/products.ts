@@ -481,6 +481,21 @@ export async function productRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Params: { packId: string } }>(
+    "/products/vertical-packs/:packId/playbook",
+    async (request, reply) => {
+      try {
+        requireImpersonatedTenant(request);
+        const { readVerticalPackPlaybook } = await import("../../lib/vertical-packs.js");
+        const playbook = await readVerticalPackPlaybook(request.params.packId);
+        if (!playbook) return reply.status(404).send({ error: "Playbook not found" });
+        return playbook;
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
   app.post<{
     Body: {
       slug: string;

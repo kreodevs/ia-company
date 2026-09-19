@@ -20,6 +20,7 @@ import { Textarea } from "../components/atoms/Textarea";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
+import EncargoRevenuePanel from "../components/office/EncargoRevenuePanel";
 import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
@@ -270,12 +271,46 @@ export default function OfficeEncargoDetailPage() {
         </div>
       </dl>
 
+      {detail.phase === "delivered" ? (
+        <section className="office-panel office-encargo-post-delivery">
+          <h2 className="office-panel-title">{t("office.encargos.postDelivery.title")}</h2>
+          <p className="office-panel-subtitle">{t("office.encargos.postDelivery.subtitle")}</p>
+          <div className="office-encargo-post-delivery-actions">
+            <a href="#encargo-delivery" className="office-link-btn">
+              {t("office.encargos.postDelivery.shareCta")}
+            </a>
+            <Link
+              to={
+                detail.productSlug
+                  ? `/office/archive?product=${encodeURIComponent(detail.productSlug)}`
+                  : "/office/archive"
+              }
+              className="office-link-btn"
+            >
+              {t("office.encargos.postDelivery.archiveLink")}
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       <EncargoDeliveryPanel
         runId={detail.id}
         documents={documents}
         hasFinalReport={Boolean(detail.finalReport)}
         enabled={detail.phase === "delivered"}
+        wizard={detail.phase === "delivered"}
       />
+
+      {detail.phase === "delivered" && detail.productId ? (
+        <EncargoRevenuePanel
+          runId={detail.id}
+          productId={detail.productId}
+          productName={detail.productName}
+          linkedRevenueUsd={detail.linkedRevenueUsd}
+          linkedRevenueAt={detail.linkedRevenueAt}
+          onRecorded={() => void refresh()}
+        />
+      ) : null}
 
       {detail.phase === "delivered" || detail.phase === "failed" ? (
         <section className="office-panel office-encargo-revision-panel">

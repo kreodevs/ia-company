@@ -11,9 +11,10 @@
 | `OfficeRecentArchive` | Last 5 documents from `/office/archive` (Kreo `Card`) |
 | `OfficeReceptionOverlay` | Full-screen reception mode for coordinator chat |
 | `DepartmentRoomView` | Shared department room — scope select (general/product), meeting table, **coordinator chat**, **department procedures**, extras slot |
-| `DepartmentProceduresPanel` | Manual **procedimientos** (workflows) + **procedimientos programados** (AutonomousSchedule rules) for a virtual or custom department; **Usar** pre-fills the coordinator |
+| `EncargoDeliveryPanel` | Client delivery links — wizard mode (3 steps) on delivered encargos; create/copy/revoke `/d/:token` shares (Oleada 5) |
+| `EncargoRevenuePanel` | Record revenue linked to encargo + product (Oleada 5) |
+| `DepartmentProceduresPanel` | Manual **procedimientos** + **recommended playbooks** (3 per virtual dept, Oleada 5) |
 | `DepartmentWarRoomPanel` | Live department war room — SSE, handoffs, procedure context, run selector |
-| `EncargoDeliveryPanel` | Client delivery links on encargo detail (create/copy/revoke/read-only `/d/:token` shares) |
 | `DeliveryPreviewModal` | Preview delivery as the client will see it before sharing |
 | `SpecialistProfileModal` | Specialist card — assign, template config, recent encargos, **documents** (archive) |
 | `TeamProposalCard` | Plan UI with human role labels (`agentDisplayLabel`) and missing-role deep links |

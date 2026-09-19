@@ -1,0 +1,62 @@
+{
+  "id": "market-intel",
+  "version": 1,
+  "name": "Market Intel",
+  "tagline": "Packaged market research and opportunity discovery for consulting-style deliverables",
+  "product": {
+    "slug": "market-intel",
+    "name": "Market Intel",
+    "description": "Recurring market scans, competitor briefs, and GO/NO-GO evaluations for client-facing research encargos.",
+    "phase": "discovery"
+  },
+  "workflows": [
+    "opportunity-discovery",
+    "research-drilldown",
+    "new-product-evaluation",
+    "pricing-and-monetization",
+    "weekly-review"
+  ],
+  "presets": [
+    {
+      "presetId": "opportunity-discovery",
+      "primary": true,
+      "taskTemplate": "Scan demand for {{niche}} — competitors, pricing anchors, and 3 monetizable angles with evidence links.",
+      "deliverableHint": "Market report in docs/research/ with TAM/SAM sketch, competitor table, and ranked opportunities."
+    },
+    {
+      "presetId": "research-drilldown",
+      "primary": true,
+      "taskTemplate": "Deep-dive drilldown on the top opportunity from the last scan — validate demand, risks, and a 2-week validation plan.",
+      "deliverableHint": "Drilldown memo in docs/research/ plus CEO decision brief in docs/ceo/."
+    },
+    {
+      "presetId": "new-product-evaluation",
+      "primary": true,
+      "taskTemplate": "Evaluate {{idea}} for a consulting client — Munger pre-mortem, unit economics sketch, GO/NO-GO recommendation.",
+      "deliverableHint": "GO/NO-GO pack across docs/research/, docs/critic/, docs/cfo/ with a single client-ready summary."
+    },
+    {
+      "presetId": "pricing-and-monetization",
+      "taskTemplate": "Recommend pricing for a research/report offering — tiers, packaging, and invoice-ready price points.",
+      "deliverableHint": "Pricing model in docs/cfo/ and sales one-pager in docs/sales/."
+    },
+    {
+      "presetId": "weekly-review",
+      "taskTemplate": "Weekly pipeline review for market-intel engagements — open leads, deliverables shipped, revenue follow-ups.",
+      "deliverableHint": "Ops summary in docs/operations/ with next actions per active client thread."
+    }
+  ],
+  "profileSeed": {
+    "summary": "Market Intel — research-as-a-service vertical for opportunity scans and validation reports.",
+    "valueProposition": "Ship client-ready market reports in days, not weeks — structured agent workflows with audit trail.",
+    "targetAudience": "Founders, agencies, and corporate innovation teams buying ad-hoc market research.",
+    "problemStatement": "Manual research is slow and inconsistent; generic ChatGPT output lacks citations and GO/NO-GO rigor.",
+    "businessModel": "Fixed-fee reports ($500–$5k) plus retainer scans ($1.5k/mo).",
+    "competitors": ["GLG", "AlphaSense", "Freelance analysts", "Internal strategy teams"],
+    "monetizationHypothesis": "Repeat scans + drilldown upsell after first delivered encargo.",
+    "suggestedPhase": "discovery",
+    "nextAction": "Run opportunity-discovery preset, deliver report link to client, record revenue on the encargo."
+  },
+  "playbookPath": "PLAYBOOK.md",
+  "defaultNextAction": "Apply Market Intel pack — run opportunity-discovery from Office recepción or Estrategia department."
+}

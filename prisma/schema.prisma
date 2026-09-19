@@ -448,11 +448,13 @@ model ProductRevenueEvent {
   stripeEventId String   @unique
   amountUsd     Float
   eventType     String
+  runId         String?
   createdAt     DateTime @default(now())
 
   product TenantProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, createdAt])
+  @@index([runId])
 }
 
 model ProductWaitlistSignup {

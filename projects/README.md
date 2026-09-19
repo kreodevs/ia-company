@@ -29,8 +29,10 @@ A **vertical pack** is a manifest at `projects/{slug}/vertical-pack.json` that b
 | Slug | Pack ID | Description |
 |------|---------|-------------|
 | [snapog/](snapog/) | `snapog` | OG image API micro-SaaS on Cloudflare Workers |
+| [market-intel/](market-intel/) | `market-intel` | Market research / GO-NO-GO consulting vertical (Oleada 5) |
+| [repo-audit/](repo-audit/) | `repo-audit` | GitHub repo audit & architecture review vertical (Oleada 5) |
 
-To add a new vertical: copy the SnapOG manifest pattern, add code under `projects/{slug}/`, and restart the API (pack list is discovered from disk).
+Operator playbooks: `GET /products/vertical-packs/:packId/playbook` reads `PLAYBOOK.md` from the workspace.
 
 ## Conventions
 

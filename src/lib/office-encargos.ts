@@ -76,6 +76,8 @@ export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   decisionProposal: OfficeEncargoDecisionProposal | null;
   debugHref: string;
   warRoomHref: string | null;
+  linkedRevenueUsd: number | null;
+  linkedRevenueAt: string | null;
 }
 
 const FINAL_REPORT_AGENTS = ["ceo-bezos", "coordinator-chief", "critic-munger", "research-thompson"];
@@ -739,6 +741,9 @@ export async function getOfficeEncargoDetail(
       }
     : null;
 
+  const { getEncargoLinkedRevenue } = await import("./product-revenue.js");
+  const linkedRevenue = await getEncargoLinkedRevenue(run.id);
+
   return {
     ...summary,
     documentCount: documents.length,
@@ -757,6 +762,8 @@ export async function getOfficeEncargoDetail(
             orgUnitId: summary.orgUnitId,
             runId: run.id,
           }),
+    linkedRevenueUsd: linkedRevenue.amountUsd,
+    linkedRevenueAt: linkedRevenue.recordedAt,
   };
 }
 

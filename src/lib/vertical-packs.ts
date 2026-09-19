@@ -378,3 +378,28 @@ export async function applyVerticalPack(
     profileSeeded,
   };
 }
+
+export async function readVerticalPackPlaybook(
+  packId: string,
+): Promise<{ markdown: string; packId: string; productSlug: string } | null> {
+  const pack = await getVerticalPackById(packId);
+  if (!pack?.playbookPath) return null;
+
+  const candidates = [
+    join(projectsRoot(), pack.product.slug, pack.playbookPath),
+    join(projectsRoot(), pack.product.slug, "PLAYBOOK.md"),
+  ];
+
+  for (const filePath of candidates) {
+    try {
+      const markdown = await readFile(filePath, "utf8");
+      if (markdown.trim()) {
+        return { markdown, packId: pack.id, productSlug: pack.product.slug };
+      }
+    } catch {
+      /* try next */
+    }
+  }
+
+  return null;
+}
