@@ -242,6 +242,8 @@ model ExecutionRun {
   orgUnit  OrgUnit?       @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
   product  TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
   logs     ExecutionLog[]
+  events   ExecutionRunEvent[]
+  checkpoints RunCheckpoint[]
   opencodeDelegation OpencodeDelegation?
   opencodeRunGate    OpencodeRunGate?
 
@@ -278,6 +280,53 @@ model ExecutionLog {
   agent Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
 
   @@index([runId, createdAt])
+}
+
+model ExecutionRunEvent {
+  id        String   @id @default(cuid())
+  runId     String
+  tenantId  String?
+  type      String
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  run ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, createdAt])
+  @@index([tenantId, createdAt])
+}
+
+enum RunCheckpointKind {
+  approval
+  veto
+  go_no_go
+  opencode
+  custom
+}
+
+enum RunCheckpointStatus {
+  pending
+  resolved
+  expired
+}
+
+model RunCheckpoint {
+  id         String              @id @default(cuid())
+  runId      String
+  tenantId   String?
+  kind       RunCheckpointKind
+  status     RunCheckpointStatus @default(pending)
+  title      String?             @db.Text
+  payload    Json                @default("{}")
+  resolution Json?
+  resolvedAt DateTime?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  run ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, status])
+  @@index([tenantId, status])
 }
 
 // ─── Consensus memory (tenant-level = company-wide; per-product is below) ────

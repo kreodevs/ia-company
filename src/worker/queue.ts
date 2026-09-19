@@ -2,6 +2,7 @@ import { Queue } from "bullmq";
 import { getRedisConnection } from "../lib/redis.js";
 
 export const WORKFLOW_QUEUE = "workflow-execution";
+export const WORKFLOW_DLQ = "workflow-execution-dlq";
 
 export interface WorkflowJobData {
   runId: string;
@@ -27,8 +28,9 @@ export function getWorkflowQueue(): Queue<WorkflowJobData> {
       connection: getRedisConnection(),
       defaultJobOptions: {
         removeOnComplete: 100,
-        removeOnFail: 200,
-        attempts: 1,
+        removeOnFail: 500,
+        attempts: 3,
+        backoff: { type: "exponential", delay: 5000 },
       },
     });
   }

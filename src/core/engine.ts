@@ -59,6 +59,15 @@ import {
   shouldUseReadonlyToolsAfterOpencode,
   workflowHasFullstackStep,
 } from "../lib/opencode-workflow.js";
+import {
+  persistAndPublishRunEvent,
+  subscribeToRunEvents,
+} from "../lib/run-events.js";
+import { createRunCheckpoint } from "../lib/run-checkpoints.js";
+import {
+  canRunStepGroupInParallel,
+  groupStepsByOrder,
+} from "../lib/step-groups.js";
 
 type LogEmitter = (event: ExecutionEvent) => void;
 
@@ -123,7 +132,7 @@ export class WorkflowExecutor {
         data,
       };
       emit?.(event);
-      emitRunEvent(event);
+      void persistAndPublishRunEvent(event, input.tenantId);
     };
 
     try {
@@ -238,16 +247,97 @@ export class WorkflowExecutor {
         }
       };
 
-      for (const step of orderedSteps) {
+      for (const group of groupStepsByOrder(orderedSteps)) {
+        const stepsToRun = group.filter((step) => step.stepOrder >= resumeFromStepOrder);
+        if (stepsToRun.length === 0) continue;
+
+        if (
+          stepsToRun.length > 1 &&
+          canRunStepGroupInParallel(stepsToRun, {
+            implementationMode: tenantCtx.implementationMode,
+            afterOpencodeDelegation: tenantCtx.afterOpencodeDelegation,
+          })
+        ) {
+          const { isRunCancelled } = await import("../worker/run-control.js");
+          if (isRunCancelled(runId)) {
+            await this.updateRunStatus(runId, "CANCELLED", { completedAt: new Date() });
+            emitEvent("done", { status: "CANCELLED" });
+            return;
+          }
+
+          assertCostLimit();
+
+          for (const step of stepsToRun) {
+            emitEvent("step_start", {
+              stepId: step.id,
+              agentName: step.agent.name,
+              stepOrder: step.stepOrder,
+              parallel: true,
+            });
+          }
+
+          const parallelResults = await Promise.all(
+            stepsToRun.map(async (step) => {
+              await this.appendLog(runId, "info", `Starting step: ${step.agent.name}`, {
+                stepId: step.id,
+                agentId: step.agent.id,
+                payload: { parallel: true },
+              });
+              const result = await this.executeStep(
+                runId,
+                step.agent,
+                step.inputConfig,
+                sharedMemory,
+                tenantCtx,
+                step.stepOrder,
+                workflowName,
+              );
+              return { step, result };
+            }),
+          );
+
+          for (const { step, result } of parallelResults) {
+            let stepOutput = result.output;
+            totalTokens += result.usage.totalTokens;
+            totalCostUsd += result.usage.estimatedCostUsd;
+
+            sharedMemory = mergeStepOutput(
+              sharedMemory,
+              step.outputConfig,
+              step.id,
+              step.agent.name,
+              stepOutput,
+              step.stepOrder,
+              {
+                wroteDocs: result.wroteDocs,
+                savedDeliverablePath: result.savedDeliverablePath,
+              },
+            );
+
+            emitEvent("step_complete", {
+              stepId: step.id,
+              agentName: step.agent.name,
+              outputPreview: stepOutput.slice(0, 500),
+              tokensUsed: result.usage.totalTokens,
+              toolCalls: result.toolCalls,
+              parallel: true,
+            });
+          }
+
+          await prisma.executionRun.update({
+            where: { id: runId },
+            data: { sharedMemory: sharedMemory as object, totalTokens, totalCostUsd },
+          });
+          assertCostLimit();
+          continue;
+        }
+
+        for (const step of stepsToRun) {
         const { isRunCancelled } = await import("../worker/run-control.js");
         if (isRunCancelled(runId)) {
           await this.updateRunStatus(runId, "CANCELLED", { completedAt: new Date() });
           emitEvent("done", { status: "CANCELLED" });
           return;
-        }
-
-        if (step.stepOrder < resumeFromStepOrder) {
-          continue;
         }
 
         assertCostLimit();
@@ -421,6 +511,14 @@ Rewrite the deliverable in markdown, then end with a fenced \`\`\`json block con
             payload: { veto },
           });
 
+          await createRunCheckpoint({
+            runId,
+            tenantId: input.tenantId,
+            kind: "veto",
+            title: vetoMessage,
+            payload: { veto, agentName: step.agent.name },
+          });
+
           await this.dispatchRunNotification(runId, input.tenantId, "FAILED", {
             totalTokens,
             totalCostUsd,
@@ -537,6 +635,7 @@ Rewrite the deliverable in markdown, then end with a fenced \`\`\`json block con
           costUsd: result.usage.estimatedCostUsd,
           payload: { outputLength: stepOutput.length },
         });
+        }
       }
 
       await this.updateRunStatus(runId, "COMPLETED", {
@@ -1119,7 +1218,7 @@ ${toolArtifacts ? `Captured tool activity:\n${toolArtifacts}\n\n` : ""}Write the
       },
     });
 
-    emitRunEvent({
+    void persistAndPublishRunEvent({
       type: level === "error" ? "error" : "log",
       runId,
       timestamp: new Date().toISOString(),
@@ -1453,18 +1552,13 @@ export function topologicalSort(workflow: WorkflowGraph) {
   return sorted;
 }
 
-const runSubscribers = new Map<string, Set<LogEmitter>>();
-
+/** @deprecated use subscribeToRunEvents from run-events.ts */
 export function subscribeToRun(runId: string, emit: LogEmitter): () => void {
-  if (!runSubscribers.has(runId)) {
-    runSubscribers.set(runId, new Set());
-  }
-  runSubscribers.get(runId)!.add(emit);
-  return () => runSubscribers.get(runId)?.delete(emit);
+  return subscribeToRunEvents(runId, emit);
 }
 
 export function emitRunEvent(event: ExecutionEvent) {
-  runSubscribers.get(event.runId)?.forEach((fn) => fn(event));
+  void persistAndPublishRunEvent(event);
 }
 
 export async function executeWorkflowInBackground(

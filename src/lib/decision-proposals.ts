@@ -111,7 +111,7 @@ export async function getDecisionProposal(id: string, tenantId: string) {
 }
 
 export async function createDecisionProposal(input: ProposalInput) {
-  return prisma.decisionProposal.create({
+  const proposal = await prisma.decisionProposal.create({
     data: {
       tenantId: input.tenantId,
       ideaId: input.ideaId,
@@ -125,6 +125,25 @@ export async function createDecisionProposal(input: ProposalInput) {
     },
     include: { idea: true },
   });
+
+  if (input.runId) {
+    const { createRunCheckpoint } = await import("./run-checkpoints.js");
+    await createRunCheckpoint({
+      runId: input.runId,
+      tenantId: input.tenantId,
+      kind: "go_no_go",
+      title: input.rationale.slice(0, 240),
+      payload: {
+        proposalId: proposal.id,
+        recommended: input.recommended,
+        workflowName: input.workflowName,
+      },
+    }).catch((err) => {
+      console.warn("[decision-proposals] checkpoint create failed:", err);
+    });
+  }
+
+  return proposal;
 }
 
 export async function attachDrilldownRun(proposalId: string, runId: string) {
@@ -140,7 +159,7 @@ export async function setProposalStatus(
   status: DecisionStatus,
   decidedBy?: string,
 ) {
-  return prisma.decisionProposal.update({
+  const updated = await prisma.decisionProposal.update({
     where: { id },
     data: {
       status,
@@ -148,6 +167,23 @@ export async function setProposalStatus(
       decidedAt: status === "pending_review" || status === "drilling" ? null : new Date(),
     },
   });
+
+  if (
+    updated.runId &&
+    status !== "pending_review" &&
+    status !== "drilling"
+  ) {
+    const { resolveCheckpointsForRun } = await import("./run-checkpoints.js");
+    await resolveCheckpointsForRun(updated.runId, "go_no_go", {
+      proposalId: updated.id,
+      status,
+      decidedBy: decidedBy ?? null,
+    }).catch((err) => {
+      console.warn("[decision-proposals] checkpoint resolve failed:", err);
+    });
+  }
+
+  return updated;
 }
 
 export async function applyApprovedProposal(

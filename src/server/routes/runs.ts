@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
 import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { subscribeToRun } from "../../core/engine.js";
+import { listRunEventsForReplay } from "../../lib/run-events.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import type { ExecutionEvent } from "../../types/index.js";
 
@@ -85,6 +86,12 @@ export async function runRoutes(app: FastifyInstance) {
           timestamp: log.createdAt.toISOString(),
           data: log,
         });
+      }
+
+      const replayEvents = await listRunEventsForReplay(runId).catch(() => []);
+      for (const event of replayEvents) {
+        if (event.type === "log") continue;
+        send(event);
       }
 
       send({

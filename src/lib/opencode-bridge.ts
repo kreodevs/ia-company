@@ -873,6 +873,17 @@ export async function prepareOpencodeImplementationGate(input: {
       data: { status: "AWAITING_USER", reason: "opencode_not_configured" },
     });
 
+    const { createRunCheckpoint } = await import("./run-checkpoints.js");
+    await createRunCheckpoint({
+      runId: input.runId,
+      tenantId: input.tenantId,
+      kind: "opencode",
+      title: "OpenCode configuration required",
+      payload: { reason: "opencode_not_configured" },
+    }).catch((err) => {
+      console.warn("[opencode-bridge] checkpoint create failed:", err);
+    });
+
     return "awaiting_user";
   }
 
