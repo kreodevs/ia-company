@@ -57,6 +57,32 @@ export const office = {
     initialMessage: "I want to commission this from the product desk:",
     initialMessageWithTitle: "I want to commission «{{title}}» from the product desk:",
   },
+  memoria: {
+    title: "Company memory",
+    subtitle: "Tenant consensus, per-product memory, and deliverable history.",
+    loading: "Loading memory…",
+    tabsLabel: "Memory scope",
+    tabs: {
+      empresa: "Company",
+      producto: "Product",
+      historial: "History",
+    },
+    productScope: "Product in focus",
+    selectProduct: "Choose a product…",
+    selectProductTitle: "Select a product",
+    selectProductDescription: "Pick a product to view its memory or revision history.",
+    companyPanel: {
+      title: "Company memory",
+      emptyNextAction: "No next action set — edit memory to set direction.",
+      open: "Open full memory",
+    },
+    historial: {
+      revisions: "Product revisions",
+      documents: "Recent documents",
+      company: "Company history",
+      companyHint: "Per-agent history lives on each product. Use the archive for company-wide documents.",
+    },
+  },
   kpis: {
     spend: "Spend this month",
     spendLimit: "of ${{limit}}",

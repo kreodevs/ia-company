@@ -57,6 +57,32 @@ export const office = {
     initialMessage: "Quiero encargar esto al equipo desde el desk del producto:",
     initialMessageWithTitle: "Quiero encargar «{{title}}» al equipo desde el desk del producto:",
   },
+  memoria: {
+    title: "Memoria de la empresa",
+    subtitle: "Consenso de la compañía, memoria por producto e historial de entregables.",
+    loading: "Cargando memoria…",
+    tabsLabel: "Ámbito de memoria",
+    tabs: {
+      empresa: "Empresa",
+      producto: "Producto",
+      historial: "Historial",
+    },
+    productScope: "Producto en foco",
+    selectProduct: "Elige un producto…",
+    selectProductTitle: "Selecciona un producto",
+    selectProductDescription: "Elige un producto para ver su memoria o el historial de revisiones.",
+    companyPanel: {
+      title: "Memoria de la empresa",
+      emptyNextAction: "Sin próxima acción definida — edita la memoria para fijar el rumbo.",
+      open: "Abrir memoria completa",
+    },
+    historial: {
+      revisions: "Revisiones del producto",
+      documents: "Documentos recientes",
+      company: "Historial de la empresa",
+      companyHint: "El historial por agente vive en cada producto. Para documentos globales, usa el archivo.",
+    },
+  },
   kpis: {
     spend: "Gasto del mes",
     spendLimit: "de ${{limit}}",

@@ -14,6 +14,7 @@ import OfficePage from "./pages/OfficePage";
 import OfficeDepartmentPage from "./pages/OfficeDepartmentPage";
 import OfficeArchivePage from "./pages/OfficeArchivePage";
 import OfficeTrabajoPage from "./pages/OfficeTrabajoPage";
+import OfficeMemoriaPage from "./pages/OfficeMemoriaPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
 import PublicDeliveryPage from "./pages/PublicDeliveryPage";
 import OpsPage from "./pages/OpsPage";
@@ -56,8 +57,8 @@ function RedirectAiTeamTab({ tab }: { tab: "agents" | "skills" }) {
 
 function RedirectProductConsensus() {
   const { productId } = useParams<{ productId: string }>();
-  if (!productId) return <Navigate to="/debug/consensus" replace />;
-  return <Navigate to={`/debug/products/${productId}/consensus`} replace />;
+  if (!productId) return <Navigate to="/office/memoria?tab=empresa" replace />;
+  return <Navigate to={`/office/memoria?tab=producto&productId=${productId}`} replace />;
 }
 
 function RedirectWorkflowEditor() {
@@ -97,6 +98,7 @@ function AppShell() {
               <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
               <Route path="office/archive" element={<OfficeArchivePage />} />
               <Route path="office/trabajo" element={<OfficeTrabajoPage />} />
+              <Route path="office/memoria" element={<OfficeMemoriaPage />} />
               <Route path="office/encargos" element={<Navigate to="/office/trabajo?tab=todos" replace />} />
               <Route path="office/pendientes" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
@@ -130,7 +132,7 @@ function AppShell() {
               <Route path="war-room" element={<WarRoomPage />} />
               <Route path="war-room/:productId" element={<WarRoomPage />} />
               <Route path="decisions" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
-              <Route path="consensus" element={<Navigate to="/debug/consensus" replace />} />
+              <Route path="consensus" element={<Navigate to="/office/memoria?tab=empresa" replace />} />
               <Route path="products/:productId/consensus" element={<RedirectProductConsensus />} />
               <Route path="products/:productId/settings" element={<ProductSettingsPage />} />
               <Route path="products/:productId/desk" element={<ProductDeskPage />} />

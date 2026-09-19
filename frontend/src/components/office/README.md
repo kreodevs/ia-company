@@ -3,6 +3,7 @@
 | Component | Role |
 |-----------|------|
 | `OfficeEncargoLivePanel` | Embeddable live war-room table for an encargo (trabajo hub + detail) |
+| `OfficeCompanyMemoryPanel` | Compact tenant consensus preview on home/archive; links to `/office/memoria` |
 | `CoordinatorChat` | Chat streaming; `executeRedirect` auto → war room (product) or `/office/trabajo` (general); thread memory in localStorage |
 | `OfficeFloorPlan` | Virtual office floor — departments, reception, busy/idle (letter theme: white cards on pale gradient) |
 | `OfficeScopeBar` | Product + org-unit scope selectors on the home office (`/office`) |
@@ -27,7 +28,9 @@
 
 Pages: `OfficeTrabajoPage` at `/office/trabajo` — unified work hub (Oleada 2). Legacy `/office/encargos` and `/office/pendientes` redirect here.
 
-Pages: `OfficeArchivePage` at `/office/archive` — unified document hub.
+Pages: `OfficeMemoriaPage` at `/office/memoria` — unified memory (Oleada 3): tabs **Empresa / Producto / Historial**. Legacy `/consensus` redirects here. Debug consensus pages remain under `/debug/consensus`.
+
+Pages: `OfficeArchivePage` at `/office/archive` — unified document hub (includes company memory strip).
 
 Department rooms show **Procedimientos del departamento** with **Nuevo procedimiento** / **Vincular existente** (creates or links workflows via `orgUnit.config.linkedWorkflowIds` or virtual dept tags), plus **Procedimientos programados**.
 

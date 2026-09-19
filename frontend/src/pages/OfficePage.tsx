@@ -11,6 +11,7 @@ import OfficeOnboardingPanel, {
 } from "../components/office/OfficeOnboardingPanel";
 import OfficePulseDrawer from "../components/office/OfficePulseDrawer";
 import OfficeRecentArchive from "../components/office/OfficeRecentArchive";
+import OfficeCompanyMemoryPanel from "../components/office/OfficeCompanyMemoryPanel";
 import OfficeReceptionOverlay from "../components/office/OfficeReceptionOverlay";
 import OfficeScopeBar from "../components/office/OfficeScopeBar";
 import { DEPARTMENT_SCOPE_GENERAL } from "../components/office/DepartmentRoomView";
@@ -232,6 +233,7 @@ export default function OfficePage() {
         </div>
 
         <aside className="office-lobby-aside">
+          <OfficeCompanyMemoryPanel compact />
           <OfficeRecentArchive />
           <div className="office-panel office-lobby-activity">
             <h2 className="office-panel-title">{t("office.activity.title")}</h2>

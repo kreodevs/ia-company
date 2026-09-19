@@ -379,6 +379,22 @@ export async function processConvergenceAfterRun(
     stuckCounter = 0;
   }
 
+  if (runStatus === "COMPLETED" || runStatus === "FAILED") {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { slug: true },
+    });
+    const { ensureRunDeliverables } = await import("./ensure-run-deliverables.js");
+    await ensureRunDeliverables({
+      tenantId,
+      runId,
+      workflowName,
+      memory: enriched,
+      productSlug,
+      tenantSlug: tenant?.slug ?? null,
+    });
+  }
+
   await prisma.tenantCycleState.update({
     where: { tenantId },
     data: {

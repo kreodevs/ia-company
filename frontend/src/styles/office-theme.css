@@ -3146,3 +3146,48 @@ html[data-theme="letter"] .office-link-inline {
 .office-trabajo-pendientes-embedded {
   max-width: none;
 }
+
+/* —— Oleada 3: company memory —— */
+
+.office-company-memory-panel .office-memory-next-action {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  margin-bottom: 0.5rem;
+}
+
+.office-memory-label {
+  font-weight: 600;
+  color: var(--color-primary, #c9a227);
+}
+
+.office-memory-preview {
+  font-size: 0.8125rem;
+  color: var(--color-muted-foreground);
+  margin: 0.5rem 0;
+}
+
+.office-memory-meta {
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+  margin-bottom: 0.5rem;
+}
+
+.office-memory-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.office-memoria-page {
+  max-width: 1280px;
+}
+
+.office-memoria-tabs {
+  margin-bottom: 0.5rem;
+}
+
+.office-archive-memory-strip {
+  margin-bottom: 1rem;
+  max-width: 420px;
+}

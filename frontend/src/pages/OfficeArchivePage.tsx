@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import { api, type OfficeArchiveItem, type OfficeArchiveResponse } from "../lib/api";
+import OfficeCompanyMemoryPanel from "../components/office/OfficeCompanyMemoryPanel";
 import RichMarkdownView from "../components/ui/RichMarkdownView";
 import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
@@ -121,6 +122,10 @@ export default function OfficeArchivePage() {
           </p>
         ) : null}
       </header>
+
+      <div className="office-archive-memory-strip">
+        <OfficeCompanyMemoryPanel compact />
+      </div>
 
       <button
         type="button"

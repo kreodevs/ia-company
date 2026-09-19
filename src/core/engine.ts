@@ -279,6 +279,83 @@ export class WorkflowExecutor {
           workflowName,
         );
 
+        let stepOutput = result.output;
+
+        const { shouldEnforceHandoffJson, hasStructuredHandoffJson } = await import(
+          "../lib/handoff-validation.js"
+        );
+        if (
+          shouldEnforceHandoffJson(step.inputConfig, sharedMemory) &&
+          stepOutput.trim() &&
+          !hasStructuredHandoffJson(stepOutput)
+        ) {
+          await this.appendLog(runId, "warn", "Missing structured handoff JSON — synthesizing handoff block", {
+            stepId: step.id,
+            agentId: step.agent.id,
+            payload: { agentName: step.agent.name },
+          });
+
+          const providerConfig = resolveAgentProviderConfig(step.agent, tenantCtx.llm);
+          const model = createLanguageModel(providerConfigFromResolved(providerConfig));
+          const taskHint =
+            typeof sharedMemory.task === "string" && sharedMemory.task.trim()
+              ? sharedMemory.task.trim()
+              : compileUserPrompt(prepareSharedMemoryForPrompt(sharedMemory), step.inputConfig);
+
+          const synthesis = await generateText({
+            model,
+            temperature: Math.min(step.agent.temperature, 0.5),
+            system: compileSystemPrompt(
+              step.agent,
+              prepareSharedMemoryForPrompt(sharedMemory),
+              step.inputConfig,
+              {
+                productSlug: tenantCtx.productSlug,
+                productName:
+                  typeof sharedMemory.focusProductName === "string"
+                    ? sharedMemory.focusProductName
+                    : tenantCtx.productSlug,
+                toolMode: this.resolveToolMode(step.agent.name, tenantCtx, step.stepOrder),
+                afterOpencodeDelegation: tenantCtx.afterOpencodeDelegation,
+              },
+            ),
+            prompt: `Your previous response for this workflow step did not include the mandatory JSON handoff block.
+
+Task:
+${taskHint}
+
+Previous response:
+${stepOutput.slice(0, 8000)}
+
+Rewrite the deliverable in markdown, then end with a fenced \`\`\`json block containing at least "consensusUpdate" or "nextAction". Do not use tools.`,
+            maxSteps: 1,
+          }).catch((err) => {
+            throw new Error(formatLlmProviderError(err, providerConfig));
+          });
+
+          stepOutput = collectAgentStepOutput(synthesis) || stepOutput;
+          totalTokens += (synthesis.usage?.promptTokens ?? 0) + (synthesis.usage?.completionTokens ?? 0);
+          totalCostUsd += estimateCostUsd(
+            providerConfig.provider,
+            providerConfig.model,
+            synthesis.usage?.promptTokens ?? 0,
+            synthesis.usage?.completionTokens ?? 0,
+          );
+        }
+
+        const cfg = step.inputConfig as StepInputConfig & { enforceContractOutputs?: boolean };
+        if (cfg.enforceContractOutputs !== false && stepOutput.trim()) {
+          const { validateAgentStepContract } = await import("../lib/agent-contract.js");
+          const check = validateAgentStepContract(step.agent.name, stepOutput);
+          if (!check.ok) {
+            await this.appendLog(runId, "warn", `Output type "${check.inferredType}" outside agent contract`, {
+              stepId: step.id,
+              agentId: step.agent.id,
+              payload: { expected: check.expected, inferredType: check.inferredType },
+            });
+          }
+        }
+
         totalTokens += result.usage.totalTokens;
         totalCostUsd += result.usage.estimatedCostUsd;
         assertCostLimit();
@@ -288,7 +365,7 @@ export class WorkflowExecutor {
           step.outputConfig,
           step.id,
           step.agent.name,
-          result.output,
+          stepOutput,
           step.stepOrder,
           {
             wroteDocs: result.wroteDocs,
@@ -304,7 +381,7 @@ export class WorkflowExecutor {
           sharedMemory._mcpFallbackUsed = true;
         }
 
-        const veto = extractMungerVeto(step.agent.name, result.output);
+        const veto = extractMungerVeto(step.agent.name, stepOutput);
         if (veto) {
           sharedMemory.veto = veto;
           sharedMemory._stoppedByVeto = true;
@@ -390,7 +467,7 @@ export class WorkflowExecutor {
                 await startOpencodeDelegation({
                   tenantId: input.tenantId,
                   runId,
-                  brief: result.output,
+                  brief: stepOutput,
                   sharedMemory,
                   productSlug: input.productSlug,
                   productId: input.productId,
@@ -448,7 +525,7 @@ export class WorkflowExecutor {
         emitEvent("step_complete", {
           stepId: step.id,
           agentName: step.agent.name,
-          outputPreview: result.output.slice(0, 500),
+          outputPreview: stepOutput.slice(0, 500),
           tokensUsed: result.usage.totalTokens,
           toolCalls: result.toolCalls,
         });
@@ -458,7 +535,7 @@ export class WorkflowExecutor {
           agentId: step.agent.id,
           tokensUsed: result.usage.totalTokens,
           costUsd: result.usage.estimatedCostUsd,
-          payload: { outputLength: result.output.length },
+          payload: { outputLength: stepOutput.length },
         });
       }
 

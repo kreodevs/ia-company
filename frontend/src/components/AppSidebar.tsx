@@ -18,6 +18,7 @@ import {
   Settings,
   Sparkles,
   Bot,
+  Brain,
   Building2,
   Users,
   Network,
@@ -58,6 +59,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/settings": Settings,
   "/office": Building2,
   "/office/trabajo": ClipboardList,
+  "/office/memoria": Brain,
   "/office/encargos": ClipboardList,
   "/office/archive": Archive,
   "/office/pendientes": Inbox,
@@ -356,6 +358,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
           { to: "/office/trabajo", labelKey: "nav.trabajo", badge: pendingDecisions },
+          { to: "/office/memoria", labelKey: "nav.memoria" },
           { to: "/office/archive", labelKey: "nav.archive" },
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },

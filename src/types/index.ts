@@ -15,6 +15,10 @@ export interface StepInputConfig {
   passSharedMemory?: boolean;
   customPrompt?: string;
   contextKeys?: string[];
+  /** When true (or deliver intent), step output must include structured handoff JSON. */
+  requireHandoffJson?: boolean;
+  /** When true, warn if inferred output type is outside agent contractOutputs. */
+  enforceContractOutputs?: boolean;
 }
 
 export interface StepOutputConfig {

@@ -79,3 +79,53 @@ export function suggestNextRoleForType(type: string): string | null {
   };
   return map[type] ?? null;
 }
+
+export function agentProducesOutput(contractOutputs: unknown, itemType: string): boolean {
+  const outputs = parseContractTypes(contractOutputs);
+  const allowed = outputs.length > 0 ? outputs : contractForAgentName("unknown").outputs;
+  return allowed.includes(itemType) || allowed.includes("other");
+}
+
+export function validateAgentStepContract(
+  agentName: string,
+  output: string,
+  contractOutputs?: unknown,
+): { ok: boolean; inferredType: string; expected: string[] } {
+  const expected =
+    parseContractTypes(contractOutputs).length > 0
+      ? parseContractTypes(contractOutputs)
+      : contractForAgentName(agentName).outputs;
+
+  if (!output.trim()) {
+    return { ok: true, inferredType: "report", expected };
+  }
+
+  const inferredType = inferOutputTypeFromContent(agentName, output);
+  return {
+    ok: agentProducesOutput(expected, inferredType),
+    inferredType,
+    expected,
+  };
+}
+
+function inferOutputTypeFromContent(agentName: string, content: string): string {
+  const hints: Array<{ pattern: RegExp; type: string }> = [
+    { pattern: /fullstack|dhh|opencode|dev/i, type: "code" },
+    { pattern: /product-norman|interaction-cooper/i, type: "spec" },
+    { pattern: /cto-vogels/i, type: "adr" },
+    { pattern: /ui-duarte|design-lead/i, type: "design" },
+    { pattern: /copy-manager|marketing-godin|content-editor|sdr-outbound/i, type: "copy" },
+    { pattern: /community-manager/i, type: "social_post" },
+  ];
+
+  for (const hint of hints) {
+    if (hint.pattern.test(agentName)) return hint.type;
+  }
+
+  const lower = content.toLowerCase();
+  if (/\b(acceptance criteria|user story|feature spec)\b/.test(lower)) return "spec";
+  if (/\b(architecture decision|adr)\b/.test(lower)) return "adr";
+  if (/\b(implemented|pull request|```)/.test(lower)) return "code";
+  if (/\b(hashtag|instagram|linkedin post|tweet)\b/.test(lower)) return "social_post";
+  return "report";
+}

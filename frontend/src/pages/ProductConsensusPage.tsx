@@ -24,10 +24,16 @@ function formatTime(iso: string): string {
 
 type View = "document" | "revisions" | "reports" | "docs";
 
-export default function ProductConsensusPage() {
+export default function ProductConsensusPage({
+  officeMode = false,
+  productIdOverride,
+}: {
+  officeMode?: boolean;
+  productIdOverride?: string;
+} = {}) {
   const { t } = useTranslation();
   const params = useParams<{ productId: string }>();
-  const productId = params.productId;
+  const productId = productIdOverride ?? params.productId;
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabFromUrl = searchParams.get("tab") as View | null;
@@ -139,48 +145,59 @@ export default function ProductConsensusPage() {
   if (loading) return <PageLoading message={t("consensus.loading")} />;
   if (!productId) return <div>Missing product id</div>;
 
-  return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <PageHeader
-        eyebrow={
-          <Breadcrumbs
-            items={[
-              { label: t("nav.sectionDebugOffice"), to: "/debug/runs" },
-              { label: t("nav.consensus"), to: "/debug/consensus" },
-              { label: t("consensus.productTab", { defaultValue: "Product memory" }) },
-            ]}
-          />
-        }
-        title={t("consensus.productTitle", { name: product?.name ?? productId })}
-        subtitle={t("consensus.productSubtitle")}
-        meta={
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <StatusPill status="running">#{record?.cycleNumber ?? 0}</StatusPill>
-            {product && <ProductActionsMenu product={product} onChange={() => {
-              api.products.list().then((list) => {
-                setProduct(list.find((p) => p.id === productId) ?? null);
-              });
-            }} />}
-            {record?.updatedAt && (
-              <span className="text-[var(--color-muted-foreground)]">
-                {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}
-              </span>
-            )}
-            <Link
-              to={`/war-room/${productId}`}
-              className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
-            >
-              {t("warRoom.title", { name: product?.name ?? productId })}
-            </Link>
-            <Link
-              to={`/products/${productId}/code`}
-              className="text-[var(--color-primary)] hover:underline"
-            >
-              {t("consensus.viewCode")}
-            </Link>
-          </div>
-        }
-      />
+  const pageBody = (
+    <>
+      {!officeMode ? (
+        <PageHeader
+          eyebrow={
+            <Breadcrumbs
+              items={[
+                { label: t("nav.sectionDebugOffice"), to: "/debug/runs" },
+                { label: t("nav.consensus"), to: "/debug/consensus" },
+                { label: t("consensus.productTab", { defaultValue: "Product memory" }) },
+              ]}
+            />
+          }
+          title={t("consensus.productTitle", { name: product?.name ?? productId })}
+          subtitle={t("consensus.productSubtitle")}
+          meta={
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <StatusPill status="running">#{record?.cycleNumber ?? 0}</StatusPill>
+              {product && (
+                <ProductActionsMenu
+                  product={product}
+                  onChange={() => {
+                    api.products.list().then((list) => {
+                      setProduct(list.find((p) => p.id === productId) ?? null);
+                    });
+                  }}
+                />
+              )}
+              {record?.updatedAt && (
+                <span className="text-[var(--color-muted-foreground)]">
+                  {t("consensus.lastUpdated", { date: formatTime(record.updatedAt) })}
+                </span>
+              )}
+              <Link
+                to={`/war-room/${productId}`}
+                className="rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-3 py-1 font-semibold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20"
+              >
+                {t("warRoom.title", { name: product?.name ?? productId })}
+              </Link>
+              <Link to={`/products/${productId}/code`} className="text-[var(--color-primary)] hover:underline">
+                {t("consensus.viewCode")}
+              </Link>
+            </div>
+          }
+        />
+      ) : (
+        <div className="office-memoria-product-header mb-4">
+          <h2 className="text-lg font-semibold">
+            {t("consensus.productTitle", { name: product?.name ?? productId })}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("consensus.productSubtitle")}</p>
+        </div>
+      )}
 
       <section className="hero-strip">
         <KpiCard
@@ -198,6 +215,9 @@ export default function ProductConsensusPage() {
               : t("consensus.productKpis.noRevisions")
           }
         />
+        <div data-testid="revisions-kpi" className="sr-only">
+          {revisions.length}
+        </div>
         <KpiCard
           label={t("consensus.productKpis.phase")}
           value={product ? product.phase : "—"}
@@ -252,6 +272,7 @@ export default function ProductConsensusPage() {
           type="button"
           role="tab"
           aria-selected={view === "revisions"}
+          data-testid="consensus-revisions-tab"
           onClick={() => switchTab("revisions")}
           className={`interactive inline-flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition ${
             view === "revisions"
@@ -368,6 +389,7 @@ export default function ProductConsensusPage() {
               {revisions.map((rev) => (
                 <li
                   key={rev.id}
+                  data-testid="revision-item"
                   className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3"
                 >
                   <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
@@ -552,6 +574,12 @@ export default function ProductConsensusPage() {
       {view === "docs" && productId && (
         <ProductAgentDocsPanel productId={productId} />
       )}
+    </>
+  );
+
+  return (
+    <div className={officeMode ? "space-y-6" : "mx-auto max-w-6xl space-y-6"}>
+      {pageBody}
     </div>
   );
 }

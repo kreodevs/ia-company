@@ -87,13 +87,13 @@ export default function ConsensusPage() {
     setScope(next);
     setSearchParams(next === "company" ? {} : { scope: next }, { replace: true });
     if (next.startsWith("product:")) {
-      navigate(`/debug/products/${next.slice("product:".length)}/consensus`);
+      navigate(`/office/memoria?tab=producto&productId=${next.slice("product:".length)}`);
     } else if (next.startsWith("idea:")) {
       const ideaId = next.slice("idea:".length);
       const idea = ideas.find((i) => i.id === ideaId);
       const linked = idea ? ideaProduct(idea) : null;
       if (linked) {
-        navigate(`/debug/products/${linked.id}/consensus`);
+        navigate(`/office/memoria?tab=producto&productId=${linked.id}`);
       }
     }
   };
@@ -213,7 +213,7 @@ export default function ConsensusPage() {
             {products.map((p) => (
               <li key={p.id}>
                 <Link
-                  to={`/debug/products/${p.id}/consensus`}
+                  to={`/office/memoria?tab=producto&productId=${p.id}`}
                   className="lift flex items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 hover:border-[var(--color-primary)]/40"
                 >
                   <span className="min-w-0 truncate">
