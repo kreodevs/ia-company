@@ -10,6 +10,7 @@ export const settings = {
   },
   tabs: {
     general: "General",
+    account: "Cuenta",
     llm: "LLM",
     opencode: "OpenCode",
     notifications: "Notificaciones",

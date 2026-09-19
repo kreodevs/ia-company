@@ -341,6 +341,74 @@ export async function registerAuthPlugin(app: FastifyInstance) {
     },
   );
 
+  app.post<{ Body: { currentPassword: string; password: string } }>(
+    "/auth/change-password",
+    { preHandler: [app.requireSuperAdmin] },
+    async (request, reply) => {
+      const { currentPassword, password } = request.body;
+      if (!currentPassword || !password) {
+        return reply.status(400).send({ error: "Current password and new password are required" });
+      }
+      if (password.length < 8) {
+        return reply.status(400).send({ error: "Password must be at least 8 characters" });
+      }
+
+      const session = request.session!;
+      const admin = await prisma.superAdmin.findUnique({ where: { id: session.sub } });
+      if (!admin || !(await verifyPassword(currentPassword, admin.passwordHash))) {
+        await logAudit(request, "auth.password_change.failed", { kind: "superadmin" });
+        return reply.status(401).send({ error: "Current password is incorrect" });
+      }
+
+      await prisma.superAdmin.update({
+        where: { id: admin.id },
+        data: { passwordHash: await hashPassword(password) },
+      });
+
+      await logAudit(request, "auth.password_changed", { kind: "superadmin" });
+      return { ok: true };
+    },
+  );
+
+  app.post<{ Body: { currentPassword: string; password: string } }>(
+    "/auth/tenant/change-password",
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      const session = request.session!;
+      if (session.kind !== "tenant") {
+        return reply.status(403).send({ error: "Tenant account required" });
+      }
+
+      const { currentPassword, password } = request.body;
+      if (!currentPassword || !password) {
+        return reply.status(400).send({ error: "Current password and new password are required" });
+      }
+      if (password.length < 8) {
+        return reply.status(400).send({ error: "Password must be at least 8 characters" });
+      }
+
+      const user = await prisma.tenantUser.findUnique({ where: { id: session.sub } });
+      if (!user || !user.isActive || !(await verifyPassword(currentPassword, user.passwordHash))) {
+        await logAudit(request, "auth.password_change.failed", {
+          kind: "tenant",
+          tenantId: session.tenantId,
+        });
+        return reply.status(401).send({ error: "Current password is incorrect" });
+      }
+
+      await prisma.tenantUser.update({
+        where: { id: user.id },
+        data: { passwordHash: await hashPassword(password) },
+      });
+
+      await logAudit(request, "auth.password_changed", {
+        kind: "tenant",
+        tenantId: session.tenantId,
+      });
+      return { ok: true };
+    },
+  );
+
   app.post<{ Body: { tenantId: string | null } }>(
     "/auth/impersonate",
     { preHandler: [app.requireSuperAdmin] },

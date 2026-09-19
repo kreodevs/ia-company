@@ -6,8 +6,9 @@
 | `TenantSmtpSection.tsx` | Tenant SMTP for agent outbound email: host, credentials, allowlist, daily quota, test connection. Used in Settings → Integrations. |
 | `TenantMcpSettingsPanel.tsx` | MCP server registry: stdio commands, env secrets, tool sync, agent grants, read-only guardrails, **Validate with LLM** smoke test. Synced tools list is a collapsible section (collapsed by default). Used in Settings → MCP servers. |
 | `TenantDeliveryBrandingPanel.tsx` | Client delivery branding: logo URL, primary color, footer, confidentiality notice, contact email. Used in Settings → Entrega cliente (`?tab=delivery`). |
+| `ChangePasswordPanel.tsx` | Authenticated password change for tenant users (current + new + confirm). Used in Settings → Cuenta (`?tab=account`). |
 
-Used by `SettingsPage` (Schedules, Integrations, MCP, and Delivery tabs).
+Used by `SettingsPage` (Schedules, Integrations, MCP, Delivery, and Account tabs).
 
 ## Guardrails (backend)
 

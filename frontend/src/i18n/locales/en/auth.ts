@@ -30,6 +30,17 @@ export const auth = {
     passwordsDoNotMatch: "Passwords do not match",
     updatePassword: "Update password",
   },
+  changePassword: {
+    title: "Change password",
+    subtitle: "Update your account password. Your current password is required.",
+    currentPassword: "Current password",
+    newPassword: "New password (min 8 chars)",
+    confirmPassword: "Confirm new password",
+    passwordsDoNotMatch: "Passwords do not match",
+    updatePassword: "Save new password",
+    success: "Password updated.",
+    failed: "Could not change password.",
+  },
   setup: {
     title: "Create Superadmin",
     subtitle:

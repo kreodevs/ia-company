@@ -30,6 +30,17 @@ export const auth = {
     passwordsDoNotMatch: "Las contraseñas no coinciden",
     updatePassword: "Actualizar contraseña",
   },
+  changePassword: {
+    title: "Cambiar contraseña",
+    subtitle: "Actualiza la contraseña de tu cuenta. Necesitas la contraseña actual.",
+    currentPassword: "Contraseña actual",
+    newPassword: "Nueva contraseña (mín. 8 caracteres)",
+    confirmPassword: "Confirmar nueva contraseña",
+    passwordsDoNotMatch: "Las contraseñas no coinciden",
+    updatePassword: "Guardar nueva contraseña",
+    success: "Contraseña actualizada.",
+    failed: "No se pudo cambiar la contraseña.",
+  },
   setup: {
     title: "Crear superadmin",
     subtitle:

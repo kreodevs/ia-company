@@ -22,14 +22,18 @@ import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPane
 import TenantSmtpSection from "../components/settings/TenantSmtpSection";
 import TenantMcpSettingsPanel from "../components/settings/TenantMcpSettingsPanel";
 import TenantDeliveryBrandingPanel from "../components/settings/TenantDeliveryBrandingPanel";
+import ChangePasswordPanel from "../components/settings/ChangePasswordPanel";
 import { Switch } from "@/components/atoms/Switch";
 import { useAdvancedMode } from "../hooks/useAdvancedMode";
+import { useAuth } from "../context/AuthContext";
 
-type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules" | "delivery";
-const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules", "delivery"];
+type SettingsTab = "general" | "account" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules" | "delivery";
+const VALID_TABS: SettingsTab[] = ["general", "account", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules", "delivery"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const { kind, tenantUser } = useAuth();
+  const showAccountTab = kind === "tenant" && tenantUser != null;
   const [advancedMode, setAdvancedMode] = useAdvancedMode();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
   const [opencode, setOpencode] = useState<Partial<TenantOpencodeConfig>>({});
@@ -224,6 +228,7 @@ export default function SettingsPage() {
         sticky
         tabs={[
           { id: "general", label: t("settings.tabs.general") },
+          ...(showAccountTab ? [{ id: "account", label: t("settings.tabs.account") }] : []),
           { id: "llm", label: t("settings.tabs.llm") },
           { id: "opencode", label: t("settings.tabs.opencode") },
           { id: "integrations", label: t("settings.tabs.integrations") },
@@ -236,6 +241,14 @@ export default function SettingsPage() {
         activeId={activeTab}
         onChange={(id) => setTab(id as SettingsTab)}
       />
+
+      {activeTab === "account" && showAccountTab && tenantUser && (
+        <ChangePasswordPanel
+          variant="tenant"
+          email={tenantUser.email}
+          name={tenantUser.name}
+        />
+      )}
 
       {activeTab === "general" && (
         <div className="space-y-4">

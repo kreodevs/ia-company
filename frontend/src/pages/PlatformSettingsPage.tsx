@@ -15,12 +15,15 @@ import TabsBar from "../components/ui/TabsBar";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
+import ChangePasswordPanel from "../components/settings/ChangePasswordPanel";
+import { useAuth } from "../context/AuthContext";
 
-type PlatformSettingsTab = "general" | "llm" | "email" | "integrations" | "opencode";
-const VALID_TABS: PlatformSettingsTab[] = ["general", "llm", "email", "integrations", "opencode"];
+type PlatformSettingsTab = "general" | "account" | "llm" | "email" | "integrations" | "opencode";
+const VALID_TABS: PlatformSettingsTab[] = ["general", "account", "llm", "email", "integrations", "opencode"];
 
 export default function PlatformSettingsPage() {
   const { t } = useTranslation();
+  const { superAdmin } = useAuth();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [llmTesting, setLlmTesting] = useState(false);
@@ -103,6 +106,7 @@ export default function PlatformSettingsPage() {
         sticky
         tabs={[
           { id: "general", label: t("admin.platformSettings.tabs.general") },
+          { id: "account", label: t("admin.platformSettings.tabs.account") },
           { id: "llm", label: t("admin.platformSettings.tabs.llm") },
           { id: "email", label: t("admin.platformSettings.tabs.email") },
           { id: "integrations", label: t("admin.platformSettings.tabs.integrations") },
@@ -111,6 +115,14 @@ export default function PlatformSettingsPage() {
         activeId={activeTab}
         onChange={(id) => setTab(id as PlatformSettingsTab)}
       />
+
+      {activeTab === "account" && superAdmin && (
+        <ChangePasswordPanel
+          variant="superadmin"
+          email={superAdmin.email}
+          name={superAdmin.name}
+        />
+      )}
 
       {activeTab === "general" && (
         <Panel title={t("admin.platformSettings.general.title")} bodySize="sm">

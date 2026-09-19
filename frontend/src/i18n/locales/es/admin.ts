@@ -70,6 +70,7 @@ export const admin = {
     saved: "Configuración de plataforma guardada",
     tabs: {
       general: "General",
+      account: "Cuenta",
       llm: "LLM",
       email: "Email",
       integrations: "Integraciones",

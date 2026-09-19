@@ -1380,6 +1380,16 @@ export const api = {
         method: "POST",
         body: JSON.stringify(body),
       }),
+    changePassword: (body: { currentPassword: string; password: string }) =>
+      request<{ ok: boolean }>("/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    changeTenantPassword: (body: { currentPassword: string; password: string }) =>
+      request<{ ok: boolean }>("/auth/tenant/change-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     impersonate: (tenantId: string | null) =>
       request<{ impersonatedTenant: TenantSummary | null }>("/auth/impersonate", {
         method: "POST",
