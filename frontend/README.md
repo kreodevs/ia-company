@@ -32,7 +32,7 @@ Two login modes at `/login`:
 |-------|-----------|---------|
 | `/agents` | `AgentsPage` | CRUD editor for agent personas, models, temperature, skills |
 | `/skills` | `SkillsPage` | CRUD editor for tenant skill prompts |
-| `/office` | `OfficePage` | Oficina — planta virtual, coordinador, servicios rápidos |
+| `/office` | `OfficePage` | Oficina — planta virtual, recepción/coordinador, archivo reciente, pulso colapsable |
 | `/office/departments/:slug` | `OfficeDepartmentPage` | Sala de departamento virtual (estrategia, ingeniería, …) |
 | `/office/archive` | `OfficeArchivePage` | Hub documental — encargos, workspace, artefactos |
 | `/office/encargos` | `OfficeEncargosPage` | Inbox de encargos |

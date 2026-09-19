@@ -22,12 +22,15 @@ import OrchestrationPlanPanel from "../components/settings/OrchestrationPlanPane
 import TenantSmtpSection from "../components/settings/TenantSmtpSection";
 import TenantMcpSettingsPanel from "../components/settings/TenantMcpSettingsPanel";
 import TenantDeliveryBrandingPanel from "../components/settings/TenantDeliveryBrandingPanel";
+import { Switch } from "@/components/atoms/Switch";
+import { useAdvancedMode } from "../hooks/useAdvancedMode";
 
 type SettingsTab = "general" | "llm" | "opencode" | "integrations" | "mcp" | "notifications" | "limits" | "schedules" | "delivery";
 const VALID_TABS: SettingsTab[] = ["general", "llm", "opencode", "integrations", "mcp", "notifications", "limits", "schedules", "delivery"];
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  const [advancedMode, setAdvancedMode] = useAdvancedMode();
   const [llm, setLlm] = useState<Partial<TenantLlmConfig>>({});
   const [opencode, setOpencode] = useState<Partial<TenantOpencodeConfig>>({});
   const [integrations, setIntegrations] = useState<Partial<TenantIntegrationsConfig>>({});
@@ -236,6 +239,25 @@ export default function SettingsPage() {
 
       {activeTab === "general" && (
         <div className="space-y-4">
+          <Panel title={t("settings.advancedMode.title")} bodySize="sm">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div className="space-y-1">
+                <p className="font-medium">{t("settings.advancedMode.label")}</p>
+                <p className="text-sm text-[var(--color-muted-foreground)]">
+                  {t("settings.advancedMode.subtitle")}
+                </p>
+              </div>
+              <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm">
+                <Switch
+                  checked={advancedMode}
+                  onCheckedChange={setAdvancedMode}
+                  aria-label={t("settings.advancedMode.label")}
+                />
+                <span>{advancedMode ? t("common.enabled") : t("common.paused")}</span>
+              </label>
+            </div>
+          </Panel>
+
           <Panel title={t("settings.interests.heading")} bodySize="sm">
         <div className="flex flex-col items-start justify-between gap-3 text-sm sm:flex-row sm:items-center">
           <div className="space-y-1">

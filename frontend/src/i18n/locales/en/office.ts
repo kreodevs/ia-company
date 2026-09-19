@@ -13,6 +13,26 @@ export const office = {
     scheduled: "Fixed tasks on a calendar — you chose when.",
     autonomous: "Meta-orchestrator is active. Review in Settings to pause.",
   },
+  pulse: {
+    title: "Office pulse",
+    show: "Show metrics",
+    hide: "Hide metrics",
+    activeRuns: "{{count}} in progress",
+    pendingDecisions: "{{count}} pending",
+  },
+  lobby: {
+    title: "Reception and jobs",
+  },
+  reception: {
+    title: "Reception",
+    close: "Close reception",
+    expand: "Full screen",
+  },
+  recentArchive: {
+    title: "Recent archive",
+    empty: "No documents yet. Complete a job to see deliverables here.",
+    viewAll: "View full archive",
+  },
   kpis: {
     spend: "Spend this month",
     spendLimit: "of ${{limit}}",

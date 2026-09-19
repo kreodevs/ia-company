@@ -1,24 +1,8 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { OfficeTaskPlan } from "../../lib/api";
+import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import Button from "../ui/Button";
-
-const AGENT_EMOJI: Record<string, string> = {
-  "coordinator-chief": "🎩",
-  "ceo-bezos": "👔",
-  "research-thompson": "🔍",
-  "critic-munger": "🧐",
-  "cfo-campbell": "💰",
-  "fullstack-dhh": "💻",
-  "marketing-godin": "📣",
-};
-
-function avatarGradient(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const hue = h % 360;
-  return `radial-gradient(circle at 30% 25%, hsl(${hue} 90% 70%) 0%, hsl(${hue} 70% 45%) 100%)`;
-}
 
 export interface TeamProposalCardProps {
   plan: OfficeTaskPlan;
@@ -51,11 +35,11 @@ export default function TeamProposalCard({
               {AGENT_EMOJI[agent.name] ?? "🧑‍💼"}
             </span>
             <span>
-              <strong>{agent.name.replace(/-/g, " ")}</strong>
+              <strong>{agentDisplayLabel({ name: agent.name, role: agent.role }, t)}</strong>
               {!compact && (
                 <>
                   <br />
-                  <span style={{ color: "#64748b", fontSize: "0.72rem" }}>
+                  <span className="office-agent-chip-reason">
                     {t(agent.reasonKey as "office.reasons.contributes")}
                   </span>
                 </>
@@ -77,7 +61,9 @@ export default function TeamProposalCard({
                   to={`/settings/specialists?tab=create-agent&brief=${encodeURIComponent(role.suggestedBrief)}`}
                   className="text-sm text-[var(--color-primary)] underline"
                 >
-                  {t("office.task.createMissingRole", { name: role.name.replace(/-/g, " ") })}
+                  {t("office.task.createMissingRole", {
+                    name: agentDisplayLabel({ name: role.name }, t),
+                  })}
                 </Link>
               </li>
             ))}

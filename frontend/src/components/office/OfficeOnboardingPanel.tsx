@@ -29,10 +29,17 @@ export function shouldShowOfficeOnboarding(dashboard: OfficeDashboard): boolean 
 
 interface OfficeOnboardingPanelProps {
   dashboard: OfficeDashboard;
+  customDeptCount?: number;
+  virtualDeptCount?: number;
   onDismiss: () => void;
 }
 
-export default function OfficeOnboardingPanel({ dashboard, onDismiss }: OfficeOnboardingPanelProps) {
+export default function OfficeOnboardingPanel({
+  dashboard,
+  customDeptCount = 0,
+  virtualDeptCount = 0,
+  onDismiss,
+}: OfficeOnboardingPanelProps) {
   const { t } = useTranslation();
 
   const steps = [
@@ -45,7 +52,7 @@ export default function OfficeOnboardingPanel({ dashboard, onDismiss }: OfficeOn
     },
     {
       id: "dept",
-      done: false,
+      done: customDeptCount > 0 || virtualDeptCount > 0,
       titleKey: "office.onboarding.stepDept",
       descKey: "office.onboarding.stepDeptDesc",
       to: "/org-studio",

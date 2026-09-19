@@ -25,6 +25,7 @@ export const nav = {
   ops: "Ops",
   products: "Products",
   orgUnits: "Departments",
+  orgStudio: "Department studio",
   warRoom: "War room",
   consensus: "Consensus",
   team: "Team",

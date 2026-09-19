@@ -7,6 +7,8 @@ interface OfficeFloorPlanProps {
   departments: OfficeDepartmentRoom[];
   agents: OfficeDashboard["agents"];
   onSelectDepartment?: (dept: OfficeDepartmentRoom) => void;
+  /** Opens reception / coordinator in focus mode (Oleada 1). */
+  onReceptionClick?: () => void;
 }
 
 function departmentTitle(
@@ -28,6 +30,7 @@ export default function OfficeFloorPlan({
   departments,
   agents,
   onSelectDepartment,
+  onReceptionClick,
 }: OfficeFloorPlanProps) {
   const { t } = useTranslation();
 
@@ -55,16 +58,29 @@ export default function OfficeFloorPlan({
       </div>
 
       <div className="office-floor-layout">
-        <Link to="#office-coordinator-chat" className="office-reception-card">
-          <span className="office-reception-emoji" aria-hidden>
-            🎩
-          </span>
-          <div>
-            <p className="office-reception-label">{t("office.chat.coordinatorName")}</p>
-            <p className="office-reception-desc">{t("office.floor.receptionHint")}</p>
-          </div>
-          <span className="office-reception-cta">{t("office.floor.talk")} →</span>
-        </Link>
+        {onReceptionClick ? (
+          <button type="button" className="office-reception-card interactive" onClick={onReceptionClick}>
+            <span className="office-reception-emoji" aria-hidden>
+              🎩
+            </span>
+            <div>
+              <p className="office-reception-label">{t("office.chat.coordinatorName")}</p>
+              <p className="office-reception-desc">{t("office.floor.receptionHint")}</p>
+            </div>
+            <span className="office-reception-cta">{t("office.floor.talk")} →</span>
+          </button>
+        ) : (
+          <Link to="#office-coordinator-chat" className="office-reception-card">
+            <span className="office-reception-emoji" aria-hidden>
+              🎩
+            </span>
+            <div>
+              <p className="office-reception-label">{t("office.chat.coordinatorName")}</p>
+              <p className="office-reception-desc">{t("office.floor.receptionHint")}</p>
+            </div>
+            <span className="office-reception-cta">{t("office.floor.talk")} →</span>
+          </Link>
+        )}
 
         <div className="office-floor-rooms">
           {virtualRooms.map((dept) => (

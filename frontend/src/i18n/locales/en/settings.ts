@@ -2,6 +2,12 @@ export const settings = {
   loading: "Loading settings…",
   title: "Tenant Settings",
   subtitle: "LLM, integrations, usage limits, schedules, and client delivery branding for your organization.",
+  advancedMode: {
+    title: "Advanced mode",
+    label: "Enable advanced mode",
+    subtitle:
+      "Shows technical runs, consensus, and ops in the sidebar. Recommended for administrators only.",
+  },
   tabs: {
     general: "General",
     llm: "LLM",

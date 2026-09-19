@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import {
-  api,
-  type OfficeDashboard,
-  type OfficeServiceTemplate,
-} from "../lib/api";
+import { api, type OfficeDashboard, type OfficeServiceTemplate } from "../lib/api";
 import { encargoContextLine } from "../lib/office-encargo-display";
 import CoordinatorChat from "../components/office/CoordinatorChat";
 import OfficeFloorPlan from "../components/office/OfficeFloorPlan";
@@ -13,9 +9,13 @@ import OfficeOnboardingPanel, {
   dismissOfficeOnboarding,
   shouldShowOfficeOnboarding,
 } from "../components/office/OfficeOnboardingPanel";
+import OfficePulseDrawer from "../components/office/OfficePulseDrawer";
+import OfficeRecentArchive from "../components/office/OfficeRecentArchive";
+import OfficeReceptionOverlay from "../components/office/OfficeReceptionOverlay";
+import OfficeScopeBar from "../components/office/OfficeScopeBar";
+import { DEPARTMENT_SCOPE_GENERAL } from "../components/office/DepartmentRoomView";
 import { NotificationPermissionPrompt } from "../components/office/NotificationBell";
 import PageLoading from "../components/ui/PageLoading";
-import KpiCard from "../components/ui/KpiCard";
 
 export default function OfficePage() {
   const { t } = useTranslation();
@@ -23,11 +23,13 @@ export default function OfficePage() {
   const [searchParams] = useSearchParams();
   const [dashboard, setDashboard] = useState<OfficeDashboard | null>(null);
   const [loading, setLoading] = useState(true);
-  const [orgUnitId, setOrgUnitId] = useState<string>("");
+  const [orgUnitId, setOrgUnitId] = useState("");
+  const [productScope, setProductScope] = useState(DEPARTMENT_SCOPE_GENERAL);
   const [orgUnits, setOrgUnits] = useState<Array<{ id: string; name: string }>>([]);
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [chatSeed, setChatSeed] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [receptionOpen, setReceptionOpen] = useState(false);
 
   const revisionContext = useMemo(() => {
     const parentRunId = searchParams.get("parentRunId")?.trim() || undefined;
@@ -48,6 +50,12 @@ export default function OfficePage() {
     };
   }, [location.state, searchParams, t]);
 
+  const resolvedProductId = useMemo(() => {
+    if (revisionContext.productId) return revisionContext.productId;
+    if (productScope === DEPARTMENT_SCOPE_GENERAL) return undefined;
+    return productScope;
+  }, [productScope, revisionContext.productId]);
+
   const refresh = useCallback(async () => {
     const [dash, units] = await Promise.all([
       api.office.dashboard(),
@@ -67,6 +75,8 @@ export default function OfficePage() {
   useEffect(() => {
     const fromUrl = searchParams.get("orgUnitId");
     if (fromUrl) setOrgUnitId(fromUrl);
+    const fromProduct = searchParams.get("productId");
+    if (fromProduct) setProductScope(fromProduct);
   }, [searchParams]);
 
   useEffect(() => {
@@ -104,11 +114,19 @@ export default function OfficePage() {
   const pickService = (service: OfficeServiceTemplate) => {
     setServiceId(service.id);
     setChatSeed(t(service.examplePromptKey as "office.serviceTemplates.marketScan.example"));
+    setReceptionOpen(true);
+  };
+
+  const openReception = () => {
+    setReceptionOpen(true);
+    document.getElementById("office-coordinator-chat")?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (loading || !dashboard) {
     return <PageLoading message={t("office.loading")} />;
   }
+
+  const chatKey = chatSeed ?? revisionContext.parentRunId ?? "default";
 
   return (
     <div className="office-page office-page-home">
@@ -146,6 +164,8 @@ export default function OfficePage() {
       {showOnboarding && (
         <OfficeOnboardingPanel
           dashboard={dashboard}
+          customDeptCount={orgUnits.length}
+          virtualDeptCount={dashboard.departments?.length ?? 0}
           onDismiss={() => {
             dismissOfficeOnboarding();
             setShowOnboarding(false);
@@ -153,160 +173,106 @@ export default function OfficePage() {
         />
       )}
 
-      <section className="office-hero-strip hero-strip">
-        <Link to="/settings?tab=limits" className="kpi-card-link" title={t("nav.settings")}>
-          <KpiCard
-            label={t("office.kpis.spend")}
-            value={`$${dashboard.usage.totalCostUsd.toFixed(2)}`}
-            delta={
-              dashboard.usage.limits.maxCostUsdPerMonth
-                ? t("office.kpis.spendLimit", {
-                    limit: dashboard.usage.limits.maxCostUsdPerMonth.toFixed(0),
-                  })
-                : t("office.kpis.noLimit")
-            }
-            trend={spendPct > 80 ? "up" : "flat"}
-          />
-        </Link>
-        <Link to="/office/encargos" className="kpi-card-link" title={t("nav.encargos")}>
-          <KpiCard
-            label={t("office.kpis.activeRuns")}
-            value={dashboard.stats.activeRuns}
-            trend={dashboard.stats.activeRuns > 0 ? "up" : "flat"}
-          />
-        </Link>
-        <Link to="/office/pendientes" className="kpi-card-link" title={t("nav.pendientes")}>
-          <KpiCard
-            label={t("office.kpis.pendingDecisions")}
-            value={dashboard.stats.pendingDecisions}
-            trend={dashboard.stats.pendingDecisions > 0 ? "up" : "down"}
-          />
-        </Link>
-        <Link to="/settings/specialists" className="kpi-card-link" title={t("nav.specialistTemplates")}>
-          <KpiCard
-            label={t("office.kpis.agents")}
-            value={dashboard.stats.agentsTotal}
-            delta={`${dashboard.agents.filter((a) => a.status === "busy").length} ${t("office.agents.busy").toLowerCase()}`}
-          />
-        </Link>
-        <Link to="/products?tab=active" className="kpi-card-link" title={t("nav.products")}>
-          <KpiCard
-            label={t("office.kpis.roi")}
-            value={
-              portfolioRoi != null
-                ? `${portfolioRoi >= 0 ? "+" : ""}${portfolioRoi}%`
-                : "—"
-            }
-            delta={
-              portfolioRoi != null && portfolioRoi >= 0
-                ? t("office.kpis.roiPositive")
-                : t("office.kpis.roiNegative")
-            }
-            trend={portfolioRoi != null && portfolioRoi >= 0 ? "up" : "down"}
-          />
-        </Link>
-      </section>
-
       <OfficeFloorPlan
         departments={dashboard.departments ?? []}
         agents={dashboard.agents}
+        onReceptionClick={openReception}
       />
 
-      <div className="office-grid">
-        <aside className="office-panel">
-          <h2 className="office-panel-title">{t("office.activity.title")}</h2>
-          {dashboard.activity.length === 0 ? (
-            <p className="office-empty">{t("office.activity.empty")}</p>
-          ) : (
-            <ul className="office-activity-list">
-              {dashboard.activity.map((item) => {
-                const inner = (
-                  <>
-                    <div className="office-activity-row">
-                      <span className="office-activity-dot" data-type={item.type} aria-hidden />
-                      <p className="office-activity-title">
-                        {item.type === "decision_pending"
-                          ? t("office.activity.decision_pending")
-                          : item.title}
+      <section className="office-lobby" aria-label={t("office.lobby.title")}>
+        <div className="office-lobby-main">
+          <section className="office-task-panel office-chat-panel" id="office-coordinator-chat">
+            <div className="office-lobby-chat-header">
+              <h2 className="office-panel-title">{t("office.chat.coordinatorName")}</h2>
+              <button
+                type="button"
+                className="office-link-btn"
+                onClick={() => setReceptionOpen(true)}
+              >
+                {t("office.reception.expand")} →
+              </button>
+            </div>
+            <OfficeScopeBar
+              orgUnitId={orgUnitId}
+              onOrgUnitChange={setOrgUnitId}
+              orgUnits={orgUnits}
+              productId={productScope}
+              onProductChange={setProductScope}
+            />
+            <CoordinatorChat
+              key={chatKey}
+              orgUnitId={orgUnitId || undefined}
+              productId={resolvedProductId}
+              parentRunId={revisionContext.parentRunId}
+              serviceId={serviceId}
+              initialUserMessage={chatSeed}
+              welcomeMessageKey={
+                revisionContext.parentRunId ? "office.revision.welcome" : undefined
+              }
+              onExecuted={() => void refresh()}
+            />
+          </section>
+        </div>
+
+        <aside className="office-lobby-aside">
+          <OfficeRecentArchive />
+          <div className="office-panel office-lobby-activity">
+            <h2 className="office-panel-title">{t("office.activity.title")}</h2>
+            {dashboard.activity.length === 0 ? (
+              <p className="office-empty">{t("office.activity.empty")}</p>
+            ) : (
+              <ul className="office-activity-list">
+                {dashboard.activity.slice(0, 6).map((item) => {
+                  const inner = (
+                    <>
+                      <div className="office-activity-row">
+                        <span className="office-activity-dot" data-type={item.type} aria-hidden />
+                        <p className="office-activity-title">
+                          {item.type === "decision_pending"
+                            ? t("office.activity.decision_pending")
+                            : item.title}
+                        </p>
+                      </div>
+                      <p className="office-activity-meta">
+                        {item.procedureLabel ? `${encargoContextLine(item, t)} · ` : ""}
+                        {t(`office.activity.${item.type}`)} ·{" "}
+                        {new Date(item.timestamp).toLocaleString([], {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
-                    </div>
-                    <p className="office-activity-meta">
-                      {item.procedureLabel
-                        ? `${encargoContextLine(item, t)} · `
-                        : ""}
-                      {t(`office.activity.${item.type}`)} ·{" "}
-                      {new Date(item.timestamp).toLocaleString([], {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                      {item.costUsd != null ? ` · $${item.costUsd.toFixed(2)}` : ""}
-                    </p>
-                  </>
-                );
-                return (
-                  <li key={item.id}>
-                    {item.href ? (
-                      <Link to={item.href} className="office-activity-item">
-                        {inner}
-                      </Link>
-                    ) : (
-                      <div className="office-activity-item">{inner}</div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          <Link to="/settings/specialists" className="office-roi-link">
-            {t("office.agents.viewAll")}
-          </Link>
-        </aside>
-
-        <section className="office-task-panel office-chat-panel" id="office-coordinator-chat">
-          <div className="office-scope-bar">
-            {orgUnits.length > 0 ? (
-              <div className="office-scope-select-wrap">
-                <label htmlFor="office-org">{t("office.task.orgUnitLabel")}</label>
-                <select
-                  id="office-org"
-                  className="office-task-select"
-                  value={orgUnitId}
-                  onChange={(e) => setOrgUnitId(e.target.value)}
-                >
-                  <option value="">{t("office.task.orgUnitAny")}</option>
-                  {orgUnits.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
-            <p className="office-scope-hint">
-              {orgUnitId
-                ? t("office.task.scopeOrgHint", {
-                    name: orgUnits.find((u) => u.id === orgUnitId)?.name ?? "",
-                  })
-                : t("office.task.scopeCompanyHint")}
-            </p>
+                    </>
+                  );
+                  return (
+                    <li key={item.id}>
+                      {item.href ? (
+                        <Link to={item.href} className="office-activity-item">
+                          {inner}
+                        </Link>
+                      ) : (
+                        <div className="office-activity-item">{inner}</div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <Link to="/office/encargos" className="office-roi-link">
+              {t("nav.encargos")} →
+            </Link>
           </div>
-          <CoordinatorChat
-            key={chatSeed ?? revisionContext.parentRunId ?? "default"}
-            orgUnitId={orgUnitId || undefined}
-            productId={revisionContext.productId}
-            parentRunId={revisionContext.parentRunId}
-            serviceId={serviceId}
-            initialUserMessage={chatSeed}
-            welcomeMessageKey={
-              revisionContext.parentRunId ? "office.revision.welcome" : undefined
-            }
-            onExecuted={() => void refresh()}
-          />
-        </section>
+        </aside>
+      </section>
 
+      <OfficePulseDrawer
+        dashboard={dashboard}
+        spendPct={spendPct}
+        portfolioRoi={portfolioRoi}
+      />
+
+      <div className="office-grid office-grid-secondary">
         <aside className="office-panel">
           <h2 className="office-panel-title">{t("office.services.title")}</h2>
           <p className="office-panel-subtitle">{t("office.services.subtitle")}</p>
@@ -323,16 +289,20 @@ export default function OfficePage() {
                   {service.emoji}
                 </span>
                 <span>
-                  <p className="office-service-label">{t(service.labelKey as "office.serviceTemplates.marketScan.label")}</p>
-                  <p className="office-service-desc">{t(service.descKey as "office.serviceTemplates.marketScan.desc")}</p>
+                  <p className="office-service-label">
+                    {t(service.labelKey as "office.serviceTemplates.marketScan.label")}
+                  </p>
+                  <p className="office-service-desc">
+                    {t(service.descKey as "office.serviceTemplates.marketScan.desc")}
+                  </p>
                 </span>
               </button>
             ))}
           </div>
+        </aside>
 
-          <h2 className="office-panel-title" style={{ marginTop: "1.35rem" }}>
-            {t("office.roi.title")}
-          </h2>
+        <aside className="office-panel">
+          <h2 className="office-panel-title">{t("office.roi.title")}</h2>
           <p className="office-panel-subtitle">{t("office.roi.subtitle")}</p>
           {dashboard.roi.length === 0 ? (
             <p className="office-empty">{t("office.roi.empty")}</p>
@@ -360,10 +330,6 @@ export default function OfficePage() {
                         {t("office.roi.revenue")}: ${item.revenueUsd.toFixed(2)}
                       </span>
                     </div>
-                    <p className="office-roi-stats office-roi-stats-secondary">
-                      {t("office.roi.runs", { count: item.runsCount })}
-                      {item.roiPct != null ? ` · ROI ${item.roiPct >= 0 ? "+" : ""}${item.roiPct}%` : ""}
-                    </p>
                     <Link to={`/war-room/${item.id}`} className="office-roi-link">
                       {t("office.roi.viewProduct")} →
                     </Link>
@@ -374,6 +340,20 @@ export default function OfficePage() {
           )}
         </aside>
       </div>
+
+      <OfficeReceptionOverlay
+        open={receptionOpen}
+        onClose={() => setReceptionOpen(false)}
+        orgUnitId={orgUnitId || undefined}
+        productId={resolvedProductId}
+        parentRunId={revisionContext.parentRunId}
+        serviceId={serviceId}
+        initialUserMessage={chatSeed}
+        welcomeMessageKey={
+          revisionContext.parentRunId ? "office.revision.welcome" : undefined
+        }
+        onExecuted={() => void refresh()}
+      />
     </div>
   );
 }

@@ -13,6 +13,26 @@ export const office = {
     scheduled: "Tareas fijas en calendario — tú eliges cuándo.",
     autonomous: "Meta-orchestrator activo. Revisa en Configuración para pausar.",
   },
+  pulse: {
+    title: "Pulso de la oficina",
+    show: "Ver métricas",
+    hide: "Ocultar métricas",
+    activeRuns: "{{count}} en curso",
+    pendingDecisions: "{{count}} pendientes",
+  },
+  lobby: {
+    title: "Recepción y encargos",
+  },
+  reception: {
+    title: "Recepción",
+    close: "Cerrar recepción",
+    expand: "Pantalla completa",
+  },
+  recentArchive: {
+    title: "Archivo reciente",
+    empty: "Sin documentos aún. Completa un encargo para ver entregables aquí.",
+    viewAll: "Ver archivo completo",
+  },
   kpis: {
     spend: "Gasto del mes",
     spendLimit: "de ${{limit}}",

@@ -2,6 +2,12 @@ export const settings = {
   loading: "Cargando configuración…",
   title: "Configuración del tenant",
   subtitle: "LLM, integraciones, límites de uso, programaciones y marca de entregas al cliente.",
+  advancedMode: {
+    title: "Modo avanzado",
+    label: "Activar modo avanzado",
+    subtitle:
+      "Muestra ejecuciones técnicas, consenso y operaciones en el menú lateral. Recomendado solo para administradores.",
+  },
   tabs: {
     general: "General",
     llm: "LLM",

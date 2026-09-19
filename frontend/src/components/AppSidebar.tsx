@@ -32,6 +32,7 @@ import { usePendingDecisionsCount } from "../hooks/usePendingDecisionsCount";
 import ThemeSwitcher from "./ThemeSwitcher";
 import OfficeSpendWidget from "./office/OfficeSpendWidget";
 import { useAuth } from "../context/AuthContext";
+import { useAdvancedMode } from "../hooks/useAdvancedMode";
 import {
   flattenNavItems,
   getStoredSidebarCollapsed,
@@ -318,6 +319,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
   }, [collapsed]);
 
   const pendingDecisions = usePendingDecisionsCount(showTenantNav);
+  const [advancedMode] = useAdvancedMode();
 
   const sections = useMemo(() => {
     const result: NavSection[] = [];
@@ -358,29 +360,34 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
           { to: "/war-room", labelKey: "nav.warRoom" },
           { to: "/products", labelKey: "nav.products" },
           { to: "/org-units", labelKey: "nav.orgUnits" },
+          { to: "/org-studio", labelKey: "nav.orgStudio" },
+          ...(isTenantAdmin
+            ? [{ to: "/settings", labelKey: "nav.settings", end: true } as NavItem]
+            : []),
         ],
       });
 
-      const debugItems: NavItem[] = [
-        { to: "/debug/runs", labelKey: "nav.runs" },
-        { to: "/debug/consensus", labelKey: "nav.consensus" },
-        { to: "/debug/ops", labelKey: "nav.ops" },
-        { to: "/debug/decisions", labelKey: "nav.decisions" },
-      ];
+      if (advancedMode) {
+        const debugItems: NavItem[] = [
+          { to: "/debug/runs", labelKey: "nav.runs" },
+          { to: "/debug/consensus", labelKey: "nav.consensus" },
+          { to: "/debug/ops", labelKey: "nav.ops" },
+          { to: "/debug/decisions", labelKey: "nav.decisions" },
+        ];
 
-      if (isTenantAdmin) {
-        debugItems.push({ to: "/debug/team", labelKey: "nav.team" });
-        debugItems.push({ to: "/settings", labelKey: "nav.settings", end: true });
-        debugItems.push({ to: "/settings/procedures", labelKey: "nav.procedures" });
-        debugItems.push({ to: "/settings/specialists", labelKey: "nav.specialistTemplates" });
+        if (isTenantAdmin) {
+          debugItems.push({ to: "/debug/team", labelKey: "nav.team" });
+          debugItems.push({ to: "/settings/procedures", labelKey: "nav.procedures" });
+          debugItems.push({ to: "/settings/specialists", labelKey: "nav.specialistTemplates" });
+        }
+
+        result.push({
+          id: "debug",
+          titleKey: "nav.sectionDebugOffice",
+          collapsible: true,
+          items: debugItems,
+        });
       }
-
-      result.push({
-        id: "debug",
-        titleKey: "nav.sectionDebugOffice",
-        collapsible: true,
-        items: debugItems,
-      });
     }
 
     if (authenticated) {
@@ -392,7 +399,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
     }
 
     return result;
-  }, [authenticated, isTenantAdmin, pendingDecisions, showAdminNav, showTenantNav]);
+  }, [advancedMode, authenticated, isTenantAdmin, pendingDecisions, showAdminNav, showTenantNav]);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
