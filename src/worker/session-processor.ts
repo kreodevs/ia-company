@@ -91,11 +91,12 @@ async function executeSessionJob(job: { data: SessionJobData }): Promise<void> {
   });
 
   // Reflejar el estado terminal de la sesión en el ExecutionRun.
+  // ExecutionStatus no tiene PAUSED; AWAITING_USER cubre ambas pausas humanas.
   const runStatus =
     result.status === "COMPLETED"
       ? "COMPLETED"
       : result.status === "AWAITING_INPUT" || result.status === "AWAITING_APPROVAL"
-        ? "PAUSED"
+        ? "AWAITING_USER"
         : result.status === "CANCELLED"
           ? "CANCELLED"
           : "FAILED";
@@ -105,7 +106,7 @@ async function executeSessionJob(job: { data: SessionJobData }): Promise<void> {
       where: { id: effectiveRunId },
       data: {
         status: runStatus as never,
-        completedAt: runStatus === "PAUSED" ? null : new Date(),
+        completedAt: runStatus === "AWAITING_USER" ? null : new Date(),
         errorMessage: result.lastError ? result.lastError.slice(0, 4000) : null,
       },
     })
@@ -129,7 +130,15 @@ async function executeSessionJob(job: { data: SessionJobData }): Promise<void> {
     tenantId,
   );
 
-  // Si quedó esperando al humano, el checkpoint ya existe; no reintentar.
+  // Finalizar el run de sesión cuando todas las sesiones estén terminales.
+  if (result.status === "COMPLETED" || result.status === "FAILED" || result.status === "CANCELLED" || result.status === "BUDGET_EXCEEDED") {
+    try {
+      const { finalizeSessionRunIfComplete } = await import("../lib/session-run-finalizer.js");
+      await finalizeSessionRunIfComplete({ runId: effectiveRunId, tenantId });
+    } catch (err) {
+      console.error("[session-worker] session run finalization failed:", err);
+    }
+  }
 }
 
 export function startSessionWorker(): Worker<SessionJobData> {

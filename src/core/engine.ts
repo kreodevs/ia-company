@@ -1618,6 +1618,22 @@ export async function executeWorkflowInBackground(
     },
   };
 
+  // Camino B: all new workflow launches enter the session runtime. The legacy
+  // executor remains available only for in-flight/opencode continuation runs.
+  if (input.tenantId && !input.afterOpencodeDelegation && input.resumeFromStepOrder == null) {
+    const { launchWorkflowAsSession } = await import("../lib/workflow-session-bridge.js");
+    const launched = await launchWorkflowAsSession(
+      workflowId,
+      input,
+      executionInput.initialMemory ?? {},
+    );
+    if (input.productId) {
+      const { recordProductRun } = await import("../lib/product-registry.js");
+      await recordProductRun(input.productId, launched.runId);
+    }
+    return launched.runId;
+  }
+
   const run = await prisma.executionRun.create({
     data: executionRunCreateData({
       workflowId,

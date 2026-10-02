@@ -81,19 +81,11 @@ flowchart TB
 
 ---
 
-### GAP-003 — Guardrails de shell incompletos
+### GAP-003 — Guardrails de shell unificados ✅ Resuelto (2026-10-02)
 
-**Severidad:** Crítica  
-**Síntoma:** Agente puede ejecutar comandos destructivos vía `run_shell_command`.
+**Fix aplicado:** política única de shell compartida por todas las herramientas (`src/lib/shell-policy.ts`, `src/lib/agent-tool-policy.ts`, `src/core/tools-gateway.ts`) con bloqueos para rutas sensibles, `gh repo delete`, `wrangler delete` y force-push. Tests en `tests/shell-policy.test.ts` (3/3).
 
-**Causa:** `run_shell_command` usa `isCommandSafe()` con lista mínima (`rm -rf /`, fork bomb, etc.). Bloqueos de `gh repo delete`, `wrangler delete`, force-push solo existen en `runShell()` usado por herramientas específicas (`git_*`, `wrangler_deploy`).
-
-- `read_file` bloquea `.env`, pero `cat .env` vía shell pasa
-- Contradice `CLAUDE.md` (Safety Guardrails)
-
-**Fix propuesto:** Política única de shell compartida por todas las herramientas.
-
-**Archivos:** `src/core/tools.ts`
+**Nota:** mantener la validación en el gateway; no reintroducir listas locales por herramienta.
 
 ---
 
@@ -353,8 +345,9 @@ flowchart TB
 
 - [x] **GAP-001** Fix listado revisiones (ID `ProductConsensus.id`) — 2026-07-23
 - [ ] **GAP-002** Seed `research-drilldown`
-- [ ] **GAP-003** Unificar policy shell
-- [ ] **GAP-008** `tenantHasActiveRun` en launch + run-now + execute
+- [x] **GAP-003** Unificar policy shell — 2026-10-02 (tools-gateway `assertShellCommandAllowed`)
+- [x] **GAP-008** `tenantHasActiveRun` en launchers — 2026-10-02 (guard en `executeWorkflowInBackground` antes del desvío a sesiones; cubre todos los launchers)
+- [ ] **GAP-008** Guard dedicado dentro de `launchOfficeSession` para llamadas directas fuera del chokepoint
 - [ ] **GAP-008** Meta-orchestrator: no ejecutar si decisiones pendientes
 - [ ] Test integración: launch producto → revisiones → agent-docs
 
@@ -363,7 +356,7 @@ flowchart TB
 - [ ] **GAP-004** Veto Munger hard stop
 - [ ] **GAP-013** UI: fase company, cycle/stuck, revenue, fase producto
 - [ ] **GAP-014** War room OpenCode panel + poll `DELEGATED`
-- [ ] **GAP-009** Dedupe entregables (`agentWroteDocsInStep`)
+- [x] **GAP-009** Dedupe entregables (`agentWroteDocsInStep`) — 2026-10-02 (session-deliverables + flags de convergencia, ver `src/lib/session-deliverables.ts`)
 - [ ] **GAP-015** Fix i18n keys rotas
 
 ### Día 3 — Alinear con visión original

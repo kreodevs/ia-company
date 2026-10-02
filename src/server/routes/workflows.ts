@@ -1,8 +1,5 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../../lib/prisma.js";
-import { executeWorkflowInBackground } from "../../core/engine.js";
-import { logAudit } from "../../lib/audit.js";
-import { assertTenantCanExecute } from "../../lib/usage-limits.js";
 import { handleRouteError, requireImpersonatedTenant } from "../lib/request-context.js";
 import { getPlatformSettingsSync } from "../../lib/platform-settings.js";
 import { updateWorkflowGraph } from "../lib/workflow-graph.js";
@@ -146,33 +143,11 @@ export async function workflowRoutes(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {
-      try {
-        const tenantId = requireImpersonatedTenant(request);
-        const workflow = await prisma.workflow.findFirst({
-          where: { id: request.params.id, tenantId },
-        });
-        if (!workflow) return reply.status(404).send({ error: "Workflow not found" });
-
-        await assertTenantCanExecute(tenantId);
-
-        const runId = await executeWorkflowInBackground(request.params.id, {
-          ...request.body,
-          tenantId,
-          mergeConsensus: request.body?.mergeConsensus ?? true,
-          syncConsensus: request.body?.syncConsensus ?? true,
-        });
-
-        await logAudit(request, "workflow.execute", {
-          workflowId: workflow.id,
-          workflowName: workflow.name,
-          runId,
-        });
-
-        return reply.status(202).send({ runId, status: "PENDING" });
-      } catch (err) {
-        return handleRouteError(reply, err);
-      }
+    async (_request, reply) => {
+      return reply.status(410).send({
+        error: "DAG legacy congelado — inicia el trabajo desde la Oficina (sesiones)",
+        hint: "El histórico de runs sigue legible. Los nuevos runs usan el runtime de sesiones.",
+      });
     },
   );
 }
