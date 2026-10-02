@@ -1,7 +1,10 @@
 # Plan de Reingeniería — Auto-Company hacia concepto Paperclip con OpenRouter
 
-> Estado: **APROBADO camino B — reemplazo directo del engine (Fase 0)**. Autoriza modificar specs previas.
+> Estado: **EN EJECUCIÓN — Fase 0 implementada; validación E2E y siguientes fases pendientes**.
+> Decisión: **APROBADO camino B — reemplazo directo del engine**. Autoriza modificar specs previas.
 > Fecha: 2026-10-01. Base: branch actual + [`GAPS.md`](docs/GAPS.md:1) + [`virtual-office-design.md`](docs/product/virtual-office-design.md:1) + [`product-roadmap.md`](docs/product/product-roadmap.md:1).
+>
+> **Regla de seguimiento:** en cada avance de este plan, marcar inmediatamente con `[x]` cada tarea terminada, mantener `[ ]` las tareas pendientes y actualizar el estado/criterio de salida cuando corresponda. No marcar una tarea como terminada solo porque exista código: debe estar implementada y validada (tests o verificación explícita).
 
 ## 1. Diagnóstico — por qué no se siente como oficina
 
@@ -134,45 +137,81 @@ Autorizado a romper specs previas:
 
 ### Fase 0 — Cimientos (desbloquea todo)
 
-- [ ] Crear `src/core/agent-loop/` con `types.ts`, `loop.ts`, `turn-executor.ts`, `acceptance.ts`.
-- [ ] Crear `src/core/tools-gateway.ts` envolviendo [`createAgentTools()`](src/core/tools.ts:60) + MCP + policy + auditoría.
-- [ ] Migración Prisma: `AgentSession`, `SessionTurn`, `SessionToolCall`, `WorkspaceSnapshot`, extensión `RunCheckpointKind`.
-- [ ] `ProviderRouter` con fallback si modelo no soporta tools + tests.
-- [ ] Worker: `session-processor.ts` con BullMQ, concurrencia por tenant, idempotencia, DLQ.
-- [ ] Criterio salida: 1 test e2e `encargo → sesión → 3 turnos con read/write/shell → snapshot` en verde.
+- [x] Crear `src/core/agent-loop/` con `types.ts`, `loop.ts`, `turn-executor.ts`, `acceptance.ts`.
+- [x] Crear `src/core/tools-gateway.ts` envolviendo [`createAgentTools()`](src/core/tools.ts:60) + MCP + policy + auditoría.
+- [x] Migración Prisma: `AgentSession`, `SessionTurn`, `SessionToolCall`, `WorkspaceSnapshot`, extensión `RunCheckpointKind`.
+- [x] `ProviderRouter` con fallback si modelo no soporta tools + tests.
+- [x] Worker: `session-processor.ts` con BullMQ, concurrencia por tenant, idempotencia, DLQ.
+- [ ] Criterio salida: 1 test e2e `encargo → sesión → 3 turnos con read/write/shell → snapshot` en verde. Hay test preparado en `tests/agent-loop.test.ts`, pero queda condicionado a `DATABASE_URL`; falta ejecutarlo y dejarlo verde en un entorno con DB.
 
 ### Fase 1 — Primera oficina que trabaja
 
-- [ ] `WorkspaceManager`: `projects/{tenant}/sessions/{sessionId}/` aislado, snapshot, árbol API `GET /api/sessions/:id/files`.
-- [ ] Coordinador genera `acceptanceCriteria` + equipo mínimo + presupuesto (extender [`planOfficeTask()`](src/lib/office-coordinator.ts:1)).
-- [ ] Encargo de oficina crea `ExecutionRun` + N `AgentSession` en vez de workflow fijo (reemplazo directo de lanzadores del DAG).
-- [ ] War-room live: SSE `turn_started`, `tool_call`, `tool_result`, `file_changed`, `need_input`. Reutilizar [`ExecutionRunEvent`](prisma/schema.prisma:285) + [`run-events.ts`](src/lib/run-events.ts:1).
-- [ ] Criterio salida: desde `/office` pedir `analiza este repo y propone ADR`, ver en war-room lecturas y ediciones en vivo, abrir archivo generado sin ir a debug.
+- [x] `WorkspaceManager`: `projects/{tenant}/sessions/{sessionId}/` aislado, snapshot, árbol API `GET /api/sessions/:id/files`.
+- [x] Coordinador genera `acceptanceCriteria` + equipo mínimo + presupuesto (extender [`planOfficeTask()`](src/lib/office-coordinator.ts:1)).
+- [x] Encargo de oficina crea `ExecutionRun` + N `AgentSession` en vez de workflow fijo (reemplazo directo de lanzadores del DAG).
+- [x] War-room live: SSE `turn_started`, `tool_call`, `tool_result`, `file_changed`, `need_input`. Reutilizar [`ExecutionRunEvent`](prisma/schema.prisma:285) + [`run-events.ts`](src/lib/run-events.ts:1).
+- [ ] Criterio salida: desde `/office` pedir `analiza este repo y propone ADR`, ver en war-room lecturas y ediciones en vivo, abrir archivo generado sin ir a debug. Falta validación E2E desde la UI.
 
 ### Fase 2 — Memoria y colaboración real
 
-- [ ] `SessionMemory`: resumen rolling cada 5 turnos, handoff estructurado agente→agente, consenso incremental a [`ProductConsensusRevision`](prisma/schema.prisma:491).
-- [ ] Planner multi-agente: secuencial, paralelo con join, reviewer (Munger como gate hard, ya existe veto en [`engine.ts`](src/core/engine.ts:474) llevarlo a sesión).
-- [ ] `ask_human` / `propose_decision` pausan loop y crean checkpoint visible en `/office/encargos/:id`.
-- [ ] Dedupe entregables: si agente ya hizo `write_file`, no repersistir en convergencia (cerrar `GAP-009`).
+- [x] `SessionMemory`: resumen rolling cada 5 turnos, handoff estructurado agente→agente, consenso incremental a [`ProductConsensusRevision`](prisma/schema.prisma:491).
+- [ ] Planner multi-agente: secuencial, paralelo con join, reviewer (Munger como gate hard, ya existe veto en [`engine.ts`](src/core/engine.ts:474) llevarlo a sesión). Parcial: hay veto a nivel sesión en `src/core/agent-loop/loop.ts` y lanzamiento de equipos vía `src/lib/office-session-launcher.ts`, pero no hay planner con join ni reviewer multi-sesión dedicado.
+- [ ] `ask_human` / `propose_decision` pausan loop y crean checkpoint visible en `/office/encargos/:id`. Parcial: el loop pausa con checkpoints `need_input` y `tool_approval` (con API de listado/resolución en `src/server/routes/office.ts`), pero no existen tools `ask_human`/`propose_decision` ni UI de checkpoints en el frontend.
+- [x] Dedupe entregables: si agente ya hizo `write_file`, no repersistir en convergencia (cerrar `GAP-009`).
 - [ ] Criterio salida: encargo de 3 agentes deja 1 ADR + 1 informe + 1 revisión consenso trazable turno→tool→doc.
 
 ### Fase 3 — Endurecer para piloto diario (corte del DAG legacy)
 
-- [ ] Presupuestos por sesión/encargo/tenant (`budgetTokens`, `budgetUsd`) con corte + checkpoint `budget_exceeded`. Conectar a `usage-limits`.
-- [ ] Shell/Git policy unificada + tests (cerrar `GAP-003`).
-- [ ] Reintentos, timeouts, DLQ, `tenantHasActiveRun` en launch sesión.
-- [ ] Corte del DAG legacy: launchers migrados en Fase 0-1, DAG congelado en modo solo-lectura histórica (sin flag dual-run, decisión camino B).
+- [ ] Presupuestos por sesión/encargo/tenant (`budgetTokens`, `budgetUsd`) con corte + checkpoint `budget_exceeded`. Conectar a `usage-limits`. Parcial: presupuesto por sesión implementado y aplicado en el loop (`src/core/agent-loop/loop.ts` + defaults en `src/lib/office-session-launcher.ts` + checkpoint `budget_exceeded`); falta el corte a nivel encargo/tenant y la conexión con `src/lib/usage-limits.ts`.
+- [x] Shell/Git policy unificada + tests (cerrar `GAP-003`).
+- [ ] Reintentos, timeouts, DLQ, `tenantHasActiveRun` en launch sesión. Parcial: reintentos (BullMQ 3 intentos + backoff), timeouts y DLQ implementados en `src/worker/session-processor.ts` y `src/worker/queue.ts`; falta `tenantHasActiveRun` en el launch de sesiones.
+- [ ] Corte del DAG legacy: launchers migrados en Fase 0-1, DAG congelado en modo solo-lectura histórica (sin flag dual-run, decisión camino B). Parcial: existe `src/lib/workflow-session-bridge.ts` (convierte el DAG en plan de sesiones) y el coordinador lanza por sesiones; falta congelar el DAG para nuevas corridas.
 - [ ] Criterio salida: 5 encargos seguidos sin docs vacíos, sin runs solapados, con costo visible.
 
 ### Fase 4 — Oficina completa Paperclip
 
-- [ ] Sala departamento = vista de sesiones activas de ese dept + `Pedir encargo a este dept` crea sesión scoped.
-- [ ] Archivo unificado ya existe ([`OfficeArchivePage.tsx`](frontend/src/pages/OfficeArchivePage.tsx:1)) — alimentarlo desde `WorkspaceSnapshot` + `SessionToolCall` (quién hizo qué archivo).
-- [ ] Ficha especialista muestra sesiones recientes, tools usadas, costo, docs.
+- [ ] Sala departamento = vista de sesiones activas de ese dept. Falta: `DepartmentRoomView` (usado por `OfficeDepartmentPage`) no muestra sesiones; no hay "Pedir encargo a este dept" como sesión scoped.
+- [ ] Archivo unificado ya existe ([`OfficeArchivePage.tsx`](frontend/src/pages/OfficeArchivePage.tsx:1)) — alimentarlo desde `WorkspaceSnapshot` + `SessionToolCall` (quién hizo qué archivo). Pendiente: la página no muestra autoría por `SessionToolCall` ni árbol de snapshot.
+- [ ] Ficha especialista muestra sesiones recientes, tools usadas, costo, docs. Falta vista de especialista alimentada por sesiones.
 - [ ] Entrega cliente desde snapshot verificado, no desde markdown suelto.
 - [ ] Retirar DAG legacy del nav diario, dejarlo en `/debug` + script migración.
 - [ ] Criterio salida: métrica `¿Se siente como oficina? >=4/5`, doc en `<=3 clicks`, 1 encargo real entregado a cliente externo.
+
+### 5.5 Pendiente auditado — qué queda por hacer (auditoría 2026-10-01, sin re-revisar código)
+
+> Esta sección congela el resultado de la auditoría de código del 2026-10-01. Si lees solo esto, sabes exactamente qué hacer sin volver a `grep` el repo. Cada pendiente trae: **qué falta**, **dónde tocar**, **cómo se valida**.
+
+#### Fase 0 — solo falta validar el E2E
+- **Hecho y validado:** `src/core/agent-loop/*`, `src/core/tools-gateway.ts`, migración Prisma `AgentSession`/`SessionTurn`/`SessionToolCall`/`WorkspaceSnapshot` + `RunCheckpointKind` (`need_input`/`tool_approval`/`budget_exceeded`), `src/core/provider-router.ts`, `src/worker/session-processor.ts` (BullMQ, lock por tenant, idempotencia, DLQ). Todo con tests unitarios.
+- **Pendiente único — criterio de salida:** correr `tests/agent-loop.test.ts` ("encargo → sesión → 3 turnos read/write/shell → snapshot") en verde. Hoy queda `skip` sin `DATABASE_URL`. **Para cerrarlo:** `DATABASE_URL=... npx prisma migrate deploy && npm test -- tests/agent-loop.test.ts`. Marcar `[x]` solo cuando pase.
+
+#### Fase 1 — cimientos hechos, falta el E2E de UI
+- **Hecho:** `WorkspaceManager` en `src/lib/workspace-session.ts` + API `GET /office/sessions/:sessionId/files` en `src/server/routes/office.ts:510`, coordinador con `acceptanceCriteria` y presupuestos, launcher `src/lib/office-session-launcher.ts` (`engine=session`) y puente `src/lib/workflow-session-bridge.ts`, war-room SSE (`turn_started`/`tool_call`/`tool_result`/`file_changed`/`need_input`) en `src/lib/run-events.ts`.
+- **Pendiente único — criterio de salida:** desde `/office` pedir "analiza este repo y propone ADR", ver en war-room lecturas/ediciones en vivo y abrir el archivo sin ir a `/debug`. Validación manual + captura. Marcar `[x]` solo tras ese flujo en un tenant real.
+
+#### Fase 2 — memoria lista, planner y HITL incompletos
+- **Hecho y con tests:** `SessionMemory` rolling cada 5 turnos + handoff a `ProductConsensusRevision` (`src/lib/session-memory.ts`, `src/lib/session-deliverables.ts` cierra GAP-009; tests `tests/session-memory.test.ts` / `tests/session-deliverables.test.ts`).
+- **Pendiente 1 — Planner multi-agente:** falta orquestación secuencial / paralela con join y reviewer Munger como gate multi-sesión. Hoy solo hay veto intra-sesión (`src/core/agent-loop/loop.ts`) y lanzamiento de equipos sin grafo (`src/lib/office-session-launcher.ts`). **Tocar:** nuevo `src/lib/session-planner.ts` (o extender launcher) + tests de join. **Validación:** encargo de 3 agentes (research → exec → review) con handoff visible.
+- **Pendiente 2 — `ask_human` / `propose_decision`:** el loop ya pausa con checkpoints `need_input`/`tool_approval` y hay API `GET /office/sessions/:id/checkpoints` + `POST .../resolve` + `POST .../resume` en `src/server/routes/office.ts`, y `frontend/src/lib/api.ts` ya tiene los clientes `fetchOfficeSessionCheckpoints`/`resolveOfficeSessionCheckpoint`, pero **no existen** las tools `ask_human`/`propose_decision`/`request_review`/`write_consensus` en `src/core/tools.ts` y no hay UI que muestre/resuelva checkpoints. **Tocar:** `src/core/tools.ts` (registrar office tools) + UI en `frontend/src/components/war-room/*` o `OfficeEncargoDetailPage`.
+- **Criterio de salida de Fase 2:** encargo 3 agentes produce 1 ADR + 1 informe + 1 revisión consenso trazable `turno → tool → doc` con snapshot + `SessionToolCall` + `ProductConsensusRevision`.
+
+#### Fase 3 — endurecer para piloto diario
+- **Hecho:** shell/git policy unificada + tests (`src/lib/shell-policy.ts`, `src/lib/agent-tool-policy.ts`, `tests/shell-policy.test.ts`) y reintentos/timeouts/DLQ (`attempts:3 + backoff` en `src/worker/queue.ts`, manejo en `src/worker/session-processor.ts`).
+- **Pendiente 1 — presupuestos encargo/tenant:** hoy solo presupuesto por sesión (defaults 150k tokens / $5 en `src/lib/office-session-launcher.ts:175` + checkpoint `budget_exceeded` en `src/core/agent-loop/loop.ts`). Falta agregación por encargo/tenant y conexión con `src/lib/usage-limits.ts` (`TenantUsageLimits`). **Tocar:** `src/lib/office-session-launcher.ts` + `src/lib/usage-limits.ts` + test.
+- **Pendiente 2 — guard `tenantHasActiveRun` en sesiones:** existe `src/lib/orchestration-conditions.ts:tenantHasActiveRun` y se usa en `orchestration-plan.ts`/`run-guards.ts`/`schedule-enrichment.ts`, pero **no** en `src/lib/office-session-launcher.ts`. **Tocar:** añadir guard al inicio de `launchOfficeSession`.
+- **Pendiente 3 — corte DAG legacy:** existe `src/lib/workflow-session-bridge.ts` y `office-coordinator.ts` ya lanza por sesiones, pero el DAG aún es lanzable (ver `src/core/meta-orchestrator.ts` aún referenciado desde `orchestration-plan.ts` y `ops.ts`). **Tocar:** congelar creación de `ExecutionRun(engine=dag)` para nuevas corridas (solo lectura histórica) y esconder el DAG del nav diario.
+- **Criterio de salida:** 5 encargos seguidos sin docs vacíos, sin runs solapados, con costo visible.
+
+#### Fase 4 — oficina completa
+- **Pendientes todos abiertos:**
+  1. **Sala departamento:** `frontend/src/components/office/DepartmentRoomView.tsx` (usado por `OfficeDepartmentPage.tsx` / `OrgUnitDetailPage.tsx`) no lista sesiones ni ofrece "Pedir encargo a este dept" como sesión scoped. **Tocar:** `DepartmentRoomView.tsx` + API de sesiones por orgUnit.
+  2. **Archivo:** `frontend/src/pages/OfficeArchivePage.tsx` existe pero no alimenta `WorkspaceSnapshot` + autoría `SessionToolCall` (quién hizo qué). Backend ya expone snapshots (`src/lib/session-store.ts:recordWorkspaceSnapshot` + tipos `OfficeWorkspaceSnapshot` en `frontend/src/lib/api.ts`), falta el wiring en la página.
+  3. **Ficha especialista:** no hay vista que muestre sesiones recientes / tools usadas / costo / docs (no existe `Specialist` page en `frontend/src/pages/`). **Tocar:** nueva ficha + endpoint agregado.
+  4. **Entrega cliente:** debe salir de snapshot verificado, no de markdown suelto (`src/lib/encargo-delivery.ts` hoy no consume `WorkspaceSnapshot`).
+  5. **Retirar DAG del nav:** `frontend/src` aún expone el DAG diario; moverlo a `/debug` + script de migración.
+- **Criterio de salida:** NPS "¿Se siente como oficina? ≥4/5", doc en ≤3 clics, 1 encargo real entregado a cliente externo vía snapshot.
+
+> Al completar cualquier pendiente de arriba, marcar el `[ ]` correspondiente en la fase y añadir en este mismo apartado la fecha + commit/PR que lo cierra.
 
 ## 6. Riesgos y mitigaciones
 
@@ -194,4 +233,5 @@ Autorizado a romper specs previas:
 
 - **Tomada (2026-10): camino B — reemplazo directo del engine para Fase 0.**
 - No hay flag ni dual-run: el DAG legacy se congela para nuevas corridas y los launchers se migran a sesiones en Fase 0-1. Runs históricos permanecen legibles.
-- Ver plan en `plans/paperclip-reingenieria.md`; siguiente paso: ejecutar Fase 0 en modo `code`.
+- Ver plan en `plans/paperclip-reingenieria.md`; Fase 0 está implementada y Fase 1 tiene los cimientos conectados.
+- **Siguiente paso:** ejecutar y dejar verde el E2E de Fase 0 con `DATABASE_URL`, después validar el flujo completo desde `/office` y marcar cada criterio conforme quede comprobado.
