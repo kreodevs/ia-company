@@ -153,6 +153,41 @@ export async function listSessionWorkspaceTree(workspaceRoot: string, subPath = 
   return all;
 }
 
+const MAX_READ_BYTES = 512 * 1024;
+
+export interface WorkspaceFileContent {
+  path: string;
+  content: string;
+  size: number;
+  truncated: boolean;
+}
+
+/** Reads a text file only inside the isolated session workspace (bounded, rejects binary). */
+export async function readSessionWorkspaceFile(
+  workspaceRoot: string,
+  requestedPath: string,
+): Promise<WorkspaceFileContent> {
+  const root = resolve(workspaceRoot);
+  const absolutePath = safeJoin(root, requestedPath);
+  const info = await fs.stat(absolutePath);
+  if (!info.isFile()) throw new Error("Requested path is not a file");
+  const size = info.size;
+  const handle = await fs.open(absolutePath, "r");
+  try {
+    const buffer = Buffer.alloc(Math.min(size, MAX_READ_BYTES));
+    const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0);
+    if (buffer.subarray(0, bytesRead).includes(0)) throw new Error("Binary files cannot be previewed");
+    return {
+      path: relative(root, absolutePath).split(sep).join("/"),
+      content: buffer.subarray(0, bytesRead).toString("utf8"),
+      size,
+      truncated: size > MAX_READ_BYTES,
+    };
+  } finally {
+    await handle.close();
+  }
+}
+
 /** Builds a bounded-to-the-workspace manifest and commits the current state. */
 export async function snapshotSessionWorkspace(workspaceRoot: string): Promise<WorkspaceSnapshotData> {
   const root = resolve(workspaceRoot);

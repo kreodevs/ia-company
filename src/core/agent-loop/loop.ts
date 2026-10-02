@@ -16,6 +16,7 @@ import {
   shouldRefreshRollingSummary,
   type SessionMemoryContext,
 } from "../../lib/session-memory.js";
+import { finalizeSessionDeliverables } from "../../lib/session-deliverables.js";
 import { buildToolGatewayToolSet, type ToolApprovalSignal, type ToolGatewayContext } from "../tools-gateway.js";
 import { resolveSessionLlmConfig } from "../provider-router.js";
 import { executeSessionTurn, type TurnExecutionContext } from "./turn-executor.js";
@@ -386,6 +387,31 @@ async function completeSession(
         error: detail,
       });
     }
+  }
+
+  // GAP-009: registrar entregables reales de la sesión en `_history` del run
+  // (wroteDocs/savedDeliverablePath) para la misma dedupe que usa el DAG legacy.
+  try {
+    const deliverables = await finalizeSessionDeliverables({
+      runId: state.runId,
+      sessionId: state.sessionId,
+      agentName: state.agentName,
+      sessionWorkspaceRoot: state.workspacePath,
+      tenantId: state.tenantId,
+      productSlug: state.productSlug,
+      finalOutput,
+    });
+    await emitSessionEvent(state, "session_deliverables", {
+      sessionId: state.sessionId,
+      wroteDocs: deliverables.wroteDocs,
+      mirrored: deliverables.mirrored.length,
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "Deliverables finalization failed";
+    await emitSessionEvent(state, "session_deliverables", {
+      sessionId: state.sessionId,
+      error: detail,
+    });
   }
 
   await emitSessionEvent(state, "session_completed", {

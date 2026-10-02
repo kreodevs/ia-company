@@ -29,6 +29,8 @@ export interface LaunchOfficeSessionInput {
   parentRunId?: string | null;
   /** Override opcional por agente (role, goal, acceptanceCriteria, budgets, etc.). */
   agentOverrides?: Record<string, Partial<AgentSessionConfig>>;
+  /** Memory inicial construida por workflows, consensos o schedulers. */
+  initialMemory?: Record<string, unknown>;
 }
 
 /** Resultado del lanzamiento. */
@@ -129,16 +131,19 @@ export async function launchOfficeSession(input: LaunchOfficeSessionInput): Prom
   }
 
   // 2. Crear ExecutionRun con engine=session
+  const baseMemory = input.initialMemory ?? {};
   const run = await prisma.executionRun.create({
     data: executionRunCreateData({
       workflowId: plan.workflowId ?? null,
       tenantId,
       sharedMemory: {
-        task: request,
-        nextAction: request,
-        officeRequest: request,
-        teamAgents: plan.agents.map((a) => a.name),
-        coordinatorNote: "Launched via Office Session Launcher (engine=session)",
+        ...baseMemory,
+        task: baseMemory.task ?? request,
+        nextAction: baseMemory.nextAction ?? request,
+        officeRequest: baseMemory.officeRequest ?? request,
+        teamAgents: baseMemory.teamAgents ?? plan.agents.map((a) => a.name),
+        coordinatorNote:
+          baseMemory.coordinatorNote ?? "Launched via Office Session Launcher (engine=session)",
         ...(parentRunId ? { parentRunId } : {}),
         ...(productId ? { productId } : {}),
         ...(productSlug ? { focusProductSlug: productSlug } : {}),

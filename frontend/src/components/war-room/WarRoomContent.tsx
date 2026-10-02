@@ -14,6 +14,7 @@ import DeliverableHealthBanner from "./DeliverableHealthBanner";
 import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 import { WarRoomSessionActivity } from "./WarRoomSessionActivity";
+import WarRoomSessionFiles from "./WarRoomSessionFiles";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import WarRoomRecentRuns from "./WarRoomRecentRuns";
 import WarRoomTable from "./WarRoomTable";
@@ -180,6 +181,10 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
 
       <div className="mb-4">
         <WarRoomSessionActivity session={session} />
+      </div>
+
+      <div className="mb-4">
+        <WarRoomSessionFiles watchRunId={watchRunId ?? data.activeRun?.id ?? null} />
       </div>
 
       <section className="hero-strip">

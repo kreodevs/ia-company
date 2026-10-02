@@ -922,11 +922,19 @@ export interface OfficeSessionTreeEntry {
   children?: OfficeSessionTreeEntry[];
 }
 
+export interface OfficeSessionFileContent {
+  path: string;
+  content: string;
+  size: number;
+  truncated: boolean;
+}
+
 export interface OfficeSessionFilesResponse {
   workspacePath: string;
   snapshot: OfficeWorkspaceSnapshot | null;
   tree: OfficeSessionTreeEntry[];
   agentDocs: ProductAgentDocsIndex;
+  file?: OfficeSessionFileContent | null;
 }
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";

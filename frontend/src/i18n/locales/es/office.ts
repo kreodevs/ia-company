@@ -613,6 +613,18 @@ export const office = {
     documents: "Documentos",
     noDocuments: "Sin documentos recientes de este especialista.",
   },
+  filesPanel: {
+    title: "Archivos del encargo",
+    session: "Sesión:",
+    selectRun: "Inicia o selecciona un encargo en el war-room para ver los archivos generados.",
+    loadingTree: "Cargando archivos…",
+    tree: "Árbol del workspace",
+    emptyWorkspace: "Workspace aún vacío (se pobla al iniciar el trabajo).",
+    hint: "Toca un archivo para abrirlo",
+    pickFile: "No hay archivo abierto. Elige uno del árbol.",
+    truncated: "Vista truncada a 512 KB. El archivo es más grande.",
+    notReadable: "No se pudo abrir este archivo",
+  },
   revision: {
     title: "Corregir entrega",
     subtitle:

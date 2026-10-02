@@ -613,6 +613,18 @@ export const office = {
     documents: "Documents",
     noDocuments: "No recent documents from this specialist.",
   },
+  filesPanel: {
+    title: "Job files",
+    session: "Session:",
+    selectRun: "Start or select a job in the war-room to browse generated files.",
+    loadingTree: "Loading files…",
+    tree: "Workspace tree",
+    emptyWorkspace: "Workspace still empty (populated when work starts).",
+    hint: "Tap a file to open it",
+    pickFile: "No file open yet. Pick one from the tree.",
+    truncated: "Preview truncated at 512 KB. The file is larger.",
+    notReadable: "Could not open this file",
+  },
   revision: {
     title: "Request revision",
     subtitle:

@@ -76,6 +76,7 @@ export type SessionEventType =
   | "budget_exceeded"
   | "session_memory_updated"
   | "session_handoff"
+  | "session_deliverables"
   | "session_completed"
   | "session_failed"
   | "veto";

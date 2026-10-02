@@ -15,6 +15,6 @@ describe("workspace layout", () => {
 
   it("describes product workspace as cwd for focused runs", () => {
     const section = buildWorkspacePromptSection({ productSlug: "snapog", productName: "SnapOG" });
-    assert.match(section, /already inside it/i);
+    assert.match(section, /product repository for/i);
   });
 });

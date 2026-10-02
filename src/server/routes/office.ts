@@ -39,7 +39,7 @@ sendEncargoDeliveryEmail,
 } from "../../lib/encargo-delivery.js";
 import { getTenantDeliveryBranding } from "../../lib/tenant-delivery-branding.js";
 import { listWorkspaceAgentDocs } from "../../lib/product-code.js";
-import { listSessionWorkspaceTree } from "../../lib/workspace-session.js";
+import { listSessionWorkspaceTree, readSessionWorkspaceFile } from "../../lib/workspace-session.js";
 import { resumeOfficeSession } from "../../lib/office-session-launcher.js";
 import { resolveRunCheckpoint } from "../../lib/run-checkpoints.js";
 import {
@@ -507,26 +507,40 @@ export async function officeRoutes(app: FastifyInstance) {
   });
   
   app.get<{ Params: { sessionId: string }; Querystring: { path?: string } }>(
-  "/office/sessions/:sessionId/files",
-  async (request, reply) => {
-  try {
-  const tenantId = requireImpersonatedTenant(request);
-  const session = await prisma.agentSession.findFirst({
-  where: { id: request.params.sessionId, tenantId },
-  include: { snapshots: { orderBy: { createdAt: "desc" }, take: 1 } },
-  });
-  if (!session) throw new HttpError(404, "Session not found");
-  const subPath = request.query.path ?? "";
-  return {
-  workspacePath: session.workspacePath,
-  snapshot: session.snapshots[0] ?? null,
-  tree: await listSessionWorkspaceTree(session.workspacePath, subPath),
-  agentDocs: await listWorkspaceAgentDocs(session.workspacePath),
-  };
-  } catch (err) {
-  return handleRouteError(reply, err);
-  }
-  },
+    "/office/sessions/:sessionId/files",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const session = await prisma.agentSession.findFirst({
+          where: { id: request.params.sessionId, tenantId },
+          include: { snapshots: { orderBy: { createdAt: "desc" }, take: 1 } },
+        });
+        if (!session) throw new HttpError(404, "Session not found");
+        const subPath = request.query.path ?? "";
+        if (subPath) {
+          try {
+            const file = await readSessionWorkspaceFile(session.workspacePath, subPath);
+            return {
+              workspacePath: session.workspacePath,
+              snapshot: session.snapshots[0] ?? null,
+              tree: [],
+              agentDocs: { roles: [], total: 0 },
+              file,
+            };
+          } catch (err) {
+            // if not a readable file, fall back to tree listing
+          }
+        }
+        return {
+          workspacePath: session.workspacePath,
+          snapshot: session.snapshots[0] ?? null,
+          tree: await listSessionWorkspaceTree(session.workspacePath, subPath),
+          agentDocs: await listWorkspaceAgentDocs(session.workspacePath),
+        };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
   );
   
   app.get<{ Params: { sessionId: string } }>("/office/sessions/:sessionId/checkpoints", async (request, reply) => {
