@@ -36,6 +36,59 @@ export interface UseWarRoomTeamOptions {
   enabled?: boolean;
 }
 
+export type WarRoomSessionEventKind =
+  | "session_started"
+  | "turn_started"
+  | "tool_call"
+  | "tool_result"
+  | "file_changed"
+  | "need_input"
+  | "tool_approval"
+  | "budget_exceeded"
+  | "session_memory_updated"
+  | "session_handoff"
+  | "session_completed"
+  | "session_failed"
+  | "veto";
+
+export interface WarRoomSessionActivityItem {
+  id: string;
+  kind: WarRoomSessionEventKind;
+  sessionId: string | null;
+  at: number;
+  label: string;
+  detail?: string | null;
+  toolName?: string | null;
+  path?: string | null;
+  fileChanged?: boolean;
+}
+
+export interface WarRoomSessionState {
+  items: WarRoomSessionActivityItem[];
+  lastToolCall: { toolName: string; argsPreview: string | null; at: number } | null;
+  lastFileChanged: { path: string | null; toolName: string | null; at: number } | null;
+  needInputPrompt: string | null;
+  pendingApproval: { toolName: string | null; reason: string } | null;
+  budgetExceeded: { reason: string; spentTokens?: number; spentCostUsd?: number } | null;
+  status: "idle" | "running" | "completed" | "failed" | "awaiting_input" | "awaiting_approval" | "budget_exceeded";
+  summary: string | null;
+  error: string | null;
+  lastEventAt: number | null;
+}
+
+export const EMPTY_WAR_ROOM_SESSION_STATE: WarRoomSessionState = {
+  items: [],
+  lastToolCall: null,
+  lastFileChanged: null,
+  needInputPrompt: null,
+  pendingApproval: null,
+  budgetExceeded: null,
+  status: "idle",
+  summary: null,
+  error: null,
+  lastEventAt: null,
+};
+
 export interface UseWarRoomTeamResult<T extends WarRoomTeamSnapshot> {
   data: T | null;
   loading: boolean;
@@ -43,6 +96,7 @@ export interface UseWarRoomTeamResult<T extends WarRoomTeamSnapshot> {
   displayTeam: TeamAgent[];
   handoff: WarRoomHandoffState | null;
   liveNote: string | null;
+  session: WarRoomSessionState;
   refresh: () => Promise<T | null>;
   scheduleRefresh: (minIntervalMs?: number) => void;
   flushRefresh: () => void;
@@ -58,10 +112,12 @@ export function useWarRoomTeam<T extends WarRoomTeamSnapshot>(
   const { enableLiveNotes = false, enabled = true } = options;
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<WarRoomSessionState>(EMPTY_WAR_ROOM_SESSION_STATE);
   const [error, setError] = useState<string | null>(null);
   const [liveNote, setLiveNote] = useState<string | null>(null);
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const teamRef = useRef<TeamAgent[]>([]);
+  const sessionEventSeq = useRef(0);
   const skipWatchRunRefresh = useRef(true);
 
   const flashNote = useCallback((note: string) => {
@@ -133,15 +189,82 @@ export function useWarRoomTeam<T extends WarRoomTeamSnapshot>(
   }, [data?.activeRun?.id, data?.activeRun?.status]);
 
   useEffect(() => {
+    setSession(EMPTY_WAR_ROOM_SESSION_STATE);
+    sessionEventSeq.current = 0;
+  }, [data?.activeRun?.id]);
+
+  useEffect(() => {
     const active = data?.activeRun;
     if (!active || !STREAM_STATUSES.has(active.status)) return;
 
     const close = api.runs.streamLogs(active.id, bindStreamHandler((evt) => {
-      const event = evt as { type?: string; data?: { agentId?: string | null; message?: string } };
-      if (enableLiveNotes && event.type === "log" && event.data?.agentId) {
-        const agent = teamRef.current.find((entry) => entry.id === event.data?.agentId);
-        const preview = String(event.data?.message ?? "").slice(0, 80);
+      const event = evt as { type?: string; data?: Record<string, unknown> };
+      const payload = event.data ?? {};
+      const sessionEvent = typeof payload.sessionEvent === "string" ? payload.sessionEvent : null;
+      const gatewayKind = payload.kind === "tool_call" || payload.kind === "tool_result" ? payload.kind : null;
+
+      if (enableLiveNotes && event.type === "log" && typeof payload.agentId === "string") {
+        const agent = teamRef.current.find((entry) => entry.id === payload.agentId);
+        const preview = String(payload.message ?? "").slice(0, 80);
         if (preview) flashNote(agent ? `${agent.name}: ${preview}` : preview);
+      }
+
+      if (sessionEvent || gatewayKind) {
+        const kind = (sessionEvent ?? gatewayKind) as WarRoomSessionEventKind;
+        const at = Date.now();
+        const id = `${at}-${sessionEventSeq.current++}`;
+        const sessionId = typeof payload.sessionId === "string" ? payload.sessionId : null;
+        const toolName = typeof payload.toolName === "string" ? payload.toolName : null;
+        const path = typeof payload.path === "string" ? payload.path : null;
+        const reason = typeof payload.reason === "string" ? payload.reason : null;
+        const prompt = typeof payload.prompt === "string" ? payload.prompt : null;
+        const summary = typeof payload.summary === "string" ? payload.summary : null;
+        const errorMessage = typeof payload.error === "string" ? payload.error : null;
+        const fileChanged = payload.fileChanged === true || kind === "file_changed";
+        const argsPreview = payload.args == null ? null : JSON.stringify(payload.args).slice(0, 180);
+
+        setSession((previous) => {
+          const item: WarRoomSessionActivityItem = {
+            id,
+            kind,
+            sessionId,
+            at,
+            label: kind.replace(/_/g, " "),
+            detail: prompt ?? summary ?? errorMessage ?? reason ?? null,
+            toolName,
+            path,
+            fileChanged,
+          };
+          const items = [...previous.items, item].slice(-40);
+          let status = previous.status;
+          if (["session_started", "turn_started", "tool_call", "tool_result", "file_changed"].includes(kind)) status = "running";
+          if (kind === "need_input") status = "awaiting_input";
+          if (kind === "tool_approval") status = "awaiting_approval";
+          if (kind === "budget_exceeded") status = "budget_exceeded";
+          if (kind === "session_completed") status = "completed";
+          if (kind === "session_failed" || kind === "veto") status = "failed";
+          return {
+            ...previous,
+            items,
+            status,
+            lastToolCall: kind === "tool_call" && toolName ? { toolName, argsPreview, at } : previous.lastToolCall,
+            lastFileChanged: fileChanged ? { path, toolName, at } : previous.lastFileChanged,
+            needInputPrompt: kind === "need_input" ? prompt : ["session_completed", "session_failed"].includes(kind) ? null : previous.needInputPrompt,
+            pendingApproval: kind === "tool_approval" ? { toolName, reason: reason ?? "Approval required" } : ["session_completed", "session_failed"].includes(kind) ? null : previous.pendingApproval,
+            budgetExceeded: kind === "budget_exceeded" ? {
+              reason: reason ?? "Budget exceeded",
+              spentTokens: typeof payload.spentTokens === "number" ? payload.spentTokens : undefined,
+              spentCostUsd: typeof payload.spentCostUsd === "number" ? payload.spentCostUsd : undefined,
+            } : previous.budgetExceeded,
+            summary: summary ?? previous.summary,
+            error: errorMessage ?? previous.error,
+            lastEventAt: at,
+          };
+        });
+
+        if (kind === "file_changed" || (kind === "tool_result" && fileChanged) || kind === "session_completed") {
+          refreshScheduler.current.schedule(STEP_EVENT_REFRESH_MS);
+        }
       } else if (event.type === "done") {
         refreshScheduler.current.flush();
       }
@@ -173,6 +296,7 @@ export function useWarRoomTeam<T extends WarRoomTeamSnapshot>(
     displayTeam,
     handoff,
     liveNote: enableLiveNotes ? liveNote : null,
+    session,
     refresh,
     scheduleRefresh,
     flushRefresh,

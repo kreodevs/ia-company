@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, RunEngine } from "@prisma/client";
 import { readMemoryOrgUnitId } from "./office-run-department.js";
 import { extractRunProductMemory } from "./product-run-association.js";
 
@@ -15,12 +15,13 @@ export function resolveRunScopeFields(input: {
 }
 
 export function executionRunCreateData(input: {
-  workflowId: string;
+  workflowId?: string | null;
   tenantId?: string | null;
   sharedMemory?: unknown;
   productId?: string | null;
   orgUnitId?: string | null;
   status?: Prisma.ExecutionRunCreateInput["status"];
+  engine?: RunEngine;
 }): Prisma.ExecutionRunUncheckedCreateInput {
   const sharedMemory = (input.sharedMemory ?? {}) as object;
   const scope = resolveRunScopeFields({
@@ -29,9 +30,10 @@ export function executionRunCreateData(input: {
     orgUnitId: input.orgUnitId,
   });
   return {
-    workflowId: input.workflowId,
+    workflowId: input.workflowId ?? undefined,
     tenantId: input.tenantId ?? undefined,
     status: input.status ?? "PENDING",
+    engine: input.engine ?? "dag",
     sharedMemory,
     orgUnitId: scope.orgUnitId,
     productId: scope.productId,

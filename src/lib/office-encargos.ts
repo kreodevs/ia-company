@@ -291,7 +291,7 @@ export async function enrichEncargosWithReportPreview(
 }
 
 async function countDocumentsForRun(
-  run: ExecutionRun & { workflow: { name: string } },
+  run: ExecutionRun & { workflow: { name: string } | null },
   workspaceRoot: string | null,
   productConsensusId: string | null,
 ): Promise<number> {
@@ -354,7 +354,7 @@ export function encargoActivityFields(input: {
 }
 
 async function mapRunToSummary(
-  run: ExecutionRun & { workflow: { name: string } },
+  run: ExecutionRun & { workflow: { name: string } | null },
   products: Array<{ id: string; slug: string; name: string }>,
   productConsensusByProductId: Map<string, string>,
   tenantId: string,
@@ -364,7 +364,10 @@ async function mapRunToSummary(
 ): Promise<OfficeEncargoSummary> {
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const request = extractRequest(memory);
-  const scopeMeta = resolveRunScopeMeta(memory as Record<string, unknown>, run.workflow.name);
+  const scopeMeta = resolveRunScopeMeta(
+    memory as Record<string, unknown>,
+    run.workflow?.name ?? "task",
+  );
   const product =
     isCompanyScopedMemory(memory as Record<string, unknown>)
       ? null
@@ -376,7 +379,7 @@ async function mapRunToSummary(
     teamAgents,
     orgUnitId,
     orgUnitName,
-    workflowName: run.workflow.name,
+    workflowName: run.workflow?.name ?? "task",
   });
   const consensusId = product ? productConsensusByProductId.get(product.id) : undefined;
   const workspaceRoot = resolveRunWorkspaceRoot(tenantId, tenantSlug, product?.slug ?? null);
@@ -391,9 +394,9 @@ async function mapRunToSummary(
 
   return {
     id: run.id,
-    title: buildTitle(request, run.workflow.name),
+    title: buildTitle(request, run.workflow?.name ?? "task"),
     request,
-    workflowName: run.workflow.name,
+    workflowName: run.workflow?.name ?? "task",
     procedureLabel: departmentContext.procedureLabel,
     status: run.status,
     phase,
@@ -486,7 +489,7 @@ export async function listOfficeEncargos(
 }
 
 export async function loadRunDocuments(
-  run: ExecutionRun & { workflow: { name: string } },
+  run: ExecutionRun & { workflow: { name: string } | null },
   workspaceRoot: string,
   consensusId: string | null,
   teamAgents: string[],
@@ -636,7 +639,7 @@ export async function loadRunDocuments(
 const DOC_EXTENSIONS = new Set([".md", ".markdown", ".mdx"]);
 
 async function loadDocumentsForRun(
-  run: ExecutionRun & { workflow: { name: string } },
+  run: ExecutionRun & { workflow: { name: string } | null },
   tenantId: string,
 ): Promise<OfficeEncargoDocument[]> {
   const [products, consensusRows, tenant] = await Promise.all([

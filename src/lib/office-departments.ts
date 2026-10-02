@@ -181,7 +181,7 @@ export async function buildOfficeDepartmentRooms(
   preloadedActiveRuns?: Array<{
     id: string;
     sharedMemory: unknown;
-    workflow: { steps: Array<{ agent: { name: string } | null }> };
+    workflow: { steps: Array<{ agent: { name: string } | null }> } | null;
   }>,
 ): Promise<OfficeDepartmentRoom[]> {
   const activeStatuses: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
@@ -221,7 +221,7 @@ export async function buildOfficeDepartmentRooms(
   const activeRunRows: ActiveRunRow[] = activeRuns.map((run) => ({
     id: run.id,
     sharedMemory: run.sharedMemory,
-    workflowAgentNames: run.workflow.steps
+    workflowAgentNames: (run.workflow?.steps ?? [])
       .map((step) => step.agent?.name)
       .filter((name): name is string => typeof name === "string"),
   }));

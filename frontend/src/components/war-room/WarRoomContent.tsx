@@ -13,6 +13,7 @@ import CoordinatorChat from "../office/CoordinatorChat";
 import DeliverableHealthBanner from "./DeliverableHealthBanner";
 import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
+import { WarRoomSessionActivity } from "./WarRoomSessionActivity";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import WarRoomRecentRuns from "./WarRoomRecentRuns";
 import WarRoomTable from "./WarRoomTable";
@@ -43,6 +44,7 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
     displayTeam,
     handoff,
     liveNote,
+    session,
     refresh,
     scheduleRefresh,
     flushRefresh,
@@ -175,6 +177,10 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
           />
         </div>
       )}
+
+      <div className="mb-4">
+        <WarRoomSessionActivity session={session} />
+      </div>
 
       <section className="hero-strip">
         <KpiCard label={t("warRoom.kpis.totalAgents")} value={data.team.length} />

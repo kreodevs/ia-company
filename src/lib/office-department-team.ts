@@ -48,7 +48,7 @@ type RunRow = Awaited<ReturnType<typeof prisma.executionRun.findMany>>[number] &
   workflow: {
     name: string;
     steps: Array<{ agent: { name: string } | null }>;
-  };
+  } | null;
   logs?: Array<{
     id: string;
     level: string;
@@ -60,7 +60,7 @@ type RunRow = Awaited<ReturnType<typeof prisma.executionRun.findMany>>[number] &
 };
 
 function workflowAgentNamesFromRun(run: RunRow): string[] {
-  return run.workflow.steps
+  return (run.workflow?.steps ?? [])
     .map((step) => step.agent?.name)
     .filter((name): name is string => typeof name === "string");
 }
@@ -151,7 +151,7 @@ function buildActiveRunSummary(
   }
   const memory = (run.sharedMemory ?? {}) as SharedMemory;
   const fields = encargoActivityFields({
-    workflowName: run.workflow.name,
+    workflowName: run.workflow?.name ?? "task",
     sharedMemory: memory,
     orgUnitNameById,
   });
@@ -161,7 +161,7 @@ function buildActiveRunSummary(
 
   return {
     id: run.id,
-    workflowName: run.workflow.name,
+    workflowName: run.workflow?.name ?? "task",
     status: run.status,
     startedAt: run.startedAt?.toISOString() ?? null,
     agentIds: Array.from(agentIds),
@@ -402,7 +402,7 @@ export async function getDepartmentTeam(
     recentRuns: deptRecentRuns.slice(0, 5).map((r) => ({
       id: r.id,
       status: r.status,
-      workflowName: r.workflow.name,
+      workflowName: r.workflow?.name ?? "task",
       startedAt: r.startedAt?.toISOString() ?? null,
       completedAt: r.completedAt?.toISOString() ?? null,
       totalTokens: r.totalTokens,
@@ -463,7 +463,7 @@ export async function countActiveRunsForDepartment(
       sharedMemory: run.sharedMemory,
       rosterNames: input.rosterNames,
       orgUnitId: input.orgUnitId ?? null,
-      workflowAgentNames: run.workflow.steps
+      workflowAgentNames: (run.workflow?.steps ?? [])
         .map((step) => step.agent?.name)
         .filter((name): name is string => typeof name === "string"),
     }),

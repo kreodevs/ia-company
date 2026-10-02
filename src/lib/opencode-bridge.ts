@@ -121,7 +121,7 @@ export async function resolveOpencodeRunGate(input: {
   const { enqueueWorkflowRun } = await import("../worker/queue.js");
   await enqueueWorkflowRun({
     runId: input.runId,
-    workflowId: run.workflowId,
+    workflowId: run.workflowId ?? "",
     tenantId: input.tenantId,
     initialMemory: sharedMemory,
     mergeConsensus: false,
@@ -130,7 +130,7 @@ export async function resolveOpencodeRunGate(input: {
       const slug = (sharedMemory as SharedMemory).focusProductSlug;
       return typeof slug === "string" ? slug : undefined;
     })(),
-    workflowName: run.workflow.name,
+    workflowName: run.workflow?.name ?? "task",
     forceLocalImplementation: true,
   });
 
@@ -291,7 +291,7 @@ export async function confirmOpencodeDelegation(input: {
     data: { sharedMemory: sharedMemory as object, status: "RUNNING" },
   });
 
-  const resumeFromStepOrder = resolveResumeAfterFullstackStepOrder(run.workflow.steps);
+  const resumeFromStepOrder = resolveResumeAfterFullstackStepOrder(run.workflow?.steps ?? []);
 
   try {
     await startOpencodeDelegation({
@@ -660,7 +660,7 @@ export async function finalizeOpencodeDelegation(delegationId: string): Promise<
   void notifyOpencodeDelegationCompleted({
     tenantId: delegation.tenantId,
     runId: delegation.runId,
-    workflowName: delegation.run.workflow.name,
+    workflowName: delegation.run.workflow?.name ?? "task",
     diffCount,
     resultSummary,
   });
@@ -668,14 +668,14 @@ export async function finalizeOpencodeDelegation(delegationId: string): Promise<
   const { enqueueWorkflowRun } = await import("../worker/queue.js");
   await enqueueWorkflowRun({
     runId: delegation.runId,
-    workflowId: delegation.run.workflowId,
+    workflowId: delegation.run.workflowId ?? "",
     tenantId: delegation.tenantId,
     initialMemory: sharedMemory,
     mergeConsensus: false,
     syncConsensus: true,
     productSlug:
       typeof sharedMemory.focusProductSlug === "string" ? sharedMemory.focusProductSlug : undefined,
-    workflowName: delegation.run.workflow.name,
+    workflowName: delegation.run.workflow?.name ?? "task",
     resumeFromStepOrder: delegation.resumeFromStepOrder,
     afterOpencodeDelegation: true,
   });
@@ -702,8 +702,8 @@ async function failDelegation(
     await degradeRunToLocalImplementation({
       runId,
       tenantId: delegation.run.tenantId,
-      workflowId: delegation.run.workflowId,
-      workflowName: delegation.run.workflow.name,
+      workflowId: delegation.run.workflowId ?? "",
+      workflowName: delegation.run.workflow?.name ?? "task",
       sharedMemory,
       productSlug,
       resumeFromStepOrder: Math.max(delegation.resumeFromStepOrder - 1, 1),
@@ -750,7 +750,7 @@ async function failDelegation(
       tenantId: run.tenantId,
       runId,
       status: "FAILED",
-      workflowName: run.workflow.name,
+      workflowName: run.workflow?.name ?? "task",
       totalCostUsd: run.totalCostUsd,
       totalTokens: run.totalTokens,
       errorMessage: message,
@@ -862,7 +862,7 @@ export async function prepareOpencodeImplementationGate(input: {
       void notifyOpencodeGateRequired({
         tenantId: run.tenantId,
         runId: input.runId,
-        workflowName: run.workflow.name,
+        workflowName: run.workflow?.name ?? "task",
       });
     }
 

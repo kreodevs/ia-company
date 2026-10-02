@@ -777,7 +777,7 @@ Rewrite the deliverable in markdown, then end with a fenced \`\`\`json block con
       tenantId,
       runId,
       status,
-      workflowName: run.workflow.name,
+      workflowName: run.workflow?.name ?? "task",
       totalCostUsd: extra.totalCostUsd ?? run.totalCostUsd,
       totalTokens: extra.totalTokens ?? run.totalTokens,
       errorMessage: extra.errorMessage ?? run.errorMessage,

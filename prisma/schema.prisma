@@ -32,6 +32,7 @@ model Tenant {
   skills    Skill[]
   workflows Workflow[]
   runs      ExecutionRun[]
+  sessions  AgentSession[]
   users     TenantUser[]
   consensus TenantConsensus?
   llmConfig TenantLlmConfig?
@@ -118,6 +119,7 @@ model Agent {
   mcpGrants     AgentMcpGrant[]
   workflowSteps WorkflowStep[]
   executionLogs ExecutionLog[]
+  sessions      AgentSession[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -221,13 +223,20 @@ enum ExecutionStatus {
   CANCELLED
 }
 
+/// dag = legacy one-shot workflow graph (frozen). session = multi-turn AgentSessionRuntime.
+enum RunEngine {
+  dag
+  session
+}
+
 model ExecutionRun {
   id           String          @id @default(cuid())
-  workflowId   String
+  workflowId   String?
   tenantId     String?
   orgUnitId    String?
   productId    String?
   status       ExecutionStatus @default(PENDING)
+  engine       RunEngine       @default(dag)
   sharedMemory Json            @default("{}")
   totalTokens  Int             @default(0)
   totalCostUsd Float           @default(0)
@@ -237,7 +246,7 @@ model ExecutionRun {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  workflow Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflow Workflow?      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   tenant   Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   orgUnit  OrgUnit?       @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
   product  TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
@@ -246,6 +255,7 @@ model ExecutionRun {
   checkpoints RunCheckpoint[]
   opencodeDelegation OpencodeDelegation?
   opencodeRunGate    OpencodeRunGate?
+  sessions AgentSession[]
 
   @@index([workflowId])
   @@index([status])
@@ -302,6 +312,9 @@ enum RunCheckpointKind {
   go_no_go
   opencode
   custom
+  need_input
+  tool_approval
+  budget_exceeded
 }
 
 enum RunCheckpointStatus {
@@ -313,6 +326,7 @@ enum RunCheckpointStatus {
 model RunCheckpoint {
   id         String              @id @default(cuid())
   runId      String
+  sessionId  String?
   tenantId   String?
   kind       RunCheckpointKind
   status     RunCheckpointStatus @default(pending)
@@ -323,10 +337,123 @@ model RunCheckpoint {
   createdAt  DateTime            @default(now())
   updatedAt  DateTime            @updatedAt
 
-  run ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  run     ExecutionRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  session AgentSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([runId, status])
   @@index([tenantId, status])
+  @@index([sessionId, status])
+}
+
+// ─── Agent sessions (multi-turn runtime — replaces one-shot DAG execution) ─────
+
+enum AgentSessionStatus {
+  PENDING
+  RUNNING
+  AWAITING_INPUT
+  AWAITING_APPROVAL
+  COMPLETED
+  FAILED
+  CANCELLED
+  BUDGET_EXCEEDED
+}
+
+enum SessionToolCallStatus {
+  ok
+  error
+  denied
+  awaiting_approval
+}
+
+model AgentSession {
+  id                 String             @id @default(cuid())
+  runId              String
+  tenantId           String?
+  agentId            String
+  status             AgentSessionStatus @default(PENDING)
+  role               String             @default("")
+  goal               String             @db.Text
+  acceptanceCriteria Json               @default("[]")
+  workspacePath      String
+  provider           String?
+  model              String?
+  maxTurns           Int                @default(25)
+  currentTurn        Int                @default(0)
+  budgetTokens       Int?
+  budgetUsd          Float?
+  spentTokens        Int                @default(0)
+  spentCostUsd       Float              @default(0)
+  summary            String?            @db.Text
+  lastError          String?            @db.Text
+  startedAt          DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  run         ExecutionRun       @relation(fields: [runId], references: [id], onDelete: Cascade)
+  tenant      Tenant?            @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  agent       Agent              @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  turns       SessionTurn[]
+  toolCalls   SessionToolCall[]
+  snapshots   WorkspaceSnapshot[]
+  checkpoints RunCheckpoint[]
+
+  @@index([runId])
+  @@index([tenantId, status])
+  @@index([agentId, status])
+}
+
+model SessionTurn {
+  id        String    @id @default(cuid())
+  sessionId String
+  turnNo    Int
+  input     String    @db.Text
+  output    String?   @db.Text
+  tokens    Int       @default(0)
+  costUsd   Float     @default(0)
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  session   AgentSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  toolCalls SessionToolCall[]
+
+  @@unique([sessionId, turnNo])
+}
+
+model SessionToolCall {
+  id         String                @id @default(cuid())
+  sessionId  String
+  turnId     String
+  toolName   String
+  argsJson   Json                  @default("{}")
+  resultJson Json?
+  exitCode   Int?
+  durationMs Int?
+  status     SessionToolCallStatus @default(ok)
+  error      String?               @db.Text
+  createdAt  DateTime              @default(now())
+
+  session AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  turn    SessionTurn   @relation(fields: [turnId], references: [id], onDelete: Cascade)
+
+  @@index([turnId])
+  @@index([sessionId, createdAt])
+}
+
+model WorkspaceSnapshot {
+  id           String   @id @default(cuid())
+  sessionId    String
+  runId        String
+  filesChanged Json     @default("[]")
+  manifest     Json     @default("{}")
+  commitSha    String?
+  totalBytes   Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  session AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([runId])
 }
 
 // ─── Consensus memory (tenant-level = company-wide; per-product is below) ────

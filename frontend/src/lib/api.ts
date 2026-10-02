@@ -738,11 +738,25 @@ export interface OpsNextRun {
 
 export type OfficeMode = "on_demand" | "scheduled" | "autonomous";
 
+export interface OfficeAcceptanceCriterion {
+  id: string;
+  description: string;
+  kind?: "file_exists" | "file_contains" | "shell_pass" | "custom";
+}
+
+export interface OfficeAgentBudget {
+  maxTurns: number;
+  budgetTokens: number;
+  budgetUsd: number;
+}
+
 export interface OfficeTaskAgent {
   id: string;
   name: string;
   role: string;
   reasonKey: string;
+  acceptanceCriteria: OfficeAcceptanceCriterion[];
+  budgets: OfficeAgentBudget;
 }
 
 export interface OfficeMissingAgentRole {
@@ -805,6 +819,114 @@ export interface OfficeServiceTemplate {
   examplePromptKey: string;
   agentNames: string[];
   deliverableKey: string;
+}
+
+export type OfficeAgentSessionStatus =
+  | "PENDING"
+  | "RUNNING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED"
+  | "AWAITING_INPUT"
+  | "AWAITING_APPROVAL";
+
+export interface OfficeAgentSession {
+  id: string;
+  runId: string;
+  tenantId: string | null;
+  agentId: string;
+  status: OfficeAgentSessionStatus;
+  role: string;
+  goal: string;
+  acceptanceCriteria: unknown;
+  workspacePath: string;
+  provider: string | null;
+  model: string | null;
+  maxTurns: number;
+  currentTurn: number;
+  budgetTokens: number | null;
+  budgetUsd: number | null;
+  spentTokens: number;
+  spentCostUsd: number;
+  summary: string | null;
+  lastError: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfficeSessionToolCall {
+  id: string;
+  sessionId: string;
+  turnId: string;
+  toolName: string;
+  argsJson: unknown;
+  resultJson: unknown;
+  exitCode: number | null;
+  durationMs: number | null;
+  status: string;
+  error: string | null;
+  createdAt: string;
+}
+
+export interface OfficeSessionTurn {
+  id: string;
+  sessionId: string;
+  turnNo: number;
+  input: string;
+  output: string | null;
+  tokens: number;
+  costUsd: number;
+  startedAt: string;
+  endedAt: string | null;
+  toolCalls: OfficeSessionToolCall[];
+}
+
+export interface OfficeWorkspaceSnapshot {
+  id: string;
+  sessionId: string;
+  runId: string;
+  filesChanged: unknown;
+  manifest: unknown;
+  commitSha: string | null;
+  totalBytes: number;
+  createdAt: string;
+}
+
+export interface OfficeSessionDetail extends OfficeAgentSession {
+  turns: OfficeSessionTurn[];
+  snapshots: OfficeWorkspaceSnapshot[];
+}
+
+export interface OfficeRunCheckpoint {
+  id: string;
+  runId: string;
+  sessionId: string | null;
+  tenantId: string | null;
+  kind: string;
+  status: string;
+  title: string | null;
+  payload: unknown;
+  resolution: unknown;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfficeSessionTreeEntry {
+  path: string;
+  name: string;
+  type: "file" | "dir";
+  size: number;
+  children?: OfficeSessionTreeEntry[];
+}
+
+export interface OfficeSessionFilesResponse {
+  workspacePath: string;
+  snapshot: OfficeWorkspaceSnapshot | null;
+  tree: OfficeSessionTreeEntry[];
+  agentDocs: ProductAgentDocsIndex;
 }
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
@@ -2042,6 +2164,30 @@ export const api = {
         "/office/tasks/execute",
         { method: "POST", body: JSON.stringify(body) },
       ),
+    runSessions: (runId: string) =>
+      request<{ sessions: OfficeAgentSession[] }>(`/office/runs/${runId}/sessions`),
+    session: (sessionId: string) =>
+      request<OfficeSessionDetail>(`/office/sessions/${sessionId}`),
+    sessionFiles: (sessionId: string, path = "") =>
+      request<OfficeSessionFilesResponse>(
+        `/office/sessions/${sessionId}/files${path ? `?path=${encodeURIComponent(path)}` : ""}`,
+      ),
+    sessionCheckpoints: (sessionId: string) =>
+      request<{ checkpoints: OfficeRunCheckpoint[] }>(`/office/sessions/${sessionId}/checkpoints`),
+    resolveSessionCheckpoint: (
+      sessionId: string,
+      checkpointId: string,
+      body: { resolution?: Record<string, unknown>; status?: "resolved" | "expired" },
+    ) =>
+      request<{ ok: boolean; checkpointId: string }>(
+        `/office/sessions/${sessionId}/checkpoints/${checkpointId}/resolve`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
+    resumeSession: (sessionId: string, humanInput: string) =>
+      request<{ ok: boolean; sessionId: string }>(`/office/sessions/${sessionId}/resume`, {
+        method: "POST",
+        body: JSON.stringify({ humanInput }),
+      }),
   },
   ops: {
     portfolio: () => request<OpsPortfolio>("/ops/portfolio"),

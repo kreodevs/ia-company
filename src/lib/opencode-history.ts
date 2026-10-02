@@ -30,7 +30,7 @@ export async function listProductOpencodeHistory(tenantId: string, productId: st
       id: d.id,
       runId: d.runId,
       runStatus: d.run.status,
-      workflowName: d.run.workflow.name,
+      workflowName: d.run.workflow?.name ?? "task",
       opencodeSessionId: d.opencodeSessionId,
       status: d.status,
       promptSummary: d.promptSummary,

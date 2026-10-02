@@ -1014,7 +1014,7 @@ export async function productRoutes(app: FastifyInstance) {
         }
         return {
           id: run.id,
-          workflowName: run.workflow.name,
+          workflowName: run.workflow?.name ?? "task",
           status: run.status,
           startedAt: run.startedAt,
           agentIds: Array.from(agentIds),
@@ -1036,7 +1036,7 @@ export async function productRoutes(app: FastifyInstance) {
       const recentRuns = runsForProduct.slice(0, 5).map((r) => ({
         id: r.id,
         status: r.status,
-        workflowName: r.workflow.name,
+        workflowName: r.workflow?.name ?? "task",
         startedAt: r.startedAt,
         completedAt: r.completedAt,
         totalTokens: r.totalTokens,
@@ -1110,7 +1110,7 @@ export async function productRoutes(app: FastifyInstance) {
         activeRun: activeRun
           ? {
               id: activeRun.id,
-              workflowName: activeRun.workflow.name,
+              workflowName: activeRun.workflow?.name ?? "task",
               status: activeRun.status,
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),

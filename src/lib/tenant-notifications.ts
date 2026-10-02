@@ -258,7 +258,7 @@ export async function notifyRunFinishedInApp(params: {
   });
   const memory = (run?.sharedMemory ?? {}) as SharedMemory;
   const workflowAgentNames =
-    run?.workflow.steps
+    run?.workflow?.steps
       .map((step) => step.agent?.name)
       .filter((name): name is string => typeof name === "string") ?? [];
   const orgUnits = await prisma.orgUnit.findMany({

@@ -156,19 +156,27 @@ function resolveSettings(row: PlatformSettings | null): ResolvedPlatformSettings
       row?.opencodeDefaultMaxWaitMs ?? PLATFORM_SETTINGS_DEFAULTS.opencodeDefaultMaxWaitMs,
     providers: {
       tokenlab: {
-        apiKey: decryptSecret(row?.tokenlabApiKey) ?? "",
+        apiKey: row?.tokenlabApiKey
+          ? (decryptSecret(row.tokenlabApiKey) ?? "")
+          : (process.env.TOKENLAB_API_KEY ?? ""),
         baseURL: row?.tokenlabBaseUrl ?? PLATFORM_SETTINGS_DEFAULTS.tokenlabBaseUrl,
       },
       openrouter: {
-        apiKey: decryptSecret(row?.openrouterApiKey) ?? "",
+        apiKey: row?.openrouterApiKey
+          ? (decryptSecret(row.openrouterApiKey) ?? "")
+          : (process.env.OPENROUTER_API_KEY ?? ""),
         baseURL: row?.openrouterBaseUrl ?? PLATFORM_SETTINGS_DEFAULTS.openrouterBaseUrl,
       },
       custom: {
-        apiKey: decryptSecret(row?.customApiKey) ?? "",
+        apiKey: row?.customApiKey
+          ? (decryptSecret(row.customApiKey) ?? "")
+          : (process.env.CUSTOM_API_KEY ?? ""),
         baseURL: row?.customBaseUrl ?? PLATFORM_SETTINGS_DEFAULTS.customBaseUrl,
       },
       replicate: {
-        apiKey: decryptSecret(row?.replicateApiKey) ?? "",
+        apiKey: row?.replicateApiKey
+          ? (decryptSecret(row.replicateApiKey) ?? "")
+          : (process.env.REPLICATE_API_TOKEN ?? process.env.REPLICATE_API_KEY ?? ""),
         baseURL: "https://api.replicate.com/v1",
       },
     },

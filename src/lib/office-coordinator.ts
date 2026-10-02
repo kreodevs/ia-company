@@ -1,13 +1,10 @@
 import type { ExecutionStatus } from "@prisma/client";
+import type { AcceptanceCriterion } from "../core/agent-loop/types.js";
 import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { executeWorkflowInBackground } from "../core/engine.js";
 import { assertTenantCanExecute, getTenantMonthlyUsage } from "./usage-limits.js";
-import {
-  ensureAgentTaskWorkflow,
-  ensurePlatformWorkflowOnTenant,
-  ensureTeamTaskWorkflow,
-} from "../server/lib/clone-templates.js";
+import { ensurePlatformWorkflowOnTenant } from "../server/lib/clone-templates.js";
 import { launchProductWork } from "./product-work-launcher.js";
 import { WORKFLOW_NAMES, type WorkflowName } from "./workflow-names.js";
 import { listTenantProducts } from "./product-registry.js";
@@ -28,6 +25,7 @@ import {
   officeLaunchMemoryFields,
 } from "./office-run-department.js";
 import { loadPriorRunContext } from "./prior-run-context.js";
+import { deliverablePathForAgent, launchOfficeSession } from "./office-session-launcher.js";
 
 export type OfficeServiceCategory =
   | "research"
@@ -52,11 +50,19 @@ export interface OfficeServiceTemplate {
   minutesPerAgent: number;
 }
 
+export interface OfficeAgentBudget {
+  maxTurns: number;
+  budgetTokens: number;
+  budgetUsd: number;
+}
+
 export interface OfficeTaskAgent {
   id: string;
   name: string;
   role: string;
   reasonKey: string;
+  acceptanceCriteria: AcceptanceCriterion[];
+  budgets: OfficeAgentBudget;
 }
 
 export interface OfficeMissingAgentRole {
@@ -465,7 +471,7 @@ export async function planOfficeTask(
   const agentReasons = match?.agentReasons ?? {};
 
   let missingAgentRoles: OfficeMissingAgentRole[] = [];
-  let selectedAgents: OfficeTaskAgent[] = [];
+  let selectedAgents: Array<{ id: string; name: string; role: string; reasonKey: string }> = [];
   let summaryOverride: string | undefined;
 
   const useLlmPlan = process.env.OFFICE_PLAN_USE_LLM !== "false" && orgAgentCatalog.length > 0;
@@ -583,14 +589,39 @@ export async function planOfficeTask(
   }
 
   const procedureLabel = workflowName ? formatProcedureLabel(workflowName) : null;
-
+  
+  const agentBudgets: OfficeAgentBudget = {
+    maxTurns: 25,
+    budgetTokens: 150_000,
+    budgetUsd: Math.max(1, Math.round((service?.costPerAgentUsd ?? 1.25) * 4 * 100) / 100),
+  };
+  const plannedAgents: OfficeTaskAgent[] = selectedAgents.map((agent) => {
+    const relative = deliverablePathForAgent(agent.name, agent.role);
+    return {
+      ...agent,
+      acceptanceCriteria: [
+        {
+          id: `ac-${agent.name}-deliverable`,
+          description: `file "${relative}" must exist and contain the deliverable for this encargo`,
+          kind: "file_exists",
+        },
+        {
+          id: `ac-${agent.name}-nonempty`,
+          description: `The file "${relative}" must be non-empty (no blank report)`,
+          kind: "file_contains",
+        },
+      ],
+      budgets: { ...agentBudgets },
+    };
+  });
+  
   const product = options.productId
     ? (scopedProducts.find((p) => p.id === options.productId) ??
         products.find((p) => p.id === options.productId) ??
         null)
     : null;
 
-  const agentCount = selectedAgents.length;
+  const agentCount = plannedAgents.length;
   const mode: OfficeTaskPlan["mode"] =
     agentCount === 1 ? "single" : workflowId ? "workflow" : "team";
 
@@ -599,7 +630,7 @@ export async function planOfficeTask(
     request: trimmed,
     summary: summaryOverride ?? trimmed.slice(0, 160),
     coordinatorNoteKey,
-    agents: selectedAgents,
+    agents: plannedAgents,
     missingAgentRoles,
     workflowId,
     workflowName,
@@ -733,78 +764,37 @@ export async function executeOfficeTask(
   const agentIds = input.agentIds?.length
     ? input.agentIds
     : plan.agents.map((a) => a.id);
-
-  if (agentIds.length === 1) {
-    const wf = await ensureAgentTaskWorkflow(tenantId, agentIds[0]!);
-    if (!wf) throw new Error("Agent not found");
-
-    if (productId) {
-      return withProduct(
-        await launchProductWork(tenantId, productId, {
-          agentId: agentIds[0],
-          task,
-          mergeConsensus: true,
-          orgContext: orgMemory,
-        }),
-      );
-    }
-
-    const runId = await executeWorkflowInBackground(wf.id, {
-      tenantId,
-      workflowName: wf.name,
-      mergeConsensus: true,
-      syncConsensus: true,
-      initialMemory: withOrgMemory(
-        officeLaunchMemoryFields({
-          task,
-          teamAgentNames: plan.agents
-            .filter((agent) => agent.id === agentIds[0])
-            .map((agent) => agent.name),
-        }),
-      ),
-    });
-    return withProduct({ runId, workflowId: wf.id, workflowName: wf.name });
+  const selectedAgents = plan.agents.filter((agent) => agentIds.includes(agent.id));
+  if (selectedAgents.length !== agentIds.length) {
+    throw new Error("One or more selected agents are not available for this tenant");
   }
+  if (selectedAgents.length === 0) throw new Error("At least one agent is required");
 
-  const teamWf = await ensureTeamTaskWorkflow(tenantId, agentIds, task.slice(0, 80));
-  if (!teamWf) throw new Error("Could not assemble team workflow");
-
-  if (productId) {
-    const runId = await executeWorkflowInBackground(teamWf.id, {
-      tenantId,
-      productId,
-      productSlug: (
-        await prisma.tenantProduct.findUnique({
-          where: { id: productId },
-          select: { slug: true },
-        })
-      )?.slug,
-      workflowName: teamWf.name,
-      mergeConsensus: true,
-      syncConsensus: true,
-      initialMemory: withOrgMemory(
-        officeLaunchMemoryFields({
-          task,
-          teamAgentNames: plan.agents.map((a) => a.name),
-        }),
-      ),
-    });
-    return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
-  }
-
-  const runId = await executeWorkflowInBackground(teamWf.id, {
+  // New Office work uses the session runtime directly. The legacy generated
+  // DAGs remain available for explicit workflows and presets above, but are no
+  // longer created for ordinary single/team encargo launches.
+  const sessionPlan: OfficeTaskPlan = {
+    ...plan,
+    agents: selectedAgents,
+    mode: selectedAgents.length === 1 ? "single" : "team",
+    workflowId: null,
+    workflowName: null,
+    presetId: null,
+  };
+  const launched = await launchOfficeSession({
     tenantId,
-    workflowName: teamWf.name,
-    mergeConsensus: true,
-    syncConsensus: true,
-    initialMemory: withOrgMemory(
-      officeLaunchMemoryFields({
-        task,
-        teamAgentNames: plan.agents.map((a) => a.name),
-      }),
-    ),
+    plan: sessionPlan,
+    request: task,
+    orgUnitId: input.orgUnitId ?? null,
+    productId: productId ?? null,
+    parentRunId: input.parentRunId ?? null,
   });
-  return withProduct({ runId, workflowId: teamWf.id, workflowName: teamWf.name });
+
+  return withProduct({
+    runId: launched.runId,
+    workflowId: plan.workflowId ?? "",
+    workflowName: plan.workflowName ?? (selectedAgents.length === 1 ? "Agent session" : "Team session"),
+  });
 }
 
 export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashboard> {

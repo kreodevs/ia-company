@@ -1,44 +1,53 @@
 import type { FastifyInstance } from "fastify";
 import {
-  chatWithCoordinator,
+chatWithCoordinator,
 } from "../../lib/coordinator-chat.js";
 import { handleCoordinatorChatStream } from "../../lib/coordinator-chat-stream.js";
 import { pipeWebResponseToFastify } from "../lib/sse-response.js";
 import {
-  encargoHumanHref,
-  deleteOfficeEncargos,
-  getOfficeEncargoDetail,
-  listOfficeEncargos,
+encargoHumanHref,
+deleteOfficeEncargos,
+getOfficeEncargoDetail,
+listOfficeEncargos,
 } from "../../lib/office-encargos.js";
 import {
-  executeOfficeTask,
-  getOfficeDashboard,
-  planOfficeTask,
+executeOfficeTask,
+getOfficeDashboard,
+planOfficeTask,
 } from "../../lib/office-coordinator.js";
 import { listOfficeArchive } from "../../lib/office-archive.js";
 import {
-  createDepartmentProcedure,
-  linkWorkflowToVirtualDepartment,
-  listProceduresForVirtualDepartment,
-  listGroupedProcedures,
+createDepartmentProcedure,
+linkWorkflowToVirtualDepartment,
+listProceduresForVirtualDepartment,
+listGroupedProcedures,
 } from "../../lib/office-procedures.js";
 import { getDepartmentTeam } from "../../lib/office-department-team.js";
 import {
-  createTenantNotification,
-  listTenantNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
+createTenantNotification,
+listTenantNotifications,
+markAllNotificationsRead,
+markNotificationRead,
 } from "../../lib/tenant-notifications.js";
 import {
-  createEncargoDelivery,
-  listEncargoDeliveries,
-  previewDeliveryPayload,
-  revokeEncargoDelivery,
-  rotateEncargoDeliveryToken,
-  sendEncargoDeliveryEmail,
+createEncargoDelivery,
+listEncargoDeliveries,
+previewDeliveryPayload,
+revokeEncargoDelivery,
+rotateEncargoDeliveryToken,
+sendEncargoDeliveryEmail,
 } from "../../lib/encargo-delivery.js";
 import { getTenantDeliveryBranding } from "../../lib/tenant-delivery-branding.js";
-import { handleRouteError, requireImpersonatedTenant, requireSession } from "../lib/request-context.js";
+import { listWorkspaceAgentDocs } from "../../lib/product-code.js";
+import { listSessionWorkspaceTree } from "../../lib/workspace-session.js";
+import { resumeOfficeSession } from "../../lib/office-session-launcher.js";
+import { resolveRunCheckpoint } from "../../lib/run-checkpoints.js";
+import {
+getAgentSessionWithTurns,
+listSessionsForRun,
+} from "../../lib/session-store.js";
+import { prisma } from "../../lib/prisma.js";
+import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError } from "../lib/request-context.js";
 
 export async function officeRoutes(app: FastifyInstance) {
   app.addHook("preHandler", app.authenticate);
@@ -462,18 +471,148 @@ export async function officeRoutes(app: FastifyInstance) {
       }
     },
   );
-
+  
+  // ---------------------------------------------------------------------------
+  // Session runtime — detalle, files, checkpoints, resume
+  // ---------------------------------------------------------------------------
+  
+  app.get<{ Params: { runId: string } }>("/office/runs/:runId/sessions", async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const run = await prisma.executionRun.findFirst({
+  where: { id: request.params.runId, tenantId },
+  select: { id: true },
+  });
+  if (!run) throw new HttpError(404, "Run not found");
+  return { sessions: await listSessionsForRun(run.id) };
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  });
+  
+  app.get<{ Params: { sessionId: string } }>("/office/sessions/:sessionId", async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const session = await prisma.agentSession.findFirst({
+  where: { id: request.params.sessionId, tenantId },
+  select: { id: true },
+  });
+  if (!session) throw new HttpError(404, "Session not found");
+  const detail = await getAgentSessionWithTurns(session.id);
+  if (!detail) throw new HttpError(404, "Session not found");
+  return detail;
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  });
+  
+  app.get<{ Params: { sessionId: string }; Querystring: { path?: string } }>(
+  "/office/sessions/:sessionId/files",
+  async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const session = await prisma.agentSession.findFirst({
+  where: { id: request.params.sessionId, tenantId },
+  include: { snapshots: { orderBy: { createdAt: "desc" }, take: 1 } },
+  });
+  if (!session) throw new HttpError(404, "Session not found");
+  const subPath = request.query.path ?? "";
+  return {
+  workspacePath: session.workspacePath,
+  snapshot: session.snapshots[0] ?? null,
+  tree: await listSessionWorkspaceTree(session.workspacePath, subPath),
+  agentDocs: await listWorkspaceAgentDocs(session.workspacePath),
+  };
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  },
+  );
+  
+  app.get<{ Params: { sessionId: string } }>("/office/sessions/:sessionId/checkpoints", async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const session = await prisma.agentSession.findFirst({
+  where: { id: request.params.sessionId, tenantId },
+  select: { id: true, runId: true },
+  });
+  if (!session) throw new HttpError(404, "Session not found");
+  const checkpoint = await prisma.runCheckpoint.findMany({
+  where: {
+  runId: session.runId,
+  tenantId,
+  status: "pending",
+  OR: [{ sessionId: session.id }, { sessionId: null }],
+  },
+  orderBy: { createdAt: "asc" },
+  });
+  return { checkpoints: checkpoint };
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  });
+  
   app.post<{
-    Body: {
-      request?: string;
-      productId?: string;
-      orgUnitId?: string;
-      serviceId?: string;
-      agentIds?: string[];
-      workflowId?: string;
-      presetId?: string;
-      parentRunId?: string;
-    };
+  Params: { sessionId: string; checkpointId: string };
+  Body: { resolution?: Record<string, unknown>; status?: "resolved" | "expired" };
+  }>("/office/sessions/:sessionId/checkpoints/:checkpointId/resolve", async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const checkpoint = await prisma.runCheckpoint.findFirst({
+  where: {
+  id: request.params.checkpointId,
+  tenantId,
+  status: "pending",
+  OR: [{ sessionId: request.params.sessionId }, { sessionId: null }],
+  },
+  select: { id: true },
+  });
+  if (!checkpoint) throw new HttpError(404, "Pending checkpoint not found");
+  await resolveRunCheckpoint({
+  id: checkpoint.id,
+  resolution: request.body?.resolution ?? {},
+  status: request.body?.status,
+  });
+  return { ok: true, checkpointId: checkpoint.id };
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  });
+  
+  app.post<{
+  Params: { sessionId: string };
+  Body: { humanInput?: string };
+  }>("/office/sessions/:sessionId/resume", async (request, reply) => {
+  try {
+  const tenantId = requireImpersonatedTenant(request);
+  const session = await prisma.agentSession.findFirst({
+  where: { id: request.params.sessionId, tenantId },
+  select: { id: true, status: true },
+  });
+  if (!session) throw new HttpError(404, "Session not found");
+  const humanInput = request.body?.humanInput?.trim();
+  if (!humanInput) throw new HttpError(400, "humanInput is required");
+  if (session.status !== "AWAITING_INPUT" && session.status !== "AWAITING_APPROVAL") {
+  throw new HttpError(409, "Session is not awaiting input or approval");
+  }
+  await resumeOfficeSession(session.id, humanInput);
+  return { ok: true, sessionId: session.id };
+  } catch (err) {
+  return handleRouteError(reply, err);
+  }
+  });
+  
+  app.post<{
+  Body: {
+  request?: string;
+  productId?: string;
+  orgUnitId?: string;
+  serviceId?: string;
+  agentIds?: string[];
+  workflowId?: string;
+  presetId?: string;
+  parentRunId?: string;
+  };
   }>("/office/tasks/execute", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);

@@ -132,7 +132,7 @@ export async function getProductLastRunTrace(
   });
   if (!product) return null;
 
-  let run: (ExecutionRun & { workflow: { name: string } }) | null = null;
+  let run: (ExecutionRun & { workflow: { name: string } | null }) | null = null;
 
   if (product.lastRunId) {
     run = await prisma.executionRun.findFirst({
@@ -263,7 +263,7 @@ export async function getProductLastRunTrace(
     run: {
       id: run.id,
       status: run.status,
-      workflowName: run.workflow.name,
+      workflowName: run.workflow?.name ?? "task",
       totalTokens: run.totalTokens,
       totalCostUsd: run.totalCostUsd,
       startedAt: run.startedAt?.toISOString() ?? null,
