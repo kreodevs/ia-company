@@ -133,7 +133,13 @@ async function executeSessionJob(job: { data: SessionJobData }): Promise<void> {
   // Finalizar el run de sesión cuando todas las sesiones estén terminales.
   if (result.status === "COMPLETED" || result.status === "FAILED" || result.status === "CANCELLED" || result.status === "BUDGET_EXCEEDED") {
     try {
-      const { finalizeSessionRunIfComplete } = await import("../lib/session-run-finalizer.js");
+      const { advanceSessionWaves, finalizeSessionRunIfComplete } = await import("../lib/session-run-finalizer.js");
+      await advanceSessionWaves({
+        runId: effectiveRunId,
+        tenantId,
+        productSlug: job.data.productSlug ?? null,
+        productId: job.data.productId ?? null,
+      });
       await finalizeSessionRunIfComplete({ runId: effectiveRunId, tenantId });
     } catch (err) {
       console.error("[session-worker] session run finalization failed:", err);

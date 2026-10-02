@@ -399,6 +399,154 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     },
   });
 
+  // ── Tools de oficina (Fase 2): HITL visible y consenso incremental ──
+  const ask_human = tool({
+    description:
+      "Ask the human a question; the session pauses until the founder answers (checkpoint need_input).",
+    parameters: z.object({
+      question: z.string().min(1).max(2_000).describe("The specific question for the human"),
+    }),
+    execute: async ({ question }) => {
+      const { createRunCheckpoint } = await import("../lib/run-checkpoints.js");
+      const checkpoint = await createRunCheckpoint({
+        runId: ctx.runId,
+        tenantId: ctx.tenantId ?? undefined,
+        kind: "need_input",
+        title: question.slice(0, 200),
+        payload: { prompt: question, agentName: ctx.agentName },
+      });
+      log("office: ask_human checkpoint created", { checkpointId: checkpoint.id });
+      return {
+        asked: true,
+        checkpointId: checkpoint.id,
+        message:
+          "Question delivered to the human. End your turn with NEED_INPUT: <question> to pause the session.",
+      };
+    },
+  });
+
+  const propose_decision = tool({
+    description:
+      "Record a formal decision proposal (GO / NO-GO / PIVOT) for human review before committing the team to a major direction.",
+    parameters: z.object({
+      decision: z.enum(["GO", "NO-GO", "PIVOT"]).describe("The recommendation"),
+      rationale: z.string().min(1).max(10_000).describe("Why this recommendation, with evidence"),
+      evidence: z.array(z.string()).max(20).optional().describe("Supporting evidence references"),
+    }),
+    execute: async ({ decision, rationale, evidence }) => {
+      if (!ctx.tenantId) throw new Error("Tenant context required to propose a decision");
+      const { prisma: db } = await import("../lib/prisma.js");
+      const run = await db.executionRun.findUnique({
+        where: { id: ctx.runId },
+        select: { sharedMemory: true },
+      });
+      const memory = (run?.sharedMemory ?? {}) as Record<string, unknown>;
+      const ideaId = typeof memory.ideaId === "string" ? memory.ideaId : "";
+      if (!ideaId) {
+        return {
+          proposed: false,
+          message:
+            "No PipelineIdea context on this run; record the decision in your deliverable docs instead.",
+        };
+      }
+      const proposal = await db.decisionProposal.create({
+        data: {
+          tenantId: ctx.tenantId,
+          ideaId,
+          runId: ctx.runId,
+          workflowName: typeof memory.workflowName === "string" ? memory.workflowName : "session",
+          recommended: (decision === "GO" ? "go" : "no_go") as never,
+          rationale,
+          evidence: (evidence ?? []) as never,
+        },
+      });
+      log("office: decision proposal created", { proposalId: proposal.id, decision });
+      return {
+        proposed: true,
+        proposalId: proposal.id,
+        message: "Decision proposal recorded and pending human review in Office.",
+      };
+    },
+  });
+
+  const request_review = tool({
+    description:
+      "Request a human review checkpoint on your deliverable before finalizing. The founder resolves it from Office.",
+    parameters: z.object({
+      deliverablePath: z.string().describe("Workspace-relative path of the file to review"),
+      note: z.string().max(2_000).optional().describe("What the reviewer should focus on"),
+    }),
+    execute: async ({ deliverablePath, note }) => {
+      const { createRunCheckpoint } = await import("../lib/run-checkpoints.js");
+      const checkpoint = await createRunCheckpoint({
+        runId: ctx.runId,
+        tenantId: ctx.tenantId ?? undefined,
+        kind: "custom",
+        title: `Review requested: ${deliverablePath}`.slice(0, 200),
+        payload: { agentName: ctx.agentName, deliverablePath, note: note ?? null },
+      });
+      log("office: review requested", { checkpointId: checkpoint.id, deliverablePath });
+      return {
+        requested: true,
+        checkpointId: checkpoint.id,
+        message:
+          "Review checkpoint created. End your turn with NEED_INPUT: review requested to pause the session.",
+      };
+    },
+  });
+
+  const write_consensus = tool({
+    description:
+      "Append a structured handoff (findings, decisions, open questions) to the product consensus memory for downstream agents.",
+    parameters: z.object({
+      content: z.string().min(1).max(20_000).describe("Markdown handoff content"),
+      nextAction: z.string().max(500).optional().describe("Concrete next action for the team"),
+      decisions: z.array(z.string()).max(20).optional().describe("Decisions taken in this contribution"),
+      openQuestions: z.array(z.string()).max(20).optional().describe("Open questions for downstream agents"),
+    }),
+    execute: async ({ content, nextAction, decisions, openQuestions }) => {
+      if (!ctx.tenantId) throw new Error("Tenant context required to write consensus");
+      const { prisma: db } = await import("../lib/prisma.js");
+      const { appendProductHandoff } = await import("../lib/product-consensus.js");
+      const run = await db.executionRun.findUnique({
+        where: { id: ctx.runId },
+        select: { productId: true, sharedMemory: true },
+      });
+      const memory = (run?.sharedMemory ?? {}) as Record<string, unknown>;
+      const productId =
+        run?.productId ?? (typeof memory.productId === "string" ? memory.productId : null);
+      if (!productId) {
+        return {
+          written: false,
+          message: "No product context on this run; your deliverable doc is the consensus record.",
+        };
+      }
+      const handoff = await appendProductHandoff({
+        productId,
+        productSlug: typeof memory.focusProductSlug === "string" ? memory.focusProductSlug : "",
+        tenantId: ctx.tenantId,
+        runId: ctx.runId,
+        agentName: ctx.agentName ?? "agent",
+        stepOrder: 0,
+        content,
+        ...(nextAction ? { nextAction } : {}),
+        decisions: (decisions ?? []).map((what) => ({
+          by: ctx.agentName ?? "agent",
+          what,
+        })),
+        openQuestions: openQuestions ?? [],
+        veto: null,
+      });
+      log("office: consensus revision appended", { revisionId: handoff.revisionId });
+      return {
+        written: true,
+        revisionId: handoff.revisionId,
+        cycleNumber: handoff.cycleNumber,
+        message: "Handoff appended to product consensus.",
+      };
+    },
+  });
+
   const mode = ctx.toolMode ?? "full";
   const allTools = {
     run_shell_command,
@@ -411,6 +559,10 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     wrangler_deploy,
     delegate_implementation,
     send_email,
+    ask_human,
+    propose_decision,
+    request_review,
+    write_consensus,
   };
 
   if (mode === "readonly") {
@@ -437,6 +589,10 @@ export function createAgentTools(ctx: ToolExecutionContext) {
     npm_run: allTools.npm_run,
     wrangler_deploy: allTools.wrangler_deploy,
     send_email: allTools.send_email,
+    ask_human: allTools.ask_human,
+    propose_decision: allTools.propose_decision,
+    request_review: allTools.request_review,
+    write_consensus: allTools.write_consensus,
     ...(agentHasGitTools(ctx.agentName)
       ? { git_status: allTools.git_status, git_commit: allTools.git_commit }
       : {}),

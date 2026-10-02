@@ -638,4 +638,21 @@ export const office = {
     initialMessage: "Corrección del encargo anterior (ID {{runId}}).",
     initialMessageWithTitle: "Corrección del encargo «{{title}}» (ID {{runId}}).",
   },
+  checkpoints: {
+    title: "Checkpoints humanos",
+    empty: "Sin checkpoints pendientes.",
+    answerPlaceholder: "Respuesta para el agente (opcional para aprobar)",
+    resolve: "Responder y reanudar",
+    expire: "Descartar",
+    kind: {
+      need_input: "Input requerido",
+      tool_approval: "Aprobación de herramienta",
+      custom: "Revisión solicitada",
+      approval: "Aprobación",
+      veto: "Veto",
+      go_no_go: "GO/NO-GO",
+      opencode: "Confirmación OpenCode",
+      budget_exceeded: "Presupuesto excedido",
+    },
+  },
 } as const;

@@ -638,4 +638,21 @@ export const office = {
     initialMessage: "Revision of prior job (ID {{runId}}).",
     initialMessageWithTitle: "Revision of job «{{title}}» (ID {{runId}}).",
   },
+  checkpoints: {
+    title: "Human checkpoints",
+    empty: "No pending checkpoints.",
+    answerPlaceholder: "Reply for the agent (optional to approve)",
+    resolve: "Reply and resume",
+    expire: "Dismiss",
+    kind: {
+      need_input: "Input required",
+      tool_approval: "Tool approval",
+      custom: "Review requested",
+      approval: "Approval",
+      veto: "Veto",
+      go_no_go: "GO/NO-GO",
+      opencode: "OpenCode confirmation",
+      budget_exceeded: "Budget exceeded",
+    },
+  },
 } as const;

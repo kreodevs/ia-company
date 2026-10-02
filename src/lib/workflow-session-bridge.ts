@@ -6,6 +6,12 @@ import {
 } from "./office-session-launcher.js";
 import type { OfficeTaskPlan } from "./office-coordinator.js";
 import type { ExecuteWorkflowInput, SharedMemory } from "../types/index.js";
+import {
+  buildSessionExecutionWaves,
+  plannerMemory,
+  plannerGoalSuffix,
+  type PlannerEdge,
+} from "./session-planner.js";
 
 /**
  * Converts a legacy workflow graph into the session runtime's team plan.
@@ -32,10 +38,40 @@ export async function launchWorkflowAsSession(
         },
         orderBy: { stepOrder: "asc" },
       },
+      edges: { select: { sourceStepId: true, targetStepId: true } },
     },
   });
   if (!workflow) throw new Error("Workflow not found");
   if (!input.tenantId) throw new Error("Session workflow launches require a tenant context");
+
+  // Planner topológico: las ondas respetan las aristas del workflow; los steps
+  // sin aristas heredan el orden de stepOrder como dependencia implícita.
+  const edges: PlannerEdge[] = workflow.edges.map((edge) => ({
+    sourceStepId: edge.sourceStepId,
+    targetStepId: edge.targetStepId,
+  }));
+  const orderedSteps = [...workflow.steps].sort((a, b) => a.stepOrder - b.stepOrder);
+  const chainedEdges: PlannerEdge[] = orderedSteps.slice(1).map((step, index) => ({
+    sourceStepId: orderedSteps[index].id,
+    targetStepId: step.id,
+  }));
+  const effectiveEdges = edges.length ? edges : chainedEdges;
+  const waves = buildSessionExecutionWaves(
+    orderedSteps.map((step) => ({
+      id: step.id,
+      agentId: step.agent!.id,
+      agentName: step.agent!.name,
+      stepOrder: step.stepOrder,
+    })),
+    effectiveEdges,
+  );
+  const waveByAgent = new Map<string, number>();
+  for (const wave of waves) {
+    for (const stepId of wave.stepIds) {
+      const step = orderedSteps.find((candidate) => candidate.id === stepId);
+      if (step?.agent) waveByAgent.set(step.agent.id, wave.wave);
+    }
+  }
 
   const seen = new Set<string>();
   const agents = workflow.steps
@@ -85,7 +121,7 @@ export async function launchWorkflowAsSession(
       agent.name,
       {
         acceptanceCriteria: deriveAcceptanceCriteria(plan, agent),
-        goal: `${request}\n\nYou are contributing as ${agent.role}. Preserve useful context from the shared memory and leave your concrete deliverable in the workspace.`,
+        goal: `${request}\n\nYou are contributing as ${agent.role}. Preserve useful context from the shared memory and leave your concrete deliverable in the workspace.\n\n${plannerGoalSuffix(waveByAgent.get(agent.id) ?? 0, waves)}`,
       },
     ]),
   );
@@ -96,7 +132,7 @@ export async function launchWorkflowAsSession(
     request,
     productId: input.productId ?? null,
     productSlug: input.productSlug ?? null,
-    initialMemory,
+    initialMemory: { ...initialMemory, ...plannerMemory(waves) },
     agentOverrides,
   });
 }

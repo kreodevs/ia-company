@@ -18,12 +18,77 @@ import { WORKFLOW_NAMES } from "./workflow-names.js";
 import { processConvergenceAfterRun } from "./convergence.js";
 import { extractSessionWrites } from "./session-deliverables.js";
 import { tenantLlmFromRecord } from "./tenant-llm.js";
+import { enqueueSessionRun } from "../worker/queue.js";
 
 const SESSION_ACTIVE: string[] = ["PENDING", "RUNNING"];
+const SESSION_TERMINAL: string[] = ["COMPLETED", "FAILED", "CANCELLED", "BUDGET_EXCEEDED"];
 
 export interface SessionRunFinalization {
   runStatus: ExecutionStatus;
   finalized: boolean;
+}
+
+/**
+ * Join de las ondas del planner: cuando todas las sesiones de las ondas
+ * previas están terminales, encola las sesiones PENDING de la siguiente onda
+ * que aún no arrancó. Idempotente: solo libera PENDING y el lock por tenant
+ * serializa la reclamación PENDING→RUNNING del worker.
+ */
+export async function advanceSessionWaves(input: {
+  runId: string;
+  tenantId?: string | null;
+  productSlug?: string | null;
+  productId?: string | null;
+  sessions?: Array<{ id: string; agentId: string; status: string }>;
+}): Promise<{ releasedSessionIds: string[]; wave: number | null }> {
+  const empty = { releasedSessionIds: [], wave: null };
+  const run = await prisma.executionRun.findUnique({
+    where: { id: input.runId },
+    select: { sharedMemory: true },
+  });
+  const memory = (run?.sharedMemory ?? {}) as SharedMemory;
+  const waves = (
+    memory.sessionPlanner as { waves?: Array<{ wave: number; agentIds: string[] }> } | undefined
+  )?.waves;
+  if (!waves?.length) return empty;
+
+  const sessions =
+    input.sessions ??
+    (await prisma.agentSession.findMany({
+      where: { runId: input.runId },
+      select: { id: true, agentId: true, status: true },
+    }));
+  const sessionsOf = (agentIds: string[]) =>
+    sessions.filter((session) => agentIds.includes(session.agentId));
+  const sorted = [...waves].sort((a, b) => a.wave - b.wave);
+
+  const target = sorted.find((wave) =>
+    sessionsOf(wave.agentIds).some((s) => s.status === "PENDING"),
+  );
+  if (!target) return empty;
+
+  // Join: solo se libera cuando TODAS las ondas previas quedaron terminales.
+  const priorTerminal = sorted
+    .filter((wave) => wave.wave < target.wave)
+    .every((wave) => {
+      const list = sessionsOf(wave.agentIds);
+      return list.length > 0 && list.every((s) => SESSION_TERMINAL.includes(s.status));
+    });
+  if (!priorTerminal) return empty;
+
+  const released: string[] = [];
+  for (const session of sessionsOf(target.agentIds)) {
+    if (session.status !== "PENDING") continue;
+    released.push(session.id);
+    await enqueueSessionRun({
+      sessionId: session.id,
+      runId: input.runId,
+      tenantId: input.tenantId ?? undefined,
+      ...(input.productSlug ? { productSlug: input.productSlug } : {}),
+      ...(input.productId ? { productId: input.productId } : {}),
+    });
+  }
+  return { releasedSessionIds: released, wave: target.wave };
 }
 
 /**

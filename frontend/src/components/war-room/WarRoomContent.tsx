@@ -15,6 +15,7 @@ import ProductMetricsStrip from "./ProductMetricsStrip";
 import OrgArtifactsPanel from "../org/OrgArtifactsPanel";
 import { WarRoomSessionActivity } from "./WarRoomSessionActivity";
 import WarRoomSessionFiles from "./WarRoomSessionFiles";
+import WarRoomSessionCheckpoints from "./WarRoomSessionCheckpoints";
 import WarRoomRunSelector from "./WarRoomRunSelector";
 import WarRoomRecentRuns from "./WarRoomRecentRuns";
 import WarRoomTable from "./WarRoomTable";
@@ -183,7 +184,8 @@ export default function WarRoomContent({ productId, watchRunId, onWatchRunChange
         <WarRoomSessionActivity session={session} />
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 space-y-4">
+        <WarRoomSessionCheckpoints watchRunId={watchRunId ?? data.activeRun?.id ?? null} />
         <WarRoomSessionFiles watchRunId={watchRunId ?? data.activeRun?.id ?? null} />
       </div>
 

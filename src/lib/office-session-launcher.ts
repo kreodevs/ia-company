@@ -236,15 +236,21 @@ export async function launchOfficeSession(input: LaunchOfficeSessionInput): Prom
     tenantId,
     );
 
-    // 4. Enqueue para ejecución asíncrona
-    const jobData: SessionJobData = {
-    sessionId: session.id,
-    runId: run.id,
-    tenantId,
-    ...(productSlug ? { productSlug } : {}),
-    ...(productId ? { productId } : {}),
-    };
-    await enqueueSessionRun(jobData);
+    // 4. Enqueue solo la primera onda cuando el planner topológico está activo.
+    // Las ondas posteriores se liberan por el processor cuando termina el join.
+    const planner = baseMemory.sessionPlanner as { waves?: Array<{ wave: number; agentIds: string[] }> } | undefined;
+    const firstWave = planner?.waves?.find((wave) => wave.wave === 0);
+    const shouldEnqueue = !firstWave || firstWave.agentIds.includes(agent.id);
+    if (shouldEnqueue) {
+      const jobData: SessionJobData = {
+      sessionId: session.id,
+      runId: run.id,
+      tenantId,
+      ...(productSlug ? { productSlug } : {}),
+      ...(productId ? { productId } : {}),
+      };
+      await enqueueSessionRun(jobData);
+    }
   }
 
   // 5. Actualizar run a RUNNING (el worker lo confirmará al reclamar la primera sesión)
