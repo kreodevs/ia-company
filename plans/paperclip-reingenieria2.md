@@ -61,7 +61,7 @@ La prioridad no es añadir más animación a la oficina, sino hacer persistente 
 
 ---
 
-# Fase A — Encargo como centro de trabajo ✅ (2026-10-03, parcial: panel de mapa + handoffs integrados en la ficha)
+# Fase A — Encargo como centro de trabajo ✅ (2026-10-03 — completada en Corte 2: riel de estado, bloqueadores, participantes y timeline unificado)
 
 ## Objetivo
 
@@ -315,7 +315,7 @@ Mostrar handoffs en:
 
 ---
 
-# Fase D — Inbox empresarial
+# Fase D — Inbox empresarial ✅ (2026-10-03, read-model `/office/inbox` + OfficeInboxPage con filtros, badge accionable y resolución en línea)
 
 ## Objetivo
 
@@ -471,7 +471,7 @@ Evaluar:
 
 ---
 
-# Fase G — Revisión de documentos y feedback anclado
+# Fase G — Revisión de documentos y feedback anclado ✅ (2026-10-03, DocumentReview + DocumentComment con ancla JSON y clave canónica file:/rev:/step:)
 
 ## Objetivo
 
@@ -657,20 +657,22 @@ qué está esperando aprobación
 
 ## Corte 1 — Cambiar la unidad mental ✅ (2026-10-03)
 
-1. Fase A: encargo como centro de trabajo. ✓ parcial (paneles work/handoffs montados; falta timeline + columna lateral de estado empresarial)
+1. Fase A: encargo como centro de trabajo. ✅ completa (paneles work/handoffs + riel de estado empresarial + bloqueadores + participantes + timeline unificado)
 2. Fase B: trabajos por departamento. ✓ (`DepartmentWorkItem` + `DepartmentWorkMapPanel`)
 3. Fase C: handoffs explícitos. ✓ (`DepartmentHandoff` + acciones aceptar/aclarar/rechazar/completar)
 
 **Resultado esperado:** un encargo puede coordinar varios departamentos y cada transición es visible.
 
-**Estado:** implementado y validado (backend `tsc --noEmit` limpio, frontend `tsc -b` limpio, 201/201 tests). Pendiente de QA manual con `DATABASE_URL` real para el flujo de 3 departamentos.
+**Estado:** implementado y validado (backend `tsc --noEmit` limpio, frontend `tsc -b` limpio, 212 tests: 206 pasan / 0 fallan / 6 omitidos). Pendiente de QA manual con `DATABASE_URL` real para el flujo de 3 departamentos y handoffs.
 
-## Corte 2 — Hacer accionable la gestión humana
+## Corte 2 — Hacer accionable la gestión humana ✅ (2026-10-03)
 
-4. Fase D: Inbox empresarial.
-5. Fase G: revisión y feedback de documentos.
+4. Fase D: Inbox empresarial. ✓ (`src/lib/office-inbox.ts` read-model sobre checkpoints/decisiones/handoffs/bloqueos/revisiones/notificaciones, `GET /office/inbox` con filtro por categoría, `OfficeInboxPage` con badge accionable, resolución en línea de decisiones/handoffs, redirecciones `/office/pendientes` y `/decisions`)
+5. Fase G: revisión y feedback de documentos. ✓ (`DocumentReview` + `DocumentComment` con ancla JSON, únicos por `[tenantId, runId, docKey, versionSha]`, claves canónicas `file:`/`rev:`/`step:`, endpoints de revisión/comentario/resolver/convertir, `DocumentReviewPanel` en la pestaña Archivos)
 
 **Resultado esperado:** el humano gestiona decisiones, bloqueos, handoffs y revisiones desde un único lugar.
+
+**Estado:** implementado y validado (commit `4e3c42b`, backend `tsc --noEmit` limpio, frontend `tsc -b` limpio, `prisma validate` OK, 212 tests: 206 pasan / 0 fallan / 6 omitidos, 3 nuevos requieren `DATABASE_URL`). Pendiente de QA manual con `DATABASE_URL` real: aplicar la migración `20261003090000_document_reviews` y recorrer decisión → handoff → revisión de documento → convertir comentario en trabajo.
 
 ## Corte 3 — Hacer visible la empresa
 
@@ -733,7 +735,9 @@ No avanzar a objetivos, rutinas, búsqueda o dashboards complejos hasta que este
 
 Corte 1 (Fase A + B + C) ✅ completado el 2026-10-03: `DepartmentWorkItem`, `DepartmentHandoff`, endpoints `/office/runs/:runId/work`, `/office/runs/:runId/handoffs`, `/office/handoffs/:handoffId` y panel `DepartmentWorkMapPanel` montado en `OfficeEncargoDetailPage`.
 
-Siguiente: **Corte 2 — Fase D (Inbox empresarial) + Fase G (revisión de documentos)** para hacer accionable la gestión humana: decisiones, handoffs pendientes, bloqueos, revisiones y alertas de coste desde un único lugar.
+Corte 2 (Fase A completa + D + G) ✅ completado el 2026-10-03 en `4e3c42b`: timeline y columna lateral de estado empresarial, Inbox accionable, revisión de documentos con comentarios anclados y conversión a trabajo departamental.
 
-Pendiente de QA manual con `DATABASE_URL` real: flujo de 3 departamentos (Estrategia → Producto → Ingeniería) creando work items, enviando handoff y aceptándolo. La UI de handoffs se inicializa automáticamente a partir de `sharedMemory.teamAgents` del encargo.
+Siguiente: **Corte 3 — Fases E + H** para hacer visible la estructura, salud y colaboración de la compañía: organigrama/mapa departamental y dashboard empresarial.
+
+QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migración `20261003090000_document_reviews`, recorrer el flujo de 3 departamentos (Estrategia → Producto → Ingeniería), enviar/aceptar un handoff y verificar decisión → revisión → comentario → trabajo.
 
