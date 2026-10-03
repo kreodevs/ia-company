@@ -275,11 +275,27 @@ export default function PublicDeliveryPage() {
                       onClick={() => setSelectedDocId(doc.id)}
                     >
                       {doc.title}
+                      {doc.verifiedCommitSha ? (
+                        <span className="public-delivery-doc-verified" title={doc.verifiedCommitSha}>
+                          ✓
+                        </span>
+                      ) : null}
                     </button>
                   ))}
                 </aside>
                 <article className="public-delivery-markdown">
-                  {selectedDoc ? <RichMarkdownView value={selectedDoc.markdown} /> : null}
+                  {selectedDoc ? (
+                    <>
+                      {selectedDoc.verifiedCommitSha ? (
+                        <p className="public-delivery-verified-note">
+                          {t("office.encargos.delivery.verifiedSnapshot", {
+                            sha: selectedDoc.verifiedCommitSha.slice(0, 8),
+                          })}
+                        </p>
+                      ) : null}
+                      <RichMarkdownView value={selectedDoc.markdown} />
+                    </>
+                  ) : null}
                 </article>
               </div>
             ) : null}

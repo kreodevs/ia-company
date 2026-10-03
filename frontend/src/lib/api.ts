@@ -1160,6 +1160,9 @@ export interface PublicDeliveryPayload {
     title: string;
     agentName: string;
     markdown: string;
+    /** SHA del WorkspaceSnapshot verificado que contiene este archivo (Fase 4). */
+    verifiedCommitSha?: string | null;
+    snapshotVerifiedAt?: string | null;
   }>;
 }
 

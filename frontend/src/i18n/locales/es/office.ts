@@ -531,6 +531,7 @@ export const office = {
       copyMessage: "Hola,\n\nTe compartimos la entrega:\n{{url}}\n\nEnlace de solo lectura.",
       deliveredAt: "Entregado",
       contact: "Contacto",
+      verifiedSnapshot: "Documento verificado contra snapshot {{sha}}",
       printPdf: "Imprimir / PDF",
       downloadMd: "Descargar Markdown",
       toc: "Contenido",
