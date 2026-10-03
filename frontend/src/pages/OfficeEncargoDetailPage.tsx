@@ -22,6 +22,7 @@ import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel
 import EncargoDeliveryPanel from "../components/office/EncargoDeliveryPanel";
 import EncargoRevenuePanel from "../components/office/EncargoRevenuePanel";
 import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
+import DepartmentWorkMapPanel from "../components/office/DepartmentWorkMapPanel";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
@@ -232,6 +233,8 @@ export default function OfficeEncargoDetailPage() {
         warRoomHref={detail.warRoomHref}
         teamAgents={detail.teamAgents}
       />
+
+      <DepartmentWorkMapPanel runId={detail.id} />
 
       <dl className="office-encargo-detail-meta">
         <div>

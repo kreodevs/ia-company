@@ -50,6 +50,12 @@ import {
   getSpecialistSessionsSummary,
   listScopedSessions,
 } from "../../lib/office-dept-sessions.js";
+import {
+  createDepartmentHandoff,
+  getDepartmentWorkMap,
+  updateDepartmentHandoff,
+} from "../../lib/office-work-items.js";
+import { DepartmentHandoffStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError } from "../lib/request-context.js";
 
@@ -525,6 +531,94 @@ export async function officeRoutes(app: FastifyInstance) {
       const summary = await getSpecialistSessionsSummary(tenantId, request.params.agentName);
       if (!summary) throw new HttpError(404, "Specialist not found");
       return summary;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Reingenieria 2 Fase A-C: trabajo interdepartamental (work items + handoffs)
+  // -------------------------------------------------------------------------
+
+  app.get<{ Params: { runId: string } }>("/office/runs/:runId/work", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const map = await getDepartmentWorkMap(tenantId, request.params.runId);
+      if (!map) throw new HttpError(404, "Run not found");
+      return map;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { runId: string };
+    Body: {
+      fromWorkItemId?: string;
+      toWorkItemId?: string;
+      message?: string;
+      openQuestions?: string[];
+      decisions?: string[];
+      artifactPaths?: string[];
+    };
+  }>("/office/runs/:runId/handoffs", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { fromWorkItemId, toWorkItemId, message, openQuestions, decisions, artifactPaths } =
+        request.body ?? {};
+      if (!message?.trim()) throw new HttpError(400, "message is required");
+      const handoff = await createDepartmentHandoff({
+        tenantId,
+        runId: request.params.runId,
+        fromWorkItemId,
+        toWorkItemId,
+        message: message.trim(),
+        openQuestions: Array.isArray(openQuestions)
+          ? openQuestions.filter((q): q is string => typeof q === "string")
+          : [],
+        decisions: Array.isArray(decisions)
+          ? decisions.filter((d): d is string => typeof d === "string")
+          : [],
+        artifactPaths: Array.isArray(artifactPaths)
+          ? artifactPaths.filter((p): p is string => typeof p === "string")
+          : [],
+      });
+      if (!handoff) throw new HttpError(404, "Work item not found");
+      return { handoff };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.patch<{
+    Params: { handoffId: string };
+    Body: { status?: string; actor?: string; clarification?: string; rejectionReason?: string };
+  }>("/office/handoffs/:handoffId", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { status, actor, clarification, rejectionReason } = request.body ?? {};
+      const allowed: DepartmentHandoffStatus[] = [
+        DepartmentHandoffStatus.accepted,
+        DepartmentHandoffStatus.needs_clarification,
+        DepartmentHandoffStatus.rejected,
+        DepartmentHandoffStatus.completed,
+      ];
+      if (!status || !allowed.includes(status as DepartmentHandoffStatus)) {
+        throw new HttpError(
+          400,
+          "status must be one of accepted, needs_clarification, rejected, completed",
+        );
+      }
+      const handoff = await updateDepartmentHandoff({
+        tenantId,
+        handoffId: request.params.handoffId,
+        status: status as DepartmentHandoffStatus,
+        actor,
+        clarification,
+        rejectionReason,
+      });
+      if (!handoff) throw new HttpError(404, "Handoff not found");
+      return { handoff };
     } catch (err) {
       return handleRouteError(reply, err);
     }

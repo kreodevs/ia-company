@@ -55,6 +55,8 @@ model Tenant {
   artifacts Artifact[]
   encargoDeliveries EncargoDelivery[]
   deliveryBranding TenantDeliveryBranding?
+  departmentWorkItems DepartmentWorkItem[]
+  departmentHandoffs DepartmentHandoff[]
 }
 
 enum TenantUserRole {
@@ -256,6 +258,7 @@ model ExecutionRun {
   opencodeDelegation OpencodeDelegation?
   opencodeRunGate    OpencodeRunGate?
   sessions AgentSession[]
+  departmentWorkItems DepartmentWorkItem[]
 
   @@index([workflowId])
   @@index([status])
@@ -1117,6 +1120,9 @@ model OrgUnit {
   products TenantProduct[]
   artifacts Artifact[]
   executionRuns ExecutionRun[]
+  departmentWorkItems DepartmentWorkItem[]
+  handoffsFrom DepartmentHandoff[] @relation("HandoffFromOrg")
+  handoffsTo DepartmentHandoff[] @relation("HandoffToOrg")
 
   @@unique([tenantId, slug])
   @@index([tenantId, type])
@@ -1171,6 +1177,94 @@ model PasswordResetToken {
   tenantUser TenantUser @relation(fields: [tenantUserId], references: [id], onDelete: Cascade)
 
   @@index([tenantUserId])
+}
+
+// ─── Interdepartmental work (Reingeniería 2, Fase A-C) ──────────────────────
+
+enum DepartmentWorkStatus {
+  planned
+  active
+  blocked
+  waiting_review
+  completed
+  cancelled
+}
+
+enum DepartmentHandoffStatus {
+  draft
+  sent
+  pending_acceptance
+  accepted
+  needs_clarification
+  rejected
+  completed
+}
+
+model DepartmentWorkItem {
+  id               String               @id @default(cuid())
+  tenantId         String
+  runId            String
+  /// slug de dept virtual (strategy/product/engineering/business) o "custom"
+  /// cuando el dueño es un OrgUnit.
+  departmentSlug   String?
+  orgUnitId        String?
+  ownerAgentId     String?
+  ownerAgentName   String?
+  title            String
+  objective        String?              @db.Text
+  status           DepartmentWorkStatus @default(planned)
+  businessStatus   String?
+  nextAction       String?              @db.Text
+  blockedReason    String?              @db.Text
+  deliverablePaths Json                 @default("[]")
+  dependsOnId      String?
+  lastActivityAt   DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run          ExecutionRun?        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  orgUnit      OrgUnit?             @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
+  dependsOn    DepartmentWorkItem?  @relation("WorkItemDeps", fields: [dependsOnId], references: [id], onDelete: SetNull)
+  dependents   DepartmentWorkItem[] @relation("WorkItemDeps")
+  handoffsFrom DepartmentHandoff[]  @relation("HandoffFrom")
+  handoffsTo   DepartmentHandoff[]  @relation("HandoffTo")
+
+  @@index([tenantId, runId])
+  @@index([tenantId, departmentSlug])
+  @@index([tenantId, status])
+}
+
+model DepartmentHandoff {
+  id                     String                  @id @default(cuid())
+  tenantId               String
+  fromWorkItemId         String?
+  toWorkItemId           String?
+  fromDepartmentSlug     String?
+  toDepartmentSlug       String?
+  fromOrgUnitId          String?
+  toOrgUnitId            String?
+  status                 DepartmentHandoffStatus @default(draft)
+  message                String                  @db.Text
+  decisions              Json                    @default("[]")
+  openQuestions          Json                    @default("[]")
+  artifactPaths          Json                    @default("[]")
+  requestedClarification String?                 @db.Text
+  rejectionReason        String?                 @db.Text
+  acceptedBy             String?
+  acceptedAt             DateTime?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  tenant       Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fromWorkItem DepartmentWorkItem? @relation("HandoffFrom", fields: [fromWorkItemId], references: [id], onDelete: SetNull)
+  toWorkItem   DepartmentWorkItem? @relation("HandoffTo", fields: [toWorkItemId], references: [id], onDelete: SetNull)
+  fromOrgUnit  OrgUnit?            @relation("HandoffFromOrg", fields: [fromOrgUnitId], references: [id], onDelete: SetNull)
+  toOrgUnit    OrgUnit?            @relation("HandoffToOrg", fields: [toOrgUnitId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([tenantId, toWorkItemId])
+  @@index([tenantId, fromWorkItemId])
 }
 
 // ─── Client delivery (read-only share links) ─────────────────────────────────

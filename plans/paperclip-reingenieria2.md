@@ -61,7 +61,7 @@ La prioridad no es añadir más animación a la oficina, sino hacer persistente 
 
 ---
 
-# Fase A — Encargo como centro de trabajo
+# Fase A — Encargo como centro de trabajo ✅ (2026-10-03, parcial: panel de mapa + handoffs integrados en la ficha)
 
 ## Objetivo
 
@@ -156,7 +156,7 @@ Separar visualmente:
 
 ---
 
-# Fase B — Trabajos por departamento y mapa interdepartamental
+# Fase B — Trabajos por departamento y mapa interdepartamental ✅ (2026-10-03, `DepartmentWorkMapPanel` con tarjetas por dept + dependencias)
 
 ## Objetivo
 
@@ -231,7 +231,7 @@ El mapa debe ser un mapa de colaboración empresarial, no un editor de workflow 
 
 ---
 
-# Fase C — Handoffs explícitos entre departamentos
+# Fase C — Handoffs explícitos entre departamentos ✅ (2026-10-03, `DepartmentHandoff` + UI aceptar/aclarar/rechazar/completar)
 
 ## Objetivo
 
@@ -655,13 +655,15 @@ qué está esperando aprobación
 
 # Orden recomendado de ejecución
 
-## Corte 1 — Cambiar la unidad mental
+## Corte 1 — Cambiar la unidad mental ✅ (2026-10-03)
 
-1. Fase A: encargo como centro de trabajo.
-2. Fase B: trabajos por departamento.
-3. Fase C: handoffs explícitos.
+1. Fase A: encargo como centro de trabajo. ✓ parcial (paneles work/handoffs montados; falta timeline + columna lateral de estado empresarial)
+2. Fase B: trabajos por departamento. ✓ (`DepartmentWorkItem` + `DepartmentWorkMapPanel`)
+3. Fase C: handoffs explícitos. ✓ (`DepartmentHandoff` + acciones aceptar/aclarar/rechazar/completar)
 
 **Resultado esperado:** un encargo puede coordinar varios departamentos y cada transición es visible.
+
+**Estado:** implementado y validado (backend `tsc --noEmit` limpio, frontend `tsc -b` limpio, 201/201 tests). Pendiente de QA manual con `DATABASE_URL` real para el flujo de 3 departamentos.
 
 ## Corte 2 — Hacer accionable la gestión humana
 
@@ -729,4 +731,9 @@ No avanzar a objetivos, rutinas, búsqueda o dashboards complejos hasta que este
 
 # Próximo paso
 
-Comenzar por **Fase A + Fase B + Fase C** en un único corte vertical: convertir un encargo en un trabajo interdepartamental trazable, con mapa de departamentos y handoffs aceptables/rechazables.
+Corte 1 (Fase A + B + C) ✅ completado el 2026-10-03: `DepartmentWorkItem`, `DepartmentHandoff`, endpoints `/office/runs/:runId/work`, `/office/runs/:runId/handoffs`, `/office/handoffs/:handoffId` y panel `DepartmentWorkMapPanel` montado en `OfficeEncargoDetailPage`.
+
+Siguiente: **Corte 2 — Fase D (Inbox empresarial) + Fase G (revisión de documentos)** para hacer accionable la gestión humana: decisiones, handoffs pendientes, bloqueos, revisiones y alertas de coste desde un único lugar.
+
+Pendiente de QA manual con `DATABASE_URL` real: flujo de 3 departamentos (Estrategia → Producto → Ingeniería) creando work items, enviando handoff y aceptándolo. La UI de handoffs se inicializa automáticamente a partir de `sharedMemory.teamAgents` del encargo.
+

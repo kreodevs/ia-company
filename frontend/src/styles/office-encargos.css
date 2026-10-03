@@ -1287,3 +1287,240 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   font-size: 0.72rem;
   color: var(--office-muted, #94a3b8);
 }
+/* ─── Reingeniería 2 Fase A-C: mapa de trabajo interdepartamental ───────── */
+
+.office-workmap {
+  border: 1px solid var(--office-border, #334155);
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: var(--office-panel, rgba(15, 23, 42, 0.6));
+}
+
+.office-workmap-head h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.office-workmap-head p {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-empty {
+  font-size: 0.8rem;
+  color: var(--office-muted, #94a3b8);
+  padding: 0.4rem 0.2rem;
+}
+
+.office-workmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.office-workmap-card {
+  position: relative;
+  border: 1px solid var(--office-border, #334155);
+  border-radius: 0.75rem;
+  padding: 0.8rem 0.85rem 0.9rem;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.office-workmap-card[data-status="blocked"] {
+  border-color: #b45309;
+}
+
+.office-workmap-card[data-status="completed"] {
+  border-color: #15803d;
+}
+
+.office-workmap-card-order {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.65rem;
+  font-size: 0.7rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+}
+
+.office-workmap-card-objective {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--office-muted, #cbd5e1);
+}
+
+.office-workmap-card-status {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--office-border, #334155);
+}
+
+.office-workmap-card[data-status="active"] .office-workmap-card-status {
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+.office-workmap-card[data-status="completed"] .office-workmap-card-status {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+.office-workmap-card[data-status="blocked"] .office-workmap-card-status {
+  color: #fbbf24;
+  border-color: #fbbf24;
+}
+
+.office-workmap-meta {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-blocked {
+  color: #fbbf24;
+}
+
+.office-workmap-new-handoff {
+  margin-top: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  background: transparent;
+  color: var(--office-muted, #94a3b8);
+  border: 1px dashed var(--office-border, #334155);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+}
+
+.office-workmap-new-handoff:hover {
+  color: #e2e8f0;
+  border-color: #64748b;
+}
+
+.office-workmap-handoff {
+  margin-top: 0.4rem;
+  border-top: 1px dashed var(--office-border, #334155);
+  padding-top: 0.4rem;
+  font-size: 0.74rem;
+}
+
+.office-workmap-handoff-head {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.office-workmap-handoff-status {
+  margin-left: auto;
+  font-size: 0.65rem;
+  border: 1px solid var(--office-border, #334155);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-handoff[data-status="accepted"] .office-workmap-handoff-status,
+.office-workmap-handoff[data-status="completed"] .office-workmap-handoff-status {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+.office-workmap-handoff[data-status="needs_clarification"] .office-workmap-handoff-status,
+.office-workmap-handoff[data-status="rejected"] .office-workmap-handoff-status {
+  color: #fbbf24;
+  border-color: #fbbf24;
+}
+
+.office-workmap-handoff p {
+  margin: 0.25rem 0 0;
+}
+
+.office-workmap-handoff-note {
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-handoff-questions {
+  margin: 0.25rem 0 0;
+  padding-left: 1rem;
+  list-style: none;
+}
+
+.office-workmap-handoff-questions li {
+  display: flex;
+  gap: 0.3rem;
+  align-items: baseline;
+}
+
+.office-workmap-handoff-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.office-workmap-handoff-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--office-border, #334155);
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.office-workmap-handoff-actions button:hover {
+  border-color: #64748b;
+}
+
+.office-workmap-handoff-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.office-workmap-handoff-form {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.office-workmap-handoff-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-workmap-handoff-form select,
+.office-workmap-handoff-form textarea {
+  font-size: 0.75rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--office-border, #334155);
+  background: rgba(2, 6, 23, 0.6);
+  color: #e2e8f0;
+  padding: 0.3rem 0.45rem;
+  resize: vertical;
+}

@@ -1102,6 +1102,67 @@ export interface OfficeEncargoDetail extends OfficeEncargoSummary {
   linkedRevenueAt: string | null;
 }
 
+// ─── Reingeniería 2 Fase A-C: trabajo interdepartamental ──────────────────
+
+export type DepartmentWorkStatus =
+  | "planned"
+  | "active"
+  | "blocked"
+  | "waiting_review"
+  | "completed"
+  | "cancelled";
+
+export type DepartmentHandoffStatus =
+  | "draft"
+  | "sent"
+  | "pending_acceptance"
+  | "accepted"
+  | "needs_clarification"
+  | "rejected"
+  | "completed";
+
+export interface OfficeDepartmentHandoff {
+  id: string;
+  status: DepartmentHandoffStatus;
+  message: string;
+  fromWorkItemId: string | null;
+  toWorkItemId: string | null;
+  fromDepartmentSlug: string | null;
+  toDepartmentSlug: string | null;
+  decisions: string[];
+  openQuestions: string[];
+  artifactPaths: string[];
+  requestedClarification: string | null;
+  rejectionReason: string | null;
+  acceptedBy: string | null;
+  acceptedAt: string | null;
+  createdAt: string;
+}
+
+export interface OfficeDepartmentWorkItem {
+  id: string;
+  title: string;
+  objective: string | null;
+  departmentSlug: string | null;
+  orgUnitId: string | null;
+  ownerAgentName: string | null;
+  status: DepartmentWorkStatus;
+  businessStatus: string | null;
+  nextAction: string | null;
+  blockedReason: string | null;
+  dependsOnId: string | null;
+  deliverablePaths: string[];
+  lastActivityAt: string | null;
+  handoffsFrom: OfficeDepartmentHandoff[];
+  handoffsTo: OfficeDepartmentHandoff[];
+}
+
+export interface OfficeDepartmentWorkMap {
+  runId: string;
+  items: OfficeDepartmentWorkItem[];
+  handoffs: OfficeDepartmentHandoff[];
+}
+
 export interface EncargoDeliverySummary {
   id: string;
   token: string;
@@ -2229,6 +2290,36 @@ export const api = {
       request<OfficeSpecialistSummary>(
         `/office/specialists/${encodeURIComponent(agentName)}/summary`,
       ),
+    workMap: (runId: string) =>
+      request<OfficeDepartmentWorkMap>(`/office/runs/${runId}/work`),
+    createHandoff: (
+      runId: string,
+      body: {
+        fromWorkItemId?: string;
+        toWorkItemId?: string;
+        message: string;
+        openQuestions?: string[];
+        decisions?: string[];
+        artifactPaths?: string[];
+      },
+    ) =>
+      request<{ handoff: OfficeDepartmentHandoff }>(`/office/runs/${runId}/handoffs`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    updateHandoff: (
+      handoffId: string,
+      body: {
+        status: "accepted" | "needs_clarification" | "rejected" | "completed";
+        actor?: string;
+        clarification?: string;
+        rejectionReason?: string;
+      },
+    ) =>
+      request<{ handoff: OfficeDepartmentHandoff }>(`/office/handoffs/${handoffId}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      }),
     session: (sessionId: string) =>
       request<OfficeSessionDetail>(`/office/sessions/${sessionId}`),
     sessionFiles: (sessionId: string, path = "") =>
