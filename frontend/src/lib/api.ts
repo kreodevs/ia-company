@@ -179,6 +179,45 @@ export interface ProductConsensus {
 }
 
 export interface ProductConsensusRevision {
+  // ... existing fields ...
+}
+
+// -------------------------------------------------
+// Corte 3 – Organigrama y Dashboard
+// -------------------------------------------------
+/**
+ * Get the department organigram hierarchy.
+ */
+export const getOrganigram = async () => request('/office/organigram');
+
+/**
+ * Get aggregated business metrics for the dashboard.
+ */
+export const getDashboard = async () => request('/office/dashboard');
+/**
+ * Corte 4 – fetch business objectives.
+ */
+export const getObjectives = async () => request('/office/objectives');
+/**
+ * Corte 4 – fetch initiatives linked to objectives.
+ */
+export const getInitiatives = async () => request('/office/initiatives');
+/**
+ * Corte 4 – fetch cost metrics.
+ */
+export const getCosts = async () => request('/office/costs');
+/**
+ * CRUD for objectives
+ */
+export const createObjective = async (payload) => request('/office/objectives', { method: 'POST', body: JSON.stringify(payload) });
+export const updateObjective = async (id, payload) => request(`/office/objectives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+export const deleteObjective = async (id) => request(`/office/objectives/${id}`, { method: 'DELETE' });
+/**
+ * CRUD for initiatives
+ */
+export const createInitiative = async (payload) => request('/office/initiatives', { method: 'POST', body: JSON.stringify(payload) });
+export const updateInitiative = async (id, payload) => request(`/office/initiatives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+export const deleteInitiative = async (id) => request(`/office/initiatives/${id}`, { method: 'DELETE' });
   id: string;
   productId: string;
   runId: string | null;

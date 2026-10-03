@@ -96,6 +96,9 @@ function AppShell() {
             <Route element={<RequireTenantAccess />}>
               <Route index element={<OfficePage />} />
               <Route path="office" element={<OfficePage />} />
+              <Route path="office/estrategia" element={<OfficeStrategyPage />} />
+              <Route path="office/objetivos" element={<OfficeObjectivesPage />} />
+              <Route path="office/iniciativas" element={<OfficeInitiativesPage />} />
               <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
               <Route path="office/archive" element={<OfficeArchivePage />} />
               <Route path="office/trabajo" element={<OfficeTrabajoPage />} />

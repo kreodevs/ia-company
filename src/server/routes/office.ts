@@ -69,6 +69,155 @@ import {
 import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError } from "../lib/request-context.js";
 
 export async function officeRoutes(app: FastifyInstance) {
+  // New endpoints for Corte 3 (Organigrama y Dashboard)
+  app.get('/office/organigram', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/organigram.js').then(m => m.getOrganigram(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get('/office/dashboard', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // Corte 4 – Objectives & Initiatives
+  app.get('/office/objectives', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then(m => m.getObjectives(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // CRUD for objectives
+  app.post('/office/objectives', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { name, description, targetValue } = request.body as any;
+      if (!name) return reply.status(400).send({ error: 'name required' });
+      const result = await import('../../lib/objectives.js').then(m => m.createObjective(tenantId, { name, description, targetValue }));
+      return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put('/office/objectives/:id', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { id } = request.params;
+      const data = request.body as any;
+      const result = await import('../../lib/objectives.js').then(m => m.updateObjective(tenantId, id, data));
+      return reply.send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.delete('/office/objectives/:id', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { id } = request.params;
+      const result = await import('../../lib/objectives.js').then(m => m.deleteObjective(tenantId, id));
+      return reply.send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then(m => m.getObjectives(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get('/office/initiatives', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then(m => m.getInitiatives(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // CRUD for initiatives
+  app.post('/office/initiatives', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { name, description, status, companyGoalId } = request.body as any;
+      if (!name) return reply.status(400).send({ error: 'name required' });
+      const result = await import('../../lib/objectives.js').then(m => m.createInitiative(tenantId, { name, description, status, companyGoalId }));
+      return reply.status(201).send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.put('/office/initiatives/:id', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { id } = request.params;
+      const data = request.body as any;
+      const result = await import('../../lib/objectives.js').then(m => m.updateInitiative(tenantId, id, data));
+      return reply.send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.delete('/office/initiatives/:id', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { id } = request.params;
+      const result = await import('../../lib/objectives.js').then(m => m.deleteInitiative(tenantId, id));
+      return reply.send(result);
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then(m => m.getInitiatives(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // Corte 4 – Cost metrics
+  app.get('/office/costs', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then(m => m.getCostMetrics(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.addHook("preHandler", app.authenticate);
   app.addHook("preHandler", app.requireTenantContext);
 
@@ -267,14 +416,8 @@ export async function officeRoutes(app: FastifyInstance) {
     },
   );
 
-  app.get("/office/dashboard", async (request, reply) => {
-    try {
-      const tenantId = requireImpersonatedTenant(request);
-      return getOfficeDashboard(tenantId);
-    } catch (err) {
-      return handleRouteError(reply, err);
-    }
-  });
+  // Duplicate dashboard route removed – kept the earlier implementation using getDashboardMetrics.
+
 
   app.get<{ Params: { slug: string }; Querystring: { watchRun?: string } }>(
     "/office/departments/:slug/team",

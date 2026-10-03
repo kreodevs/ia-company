@@ -59,6 +59,8 @@ model Tenant {
   departmentHandoffs  DepartmentHandoff[]
   documentReviews     DocumentReview[]
   documentComments    DocumentComment[]
+  companyGoals        CompanyGoal[]
+  initiatives         Initiative[]
 }
 
 enum TenantUserRole {

@@ -1,0 +1,22 @@
+{
+  "meta": {"type": "architecture", "quality_profile": "showcase"},
+  "nodes": [
+    {"id": "orgUnit", "label": "OrgUnit (departamento)", "type": "service"},
+    {"id": "deptWorkItem", "label": "DepartmentWorkItem", "type": "entity"},
+    {"id": "executionRun", "label": "ExecutionRun", "type": "entity"},
+    {"id": "officeInbox", "label": "OfficeInbox", "type": "service"},
+    {"id": "documentReview", "label": "DocumentReview", "type": "service"},
+    {"id": "dashboard", "label": "Dashboard", "type": "service"},
+    {"id": "api", "label": "API Layer", "type": "gateway"}
+  ],
+  "edges": [
+    {"source": "api", "target": "orgUnit", "label": "GET /office/organigram"},
+    {"source": "api", "target": "dashboard", "label": "GET /office/dashboard"},
+    {"source": "orgUnit", "target": "deptWorkItem", "label": "has"},
+    {"source": "deptWorkItem", "target": "executionRun", "label": "executes"},
+    {"source": "executionRun", "target": "officeInbox", "label": "produces notifications"},
+    {"source": "executionRun", "target": "documentReview", "label": "produces reviews"},
+    {"source": "officeInbox", "target": "dashboard", "label": "feeds"},
+    {"source": "documentReview", "target": "dashboard", "label": "feeds"}
+  ]
+}
