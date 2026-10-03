@@ -58,6 +58,10 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/templates/workflows": GitBranch,
   "/admin/settings": Settings,
   "/office": Building2,
+  "/office/dashboard": LayoutDashboard,
+  "/office/organigrama": Network,
+  "/office/objetivos": Crosshair,
+  "/office/iniciativas": ClipboardCheck,
   "/office/trabajo": ClipboardList,
   "/office/memoria": Brain,
   "/office/encargos": ClipboardList,
@@ -358,6 +362,15 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionOffice",
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
+          {
+            labelKey: "nav.groupStrategy",
+            children: [
+              { to: "/office/dashboard", labelKey: "nav.dashboard" },
+              { to: "/office/organigrama", labelKey: "nav.organigram" },
+              { to: "/office/objetivos", labelKey: "nav.objectives" },
+              { to: "/office/iniciativas", labelKey: "nav.initiatives" },
+            ],
+          },
           { to: "/office/trabajo", labelKey: "nav.trabajo" },
           { to: "/office/inbox", labelKey: "nav.inbox", badge: pendingDecisions },
           { to: "/office/memoria", labelKey: "nav.memoria" },

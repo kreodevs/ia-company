@@ -51,6 +51,8 @@ import ProceduresSettingsPage from "./pages/ProceduresSettingsPage";
 import { OfficeStrategyPage } from "./pages/OfficeStrategyPage";
 import { OfficeObjectivesPage } from "./pages/OfficeObjectivesPage";
 import { OfficeInitiativesPage } from "./pages/OfficeInitiativesPage";
+import { OfficeDashboardPage } from "./pages/OfficeDashboardPage";
+import { OfficeOrganigramPage } from "./pages/OfficeOrganigramPage";
 import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
 
@@ -100,6 +102,8 @@ function AppShell() {
               <Route index element={<OfficePage />} />
               <Route path="office" element={<OfficePage />} />
               <Route path="office/estrategia" element={<OfficeStrategyPage />} />
+              <Route path="office/dashboard" element={<OfficeDashboardPage />} />
+              <Route path="office/organigrama" element={<OfficeOrganigramPage />} />
               <Route path="office/objetivos" element={<OfficeObjectivesPage />} />
               <Route path="office/iniciativas" element={<OfficeInitiativesPage />} />
               <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
