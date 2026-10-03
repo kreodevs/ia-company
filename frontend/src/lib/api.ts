@@ -218,27 +218,6 @@ export const deleteObjective = async (id) => request(`/office/objectives/${id}`,
 export const createInitiative = async (payload) => request('/office/initiatives', { method: 'POST', body: JSON.stringify(payload) });
 export const updateInitiative = async (id, payload) => request(`/office/initiatives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
 export const deleteInitiative = async (id) => request(`/office/initiatives/${id}`, { method: 'DELETE' });
-  id: string;
-  productId: string;
-  runId: string | null;
-  stepId: string | null;
-  agentName: string;
-  stepOrder: number;
-  content: string;
-  nextAction: string | null;
-  decisions: Array<{ by: string; what: string; why?: string }>;
-  openQuestions: string[];
-  veto: { by: string; reason: string } | null;
-  createdAt: string;
-}
-
-export type CompanyPhase =
-  | "exploring"
-  | "validating"
-  | "building"
-  | "launching"
-  | "growing";
-
 export type ProductPhase =
   | "queued"
   | "evaluating"
