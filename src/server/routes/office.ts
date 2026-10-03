@@ -12,6 +12,7 @@ listOfficeEncargos,
 } from "../../lib/office-encargos.js";
 import {
 executeOfficeTask,
+getOfficeDashboard,
 planOfficeTask,
 } from "../../lib/office-coordinator.js";
 import { listOfficeArchive } from "../../lib/office-archive.js";
@@ -82,8 +83,7 @@ export async function officeRoutes(app: FastifyInstance) {
   app.get('/office/dashboard', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
-      return result;
+      return getOfficeDashboard(tenantId);
     } catch (err) {
       return handleRouteError(reply, err);
     }
