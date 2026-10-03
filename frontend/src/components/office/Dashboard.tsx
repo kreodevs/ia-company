@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDashboard } from '../lib/api';
+import { getDashboard } from '../../lib/api';
 
 /**
  * Dashboard component showing aggregated business metrics.

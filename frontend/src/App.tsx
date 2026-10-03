@@ -48,6 +48,9 @@ import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
 import TenantUsersPage from "./pages/TenantUsersPage";
 import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import ProceduresSettingsPage from "./pages/ProceduresSettingsPage";
+import { OfficeStrategyPage } from "./pages/OfficeStrategyPage";
+import { OfficeObjectivesPage } from "./pages/OfficeObjectivesPage";
+import { OfficeInitiativesPage } from "./pages/OfficeInitiativesPage";
 import { Toaster } from "./components/molecules/Sonner";
 import { defaultHelpSlug } from "./content/help";
 
