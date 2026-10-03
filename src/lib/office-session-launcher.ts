@@ -13,6 +13,7 @@ import { agentDocsPath } from "./workspace-layout.js";
 import { slugifyProductName } from "./product-workspace.js";
 import { persistAndPublishRunEvent } from "./run-events.js";
 import { ensureSessionWorkspace, snapshotSessionWorkspace } from "./workspace-session.js";
+import { assertTenantCanLaunchRun } from "./run-guards.js";
 import type { AgentSessionConfig, AcceptanceCriterion, RunContextForSession } from "../core/agent-loop/types.js";
 import type { OfficeTaskPlan } from "./office-coordinator.js";
 import type { RunEngine } from "@prisma/client";
@@ -27,6 +28,8 @@ export interface LaunchOfficeSessionInput {
   /** Slug real del TenantProduct (obligatorio con productId; se resuelve de BD si falta). */
   productSlug?: string | null;
   parentRunId?: string | null;
+  /** Skip active-run guard (p.ej. reanudación de revisión donde el run padre sigue AWAITING_USER). */
+  allowActiveRun?: boolean;
   /** Override opcional por agente (role, goal, acceptanceCriteria, budgets, etc.). */
   agentOverrides?: Record<string, Partial<AgentSessionConfig>>;
   /** Memory inicial construida por workflows, consensos o schedulers. */
@@ -118,7 +121,13 @@ function deriveAgentGoal(agent: OfficeTaskPlan["agents"][number], request: strin
 export async function launchOfficeSession(input: LaunchOfficeSessionInput): Promise<LaunchOfficeSessionResult> {
   const { tenantId, plan, request, orgUnitId, parentRunId, agentOverrides = {} } = input;
   const productId = input.productId ?? null;
-  
+
+  // 0. Guard dedicado de runs activos por tenant. El chokepoint del engine
+  // (executeWorkflowInBackground) ya lo aplica, pero launchOfficeSession también
+  // se invoca directo desde el coordinador de Oficina sin pasar por ahí.
+  // allowActiveRun salta el guard solo en reanudaciones intencionadas.
+  await assertTenantCanLaunchRun(tenantId, { allowActiveRun: input.allowActiveRun });
+
   // 1. Resolver slugs reales: productId sin slug explícito se consulta al TenantProduct.
   let productSlug: string | null = input.productSlug ?? null;
   if (productId && !productSlug) {
@@ -132,18 +141,31 @@ export async function launchOfficeSession(input: LaunchOfficeSessionInput): Prom
 
   // 2. Crear ExecutionRun con engine=session
   const baseMemory = input.initialMemory ?? {};
+  const plannedBudgetTokens = plan.agents.reduce(
+    (sum, agent) => sum + (agent.budgets?.budgetTokens ?? 150_000),
+    0,
+  );
+  const plannedBudgetUsd = plan.agents.reduce(
+    (sum, agent) => sum + (agent.budgets?.budgetUsd ?? 5.0),
+    0,
+  );
+  const runMemory: Record<string, unknown> = {
+    ...baseMemory,
+    budgetTokens: typeof baseMemory.budgetTokens === "number" ? baseMemory.budgetTokens : plannedBudgetTokens,
+    budgetUsd: typeof baseMemory.budgetUsd === "number" ? baseMemory.budgetUsd : plannedBudgetUsd,
+  };
   const run = await prisma.executionRun.create({
     data: executionRunCreateData({
       workflowId: plan.workflowId ?? null,
       tenantId,
       sharedMemory: {
-        ...baseMemory,
-        task: baseMemory.task ?? request,
-        nextAction: baseMemory.nextAction ?? request,
-        officeRequest: baseMemory.officeRequest ?? request,
-        teamAgents: baseMemory.teamAgents ?? plan.agents.map((a) => a.name),
+        ...runMemory,
+        task: runMemory.task ?? request,
+        nextAction: runMemory.nextAction ?? request,
+        officeRequest: runMemory.officeRequest ?? request,
+        teamAgents: runMemory.teamAgents ?? plan.agents.map((a) => a.name),
         coordinatorNote:
-          baseMemory.coordinatorNote ?? "Launched via Office Session Launcher (engine=session)",
+          runMemory.coordinatorNote ?? "Launched via Office Session Launcher (engine=session)",
         ...(parentRunId ? { parentRunId } : {}),
         ...(productId ? { productId } : {}),
         ...(productSlug ? { focusProductSlug: productSlug } : {}),

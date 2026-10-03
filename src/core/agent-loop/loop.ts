@@ -8,6 +8,7 @@
 import { prisma } from "../../lib/prisma.js";
 import { persistAndPublishRunEvent } from "../../lib/run-events.js";
 import { createRunCheckpoint } from "../../lib/run-checkpoints.js";
+import { evaluateRunBudget } from "../../lib/session-budgets.js";
 import { recordWorkspaceSnapshot } from "../../lib/session-store.js";
 import { snapshotSessionWorkspace } from "../../lib/workspace-session.js";
 import {
@@ -180,15 +181,22 @@ export async function runAgentLoop(options: AgentLoopOptions): Promise<AgentLoop
 
   // Loop principal
   while (state.currentTurn < state.maxTurns) {
-    // Límite de presupuesto → checkpoint budget_exceeded + pausar
-    if (state.budgetTokens && state.spentTokens >= state.budgetTokens) {
-      const reason = `Token budget exceeded (${state.spentTokens}/${state.budgetTokens} tokens)`;
-      await handleBudgetExceeded(state, reason);
-      return makeResult(state, "BUDGET_EXCEEDED", reason);
-    }
-    if (state.budgetUsd && state.spentCostUsd >= state.budgetUsd) {
-      const reason = `Cost budget exceeded ($${state.spentCostUsd.toFixed(4)}/$${state.budgetUsd.toFixed(4)})`;
-      await handleBudgetExceeded(state, reason);
+    // Presupuesto sesión → run (encargo) → tenant. El corte emite checkpoint
+    // budget_exceeded y termina la sesión (el finalizer marca el run FAILED).
+    const budget = await evaluateRunBudget({
+      runId: state.runId,
+      tenantId: state.tenantId,
+      currentSession: {
+        sessionId: state.sessionId,
+        spentTokens: state.spentTokens,
+        spentCostUsd: state.spentCostUsd,
+      },
+      sessionBudgetTokens: state.budgetTokens,
+      sessionBudgetUsd: state.budgetUsd,
+    });
+    if (!budget.ok) {
+      const reason = budget.reason ?? "Budget exceeded";
+      await handleBudgetExceeded(state, reason, budget.checkpointPayload);
       return makeResult(state, "BUDGET_EXCEEDED", reason);
     }
 
@@ -422,7 +430,11 @@ async function completeSession(
   });
 }
 
-async function handleBudgetExceeded(state: LoopState, reason: string): Promise<void> {
+async function handleBudgetExceeded(
+  state: LoopState,
+  reason: string,
+  extraPayload?: Record<string, unknown>,
+): Promise<void> {
   await prisma.agentSession.update({
     where: { id: state.sessionId },
     data: {
@@ -444,6 +456,7 @@ async function handleBudgetExceeded(state: LoopState, reason: string): Promise<v
       budgetUsd: state.budgetUsd,
       spentTokens: state.spentTokens,
       spentCostUsd: state.spentCostUsd,
+      ...extraPayload,
     },
   });
   await emitSessionEvent(state, "budget_exceeded", {
