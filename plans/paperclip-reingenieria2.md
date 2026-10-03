@@ -683,9 +683,23 @@ qué está esperando aprobación
 
 ## Corte 4 — Alinear y escalar
 
-8. Fase F: objetivos e iniciativas.
+8. Fase F: objetivos e iniciativas. ✅ (2026-10-03, commit `e8a30f0`)
 9. Fase I: operaciones recurrentes.
 10. Fase J: coste empresarial y búsqueda global.
+
+### Referencias de código
+- `src/lib/objectives.ts` – modelo Prisma y funciones CRUD.
+- `src/server/routes/office.ts` – endpoints HTTP.
+- `frontend/src/components/office/ObjectiveForm.tsx` / `InitiativeForm.tsx` – formularios UI.
+- `frontend/src/pages/OfficeObjectivesPage.tsx` / `OfficeInitiativesPage.tsx` – páginas de listado y creación.
+- `docs/cto/objectives-initiatives.md` – documentación de arquitectura.
+- `docs/product/strategic-dashboard.md` – documentación de UI.
+
+### QA para fase F
+- Ejecutar pruebas unitarias de CRUD (`tests/office‑objectives.test.ts`, `tests/office‑initiatives.test.ts`).
+- Verificar manualmente con un `DATABASE_URL` real que los endpoints persisten los datos.
+- Confirmar que la UI muestra correctamente la lista tras crear/editar/eliminar.
+
 
 **Resultado esperado:** la empresa puede operar de forma continua y orientada a objetivos.
 
