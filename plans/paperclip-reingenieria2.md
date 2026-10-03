@@ -755,3 +755,109 @@ Siguiente: **Corte 3 — Fases E + H** para hacer visible la estructura, salud y
 
 QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migración `20261003090000_document_reviews`, recorrer el flujo de 3 departamentos (Estrategia → Producto → Ingeniería), enviar/aceptar un handoff y verificar decisión → revisión → comentario → trabajo.
 
+---
+
+# Pendientes detectados (auditoría 2026-10-03)
+
+> Resultado de la validación de Corte 3 y Corte 4 tras los commits `e8a30f0`, `8a417f0`, `78df7b9` y `011b351`. El build técnico pasa (`npm run build` limpio, backend `tsc --noEmit` limpio, frontend `tsc -b` limpio), pero la funcionalidad está incompleta respecto al alcance definido en las Fases E, F, H, I y J.
+
+## Estado por fase
+
+| Fase | Estado | Resumen |
+|---|---|---|
+| E — Organigrama y mapa departamental | ⚠️ Parcial | Endpoints y UI básicos existen; páginas no routeadas y sin jerarquía real. |
+| F — Objetivos, proyectos e iniciativas | ⚠️ Parcial | CRUD completo; sin vínculo a encargos, sin migración, sin tests ni docs. |
+| H — Dashboard de empresa | ⚠️ Parcial | Endpoint con 5 métricas básicas; faltan métricas de management y filtros. |
+| I — Operaciones recurrentes | ❌ No implementada | Sin `DepartmentOperationsPanel`, `RoutineCard`, historial ni pausado. |
+| J — Coste empresarial y búsqueda global | ❌ No implementada | Sin búsqueda `⌘K`, sin filtros de coste, sin alertas 50/80/100%. |
+
+## Bloqueo crítico (prioridad 1)
+
+### P1 — Migración Prisma de `CompanyGoal` e `Initiative` no existe
+
+- Los modelos están en `prisma/schema.prisma` (líneas 66–92) pero **no hay migración** en `prisma/migrations/` que cree las tablas `company_goals` ni `initiatives`.
+- El contenedor de producción ejecuta `prisma migrate deploy` vía `docker/api/entrypoint.sh` (no `db push`), por lo que los endpoints `/office/objectives` y `/office/initiatives` **fallarán en runtime** contra la base de producción.
+- **Acción:** generar y commitear la migración (`npx prisma migrate dev --name add_company_goals_initiatives`) y validarla contra un `DATABASE_URL` real.
+
+## Corte 3 — pendientes
+
+### P2 — Rutas de organigrama y dashboard no registradas en `App.tsx`
+
+- `OfficeOrganigramPage` y `OfficeDashboardPage` existen en `frontend/src/pages/` pero **no están importadas ni routeadas** en `frontend/src/App.tsx`.
+- Rutas candidatas según el plan: `/office/company` u `/org-chart` (Fase E); falta decidir la ruta definitiva del dashboard de empresa (Fase H) y no colisionar con `/office` (que ya renderiza el home de oficina).
+- **Acción:** importar ambas páginas, registrar rutas y añadir entradas de navegación en el sidebar (`frontend/src/lib/sidebar.ts` hoy no tiene enlaces a ninguna página de Corte 3/4).
+
+### P3 — Organigrama sin jerarquía real (Fase E incompleta)
+
+- `OrgUnit` en el schema no tiene `parentId` ni relación self-referencing; `src/lib/organigram.ts` devuelve una **lista plana** de unidades activas con `children: []` siempre vacío.
+- No hay representación de: CEO/coordinador, managers, especialistas, líneas de reporte, límites de autoridad, handoffs entrantes/salientes por departamento, ni salud departamental.
+- La tarjeta de departamento tampoco muestra misión, responsabilidades, equipo, encargos activos, procedimientos ni coste (requisitos de Fase E).
+- Componentes exigidos por el plan no existen: `CompanyOrgChart`, `DepartmentOrgCard`, `DepartmentHealthSummary`, `DepartmentCollaborationMap`.
+- **Acción:** decidir el modelo de jerarquía (añadir `parentId` a `OrgUnit` con migración, o derivar la jerarquía de `OrgUnitType` + template), y luego reconstruir `getOrganigram` + `OrganigramMap` como árbol navegable.
+
+### P4 — Dashboard de empresa incompleto (Fase H incompleta)
+
+- `src/lib/dashboard.ts` solo calcula: `totalCostUsd`, `activeRuns`, `pendingDecisions`, `pendingHandoffs`, `pendingReviews`.
+- Faltan métricas del plan: objetivos activos, trabajos bloqueados, entregas recientes, salud por departamento, tiempo medio de handoff, tiempo en estado bloqueado, ratio de entregas aprobadas al primer intento.
+- No hay tabla departamental (Departamento × Activos/Bloqueados/Coste/Entregados).
+- No hay filtro por periodo en el endpoint ni en el componente `Dashboard.tsx`.
+- No hay drill-down: las métricas no enlazan al trabajo/inbox que las origina.
+- **Conflicto activo:** el commit `011b351` cambió `GET /office/dashboard` para usar `getOfficeDashboard` (de `office-coordinator.ts`, forma `OfficeDashboard`: `mode`, `usage`, `stats`, `activity`, `roi`, `agents`, `departments`), pero el componente `frontend/src/components/office/Dashboard.tsx` espera la forma mínima de `getDashboardMetrics` (`totalCostUsd`, `activeRuns`, `pendingDecisions`, `pendingHandoffs`, `pendingReviews`). Hay que decidir un único contrato: o el componente consume `getOfficeDashboard`, o el endpoint vuelve a `getDashboardMetrics`. Tal como está, el dashboard de empresa mostrará `undefined` en todas las tarjetas.
+- **Acción:** unificar contrato endpoint↔componente y luego extender `getDashboardMetrics` (o `getOfficeDashboard`) con las métricas de management de la Fase H, agregadas por periodo y por departamento.
+
+### P5 — Tests de Corte 3 rotos (usen Jest en un proyecto sin Jest)
+
+- `tests/office-dashboard.test.ts` y `tests/office-organigram.test.ts` usan `jest.mock` / `describe` / `it` de Jest, pero el proyecto ejecuta tests con `node:test` vía `tsx --test` (convención de `tests/office-inbox.test.ts`).
+- Al ejecutarlos fallan inmediatamente con `ReferenceError: jest is not defined`; no validan nada hoy.
+- Además, el test de organigrama mockea `parentId`/`children` que ya no existen en el schema ni en la implementación reescrita.
+- **Acción:** reescribir ambos tests con `node:test` + `assert/strict` (puros, sin `DATABASE_URL` como el resto de la suite) y alinearlos con la implementación real de `organigram.ts`/`dashboard.ts`.
+
+## Corte 4 — pendientes
+
+### P6 — Fase F incompleta: sin vínculo objetivo → iniciativa → encargo
+
+- `CompanyGoal` e `Initiative` solo se relacionan entre sí; no existe `goalId`/`initiativeId` en `ExecutionRun`, `DepartmentWorkItem`, encargos ni entregas.
+- La jerarquía exigida `Objetivo → Iniciativa → Encargo → Trabajo → Entrega` no es navegable: los objetivos son un CRUD aislado.
+- No se pregunta "¿a qué objetivo o iniciativa contribuye?" al crear un encargo (UX de Fase F).
+- El objetivo no se propaga a: prompt de agentes, War Room, detalle de encargo, entrega ni dashboard.
+- No hay coste ni progreso agregado por objetivo (`currentValue` existe en el modelo pero nada lo actualiza).
+- **Acción:** añadir `goalId`/`initiativeId` (con migración) al modelo de trabajo elegido, incluir el selector en la creación de encargos, inyectar el contexto del objetivo en el brief/prompt y exponer coste+progreso por objetivo.
+
+### P7 — Fase F sin tests ni documentación comprometida
+
+- El plan exige `tests/office-objectives.test.ts` y `tests/office-initiatives.test.ts` como QA de la fase: **no existen**.
+- El plan referencia `docs/cto/objectives-initiatives.md` y `docs/product/strategic-dashboard.md`: **no existen** en el repo (solo está `architecture/organigram-dashboard.json` de Corte 3).
+- **Acción:** crear los dos tests con la convención `node:test` del proyecto (CRUD con mock de prisma o contra `DATABASE_URL` real) y redactar las dos docs; actualizar `INDEX.md`/`TO_DO.md` si aplica.
+
+### P8 — Fase I no implementada: operaciones recurrentes por departamento
+
+- No existe ningún componente `DepartmentOperationsPanel`, `RoutineCard`, `RoutineRunHistory` ni `RoutineHealthBadge` (verificado por búsqueda en `frontend/src` y `src`).
+- La infraestructura subyacente existe (`AutonomousSchedule`, worker BullMQ, scheduler) pero no está expuesta como **operaciones de negocio** por departamento: falta vista "Operaciones de Marketing/Producto/…", responsable, frecuencia, última/próxima ejecución, resultado, coste medio, estado pausado/activo y motivo de pausa.
+- Falta el requisito de que una rutina cree trabajo visible en el departamento con historial y entrega, y que fallos/costes aparezcan en el Inbox.
+- **Acción:** construir el read-model de operaciones sobre `AutonomousSchedule` + historial de runs, y los 4 componentes UI, enlazando cada ejecución a su `ExecutionRun`/entrega.
+
+### P9 — Fase J no implementada: coste empresarial y búsqueda global
+
+- `GET /office/costs` solo devuelve `totalCostUsd` y `activeRuns`; no hay filtros por Empresa/Departamento/Encargo/Proyecto/Objetivo/Agente/Modelo.
+- No hay alertas de presupuesto al 50%/80%/100% ni predicción de coste final (existe el tipo `cost_alert` en `tenant-notifications.ts` pero no la lógica de umbrales por presupuesto).
+- No existe búsqueda global `⌘K`/`Ctrl+K` (sin `CommandPalette`/`GlobalSearch` en `frontend/src`): no se pueden buscar encargos, documentos, agentes, departamentos, decisiones, handoffs, comentarios, objetivos ni runs.
+- **Acción:** implementar el endpoint de coste con dimensiones de filtro + umbrales de alerta, y la paleta de comandos con un endpoint de búsqueda multi-entidad respetando tenant y permisos.
+
+## Pendientes transversales
+
+- **Navegación:** el sidebar no enlaza a ninguna página de Corte 3/4 (`estrategia`, `objetivos`, `iniciativas`, `organigrama`, `dashboard`); las páginas son inalcanzables para el usuario salvo URL directa.
+- **QA manual sin `DATABASE_URL`:** los flujos de Corte 2 (handoffs, revisiones) y los nuevos CRUD de Corte 4 siguen sin validar contra base real.
+- **Docs desactualizadas:** marcar en este plan las fases E/F/H como completas cuando se cierren sus pendientes, y anotar los commits correspondientes (hoy solo F está marcada ✅ con `e8a30f0`, pero incompleta según esta auditoría).
+
+## Orden sugerido de desbloqueo
+
+1. **P1** — migración de `CompanyGoal`/`Initiative` (bloquea runtime en producción).
+2. **P4 (contrato dashboard)** — decidir y unificar el contrato de `/office/dashboard` (evita UI rota en el despliegue actual).
+3. **P2** — routear y enlazar organigrama + dashboard.
+4. **P3** — jerarquía real del organigrama (requiere decidir modelo + migración).
+5. **P5** — reparar tests de Corte 3 con `node:test`.
+6. **P6** — vínculo objetivo → iniciativa → encargo (requiere migración).
+7. **P7** — tests + docs de Fase F.
+8. **P8** — Fase I (operaciones recurrentes).
+9. **P9** — Fase J (coste + búsqueda global).
+

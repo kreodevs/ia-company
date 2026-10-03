@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDashboard } from '../../lib/api';
+import { getDashboardLegacy } from '../../lib/api';
 
 /**
  * Dashboard component showing aggregated business metrics.
@@ -10,7 +10,7 @@ export const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getDashboard()
+    getDashboardLegacy()
       .then(setMetrics)
       .catch((e) => setError(e.message ?? 'Error loading dashboard'));
   }, []);

@@ -236,9 +236,21 @@ export interface OrganigramNode {
 export const getOrganigram = async () => request<OrganigramNode[]>('/office/organigram');
 
 /**
- * Get aggregated business metrics for the dashboard.
+ * Get the full Office dashboard (usage, stats, activity, departments...).
  */
-export const getDashboard = async () => request<Record<string, unknown>>('/office/dashboard');
+export const getDashboard = async () => request<OfficeDashboard>('/office/dashboard');
+
+/**
+ * Get aggregated legacy business metrics (flat shape) for the strategy page.
+ */
+export const getDashboardLegacy = async () =>
+  request<{
+    totalCostUsd: number;
+    activeRuns: number;
+    pendingDecisions: number;
+    pendingHandoffs: number;
+    pendingReviews: number;
+  }>('/office/dashboard/legacy');
 /**
  * Corte 4 – fetch business objectives.
  */

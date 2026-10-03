@@ -110,10 +110,10 @@ export default function OfficePage() {
   }, [dashboard]);
 
   useEffect(() => {
-    if (!dashboard?.stats.activeRuns) return;
+    if (!dashboard?.stats?.activeRuns) return;
     const timer = window.setInterval(() => void refresh(), 8000);
     return () => window.clearInterval(timer);
-  }, [dashboard?.stats.activeRuns, refresh]);
+  }, [dashboard?.stats?.activeRuns, refresh]);
 
   const spendPct = useMemo(() => {
     if (!dashboard) return 0;

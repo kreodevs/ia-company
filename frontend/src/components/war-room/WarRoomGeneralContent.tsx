@@ -43,10 +43,10 @@ export default function WarRoomGeneralContent({ products, watchRunId }: WarRoomG
   }, [refresh]);
 
   useEffect(() => {
-    if (!dashboard?.stats.activeRuns) return;
+    if (!dashboard?.stats?.activeRuns) return;
     const timer = window.setInterval(() => void refresh(), 20000);
     return () => window.clearInterval(timer);
-  }, [dashboard?.stats.activeRuns, refresh]);
+  }, [dashboard?.stats?.activeRuns, refresh]);
 
   const seatAgents = useMemo<WarRoomSeatAgent[]>(() => {
     if (!dashboard) return [];

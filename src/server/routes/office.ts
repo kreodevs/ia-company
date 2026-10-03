@@ -391,7 +391,16 @@ export async function officeRoutes(app: FastifyInstance) {
     },
   );
 
-  // Duplicate dashboard route removed – kept the earlier implementation using getDashboardMetrics.
+  // Corte 3 – aggregated legacy business metrics (used by the strategy page).
+  app.get("/office/dashboard/legacy", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
+      return result;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 
 
   app.get<{ Params: { slug: string }; Querystring: { watchRun?: string } }>(

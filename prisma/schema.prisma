@@ -64,20 +64,21 @@ model Tenant {
 }
 
 model CompanyGoal {
-  id          String   @id @default(cuid())
-  tenantId    String
-  name        String
-  description String?
-  targetValue Float?
+  id           String       @id @default(cuid())
+  tenantId     String
+  name         String
+  description  String?
+  targetValue  Float?
   currentValue Float?
-  initiatives Initiative[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  initiatives  Initiative[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
+
 model Initiative {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   tenantId      String
   name          String
   description   String?
@@ -85,11 +86,12 @@ model Initiative {
   companyGoal   CompanyGoal @relation(fields: [companyGoalId], references: [id])
   companyGoalId String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
+
 enum TenantUserRole {
   owner
   admin
