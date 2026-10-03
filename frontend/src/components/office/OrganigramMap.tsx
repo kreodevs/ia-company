@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getOrganigram } from '../lib/api';
+import { getOrganigram } from '../../lib/api';
 
 /**
  * Simple component that displays the department organigram as a nested list.
@@ -11,8 +11,8 @@ export const OrganigramMap: React.FC = () => {
 
   useEffect(() => {
     getOrganigram()
-      .then(setData)
-      .catch((e) => setError(e.message ?? 'Error loading organigram'));
+      .then((data) => setData(data))
+      .catch((e: any) => setError(e.message ?? 'Error loading organigram'));
   }, []);
 
   const renderNode = (node: any) => (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getInitiatives } from '../lib/api';
+import { getInitiatives } from '../../lib/api';
 
 /**
  * Simple component that lists initiatives linked to objectives.
@@ -10,8 +10,8 @@ export const Initiatives: React.FC = () => {
 
   useEffect(() => {
     getInitiatives()
-      .then(setInitiatives)
-      .catch((e) => setError(e.message ?? 'Error loading initiatives'));
+      .then((data) => setInitiatives(data))
+      .catch((e: any) => setError(e.message ?? 'Error loading initiatives'));
   }, []);
 
   if (error) return <div className="error">{error}</div>;

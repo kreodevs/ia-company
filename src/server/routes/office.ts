@@ -12,7 +12,6 @@ listOfficeEncargos,
 } from "../../lib/office-encargos.js";
 import {
 executeOfficeTask,
-getOfficeDashboard,
 planOfficeTask,
 } from "../../lib/office-coordinator.js";
 import { listOfficeArchive } from "../../lib/office-archive.js";
@@ -114,7 +113,7 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  app.put('/office/objectives/:id', async (request, reply) => {
+  app.put<{ Params: { id: string } }>('/office/objectives/:id', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { id } = request.params;
@@ -126,20 +125,12 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  app.delete('/office/objectives/:id', async (request, reply) => {
+  app.delete<{ Params: { id: string } }>('/office/objectives/:id', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { id } = request.params;
       const result = await import('../../lib/objectives.js').then(m => m.deleteObjective(tenantId, id));
       return reply.send(result);
-    } catch (err) {
-      return handleRouteError(reply, err);
-    }
-  });
-    try {
-      const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/objectives.js').then(m => m.getObjectives(tenantId));
-      return result;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -160,7 +151,7 @@ export async function officeRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { name, description, status, companyGoalId } = request.body as any;
-      if (!name) return reply.status(400).send({ error: 'name required' });
+      if (!name || !companyGoalId) return reply.status(400).send({ error: 'name and companyGoalId required' });
       const result = await import('../../lib/objectives.js').then(m => m.createInitiative(tenantId, { name, description, status, companyGoalId }));
       return reply.status(201).send(result);
     } catch (err) {
@@ -168,7 +159,7 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  app.put('/office/initiatives/:id', async (request, reply) => {
+  app.put<{ Params: { id: string } }>('/office/initiatives/:id', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { id } = request.params;
@@ -180,20 +171,12 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  app.delete('/office/initiatives/:id', async (request, reply) => {
+  app.delete<{ Params: { id: string } }>('/office/initiatives/:id', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const { id } = request.params;
       const result = await import('../../lib/objectives.js').then(m => m.deleteInitiative(tenantId, id));
       return reply.send(result);
-    } catch (err) {
-      return handleRouteError(reply, err);
-    }
-  });
-    try {
-      const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/objectives.js').then(m => m.getInitiatives(tenantId));
-      return result;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -204,14 +187,6 @@ export async function officeRoutes(app: FastifyInstance) {
     try {
       const tenantId = requireImpersonatedTenant(request);
       const result = await import('../../lib/objectives.js').then(m => m.getCostMetrics(tenantId));
-      return result;
-    } catch (err) {
-      return handleRouteError(reply, err);
-    }
-  });
-    try {
-      const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
       return result;
     } catch (err) {
       return handleRouteError(reply, err);

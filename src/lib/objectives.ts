@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 /**
  * Simple placeholder implementation for Corte 4 – Objective & Initiative data.
@@ -34,12 +34,12 @@ export async function updateObjective(tenantId: string, id: string, data: { name
   return prisma.companyGoal.update({ where: { id }, data: { ...data, tenantId } });
 }
 
-export async function deleteObjective(tenantId: string, id: string) {
+export async function deleteObjective(_tenantId: string, id: string) {
   return prisma.companyGoal.delete({ where: { id } });
 }
 
 // ---------- CRUD for Initiative ----------
-export async function createInitiative(tenantId: string, data: { name: string; description?: string; status?: string; companyGoalId?: string }) {
+export async function createInitiative(tenantId: string, data: { name: string; description?: string; status?: string; companyGoalId: string }) {
   return prisma.initiative.create({ data: { tenantId, name: data.name, description: data.description, status: data.status, companyGoalId: data.companyGoalId } });
 }
 
@@ -47,6 +47,6 @@ export async function updateInitiative(tenantId: string, id: string, data: { nam
   return prisma.initiative.update({ where: { id }, data: { ...data, tenantId } });
 }
 
-export async function deleteInitiative(tenantId: string, id: string) {
+export async function deleteInitiative(_tenantId: string, id: string) {
   return prisma.initiative.delete({ where: { id } });
 }

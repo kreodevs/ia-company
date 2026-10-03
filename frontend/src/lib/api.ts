@@ -179,7 +179,52 @@ export interface ProductConsensus {
 }
 
 export interface ProductConsensusRevision {
-  // ... existing fields ...
+  id: string;
+  productId: string;
+  runId: string | null;
+  stepId: string | null;
+  agentName: string;
+  stepOrder: number;
+  content: string;
+  nextAction: string | null;
+  decisions: { by: string; what: string; why?: string }[];
+  openQuestions: string[];
+  veto: { by: string; reason: string } | null;
+  createdAt: string;
+}
+
+/** Corte 4 – company objective (maps to the Prisma `CompanyGoal` model). */
+export interface CompanyGoal {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string | null;
+  targetValue: number | null;
+  currentValue: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Corte 4 – initiative linked to a company objective (Prisma `Initiative`). */
+export interface Initiative {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string | null;
+  status: string | null;
+  companyGoalId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Corte 3 – organigram node returned by `/office/organigram`. */
+export interface OrganigramNode {
+  id: string;
+  name: string;
+  type?: string;
+  slug?: string;
+  workItemCount: number;
+  children: OrganigramNode[];
 }
 
 // -------------------------------------------------
@@ -188,36 +233,38 @@ export interface ProductConsensusRevision {
 /**
  * Get the department organigram hierarchy.
  */
-export const getOrganigram = async () => request('/office/organigram');
+export const getOrganigram = async () => request<OrganigramNode[]>('/office/organigram');
 
 /**
  * Get aggregated business metrics for the dashboard.
  */
-export const getDashboard = async () => request('/office/dashboard');
+export const getDashboard = async () => request<Record<string, unknown>>('/office/dashboard');
 /**
  * Corte 4 – fetch business objectives.
  */
-export const getObjectives = async () => request('/office/objectives');
+export const getObjectives = async () => request<CompanyGoal[]>('/office/objectives');
 /**
  * Corte 4 – fetch initiatives linked to objectives.
  */
-export const getInitiatives = async () => request('/office/initiatives');
+export const getInitiatives = async () => request<Initiative[]>('/office/initiatives');
 /**
  * Corte 4 – fetch cost metrics.
  */
-export const getCosts = async () => request('/office/costs');
+export const getCosts = async () => request<{ totalCostUsd: number; activeRuns: number }>('/office/costs');
 /**
  * CRUD for objectives
  */
-export const createObjective = async (payload) => request('/office/objectives', { method: 'POST', body: JSON.stringify(payload) });
-export const updateObjective = async (id, payload) => request(`/office/objectives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-export const deleteObjective = async (id) => request(`/office/objectives/${id}`, { method: 'DELETE' });
+export const createObjective = async (payload: Partial<CompanyGoal>) => request<CompanyGoal>('/office/objectives', { method: 'POST', body: JSON.stringify(payload) });
+export const updateObjective = async (id: string, payload: Partial<CompanyGoal>) => request<CompanyGoal>(`/office/objectives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+export const deleteObjective = async (id: string) => request<void>(`/office/objectives/${id}`, { method: 'DELETE' });
 /**
  * CRUD for initiatives
  */
-export const createInitiative = async (payload) => request('/office/initiatives', { method: 'POST', body: JSON.stringify(payload) });
-export const updateInitiative = async (id, payload) => request(`/office/initiatives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-export const deleteInitiative = async (id) => request(`/office/initiatives/${id}`, { method: 'DELETE' });
+export const createInitiative = async (payload: Partial<Initiative>) => request<Initiative>('/office/initiatives', { method: 'POST', body: JSON.stringify(payload) });
+export const updateInitiative = async (id: string, payload: Partial<Initiative>) => request<Initiative>(`/office/initiatives/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+export const deleteInitiative = async (id: string) => request<void>(`/office/initiatives/${id}`, { method: 'DELETE' });
+export type CompanyPhase = "launching" | "exploring" | "validating" | "building" | "growing";
+
 export type ProductPhase =
   | "queued"
   | "evaluating"

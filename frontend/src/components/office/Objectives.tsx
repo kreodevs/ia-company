@@ -10,8 +10,8 @@ export const Objectives: React.FC = () => {
 
   useEffect(() => {
     getObjectives()
-      .then(setObjectives)
-      .catch((e) => setError(e.message ?? 'Error loading objectives'));
+      .then((data) => setObjectives(data))
+      .catch((e: any) => setError(e.message ?? 'Error loading objectives'));
   }, []);
 
   if (error) return <div className="error">{error}</div>;
