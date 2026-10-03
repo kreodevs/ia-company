@@ -221,8 +221,9 @@ export interface Initiative {
 export interface OrganigramNode {
   id: string;
   name: string;
-  type?: string;
-  slug?: string;
+  type: string;
+  slug: string;
+  parentId: string | null;
   workItemCount: number;
   children: OrganigramNode[];
 }
@@ -2765,6 +2766,7 @@ export const api = {
       body: {
         name?: string;
         description?: string | null;
+        parentId?: string | null;
         config?: Record<string, unknown>;
         designMd?: string;
         isActive?: boolean;

@@ -781,19 +781,21 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 
 ## Corte 3 — pendientes
 
-### P2 — Rutas de organigrama y dashboard no registradas en `App.tsx`
+### P2 — Rutas de organigrama y dashboard no registradas en `App.tsx` ✅ Resuelto (`a493c51`)
 
-- `OfficeOrganigramPage` y `OfficeDashboardPage` existen en `frontend/src/pages/` pero **no están importadas ni routeadas** en `frontend/src/App.tsx`.
-- Rutas candidatas según el plan: `/office/company` u `/org-chart` (Fase E); falta decidir la ruta definitiva del dashboard de empresa (Fase H) y no colisionar con `/office` (que ya renderiza el home de oficina).
-- **Acción:** importar ambas páginas, registrar rutas y añadir entradas de navegación en el sidebar (`frontend/src/lib/sidebar.ts` hoy no tiene enlaces a ninguna página de Corte 3/4).
+- Se registraron `/office/dashboard` y `/office/organigrama` en `frontend/src/App.tsx`.
+- El sidebar incluye el grupo Estrategia con Dashboard, Organigrama, Objetivos e Iniciativas, con traducciones es/en e iconos.
 
-### P3 — Organigrama sin jerarquía real (Fase E incompleta)
 
-- `OrgUnit` en el schema no tiene `parentId` ni relación self-referencing; `src/lib/organigram.ts` devuelve una **lista plana** de unidades activas con `children: []` siempre vacío.
-- No hay representación de: CEO/coordinador, managers, especialistas, líneas de reporte, límites de autoridad, handoffs entrantes/salientes por departamento, ni salud departamental.
-- La tarjeta de departamento tampoco muestra misión, responsabilidades, equipo, encargos activos, procedimientos ni coste (requisitos de Fase E).
-- Componentes exigidos por el plan no existen: `CompanyOrgChart`, `DepartmentOrgCard`, `DepartmentHealthSummary`, `DepartmentCollaborationMap`.
-- **Acción:** decidir el modelo de jerarquía (añadir `parentId` a `OrgUnit` con migración, o derivar la jerarquía de `OrgUnitType` + template), y luego reconstruir `getOrganigram` + `OrganigramMap` como árbol navegable.
+### P3 — Organigrama sin jerarquía real (Fase E incompleta) ✅ Parcialmente resuelto
+
+- Añadido `OrgUnit.parentId` nullable con relación self-referencing `OrgHierarchy`, índice por tenant y FK `ON DELETE SET NULL`.
+- Nueva migración `20261004120000_org_unit_hierarchy` para producción.
+- `getOrganigram` ahora devuelve un árbol real con `children`, `parentId` y conteo de work items; valida tenant y evita ciclos al actualizar.
+- UI de settings permite asignar/quitar el departamento padre, excluyendo el propio nodo y sus descendientes.
+- `OrganigramMap` usa tipos reales y muestra la estructura anidada.
+- Pendiente Fase E: CEO/coordinador, salud departamental, colaboración, handoffs y tarjetas enriquecidas.
+
 
 ### P4 — Dashboard de empresa incompleto (Fase H incompleta)
 

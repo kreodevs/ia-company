@@ -16,6 +16,8 @@ export const org = {
   profileSubtitle: "Name and description shown in the list and meeting room.",
   saveProfile: "Save profile",
   profileSaved: "Department updated.",
+  parentUnitLabel: "Parent department",
+  parentUnitNone: "No parent (root)",
   configSaved: "Configuration saved.",
   tabs: {
     room: "Meeting room",

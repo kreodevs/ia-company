@@ -43,6 +43,8 @@ export default function OrgUnitDetailPage() {
   const [creatingWorkItem, setCreatingWorkItem] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editParentId, setEditParentId] = useState<string>("__none__");
+  const [allUnits, setAllUnits] = useState<OrgUnit[]>([]);
 
   const [staffRoster, setStaffRoster] = useState<OrgUnitStaffRoster | null>(null);
 
@@ -76,6 +78,8 @@ export default function OrgUnitDetailPage() {
     setStaffRoster(staff);
     setEditName(u.name);
     setEditDescription(u.description ?? "");
+    setEditParentId(u.parentId ?? "__none__");
+    setAllUnits(await api.orgUnits.list());
 
     const room = dashboard.departments.find((d) => d.id === id && d.kind === "org_unit");
     const agentsByName = new Map(dashboard.agents.map((agent) => [agent.name, agent]));
@@ -124,6 +128,7 @@ export default function OrgUnitDetailPage() {
       const updated = await api.orgUnits.update(unit.id, {
         name: editName.trim(),
         description: editDescription.trim() || null,
+        parentId: editParentId === "__none__" ? null : editParentId || null,
       });
       setUnit(updated);
       toast.success(t("org.profileSaved"));
@@ -280,6 +285,9 @@ export default function OrgUnitDetailPage() {
           artifacts={artifacts}
           editName={editName}
           editDescription={editDescription}
+          editParentId={editParentId}
+          allUnits={allUnits}
+          onEditParentIdChange={setEditParentId}
           savingProfile={savingProfile}
           launchTask={launchTask}
           launchProductId={launchProductId}

@@ -44,6 +44,7 @@ export interface OrgUnit {
   description: string | null;
   type: string;
   templateId: string | null;
+  parentId: string | null;
   config: Record<string, unknown>;
   configSchema: OrgUnitConfigSchema;
   tokens: Record<string, unknown>;

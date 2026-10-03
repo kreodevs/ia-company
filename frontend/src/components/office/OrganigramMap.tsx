@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { getOrganigram } from '../../lib/api';
+import React, { useEffect, useState } from "react";
+import { getOrganigram, type OrganigramNode } from "../../lib/api";
 
-/**
- * Simple component that displays the department organigram as a nested list.
- * It fetches data from `/office/organigram` via the API helper.
- */
 export const OrganigramMap: React.FC = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<OrganigramNode[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getOrganigram()
-      .then((data) => setData(data))
-      .catch((e: any) => setError(e.message ?? 'Error loading organigram'));
+      .then(setData)
+      .catch((e) => setError(e instanceof Error ? e.message : "Error loading organigram"));
   }, []);
 
-  const renderNode = (node: any) => (
+  const renderNode = (node: OrganigramNode) => (
     <li key={node.id}>
-      {node.name} (work items: {node.workItemCount})
-      {node.children && node.children.length > 0 && (
-        <ul>{node.children.map(renderNode)}</ul>
-      )}
+      {node.name}
+      <span className="ml-2 rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+        {node.type}
+      </span>
+      <span className="ml-2 text-xs">({node.workItemCount} work items)</span>
+      {node.children.length > 0 && <ul className="ml-4 mt-1">{node.children.map(renderNode)}</ul>}
     </li>
   );
 

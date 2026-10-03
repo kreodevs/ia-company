@@ -11,6 +11,7 @@ export function serializeOrgUnit(unit: OrgUnit) {
     description: unit.description,
     type: unit.type,
     templateId: unit.templateId,
+    parentId: unit.parentId,
     config: unit.config,
     configSchema: unit.configSchema,
     tokens: unit.tokens,
@@ -87,6 +88,7 @@ export async function updateOrgUnit(
   input: {
     name?: string;
     description?: string;
+    parentId?: string | null;
     config?: Record<string, unknown>;
     tokens?: Record<string, unknown>;
     designMd?: string;
@@ -96,11 +98,41 @@ export async function updateOrgUnit(
   const unit = await prisma.orgUnit.findFirst({ where: { id, tenantId } });
   if (!unit) return null;
 
+  let parentId: string | null | undefined;
+  if (input.parentId !== undefined) {
+    parentId = input.parentId?.trim() || null;
+    if (parentId) {
+      if (parentId === id) {
+        throw new Error("An org unit cannot be its own parent");
+      }
+      const parent = await prisma.orgUnit.findFirst({
+        where: { id: parentId, tenantId },
+        select: { id: true },
+      });
+      if (!parent) throw new Error("Parent org unit not found");
+
+      // Walk up from the proposed parent: if we reach this unit the move
+      // would create a cycle.
+      let cursor: string | null = parentId;
+      const seen = new Set<string>();
+      while (cursor && !seen.has(cursor)) {
+        seen.add(cursor);
+        if (cursor === id) throw new Error("Org unit hierarchy cannot contain cycles");
+        const ancestor: { parentId: string | null } | null = await prisma.orgUnit.findFirst({
+          where: { id: cursor, tenantId },
+          select: { parentId: true },
+        });
+        cursor = ancestor?.parentId ?? null;
+      }
+    }
+  }
+
   const updated = await prisma.orgUnit.update({
     where: { id },
     data: {
       ...(input.name != null ? { name: input.name.trim() } : {}),
       ...(input.description !== undefined ? { description: input.description?.trim() || null } : {}),
+      ...(parentId !== undefined ? { parentId } : {}),
       ...(input.config !== undefined ? { config: input.config as Prisma.InputJsonValue } : {}),
       ...(input.tokens !== undefined ? { tokens: input.tokens as Prisma.InputJsonValue } : {}),
       ...(input.designMd !== undefined ? { designMd: input.designMd || null } : {}),

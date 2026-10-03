@@ -137,6 +137,7 @@ export async function orgUnitRoutes(app: FastifyInstance) {
     Body: {
       name?: string;
       description?: string;
+      parentId?: string | null;
       config?: Record<string, unknown>;
       tokens?: Record<string, unknown>;
       designMd?: string;

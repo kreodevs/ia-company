@@ -1141,6 +1141,7 @@ model OrgUnit {
   description  String?     @db.Text
   type         OrgUnitType @default(custom)
   templateId   String?
+  parentId     String?
   config       Json        @default("{}")
   configSchema Json        @default("{}")
   tokens       Json        @default("{}")
@@ -1151,6 +1152,8 @@ model OrgUnit {
 
   tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   template            BusinessTemplate?    @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  parent              OrgUnit?             @relation("OrgHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children            OrgUnit[]            @relation("OrgHierarchy")
   products            TenantProduct[]
   artifacts           Artifact[]
   executionRuns       ExecutionRun[]
@@ -1160,6 +1163,7 @@ model OrgUnit {
 
   @@unique([tenantId, slug])
   @@index([tenantId, type])
+  @@index([tenantId, parentId])
 }
 
 model Artifact {

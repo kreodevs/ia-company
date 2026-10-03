@@ -23,6 +23,9 @@ export interface DepartmentSettingsPanelProps {
   artifacts: Artifact[];
   editName: string;
   editDescription: string;
+  editParentId: string;
+  allUnits: OrgUnit[];
+  onEditParentIdChange: (value: string) => void;
   savingProfile: boolean;
   launchTask: string;
   launchProductId: string;
@@ -49,6 +52,9 @@ export default function DepartmentSettingsPanel({
   artifacts,
   editName,
   editDescription,
+  editParentId,
+  allUnits,
+  onEditParentIdChange,
   savingProfile,
   launchTask,
   launchProductId,
@@ -114,6 +120,31 @@ export default function DepartmentSettingsPanel({
     unit.configSchema?.sections?.length || unit.configSchema?.fields?.length,
   );
 
+  // Cycle-safe parent options: exclude this unit and units that descend from it.
+  const parentOptions = useMemo(() => {
+    const descendants = new Set<string>();
+    const byParent = new Map<string, string[]>();
+    for (const candidate of allUnits) {
+      if (!candidate.parentId) continue;
+      const bucket = byParent.get(candidate.parentId);
+      if (bucket) bucket.push(candidate.id);
+      else byParent.set(candidate.parentId, [candidate.id]);
+    }
+    const stack = (byParent.get(unit.id) ?? []).slice();
+    while (stack.length > 0) {
+      const next = stack.pop() as string;
+      if (descendants.has(next)) continue;
+      descendants.add(next);
+      for (const child of byParent.get(next) ?? []) stack.push(child);
+    }
+    return [
+      { value: "__none__", label: t("org.parentUnitNone") },
+      ...allUnits
+        .filter((candidate) => candidate.id !== unit.id && !descendants.has(candidate.id))
+        .map((candidate) => ({ value: candidate.id, label: candidate.name })),
+    ];
+  }, [allUnits, unit.id, t]);
+
   return (
     <div className="office-dept-settings-panel">
       <div className="office-dept-settings-tabs">
@@ -142,6 +173,17 @@ export default function DepartmentSettingsPanel({
                 onChange={(e) => onEditDescriptionChange(e.target.value)}
                 disabled={savingProfile}
               />
+              <div>
+                <label className="mb-1 block text-xs font-medium text-[var(--color-muted-foreground)]">
+                  {t("org.parentUnitLabel")}
+                </label>
+                <Select
+                  value={editParentId}
+                  onChange={onEditParentIdChange}
+                  options={parentOptions}
+                  ariaLabel={t("org.parentUnitLabel")}
+                />
+              </div>
               <Button
                 onClick={() => void onSaveProfile()}
                 disabled={savingProfile || !editName.trim()}
