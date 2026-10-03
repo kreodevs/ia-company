@@ -170,12 +170,12 @@ Autorizado a romper specs previas:
 
 ### Fase 4 — Oficina completa Paperclip
 
-- [ ] Sala departamento = vista de sesiones activas de ese dept. Falta: `DepartmentRoomView` (usado por `OfficeDepartmentPage`) no muestra sesiones; no hay "Pedir encargo a este dept" como sesión scoped.
-- [ ] Archivo unificado ya existe ([`OfficeArchivePage.tsx`](frontend/src/pages/OfficeArchivePage.tsx:1)) — alimentarlo desde `WorkspaceSnapshot` + `SessionToolCall` (quién hizo qué archivo). Pendiente: la página no muestra autoría por `SessionToolCall` ni árbol de snapshot.
-- [ ] Ficha especialista muestra sesiones recientes, tools usadas, costo, docs. Falta vista de especialista alimentada por sesiones.
-- [ ] Entrega cliente desde snapshot verificado, no desde markdown suelto.
-- [ ] Retirar DAG legacy del nav diario, dejarlo en `/debug` + script migración.
-- [ ] Criterio salida: métrica `¿Se siente como oficina? >=4/5`, doc en `<=3 clicks`, 1 encargo real entregado a cliente externo.
+- [x] **Sala departamento** (2026-10-02): `WarRoomSessionFiles` + `WarRoomSessionCheckpoints` montados en `DepartmentWarRoomPanel.tsx` para ambas salas (dept virtual y orgUnit); run activo muestra árbol del workspace, archivos y checkpoints HITL en vivo; "pedir encargo a este dept" ya existía scoped vía `CoordinatorChat`/`executeOfficeTask` con `orgUnitId`.
+- [x] **Archivo con provenancia** (2026-10-02): `OfficeArchivePage.tsx` alimentado desde `WorkspaceSnapshot` + `SessionToolCall` (autoría real); muestra "Escrito por X" y "Verificado contra snapshot <sha>" en el preview.
+- [x] **Ficha especialista** (2026-10-02): `SpecialistProfileModal` muestra sesiones recientes, estado, costo (`spentCostUsd`), totales y tools usadas (agregado `SessionToolCall`), vía `GET /office/specialists/:agentName/summary`.
+- [x] **Entrega cliente desde snapshot verificado** (2026-10-02): `loadRunDocuments` sella docs `kind:"file"` con `verifiedCommitSha` + `snapshotVerifiedAt`; `PublicDeliveryPage.tsx` muestra sello y marca documentos verificados.
+- [x] **Retirar DAG del nav** (2026-10-02, verificado en auditoría): nav diaria no expone `/office/workflows`; ruta redirige a `/settings/procedures`.
+- **Criterio de salida:** NPS "¿Se siente como oficina? ≥4/5", doc en ≤3 clics, 1 encargo real entregado a cliente externo vía snapshot. Pendiente E2E con `DATABASE_URL`.
 
 ### 5.5 Pendiente auditado — qué queda por hacer (auditoría 2026-10-01, sin re-revisar código)
 
