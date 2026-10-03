@@ -33,6 +33,9 @@ export interface PublicDeliveryDocument {
   title: string;
   agentName: string;
   markdown: string;
+  /** SHA del WorkspaceSnapshot verificado que contiene este documento (Fase 4). */
+  verifiedCommitSha?: string | null;
+  snapshotVerifiedAt?: string | null;
 }
 
 export interface PublicDeliveryBranding {
@@ -108,6 +111,8 @@ function buildSnapshotFromDetail(
       title: doc.title,
       agentName: doc.agentName,
       markdown: doc.markdown,
+      verifiedCommitSha: doc.verifiedCommitSha ?? null,
+      snapshotVerifiedAt: doc.snapshotVerifiedAt ?? null,
     }));
 
   return {

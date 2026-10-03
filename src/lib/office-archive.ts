@@ -10,9 +10,16 @@ import {
 import { resolveProductWorkspaceRoot } from "./product-workspace.js";
 import { resolveTenantWorkspaceRoot } from "./tenant-workspace.js";
 import { isCompanyScopedMemory } from "./scope-contract.js";
+import { getLatestRunSnapshot } from "./session-store.js";
 import type { SharedMemory } from "../types/index.js";
 
 export type OfficeArchiveSource = "encargo" | "encargo_summary" | "workspace" | "artifact";
+
+export interface OfficeArchiveSnapshotTree {
+  commitSha: string | null;
+  createdAt: string;
+  files: Array<{ path: string; size: number; modifiedAt: string }>;
+}
 
 export interface OfficeArchiveItem {
   id: string;
@@ -32,6 +39,11 @@ export interface OfficeArchiveItem {
   markdown: string;
   timestamp: string;
   encargoHref: string | null;
+  /** Agente que escribió el archivo vía SessionToolCall (write/edit), si se conoce. */
+  writtenByAgent?: string | null;
+  /** Árbol de snapshot del run/encargo que contiene este doc (Fase 4). */
+  snapshotTree?: OfficeArchiveSnapshotTree | null;
+  verifiedCommitSha?: string | null;
 }
 
 export interface OfficeArchiveFiltersMeta {
@@ -133,6 +145,8 @@ function encargoDocToArchiveItem(
     product: { id: string; name: string; slug: string; orgUnitId: string | null } | null;
     orgUnitName: string | null;
     orgUnitId: string | null;
+    snapshotTree?: OfficeArchiveSnapshotTree | null;
+    writtenByByPath?: Map<string, string>;
   },
 ): OfficeArchiveItem {
   return {
@@ -153,6 +167,9 @@ function encargoDocToArchiveItem(
     markdown: doc.markdown,
     timestamp: ctx.timestamp,
     encargoHref: `/office/encargos/${ctx.runId}`,
+    writtenByAgent: (doc.path && ctx.writtenByByPath?.get(doc.path)) ?? doc.agentName ?? null,
+    snapshotTree: ctx.snapshotTree ?? null,
+    verifiedCommitSha: doc.verifiedCommitSha ?? null,
   };
 }
 
@@ -234,6 +251,55 @@ export async function listOfficeArchive(
     const consensusId = product ? (consensusByProductId.get(product.id) ?? null) : null;
     const timestamp = (run.completedAt ?? run.startedAt ?? run.createdAt).toISOString();
 
+    // Provenancia Fase 4: árbol del último snapshot verificado del run y
+    // autoría de archivos por SessionToolCall (write_file/edit_file).
+    let snapshotTree: OfficeArchiveSnapshotTree | null = null;
+    let writtenByByPath: Map<string, string> | null = null;
+    try {
+      const snapshot = await getLatestRunSnapshot(run.id);
+      const manifest = (snapshot?.manifest ?? {}) as Record<
+        string,
+        { size?: number; modifiedAt?: string }
+      >;
+      const files = Object.keys(manifest).map((path) => ({
+        path,
+        size: manifest[path]?.size ?? 0,
+        modifiedAt: manifest[path]?.modifiedAt ?? snapshot?.createdAt.toISOString() ?? "",
+      }));
+      if (files.length > 0) {
+        snapshotTree = {
+          commitSha: snapshot?.commitSha ?? null,
+          createdAt: snapshot?.createdAt.toISOString() ?? timestamp,
+          files,
+        };
+      }
+      const agentSessions = await prisma.agentSession.findMany({
+        where: { runId: run.id },
+        select: { id: true, agent: { select: { name: true } } },
+      });
+      const authorBySession = new Map<string, string>();
+      for (const session of agentSessions) {
+        if (session.agent?.name) authorBySession.set(session.id, session.agent.name);
+      }
+      const writeCalls = await prisma.sessionToolCall.findMany({
+        where: {
+          sessionId: { in: agentSessions.map((s) => s.id) },
+          toolName: { in: ["write_file", "edit_file", "overwrite_file"] },
+        },
+        select: { sessionId: true, argsJson: true },
+      });
+      writtenByByPath = new Map<string, string>();
+      for (const call of writeCalls) {
+        const agent = authorBySession.get(call.sessionId);
+        if (!agent) continue;
+        const args = call.argsJson as { path?: unknown } | null;
+        if (typeof args?.path === "string") writtenByByPath.set(args.path, agent);
+      }
+    } catch {
+      snapshotTree = null;
+      writtenByByPath = null;
+    }
+
     const documents = await loadRunDocuments(run, workspaceRoot, consensusId, teamAgents);
     const revisions = documents
       .filter((d) => d.kind === "revision")
@@ -274,6 +340,8 @@ export async function listOfficeArchive(
           product,
           orgUnitName,
           orgUnitId,
+          snapshotTree,
+          writtenByByPath: writtenByByPath ?? undefined,
         }),
       );
     }

@@ -8,6 +8,8 @@ import WarRoomAgentSeat from "../war-room/WarRoomAgentSeat";
 import WarRoomIdleSeats from "../war-room/WarRoomIdleSeats";
 import WarRoomRecentRuns from "../war-room/WarRoomRecentRuns";
 import WarRoomRunSelector from "../war-room/WarRoomRunSelector";
+import WarRoomSessionFiles from "../war-room/WarRoomSessionFiles";
+import WarRoomSessionCheckpoints from "../war-room/WarRoomSessionCheckpoints";
 import WarRoomTable from "../war-room/WarRoomTable";
 import WarRoomVetoBanner from "../war-room/WarRoomVetoBanner";
 import { useWarRoomTeam } from "../war-room/hooks/useWarRoomTeam";
@@ -185,6 +187,8 @@ export default function DepartmentWarRoomPanel({
           task: data.activeRun.task,
         }}
       />
+      <WarRoomSessionFiles watchRunId={data.activeRun.id} />
+      <WarRoomSessionCheckpoints watchRunId={data.activeRun.id} />
       {recentRunsSection}
     </div>
   );

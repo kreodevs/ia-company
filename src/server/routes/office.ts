@@ -43,9 +43,13 @@ import { listSessionWorkspaceTree, readSessionWorkspaceFile } from "../../lib/wo
 import { resumeOfficeSession } from "../../lib/office-session-launcher.js";
 import { resolveRunCheckpoint } from "../../lib/run-checkpoints.js";
 import {
-getAgentSessionWithTurns,
-listSessionsForRun,
+  getAgentSessionWithTurns,
+  listSessionsForRun,
 } from "../../lib/session-store.js";
+import {
+  getSpecialistSessionsSummary,
+  listScopedSessions,
+} from "../../lib/office-dept-sessions.js";
 import { prisma } from "../../lib/prisma.js";
 import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError } from "../lib/request-context.js";
 
@@ -489,7 +493,43 @@ export async function officeRoutes(app: FastifyInstance) {
   return handleRouteError(reply, err);
   }
   });
-  
+
+  // ---------------------------------------------------------------------------
+  // Fase 4 — sala de departamento (sesiones vivas) y ficha de especialista
+  // ---------------------------------------------------------------------------
+
+  app.get<{
+    Querystring: { departmentSlug?: string; orgUnitId?: string; agentName?: string; limit?: string };
+  }>("/office/dept/sessions", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { departmentSlug, orgUnitId, agentName, limit } = request.query;
+      if (!departmentSlug && !orgUnitId) {
+        throw new HttpError(400, "departmentSlug or orgUnitId is required");
+      }
+      const sessions = await listScopedSessions(tenantId, {
+        departmentSlug,
+        orgUnitId,
+        agentName,
+        limit: limit ? Number(limit) : undefined,
+      });
+      return { sessions };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { agentName: string } }>("/office/specialists/:agentName/summary", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const summary = await getSpecialistSessionsSummary(tenantId, request.params.agentName);
+      if (!summary) throw new HttpError(404, "Specialist not found");
+      return summary;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get<{ Params: { sessionId: string } }>("/office/sessions/:sessionId", async (request, reply) => {
   try {
   const tenantId = requireImpersonatedTenant(request);

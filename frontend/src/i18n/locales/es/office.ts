@@ -213,6 +213,8 @@ export const office = {
       workspace: "Workspace",
       artifact: "Artefacto",
     },
+    writtenBy: "Escrito por {{agent}}",
+    verifiedSnapshot: "Verificado contra snapshot {{sha}}",
   },
   departments: {
     strategy: {
@@ -612,6 +614,10 @@ export const office = {
     currentTask: "Tarea actual",
     documents: "Documentos",
     noDocuments: "Sin documentos recientes de este especialista.",
+    activity: "Actividad en planta",
+    sessionsCount: "{{value}} sesiones",
+    noSessions: "Sin sesiones recientes.",
+    sessionUntitled: "Encargo",
   },
   filesPanel: {
     title: "Archivos del encargo",

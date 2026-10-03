@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Settings, X } from "lucide-react";
-import { api, type OfficeArchiveItem, type OfficeEncargoSummary, type TeamAgent } from "../../lib/api";
+import {
+  api,
+  type OfficeArchiveItem,
+  type OfficeEncargoSummary,
+  type OfficeSpecialistSummary,
+  type TeamAgent,
+} from "../../lib/api";
 import { encargoContextLine } from "../../lib/office-encargo-display";
 import { AGENT_EMOJI, agentDisplayLabel, avatarGradient } from "../../lib/office-visual";
 import type { DepartmentRoomAgent } from "./DepartmentRoomView";
@@ -31,6 +37,7 @@ export default function SpecialistProfileModal({
   const [recentEncargos, setRecentEncargos] = useState<OfficeEncargoSummary[]>([]);
   const [documents, setDocuments] = useState<OfficeArchiveItem[]>([]);
   const [liveAgent, setLiveAgent] = useState<TeamAgent | null>(null);
+  const [sessionSummary, setSessionSummary] = useState<OfficeSpecialistSummary | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +75,13 @@ export default function SpecialistProfileModal({
       })
       .catch(() => setRecentEncargos([]));
   }, [agent.name, departmentSlug, orgUnitId]);
+
+  useEffect(() => {
+    api.office
+      .specialistSummary(agent.name)
+      .then((summary) => setSessionSummary(summary))
+      .catch(() => setSessionSummary(null));
+  }, [agent.name]);
 
   useEffect(() => {
     api.office
@@ -188,6 +202,50 @@ export default function SpecialistProfileModal({
             </ul>
           )}
         </div>
+
+        {sessionSummary ? (
+          <div className="office-specialist-modal-recent office-specialist-modal-activity">
+            <h3 className="office-specialist-modal-recent-title">
+              {t("office.specialists.activity")}
+              <span className="office-specialist-activity-totals">
+                {t("office.specialists.sessionsCount", { value: sessionSummary.totals.sessions })} ·
+                ${sessionSummary.totals.spentCostUsd.toFixed(2)}
+              </span>
+            </h3>
+            {sessionSummary.sessions.length === 0 ? (
+              <p className="office-empty">{t("office.specialists.noSessions")}</p>
+            ) : (
+              <ul className="office-specialist-modal-recent-list">
+                {sessionSummary.sessions.slice(0, 3).map((session) => (
+                  <li key={session.id}>
+                    <Link
+                      to={session.runId ? `/office/encargos/${session.runId}` : "/office"}
+                      className="office-specialist-recent-item"
+                    >
+                      <span className="office-specialist-recent-title">
+                        {session.encargoTitle ?? t("office.specialists.sessionUntitled")}
+                      </span>
+                      <span className="office-specialist-recent-meta">
+                        {t(`warRoom.session.${session.status === "RUNNING" ? "running" : session.status === "AWAITING_INPUT" ? "awaitingInput" : session.status === "AWAITING_APPROVAL" ? "awaitingApproval" : session.status === "COMPLETED" ? "completed" : session.status === "FAILED" ? "failed" : "idle"}`, { defaultValue: session.status })} ·
+                        ${session.spentCostUsd.toFixed(3)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {sessionSummary.tools.length > 0 ? (
+              <div className="office-specialist-activity-tools">
+                {sessionSummary.tools.slice(0, 6).map((tool) => (
+                  <span key={tool.toolName} className="office-specialist-activity-tool">
+                    {tool.toolName}
+                    <b>×{tool.count}</b>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="office-specialist-modal-actions">
           <Button

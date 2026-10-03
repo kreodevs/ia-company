@@ -870,6 +870,33 @@ export interface OfficeSessionToolCall {
   createdAt: string;
 }
 
+/** Sesión viva en sala de departamento / ficha de especialista (Fase 4). */
+export interface OfficeDeptSessionSummary {
+  id: string;
+  runId: string;
+  agentId: string;
+  agentName: string | null;
+  role: string;
+  status: string;
+  goal: string;
+  currentTurn: number;
+  maxTurns: number;
+  spentTokens: number;
+  spentCostUsd: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  encargoTitle: string | null;
+}
+
+export interface OfficeSpecialistSummary {
+  agent: { id: string; name: string; role: string; isActive: boolean };
+  sessions: OfficeDeptSessionSummary[];
+  tools: Array<{ toolName: string; count: number; lastUsedAt: string | null }>;
+  totals: { spentTokens: number; spentCostUsd: number; sessions: number };
+}
+
 export interface OfficeSessionTurn {
   id: string;
   sessionId: string;
@@ -1048,6 +1075,9 @@ export interface OfficeEncargoDocument {
   markdown: string;
   path?: string;
   stepOrder: number;
+  /** SHA del WorkspaceSnapshot verificado que contiene este archivo (Fase 4). */
+  verifiedCommitSha?: string | null;
+  snapshotVerifiedAt?: string | null;
 }
 
 export interface OfficeEncargoDecisionProposal {
@@ -1183,6 +1213,12 @@ export interface OfficeDepartmentRoom {
 
 export type OfficeArchiveSource = "encargo" | "encargo_summary" | "workspace" | "artifact";
 
+export interface OfficeArchiveSnapshotTree {
+  commitSha: string | null;
+  createdAt: string;
+  files: Array<{ path: string; size: number; modifiedAt: string }>;
+}
+
 export interface OfficeArchiveItem {
   id: string;
   source: OfficeArchiveSource;
@@ -1201,6 +1237,9 @@ export interface OfficeArchiveItem {
   markdown: string;
   timestamp: string;
   encargoHref: string | null;
+  writtenByAgent?: string | null;
+  snapshotTree?: OfficeArchiveSnapshotTree | null;
+  verifiedCommitSha?: string | null;
 }
 
 export interface OfficeArchiveResponse {
@@ -2174,6 +2213,19 @@ export const api = {
       ),
     runSessions: (runId: string) =>
       request<{ sessions: OfficeAgentSession[] }>(`/office/runs/${runId}/sessions`),
+    deptSessions: (params: { departmentSlug?: string; orgUnitId?: string; agentName?: string; limit?: number }) => {
+      const q = new URLSearchParams();
+      if (params.departmentSlug) q.set("departmentSlug", params.departmentSlug);
+      if (params.orgUnitId) q.set("orgUnitId", params.orgUnitId);
+      if (params.agentName) q.set("agentName", params.agentName);
+      if (params.limit) q.set("limit", String(params.limit));
+      const qs = q.toString();
+      return request<{ sessions: OfficeDeptSessionSummary[] }>(`/office/dept/sessions${qs ? `?${qs}` : ""}`);
+    },
+    specialistSummary: (agentName: string) =>
+      request<OfficeSpecialistSummary>(
+        `/office/specialists/${encodeURIComponent(agentName)}/summary`,
+      ),
     session: (sessionId: string) =>
       request<OfficeSessionDetail>(`/office/sessions/${sessionId}`),
     sessionFiles: (sessionId: string, path = "") =>

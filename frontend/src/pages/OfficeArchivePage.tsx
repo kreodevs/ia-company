@@ -272,7 +272,18 @@ export default function OfficeArchivePage() {
                   <p className="office-archive-preview-meta">
                     {t(`office.archive.source.${selected.source}`)}
                     {selected.path ? ` · ${selected.path}` : ""}
+                    {selected.writtenByAgent ? ` · ${t("office.archive.writtenBy", { agent: selected.writtenByAgent })}` : ""}
                   </p>
+                  {selected.verifiedCommitSha && (
+                    <p className="office-archive-preview-meta office-archive-verified">
+                      {t("office.archive.verifiedSnapshot", {
+                        sha: selected.verifiedCommitSha.slice(0, 8),
+                      })}
+                      {selected.snapshotTree
+                        ? ` · ${new Date(selected.snapshotTree.createdAt).toLocaleString()}`
+                        : ""}
+                    </p>
+                  )}
                 </div>
                 {selected.encargoHref ? (
                   <Link to={selected.encargoHref} className="office-link-btn">

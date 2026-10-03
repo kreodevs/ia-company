@@ -213,6 +213,8 @@ export const office = {
       workspace: "Workspace",
       artifact: "Artifact",
     },
+    writtenBy: "Written by {{agent}}",
+    verifiedSnapshot: "Verified against snapshot {{sha}}",
   },
   departments: {
     strategy: {
@@ -612,6 +614,10 @@ export const office = {
     currentTask: "Current task",
     documents: "Documents",
     noDocuments: "No recent documents from this specialist.",
+    activity: "Floor activity",
+    sessionsCount: "{{value}} sessions",
+    noSessions: "No recent sessions.",
+    sessionUntitled: "Job",
   },
   filesPanel: {
     title: "Job files",

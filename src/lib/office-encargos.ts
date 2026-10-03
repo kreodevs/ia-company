@@ -14,6 +14,7 @@ import { extractReferencedDocPaths } from "./referenced-doc-path.js";
 import { resolveEncargoDepartmentContext } from "./office-procedures.js";
 import { departmentWarRoomHref } from "./office-department-team.js";
 import { buildDepartmentRunScopeWhere, extractRunTeamAgentNames } from "./office-run-department.js";
+import { getLatestRunSnapshot } from "./session-store.js";
 import { isCompanyScopedMemory, resolveRunScopeMeta } from "./scope-contract.js";
 
 export type OfficeEncargoPhase = "queued" | "in_progress" | "delivered" | "failed" | "cancelled";
@@ -49,13 +50,16 @@ export interface OfficeEncargoSummary {
 }
 
 export interface OfficeEncargoDocument {
-  id: string;
-  kind: "revision" | "step" | "file";
-  agentName: string;
-  title: string;
-  markdown: string;
-  path?: string;
-  stepOrder: number;
+  readonly id: string;
+  readonly kind: "revision" | "step" | "file";
+  readonly agentName: string;
+  readonly title: string;
+  readonly markdown: string;
+  readonly path?: string;
+  readonly stepOrder: number;
+  /** SHA del WorkspaceSnapshot verificado que contiene este archivo (Fase 4). */
+  readonly verifiedCommitSha?: string | null;
+  readonly snapshotVerifiedAt?: string | null;
 }
 
 export interface OfficeEncargoDecisionProposal {
@@ -501,12 +505,38 @@ export async function loadRunDocuments(
   const loadedPaths = new Set<string>();
   const agentsWithFile = new Set<string>();
 
+  // Provenancia verificada: paths presentes en el manifest del último snapshot
+  // del run quedan sellados con su commitSha (Fase 4 — entrega desde snapshot).
+  let verifiedPaths: Map<string, { sha: string | null; at: string | null }> | null = null;
+  try {
+    const snapshot = await getLatestRunSnapshot(run.id);
+    const manifest = (snapshot?.manifest ?? {}) as Record<
+      string,
+      { size?: number; modifiedAt?: string }
+    >;
+    if (snapshot && Object.keys(manifest).length > 0) {
+      verifiedPaths = new Map(
+        Object.keys(manifest).map((path) => [
+          path,
+          { sha: snapshot.commitSha ?? null, at: snapshot.createdAt.toISOString() },
+        ]),
+      );
+    }
+  } catch {
+    // sin snapshot: documentos sin sello (comportamiento previo)
+  }
+
   const push = (doc: OfficeEncargoDocument) => {
     const agentStepKey = `${doc.agentName}:${doc.stepOrder}`;
     const contentKey = `${agentStepKey}:${doc.markdown.trim().slice(0, 200)}`;
     if (seen.has(contentKey)) return;
     seen.add(contentKey);
-    documents.push(doc);
+    const verified = doc.path ? verifiedPaths?.get(doc.path) : undefined;
+    documents.push(
+      verified
+        ? { ...doc, verifiedCommitSha: verified.sha, snapshotVerifiedAt: verified.at }
+        : doc,
+    );
     if (doc.kind === "file") {
       agentsWithFile.add(doc.agentName);
       if (doc.path) loadedPaths.add(doc.path);

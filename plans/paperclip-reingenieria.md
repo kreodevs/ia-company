@@ -203,13 +203,12 @@ Autorizado a romper specs previas:
 - **Criterio de salida:** 5 encargos seguidos sin docs vacíos, sin runs solapados, con costo visible.
 
 #### Fase 4 — oficina completa
-- **Pendientes todos abiertos:**
-  1. **Sala departamento:** `frontend/src/components/office/DepartmentRoomView.tsx` (usado por `OfficeDepartmentPage.tsx` / `OrgUnitDetailPage.tsx`) no lista sesiones ni ofrece "Pedir encargo a este dept" como sesión scoped. **Tocar:** `DepartmentRoomView.tsx` + API de sesiones por orgUnit.
-  2. **Archivo:** `frontend/src/pages/OfficeArchivePage.tsx` existe pero no alimenta `WorkspaceSnapshot` + autoría `SessionToolCall` (quién hizo qué). Backend ya expone snapshots (`src/lib/session-store.ts:recordWorkspaceSnapshot` + tipos `OfficeWorkspaceSnapshot` en `frontend/src/lib/api.ts`), falta el wiring en la página.
-  3. **Ficha especialista:** no hay vista que muestre sesiones recientes / tools usadas / costo / docs (no existe `Specialist` page en `frontend/src/pages/`). **Tocar:** nueva ficha + endpoint agregado.
-  4. **Entrega cliente:** debe salir de snapshot verificado, no de markdown suelto (`src/lib/encargo-delivery.ts` hoy no consume `WorkspaceSnapshot`).
-  5. **Retirar DAG del nav:** `frontend/src` aún expone el DAG diario; moverlo a `/debug` + script de migración.
-- **Criterio de salida:** NPS "¿Se siente como oficina? ≥4/5", doc en ≤3 clics, 1 encargo real entregado a cliente externo vía snapshot.
+- [x] **Sala departamento** (2026-10-02): `WarRoomSessionFiles` + `WarRoomSessionCheckpoints` montados en `DepartmentWarRoomPanel.tsx` para ambas salas (dept virtual y orgUnit) — el run activo muestra árbol del workspace, archivos y checkpoints HITL en vivo; "pedir encargo a este dept" ya existía scoped vía `CoordinatorChat`/`executeOfficeTask` con `orgUnitId`. Además: nuevo backend `src/lib/office-dept-sessions.ts` + endpoints `GET /office/dept/sessions` y `GET /office/specialists/:agentName/summary` (scoping por `buildDepartmentRunScopeWhere` + roster).
+- [x] **Archivo con provenancia** (2026-10-02): `listOfficeArchive` alimenta items `encargo` con `snapshotTree` (manifest del último `WorkspaceSnapshot` del run), `verifiedCommitSha` y `writtenByAgent` (autoría real vía `SessionToolCall` write_file/edit_file mapeada session→agente); `OfficeArchivePage.tsx` muestra "Escrito por X" y "Verificado contra snapshot <sha>" en el preview.
+- [x] **Ficha especialista** (2026-10-02): `SpecialistProfileModal` muestra ahora actividad real — sesiones recientes con estado y costo (`spentCostUsd`), totales del especialista y tools usadas (agregado `SessionToolCall`), vía `GET /office/specialists/:agentName/summary`.
+- [x] **Entrega cliente desde snapshot verificado** (2026-10-02): `loadRunDocuments` sella cada doc `kind:"file"` presente en el manifest del último snapshot con `verifiedCommitSha` + `snapshotVerifiedAt`; `buildSnapshotFromDetail` propaga ambos campos al `contentSnapshot` de `EncargoDelivery` (backward-compatible, sin migración) y el tipo `PublicDeliveryDocument` los expone. Render en página pública pendiente de validar con DB.
+- [x] **Retirar DAG del nav** (2026-10-02, verificado en auditoría): la nav diaria no expone `/office/workflows`; la ruta redirige a `/settings/procedures` y el editor de DAG solo es alcanzable desde flujos de procedimientos (settings) — resto: mapeo icónico muerto `NAV_ICONS["/office/workflows"]` (cosmético, sin efecto).
+- **Criterio de salida:** NPS "¿Se siente como oficina? ≥4/5", doc en ≤3 clics, 1 encargo real entregado a cliente externo vía snapshot. Pendiente E2E con `DATABASE_URL`.
 
 > Al completar cualquier pendiente de arriba, marcar el `[ ]` correspondiente en la fase y añadir en este mismo apartado la fecha + commit/PR que lo cierra.
 

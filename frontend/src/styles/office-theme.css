@@ -2796,6 +2796,42 @@ html[data-theme="letter"] .office-link-inline {
   color: var(--office-muted, #94a3b8);
 }
 
+/* Fase 4: actividad del especialista (sesiones, tools, costo) */
+
+.office-specialist-activity-totals {
+  margin-left: 0.5rem;
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-specialist-activity-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.55rem;
+}
+
+.office-specialist-activity-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--office-dept-panel-border);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-specialist-activity-tool b {
+  font-weight: 600;
+  color: var(--color-primary, #38bdf8);
+}
+
+.office-archive-verified {
+  color: var(--color-primary, #38bdf8);
+}
+
 /* —— Oleada 1: lobby-first office home —— */
 
 .office-reception-card.interactive {

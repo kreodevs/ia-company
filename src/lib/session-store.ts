@@ -204,3 +204,56 @@ export async function getSessionSpend(sessionId: string): Promise<{ tokens: numb
     costUsd: agg._sum.costUsd ?? 0,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Department room / specialist views (Fase 4)
+// ---------------------------------------------------------------------------
+
+/** Latest verified workspace snapshot for a run (used for delivery provenance). */
+export async function getLatestRunSnapshot(runId: string) {
+  return prisma.workspaceSnapshot.findFirst({
+    where: { runId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+/** Recent sessions across a set of runs (dept room / specialist ficha). */
+export async function listSessionsForRuns(
+  runIds: string[],
+  options: { limit?: number } = {},
+): Promise<AgentSession[]> {
+  if (runIds.length === 0) return [];
+  return prisma.agentSession.findMany({
+    where: { runId: { in: runIds } },
+    orderBy: { createdAt: "desc" },
+    take: Math.min(50, Math.max(1, options.limit ?? 20)),
+  });
+}
+
+/** Tool usage summary for one session or aggregated across sessions. */
+export async function summarizeToolCallsForSessions(
+  sessionIds: string[],
+): Promise<Array<{ toolName: string; count: number; lastUsedAt: string | null }>> {
+  if (sessionIds.length === 0) return [];
+  const calls = await prisma.sessionToolCall.findMany({
+    where: { sessionId: { in: sessionIds } },
+    select: { toolName: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+  });
+  const counts = new Map<string, { count: number; lastUsedAt: Date | null }>();
+  for (const call of calls) {
+    const existing = counts.get(call.toolName);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      counts.set(call.toolName, { count: 1, lastUsedAt: call.createdAt });
+    }
+  }
+  return [...counts.entries()]
+    .map(([toolName, value]) => ({
+      toolName,
+      count: value.count,
+      lastUsedAt: value.lastUsedAt?.toISOString() ?? null,
+    }))
+    .sort((a, b) => b.count - a.count);
+}
