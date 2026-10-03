@@ -1,6 +1,8 @@
 import { DepartmentHandoffStatus, DepartmentWorkStatus, Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { VIRTUAL_OFFICE_DEPARTMENTS } from "./office-departments.js";
+import { createTenantNotification } from "./tenant-notifications.js";
+import { encargoHumanHref } from "./office-encargos.js";
 
 export interface DepartmentWorkMap {
   runId: string;
@@ -141,17 +143,27 @@ export async function createDepartmentHandoff(input: {
   const source = await prisma.departmentWorkItem.findFirst({ where: { id: input.fromWorkItemId, tenantId: input.tenantId, runId: input.runId } });
   const target = input.toWorkItemId ? await prisma.departmentWorkItem.findFirst({ where: { id: input.toWorkItemId, tenantId: input.tenantId, runId: input.runId } }) : null;
   if (!source || (input.toWorkItemId && !target)) return null;
-  return prisma.departmentHandoff.create({ data: {
+  const handoff = await prisma.departmentHandoff.create({ data: {
     tenantId: input.tenantId, fromWorkItemId: source.id, toWorkItemId: target?.id ?? null,
     fromDepartmentSlug: source.departmentSlug, toDepartmentSlug: target?.departmentSlug ?? null,
     status: DepartmentHandoffStatus.pending_acceptance, message: input.message,
     openQuestions: input.openQuestions ?? [], decisions: input.decisions ?? [], artifactPaths: input.artifactPaths ?? [],
-  }, select: handoffSelect }).then(serializeHandoff);
+  }, select: handoffSelect });
+  await createTenantNotification({
+    tenantId: input.tenantId,
+    type: "handoff_pending",
+    title: `Handoff pendiente: ${source.departmentSlug ?? "?"} → ${target?.departmentSlug ?? "?"}`,
+    body: input.message,
+    href: encargoHumanHref(input.runId),
+    runId: input.runId,
+  });
+  return serializeHandoff(handoff);
 }
 
 export async function updateDepartmentHandoff(input: { tenantId: string; handoffId: string; status: DepartmentHandoffStatus; actor?: string; clarification?: string; rejectionReason?: string }) {
-  const handoff = await prisma.departmentHandoff.findFirst({ where: { id: input.handoffId, tenantId: input.tenantId } });
+  const handoff = await prisma.departmentHandoff.findFirst({ where: { id: input.handoffId, tenantId: input.tenantId }, include: { fromWorkItem: { select: { runId: true } }, toWorkItem: { select: { runId: true } } } });
   if (!handoff) return null;
+  const handoffRunId = handoff.fromWorkItem?.runId ?? handoff.toWorkItem?.runId ?? null;
   const updated = await prisma.departmentHandoff.update({ where: { id: handoff.id }, data: {
     status: input.status, acceptedBy: input.status === DepartmentHandoffStatus.accepted ? input.actor ?? null : undefined,
     acceptedAt: input.status === DepartmentHandoffStatus.accepted ? new Date() : undefined,
@@ -160,6 +172,26 @@ export async function updateDepartmentHandoff(input: { tenantId: string; handoff
   }, select: handoffSelect });
   if (input.status === DepartmentHandoffStatus.accepted && handoff.toWorkItemId) {
     await prisma.departmentWorkItem.update({ where: { id: handoff.toWorkItemId }, data: { status: DepartmentWorkStatus.active, businessStatus: "En ejecución", blockedReason: null, lastActivityAt: new Date() } });
+  }
+  if (input.status === DepartmentHandoffStatus.needs_clarification) {
+    await createTenantNotification({
+      tenantId: input.tenantId,
+      type: "clarification_requested",
+      title: `Clarificación solicitada: ${handoff.fromDepartmentSlug ?? "?"} → ${handoff.toDepartmentSlug ?? "?"}`,
+      body: input.clarification ?? "",
+      href: handoffRunId ? encargoHumanHref(handoffRunId) : "/office/trabajo",
+      runId: handoffRunId,
+    });
+  }
+  if (input.status === DepartmentHandoffStatus.rejected) {
+    await createTenantNotification({
+      tenantId: input.tenantId,
+      type: "encargo_blocked",
+      title: `Handoff rechazado: ${handoff.fromDepartmentSlug ?? "?"} → ${handoff.toDepartmentSlug ?? "?"}`,
+      body: input.rejectionReason ?? "",
+      href: handoffRunId ? encargoHumanHref(handoffRunId) : "/office/trabajo",
+      runId: handoffRunId,
+    });
   }
   return serializeHandoff(updated);
 }

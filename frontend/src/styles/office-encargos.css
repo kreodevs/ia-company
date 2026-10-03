@@ -1524,3 +1524,303 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   padding: 0.3rem 0.45rem;
   resize: vertical;
 }
+
+/* ==========================================================================
+   Reingeniería 2, Corte 2 — Inbox empresarial, timeline, estado y revisión.
+   ========================================================================== */
+
+/* --- Inbox ------------------------------------------------------------- */
+
+.office-inbox-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.office-inbox-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.office-inbox-group-label {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-inbox-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--office-border, #334155);
+  border-radius: 0.6rem;
+  background: rgba(2, 6, 23, 0.45);
+}
+
+.office-inbox-item[data-priority="1"] {
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.office-inbox-item[data-priority="2"],
+.office-inbox-item[data-priority="3"] {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.office-inbox-item-body {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.office-inbox-item-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--office-text-emphasis);
+}
+
+.office-inbox-item-body-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-inbox-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+/* --- Timeline unificado (Fase A) --------------------------------------- */
+
+.office-activity-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.office-activity-item {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.45rem 0.2rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.office-activity-item:last-child {
+  border-bottom: none;
+}
+
+.office-activity-item--governance .office-activity-dot {
+  background: #fbbf24;
+}
+
+.office-activity-item--business .office-activity-dot {
+  background: #38bdf8;
+}
+
+.office-activity-body {
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.office-activity-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.office-activity-kind {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-activity-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--office-text-emphasis);
+}
+
+.office-activity-time {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-activity-detail,
+.office-activity-actor {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-activity-loading,
+.office-activity-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+/* --- Riel de estado empresarial (Fase A) ------------------------------- */
+
+.office-encargo-status-rail {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.office-status-panel {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.office-status-rail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-status-rail-row strong {
+  font-size: 0.8rem;
+  text-align: right;
+  color: var(--office-text-emphasis);
+}
+
+.office-status-rail-dl {
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.office-status-rail-dl dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-status-rail-dl dd {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--office-text-emphasis);
+}
+
+.office-blockers-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #fecaca;
+}
+
+.office-participants-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.office-participant-chip {
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--office-border, #334155);
+  background: rgba(56, 189, 248, 0.08);
+  font-size: 0.72rem;
+  color: var(--office-text-emphasis);
+}
+
+/* --- Revisión de documentos (Fase G) ----------------------------------- */
+
+.office-review-panel {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.office-review-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-review-meta code {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  background: rgba(2, 6, 23, 0.7);
+}
+
+.office-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.office-review-comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.office-review-comment {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--office-border, #334155);
+  border-radius: 0.5rem;
+  background: rgba(2, 6, 23, 0.4);
+}
+
+.office-review-comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--office-muted, #94a3b8);
+}
+
+.office-review-comment-body {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--office-text-emphasis);
+  white-space: pre-wrap;
+}
+
+.office-review-comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.office-review-form {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.office-review-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--office-muted, #94a3b8);
+}

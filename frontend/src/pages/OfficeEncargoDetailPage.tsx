@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Bug, Check, Crosshair, FileText, MessageSquare, Sparkles, X } from "lucide-react";
+import {
+  Bug,
+  Check,
+  Crosshair,
+  FileText,
+  MessageSquare,
+  Sparkles,
+  X,
+  Clock,
+  DollarSign,
+  CheckCheck,
+} from "lucide-react";
 import {
   api,
   type OfficeEncargoDetail,
@@ -24,6 +35,12 @@ import EncargoRevenuePanel from "../components/office/EncargoRevenuePanel";
 import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
 import DepartmentWorkMapPanel from "../components/office/DepartmentWorkMapPanel";
 import RunScopeBadge from "../components/runs/RunScopeBadge";
+import EncargoActivityTimeline from "../components/office/EncargoActivityTimeline";
+import DocumentReviewPanel from "../components/office/DocumentReviewPanel";
+import EncargoStatusRail, {
+  EncargoBlockersPanel,
+  EncargoParticipantsPanel,
+} from "../components/office/EncargoStatusRail";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import { notifyPendingDecisionsChanged } from "../hooks/usePendingDecisionsCount";
 import {
@@ -31,7 +48,14 @@ import {
   encargoTeamLabels,
 } from "../lib/office-encargo-display";
 
-type DetailTab = "final" | "documents";
+type DetailTab =
+  | "summary"
+  | "work"
+  | "conversation"
+  | "documents"
+  | "activity"
+  | "cost"
+  | "delivery";
 
 function decisionStatusPill(status: OfficeEncargoDecisionProposal["status"]): string {
   switch (status) {
@@ -54,7 +78,7 @@ export default function OfficeEncargoDetailPage() {
   const actorEmail = useDecisionActorEmail();
   const [detail, setDetail] = useState<OfficeEncargoDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<DetailTab>("final");
+  const [tab, setTab] = useState<DetailTab>("summary");
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
   const [decisionBusy, setDecisionBusy] = useState(false);
   const [pivotOpen, setPivotOpen] = useState(false);
@@ -89,11 +113,6 @@ export default function OfficeEncargoDetailPage() {
   useEffect(() => {
     if (selectedDoc && !selectedDocId) setSelectedDocId(selectedDoc.id);
   }, [selectedDoc, selectedDocId]);
-
-  useEffect(() => {
-    if (detail?.finalReport) setTab("final");
-    else if (detail?.documents.length) setTab("documents");
-  }, [detail?.id, detail?.finalReport, detail?.documents.length]);
 
   const decision = detail?.decisionProposal ?? null;
   const decisionPending =
@@ -148,7 +167,7 @@ export default function OfficeEncargoDetailPage() {
             <Breadcrumbs
               items={[
                 { label: t("office.encargos.breadcrumbOffice"), to: "/office" },
-                { label: t("office.encargos.backToList"), to: "/office/encargos" },
+                { label: t("office.encargos.backToList"), to: "/office/trabajo" },
               ]}
             />
           }
@@ -158,7 +177,7 @@ export default function OfficeEncargoDetailPage() {
           title={t("office.encargos.notFound")}
           description={t("office.encargos.backToList")}
           action={
-            <Link to="/office/encargos" className="office-link-btn inline-flex">
+            <Link to="/office/trabajo" className="office-link-btn inline-flex">
               {t("office.encargos.backToList")}
             </Link>
           }
@@ -167,9 +186,20 @@ export default function OfficeEncargoDetailPage() {
     );
   }
 
-  const showFinal = tab === "final";
-  const markdown = showFinal ? detail.finalReport : (selectedDoc?.markdown ?? "");
+  const showFinal = tab === "documents" && selectedDoc?.kind !== "file" && detail.finalReport;
+  const markdown = showFinal ? detail.finalReport : selectedDoc?.markdown ?? "";
   const showDocSidebar = tab === "documents" && documents.length > 0;
+
+
+  const Tabs: Array<{ id: DetailTab; label: string; icon: React.ReactNode }> = [
+    { id: "summary", label: t("office.encargos.tabSummary"), icon: <FileText className="h-4 w-4" aria-hidden /> },
+    { id: "work", label: t("office.encargos.tabWork"), icon: <MessageSquare className="h-4 w-4" aria-hidden /> },
+    { id: "conversation", label: t("office.encargos.tabConversation"), icon: <Sparkles className="h-4 w-4" aria-hidden /> },
+    { id: "documents", label: t("office.encargos.tabDocuments", { count: documents.length }), icon: <FileText className="h-4 w-4" aria-hidden /> },
+    { id: "activity", label: t("office.encargos.tabActivity"), icon: <Clock className="h-4 w-4" aria-hidden /> },
+    { id: "cost", label: t("office.encargos.tabCost"), icon: <DollarSign className="h-4 w-4" aria-hidden /> },
+    { id: "delivery", label: t("office.encargos.tabDelivery"), icon: <CheckCheck className="h-4 w-4" aria-hidden /> },
+  ];
 
   return (
     <div className="office-page office-encargo-detail">
@@ -222,98 +252,337 @@ export default function OfficeEncargoDetailPage() {
         </Link>
       </div>
 
-      <OfficeEncargoLivePanel
-        runId={detail.id}
-        title={detail.title}
-        phase={detail.phase}
-        departmentSlug={detail.departmentSlug}
-        orgUnitId={detail.orgUnitId}
-        productId={detail.productId}
-        productName={detail.productName}
-        warRoomHref={detail.warRoomHref}
-        teamAgents={detail.teamAgents}
-      />
+      <div className="office-encargo-detail-tabs" role="tablist" aria-label={t("office.encargos.tabsLabel")}>
+        {Tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={`office-encargos-filter ${tab === t.id ? "office-encargos-filter-active" : ""}`}
+            onClick={() => setTab(t.id)}
+          >
+            {t.icon}
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </div>
 
-      <DepartmentWorkMapPanel runId={detail.id} />
+      <div className="office-encargo-detail-layout">
+        <main className="office-encargo-preview">
+          {tab === "summary" && (
+            <>
+              <section className="office-panel office-encargo-header">
+                <div className="office-encargo-header-main">
+                  <div className="office-encargo-header-meta">
+                    <div>
+                      <dt>{t("office.encargos.procedure")}</dt>
+                      <dd>{detail.procedureLabel}</dd>
+                    </div>
+                    <div>
+                      <dt>{t("office.encargos.product")}</dt>
+                      <dd>
+                        {detail.productName ?? (
+                          <span className="office-meta-none">{t("office.encargos.scopeCompany")}</span>
+                        )}
+                      </dd>
+                    </div>
+                    {detail.teamAgents.length > 0 ? (
+                      <div>
+                        <dt>{t("office.encargos.team")}</dt>
+                        <dd>{encargoTeamLabels(detail.teamAgents, t)}</dd>
+                      </div>
+                    ) : null}
+                    <div>
+                      <dt>{t("office.encargos.cost")}</dt>
+                      <dd>${detail.totalCostUsd.toFixed(2)}</dd>
+                    </div>
+                  </div>
+                  <div className="office-encargo-header-next">
+                    {detail.nextAction ? (
+                      <div className="office-encargo-next-action">
+                        <p className="office-encargo-next-label">{t("office.encargos.nextActionLabel")}</p>
+                        <p className="office-encargo-next-text">{detail.nextAction}</p>
+                      </div>
+                    ) : null}
+                    {detail.phase === "delivered" ? (
+                      <p className="office-encargo-delivered-note">{t("office.encargos.deliveredNote")}</p>
+                    ) : null}
+                    {detail.phase === "in_progress" || detail.phase === "queued" ? (
+                      <p className="office-encargo-progress-note">{t("office.encargos.inProgressNote")}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </section>
 
-      <dl className="office-encargo-detail-meta">
-        <div>
-          <dt>{t("office.encargos.department")}</dt>
-          <dd>
-            {detail.departmentHref ? (
-              <Link to={detail.departmentHref}>{encargoDepartmentLabel(detail, t)}</Link>
-            ) : (
-              encargoDepartmentLabel(detail, t)
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>{t("office.encargos.procedure")}</dt>
-          <dd>{detail.procedureLabel}</dd>
-        </div>
-        {detail.productName ? (
-          <div>
-            <dt>{t("office.encargos.product")}</dt>
-            <dd>{detail.productName}</dd>
-          </div>
-        ) : (
-          <div>
-            <dt>{t("office.encargos.product")}</dt>
-            <dd>{t("office.encargos.scopeCompany")}</dd>
-          </div>
-        )}
-        {detail.teamAgents.length > 0 ? (
-          <div>
-            <dt>{t("office.encargos.team")}</dt>
-            <dd>{encargoTeamLabels(detail.teamAgents, t)}</dd>
-          </div>
-        ) : null}
-        <div>
-          <dt>{t("office.encargos.cost")}</dt>
-          <dd>${detail.totalCostUsd.toFixed(2)}</dd>
-        </div>
-      </dl>
+              {decision ? (
+                <section className="office-panel office-encargo-decision">
+                  <h2 className="office-panel-title">
+                    <Sparkles className="h-4 w-4" aria-hidden />
+                    {t("office.encargos.decisionTitle")}
+                  </h2>
+                  <div className="office-encargo-decision-head">
+                    <StatusPill status={decisionStatusPill(decision.status)}>
+                      {t(`decisions.status.${decision.status}`, { defaultValue: decision.status })}
+                    </StatusPill>
+                    <span className="office-encargo-decision-idea">{decision.ideaTitle}</span>
+                    <span className="office-encargo-decision-rec">
+                      {t("office.encargos.recommended", {
+                        decision:
+                          decision.recommended === "go" ? t("decisions.go") : t("decisions.noGo"),
+                      })}
+                    </span>
+                  </div>
+                  <p className="office-encargo-decision-rationale">{decision.rationale}</p>
 
-      {detail.phase === "delivered" ? (
-        <section className="office-panel office-encargo-post-delivery">
-          <h2 className="office-panel-title">{t("office.encargos.postDelivery.title")}</h2>
-          <p className="office-panel-subtitle">{t("office.encargos.postDelivery.subtitle")}</p>
-          <div className="office-encargo-post-delivery-actions">
-            <a href="#encargo-delivery" className="office-link-btn">
-              {t("office.encargos.postDelivery.shareCta")}
-            </a>
-            <Link
-              to={
-                detail.productSlug
-                  ? `/office/archive?product=${encodeURIComponent(detail.productSlug)}`
-                  : "/office/archive"
-              }
-              className="office-link-btn"
-            >
-              {t("office.encargos.postDelivery.archiveLink")}
-            </Link>
-          </div>
-        </section>
-      ) : null}
+                  {decision.evidence.length > 0 ? (
+                    <DecisionEvidencePanel
+                      proposalId={decision.id}
+                      runId={runId!}
+                      evidence={decision.evidence}
+                      documents={detail.documents}
+                    />
+                  ) : null}
 
-      <EncargoDeliveryPanel
-        runId={detail.id}
-        documents={documents}
-        hasFinalReport={Boolean(detail.finalReport)}
-        enabled={detail.phase === "delivered"}
-        wizard={detail.phase === "delivered"}
-      />
+                  {decisionPending ? (
+                    pivotOpen ? (
+                      <div className="office-encargo-decision-pivot">
+                        <Input
+                          label={t("decisions.pivotPrompt")}
+                          value={pivotText}
+                          onChange={(e) => setPivotText(e.target.value)}
+                          placeholder={t("decisions.pivotPlaceholder")}
+                        />
+                        <div className="office-encargo-decision-actions">
+                          <Button
+                            size="sm"
+                            disabled={decisionBusy || !pivotText.trim()}
+                            onClick={() => void submitPivot()}
+                          >
+                            {t("decisions.requestDrilldown")}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setPivotOpen(false);
+                              setPivotText("");
+                            }}
+                          >
+                            {t("common.cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="office-encargo-decision-actions">
+                        <Button
+                          size="sm"
+                          disabled={decisionBusy}
+                          onClick={() =>
+                            void runDecision(() =>
+                              api.decisions.approve(decision.id, { actorEmail }),
+                            )
+                          }
+                        >
+                          <Check className="mr-1 h-3.5 w-3.5" aria-hidden />
+                          {t("decisions.approve")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={decisionBusy}
+                          onClick={() => {
+                            setPivotOpen(true);
+                            setPivotText(decision.pivotPrompt ?? "");
+                          }}
+                        >
+                          {t("decisions.pivot")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={decisionBusy}
+                          onClick={() =>
+                            void runDecision(() =>
+                              api.decisions.reject(decision.id, { actorEmail }),
+                            )
+                          }
+                        >
+                          <X className="mr-1 h-3.5 w-3.5" aria-hidden />
+                          {t("decisions.reject")}
+                        </Button>
+                      </div>
+                    )
+                  ) : (
+                    <p className="office-encargo-decision-resolved">
+                      {t("office.encargos.decisionResolved")}
+                    </p>
+                  )}
+                </section>
+              ) : null}
 
-      {detail.phase === "delivered" && detail.productId ? (
-        <EncargoRevenuePanel
-          runId={detail.id}
-          productId={detail.productId}
-          productName={detail.productName}
-          linkedRevenueUsd={detail.linkedRevenueUsd}
-          linkedRevenueAt={detail.linkedRevenueAt}
-          onRecorded={() => void refresh()}
-        />
-      ) : null}
+              {showNextPanel && !decision ? (
+                <section className="office-panel office-encargo-next-panel">
+                  <h2 className="office-panel-title">
+                    <Sparkles className="h-4 w-4" aria-hidden />
+                    {t("office.encargos.nextStepTitle")}
+                  </h2>
+                  {detail.nextAction ? (
+                    <div className="office-encargo-next-action">
+                      <p className="office-encargo-next-label">{t("office.encargos.nextActionLabel")}</p>
+                      <p className="office-encargo-next-text">{detail.nextAction}</p>
+                    </div>
+                  ) : null}
+                </section>
+              ) : null}
+
+              <EncargoBlockersPanel detail={detail} />
+              <EncargoParticipantsPanel detail={detail} />
+            </>
+          )}
+
+          {tab === "work" && <DepartmentWorkMapPanel runId={detail.id} />}
+
+          {tab === "conversation" && (
+            <OfficeEncargoLivePanel
+              runId={detail.id}
+              title={detail.title}
+              phase={detail.phase}
+              departmentSlug={detail.departmentSlug}
+              orgUnitId={detail.orgUnitId}
+              productId={detail.productId}
+              productName={detail.productName}
+              warRoomHref={detail.warRoomHref}
+              teamAgents={detail.teamAgents}
+            />
+          )}
+
+          {tab === "documents" && (
+            <>
+              <DocumentReviewPanel
+                runId={detail.id}
+                document={selectedDoc}
+                versionSha={selectedDoc?.verifiedCommitSha ?? null}
+              />
+              <div
+                className={`office-encargo-detail-layout ${showDocSidebar ? "" : "office-encargo-detail-layout--full"}`}
+              >
+                {showDocSidebar ? (
+                  <aside className="office-panel office-encargo-doc-list">
+                    <h2 className="office-panel-title">{t("office.encargos.documentsTitle")}</h2>
+                    <ul>
+                      {documents.map((doc: OfficeEncargoDocument) => (
+                        <li key={doc.id}>
+                          <button
+                            type="button"
+                            className={`office-encargo-doc-item ${selectedDoc?.id === doc.id ? "office-encargo-doc-item-active" : ""}`}
+                            onClick={() => setSelectedDocId(doc.id)}
+                            title={[doc.agentName.replace(/-/g, " "), doc.title].join(" — ")}
+                          >
+                            <span className="office-encargo-doc-agent">{doc.agentName.replace(/-/g, " ")}</span>
+                            <span className="office-encargo-doc-title">{doc.title}</span>
+                            <span className="office-encargo-doc-kind">{t(`office.encargos.docKind.${doc.kind}`)}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                ) : null}
+
+                <section className="office-panel office-encargo-preview">
+                  <h2 className="office-panel-title">
+                    {showFinal ? t("office.encargos.finalReportTitle") : selectedDoc?.title}
+                  </h2>
+                  {!showFinal && selectedDoc?.path ? (
+                    <p className="office-encargo-doc-path">{selectedDoc.path}</p>
+                  ) : null}
+                  {!showFinal && selectedDoc?.kind === "file" ? (
+                    <p className="office-encargo-summary-note office-encargo-summary-note-muted">
+                      {t("office.encargos.fullReportNote")}
+                    </p>
+                  ) : null}
+                  {showFinal && detail.finalReportKind === "summary" ? (
+                    <p className="office-encargo-summary-note">{t("office.encargos.finalReportSubtitle")}</p>
+                  ) : null}
+                  {showFinal && detail.finalReportKind === "agent" ? (
+                    <p className="office-encargo-summary-note office-encargo-summary-note-muted">
+                      {t("office.encargos.finalReportFallbackNote")}
+                    </p>
+                  ) : null}
+                  {detail.phase === "in_progress" || detail.phase === "queued" ? (
+                    <p className="office-encargo-progress-note">{t("office.encargos.inProgressNote")}</p>
+                  ) : null}
+                  <RichMarkdownView
+                    value={markdown}
+                    emptyMessage={
+                      showFinal ? t("office.encargos.finalReportEmpty") : t("office.encargos.documentEmpty")
+                    }
+                    ariaLabel={showFinal ? t("office.encargos.finalReportTitle") : selectedDoc?.title}
+                  />
+                </section>
+              </div>
+            </>
+          )}
+
+          {tab === "activity" && <EncargoActivityTimeline runId={detail.id} />}
+
+          {tab === "cost" && (
+            <>
+              {detail.phase === "delivered" && detail.productId ? (
+                <EncargoRevenuePanel
+                  runId={detail.id}
+                  productId={detail.productId}
+                  productName={detail.productName}
+                  linkedRevenueUsd={detail.linkedRevenueUsd}
+                  linkedRevenueAt={detail.linkedRevenueAt}
+                  onRecorded={() => void refresh()}
+                />
+              ) : (
+                <p className="office-empty">{t("office.encargos.costNotAvailable")}</p>
+              )}
+            </>
+          )}
+
+          {tab === "delivery" && (
+            <>
+              <EncargoDeliveryPanel
+                runId={detail.id}
+                documents={documents}
+                hasFinalReport={Boolean(detail.finalReport)}
+                enabled={detail.phase === "delivered"}
+                wizard={detail.phase === "delivered"}
+              />
+              {detail.phase === "delivered" ? (
+                <section className="office-panel office-encargo-post-delivery">
+                  <h2 className="office-panel-title">{t("office.encargos.postDelivery.title")}</h2>
+                  <p className="office-panel-subtitle">{t("office.encargos.postDelivery.subtitle")}</p>
+                  <div className="office-encargo-post-delivery-actions">
+                    <a href="#encargo-delivery" className="office-link-btn">
+                      {t("office.encargos.postDelivery.shareCta")}
+                    </a>
+                    <Link
+                      to={
+                        detail.productSlug
+                          ? `/office/archive?product=${encodeURIComponent(detail.productSlug)}`
+                          : "/office/archive"
+                      }
+                      className="office-link-btn"
+                    >
+                      {t("office.encargos.postDelivery.archiveLink")}
+                    </Link>
+                  </div>
+                </section>
+              ) : (
+                <p className="office-empty">{t("office.encargos.deliveryNotAvailable")}</p>
+              )}
+            </>
+          )}
+        </main>
+
+        <aside className="office-encargo-status-rail">
+          <EncargoStatusRail detail={detail} />
+        </aside>
+      </div>
 
       {detail.phase === "delivered" || detail.phase === "failed" ? (
         <section className="office-panel office-encargo-revision-panel">
@@ -342,214 +611,6 @@ export default function OfficeEncargoDetailPage() {
           </div>
         </section>
       ) : null}
-
-      {showNextPanel ? (
-        <section className="office-panel office-encargo-next-panel">
-          <h2 className="office-panel-title">
-            <Sparkles className="h-4 w-4" aria-hidden />
-            {t("office.encargos.nextStepTitle")}
-          </h2>
-
-          {detail.nextAction ? (
-            <div className="office-encargo-next-action">
-              <p className="office-encargo-next-label">{t("office.encargos.nextActionLabel")}</p>
-              <p className="office-encargo-next-text">{detail.nextAction}</p>
-            </div>
-          ) : null}
-
-          {decision ? (
-            <div className="office-encargo-decision">
-              <div className="office-encargo-decision-head">
-                <StatusPill status={decisionStatusPill(decision.status)}>
-                  {t(`decisions.status.${decision.status}`, { defaultValue: decision.status })}
-                </StatusPill>
-                <span className="office-encargo-decision-idea">{decision.ideaTitle}</span>
-                <span className="office-encargo-decision-rec">
-                  {t("office.encargos.recommended", {
-                    decision:
-                      decision.recommended === "go" ? t("decisions.go") : t("decisions.noGo"),
-                  })}
-                </span>
-              </div>
-              <p className="office-encargo-decision-rationale">{decision.rationale}</p>
-
-              {decision.evidence.length > 0 ? (
-                <DecisionEvidencePanel
-                  proposalId={decision.id}
-                  runId={runId}
-                  evidence={decision.evidence}
-                  documents={detail.documents}
-                />
-              ) : null}
-
-              {decisionPending ? (
-                pivotOpen ? (
-                  <div className="office-encargo-decision-pivot">
-                    <Input
-                      label={t("decisions.pivotPrompt")}
-                      value={pivotText}
-                      onChange={(e) => setPivotText(e.target.value)}
-                      placeholder={t("decisions.pivotPlaceholder")}
-                    />
-                    <div className="office-encargo-decision-actions">
-                      <Button
-                        size="sm"
-                        disabled={decisionBusy || !pivotText.trim()}
-                        onClick={() => void submitPivot()}
-                      >
-                        {t("decisions.requestDrilldown")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setPivotOpen(false);
-                          setPivotText("");
-                        }}
-                      >
-                        {t("common.cancel")}
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="office-encargo-decision-actions">
-                    <Button
-                      size="sm"
-                      disabled={decisionBusy}
-                      onClick={() =>
-                        void runDecision(() =>
-                          api.decisions.approve(decision.id, { actorEmail }),
-                        )
-                      }
-                    >
-                      <Check className="mr-1 h-3.5 w-3.5" aria-hidden />
-                      {t("decisions.approve", {
-                        decision:
-                          decision.recommended === "go" ? t("decisions.go") : t("decisions.noGo"),
-                      })}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={decisionBusy}
-                      onClick={() => {
-                        setPivotOpen(true);
-                        setPivotText(decision.pivotPrompt ?? "");
-                      }}
-                    >
-                      {t("decisions.pivot")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={decisionBusy}
-                      onClick={() =>
-                        void runDecision(() =>
-                          api.decisions.reject(decision.id, { actorEmail }),
-                        )
-                      }
-                    >
-                      <X className="mr-1 h-3.5 w-3.5" aria-hidden />
-                      {t("decisions.reject")}
-                    </Button>
-                  </div>
-                )
-              ) : (
-                <p className="office-encargo-decision-resolved">
-                  {t("office.encargos.decisionResolved")}
-                </p>
-              )}
-            </div>
-          ) : detail.phase === "delivered" && detail.workflowName === "new-product-evaluation" ? (
-            <p className="office-encargo-next-hint">{t("office.encargos.noDecisionHint")}</p>
-          ) : null}
-
-          <Link to="/office/pendientes" className="office-link-btn office-encargo-decisions-link">
-            <ArrowRight className="h-4 w-4" aria-hidden />
-            {t("office.encargos.openDecisions")}
-          </Link>
-        </section>
-      ) : null}
-
-      <div className="office-encargo-detail-tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "final"}
-          className={`office-encargos-filter ${tab === "final" ? "office-encargos-filter-active" : ""}`}
-          onClick={() => setTab("final")}
-        >
-          <FileText className="h-4 w-4" aria-hidden />
-          {t("office.encargos.tabFinal")}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "documents"}
-          className={`office-encargos-filter ${tab === "documents" ? "office-encargos-filter-active" : ""}`}
-          onClick={() => setTab("documents")}
-        >
-          {t("office.encargos.tabDocuments", { count: documents.length })}
-        </button>
-      </div>
-
-      <div
-        className={`office-encargo-detail-layout ${showDocSidebar ? "" : "office-encargo-detail-layout--full"}`}
-      >
-        {showDocSidebar ? (
-          <aside className="office-panel office-encargo-doc-list">
-            <h2 className="office-panel-title">{t("office.encargos.documentsTitle")}</h2>
-            <ul>
-              {documents.map((doc: OfficeEncargoDocument) => (
-                <li key={doc.id}>
-                  <button
-                    type="button"
-                    className={`office-encargo-doc-item ${selectedDoc?.id === doc.id ? "office-encargo-doc-item-active" : ""}`}
-                    onClick={() => setSelectedDocId(doc.id)}
-                    title={[doc.agentName.replace(/-/g, " "), doc.title].join(" — ")}
-                  >
-                    <span className="office-encargo-doc-agent">{doc.agentName.replace(/-/g, " ")}</span>
-                    <span className="office-encargo-doc-title">{doc.title}</span>
-                    <span className="office-encargo-doc-kind">{t(`office.encargos.docKind.${doc.kind}`)}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </aside>
-        ) : null}
-
-        <section className="office-panel office-encargo-preview">
-          <h2 className="office-panel-title">
-            {showFinal ? t("office.encargos.finalReportTitle") : selectedDoc?.title}
-          </h2>
-          {!showFinal && selectedDoc?.path ? (
-            <p className="office-encargo-doc-path">{selectedDoc.path}</p>
-          ) : null}
-          {!showFinal && selectedDoc?.kind === "file" ? (
-            <p className="office-encargo-summary-note office-encargo-summary-note-muted">
-              {t("office.encargos.fullReportNote")}
-            </p>
-          ) : null}
-          {showFinal && detail.finalReportKind === "summary" ? (
-            <p className="office-encargo-summary-note">{t("office.encargos.finalReportSubtitle")}</p>
-          ) : null}
-          {showFinal && detail.finalReportKind === "agent" ? (
-            <p className="office-encargo-summary-note office-encargo-summary-note-muted">
-              {t("office.encargos.finalReportFallbackNote")}
-            </p>
-          ) : null}
-          {detail.phase === "in_progress" || detail.phase === "queued" ? (
-            <p className="office-encargo-progress-note">{t("office.encargos.inProgressNote")}</p>
-          ) : null}
-          <RichMarkdownView
-            value={markdown}
-            emptyMessage={
-              showFinal ? t("office.encargos.finalReportEmpty") : t("office.encargos.documentEmpty")
-            }
-            ariaLabel={showFinal ? t("office.encargos.finalReportTitle") : selectedDoc?.title}
-          />
-        </section>
-      </div>
     </div>
   );
 }

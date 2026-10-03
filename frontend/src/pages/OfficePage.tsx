@@ -164,8 +164,8 @@ export default function OfficePage() {
             {t(`office.mode.${dashboard.mode}`)}
           </div>
           {dashboard.stats.pendingDecisions > 0 ? (
-          <Link to="/office/trabajo?tab=pendientes" className="office-link-btn office-link-btn-emphasis">
-            {t("nav.trabajo")} ({dashboard.stats.pendingDecisions})
+          <Link to="/office/inbox?category=decision" className="office-link-btn office-link-btn-emphasis">
+            {t("nav.inbox")} ({dashboard.stats.pendingDecisions})
           </Link>
           ) : null}
           <Link to="/office/trabajo" className="office-link-btn">

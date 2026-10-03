@@ -1078,6 +1078,8 @@ export interface OfficeEncargoDocument {
   /** SHA del WorkspaceSnapshot verificado que contiene este archivo (Fase 4). */
   verifiedCommitSha?: string | null;
   snapshotVerifiedAt?: string | null;
+  /** Clave canónica de revisión: `file:<path>` | `rev:<id>` | `step:<id>` (Fase G). */
+  docKey?: string;
 }
 
 export interface OfficeEncargoDecisionProposal {
@@ -1161,6 +1163,80 @@ export interface OfficeDepartmentWorkMap {
   runId: string;
   items: OfficeDepartmentWorkItem[];
   handoffs: OfficeDepartmentHandoff[];
+}
+
+// ─── Reingeniería 2 Fase A: timeline unificado ─────────────────────────────
+
+export interface EncargoActivityItem {
+  id: string;
+  category: "technical" | "governance" | "business";
+  kind: string;
+  title: string;
+  detail: string | null;
+  actor: string | null;
+  runId: string;
+  refId: string | null;
+  href: string | null;
+  createdAt: string;
+}
+
+// ─── Reingeniería 2 Fase D: inbox empresarial ──────────────────────────────
+
+export type OfficeInboxCategory =
+  | "decision"
+  | "handoff"
+  | "blocked"
+  | "review"
+  | "cost"
+  | "failure"
+  | "info";
+
+export interface OfficeInboxItem {
+  id: string;
+  kind: string;
+  category: OfficeInboxCategory;
+  priority: number;
+  title: string;
+  body: string | null;
+  href: string;
+  runId: string | null;
+  refId: string;
+  resolve: { method: "POST" | "PATCH"; url: string; body?: Record<string, unknown> } | null;
+  createdAt: string;
+}
+
+// ─── Reingeniería 2 Fase G: revisión de documentos ──────────────────────────
+
+export type DocumentReviewStatus =
+  | "pending_review"
+  | "changes_requested"
+  | "approved"
+  | "rejected";
+
+export interface OfficeDocumentComment {
+  id: string;
+  anchor: { kind?: string; heading?: string | null; line?: number | null; quote?: string | null };
+  body: string;
+  authorUserId: string | null;
+  authorAgentName: string | null;
+  versionSha: string | null;
+  status: "open" | "resolved" | "converted";
+  linkedWorkItemId: string | null;
+  createdAt: string;
+}
+
+export interface OfficeDocumentReview {
+  id: string;
+  runId: string;
+  docKey: string;
+  docPath: string | null;
+  versionSha: string | null;
+  status: DocumentReviewStatus;
+  resolvedBy: string | null;
+  resolvedAt: string | null;
+  comments: OfficeDocumentComment[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EncargoDeliverySummary {
@@ -2319,6 +2395,67 @@ export const api = {
       request<{ handoff: OfficeDepartmentHandoff }>(`/office/handoffs/${handoffId}`, {
         method: "PATCH",
         body: JSON.stringify(body),
+      }),
+    activity: (runId: string, limit?: number) => {
+      const q = limit ? `?limit=${limit}` : "";
+      return request<{ items: EncargoActivityItem[] }>(`/office/runs/${runId}/activity${q}`);
+    },
+    inbox: (params?: { category?: OfficeInboxCategory; limit?: number }) => {
+      const q = new URLSearchParams();
+      if (params?.category) q.set("category", params.category);
+      if (params?.limit) q.set("limit", String(params.limit));
+      const qs = q.toString();
+      return request<{ items: OfficeInboxItem[]; count: number }>(
+        `/office/inbox${qs ? `?${qs}` : ""}`,
+      );
+    },
+    runReviews: (runId: string, docKey?: string) => {
+      const q = docKey ? `?docKey=${encodeURIComponent(docKey)}` : "";
+      return request<{ reviews: OfficeDocumentReview[] }>(`/office/runs/${runId}/reviews${q}`);
+    },
+    upsertReview: (
+      runId: string,
+      body: {
+        docKey: string;
+        docPath?: string;
+        versionSha?: string;
+        status: DocumentReviewStatus;
+      },
+    ) =>
+      request<{ review: OfficeDocumentReview }>(`/office/runs/${runId}/reviews`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    addReviewComment: (
+      runId: string,
+      reviewId: string,
+      body: {
+        body: string;
+        anchor?: { kind?: string; heading?: string; line?: number; quote?: string };
+      },
+    ) =>
+      request<{ review: OfficeDocumentReview }>(
+        `/office/runs/${runId}/reviews/${reviewId}/comments`,
+        { method: "POST", body: JSON.stringify(body) },
+      ),
+    resolveReviewComment: (runId: string, commentId: string) =>
+      request<{ review: OfficeDocumentReview }>(
+        `/office/runs/${runId}/reviews/comments/${commentId}/resolve`,
+        { method: "POST" },
+      ),
+    convertReviewComment: (
+      runId: string,
+      commentId: string,
+      body?: { title?: string; ownerAgentName?: string; departmentSlug?: string },
+    ) =>
+      request<{ workItemId: string; commentId: string }>(
+        `/office/runs/${runId}/reviews/comments/${commentId}/convert`,
+        { method: "POST", body: body ? JSON.stringify(body) : undefined },
+      ),
+    resolveInboxItem: (resolve: { method: "POST" | "PATCH"; url: string; body?: Record<string, unknown> }) =>
+      request<unknown>(resolve.url, {
+        method: resolve.method,
+        body: resolve.body ? JSON.stringify(resolve.body) : undefined,
       }),
     session: (sessionId: string) =>
       request<OfficeSessionDetail>(`/office/sessions/${sessionId}`),

@@ -27,6 +27,7 @@ export const nav = {
   orgUnits: "Departamentos",
   orgStudio: "Estudio de departamentos",
   trabajo: "Mi trabajo",
+  inbox: "Bandeja",
   memoria: "Memoria",
   warRoom: "War room",
   consensus: "Consenso",

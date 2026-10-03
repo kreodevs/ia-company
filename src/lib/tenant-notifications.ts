@@ -18,7 +18,13 @@ export type TenantNotificationType =
   | "task_started"
   | "playbook_suggestion"
   | "department_run_completed"
-  | "delivery_viewed";
+  | "delivery_viewed"
+  | "handoff_pending"
+  | "checkpoint_pending"
+  | "encargo_blocked"
+  | "cost_alert"
+  | "doc_review_pending"
+  | "clarification_requested";
 
 export interface TenantNotificationDto {
   id: string;

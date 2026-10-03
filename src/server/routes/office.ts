@@ -55,8 +55,17 @@ import {
   getDepartmentWorkMap,
   updateDepartmentHandoff,
 } from "../../lib/office-work-items.js";
-import { DepartmentHandoffStatus } from "@prisma/client";
+import { DepartmentHandoffStatus, DocumentReviewStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import { getEncargoActivity } from "../../lib/encargo-activity.js";
+import { getOfficeInbox, type OfficeInboxCategory } from "../../lib/office-inbox.js";
+import {
+  addDocumentComment,
+  convertCommentToWorkItem,
+  listDocumentReviews,
+  resolveDocumentComment,
+  upsertDocumentReview,
+} from "../../lib/document-reviews.js";
 import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError } from "../lib/request-context.js";
 
 export async function officeRoutes(app: FastifyInstance) {
@@ -619,6 +628,160 @@ export async function officeRoutes(app: FastifyInstance) {
       });
       if (!handoff) throw new HttpError(404, "Handoff not found");
       return { handoff };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Reingenieria 2 Fase A: timeline unificado (tecnico + gobernanza + empresa)
+  // -------------------------------------------------------------------------
+
+  app.get<{ Params: { runId: string }; Querystring: { limit?: string } }>(
+    "/office/runs/:runId/activity",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const activity = await getEncargoActivity(tenantId, request.params.runId, {
+          limit: request.query.limit ? Number(request.query.limit) : undefined,
+        });
+        if (!activity) throw new HttpError(404, "Run not found");
+        return { items: activity };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  // -------------------------------------------------------------------------
+  // Reingenieria 2 Fase D: inbox empresarial (read-model agregador)
+  // -------------------------------------------------------------------------
+
+  const INBOX_CATEGORIES = [
+    "decision",
+    "handoff",
+    "blocked",
+    "review",
+    "cost",
+    "failure",
+    "info",
+  ] as const;
+
+  app.get<{ Querystring: { category?: string; limit?: string } }>(
+    "/office/inbox",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const category = INBOX_CATEGORIES.includes(request.query.category as OfficeInboxCategory)
+          ? (request.query.category as OfficeInboxCategory)
+          : undefined;
+        const items = await getOfficeInbox(tenantId, {
+          category,
+          limit: request.query.limit ? Number(request.query.limit) : undefined,
+        });
+        return { items, count: items.length };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  // -------------------------------------------------------------------------
+  // Reingenieria 2 Fase G: revision de documentos con comentarios anclados
+  // -------------------------------------------------------------------------
+
+  app.get<{ Params: { runId: string }; Querystring: { docKey?: string } }>(
+    "/office/runs/:runId/reviews",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const reviews = await listDocumentReviews(tenantId, request.params.runId, {
+          docKey: request.query.docKey,
+        });
+        return { reviews };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{
+    Params: { runId: string };
+    Body: { docKey?: string; docPath?: string; versionSha?: string; status?: string };
+  }>("/office/runs/:runId/reviews", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const session = requireSession(request);
+      const { docKey, docPath, versionSha, status } = request.body ?? {};
+      if (!docKey?.trim()) throw new HttpError(400, "docKey is required");
+      const review = await upsertDocumentReview({
+        tenantId,
+        runId: request.params.runId,
+        docKey: docKey.trim(),
+        docPath: docPath ?? null,
+        versionSha: versionSha ?? null,
+        status: (status ?? "pending_review") as DocumentReviewStatus,
+        actor: session.sub ?? null,
+      });
+      if (!review) throw new HttpError(404, "Run not found");
+      return reply.status(201).send({ review });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { runId: string; reviewId: string };
+    Body: { body?: string; anchor?: { kind?: string; heading?: string; line?: number; quote?: string } };
+  }>("/office/runs/:runId/reviews/:reviewId/comments", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const session = requireSession(request);
+      const { body, anchor } = request.body ?? {};
+      if (!body?.trim()) throw new HttpError(400, "body is required");
+      const review = await addDocumentComment({
+        tenantId,
+        reviewId: request.params.reviewId,
+        body: body.trim(),
+        anchor,
+        authorUserId: session.sub ?? null,
+      });
+      if (!review) throw new HttpError(404, "Review not found");
+      return reply.status(201).send({ review });
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { runId: string; commentId: string } }>(
+    "/office/runs/:runId/reviews/comments/:commentId/resolve",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const review = await resolveDocumentComment({ tenantId, commentId: request.params.commentId });
+        if (!review) throw new HttpError(404, "Comment not found");
+        return { review };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.post<{
+    Params: { runId: string; commentId: string };
+    Body: { title?: string; ownerAgentName?: string; departmentSlug?: string };
+  }>("/office/runs/:runId/reviews/comments/:commentId/convert", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await convertCommentToWorkItem({
+        tenantId,
+        commentId: request.params.commentId,
+        title: request.body?.title,
+        ownerAgentName: request.body?.ownerAgentName ?? null,
+        departmentSlug: request.body?.departmentSlug ?? null,
+      });
+      if (!result) throw new HttpError(404, "Comment not found");
+      return reply.status(201).send(result);
     } catch (err) {
       return handleRouteError(reply, err);
     }

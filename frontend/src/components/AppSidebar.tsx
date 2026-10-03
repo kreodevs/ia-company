@@ -63,6 +63,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/office/encargos": ClipboardList,
   "/office/archive": Archive,
   "/office/pendientes": Inbox,
+  "/office/inbox": Inbox,
   "/products": Package,
   "/org-units": Network,
   "/org-studio": Network,
@@ -357,7 +358,8 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionOffice",
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
-          { to: "/office/trabajo", labelKey: "nav.trabajo", badge: pendingDecisions },
+          { to: "/office/trabajo", labelKey: "nav.trabajo" },
+          { to: "/office/inbox", labelKey: "nav.inbox", badge: pendingDecisions },
           { to: "/office/memoria", labelKey: "nav.memoria" },
           { to: "/office/archive", labelKey: "nav.archive" },
           { to: "/war-room", labelKey: "nav.warRoom" },

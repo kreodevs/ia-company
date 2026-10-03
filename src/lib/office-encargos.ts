@@ -60,6 +60,8 @@ export interface OfficeEncargoDocument {
   /** SHA del WorkspaceSnapshot verificado que contiene este archivo (Fase 4). */
   readonly verifiedCommitSha?: string | null;
   readonly snapshotVerifiedAt?: string | null;
+  /** Clave canónica de revisión (Fase G): `file:<path>` | `rev:<id>` | `step:<id>`. */
+  readonly docKey?: string;
 }
 
 export interface OfficeEncargoDecisionProposal {
@@ -532,11 +534,17 @@ export async function loadRunDocuments(
     if (seen.has(contentKey)) return;
     seen.add(contentKey);
     const verified = doc.path ? verifiedPaths?.get(doc.path) : undefined;
-    documents.push(
-      verified
-        ? { ...doc, verifiedCommitSha: verified.sha, snapshotVerifiedAt: verified.at }
-        : doc,
-    );
+    const docKey =
+      doc.docKey ??
+      (doc.kind === "file"
+        ? `file:${doc.path ?? doc.id}`
+        : doc.kind === "revision"
+          ? `rev:${doc.id}`
+          : `step:${doc.id.replace(/^step-/, "")}`);
+    const enriched = verified
+      ? { ...doc, docKey, verifiedCommitSha: verified.sha, snapshotVerifiedAt: verified.at }
+      : { ...doc, docKey };
+    documents.push(enriched);
     if (doc.kind === "file") {
       agentsWithFile.add(doc.agentName);
       if (doc.path) loadedPaths.add(doc.path);

@@ -16,6 +16,7 @@ import OfficeArchivePage from "./pages/OfficeArchivePage";
 import OfficeTrabajoPage from "./pages/OfficeTrabajoPage";
 import OfficeMemoriaPage from "./pages/OfficeMemoriaPage";
 import OfficeEncargoDetailPage from "./pages/OfficeEncargoDetailPage";
+import OfficeInboxPage from "./pages/OfficeInboxPage";
 import PublicDeliveryPage from "./pages/PublicDeliveryPage";
 import OpsPage from "./pages/OpsPage";
 import ProductsPage from "./pages/ProductsPage";
@@ -100,7 +101,8 @@ function AppShell() {
               <Route path="office/trabajo" element={<OfficeTrabajoPage />} />
               <Route path="office/memoria" element={<OfficeMemoriaPage />} />
               <Route path="office/encargos" element={<Navigate to="/office/trabajo?tab=todos" replace />} />
-              <Route path="office/pendientes" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
+              <Route path="office/pendientes" element={<Navigate to="/office/inbox" replace />} />
+              <Route path="office/inbox" element={<OfficeInboxPage />} />
               <Route path="office/encargos/:runId" element={<OfficeEncargoDetailPage />} />
               <Route path="office/workflows/:id" element={<WorkflowEditorPage />} />
               <Route path="office/workflows" element={<Navigate to="/settings/procedures" replace />} />
@@ -131,7 +133,7 @@ function AppShell() {
               <Route path="org-studio" element={<OrgStudioPage />} />
               <Route path="war-room" element={<WarRoomPage />} />
               <Route path="war-room/:productId" element={<WarRoomPage />} />
-              <Route path="decisions" element={<Navigate to="/office/trabajo?tab=pendientes" replace />} />
+              <Route path="decisions" element={<Navigate to="/office/inbox?category=decision" replace />} />
               <Route path="consensus" element={<Navigate to="/office/memoria?tab=empresa" replace />} />
               <Route path="products/:productId/consensus" element={<RedirectProductConsensus />} />
               <Route path="products/:productId/settings" element={<ProductSettingsPage />} />

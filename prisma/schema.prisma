@@ -21,42 +21,44 @@ model SuperAdmin {
 // ─── Multi-tenant ───────────────────────────────────────────────────────────
 
 model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  scheduleTimezone String @default("UTC")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  scheduleTimezone String   @default("UTC")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  agents    Agent[]
-  skills    Skill[]
-  workflows Workflow[]
-  runs      ExecutionRun[]
-  sessions  AgentSession[]
-  users     TenantUser[]
-  consensus TenantConsensus?
-  llmConfig TenantLlmConfig?
-  schedules AutonomousSchedule[]
-  auditLogs AuditLog[]
-  notificationConfig TenantNotificationConfig?
-  usageLimits TenantUsageLimits?
-  cycleState TenantCycleState?
-  products TenantProduct[]
-  pipelineIdeas PipelineIdea[]
-  interests TenantInterest[]
-  opencodeConfig TenantOpencodeConfig?
-  integrationConfig TenantIntegrationConfig?
-  mcpServers TenantMcpServer[]
-  emailSendLogs TenantEmailSendLog[]
+  agents              Agent[]
+  skills              Skill[]
+  workflows           Workflow[]
+  runs                ExecutionRun[]
+  sessions            AgentSession[]
+  users               TenantUser[]
+  consensus           TenantConsensus?
+  llmConfig           TenantLlmConfig?
+  schedules           AutonomousSchedule[]
+  auditLogs           AuditLog[]
+  notificationConfig  TenantNotificationConfig?
+  usageLimits         TenantUsageLimits?
+  cycleState          TenantCycleState?
+  products            TenantProduct[]
+  pipelineIdeas       PipelineIdea[]
+  interests           TenantInterest[]
+  opencodeConfig      TenantOpencodeConfig?
+  integrationConfig   TenantIntegrationConfig?
+  mcpServers          TenantMcpServer[]
+  emailSendLogs       TenantEmailSendLog[]
   opencodeDelegations OpencodeDelegation[]
-  opencodeRunGates OpencodeRunGate[]
-  notifications TenantNotification[]
-  orgUnits OrgUnit[]
-  artifacts Artifact[]
-  encargoDeliveries EncargoDelivery[]
-  deliveryBranding TenantDeliveryBranding?
+  opencodeRunGates    OpencodeRunGate[]
+  notifications       TenantNotification[]
+  orgUnits            OrgUnit[]
+  artifacts           Artifact[]
+  encargoDeliveries   EncargoDelivery[]
+  deliveryBranding    TenantDeliveryBranding?
   departmentWorkItems DepartmentWorkItem[]
-  departmentHandoffs DepartmentHandoff[]
+  departmentHandoffs  DepartmentHandoff[]
+  documentReviews     DocumentReview[]
+  documentComments    DocumentComment[]
 }
 
 enum TenantUserRole {
@@ -100,23 +102,23 @@ enum AgentModelKind {
 }
 
 model Agent {
-  id               String          @id @default(cuid())
+  id               String         @id @default(cuid())
   tenantId         String?
   platformSourceId String?
   name             String
   role             String
-  systemPrompt     String          @db.Text
+  systemPrompt     String         @db.Text
   provider         AgentProvider?
   model            String?
-  modelKind        AgentModelKind  @default(chat)
-  temperature      Float           @default(0.7)
-  contractInputs   Json          @default("[]")
-  contractOutputs  Json          @default("[]")
-  isActive         Boolean       @default(true)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  modelKind        AgentModelKind @default(chat)
+  temperature      Float          @default(0.7)
+  contractInputs   Json           @default("[]")
+  contractOutputs  Json           @default("[]")
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
-  tenant        Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant        Tenant?         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   skills        AgentSkill[]
   mcpGrants     AgentMcpGrant[]
   workflowSteps WorkflowStep[]
@@ -248,17 +250,18 @@ model ExecutionRun {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  workflow Workflow?      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  tenant   Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
-  orgUnit  OrgUnit?       @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
-  product  TenantProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  logs     ExecutionLog[]
-  events   ExecutionRunEvent[]
-  checkpoints RunCheckpoint[]
-  opencodeDelegation OpencodeDelegation?
-  opencodeRunGate    OpencodeRunGate?
-  sessions AgentSession[]
+  workflow            Workflow?            @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  tenant              Tenant?              @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  orgUnit             OrgUnit?             @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
+  product             TenantProduct?       @relation(fields: [productId], references: [id], onDelete: SetNull)
+  logs                ExecutionLog[]
+  events              ExecutionRunEvent[]
+  checkpoints         RunCheckpoint[]
+  opencodeDelegation  OpencodeDelegation?
+  opencodeRunGate     OpencodeRunGate?
+  sessions            AgentSession[]
   departmentWorkItems DepartmentWorkItem[]
+  documentReviews     DocumentReview[]
 
   @@index([workflowId])
   @@index([status])
@@ -393,9 +396,9 @@ model AgentSession {
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
-  run         ExecutionRun       @relation(fields: [runId], references: [id], onDelete: Cascade)
-  tenant      Tenant?            @relation(fields: [tenantId], references: [id], onDelete: SetNull)
-  agent       Agent              @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  run         ExecutionRun        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  tenant      Tenant?             @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  agent       Agent               @relation(fields: [agentId], references: [id], onDelete: Restrict)
   turns       SessionTurn[]
   toolCalls   SessionToolCall[]
   snapshots   WorkspaceSnapshot[]
@@ -437,7 +440,7 @@ model SessionToolCall {
   createdAt  DateTime              @default(now())
 
   session AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  turn    SessionTurn   @relation(fields: [turnId], references: [id], onDelete: Cascade)
+  turn    SessionTurn  @relation(fields: [turnId], references: [id], onDelete: Cascade)
 
   @@index([turnId])
   @@index([sessionId, createdAt])
@@ -529,43 +532,43 @@ model TenantCycleState {
 }
 
 model TenantProduct {
-  id                 String              @id @default(cuid())
-  tenantId           String
-  slug               String
-  name               String
-  description        String?             @db.Text
-  phase              ProductPhase        @default(queued)
-  pipelineRank       Int                 @default(0)
-  goNoGo             GoNoGoDecision      @default(pending)
-  revenueUsd         Float               @default(0)
-  lastRunId          String?
-  githubRepoUrl      String?
-  githubDefaultBranch String?
-  websiteUrl         String?
-  pricingPageUrl     String?
-  metadata           Json?
-  intakeStatus       ProductIntakeStatus @default(skipped)
-  intakeRunId        String?
-  opencodeDefaultAgent  String?
-  opencodeDefaultModel  String?
-  opencodeProjectPath   String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id                   String              @id @default(cuid())
+  tenantId             String
+  slug                 String
+  name                 String
+  description          String?             @db.Text
+  phase                ProductPhase        @default(queued)
+  pipelineRank         Int                 @default(0)
+  goNoGo               GoNoGoDecision      @default(pending)
+  revenueUsd           Float               @default(0)
+  lastRunId            String?
+  githubRepoUrl        String?
+  githubDefaultBranch  String?
+  websiteUrl           String?
+  pricingPageUrl       String?
+  metadata             Json?
+  intakeStatus         ProductIntakeStatus @default(skipped)
+  intakeRunId          String?
+  opencodeDefaultAgent String?
+  opencodeDefaultModel String?
+  opencodeProjectPath  String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
 
-  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  focusCycles TenantCycleState[] @relation("FocusProduct")
-  consensus   ProductConsensus?
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  focusCycles         TenantCycleState[]   @relation("FocusProduct")
+  consensus           ProductConsensus?
   opencodeDelegations OpencodeDelegation[]
 
-  orgUnitId    String?
-  workItemKind WorkItemKind @default(product)
-  orgUnit      OrgUnit?     @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
-  artifacts    Artifact[]
-  deskItems    ProductDeskItem[]
-  productSignals ProductSignal[]
-  revenueEvents ProductRevenueEvent[]
+  orgUnitId       String?
+  workItemKind    WorkItemKind            @default(product)
+  orgUnit         OrgUnit?                @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
+  artifacts       Artifact[]
+  deskItems       ProductDeskItem[]
+  productSignals  ProductSignal[]
+  revenueEvents   ProductRevenueEvent[]
   waitlistSignups ProductWaitlistSignup[]
-  executionRuns ExecutionRun[]
+  executionRuns   ExecutionRun[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, phase])
@@ -639,18 +642,18 @@ model ProductConsensusRevision {
 }
 
 model PipelineIdea {
-  id                  String         @id @default(cuid())
-  tenantId            String
-  title               String
-  description         String?        @db.Text
-  rank                Int            @default(0)
-  interestScore       Float          @default(0)
-  goNoGo              GoNoGoDecision @default(pending)
-  promotedProductId   String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  id                String         @id @default(cuid())
+  tenantId          String
+  title             String
+  description       String?        @db.Text
+  rank              Int            @default(0)
+  interestScore     Float          @default(0)
+  goNoGo            GoNoGoDecision @default(pending)
+  promotedProductId String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   proposals DecisionProposal[]
 
   @@index([tenantId, rank])
@@ -666,21 +669,21 @@ enum DecisionStatus {
 }
 
 model DecisionProposal {
-  id            String         @id @default(cuid())
-  tenantId      String
-  ideaId        String
-  runId         String?
-  workflowName  String
-  recommended   GoNoGoDecision
-  rationale     String         @db.Text
-  evidence      Json           @default("[]")
-  pivotPrompt   String?        @db.Text
-  status        DecisionStatus @default(pending_review)
+  id             String         @id @default(cuid())
+  tenantId       String
+  ideaId         String
+  runId          String?
+  workflowName   String
+  recommended    GoNoGoDecision
+  rationale      String         @db.Text
+  evidence       Json           @default("[]")
+  pivotPrompt    String?        @db.Text
+  status         DecisionStatus @default(pending_review)
   drilldownRunId String?
-  decidedBy     String?
-  decidedAt     DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  decidedBy      String?
+  decidedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   idea PipelineIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
 
@@ -814,20 +817,20 @@ model TenantOpencodeConfig {
 }
 
 model TenantIntegrationConfig {
-  tenantId        String   @id
-  githubToken     String?  @db.Text
-  githubUsername  String?
-  smtpHost        String?
-  smtpPort        Int?
-  smtpSecure      Boolean  @default(true)
-  smtpUser        String?
-  smtpPassword    String?  @db.Text
-  smtpFromEmail   String?
-  smtpFromName    String?
-  smtpEnabled     Boolean  @default(false)
-  smtpAllowedRecipients String? @db.Text
-  smtpMaxPerDay   Int      @default(20)
-  updatedAt       DateTime @updatedAt
+  tenantId              String   @id
+  githubToken           String?  @db.Text
+  githubUsername        String?
+  smtpHost              String?
+  smtpPort              Int?
+  smtpSecure            Boolean  @default(true)
+  smtpUser              String?
+  smtpPassword          String?  @db.Text
+  smtpFromEmail         String?
+  smtpFromName          String?
+  smtpEnabled           Boolean  @default(false)
+  smtpAllowedRecipients String?  @db.Text
+  smtpMaxPerDay         Int      @default(20)
+  updatedAt             DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
@@ -911,21 +914,21 @@ enum OpencodeDelegationStatus {
 }
 
 model OpencodeDelegation {
-  id                String                   @id @default(cuid())
-  tenantId          String
-  runId             String                   @unique
-  productId         String?
-  opencodeSessionId String
-  status            OpencodeDelegationStatus @default(PENDING)
-  promptSummary     String?                  @db.Text
-  resultSummary     String?                  @db.Text
-  diffJson          Json?
-  resumeFromStepOrder Int                    @default(3)
-  errorMessage      String?                  @db.Text
-  startedAt         DateTime?
-  completedAt       DateTime?
-  createdAt         DateTime                 @default(now())
-  updatedAt         DateTime                 @updatedAt
+  id                  String                   @id @default(cuid())
+  tenantId            String
+  runId               String                   @unique
+  productId           String?
+  opencodeSessionId   String
+  status              OpencodeDelegationStatus @default(PENDING)
+  promptSummary       String?                  @db.Text
+  resultSummary       String?                  @db.Text
+  diffJson            Json?
+  resumeFromStepOrder Int                      @default(3)
+  errorMessage        String?                  @db.Text
+  startedAt           DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
 
   tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   run     ExecutionRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
@@ -942,17 +945,17 @@ enum OpencodeGateDecision {
 }
 
 model OpencodeRunGate {
-  id         String                @id @default(cuid())
-  tenantId   String
-  runId      String                @unique
-  reason     String
-  decision   OpencodeGateDecision?
-  pendingBrief         String?      @db.Text
-  overrideAgent        String?
-  overrideModel        String?
-  overrideProjectPath  String?
-  createdAt  DateTime              @default(now())
-  resolvedAt DateTime?
+  id                  String                @id @default(cuid())
+  tenantId            String
+  runId               String                @unique
+  reason              String
+  decision            OpencodeGateDecision?
+  pendingBrief        String?               @db.Text
+  overrideAgent       String?
+  overrideModel       String?
+  overrideProjectPath String?
+  createdAt           DateTime              @default(now())
+  resolvedAt          DateTime?
 
   tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   run    ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
@@ -1115,14 +1118,14 @@ model OrgUnit {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  template BusinessTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  products TenantProduct[]
-  artifacts Artifact[]
-  executionRuns ExecutionRun[]
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  template            BusinessTemplate?    @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  products            TenantProduct[]
+  artifacts           Artifact[]
+  executionRuns       ExecutionRun[]
   departmentWorkItems DepartmentWorkItem[]
-  handoffsFrom DepartmentHandoff[] @relation("HandoffFromOrg")
-  handoffsTo DepartmentHandoff[] @relation("HandoffToOrg")
+  handoffsFrom        DepartmentHandoff[]  @relation("HandoffFromOrg")
+  handoffsTo          DepartmentHandoff[]  @relation("HandoffToOrg")
 
   @@unique([tenantId, slug])
   @@index([tenantId, type])
@@ -1229,6 +1232,7 @@ model DepartmentWorkItem {
   dependents   DepartmentWorkItem[] @relation("WorkItemDeps")
   handoffsFrom DepartmentHandoff[]  @relation("HandoffFrom")
   handoffsTo   DepartmentHandoff[]  @relation("HandoffTo")
+  commentLinks DocumentComment[]    @relation("CommentWorkItem")
 
   @@index([tenantId, runId])
   @@index([tenantId, departmentSlug])
@@ -1265,6 +1269,71 @@ model DepartmentHandoff {
   @@index([tenantId, status])
   @@index([tenantId, toWorkItemId])
   @@index([tenantId, fromWorkItemId])
+}
+
+// ─── Document reviews (Reingeniería 2, Fase G) ──────────────────────────────
+
+enum DocumentReviewStatus {
+  pending_review
+  changes_requested
+  approved
+  rejected
+}
+
+model DocumentReview {
+  id         String               @id @default(cuid())
+  tenantId   String
+  runId      String
+  /// Clave canónica del documento: `file:<path>` | `rev:<revisionId>` | `step:<id>`
+  docKey     String
+  docPath    String?
+  /// SHA del snapshot verificado al que pertenece esta revisión (versión).
+  versionSha String?
+  status     DocumentReviewStatus @default(pending_review)
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run      ExecutionRun      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  comments DocumentComment[]
+
+  @@unique([tenantId, runId, docKey, versionSha])
+  @@index([tenantId, runId])
+  @@index([tenantId, status])
+}
+
+model DocumentComment {
+  id               String        @id @default(cuid())
+  tenantId         String
+  reviewId         String
+  runId            String
+  docKey           String
+  /// Anclaje: { kind: "section"|"line", heading?, line?, quote? }
+  anchor           Json          @default("{}")
+  body             String        @db.Text
+  authorUserId     String?
+  authorAgentName  String?
+  /// SHA del snapshot en el que se escribió el comentario.
+  versionSha       String?
+  status           CommentStatus @default(open)
+  linkedWorkItemId String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  tenant         Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  review         DocumentReview      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  linkedWorkItem DepartmentWorkItem? @relation("CommentWorkItem", fields: [linkedWorkItemId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, reviewId])
+  @@index([tenantId, runId, docKey])
+}
+
+enum CommentStatus {
+  open
+  resolved
+  converted
 }
 
 // ─── Client delivery (read-only share links) ─────────────────────────────────
@@ -1308,28 +1377,28 @@ model TenantDeliveryBranding {
 // ─── Platform settings (superadmin UI; secrets encrypted) ───────────────────
 
 model PlatformSettings {
-  id                  String        @id @default("platform")
-  publicUrl           String        @default("http://localhost:5173")
-  defaultProvider     AgentProvider @default(tokenlab)
-  defaultModel        String        @default("claude-3-5-sonnet-20241022")
-  defaultTemperature  Float         @default(0.7)
-  tokenlabApiKey      String?       @db.Text
-  tokenlabBaseUrl     String        @default("https://api.lemondata.io/v1")
-  openrouterApiKey    String?       @db.Text
-  openrouterBaseUrl   String        @default("https://openrouter.ai/api/v1")
-  openrouterReferer   String        @default("https://auto-company.local")
-  customApiKey        String?       @db.Text
-  customBaseUrl       String        @default("")
-  replicateApiKey     String?       @db.Text
-  resendApiKey        String?       @db.Text
-  githubApiKey        String?       @db.Text
-  emailFrom           String        @default("onboarding@resend.dev")
-  executeRateLimitMax Int           @default(30)
-  authRateLimitMax    Int           @default(150)
-  shellTimeoutMs      Int           @default(30000)
-  schedulerTickMs     Int           @default(60000)
-  opencodeEnabled     Boolean       @default(false)
-  opencodeDefaultPollIntervalMs Int @default(5000)
-  opencodeDefaultMaxWaitMs      Int @default(3600000)
-  updatedAt           DateTime      @updatedAt
+  id                            String        @id @default("platform")
+  publicUrl                     String        @default("http://localhost:5173")
+  defaultProvider               AgentProvider @default(tokenlab)
+  defaultModel                  String        @default("claude-3-5-sonnet-20241022")
+  defaultTemperature            Float         @default(0.7)
+  tokenlabApiKey                String?       @db.Text
+  tokenlabBaseUrl               String        @default("https://api.lemondata.io/v1")
+  openrouterApiKey              String?       @db.Text
+  openrouterBaseUrl             String        @default("https://openrouter.ai/api/v1")
+  openrouterReferer             String        @default("https://auto-company.local")
+  customApiKey                  String?       @db.Text
+  customBaseUrl                 String        @default("")
+  replicateApiKey               String?       @db.Text
+  resendApiKey                  String?       @db.Text
+  githubApiKey                  String?       @db.Text
+  emailFrom                     String        @default("onboarding@resend.dev")
+  executeRateLimitMax           Int           @default(30)
+  authRateLimitMax              Int           @default(150)
+  shellTimeoutMs                Int           @default(30000)
+  schedulerTickMs               Int           @default(60000)
+  opencodeEnabled               Boolean       @default(false)
+  opencodeDefaultPollIntervalMs Int           @default(5000)
+  opencodeDefaultMaxWaitMs      Int           @default(3600000)
+  updatedAt                     DateTime      @updatedAt
 }
