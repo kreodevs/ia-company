@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Building2, ChevronRight, Users } from "lucide-react";
+import { ArrowLeftRight, Building2, ChevronRight, ShieldAlert, Users } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
 import StatusPill from "@/components/ui/StatusPill";
 import { Button } from "@/components/atoms/Button";
@@ -68,6 +68,32 @@ export function DepartmentOrgCard({
         <div>
           <dt className="text-[var(--foreground-muted)]">Subunidades</dt>
           <dd className="font-semibold tabular-nums">{node.children.length}</dd>
+        </div>
+        <div>
+          <dt className="inline-flex items-center gap-1 text-[var(--foreground-muted)]">
+            <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
+            Bloqueados
+          </dt>
+          <dd className="font-semibold tabular-nums">
+            {node.blockedWorkItems > 0 ? (
+              <Link to="/office/inbox?category=blocked" className="text-[var(--primary)] hover:underline">
+                {node.blockedWorkItems}
+              </Link>
+            ) : (
+              0
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt className="inline-flex items-center gap-1 text-[var(--foreground-muted)]">
+            <ArrowLeftRight className="h-3.5 w-3.5" aria-hidden />
+            Handoffs
+          </dt>
+          <dd className="font-semibold tabular-nums text-sm">
+            <span title="Entrantes">{node.pendingHandoffsIn} in</span>
+            <span className="mx-1 text-[var(--foreground-muted)]">/</span>
+            <span title="Salientes">{node.pendingHandoffsOut} out</span>
+          </dd>
         </div>
         {agentCount !== undefined && (
           <div className="col-span-2 flex items-center gap-1.5 text-[var(--foreground-muted)]">

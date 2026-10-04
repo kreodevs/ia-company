@@ -37,6 +37,7 @@ import DepartmentWorkMapPanel from "../components/office/DepartmentWorkMapPanel"
 import RunScopeBadge from "../components/runs/RunScopeBadge";
 import EncargoActivityTimeline from "../components/office/EncargoActivityTimeline";
 import DocumentReviewPanel from "../components/office/DocumentReviewPanel";
+import { StrategicContextBanner } from "../components/office/StrategicContextBanner";
 import EncargoStatusRail, {
   EncargoBlockersPanel,
   EncargoParticipantsPanel,
@@ -203,6 +204,13 @@ export default function OfficeEncargoDetailPage() {
 
   return (
     <div className="office-page office-encargo-detail">
+      <StrategicContextBanner
+        className="mb-4"
+        companyGoalId={detail.companyGoalId}
+        companyGoalName={detail.companyGoalName}
+        initiativeId={detail.initiativeId}
+        initiativeName={detail.initiativeName}
+      />
       <PageHeader
         eyebrow={
           <Breadcrumbs

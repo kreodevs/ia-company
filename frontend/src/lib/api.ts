@@ -225,6 +225,9 @@ export interface OrganigramNode {
   slug: string;
   parentId: string | null;
   workItemCount: number;
+  blockedWorkItems: number;
+  pendingHandoffsIn: number;
+  pendingHandoffsOut: number;
   children: OrganigramNode[];
 }
 
@@ -260,6 +263,29 @@ export interface ManagementDashboardMetrics {
   activeInitiatives: number;
   blockedWorkItems: number;
   periodStart: string | null;
+  recentDeliveries: number;
+  avgHandoffAcceptHours: number | null;
+  avgBlockedWorkItemHours: number | null;
+  documentFirstPassApprovalRate: number | null;
+}
+
+export interface ObjectiveSummaryRow {
+  id: string;
+  name: string;
+  targetValue: number | null;
+  currentValue: number | null;
+  encargoCount: number;
+  totalCostUsd: number;
+}
+
+export type OfficeSearchResultType = "encargo" | "objective" | "initiative" | "department";
+
+export interface OfficeSearchResult {
+  type: OfficeSearchResultType;
+  id: string;
+  title: string;
+  subtitle: string | null;
+  href: string;
 }
 
 export const getDashboard = async (params?: { since?: string }) => {
@@ -282,6 +308,14 @@ export const getDashboardLegacy = async (params?: { since?: string }) => {
  * Corte 4 – fetch business objectives.
  */
 export const getObjectives = async () => request<CompanyGoal[]>('/office/objectives');
+
+export const getObjectivesSummary = async () =>
+  request<{ items: ObjectiveSummaryRow[] }>("/office/objectives/summary").then((r) => r.items);
+
+export const searchOffice = async (q: string, limit = 20) =>
+  request<{ items: OfficeSearchResult[] }>(
+    `/office/search?q=${encodeURIComponent(q)}&limit=${limit}`,
+  ).then((r) => r.items);
 
 export interface ObjectiveEncargoSummary {
   id: string;
@@ -637,6 +671,10 @@ export interface TeamActiveRun {
   startedAt: string | null;
   agentIds: string[];
   task?: string | null;
+  companyGoalId?: string | null;
+  companyGoalName?: string | null;
+  initiativeId?: string | null;
+  initiativeName?: string | null;
   errorMessage?: string | null;
   opencode?: {
     delegationId: string;
@@ -653,6 +691,10 @@ export interface TeamActiveRunSummary {
   startedAt: string | null;
   agentIds: string[];
   task: string | null;
+  companyGoalId?: string | null;
+  companyGoalName?: string | null;
+  initiativeId?: string | null;
+  initiativeName?: string | null;
 }
 
 export interface TeamRecentRun {

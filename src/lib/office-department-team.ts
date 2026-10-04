@@ -12,6 +12,7 @@ import {
 } from "./office-run-department.js";
 import { extractRunTaskPreview } from "./product-run-association.js";
 import type { SharedMemory } from "../types/index.js";
+import { readStrategicContextFromRun } from "./strategic-context.js";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
@@ -25,6 +26,8 @@ const runListInclude = {
       },
     },
   },
+  companyGoal: { select: { id: true, name: true } },
+  initiative: { select: { id: true, name: true } },
 };
 
 const runInclude = {
@@ -99,6 +102,10 @@ export interface DepartmentTeamActiveRun {
   procedureLabel: string;
   productId: string | null;
   productName: string | null;
+  companyGoalId: string | null;
+  companyGoalName: string | null;
+  initiativeId: string | null;
+  initiativeName: string | null;
 }
 
 export interface DepartmentTeamPayload {
@@ -119,6 +126,10 @@ export interface DepartmentTeamPayload {
     agentIds: string[];
     task: string | null;
     procedureLabel: string;
+    companyGoalId: string | null;
+    companyGoalName: string | null;
+    initiativeId: string | null;
+    initiativeName: string | null;
   }>;
   recentRuns: Array<{
     id: string;
@@ -159,6 +170,8 @@ function buildActiveRunSummary(
     typeof memory.focusProductSlug === "string" ? memory.focusProductSlug : null;
   const product = productSlug ? products.find((p) => p.slug === productSlug) : null;
 
+  const strategic = readStrategicContextFromRun(run as Parameters<typeof readStrategicContextFromRun>[0]);
+
   return {
     id: run.id,
     workflowName: run.workflow?.name ?? "task",
@@ -171,6 +184,7 @@ function buildActiveRunSummary(
     productId: product?.id ?? null,
     productName: product?.name ?? null,
     fields,
+    ...strategic,
   };
 }
 
@@ -363,6 +377,10 @@ export async function getDepartmentTeam(
       agentIds: summary.agentIds,
       task: summary.task,
       procedureLabel: summary.procedureLabel,
+      companyGoalId: summary.companyGoalId,
+      companyGoalName: summary.companyGoalName,
+      initiativeId: summary.initiativeId,
+      initiativeName: summary.initiativeName,
     };
   });
 
@@ -396,6 +414,10 @@ export async function getDepartmentTeam(
           procedureLabel: activeRunSummary.procedureLabel,
           productId: activeRunSummary.productId,
           productName: activeRunSummary.productName,
+          companyGoalId: activeRunSummary.companyGoalId,
+          companyGoalName: activeRunSummary.companyGoalName,
+          initiativeId: activeRunSummary.initiativeId,
+          initiativeName: activeRunSummary.initiativeName,
         }
       : null,
     activeRuns,

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { formatWorkflowTitle } from "../../lib/workflow-display";
 import type { TeamActiveRun, TeamAgent, TeamActiveRunSummary } from "../../lib/api";
 import { shortTime } from "./war-room-shared";
+import { StrategicContextBanner } from "../office/StrategicContextBanner";
 
 interface WarRoomBriefingBarProps {
   activeRun: TeamActiveRun | null;
@@ -26,7 +27,13 @@ export default function WarRoomBriefingBar({
       <div className="war-room-briefing-col">
         <h2 className="war-room-section-title">{t("warRoom.briefing")}</h2>
         {activeRun ? (
-          <div className="war-room-briefing">
+          <div className="war-room-briefing space-y-3">
+            <StrategicContextBanner
+              companyGoalId={activeRun.companyGoalId}
+              companyGoalName={activeRun.companyGoalName}
+              initiativeId={activeRun.initiativeId}
+              initiativeName={activeRun.initiativeName}
+            />
             {activeRuns.length > 1 && (
               <p className="war-room-briefing-meta war-room-briefing-multi">
                 {t("warRoom.runSelector.viewingOneOf", { count: activeRuns.length })}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { getInitiatives, getObjectives, type Initiative, type CompanyGoal } from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import EmptyState from "../ui/EmptyState";
@@ -31,7 +32,19 @@ export const Initiatives: React.FC = () => {
 
   const columns: DataTableColumn[] = useMemo(
     () => [
-      { field: "name", header: "Iniciativa", sortable: true },
+      {
+        field: "name",
+        header: "Iniciativa",
+        sortable: true,
+        body: (row: Initiative) => (
+          <Link
+            className="font-medium text-[var(--primary)] hover:underline"
+            to={`/office/trabajo?tab=todos&companyGoalId=${row.companyGoalId}&initiativeId=${row.id}`}
+          >
+            {row.name}
+          </Link>
+        ),
+      },
       {
         field: "companyGoalId",
         header: "Objetivo",

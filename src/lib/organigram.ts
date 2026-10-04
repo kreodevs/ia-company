@@ -1,3 +1,4 @@
+import { DepartmentHandoffStatus, DepartmentWorkStatus } from "@prisma/client";
 import { prisma } from "./prisma.js";
 
 export interface OrganigramNode {
@@ -7,6 +8,9 @@ export interface OrganigramNode {
   slug: string;
   parentId: string | null;
   workItemCount: number;
+  blockedWorkItems: number;
+  pendingHandoffsIn: number;
+  pendingHandoffsOut: number;
   children: OrganigramNode[];
 }
 
@@ -17,7 +21,7 @@ export interface OrganigramNode {
  * treated as a root rather than leaking another tenant's structure.
  */
 export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]> {
-  const [units, workItems] = await Promise.all([
+  const [units, workItems, blockedItems, handoffsIn, handoffsOut] = await Promise.all([
     prisma.orgUnit.findMany({
       where: { tenantId, isActive: true },
       orderBy: { name: "asc" },
@@ -28,10 +32,42 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
       where: { tenantId, orgUnitId: { not: null } },
       _count: { id: true },
     }),
+    prisma.departmentWorkItem.groupBy({
+      by: ["orgUnitId"],
+      where: { tenantId, orgUnitId: { not: null }, status: DepartmentWorkStatus.blocked },
+      _count: { id: true },
+    }),
+    prisma.departmentHandoff.groupBy({
+      by: ["toOrgUnitId"],
+      where: {
+        tenantId,
+        toOrgUnitId: { not: null },
+        status: DepartmentHandoffStatus.pending_acceptance,
+      },
+      _count: { id: true },
+    }),
+    prisma.departmentHandoff.groupBy({
+      by: ["fromOrgUnitId"],
+      where: {
+        tenantId,
+        fromOrgUnitId: { not: null },
+        status: { in: [DepartmentHandoffStatus.sent, DepartmentHandoffStatus.pending_acceptance] },
+      },
+      _count: { id: true },
+    }),
   ]);
 
   const countMap = new Map<string, number>(
     workItems.map((workItem) => [workItem.orgUnitId as string, workItem._count.id]),
+  );
+  const blockedMap = new Map(
+    blockedItems.map((row) => [row.orgUnitId as string, row._count.id]),
+  );
+  const handoffsInMap = new Map(
+    handoffsIn.map((row) => [row.toOrgUnitId as string, row._count.id]),
+  );
+  const handoffsOutMap = new Map(
+    handoffsOut.map((row) => [row.fromOrgUnitId as string, row._count.id]),
   );
   const nodeMap = new Map<string, OrganigramNode>();
 
@@ -43,6 +79,9 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
       slug: unit.slug,
       parentId: unit.parentId,
       workItemCount: countMap.get(unit.id) ?? 0,
+      blockedWorkItems: blockedMap.get(unit.id) ?? 0,
+      pendingHandoffsIn: handoffsInMap.get(unit.id) ?? 0,
+      pendingHandoffsOut: handoffsOutMap.get(unit.id) ?? 0,
       children: [],
     });
   }

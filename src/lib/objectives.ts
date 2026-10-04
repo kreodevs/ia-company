@@ -5,6 +5,52 @@ export async function getObjectives(tenantId: string) {
   return prisma.companyGoal.findMany({ where: { tenantId }, orderBy: { updatedAt: "desc" } });
 }
 
+export interface ObjectiveSummaryRow {
+  id: string;
+  name: string;
+  targetValue: number | null;
+  currentValue: number | null;
+  encargoCount: number;
+  totalCostUsd: number;
+}
+
+/** Resumen ligero para dashboard estratégico (Fase F/H). */
+export async function getObjectivesSummary(tenantId: string): Promise<ObjectiveSummaryRow[]> {
+  const goals = await prisma.companyGoal.findMany({
+    where: { tenantId },
+    orderBy: { updatedAt: "desc" },
+    take: 12,
+  });
+  if (!goals.length) return [];
+
+  const stats = await prisma.executionRun.groupBy({
+    by: ["companyGoalId"],
+    where: { tenantId, companyGoalId: { in: goals.map((g) => g.id) } },
+    _count: { id: true },
+    _sum: { totalCostUsd: true },
+  });
+  const statMap = new Map(
+    stats
+      .filter((s) => s.companyGoalId)
+      .map((s) => [
+        s.companyGoalId as string,
+        { count: s._count.id, cost: s._sum.totalCostUsd ?? 0 },
+      ]),
+  );
+
+  return goals.map((goal) => {
+    const row = statMap.get(goal.id);
+    return {
+      id: goal.id,
+      name: goal.name,
+      targetValue: goal.targetValue,
+      currentValue: goal.currentValue,
+      encargoCount: row?.count ?? 0,
+      totalCostUsd: Math.round((row?.cost ?? 0) * 100) / 100,
+    };
+  });
+}
+
 export async function getInitiatives(tenantId: string) {
   return prisma.initiative.findMany({ where: { tenantId }, orderBy: { updatedAt: "desc" } });
 }

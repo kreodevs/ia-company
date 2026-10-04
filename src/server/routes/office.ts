@@ -95,6 +95,30 @@ export async function officeRoutes(app: FastifyInstance) {
   });
 
   // Corte 4 – Objectives & Initiatives
+  app.get('/office/objectives/summary', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const result = await import('../../lib/objectives.js').then((m) => m.getObjectivesSummary(tenantId));
+      return { items: result };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get<{ Querystring: { q?: string; limit?: string } }>('/office/search', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const q = request.query.q ?? "";
+      const limit = request.query.limit ? Number(request.query.limit) : 20;
+      const items = await import('../../lib/office-global-search.js').then((m) =>
+        m.searchOffice(tenantId, q, limit),
+      );
+      return { items };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get('/office/objectives', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);

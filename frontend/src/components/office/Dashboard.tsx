@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Activity, Inbox, Target } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
-import { getDashboard, type DepartmentManagementRow, type OfficeDashboard } from "../../lib/api";
+import {
+  getDashboard,
+  getObjectivesSummary,
+  type DepartmentManagementRow,
+  type ObjectiveSummaryRow,
+  type OfficeDashboard,
+} from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import KpiCard from "../ui/KpiCard";
 import Panel from "../ui/Panel";
@@ -30,13 +36,17 @@ function sinceForPeriod(period: PeriodKey): string | undefined {
  */
 export function Dashboard() {
   const [dash, setDash] = useState<OfficeDashboard | null>(null);
+  const [objectives, setObjectives] = useState<ObjectiveSummaryRow[]>([]);
   const [period, setPeriod] = useState<PeriodKey>("30d");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setDash(null);
-    getDashboard({ since: sinceForPeriod(period) })
-      .then(setDash)
+    Promise.all([getDashboard({ since: sinceForPeriod(period) }), getObjectivesSummary()])
+      .then(([d, objs]) => {
+        setDash(d);
+        setObjectives(objs);
+      })
       .catch((e) => setError(e instanceof Error ? e.message : "Error loading dashboard"));
   }, [period]);
 
@@ -156,6 +166,26 @@ export function Dashboard() {
           delta={`${management.activeInitiatives} iniciativas activas`}
         />
         <KpiCard
+          label="Entregas (periodo)"
+          value={management.recentDeliveries}
+          delta="Encargos completados"
+          trend={management.recentDeliveries > 0 ? "up" : "flat"}
+        />
+        <KpiCard
+          label="Handoff (media h)"
+          value={management.avgHandoffAcceptHours ?? "—"}
+          delta="Aceptación entre deptos."
+        />
+        <KpiCard
+          label="Docs 1ª pasada"
+          value={
+            management.documentFirstPassApprovalRate != null
+              ? `${management.documentFirstPassApprovalRate}%`
+              : "—"
+          }
+          delta="Aprobación sin revisión"
+        />
+        <KpiCard
           label="Inversión / ingresos"
           value={formatUsd(stats.totalInvestedUsd)}
           delta={`Ingresos: ${formatUsd(stats.totalRevenueUsd)}`}
@@ -179,6 +209,48 @@ export function Dashboard() {
           </Link>
         </Button>
       </div>
+
+      {objectives.length > 0 && (
+        <Panel title="Objetivos estratégicos" subtitle="Encargos y coste por objetivo (Fase F)">
+          <DataTable
+            columns={[
+              {
+                field: "name",
+                header: "Objetivo",
+                body: (row: ObjectiveSummaryRow) => (
+                  <Link className="font-medium text-[var(--primary)] hover:underline" to={`/office/objetivos/${row.id}`}>
+                    {row.name}
+                  </Link>
+                ),
+              },
+              {
+                field: "encargoCount",
+                header: "Encargos",
+                body: (row: ObjectiveSummaryRow) => (
+                  <Link className="tabular-nums hover:underline" to={`/office/trabajo?tab=todos&companyGoalId=${row.id}`}>
+                    {row.encargoCount}
+                  </Link>
+                ),
+              },
+              {
+                field: "totalCostUsd",
+                header: "Coste",
+                body: (row: ObjectiveSummaryRow) => formatUsd(row.totalCostUsd),
+              },
+              {
+                field: "currentValue",
+                header: "Progreso",
+                body: (row: ObjectiveSummaryRow) =>
+                  row.targetValue != null ? `${row.currentValue ?? 0} / ${row.targetValue}` : "—",
+              },
+            ]}
+            data={objectives}
+            emptyMessage="Sin objetivos."
+            paginator={objectives.length > 6}
+            rows={6}
+          />
+        </Panel>
+      )}
 
       <Panel
         title="Salud por departamento"

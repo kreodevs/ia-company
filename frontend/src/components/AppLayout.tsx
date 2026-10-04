@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
+import { OfficeGlobalSearch } from "./office/OfficeGlobalSearch";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="app-layout">
+      <OfficeGlobalSearch />
       <AppSidebar mobileOpen={mobileSidebarOpen} onMobileClose={closeMobileSidebar} />
       <div className="app-layout-column">
         <AppHeader

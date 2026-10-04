@@ -25,6 +25,8 @@
 | `Objectives` / `Initiatives` | Fase F — listados con Kreo `DataTable` |
 | `ObjectiveForm` / `InitiativeForm` | Fase F — CRUD con Kreo `DynamicForm` (`variant="premium"`) |
 | `StrategicContextFields` | Selector opcional objetivo → iniciativa al lanzar encargo (`CoordinatorChat`) |
+| `StrategicContextBanner` | Kreo `Card` con enlaces a objetivo/iniciativa (detalle encargo, war room) |
+| `OfficeGlobalSearch` | Búsqueda global ⌘K — Kreo `Command` + `Dialog`; API `GET /office/search` |
 
 Páginas: `OfficeObjectiveDetailPage` en `/office/objetivos/:goalId` — KPIs, rollups por iniciativa y encargos vinculados.
 

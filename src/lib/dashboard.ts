@@ -28,6 +28,32 @@ export interface ManagementDashboardMetrics {
   activeInitiatives: number;
   blockedWorkItems: number;
   periodStart: string | null;
+  recentDeliveries: number;
+  avgHandoffAcceptHours: number | null;
+  avgBlockedWorkItemHours: number | null;
+  documentFirstPassApprovalRate: number | null;
+}
+
+/** Promedio de horas entre creación y aceptación de handoffs completados. */
+export function computeAverageHandoffAcceptHours(
+  rows: Array<{ createdAt: Date; acceptedAt: Date | null }>,
+): number | null {
+  const done = rows.filter((r) => r.acceptedAt);
+  if (!done.length) return null;
+  const ms = done.reduce(
+    (sum, r) => sum + (r.acceptedAt!.getTime() - r.createdAt.getTime()),
+    0,
+  );
+  return Math.round((ms / done.length / 3_600_000) * 10) / 10;
+}
+
+export function computeDocumentFirstPassApprovalRate(
+  approved: number,
+  rejectedOrChanges: number,
+): number | null {
+  const total = approved + rejectedOrChanges;
+  if (total === 0) return null;
+  return Math.round((approved / total) * 100);
 }
 
 const ACTIVE_WORK_STATUSES: DepartmentWorkStatus[] = [
@@ -57,6 +83,10 @@ export async function getDashboardMetrics(
     activeGoals,
     activeInitiatives,
     blockedWorkItems,
+    recentDeliveries,
+    handoffTimingRows,
+    blockedWorkRows,
+    reviewStatusGroups,
   ] = await Promise.all([
     prisma.executionRun.aggregate({
       where: runWhere,
@@ -76,7 +106,55 @@ export async function getDashboardMetrics(
     prisma.departmentWorkItem.count({
       where: { tenantId, status: DepartmentWorkStatus.blocked },
     }),
+    prisma.executionRun.count({
+      where: {
+        tenantId,
+        status: "COMPLETED",
+        ...(since ? { completedAt: { gte: since } } : {}),
+      },
+    }),
+    prisma.departmentHandoff.findMany({
+      where: {
+        tenantId,
+        status: { in: ["accepted", "completed"] },
+        acceptedAt: { not: null },
+        ...(since ? { createdAt: { gte: since } } : {}),
+      },
+      select: { createdAt: true, acceptedAt: true },
+      take: 200,
+    }),
+    prisma.departmentWorkItem.findMany({
+      where: { tenantId, status: DepartmentWorkStatus.blocked },
+      select: { updatedAt: true },
+      take: 100,
+    }),
+    prisma.documentReview.groupBy({
+      by: ["status"],
+      where: {
+        tenantId,
+        status: { in: ["approved", "changes_requested", "rejected"] },
+        ...(since ? { updatedAt: { gte: since } } : {}),
+      },
+      _count: { id: true },
+    }),
   ]);
+
+  const now = Date.now();
+  const avgBlockedWorkItemHours =
+    blockedWorkRows.length > 0
+      ? Math.round(
+          (blockedWorkRows.reduce((sum, row) => sum + (now - row.updatedAt.getTime()), 0) /
+            blockedWorkRows.length /
+            3_600_000) *
+            10,
+        ) / 10
+      : null;
+
+  const approvedReviews =
+    reviewStatusGroups.find((g) => g.status === "approved")?._count.id ?? 0;
+  const notFirstPass =
+    (reviewStatusGroups.find((g) => g.status === "changes_requested")?._count.id ?? 0) +
+    (reviewStatusGroups.find((g) => g.status === "rejected")?._count.id ?? 0);
 
   return {
     totalCostUsd: costResult._sum.totalCostUsd ?? 0,
@@ -88,6 +166,13 @@ export async function getDashboardMetrics(
     activeInitiatives,
     blockedWorkItems,
     periodStart: since?.toISOString() ?? null,
+    recentDeliveries,
+    avgHandoffAcceptHours: computeAverageHandoffAcceptHours(handoffTimingRows),
+    avgBlockedWorkItemHours,
+    documentFirstPassApprovalRate: computeDocumentFirstPassApprovalRate(
+      approvedReviews,
+      notFirstPass,
+    ),
   };
 }
 

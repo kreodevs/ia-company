@@ -883,6 +883,8 @@ export async function productRoutes(app: FastifyInstance) {
               where: { id: product.lastRunId },
               include: {
                 workflow: { select: { name: true } },
+                companyGoal: { select: { id: true, name: true } },
+                initiative: { select: { id: true, name: true } },
                 logs: {
                   where: { agentId: { not: null } },
                   orderBy: { createdAt: "desc" },
@@ -913,11 +915,14 @@ export async function productRoutes(app: FastifyInstance) {
       );
       const isFocusProduct = cycle.focusProductId === product.id;
       const activeStatuses = ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"] as const;
+      const { readStrategicContextFromRun } = await import("../../lib/strategic-context.js");
       const runListInclude = {
         workflow: { select: { name: true } },
+        companyGoal: { select: { id: true, name: true } },
+        initiative: { select: { id: true, name: true } },
       };
       const runInclude = {
-        workflow: { select: { name: true } },
+        ...runListInclude,
         logs: {
           where: { agentId: { not: null } },
           orderBy: { createdAt: "desc" as const },
@@ -1012,6 +1017,7 @@ export async function productRoutes(app: FastifyInstance) {
         for (const log of logsForRun(run)) {
           if (log.agentId) agentIds.add(log.agentId);
         }
+        const strategic = readStrategicContextFromRun(run);
         return {
           id: run.id,
           workflowName: run.workflow?.name ?? "task",
@@ -1019,6 +1025,7 @@ export async function productRoutes(app: FastifyInstance) {
           startedAt: run.startedAt,
           agentIds: Array.from(agentIds),
           task: extractRunTaskPreview(run.sharedMemory),
+          ...strategic,
         };
       });
 
@@ -1115,6 +1122,7 @@ export async function productRoutes(app: FastifyInstance) {
               startedAt: activeRun.startedAt,
               agentIds: Array.from(activeAgentIds),
               task: extractRunTaskPreview(activeRun.sharedMemory),
+              ...readStrategicContextFromRun(activeRun),
               errorMessage: activeRun.errorMessage,
               opencode: activeDelegation
                 ? {

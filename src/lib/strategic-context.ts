@@ -88,6 +88,37 @@ export function appendStrategicContextToTask(task: string, context: ResolvedStra
   return `${task.trim()}\n\n---\nContexto estratégico\n${context.promptBlock}`;
 }
 
+export interface StrategicContextFields {
+  companyGoalId: string | null;
+  companyGoalName: string | null;
+  initiativeId: string | null;
+  initiativeName: string | null;
+}
+
+/** Lee vínculo estratégico desde FK o sharedMemory (war room, entregas). */
+export function readStrategicContextFromRun(run: {
+  companyGoalId?: string | null;
+  initiativeId?: string | null;
+  sharedMemory?: unknown;
+  companyGoal?: { id: string; name: string } | null;
+  initiative?: { id: string; name: string } | null;
+}): StrategicContextFields {
+  const memory = (run.sharedMemory ?? {}) as Record<string, unknown>;
+  const companyGoalId =
+    run.companyGoalId ??
+    (typeof memory.companyGoalId === "string" ? memory.companyGoalId : null);
+  const initiativeId =
+    run.initiativeId ??
+    (typeof memory.initiativeId === "string" ? memory.initiativeId : null);
+  const companyGoalName =
+    run.companyGoal?.name ??
+    (typeof memory.companyGoalName === "string" ? memory.companyGoalName : null);
+  const initiativeName =
+    run.initiative?.name ??
+    (typeof memory.initiativeName === "string" ? memory.initiativeName : null);
+  return { companyGoalId, companyGoalName, initiativeId, initiativeName };
+}
+
 export async function attachStrategicLinkToRun(
   runId: string,
   tenantId: string,

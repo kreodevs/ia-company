@@ -685,7 +685,7 @@ qué está esperando aprobación
 
 8. Fase F: objetivos e iniciativas. ✅ (2026-10-03, commit `e8a30f0`)
 9. Fase I: operaciones recurrentes.
-10. Fase J: coste empresarial y búsqueda global.
+10. Fase J: coste empresarial y búsqueda global. 🟡 búsqueda global mínima (2026-10-04); coste/alertas pendientes.
 
 ### Referencias de código
 - `src/lib/objectives.ts` – modelo Prisma y funciones CRUD.
@@ -838,12 +838,10 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 - Falta el requisito de que una rutina cree trabajo visible en el departamento con historial y entrega, y que fallos/costes aparezcan en el Inbox.
 - **Acción:** construir el read-model de operaciones sobre `AutonomousSchedule` + historial de runs, y los 4 componentes UI, enlazando cada ejecución a su `ExecutionRun`/entrega.
 
-### P9 — Fase J no implementada: coste empresarial y búsqueda global
+### P9 — Fase J parcial: coste empresarial y búsqueda global
 
-- `GET /office/costs` solo devuelve `totalCostUsd` y `activeRuns`; no hay filtros por Empresa/Departamento/Encargo/Proyecto/Objetivo/Agente/Modelo.
-- No hay alertas de presupuesto al 50%/80%/100% ni predicción de coste final (existe el tipo `cost_alert` en `tenant-notifications.ts` pero no la lógica de umbrales por presupuesto).
-- No existe búsqueda global `⌘K`/`Ctrl+K` (sin `CommandPalette`/`GlobalSearch` en `frontend/src`): no se pueden buscar encargos, documentos, agentes, departamentos, decisiones, handoffs, comentarios, objetivos ni runs.
-- **Acción:** implementar el endpoint de coste con dimensiones de filtro + umbrales de alerta, y la paleta de comandos con un endpoint de búsqueda multi-entidad respetando tenant y permisos.
+- **Hecho (2026-10-04):** `GET /office/search` + `OfficeGlobalSearch` (⌘K) con Kreo `Command`/`Dialog` — encargos, objetivos, iniciativas, departamentos. Checklist QA en `docs/qa/paperclip-reingenieria2-manual.md`.
+- **Pendiente:** `GET /office/costs` con filtros multidimensionales; alertas de presupuesto 50/80/100%; ampliar búsqueda a documentos, agentes, decisiones, handoffs y comentarios.
 
 ## Pendientes transversales
 
