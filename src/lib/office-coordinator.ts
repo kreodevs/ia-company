@@ -128,6 +128,8 @@ export interface OfficeDashboard {
     totalInvestedUsd: number;
     totalRevenueUsd: number;
   };
+  management: import("./dashboard.js").ManagementDashboardMetrics;
+  departmentMetrics: import("./dashboard.js").DepartmentManagementRow[];
   activity: OfficeActivityItem[];
   roi: OfficeRoiProduct[];
   agents: Array<{ id: string; name: string; role: string; status: "idle" | "busy" }>;
@@ -656,6 +658,8 @@ export interface ExecuteOfficeTaskInput {
   workflowId?: string;
   presetId?: string;
   parentRunId?: string;
+  companyGoalId?: string;
+  initiativeId?: string;
 }
 
 export async function executeOfficeTask(
@@ -664,17 +668,26 @@ export async function executeOfficeTask(
 ): Promise<{ runId: string; workflowId: string; workflowName: string; productId: string | null }> {
   await assertTenantCanExecute(tenantId);
 
+  const { resolveStrategicContext, appendStrategicContextToTask, attachStrategicLinkToRun } =
+    await import("./strategic-context.js");
+  const strategic = await resolveStrategicContext(tenantId, {
+    companyGoalId: input.companyGoalId,
+    initiativeId: input.initiativeId,
+  });
+
   const plan = await planOfficeTask(tenantId, input.request, {
     productId: input.productId,
     serviceId: input.serviceId,
     orgUnitId: input.orgUnitId,
   });
 
-  const task = await enrichOfficeTaskWithGitHubContext(
+  const baseTask = await enrichOfficeTaskWithGitHubContext(
     tenantId,
     input.request.trim(),
     input.serviceId ?? plan.serviceId,
   );
+  const task = appendStrategicContextToTask(baseTask, strategic);
+  const strategicMemory = strategic?.memoryFields ?? {};
   const orgCtx = input.orgUnitId ? await loadOrgUnitContext(tenantId, input.orgUnitId) : null;
   const priorRun = input.parentRunId
     ? await loadPriorRunContext(tenantId, input.parentRunId)
@@ -685,27 +698,33 @@ export async function executeOfficeTask(
     : "Task dispatched from Office dashboard";
 
   if (orgCtx && !input.workflowId && !input.agentIds?.length) {
-    return launchOrgUnitWork(tenantId, input.orgUnitId!, {
+    const orgResult = await launchOrgUnitWork(tenantId, input.orgUnitId!, {
       task,
       productId: input.productId,
       presetId: input.presetId ?? plan.presetId ?? undefined,
     });
+    await attachStrategicLinkToRun(orgResult.runId, tenantId, strategic);
+    return orgResult;
   }
 
   const productId = input.productId ?? plan.productId ?? undefined;
   const orgMemory = { ...(orgCtx ? orgContextToInitialMemory(orgCtx) : {}), ...revisionMemory };
-  const withOrgMemory = (mem: Record<string, unknown>) => ({ ...mem, ...orgMemory });
+  const withOrgMemory = (mem: Record<string, unknown>) => ({ ...mem, ...orgMemory, ...strategicMemory });
 
   const withProduct = (result: { runId: string; workflowId: string; workflowName: string }) => ({
     ...result,
     productId: productId ?? null,
   });
+  const finalize = async (result: { runId: string; workflowId: string; workflowName: string }) => {
+    await attachStrategicLinkToRun(result.runId, tenantId, strategic);
+    return withProduct(result);
+  };
 
   if (input.presetId ?? plan.presetId) {
     if (!productId) {
       throw new Error("A product is required for preset workflows. Create or select a product first.");
     }
-    return withProduct(
+    return finalize(
       await launchProductWork(tenantId, productId, {
         presetId: input.presetId ?? plan.presetId ?? undefined,
         task,
@@ -731,7 +750,7 @@ export async function executeOfficeTask(
     const teamAgentNames = agentNamesFromWorkflowSteps(workflow.steps);
 
     if (productId) {
-      return withProduct(
+      return finalize(
         await launchProductWork(tenantId, productId, {
           workflowId: workflow.id,
           task,
@@ -758,7 +777,7 @@ export async function executeOfficeTask(
         }),
       ),
     });
-    return withProduct({ runId, workflowId: workflow.id, workflowName: workflow.name });
+    return finalize({ runId, workflowId: workflow.id, workflowName: workflow.name });
   }
 
   const agentIds = input.agentIds?.length
@@ -788,16 +807,28 @@ export async function executeOfficeTask(
     orgUnitId: input.orgUnitId ?? null,
     productId: productId ?? null,
     parentRunId: input.parentRunId ?? null,
+    companyGoalId: strategic?.companyGoalId ?? null,
+    initiativeId: strategic?.initiativeId ?? null,
+    initialMemory: strategicMemory,
   });
 
-  return withProduct({
+  return finalize({
     runId: launched.runId,
     workflowId: plan.workflowId ?? "",
     workflowName: plan.workflowName ?? (selectedAgents.length === 1 ? "Agent session" : "Team session"),
   });
 }
 
-export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashboard> {
+export async function getOfficeDashboard(
+  tenantId: string,
+  options: { since?: Date } = {},
+): Promise<OfficeDashboard> {
+  const { getDashboardMetrics, getDepartmentManagementMetrics } = await import("./dashboard.js");
+  const [management, departmentMetrics] = await Promise.all([
+    getDashboardMetrics(tenantId, { since: options.since }),
+    getDepartmentManagementMetrics(tenantId, { since: options.since }),
+  ]);
+
   const activeStatuses: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
   const [
@@ -1000,6 +1031,8 @@ export async function getOfficeDashboard(tenantId: string): Promise<OfficeDashbo
       totalInvestedUsd: Math.round(totalInvestedUsd * 100) / 100,
       totalRevenueUsd,
     },
+    management,
+    departmentMetrics,
     activity: activity.slice(0, 12),
     roi: roi.sort((a, b) => b.investedUsd - a.investedUsd).slice(0, 6),
     agents: agentStatuses,

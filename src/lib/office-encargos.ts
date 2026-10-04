@@ -44,6 +44,10 @@ export interface OfficeEncargoSummary {
   scopeLevel: "company" | "product" | "department" | null;
   scopeIntent: string | null;
   scopeLabelKey: string | null;
+  companyGoalId: string | null;
+  companyGoalName: string | null;
+  initiativeId: string | null;
+  initiativeName: string | null;
   /** Truncated final report for list/preview surfaces (deliveries overview). */
   reportPreview?: string | null;
   finalReportKind?: "summary" | "agent" | "none" | null;
@@ -359,8 +363,36 @@ export function encargoActivityFields(input: {
   };
 }
 
+function resolveStrategicFromRun(
+  run: ExecutionRun & {
+    companyGoal?: { id: string; name: string } | null;
+    initiative?: { id: string; name: string } | null;
+  },
+  memory: SharedMemory,
+): Pick<
+  OfficeEncargoSummary,
+  "companyGoalId" | "companyGoalName" | "initiativeId" | "initiativeName"
+> {
+  const companyGoalId = run.companyGoalId ?? readMemoryString(memory, "companyGoalId");
+  const initiativeId = run.initiativeId ?? readMemoryString(memory, "initiativeId");
+  const companyGoalName =
+    run.companyGoal?.name ?? readMemoryString(memory, "companyGoalName");
+  const initiativeName =
+    run.initiative?.name ?? readMemoryString(memory, "initiativeName");
+  return {
+    companyGoalId,
+    companyGoalName,
+    initiativeId,
+    initiativeName,
+  };
+}
+
 async function mapRunToSummary(
-  run: ExecutionRun & { workflow: { name: string } | null },
+  run: ExecutionRun & {
+    workflow: { name: string } | null;
+    companyGoal?: { id: string; name: string } | null;
+    initiative?: { id: string; name: string } | null;
+  },
   products: Array<{ id: string; slug: string; name: string }>,
   productConsensusByProductId: Map<string, string>,
   tenantId: string,
@@ -423,6 +455,7 @@ async function mapRunToSummary(
     scopeLevel: scopeMeta?.level ?? null,
     scopeIntent: scopeMeta?.intent ?? null,
     scopeLabelKey: scopeMeta?.labelKey ?? null,
+    ...resolveStrategicFromRun(run, memory),
   };
 }
 
@@ -450,7 +483,11 @@ export async function listOfficeEncargos(
       where: { tenantId, ...(scopeWhere ?? {}) },
       orderBy: { createdAt: "desc" },
       take: fetchLimit,
-      include: { workflow: { select: { name: true } } },
+      include: {
+        workflow: { select: { name: true } },
+        companyGoal: { select: { id: true, name: true } },
+        initiative: { select: { id: true, name: true } },
+      },
     }),
     prisma.tenantProduct.findMany({
       where: { tenantId },
@@ -719,7 +756,11 @@ export async function getOfficeEncargoDetail(
 ): Promise<OfficeEncargoDetail | null> {
   const run = await prisma.executionRun.findFirst({
     where: { id: runId, tenantId },
-    include: { workflow: { select: { name: true } } },
+    include: {
+      workflow: { select: { name: true } },
+      companyGoal: { select: { id: true, name: true } },
+      initiative: { select: { id: true, name: true } },
+    },
   });
   if (!run) return null;
 

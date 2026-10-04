@@ -34,6 +34,8 @@ export interface LaunchOfficeSessionInput {
   agentOverrides?: Record<string, Partial<AgentSessionConfig>>;
   /** Memory inicial construida por workflows, consensos o schedulers. */
   initialMemory?: Record<string, unknown>;
+  companyGoalId?: string | null;
+  initiativeId?: string | null;
 }
 
 /** Resultado del lanzamiento. */
@@ -173,6 +175,8 @@ export async function launchOfficeSession(input: LaunchOfficeSessionInput): Prom
       },
       productId: productId ?? null,
       orgUnitId: orgUnitId ?? null,
+      companyGoalId: input.companyGoalId ?? null,
+      initiativeId: input.initiativeId ?? null,
       status: "PENDING",
       engine: "session" as RunEngine,
     }),

@@ -239,19 +239,45 @@ export const getOrganigram = async () => request<OrganigramNode[]>('/office/orga
 /**
  * Get the full Office dashboard (usage, stats, activity, departments...).
  */
-export const getDashboard = async () => request<OfficeDashboard>('/office/dashboard');
+export interface DepartmentManagementRow {
+  departmentKey: string;
+  departmentName: string;
+  kind: "virtual" | "org_unit";
+  activeCount: number;
+  blockedCount: number;
+  costUsd: number;
+  deliveredCount: number;
+  href: string;
+}
+
+export interface ManagementDashboardMetrics {
+  totalCostUsd: number;
+  activeRuns: number;
+  pendingDecisions: number;
+  pendingHandoffs: number;
+  pendingReviews: number;
+  activeGoals: number;
+  activeInitiatives: number;
+  blockedWorkItems: number;
+  periodStart: string | null;
+}
+
+export const getDashboard = async (params?: { since?: string }) => {
+  const q = new URLSearchParams();
+  if (params?.since) q.set("since", params.since);
+  const qs = q.toString();
+  return request<OfficeDashboard>(`/office/dashboard${qs ? `?${qs}` : ""}`);
+};
 
 /**
- * Get aggregated legacy business metrics (flat shape) for the strategy page.
+ * Métricas de gestión (misma forma que `OfficeDashboard.management`).
  */
-export const getDashboardLegacy = async () =>
-  request<{
-    totalCostUsd: number;
-    activeRuns: number;
-    pendingDecisions: number;
-    pendingHandoffs: number;
-    pendingReviews: number;
-  }>('/office/dashboard/legacy');
+export const getDashboardLegacy = async (params?: { since?: string }) => {
+  const q = new URLSearchParams();
+  if (params?.since) q.set("since", params.since);
+  const qs = q.toString();
+  return request<ManagementDashboardMetrics>(`/office/dashboard/legacy${qs ? `?${qs}` : ""}`);
+};
 /**
  * Corte 4 – fetch business objectives.
  */
@@ -1069,6 +1095,10 @@ export interface OfficeEncargoSummary {
   scopeLevel?: "company" | "product" | "department" | null;
   scopeIntent?: string | null;
   scopeLabelKey?: string | null;
+  companyGoalId?: string | null;
+  companyGoalName?: string | null;
+  initiativeId?: string | null;
+  initiativeName?: string | null;
   reportPreview?: string | null;
   finalReportKind?: "summary" | "agent" | "none" | null;
 }
@@ -1403,6 +1433,8 @@ export interface OfficeDashboard {
     totalInvestedUsd: number;
     totalRevenueUsd: number;
   };
+  management: ManagementDashboardMetrics;
+  departmentMetrics: DepartmentManagementRow[];
   activity: OfficeActivityItem[];
   roi: OfficeRoiProduct[];
   agents: Array<{ id: string; name: string; role: string; status: "idle" | "busy" }>;
@@ -2424,6 +2456,8 @@ export const api = {
       workflowId?: string;
       presetId?: string;
       parentRunId?: string;
+      companyGoalId?: string;
+      initiativeId?: string;
     }) =>
       request<{ runId: string; workflowId: string; workflowName: string; productId: string | null }>(
         "/office/tasks/execute",

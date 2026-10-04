@@ -80,10 +80,15 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get('/office/dashboard', async (request, reply) => {
+  app.get<{ Querystring: { since?: string } }>('/office/dashboard', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      return getOfficeDashboard(tenantId);
+      const sinceRaw = request.query.since;
+      const since = sinceRaw ? new Date(sinceRaw) : undefined;
+      if (sinceRaw && since && Number.isNaN(since.getTime())) {
+        return reply.status(400).send({ error: "Invalid since date" });
+      }
+      return getOfficeDashboard(tenantId, { since });
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -392,10 +397,17 @@ export async function officeRoutes(app: FastifyInstance) {
   );
 
   // Corte 3 – aggregated legacy business metrics (used by the strategy page).
-  app.get("/office/dashboard/legacy", async (request, reply) => {
+  app.get<{ Querystring: { since?: string } }>("/office/dashboard/legacy", async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/dashboard.js').then(m => m.getDashboardMetrics(tenantId));
+      const sinceRaw = request.query.since;
+      const since = sinceRaw ? new Date(sinceRaw) : undefined;
+      if (sinceRaw && since && Number.isNaN(since.getTime())) {
+        return reply.status(400).send({ error: "Invalid since date" });
+      }
+      const result = await import('../../lib/dashboard.js').then((m) =>
+        m.getDashboardMetrics(tenantId, { since }),
+      );
       return result;
     } catch (err) {
       return handleRouteError(reply, err);
@@ -1050,6 +1062,8 @@ export async function officeRoutes(app: FastifyInstance) {
   workflowId?: string;
   presetId?: string;
   parentRunId?: string;
+  companyGoalId?: string;
+  initiativeId?: string;
   };
   }>("/office/tasks/execute", async (request, reply) => {
     try {
@@ -1063,6 +1077,8 @@ export async function officeRoutes(app: FastifyInstance) {
         workflowId,
         presetId,
         parentRunId,
+        companyGoalId,
+        initiativeId,
       } = request.body ?? {};
       if (!taskRequest?.trim()) {
         return reply.status(400).send({ error: "request is required" });
@@ -1076,6 +1092,8 @@ export async function officeRoutes(app: FastifyInstance) {
         workflowId,
         presetId,
         parentRunId,
+        companyGoalId,
+        initiativeId,
       });
 
       await createTenantNotification({

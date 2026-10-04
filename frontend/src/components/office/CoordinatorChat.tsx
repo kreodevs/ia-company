@@ -21,6 +21,7 @@ import {
 } from "../../lib/coordinator-execute-nav";
 import Button from "../ui/Button";
 import TeamProposalCard from "./TeamProposalCard";
+import { StrategicContextFields, type StrategicContextValue } from "./StrategicContextFields";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 const WELCOME_KEY = "office.chat.welcome";
@@ -67,6 +68,10 @@ function CoordinatorChatLegacy({
   const welcomeKey = welcomeMessageKey ?? WELCOME_KEY;
   const threadScopeKey = coordinatorThreadScopeKey(productId, orgUnitId);
   const [messages, setMessages] = useState<CoordinatorChatMessage[]>([]);
+  const [strategic, setStrategic] = useState<StrategicContextValue>({
+    companyGoalId: null,
+    initiativeId: null,
+  });
   const [input, setInput] = useState("");
   const [plan, setPlan] = useState<OfficeTaskPlan | null>(null);
   const [busy, setBusy] = useState(false);
@@ -150,6 +155,8 @@ function CoordinatorChatLegacy({
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
         parentRunId,
+        companyGoalId: strategic.companyGoalId ?? undefined,
+        initiativeId: strategic.initiativeId ?? undefined,
       });
       onExecuted?.(result.runId);
       const path = resolveCoordinatorExecutePath({
@@ -177,7 +184,10 @@ function CoordinatorChatLegacy({
       onRequestPlan={() => void send(input, true)}
       planFooter={
         plan && !executing ? (
-          <TeamProposalCard plan={plan} onExecute={() => void executePlan()} executing={executing} compact />
+          <div className="space-y-3">
+            <StrategicContextFields value={strategic} onChange={setStrategic} />
+            <TeamProposalCard plan={plan} onExecute={() => void executePlan()} executing={executing} compact />
+          </div>
         ) : null
       }
     >
@@ -214,6 +224,10 @@ function CoordinatorChatStream({
   const [input, setInput] = useState("");
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [strategic, setStrategic] = useState<StrategicContextValue>({
+    companyGoalId: null,
+    initiativeId: null,
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
   const seeded = useRef(false);
   const requestPlanRef = useRef(false);
@@ -316,6 +330,8 @@ function CoordinatorChatStream({
         presetId: plan.presetId ?? undefined,
         agentIds: plan.agents.map((a) => a.id),
         parentRunId,
+        companyGoalId: strategic.companyGoalId ?? undefined,
+        initiativeId: strategic.initiativeId ?? undefined,
       });
       onExecuted?.(result.runId);
       const path = resolveCoordinatorExecutePath({
@@ -345,12 +361,15 @@ function CoordinatorChatStream({
       onRequestPlan={() => void send(input, true)}
       planFooter={
         plan && !executing ? (
-          <TeamProposalCard
-            plan={plan}
-            onExecute={() => void executePlan()}
-            executing={executing}
-            compact
-          />
+          <div className="space-y-3">
+            <StrategicContextFields value={strategic} onChange={setStrategic} />
+            <TeamProposalCard
+              plan={plan}
+              onExecute={() => void executePlan()}
+              executing={executing}
+              compact
+            />
+          </div>
         ) : null
       }
     >

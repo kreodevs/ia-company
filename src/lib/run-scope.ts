@@ -20,6 +20,8 @@ export function executionRunCreateData(input: {
   sharedMemory?: unknown;
   productId?: string | null;
   orgUnitId?: string | null;
+  companyGoalId?: string | null;
+  initiativeId?: string | null;
   status?: Prisma.ExecutionRunCreateInput["status"];
   engine?: RunEngine;
 }): Prisma.ExecutionRunUncheckedCreateInput {
@@ -37,5 +39,7 @@ export function executionRunCreateData(input: {
     sharedMemory,
     orgUnitId: scope.orgUnitId,
     productId: scope.productId,
+    companyGoalId: input.companyGoalId ?? undefined,
+    initiativeId: input.initiativeId ?? undefined,
   };
 }

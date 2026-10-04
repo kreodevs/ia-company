@@ -24,6 +24,7 @@
 | `DepartmentOrgCard` | Tarjeta de departamento en organigrama (misión operativa: trabajos, subunidades, sala) |
 | `Objectives` / `Initiatives` | Fase F — listados con Kreo `DataTable` |
 | `ObjectiveForm` / `InitiativeForm` | Fase F — CRUD con Kreo `DynamicForm` (`variant="premium"`) |
+| `StrategicContextFields` | Selector opcional objetivo → iniciativa al lanzar encargo (`CoordinatorChat`) |
 
 ## Home layout (Oleada 1)
 

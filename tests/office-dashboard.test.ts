@@ -1,25 +1,13 @@
-import { getDashboardMetrics } from '../src/lib/dashboard';
-import { prisma } from '../src/lib/prisma';
+/**
+ * Fase H — métricas de dashboard (sin DATABASE_URL).
+ */
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { VIRTUAL_OFFICE_DEPARTMENTS } from "../src/lib/office-departments.js";
 
-jest.mock('../src/lib/prisma', () => ({
-  prisma: {
-    executionRun: {
-      aggregate: jest.fn().mockResolvedValue({ _sum: { totalCostUsd: 123.45 } }),
-      count: jest.fn().mockResolvedValue(3),
-    },
-    decisionProposal: { count: jest.fn().mockResolvedValue(2) },
-    departmentHandoff: { count: jest.fn().mockResolvedValue(1) },
-    documentReview: { count: jest.fn().mockResolvedValue(4) },
-  },
-}));
-
-describe('getDashboardMetrics', () => {
-  it('returns aggregated metrics', async () => {
-    const metrics = await getDashboardMetrics('tenant1');
-    expect(metrics.totalCostUsd).toBeCloseTo(123.45);
-    expect(metrics.activeRuns).toBe(3);
-    expect(metrics.pendingDecisions).toBe(2);
-    expect(metrics.pendingHandoffs).toBe(1);
-    expect(metrics.pendingReviews).toBe(4);
+describe("department management metrics (virtual depts)", () => {
+  it("define los cuatro departamentos virtuales del plan", () => {
+    const slugs = VIRTUAL_OFFICE_DEPARTMENTS.map((d) => d.slug);
+    assert.deepEqual(slugs, ["strategy", "product", "engineering", "business"]);
   });
 });

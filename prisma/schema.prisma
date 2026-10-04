@@ -71,6 +71,7 @@ model CompanyGoal {
   targetValue  Float?
   currentValue Float?
   initiatives  Initiative[]
+  executionRuns ExecutionRun[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
@@ -85,6 +86,7 @@ model Initiative {
   status        String?
   companyGoal   CompanyGoal @relation(fields: [companyGoalId], references: [id])
   companyGoalId String
+  executionRuns ExecutionRun[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -270,6 +272,8 @@ model ExecutionRun {
   tenantId     String?
   orgUnitId    String?
   productId    String?
+  companyGoalId String?
+  initiativeId  String?
   status       ExecutionStatus @default(PENDING)
   engine       RunEngine       @default(dag)
   sharedMemory Json            @default("{}")
@@ -285,6 +289,8 @@ model ExecutionRun {
   tenant              Tenant?              @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   orgUnit             OrgUnit?             @relation(fields: [orgUnitId], references: [id], onDelete: SetNull)
   product             TenantProduct?       @relation(fields: [productId], references: [id], onDelete: SetNull)
+  companyGoal         CompanyGoal?         @relation(fields: [companyGoalId], references: [id], onDelete: SetNull)
+  initiative          Initiative?          @relation(fields: [initiativeId], references: [id], onDelete: SetNull)
   logs                ExecutionLog[]
   events              ExecutionRunEvent[]
   checkpoints         RunCheckpoint[]
@@ -301,6 +307,8 @@ model ExecutionRun {
   @@index([tenantId, productId])
   @@index([tenantId, orgUnitId, status])
   @@index([tenantId, productId, status])
+  @@index([tenantId, companyGoalId])
+  @@index([tenantId, initiativeId])
 }
 
 enum LogLevel {

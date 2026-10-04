@@ -297,6 +297,26 @@ export default function OfficeEncargoDetailPage() {
                       <dt>{t("office.encargos.cost")}</dt>
                       <dd>${detail.totalCostUsd.toFixed(2)}</dd>
                     </div>
+                    {detail.companyGoalName ? (
+                      <div>
+                        <dt>Objetivo</dt>
+                        <dd>
+                          <Link to="/office/objectives" className="text-[var(--primary)] hover:underline">
+                            {detail.companyGoalName}
+                          </Link>
+                        </dd>
+                      </div>
+                    ) : null}
+                    {detail.initiativeName ? (
+                      <div>
+                        <dt>Iniciativa</dt>
+                        <dd>
+                          <Link to="/office/iniciativas" className="text-[var(--primary)] hover:underline">
+                            {detail.initiativeName}
+                          </Link>
+                        </dd>
+                      </div>
+                    ) : null}
                   </div>
                   <div className="office-encargo-header-next">
                     {detail.nextAction ? (
