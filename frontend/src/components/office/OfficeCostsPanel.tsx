@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Input from "../ui/Input";
+import { Button } from "@/components/atoms/Button";
 import { Link } from "react-router-dom";
 import { getOfficeCostReport, type OfficeCostReport } from "../../lib/api";
 import Panel from "../ui/Panel";
@@ -15,12 +17,18 @@ function formatUsd(value: number): string {
 export function OfficeCostsPanel() {
   const [report, setReport] = useState<OfficeCostReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [modelFilter, setModelFilter] = useState("");
 
-  useEffect(() => {
-    getOfficeCostReport()
+  const load = useCallback(() => {
+    setError(null);
+    getOfficeCostReport({ model: modelFilter.trim() || undefined })
       .then(setReport)
       .catch((e) => setError(e instanceof Error ? e.message : "Error"));
-  }, []);
+  }, [modelFilter]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (error) return <EmptyState title="Costes" description={error} />;
   if (!report) return <PageLoading message="Cargando costes…" />;
@@ -51,10 +59,25 @@ export function OfficeCostsPanel() {
           </StatusPill>
         </p>
       ) : null}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="mb-4 flex flex-wrap items-end gap-2">
+        <label className="text-sm text-[var(--foreground-muted)]">
+          Modelo LLM
+          <Input
+            className="mt-1 max-w-xs"
+            value={modelFilter}
+            onChange={(e) => setModelFilter(e.target.value)}
+            placeholder="ej. claude, gpt-4"
+          />
+        </label>
+        <Button type="button" size="sm" variant="outline" onClick={load}>
+          Aplicar filtro
+        </Button>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <CostBreakdown title="Por departamento" rows={report.byDepartment} />
         <CostBreakdown title="Por objetivo" rows={report.byObjective} />
         <CostBreakdown title="Por producto" rows={report.byProduct} />
+        <CostBreakdown title="Por modelo" rows={report.byModel} />
       </div>
     </Panel>
   );

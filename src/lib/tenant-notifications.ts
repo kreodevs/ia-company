@@ -344,4 +344,7 @@ export async function notifyRunFinishedInApp(params: {
     href: warHref,
     runId: params.runId,
   });
+
+  const { syncCostBudgetAlerts } = await import("./cost-alerts.js");
+  await syncCostBudgetAlerts(params.tenantId).catch(() => undefined);
 }

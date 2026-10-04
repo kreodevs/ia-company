@@ -89,7 +89,10 @@ export async function getOfficeInbox(
 ): Promise<OfficeInboxItem[]> {
   const limit = Math.min(100, Math.max(10, options.limit ?? 50));
 
-  const [checkpoints, proposals, handoffs, blockedItems, reviewItems, notifications] =
+  const failureSince = new Date();
+  failureSince.setDate(failureSince.getDate() - 14);
+
+  const [checkpoints, proposals, handoffs, blockedItems, reviewItems, notifications, failedRuns] =
     await Promise.all([
       prisma.runCheckpoint.findMany({
         where: { tenantId, status: RunCheckpointStatus.pending },
@@ -128,6 +131,18 @@ export async function getOfficeInbox(
         where: { tenantId, readAt: null, type: { in: ["run_failed", "cost_alert", "budget_exceeded"] } },
         orderBy: { createdAt: "desc" },
         take: limit,
+      }),
+      prisma.executionRun.findMany({
+        where: { tenantId, status: "FAILED", createdAt: { gte: failureSince } },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        select: {
+          id: true,
+          createdAt: true,
+          errorMessage: true,
+          sharedMemory: true,
+          workflow: { select: { name: true } },
+        },
       }),
     ]);
 
@@ -229,6 +244,37 @@ export async function getOfficeInbox(
         refId: review.id,
         resolve: null,
         createdAt: review.updatedAt,
+      }),
+    );
+  }
+
+  const notifiedRunIds = new Set(
+    notifications.map((n) => n.runId).filter((id): id is string => Boolean(id)),
+  );
+
+  for (const run of failedRuns) {
+    const memory = run.sharedMemory as Record<string, unknown>;
+    const scheduleId = typeof memory.scheduleId === "string" ? memory.scheduleId : null;
+    if (!scheduleId) continue;
+    if (notifiedRunIds.has(run.id)) continue;
+    const scheduleName =
+      typeof memory.scheduleName === "string" ? memory.scheduleName : "Operación programada";
+    items.push(
+      item({
+        id: `sch-fail-${run.id}`,
+        kind: "schedule_run_failed",
+        category: "failure",
+        title: `Rutina fallida: ${scheduleName}`,
+        body: run.errorMessage ?? run.workflow?.name ?? null,
+        href: encargoHumanHref(run.id),
+        runId: run.id,
+        refId: scheduleId,
+        resolve: {
+          method: "PATCH",
+          url: `/office/operations/${scheduleId}`,
+          body: { enabled: false },
+        },
+        createdAt: run.createdAt,
       }),
     );
   }

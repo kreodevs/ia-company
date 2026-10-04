@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
+import { syncCostBudgetAlerts } from "./cost-alerts.js";
 import { getTenantMonthlyUsage } from "./usage-limits.js";
 
 export type BudgetAlertLevel = 50 | 80 | 100 | null;
@@ -11,6 +12,7 @@ export interface OfficeCostFilters {
   productId?: string;
   agentId?: string;
   runId?: string;
+  model?: string;
 }
 
 export interface OfficeCostBreakdownRow {
@@ -32,6 +34,7 @@ export interface OfficeCostReport {
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
+  byModel: OfficeCostBreakdownRow[];
 }
 
 export function budgetAlertFromPercent(percent: number | null): BudgetAlertLevel {
@@ -55,6 +58,11 @@ function buildRunWhere(tenantId: string, filters: OfficeCostFilters): Prisma.Exe
   }
   if (filters.agentId) {
     where.logs = { some: { agentId: filters.agentId } };
+  }
+  if (filters.model?.trim()) {
+    where.sessions = {
+      some: { model: { contains: filters.model.trim(), mode: "insensitive" } },
+    };
   }
   return where;
 }
@@ -83,7 +91,7 @@ export async function getOfficeCostReport(
       ? Math.round((monthly.totalCostUsd / limit) * 1000) / 10
       : null;
 
-  const [goalGroups, productGroups, orgUnits, goals, products] = await Promise.all([
+  const [goalGroups, productGroups, orgUnits, goals, products, modelGroups] = await Promise.all([
     prisma.executionRun.groupBy({
       by: ["companyGoalId"],
       where: { ...where, companyGoalId: { not: null } },
@@ -107,6 +115,16 @@ export async function getOfficeCostReport(
     prisma.tenantProduct.findMany({
       where: { tenantId },
       select: { id: true, name: true },
+    }),
+    prisma.agentSession.groupBy({
+      by: ["model"],
+      where: {
+        tenantId,
+        model: { not: null },
+        run: where,
+      },
+      _sum: { spentCostUsd: true },
+      _count: { id: true },
     }),
   ]);
 
@@ -132,6 +150,8 @@ export async function getOfficeCostReport(
       };
     }),
   );
+
+  void syncCostBudgetAlerts(tenantId);
 
   return {
     totalCostUsd,
@@ -161,6 +181,17 @@ export async function getOfficeCostReport(
         costUsd: Number(g._sum.totalCostUsd) || 0,
         runCount: g._count.id,
         href: `/products/${g.productId}`,
+      }))
+      .sort((a, b) => b.costUsd - a.costUsd)
+      .slice(0, 12),
+    byModel: modelGroups
+      .filter((g) => g.model)
+      .map((g) => ({
+        key: g.model as string,
+        label: g.model as string,
+        costUsd: Math.round((Number(g._sum.spentCostUsd) || 0) * 100) / 100,
+        runCount: g._count.id,
+        href: null,
       }))
       .sort((a, b) => b.costUsd - a.costUsd)
       .slice(0, 12),

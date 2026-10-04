@@ -13,15 +13,19 @@ interface DepartmentOperationsPanelProps {
 /** Fase I — operaciones recurrentes como negocio (Kreo Card). */
 export function DepartmentOperationsPanel({ departmentSlug, orgUnitId }: DepartmentOperationsPanelProps) {
   const [items, setItems] = useState<DepartmentOperationRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+  const reload = () => {
     setLoading(true);
     getDepartmentOperations({ departmentSlug, orgUnitId })
       .then(setItems)
       .catch((e) => setError(e instanceof Error ? e.message : "Error"))
       .finally(() => setLoading(false));
+  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload when scope changes
   }, [departmentSlug, orgUnitId]);
 
   if (loading) return <PageLoading message="Cargando operaciones…" />;
@@ -36,7 +40,7 @@ export function DepartmentOperationsPanel({ departmentSlug, orgUnitId }: Departm
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {items.map((op) => (
-            <RoutineCard key={op.scheduleId} operation={op} />
+            <RoutineCard key={op.scheduleId} operation={op} onChanged={reload} />
           ))}
         </div>
       )}

@@ -66,6 +66,16 @@ export function DepartmentOrgCard({
         </div>
       }
     >
+      {node.mission ? (
+        <p className="mb-3 text-sm text-[var(--foreground-muted)]">{node.mission}</p>
+      ) : null}
+      {node.procedureHighlights.length > 0 ? (
+        <ul className="mb-3 list-inside list-disc text-sm text-[var(--foreground)]">
+          {node.procedureHighlights.map((label) => (
+            <li key={label}>{label}</li>
+          ))}
+        </ul>
+      ) : null}
       <dl className="grid grid-cols-2 gap-3 text-sm">
         <div>
           <dt className="text-[var(--foreground-muted)]">Trabajos dept.</dt>

@@ -228,6 +228,8 @@ export interface OrganigramNode {
   blockedWorkItems: number;
   pendingHandoffsIn: number;
   pendingHandoffsOut: number;
+  mission: string | null;
+  procedureHighlights: string[];
   children: OrganigramNode[];
 }
 
@@ -389,6 +391,7 @@ export interface OfficeCostReport {
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
+  byModel: OfficeCostBreakdownRow[];
 }
 
 export const getOfficeCostReport = async (params?: {
@@ -398,6 +401,7 @@ export const getOfficeCostReport = async (params?: {
   productId?: string;
   agentId?: string;
   runId?: string;
+  model?: string;
 }) => {
   const q = new URLSearchParams();
   if (params?.since) q.set("since", params.since);
@@ -406,6 +410,7 @@ export const getOfficeCostReport = async (params?: {
   if (params?.productId) q.set("productId", params.productId);
   if (params?.agentId) q.set("agentId", params.agentId);
   if (params?.runId) q.set("runId", params.runId);
+  if (params?.model) q.set("model", params.model);
   const qs = q.toString();
   return request<OfficeCostReport>(`/office/costs${qs ? `?${qs}` : ""}`);
 };
@@ -465,6 +470,16 @@ export const getDepartmentOperations = async (ctx: {
   }
   return [];
 };
+
+export const setDepartmentOperationEnabled = async (
+  scheduleId: string,
+  enabled: boolean,
+  pauseReason?: string | null,
+) =>
+  request<{ ok: boolean }>(`/office/operations/${scheduleId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ enabled, pauseReason }),
+  });
 
 export interface CollaborationEdge {
   fromOrgUnitId: string;

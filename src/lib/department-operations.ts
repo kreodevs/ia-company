@@ -4,6 +4,7 @@ import {
   listProceduresForVirtualDepartment,
   type OfficeScheduledProcedureSummary,
 } from "./office-procedures.js";
+import { loadRecentRunsByScheduleId } from "./schedule-run-index.js";
 import { prisma } from "./prisma.js";
 
 export type DepartmentOperationHealth = "healthy" | "warning" | "paused" | "disabled";
@@ -45,37 +46,10 @@ async function enrichScheduled(
   tenantId: string,
   scheduled: OfficeScheduledProcedureSummary[],
 ): Promise<DepartmentOperationRow[]> {
-  const workflowIds = scheduled.map((s) => s.workflowId).filter(Boolean) as string[];
-  const runsByWorkflow = new Map<string, DepartmentOperationRunRow[]>();
-
-  if (workflowIds.length) {
-    const runs = await prisma.executionRun.findMany({
-      where: { tenantId, workflowId: { in: workflowIds } },
-      orderBy: { createdAt: "desc" },
-      take: Math.min(80, workflowIds.length * 8),
-      select: {
-        id: true,
-        workflowId: true,
-        status: true,
-        completedAt: true,
-        totalCostUsd: true,
-      },
-    });
-    for (const run of runs) {
-      if (!run.workflowId) continue;
-      const list = runsByWorkflow.get(run.workflowId) ?? [];
-      if (list.length < 5) {
-        list.push({
-          id: run.id,
-          status: run.status,
-          completedAt: run.completedAt?.toISOString() ?? null,
-          totalCostUsd: Number(run.totalCostUsd) || 0,
-          href: `/office/encargos/${run.id}`,
-        });
-        runsByWorkflow.set(run.workflowId, list);
-      }
-    }
-  }
+  const runsBySchedule = await loadRecentRunsByScheduleId(
+    tenantId,
+    scheduled.map((s) => s.scheduleId),
+  );
 
   const scheduleRows = await prisma.autonomousSchedule.findMany({
     where: { tenantId, id: { in: scheduled.map((s) => s.scheduleId) } },
@@ -84,7 +58,8 @@ async function enrichScheduled(
   const skipById = new Map(scheduleRows.map((r) => [r.id, r.lastSkipReason]));
 
   return scheduled.map((item) => {
-    const recentRuns = item.workflowId ? runsByWorkflow.get(item.workflowId) ?? [] : [];
+    const recentRuns: DepartmentOperationRunRow[] =
+      runsBySchedule.get(item.scheduleId) ?? [];
     const costs = recentRuns.map((r) => r.totalCostUsd).filter((c) => c > 0);
     const avgCostUsd =
       costs.length > 0
@@ -116,4 +91,36 @@ export async function listDepartmentOperations(
       ? await listProceduresForVirtualDepartment(tenantId, ctx.departmentSlug)
       : await listProceduresForOrgUnit(tenantId, ctx.orgUnitId);
   return enrichScheduled(tenantId, response.scheduled);
+}
+
+export async function setDepartmentOperationEnabled(
+  tenantId: string,
+  scheduleId: string,
+  enabled: boolean,
+  pauseReason?: string | null,
+): Promise<void> {
+  const row = await prisma.autonomousSchedule.findFirst({
+    where: { id: scheduleId, tenantId },
+  });
+  if (!row) throw new Error("Schedule not found");
+
+  const { getTenantScheduleTimezone } = await import("./tenant-schedule-settings.js");
+  const { computeNextRunAt } = await import("./schedule-timing.js");
+  const timeZone = await getTenantScheduleTimezone(tenantId);
+
+  await prisma.autonomousSchedule.update({
+    where: { id: scheduleId },
+    data: {
+      enabled,
+      lastSkipReason: enabled ? null : pauseReason ?? "Pausado desde operaciones de departamento",
+      nextRunAt: enabled
+        ? computeNextRunAt({
+            from: new Date(),
+            intervalSec: row.intervalSec,
+            cronExpr: row.cronExpr,
+            timeZone,
+          })
+        : null,
+    },
+  });
 }

@@ -11,6 +11,8 @@ export interface OrganigramNode {
   blockedWorkItems: number;
   pendingHandoffsIn: number;
   pendingHandoffsOut: number;
+  mission: string | null;
+  procedureHighlights: string[];
   children: OrganigramNode[];
 }
 
@@ -25,7 +27,7 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
     prisma.orgUnit.findMany({
       where: { tenantId, isActive: true },
       orderBy: { name: "asc" },
-      select: { id: true, name: true, type: true, slug: true, parentId: true },
+      select: { id: true, name: true, type: true, slug: true, parentId: true, description: true },
     }),
     prisma.departmentWorkItem.groupBy({
       by: ["orgUnitId"],
@@ -82,9 +84,13 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
       blockedWorkItems: blockedMap.get(unit.id) ?? 0,
       pendingHandoffsIn: handoffsInMap.get(unit.id) ?? 0,
       pendingHandoffsOut: handoffsOutMap.get(unit.id) ?? 0,
+      mission: unit.description?.trim() || null,
+      procedureHighlights: [],
       children: [],
     });
   }
+
+  await attachProcedureHighlights(tenantId, nodeMap);
 
   const roots: OrganigramNode[] = [];
   for (const node of nodeMap.values()) {
@@ -94,6 +100,38 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
   }
 
   return roots;
+}
+
+async function attachProcedureHighlights(
+  tenantId: string,
+  nodeMap: Map<string, OrganigramNode>,
+): Promise<void> {
+  const { listGroupedProcedures } = await import("./office-procedures.js");
+  const { VIRTUAL_OFFICE_DEPARTMENTS } = await import("./office-departments.js");
+  const grouped = await listGroupedProcedures(tenantId);
+
+  for (const group of grouped.groups) {
+    if (group.orgUnitId) {
+      const node = nodeMap.get(group.orgUnitId);
+      if (node) {
+        node.procedureHighlights = group.items.slice(0, 3).map((p) => p.procedureLabel);
+      }
+      continue;
+    }
+    if (group.departmentSlug) {
+      const unit = [...nodeMap.values()].find((n) => n.slug === group.departmentSlug);
+      if (unit) {
+        unit.procedureHighlights = group.items.slice(0, 3).map((p) => p.procedureLabel);
+      }
+    }
+  }
+
+  for (const def of VIRTUAL_OFFICE_DEPARTMENTS) {
+    const node = [...nodeMap.values()].find((n) => n.slug === def.slug);
+    if (node && !node.mission) {
+      node.mission = `Departamento virtual: ${def.slug}`;
+    }
+  }
 }
 
 /** Nodo raíz CEO/coordinador (Fase E) envolviendo el árbol real. */
@@ -117,6 +155,8 @@ export function wrapOrganigramWithExecutive(roots: OrganigramNode[]): Organigram
       blockedWorkItems: sum((n) => n.blockedWorkItems),
       pendingHandoffsIn: sum((n) => n.pendingHandoffsIn),
       pendingHandoffsOut: sum((n) => n.pendingHandoffsOut),
+      mission: "Coordinación estratégica, priorización de encargos y visión de empresa.",
+      procedureHighlights: [],
       children: roots,
     },
   ];

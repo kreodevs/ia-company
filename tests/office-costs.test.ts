@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { budgetAlertFromPercent } from "../src/lib/office-costs.js";
+import { syncCostBudgetAlerts } from "../src/lib/cost-alerts.js";
 import { wrapOrganigramWithExecutive } from "../src/lib/organigram.js";
 
 describe("budgetAlertFromPercent", () => {
@@ -26,6 +27,8 @@ describe("wrapOrganigramWithExecutive", () => {
         blockedWorkItems: 1,
         pendingHandoffsIn: 0,
         pendingHandoffsOut: 1,
+        mission: "Operaciones",
+        procedureHighlights: ["Informe semanal"],
         children: [],
       },
     ]);
@@ -33,5 +36,11 @@ describe("wrapOrganigramWithExecutive", () => {
     assert.equal(wrapped[0]?.type, "executive");
     assert.equal(wrapped[0]?.children.length, 1);
     assert.equal(wrapped[0]?.workItemCount, 2);
+  });
+});
+
+describe("syncCostBudgetAlerts", () => {
+  it("exporta función", () => {
+    assert.equal(typeof syncCostBudgetAlerts, "function");
   });
 });

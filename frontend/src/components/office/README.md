@@ -31,6 +31,8 @@
 | `OfficeCostsPanel` | Fase J — coste multidimensional y alertas de presupuesto |
 | `CollaborationMapPanel` | Fase E — handoffs entre departamentos |
 | `EncargoStrategicLinkEditor` | Fase F — PATCH vínculo objetivo/iniciativa en detalle de encargo |
+| `RoutineCard` | Pausar/reactivar rutina vía `PATCH /office/operations/:scheduleId` |
+| `DepartmentOrgCard` | Muestra misión y procedimientos destacados (Fase E) |
 
 Páginas: `OfficeObjectiveDetailPage` en `/office/objetivos/:goalId` — KPIs, rollups por iniciativa y encargos vinculados.
 

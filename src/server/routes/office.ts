@@ -245,6 +245,7 @@ export async function officeRoutes(app: FastifyInstance) {
       productId?: string;
       agentId?: string;
       runId?: string;
+      model?: string;
     };
   }>('/office/costs', async (request, reply) => {
     try {
@@ -262,6 +263,7 @@ export async function officeRoutes(app: FastifyInstance) {
           productId: request.query.productId,
           agentId: request.query.agentId,
           runId: request.query.runId,
+          model: request.query.model,
         }),
       );
       return report;
@@ -522,6 +524,29 @@ export async function officeRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.patch<{
+    Params: { scheduleId: string };
+    Body: { enabled?: boolean; pauseReason?: string | null };
+  }>("/office/operations/:scheduleId", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const enabled = request.body?.enabled;
+      if (enabled === undefined) {
+        return reply.status(400).send({ error: "enabled is required" });
+      }
+      const { setDepartmentOperationEnabled } = await import("../../lib/department-operations.js");
+      await setDepartmentOperationEnabled(
+        tenantId,
+        request.params.scheduleId,
+        enabled,
+        request.body.pauseReason,
+      );
+      return { ok: true };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 
   app.get<{ Params: { slug: string } }>(
     "/office/departments/:slug/operations",

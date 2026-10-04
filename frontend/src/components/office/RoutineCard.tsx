@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { CalendarClock } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
-import type { DepartmentOperationRow } from "../../lib/api";
+import { useState } from "react";
+import { Button } from "@/components/atoms/Button";
+import { setDepartmentOperationEnabled, type DepartmentOperationRow } from "../../lib/api";
 import { RoutineHealthBadge } from "./RoutineHealthBadge";
 import { RoutineRunHistory } from "./RoutineRunHistory";
 
@@ -10,7 +12,28 @@ function formatUsd(value: number | null): string {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(value);
 }
 
-export function RoutineCard({ operation }: { operation: DepartmentOperationRow }) {
+export function RoutineCard({
+  operation,
+  onChanged,
+}: {
+  operation: DepartmentOperationRow;
+  onChanged?: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const toggle = async () => {
+    setBusy(true);
+    try {
+      await setDepartmentOperationEnabled(
+        operation.scheduleId,
+        !operation.enabled,
+        !operation.enabled ? null : "Pausado manualmente desde la sala",
+      );
+      onChanged?.();
+    } finally {
+      setBusy(false);
+    }
+  };
   const freq = operation.cronExpr
     ? `Cron: ${operation.cronExpr}`
     : operation.intervalSec >= 86400
@@ -53,6 +76,11 @@ export function RoutineCard({ operation }: { operation: DepartmentOperationRow }
           </Link>
         </p>
       ) : null}
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void toggle()}>
+          {operation.enabled ? "Pausar rutina" : "Reactivar rutina"}
+        </Button>
+      </div>
       <div className="mt-3 border-t border-[var(--border)] pt-2">
         <RoutineRunHistory runs={operation.recentRuns} />
       </div>
