@@ -467,11 +467,18 @@ export async function listOfficeEncargos(
     departmentSlug?: string;
     orgUnitId?: string;
     productId?: string;
+    companyGoalId?: string;
+    initiativeId?: string;
   } = {},
 ): Promise<{ items: OfficeEncargoSummary[] }> {
   const limit = Math.min(100, Math.max(1, options.limit ?? 50));
   const hasScopeFilter = Boolean(
-    options.phase || options.departmentSlug || options.orgUnitId || options.productId,
+    options.phase ||
+      options.departmentSlug ||
+      options.orgUnitId ||
+      options.productId ||
+      options.companyGoalId ||
+      options.initiativeId,
   );
   const fetchLimit = hasScopeFilter ? Math.min(100, limit * 4) : limit;
   const scopeWhere = options.orgUnitId
@@ -480,7 +487,12 @@ export async function listOfficeEncargos(
 
   const [runs, products, consensusRows, tenant, orgUnits] = await Promise.all([
     prisma.executionRun.findMany({
-      where: { tenantId, ...(scopeWhere ?? {}) },
+      where: {
+        tenantId,
+        ...(scopeWhere ?? {}),
+        ...(options.companyGoalId ? { companyGoalId: options.companyGoalId } : {}),
+        ...(options.initiativeId ? { initiativeId: options.initiativeId } : {}),
+      },
       orderBy: { createdAt: "desc" },
       take: fetchLimit,
       include: {
@@ -526,6 +538,12 @@ export async function listOfficeEncargos(
   }
   if (options.productId) {
     items = items.filter((item) => item.productId === options.productId);
+  }
+  if (options.companyGoalId) {
+    items = items.filter((item) => item.companyGoalId === options.companyGoalId);
+  }
+  if (options.initiativeId) {
+    items = items.filter((item) => item.initiativeId === options.initiativeId);
   }
 
   return { items: items.slice(0, limit) };

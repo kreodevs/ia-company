@@ -50,6 +50,7 @@ import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import ProceduresSettingsPage from "./pages/ProceduresSettingsPage";
 import { OfficeStrategyPage } from "./pages/OfficeStrategyPage";
 import { OfficeObjectivesPage } from "./pages/OfficeObjectivesPage";
+import OfficeObjectiveDetailPage from "./pages/OfficeObjectiveDetailPage";
 import { OfficeInitiativesPage } from "./pages/OfficeInitiativesPage";
 import { OfficeDashboardPage } from "./pages/OfficeDashboardPage";
 import { OfficeOrganigramPage } from "./pages/OfficeOrganigramPage";
@@ -105,6 +106,7 @@ function AppShell() {
               <Route path="office/dashboard" element={<OfficeDashboardPage />} />
               <Route path="office/organigrama" element={<OfficeOrganigramPage />} />
               <Route path="office/objetivos" element={<OfficeObjectivesPage />} />
+              <Route path="office/objetivos/:goalId" element={<OfficeObjectiveDetailPage />} />
               <Route path="office/iniciativas" element={<OfficeInitiativesPage />} />
               <Route path="office/departments/:slug" element={<OfficeDepartmentPage />} />
               <Route path="office/archive" element={<OfficeArchivePage />} />

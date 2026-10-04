@@ -43,6 +43,8 @@ export default function OfficeTrabajoPage() {
   const tab = parseTrabajoTab(searchParams.get("tab"));
   const watchRunId = searchParams.get("run")?.trim() || null;
   const decisionTab = parseDecisionTab(searchParams.get("decisionTab"));
+  const companyGoalId = searchParams.get("companyGoalId")?.trim() || null;
+  const initiativeId = searchParams.get("initiativeId")?.trim() || null;
   const [highlightEncargo, setHighlightEncargo] = useState<OfficeEncargoDetail | null>(null);
   const [loadingRun, setLoadingRun] = useState(false);
 
@@ -154,6 +156,8 @@ export default function OfficeTrabajoPage() {
               hidePhaseFilters
               highlightRunId={watchRunId}
               onHighlightRun={setWatchRun}
+              companyGoalId={companyGoalId}
+              initiativeId={initiativeId}
             />
           </div>
           {showLivePanel && highlightEncargo ? (

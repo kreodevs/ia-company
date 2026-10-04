@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { getObjectives, type CompanyGoal } from "../../lib/api";
 import PageLoading from "../ui/PageLoading";
 import EmptyState from "../ui/EmptyState";
@@ -28,7 +29,16 @@ export const Objectives: React.FC = () => {
 
   const columns: DataTableColumn[] = useMemo(
     () => [
-      { field: "name", header: "Objetivo", sortable: true },
+      {
+        field: "name",
+        header: "Objetivo",
+        sortable: true,
+        body: (row: CompanyGoal) => (
+          <Link className="font-medium text-[var(--primary)] hover:underline" to={`/office/objetivos/${row.id}`}>
+            {row.name}
+          </Link>
+        ),
+      },
       {
         field: "description",
         header: "Descripción",

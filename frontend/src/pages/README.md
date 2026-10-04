@@ -19,7 +19,9 @@ Sidebar groups (see `AppSidebar.tsx`): **Oficina** (home, **Mis pendientes**, en
 | Route | Page |
 |-------|------|
 | `/` · `/office` | `OfficePage` — coordinador en contexto general; KPIs enlazan a límites, encargos, pendientes, especialistas y productos; CTA a pendientes cuando hay decisiones |
-| `/office/trabajo` | `OfficeTrabajoPage` — hub unificado activos/pendientes/entregados (Oleada 2) |
+| `/office/trabajo` | `OfficeTrabajoPage` — hub unificado activos/pendientes/entregados (Oleada 2); query `companyGoalId` / `initiativeId` filtra encargos estratégicos |
+| `/office/objetivos` | `OfficeObjectivesPage` — objetivos (Kreo) |
+| `/office/objetivos/:goalId` | `OfficeObjectiveDetailPage` — KPIs, iniciativas y encargos del objetivo |
 | `/office/memoria` | `OfficeMemoriaPage` — memoria empresa/producto/historial (Oleada 3) |
 | `/office/encargos/:runId` | `OfficeEncargoDetailPage` — PageHeader + Breadcrumbs, paneles office |
 | `/office/pendientes` | `PendingDecisionsPage` — Breadcrumbs, filtros sticky, `EmptyState` |

@@ -105,6 +105,19 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get<{ Params: { id: string } }>('/office/objectives/:id', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const detail = await import('../../lib/objectives.js').then((m) =>
+        m.getObjectiveDetail(tenantId, request.params.id),
+      );
+      if (!detail) return reply.status(404).send({ error: 'Objective not found' });
+      return detail;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   // CRUD for objectives
   app.post('/office/objectives', async (request, reply) => {
     try {
@@ -208,13 +221,16 @@ export async function officeRoutes(app: FastifyInstance) {
       departmentSlug?: string;
       orgUnitId?: string;
       productId?: string;
+      companyGoalId?: string;
+      initiativeId?: string;
     };
   }>(
     "/office/encargos",
     async (request, reply) => {
       try {
         const tenantId = requireImpersonatedTenant(request);
-        const { limit, phase, departmentSlug, orgUnitId, productId } = request.query;
+        const { limit, phase, departmentSlug, orgUnitId, productId, companyGoalId, initiativeId } =
+          request.query;
         const validPhases = ["queued", "in_progress", "delivered", "failed", "cancelled"] as const;
         const phaseFilter = validPhases.includes(phase as (typeof validPhases)[number])
           ? (phase as (typeof validPhases)[number])
@@ -225,6 +241,8 @@ export async function officeRoutes(app: FastifyInstance) {
           departmentSlug,
           orgUnitId,
           productId,
+          companyGoalId,
+          initiativeId,
         });
       } catch (err) {
         return handleRouteError(reply, err);

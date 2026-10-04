@@ -26,6 +26,8 @@
 | `ObjectiveForm` / `InitiativeForm` | Fase F — CRUD con Kreo `DynamicForm` (`variant="premium"`) |
 | `StrategicContextFields` | Selector opcional objetivo → iniciativa al lanzar encargo (`CoordinatorChat`) |
 
+Páginas: `OfficeObjectiveDetailPage` en `/office/objetivos/:goalId` — KPIs, rollups por iniciativa y encargos vinculados.
+
 ## Home layout (Oleada 1)
 
 `/office` order: **floor plan → reception/chat lobby → archive sidebar → collapsed pulse metrics → services/ROI**.

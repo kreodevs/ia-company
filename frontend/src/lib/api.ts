@@ -282,6 +282,43 @@ export const getDashboardLegacy = async (params?: { since?: string }) => {
  * Corte 4 – fetch business objectives.
  */
 export const getObjectives = async () => request<CompanyGoal[]>('/office/objectives');
+
+export interface ObjectiveEncargoSummary {
+  id: string;
+  title: string;
+  status: string;
+  phase: OfficeEncargoPhase;
+  totalCostUsd: number;
+  initiativeId: string | null;
+  initiativeName: string | null;
+  createdAt: string;
+}
+
+export interface InitiativeRollup {
+  id: string;
+  name: string;
+  status: string | null;
+  encargoCount: number;
+  deliveredCount: number;
+  totalCostUsd: number;
+}
+
+export interface CompanyGoalDetail {
+  goal: CompanyGoal;
+  initiatives: Initiative[];
+  stats: {
+    encargoCount: number;
+    activeEncargos: number;
+    deliveredEncargos: number;
+    totalCostUsd: number;
+    progressPercent: number;
+  };
+  initiativeRollups: InitiativeRollup[];
+  recentEncargos: ObjectiveEncargoSummary[];
+}
+
+export const getObjectiveDetail = async (goalId: string) =>
+  request<CompanyGoalDetail>(`/office/objectives/${encodeURIComponent(goalId)}`);
 /**
  * Corte 4 – fetch initiatives linked to objectives.
  */
@@ -2295,6 +2332,8 @@ export const api = {
       departmentSlug?: string;
       orgUnitId?: string;
       productId?: string;
+      companyGoalId?: string;
+      initiativeId?: string;
     }) => {
       const q = new URLSearchParams();
       if (params?.limit) q.set("limit", String(params.limit));
@@ -2302,6 +2341,8 @@ export const api = {
       if (params?.departmentSlug) q.set("departmentSlug", params.departmentSlug);
       if (params?.orgUnitId) q.set("orgUnitId", params.orgUnitId);
       if (params?.productId) q.set("productId", params.productId);
+      if (params?.companyGoalId) q.set("companyGoalId", params.companyGoalId);
+      if (params?.initiativeId) q.set("initiativeId", params.initiativeId);
       const qs = q.toString();
       return request<{ items: OfficeEncargoSummary[] }>(`/office/encargos${qs ? `?${qs}` : ""}`);
     },

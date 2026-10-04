@@ -39,6 +39,8 @@ export interface OfficeEncargosPageProps {
   hidePhaseFilters?: boolean;
   highlightRunId?: string | null;
   onHighlightRun?: (runId: string) => void;
+  companyGoalId?: string | null;
+  initiativeId?: string | null;
 }
 
 function isEncargoDeletable(item: OfficeEncargoSummary): boolean {
@@ -58,6 +60,8 @@ export default function OfficeEncargosPage({
   hidePhaseFilters = false,
   highlightRunId,
   onHighlightRun,
+  companyGoalId: companyGoalIdProp,
+  initiativeId: initiativeIdProp,
 }: OfficeEncargosPageProps = {}) {
   const { t } = useTranslation();
   const [items, setItems] = useState<OfficeEncargoSummary[]>([]);
@@ -86,6 +90,8 @@ export default function OfficeEncargosPage({
       phase: apiPhase,
       departmentSlug: departmentSlug || undefined,
       orgUnitId: orgUnitId || undefined,
+      companyGoalId: companyGoalIdProp || undefined,
+      initiativeId: initiativeIdProp || undefined,
     });
     const filtered = fixedPhase
       ? res.items.filter((item) => matchesFixedPhase(item, fixedPhase))
@@ -96,7 +102,7 @@ export default function OfficeEncargosPage({
       const next = new Set([...prev].filter((id) => valid.has(id)));
       return next.size === prev.size ? prev : next;
     });
-  }, [fixedPhase, phase, departmentSlug, orgUnitId]);
+  }, [fixedPhase, phase, departmentSlug, orgUnitId, companyGoalIdProp, initiativeIdProp]);
 
   useEffect(() => {
     setLoading(true);
