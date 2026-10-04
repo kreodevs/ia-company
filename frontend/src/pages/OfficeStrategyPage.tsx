@@ -1,17 +1,33 @@
-import React from 'react';
-import { Objectives } from '../components/office/Objectives';
-import { Initiatives } from '../components/office/Initiatives';
-import { Dashboard as CostDashboard } from '../components/office/Dashboard'; // Reuse Dashboard component for cost metrics
+import PageHeader from "../components/ui/PageHeader";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import { Objectives } from "../components/office/Objectives";
+import { Initiatives } from "../components/office/Initiatives";
+import { Dashboard } from "../components/office/Dashboard";
+import Panel from "../components/ui/Panel";
 
 /**
- * Page that aggregates Corte 4 UI: objectives, initiatives and cost metrics.
+ * Vista agregada de estrategia (objetivos, iniciativas, pulso de coste).
  */
 export const OfficeStrategyPage: React.FC = () => (
-  <div className="office-strategy-page">
-    <h1>Estrategia empresarial</h1>
-    <Objectives />
-    <Initiatives />
-    {/* Cost metrics can be displayed using the existing Dashboard component */}
-    <CostDashboard />
+  <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+    <PageHeader
+      eyebrow={
+        <Breadcrumbs
+          items={[
+            { label: "Oficina", to: "/office" },
+            { label: "Estrategia" },
+          ]}
+        />
+      }
+      title="Estrategia empresarial"
+      subtitle="Objetivos, iniciativas y métricas consolidadas."
+    />
+    <Panel title="Objetivos" bodySize="sm">
+      <Objectives />
+    </Panel>
+    <Panel title="Iniciativas" bodySize="sm">
+      <Initiatives />
+    </Panel>
+    <Dashboard />
   </div>
 );

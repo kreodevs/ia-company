@@ -1,12 +1,21 @@
-import React from 'react';
-import { Dashboard } from '../components/office/Dashboard';
+import PageHeader from "../components/ui/PageHeader";
+import Breadcrumbs from "../components/ui/Breadcrumbs";
+import { Dashboard } from "../components/office/Dashboard";
 
-/**
- * Page showing the business dashboard.
- */
 export const OfficeDashboardPage: React.FC = () => (
-  <div className="office-dashboard-page">
-    <h1>Dashboard empresarial</h1>
+  <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+    <PageHeader
+      eyebrow={
+        <Breadcrumbs
+          items={[
+            { label: "Oficina", to: "/office" },
+            { label: "Dashboard empresarial" },
+          ]}
+        />
+      }
+      title="Dashboard empresarial"
+      subtitle="Métricas de gestión, salud departamental y actividad reciente (Fase H)."
+    />
     <Dashboard />
   </div>
 );

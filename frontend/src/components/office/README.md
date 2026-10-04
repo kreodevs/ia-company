@@ -19,6 +19,11 @@
 | `SpecialistProfileModal` | Specialist card — assign, template config, recent encargos, **documents** (archive) |
 | `TeamProposalCard` | Plan UI with human role labels (`agentDisplayLabel`) and missing-role deep links |
 | `OfficeOnboardingPanel` | Post-login checklist (Plantilla de especialistas → Org Studio → primer encargo) |
+| `Dashboard` | Fase H — KPIs Kreo (`DashboardKPI` vía `KpiCard`), tabla departamental (`DataTable`), actividad y enlaces a Inbox |
+| `OrganigramMap` | Fase E — árbol de `OrgUnit` con `DepartmentOrgCard` (Kreo `Card`, `StatusPill`, enlaces a sala y trabajos) |
+| `DepartmentOrgCard` | Tarjeta de departamento en organigrama (misión operativa: trabajos, subunidades, sala) |
+| `Objectives` / `Initiatives` | Fase F — listados con Kreo `DataTable` |
+| `ObjectiveForm` / `InitiativeForm` | Fase F — CRUD con Kreo `DynamicForm` (`variant="premium"`) |
 
 ## Home layout (Oleada 1)
 

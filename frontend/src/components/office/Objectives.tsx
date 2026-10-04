@@ -1,33 +1,78 @@
-import React, { useEffect, useState } from 'react';
-import { getObjectives } from '../../lib/api';
+import { useEffect, useMemo, useState } from "react";
+import { getObjectives, type CompanyGoal } from "../../lib/api";
+import PageLoading from "../ui/PageLoading";
+import EmptyState from "../ui/EmptyState";
+import StatusPill from "../ui/StatusPill";
+import { DataTable, type DataTableColumn } from "../organisms/DataTable";
+
+function progressPercent(goal: CompanyGoal): number {
+  if (goal.targetValue == null || goal.targetValue === 0) return 0;
+  const current = goal.currentValue ?? 0;
+  return Math.min(100, Math.round((current / goal.targetValue) * 100));
+}
 
 /**
- * Simple component that lists business objectives.
+ * Fase F — listado de objetivos con Kreo DataTable.
  */
 export const Objectives: React.FC = () => {
-  const [objectives, setObjectives] = useState<any[]>([]);
+  const [objectives, setObjectives] = useState<CompanyGoal[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getObjectives()
-      .then((data) => setObjectives(data))
-      .catch((e: any) => setError(e.message ?? 'Error loading objectives'));
+      .then(setObjectives)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Error loading objectives"))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (error) return <div className="error">{error}</div>;
-  if (!objectives.length) return <div>Loading objectives…</div>;
+  const columns: DataTableColumn[] = useMemo(
+    () => [
+      { field: "name", header: "Objetivo", sortable: true },
+      {
+        field: "description",
+        header: "Descripción",
+        body: (row: CompanyGoal) => row.description ?? "—",
+      },
+      {
+        field: "targetValue",
+        header: "Meta",
+        sortable: true,
+        body: (row: CompanyGoal) => (row.targetValue != null ? `${row.targetValue}%` : "—"),
+      },
+      {
+        field: "currentValue",
+        header: "Actual",
+        sortable: true,
+        body: (row: CompanyGoal) => (row.currentValue != null ? `${row.currentValue}%` : "—"),
+      },
+      {
+        field: "progress",
+        header: "Progreso",
+        body: (row: CompanyGoal) => {
+          const pct = progressPercent(row);
+          const status = pct >= 100 ? "completed" : pct >= 50 ? "running" : "pending";
+          return <StatusPill status={status}>{`${pct}%`}</StatusPill>;
+        },
+      },
+    ],
+    [],
+  );
+
+  if (loading) return <PageLoading message="Cargando objetivos…" />;
+  if (error) {
+    return <EmptyState title="Error" description={error} />;
+  }
 
   return (
-    <div className="objectives">
-      <h2>Objetivos empresariales</h2>
-      <ul>
-        {objectives.map((obj) => (
-          <li key={obj.id}>
-            <strong>{obj.name}</strong>: {obj.description}<br />
-            Meta: {obj.targetValue}% – Actual: {obj.currentValue}%
-          </li>
-        ))}
-      </ul>
-    </div>
+    <DataTable
+      columns={columns}
+      data={objectives}
+      globalFilterEnabled
+      globalFilterPlaceholder="Buscar objetivo…"
+      emptyMessage="Aún no hay objetivos. Crea el primero con el formulario superior."
+      paginator={objectives.length > 10}
+      rows={10}
+    />
   );
 };
