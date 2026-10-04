@@ -9,6 +9,7 @@ export const nav = {
   sectionDebugOffice: "Oficina de depuración",
   sectionGeneral: "General",
   admin: "Admin",
+  qa: "QA plataforma",
   templates: "Plantillas",
   settings: "Configuración",
   agents: "Agentes",

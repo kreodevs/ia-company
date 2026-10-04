@@ -193,6 +193,12 @@ export default function SuperAdminDashboardPage() {
             >
               {t("nav.workflows")}
             </Link>
+            <Link
+              to="/admin/qa"
+              className="interactive text-sm text-[var(--color-primary)] hover:underline"
+            >
+              {t("nav.qa")} →
+            </Link>
           </div>
         </Panel>
 

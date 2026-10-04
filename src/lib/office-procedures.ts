@@ -30,6 +30,7 @@ export interface OfficeProcedureSummary {
 export interface OfficeScheduledProcedureSummary {
   scheduleId: string;
   scheduleName: string;
+  responsibleAgentName: string | null;
   enabled: boolean;
   orchestrationMode: "fixed" | "meta_dynamic";
   workflowId: string | null;
@@ -236,9 +237,11 @@ function mapScheduleToScheduledProcedureSummary(
   workflow: WorkflowWithSteps | null,
 ): OfficeScheduledProcedureSummary {
   const procedure = workflow ? mapWorkflowToProcedure(workflow) : null;
+  const agentNames = workflow ? agentNamesFromWorkflow(workflow) : [];
   return {
     scheduleId: schedule.id,
     scheduleName: schedule.name,
+    responsibleAgentName: agentNames[0] ?? null,
     enabled: schedule.enabled,
     orchestrationMode:
       schedule.orchestrationMode === "meta_dynamic" ? "meta_dynamic" : "fixed",

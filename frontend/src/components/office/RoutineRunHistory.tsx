@@ -12,8 +12,16 @@ export function RoutineRunHistory({ runs }: { runs: DepartmentOperationRunRow[] 
           <Link to={run.href} className="truncate text-[var(--primary)] hover:underline">
             {run.id.slice(0, 8)}…
           </Link>
-          <span className="shrink-0 tabular-nums text-[var(--foreground-muted)]">
-            {run.status} · ${run.totalCostUsd.toFixed(2)}
+          <span className="shrink-0 text-right text-[var(--foreground-muted)]">
+            <span className="tabular-nums">{run.status} · ${run.totalCostUsd.toFixed(2)}</span>
+            {run.departmentWorkCount > 0 ? (
+              <span className="block text-[10px]">{run.departmentWorkCount} trabajo(s) dept.</span>
+            ) : null}
+            {run.deliveryHref ? (
+              <Link to={run.deliveryHref} className="block text-[10px] text-[var(--primary)] hover:underline">
+                Entrega
+              </Link>
+            ) : null}
           </span>
         </li>
       ))}

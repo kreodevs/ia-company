@@ -51,6 +51,7 @@ import { cn } from "../lib/utils";
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/admin": LayoutDashboard,
+  "/admin/qa": ClipboardCheck,
   "/admin/templates": Layers,
   "/office/workflows": GitBranch,
   "/settings/procedures": GitBranch,
@@ -338,6 +339,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
         titleKey: "nav.sectionAdmin",
         items: [
           { to: "/admin", labelKey: "nav.admin", end: true },
+          { to: "/admin/qa", labelKey: "nav.qa" },
           { to: "/admin/settings", labelKey: "nav.settings" },
         ],
       });

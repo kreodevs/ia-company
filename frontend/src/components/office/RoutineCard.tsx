@@ -55,6 +55,11 @@ export function RoutineCard({
         </span>
       }
     >
+      {operation.responsibleAgentName ? (
+        <p className="mb-2 text-xs text-[var(--foreground-muted)]">
+          Responsable: <span className="font-medium text-[var(--foreground)]">{operation.responsibleAgentName}</span>
+        </p>
+      ) : null}
       <dl className="grid grid-cols-2 gap-2 text-sm">
         <div>
           <dt className="text-[var(--foreground-muted)]">Próxima</dt>

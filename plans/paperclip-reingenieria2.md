@@ -765,11 +765,11 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 
 | Fase | Estado | Resumen |
 |---|---|---|
-| E — Organigrama y mapa departamental | ⚠️ Parcial | Endpoints y UI básicos existen; páginas no routeadas y sin jerarquía real. |
-| F — Objetivos, proyectos e iniciativas | ⚠️ Parcial | CRUD completo; sin vínculo a encargos, sin migración, sin tests ni docs. |
-| H — Dashboard de empresa | ⚠️ Parcial | Endpoint con 5 métricas básicas; faltan métricas de management y filtros. |
-| I — Operaciones recurrentes | ❌ No implementada | Sin `DepartmentOperationsPanel`, `RoutineCard`, historial ni pausado. |
-| J — Coste empresarial y búsqueda global | ❌ No implementada | Sin búsqueda `⌘K`, sin filtros de coste, sin alertas 50/80/100%. |
+| E — Organigrama y mapa departamental | ✅ | `/office/organigrama`, jerarquía `parentId`, CEO wrapper, tarjetas Kreo, `missionDescKey` virtual, grafo de colaboración. |
+| F — Objetivos, proyectos e iniciativas | ✅ | CRUD, migración, vínculo en `ExecutionRun`, selector/banner, `PATCH strategic-link` + re-sync de task/prompt. |
+| H — Dashboard de empresa | ✅ | `getOfficeDashboard` + métricas management, tabla departamental, periodo, drill-down. |
+| I — Operaciones recurrentes | ✅ | `DepartmentOperationsPanel`, `RoutineCard`, historial por `scheduleId`, pausa manual y auto al 100% presupuesto, inbox fallos rutina. |
+| J — Coste empresarial y búsqueda global | ✅ | `⌘K`, filtros coste (depto/objetivo/producto/modelo/encargo), proyección fin de mes, comentarios en búsqueda, alertas 50/80/100%. |
 
 ## Bloqueo crítico (prioridad 1)
 
@@ -846,7 +846,7 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 ## Pendientes transversales
 
 - **Navegación:** el sidebar no enlaza a ninguna página de Corte 3/4 (`estrategia`, `objetivos`, `iniciativas`, `organigrama`, `dashboard`); las páginas son inalcanzables para el usuario salvo URL directa.
-- **QA manual sin `DATABASE_URL`:** los flujos de Corte 2 (handoffs, revisiones) y los nuevos CRUD de Corte 4 siguen sin validar contra base real.
+- **QA automatizada:** Superadmin → `/admin/qa` ejecuta smoke tests contra PostgreSQL interno del contenedor (ver `docs/qa/paperclip-reingenieria2-manual.md`).
 - **Docs desactualizadas:** marcar en este plan las fases E/F/H como completas cuando se cierren sus pendientes, y anotar los commits correspondientes (hoy solo F está marcada ✅ con `e8a30f0`, pero incompleta según esta auditoría).
 
 ## Orden sugerido de desbloqueo

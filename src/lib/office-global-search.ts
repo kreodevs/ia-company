@@ -8,7 +8,8 @@ export type OfficeSearchResultType =
   | "decision"
   | "handoff"
   | "agent"
-  | "document";
+  | "document"
+  | "comment";
 
 export interface OfficeSearchResult {
   type: OfficeSearchResultType;
@@ -30,7 +31,8 @@ export async function searchOffice(
   if (q.length < 2) return [];
 
   const take = Math.min(10, limit);
-  const [runs, goals, initiatives, orgUnits, decisions, handoffs, agents, docs] = await Promise.all([
+  const [runs, goals, initiatives, orgUnits, decisions, handoffs, agents, docs, comments] =
+    await Promise.all([
     prisma.executionRun.findMany({
       where: {
         tenantId,
@@ -99,6 +101,11 @@ export async function searchOffice(
       take,
       select: { id: true, title: true, runId: true },
     }),
+    prisma.documentComment.findMany({
+      where: { tenantId, body: { contains: q, mode: "insensitive" } },
+      take,
+      select: { id: true, body: true, runId: true, docKey: true },
+    }),
   ]);
 
   const results: OfficeSearchResult[] = [];
@@ -165,6 +172,15 @@ export async function searchOffice(
       title: doc.title,
       subtitle: "Documento",
       href: doc.runId ? `/office/encargos/${doc.runId}` : "/office/archive",
+    });
+  }
+  for (const comment of comments) {
+    results.push({
+      type: "comment",
+      id: comment.id,
+      title: comment.body.slice(0, 120),
+      subtitle: comment.docKey,
+      href: `/office/encargos/${comment.runId}`,
     });
   }
   for (const run of runs) {

@@ -32,7 +32,10 @@ export async function syncCostBudgetAlerts(tenantId: string): Promise<void> {
       createdAt: { gte: since },
     },
   });
-  if (existing) return;
+  if (existing) {
+    if (level >= 100) await pauseSchedulesForBudgetExhausted(tenantId);
+    return;
+  }
 
   const title =
     level >= 100
@@ -48,4 +51,18 @@ export async function syncCostBudgetAlerts(tenantId: string): Promise<void> {
     body: `${marker}: $${monthly.totalCostUsd.toFixed(2)} / $${limit.toFixed(2)} (${percent}%).`,
     href: "/office/dashboard",
   });
+
+  if (level >= 100) await pauseSchedulesForBudgetExhausted(tenantId);
+}
+
+async function pauseSchedulesForBudgetExhausted(tenantId: string): Promise<void> {
+  const { setDepartmentOperationEnabled } = await import("./department-operations.js");
+  const schedules = await prisma.autonomousSchedule.findMany({
+    where: { tenantId, enabled: true },
+    select: { id: true },
+  });
+  const reason = "Pausado automáticamente: presupuesto mensual agotado";
+  for (const schedule of schedules) {
+    await setDepartmentOperationEnabled(tenantId, schedule.id, false, reason);
+  }
 }

@@ -213,6 +213,21 @@ export const admin = {
       deleted: 'Deleted workflow template "{{name}}"',
     },
   },
+  qa: {
+    title: "Automated QA",
+    subtitle:
+      "Smoke tests against the API container’s internal PostgreSQL (migrations, tables, Office services). No external DATABASE_URL required.",
+    run: "Run QA",
+    runFailed: "Could not run QA",
+    errorTitle: "Error",
+    needTenant:
+      "Without an impersonated tenant, only DB connectivity and migrations are checked. Impersonate a tenant for Office checks.",
+    resultsTitle: "Results",
+    summary: "{{pass}} pass · {{fail}} fail · {{warn}} warn · {{skip}} skip",
+    manualDocHint: "Complementary manual checklist in internal docs",
+    emptyTitle: "No run yet",
+    emptyDescription: "Click «Run QA» to validate the current deployment.",
+  },
   impersonation: {
     label: "Impersonate tenant",
     superadminView: "Superadmin view",

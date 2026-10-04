@@ -216,6 +216,25 @@ export async function adminRoutes(app: FastifyInstance) {
     }
   });
 
+  app.post<{ Body: { tenantId?: string | null } }>("/admin/qa/run", async (request, reply) => {
+    try {
+      const tenantId =
+        request.body?.tenantId?.trim() ||
+        request.session!.impersonatedTenantId ||
+        null;
+      const { runPlatformQa } = await import("../../lib/platform-qa.js");
+      const report = await runPlatformQa(tenantId);
+      await logAudit(request, "admin.qa.run", {
+        tenantId,
+        pass: report.summary.pass,
+        fail: report.summary.fail,
+      });
+      return report;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.get("/admin/audit-logs", async (request, reply) => {
     try {
       const { tenantId, limit = "50" } = request.query as { tenantId?: string; limit?: string };

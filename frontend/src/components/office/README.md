@@ -28,8 +28,8 @@
 | `StrategicContextBanner` | Kreo `Card` con enlaces a objetivo/iniciativa (detalle encargo, war room) |
 | `OfficeGlobalSearch` | Búsqueda global ⌘K — Kreo `Command` + `Dialog`; API `GET /office/search` |
 | `DepartmentOperationsPanel` / `RoutineCard` / `RoutineHealthBadge` / `RoutineRunHistory` | Fase I — operaciones recurrentes (Kreo `Card`, `StatusPill`) |
-| `OfficeCostsPanel` | Fase J — coste multidimensional y alertas de presupuesto |
-| `CollaborationMapPanel` | Fase E — handoffs entre departamentos |
+| `OfficeCostsPanel` | Fase J — filtros (periodo, objetivo, producto, depto, encargo, modelo), proyección fin de mes |
+| `CollaborationMapPanel` | Fase E — grafo SVG + lista de handoffs (virtuales y OrgUnit) |
 | `EncargoStrategicLinkEditor` | Fase F — PATCH vínculo objetivo/iniciativa en detalle de encargo |
 | `RoutineCard` | Pausar/reactivar rutina vía `PATCH /office/operations/:scheduleId` |
 | `DepartmentOrgCard` | Muestra misión y procedimientos destacados (Fase E) |

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeftRight, Building2, ChevronRight, ShieldAlert, Users } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
 import StatusPill from "@/components/ui/StatusPill";
@@ -11,6 +12,7 @@ export interface DepartmentOrgCardProps {
   depth?: number;
   roomStatus?: "idle" | "busy";
   agentCount?: number;
+  roomDescKey?: string | null;
   className?: string;
 }
 
@@ -22,8 +24,15 @@ export function DepartmentOrgCard({
   depth = 0,
   roomStatus,
   agentCount,
+  roomDescKey,
   className,
 }: DepartmentOrgCardProps) {
+  const { t } = useTranslation();
+  const missionText =
+    (node.missionDescKey ? t(node.missionDescKey) : null) ??
+    node.mission ??
+    (roomDescKey ? t(roomDescKey) : null);
+
   const deptPath =
     node.slug === "__executive__" || node.type === "executive"
       ? "/office"
@@ -66,8 +75,8 @@ export function DepartmentOrgCard({
         </div>
       }
     >
-      {node.mission ? (
-        <p className="mb-3 text-sm text-[var(--foreground-muted)]">{node.mission}</p>
+      {missionText ? (
+        <p className="mb-3 text-sm text-[var(--foreground-muted)]">{missionText}</p>
       ) : null}
       {node.procedureHighlights.length > 0 ? (
         <ul className="mb-3 list-inside list-disc text-sm text-[var(--foreground)]">

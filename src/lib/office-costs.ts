@@ -31,6 +31,12 @@ export interface OfficeCostReport {
   budgetLimitUsd: number | null;
   budgetUsedPercent: number | null;
   budgetAlert: BudgetAlertLevel;
+  /** Proyección lineal de gasto al cierre del mes (Fase J). */
+  projectedMonthEndUsd: number | null;
+  projectedBudgetPercent: number | null;
+  /** USD por encargo completado en el periodo filtrado. */
+  costPerCompletedRunUsd: number | null;
+  completedRunCount: number;
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
@@ -72,7 +78,7 @@ export async function getOfficeCostReport(
   filters: OfficeCostFilters = {},
 ): Promise<OfficeCostReport> {
   const where = buildRunWhere(tenantId, filters);
-  const [aggregate, activeRuns, monthly] = await Promise.all([
+  const [aggregate, activeRuns, completedRuns, monthly] = await Promise.all([
     prisma.executionRun.aggregate({
       where,
       _sum: { totalCostUsd: true },
@@ -80,6 +86,9 @@ export async function getOfficeCostReport(
     }),
     prisma.executionRun.count({
       where: { ...where, status: { in: ["RUNNING", "PENDING", "DELEGATED", "AWAITING_USER"] } },
+    }),
+    prisma.executionRun.count({
+      where: { ...where, status: "COMPLETED" },
     }),
     getTenantMonthlyUsage(tenantId),
   ]);
@@ -153,14 +162,32 @@ export async function getOfficeCostReport(
 
   void syncCostBudgetAlerts(tenantId);
 
+  const now = new Date();
+  const dayOfMonth = now.getUTCDate();
+  const daysInMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
+  const projectedMonthEndUsd =
+    dayOfMonth > 0
+      ? Math.round((monthly.totalCostUsd / dayOfMonth) * daysInMonth * 100) / 100
+      : null;
+  const projectedBudgetPercent =
+    limit != null && limit > 0 && projectedMonthEndUsd != null
+      ? Math.round((projectedMonthEndUsd / limit) * 1000) / 10
+      : null;
+  const costPerCompletedRunUsd =
+    completedRuns > 0 ? Math.round((totalCostUsd / completedRuns) * 100) / 100 : null;
+
   return {
     totalCostUsd,
     activeRuns,
     runCount: aggregate._count.id,
+    completedRunCount: completedRuns,
     periodStart: filters.since?.toISOString() ?? monthly.periodStart,
     budgetLimitUsd: limit,
     budgetUsedPercent,
     budgetAlert: budgetAlertFromPercent(budgetUsedPercent),
+    projectedMonthEndUsd,
+    projectedBudgetPercent,
+    costPerCompletedRunUsd,
     byDepartment: deptCostRows.sort((a, b) => b.costUsd - a.costUsd).slice(0, 12),
     byObjective: goalGroups
       .filter((g) => g.companyGoalId)

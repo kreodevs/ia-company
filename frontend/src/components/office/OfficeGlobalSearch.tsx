@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Briefcase, FileText, Gavel, Layers, Target, User, ArrowLeftRight } from "lucide-react";
+import { Building2, Briefcase, FileText, Gavel, Layers, Target, User, ArrowLeftRight, MessageSquare } from "lucide-react";
 import { Dialog } from "@/components/molecules/Dialog";
 import {
   Command,
@@ -22,6 +22,7 @@ const TYPE_LABEL: Record<OfficeSearchResultType, string> = {
   handoff: "Handoffs",
   agent: "Agentes",
   document: "Documentos",
+  comment: "Comentarios",
 };
 
 function iconFor(type: OfficeSearchResultType) {
@@ -42,6 +43,8 @@ function iconFor(type: OfficeSearchResultType) {
       return User;
     case "document":
       return FileText;
+    case "comment":
+      return MessageSquare;
   }
 }
 
@@ -112,6 +115,7 @@ export function OfficeGlobalSearch() {
       handoff: [],
       agent: [],
       document: [],
+      comment: [],
     },
   );
 

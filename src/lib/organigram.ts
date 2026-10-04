@@ -12,6 +12,8 @@ export interface OrganigramNode {
   pendingHandoffsIn: number;
   pendingHandoffsOut: number;
   mission: string | null;
+  /** i18n key para departamentos virtuales (Fase E). */
+  missionDescKey: string | null;
   procedureHighlights: string[];
   children: OrganigramNode[];
 }
@@ -85,6 +87,7 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
       pendingHandoffsIn: handoffsInMap.get(unit.id) ?? 0,
       pendingHandoffsOut: handoffsOutMap.get(unit.id) ?? 0,
       mission: unit.description?.trim() || null,
+      missionDescKey: null,
       procedureHighlights: [],
       children: [],
     });
@@ -129,7 +132,7 @@ async function attachProcedureHighlights(
   for (const def of VIRTUAL_OFFICE_DEPARTMENTS) {
     const node = [...nodeMap.values()].find((n) => n.slug === def.slug);
     if (node && !node.mission) {
-      node.mission = `Departamento virtual: ${def.slug}`;
+      node.missionDescKey = def.descKey;
     }
   }
 }
@@ -156,6 +159,7 @@ export function wrapOrganigramWithExecutive(roots: OrganigramNode[]): Organigram
       pendingHandoffsIn: sum((n) => n.pendingHandoffsIn),
       pendingHandoffsOut: sum((n) => n.pendingHandoffsOut),
       mission: "Coordinación estratégica, priorización de encargos y visión de empresa.",
+      missionDescKey: null,
       procedureHighlights: [],
       children: roots,
     },

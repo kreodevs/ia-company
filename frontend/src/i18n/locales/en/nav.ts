@@ -9,6 +9,7 @@ export const nav = {
   sectionDebugOffice: "Debug office",
   sectionGeneral: "General",
   admin: "Admin",
+  qa: "Platform QA",
   templates: "Templates",
   settings: "Settings",
   agents: "Agents",

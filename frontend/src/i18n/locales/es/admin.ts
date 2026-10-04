@@ -214,6 +214,21 @@ export const admin = {
       deleted: 'Eliminada plantilla de workflow "{{name}}"',
     },
   },
+  qa: {
+    title: "QA automatizada",
+    subtitle:
+      "Smoke tests contra PostgreSQL interno del contenedor API (migraciones, tablas y servicios Office). No requiere DATABASE_URL externo.",
+    run: "Ejecutar QA",
+    runFailed: "No se pudo ejecutar QA",
+    errorTitle: "Error",
+    needTenant:
+      "Sin tenant impersonado solo se validan migraciones y conexión. Impersona un tenant para checks de Office.",
+    resultsTitle: "Resultados",
+    summary: "{{pass}} OK · {{fail}} fallos · {{warn}} avisos · {{skip}} omitidos",
+    manualDocHint: "Checklist manual complementario en documentación interna",
+    emptyTitle: "Sin ejecución aún",
+    emptyDescription: "Pulsa «Ejecutar QA» para validar el despliegue actual.",
+  },
   impersonation: {
     label: "Impersonar tenant",
     superadminView: "Vista superadmin",

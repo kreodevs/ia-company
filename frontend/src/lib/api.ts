@@ -42,6 +42,25 @@ export type AuthStatus =
       tenant: TenantSummary;
     };
 
+export type QaCheckStatus = "pass" | "fail" | "warn" | "skip";
+
+export interface QaCheckResult {
+  id: string;
+  category: "platform" | "tenant" | "office";
+  name: string;
+  status: QaCheckStatus;
+  message: string;
+  durationMs: number;
+}
+
+export interface PlatformQaReport {
+  ranAt: string;
+  tenantId: string | null;
+  tenantName: string | null;
+  checks: QaCheckResult[];
+  summary: { pass: number; fail: number; warn: number; skip: number };
+}
+
 export interface AdminDashboard {
   superAdmin: SuperAdmin;
   impersonatedTenantId: string | null;
@@ -229,6 +248,7 @@ export interface OrganigramNode {
   pendingHandoffsIn: number;
   pendingHandoffsOut: number;
   mission: string | null;
+  missionDescKey: string | null;
   procedureHighlights: string[];
   children: OrganigramNode[];
 }
@@ -288,7 +308,8 @@ export type OfficeSearchResultType =
   | "decision"
   | "handoff"
   | "agent"
-  | "document";
+  | "document"
+  | "comment";
 
 export interface OfficeSearchResult {
   type: OfficeSearchResultType;
@@ -388,6 +409,10 @@ export interface OfficeCostReport {
   budgetLimitUsd: number | null;
   budgetUsedPercent: number | null;
   budgetAlert: BudgetAlertLevel;
+  projectedMonthEndUsd: number | null;
+  projectedBudgetPercent: number | null;
+  costPerCompletedRunUsd: number | null;
+  completedRunCount: number;
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
@@ -429,11 +454,14 @@ export interface DepartmentOperationRunRow {
   completedAt: string | null;
   totalCostUsd: number;
   href: string;
+  departmentWorkCount: number;
+  deliveryHref: string | null;
 }
 
 export interface DepartmentOperationRow {
   scheduleId: string;
   scheduleName: string;
+  responsibleAgentName: string | null;
   enabled: boolean;
   orchestrationMode: "fixed" | "meta_dynamic";
   workflowId: string | null;
@@ -2070,6 +2098,11 @@ export const api = {
       }>(`/admin/tenants/${id}/sync-templates`, {
         method: "POST",
         body: JSON.stringify(body ?? {}),
+      }),
+    runPlatformQa: (tenantId?: string | null) =>
+      request<PlatformQaReport>("/admin/qa/run", {
+        method: "POST",
+        body: JSON.stringify({ tenantId: tenantId ?? null }),
       }),
     auditLogs: (params?: { tenantId?: string; limit?: number }) => {
       const qs = new URLSearchParams();

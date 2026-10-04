@@ -45,6 +45,7 @@ import RunDetailPage from "./pages/RunDetailPage";
 import RunsPage from "./pages/RunsPage";
 import SetupSuperAdminPage from "./pages/SetupSuperAdminPage";
 import SuperAdminDashboardPage from "./pages/SuperAdminDashboardPage";
+import SuperAdminQaPage from "./pages/SuperAdminQaPage";
 import TenantUsersPage from "./pages/TenantUsersPage";
 import WorkflowEditorPage from "./pages/WorkflowEditorPage";
 import ProceduresSettingsPage from "./pages/ProceduresSettingsPage";
@@ -93,6 +94,7 @@ function AppShell() {
 
             <Route element={<RequireSuperAdmin />}>
               <Route path="admin" element={<SuperAdminDashboardPage />} />
+              <Route path="admin/qa" element={<SuperAdminQaPage />} />
               <Route path="admin/settings" element={<PlatformSettingsPage />} />
               <Route path="admin/templates/workflows/:id" element={<PlatformWorkflowEditorPage />} />
               <Route path="admin/templates/workflows" element={<PlatformWorkflowTemplatesPage />} />

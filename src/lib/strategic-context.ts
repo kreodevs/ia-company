@@ -84,9 +84,49 @@ function buildContext(
   };
 }
 
+const STRATEGIC_MARKER = "\n\n---\nContexto estratégico\n";
+
+export function stripStrategicContextFromTask(task: string): string {
+  const idx = task.indexOf(STRATEGIC_MARKER);
+  return idx >= 0 ? task.slice(0, idx).trimEnd() : task.trim();
+}
+
 export function appendStrategicContextToTask(task: string, context: ResolvedStrategicContext | null): string {
-  if (!context) return task;
-  return `${task.trim()}\n\n---\nContexto estratégico\n${context.promptBlock}`;
+  if (!context) return stripStrategicContextFromTask(task);
+  const base = stripStrategicContextFromTask(task);
+  return `${base}${STRATEGIC_MARKER}${context.promptBlock}`;
+}
+
+/** Re-sincroniza officeRequest/task del encargo tras editar vínculo estratégico (Fase F). */
+export async function resyncEncargoTaskWithStrategicLink(
+  tenantId: string,
+  runId: string,
+  context: ResolvedStrategicContext | null,
+): Promise<void> {
+  const run = await prisma.executionRun.findFirst({
+    where: { id: runId, tenantId },
+    select: { sharedMemory: true },
+  });
+  if (!run) return;
+
+  const memory = { ...((run.sharedMemory ?? {}) as Record<string, unknown>) };
+  const raw =
+    (typeof memory.officeTaskBase === "string" && memory.officeTaskBase) ||
+    (typeof memory.officeRequest === "string" && memory.officeRequest) ||
+    (typeof memory.task === "string" && memory.task) ||
+    null;
+  if (!raw) return;
+
+  const base = stripStrategicContextFromTask(raw);
+  memory.officeTaskBase = base;
+  const next = context ? appendStrategicContextToTask(base, context) : base;
+  memory.officeRequest = next;
+  memory.task = next;
+
+  await prisma.executionRun.update({
+    where: { id: runId },
+    data: { sharedMemory: memory as Prisma.InputJsonValue },
+  });
 }
 
 export interface StrategicContextFields {
@@ -146,6 +186,13 @@ export async function attachStrategicLinkToRun(
   }
 
   Object.assign(memory, context.memoryFields);
+  const taskRaw =
+    (typeof memory.officeRequest === "string" && memory.officeRequest) ||
+    (typeof memory.task === "string" && memory.task) ||
+    null;
+  if (taskRaw) {
+    memory.officeTaskBase = stripStrategicContextFromTask(taskRaw);
+  }
   await prisma.executionRun.update({
     where: { id: runId },
     data: {
@@ -166,6 +213,7 @@ export async function updateEncargoStrategicLink(
     Boolean(input.companyGoalId?.trim()) || Boolean(input.initiativeId?.trim());
   const context = hasLink ? await resolveStrategicContext(tenantId, input) : null;
   await attachStrategicLinkToRun(runId, tenantId, context);
+  await resyncEncargoTaskWithStrategicLink(tenantId, runId, context);
   const run = await prisma.executionRun.findFirst({
     where: { id: runId, tenantId },
     include: {

@@ -1,6 +1,18 @@
-# QA manual — paperclip-reingenieria2 (F–J)
+# QA — paperclip-reingenieria2 (F–J)
 
-Checklist con tenant de prueba y `DATABASE_URL` configurado.
+## QA automatizada (producción / contenedor)
+
+La base de datos **no está expuesta** fuera del contenedor API. Usa **Superadmin → QA plataforma** (`/admin/qa`):
+
+1. Inicia sesión como superadmin.
+2. (Opcional) Impersona un tenant de prueba.
+3. **Ejecutar QA** — valida conexión, migraciones reingeniería 2 y, con tenant, smoke de organigrama, dashboard, inbox, búsqueda y costes.
+
+Los fallos de migración indican ejecutar `prisma migrate deploy` **dentro** del contenedor API.
+
+## QA manual (UI)
+
+Checklist complementario en el tenant impersonado (sin `DATABASE_URL` local):
 
 ## F — Objetivos e iniciativas
 

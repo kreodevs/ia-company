@@ -58,6 +58,7 @@ export const OrganigramMap: React.FC = () => {
             node={node}
             roomStatus={room?.status}
             agentCount={room?.agentNames?.length}
+            roomDescKey={room?.descKey}
           />
         );
       })}

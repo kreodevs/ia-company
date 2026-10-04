@@ -25,12 +25,16 @@ export async function getCollaborationMap(tenantId: string): Promise<Collaborati
     where: {
       tenantId,
       createdAt: { gte: since },
-      fromOrgUnitId: { not: null },
-      toOrgUnitId: { not: null },
+      OR: [
+        { fromOrgUnitId: { not: null }, toOrgUnitId: { not: null } },
+        { fromDepartmentSlug: { not: null }, toDepartmentSlug: { not: null } },
+      ],
     },
     select: {
       fromOrgUnitId: true,
       toOrgUnitId: true,
+      fromDepartmentSlug: true,
+      toDepartmentSlug: true,
       status: true,
       fromOrgUnit: { select: { name: true, slug: true } },
       toOrgUnit: { select: { name: true, slug: true } },
@@ -40,8 +44,9 @@ export async function getCollaborationMap(tenantId: string): Promise<Collaborati
   const edgeMap = new Map<string, CollaborationEdge>();
 
   for (const row of handoffs) {
-    const fromId = row.fromOrgUnitId!;
-    const toId = row.toOrgUnitId!;
+    const fromId = row.fromOrgUnitId ?? `virtual:${row.fromDepartmentSlug}`;
+    const toId = row.toOrgUnitId ?? `virtual:${row.toDepartmentSlug}`;
+    if (!fromId || !toId || fromId === "virtual:null" || toId === "virtual:null") continue;
     const key = `${fromId}->${toId}`;
     const existing = edgeMap.get(key);
     const pending =
@@ -55,11 +60,11 @@ export async function getCollaborationMap(tenantId: string): Promise<Collaborati
     } else {
       edgeMap.set(key, {
         fromOrgUnitId: fromId,
-        fromName: row.fromOrgUnit?.name ?? fromId,
-        fromSlug: row.fromOrgUnit?.slug ?? fromId,
+        fromName: row.fromOrgUnit?.name ?? row.fromDepartmentSlug ?? fromId,
+        fromSlug: row.fromOrgUnit?.slug ?? row.fromDepartmentSlug ?? fromId,
         toOrgUnitId: toId,
-        toName: row.toOrgUnit?.name ?? toId,
-        toSlug: row.toOrgUnit?.slug ?? toId,
+        toName: row.toOrgUnit?.name ?? row.toDepartmentSlug ?? toId,
+        toSlug: row.toOrgUnit?.slug ?? row.toDepartmentSlug ?? toId,
         totalCount: 1,
         pendingCount: pending,
       });
