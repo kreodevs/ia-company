@@ -4,7 +4,11 @@ export type OfficeSearchResultType =
   | "encargo"
   | "objective"
   | "initiative"
-  | "department";
+  | "department"
+  | "decision"
+  | "handoff"
+  | "agent"
+  | "document";
 
 export interface OfficeSearchResult {
   type: OfficeSearchResultType;
@@ -26,7 +30,7 @@ export async function searchOffice(
   if (q.length < 2) return [];
 
   const take = Math.min(10, limit);
-  const [runs, goals, initiatives, orgUnits] = await Promise.all([
+  const [runs, goals, initiatives, orgUnits, decisions, handoffs, agents, docs] = await Promise.all([
     prisma.executionRun.findMany({
       where: {
         tenantId,
@@ -59,6 +63,42 @@ export async function searchOffice(
       take,
       select: { id: true, name: true, slug: true },
     }),
+    prisma.decisionProposal.findMany({
+      where: {
+        tenantId,
+        OR: [
+          { workflowName: { contains: q, mode: "insensitive" } },
+          { rationale: { contains: q, mode: "insensitive" } },
+        ],
+      },
+      take,
+      select: { id: true, workflowName: true, runId: true },
+    }),
+    prisma.departmentHandoff.findMany({
+      where: { tenantId, message: { contains: q, mode: "insensitive" } },
+      take,
+      select: {
+        id: true,
+        message: true,
+        fromWorkItem: { select: { runId: true } },
+      },
+    }),
+    prisma.agent.findMany({
+      where: { tenantId, isActive: true, name: { contains: q, mode: "insensitive" } },
+      take,
+      select: { id: true, name: true, role: true },
+    }),
+    prisma.artifact.findMany({
+      where: {
+        tenantId,
+        OR: [
+          { title: { contains: q, mode: "insensitive" } },
+          { previewText: { contains: q, mode: "insensitive" } },
+        ],
+      },
+      take,
+      select: { id: true, title: true, runId: true },
+    }),
   ]);
 
   const results: OfficeSearchResult[] = [];
@@ -88,6 +128,43 @@ export async function searchOffice(
       title: unit.name,
       subtitle: "Departamento",
       href: `/office/departments/${unit.slug}`,
+    });
+  }
+  for (const decision of decisions) {
+    results.push({
+      type: "decision",
+      id: decision.id,
+      title: decision.workflowName,
+      subtitle: "Decisión",
+      href: decision.runId ? `/office/encargos/${decision.runId}` : "/office/inbox?category=decisions",
+    });
+  }
+  for (const handoff of handoffs) {
+    const runId = handoff.fromWorkItem?.runId ?? null;
+    results.push({
+      type: "handoff",
+      id: handoff.id,
+      title: handoff.message.slice(0, 120),
+      subtitle: "Handoff",
+      href: runId ? `/office/encargos/${runId}` : "/office/inbox?category=handoffs",
+    });
+  }
+  for (const agent of agents) {
+    results.push({
+      type: "agent",
+      id: agent.id,
+      title: agent.name,
+      subtitle: agent.role ?? "Agente",
+      href: `/settings/agents`,
+    });
+  }
+  for (const doc of docs) {
+    results.push({
+      type: "document",
+      id: doc.id,
+      title: doc.title,
+      subtitle: "Documento",
+      href: doc.runId ? `/office/encargos/${doc.runId}` : "/office/archive",
     });
   }
   for (const run of runs) {

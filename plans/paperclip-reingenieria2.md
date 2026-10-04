@@ -684,8 +684,8 @@ qué está esperando aprobación
 ## Corte 4 — Alinear y escalar
 
 8. Fase F: objetivos e iniciativas. ✅ (2026-10-03, commit `e8a30f0`)
-9. Fase I: operaciones recurrentes.
-10. Fase J: coste empresarial y búsqueda global. 🟡 búsqueda global mínima (2026-10-04); coste/alertas pendientes.
+9. Fase I: operaciones recurrentes. 🟡 panel por departamento + historial por workflow (2026-10-04).
+10. Fase J: coste empresarial y búsqueda global. 🟡 costes/alertas + búsqueda ampliada (2026-10-04).
 
 ### Referencias de código
 - `src/lib/objectives.ts` – modelo Prisma y funciones CRUD.
@@ -840,8 +840,8 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 
 ### P9 — Fase J parcial: coste empresarial y búsqueda global
 
-- **Hecho (2026-10-04):** `GET /office/search` + `OfficeGlobalSearch` (⌘K) con Kreo `Command`/`Dialog` — encargos, objetivos, iniciativas, departamentos. Checklist QA en `docs/qa/paperclip-reingenieria2-manual.md`.
-- **Pendiente:** `GET /office/costs` con filtros multidimensionales; alertas de presupuesto 50/80/100%; ampliar búsqueda a documentos, agentes, decisiones, handoffs y comentarios.
+- **Hecho:** `GET /office/costs` (`office-costs.ts`) con filtros y desglose; alertas 50/80/100%; `OfficeCostsPanel`; búsqueda ampliada (decisiones, handoffs, agentes, artefactos).
+- **Pendiente:** filtro por modelo LLM; predicción de coste; comentarios en búsqueda.
 
 ## Pendientes transversales
 

@@ -278,7 +278,15 @@ export interface ObjectiveSummaryRow {
   totalCostUsd: number;
 }
 
-export type OfficeSearchResultType = "encargo" | "objective" | "initiative" | "department";
+export type OfficeSearchResultType =
+  | "encargo"
+  | "objective"
+  | "initiative"
+  | "department"
+  | "decision"
+  | "handoff"
+  | "agent"
+  | "document";
 
 export interface OfficeSearchResult {
   type: OfficeSearchResultType;
@@ -360,7 +368,131 @@ export const getInitiatives = async () => request<Initiative[]>('/office/initiat
 /**
  * Corte 4 – fetch cost metrics.
  */
-export const getCosts = async () => request<{ totalCostUsd: number; activeRuns: number }>('/office/costs');
+export type BudgetAlertLevel = 50 | 80 | 100 | null;
+
+export interface OfficeCostBreakdownRow {
+  key: string;
+  label: string;
+  costUsd: number;
+  runCount: number;
+  href: string | null;
+}
+
+export interface OfficeCostReport {
+  totalCostUsd: number;
+  activeRuns: number;
+  runCount: number;
+  periodStart: string | null;
+  budgetLimitUsd: number | null;
+  budgetUsedPercent: number | null;
+  budgetAlert: BudgetAlertLevel;
+  byDepartment: OfficeCostBreakdownRow[];
+  byObjective: OfficeCostBreakdownRow[];
+  byProduct: OfficeCostBreakdownRow[];
+}
+
+export const getOfficeCostReport = async (params?: {
+  since?: string;
+  orgUnitId?: string;
+  companyGoalId?: string;
+  productId?: string;
+  agentId?: string;
+  runId?: string;
+}) => {
+  const q = new URLSearchParams();
+  if (params?.since) q.set("since", params.since);
+  if (params?.orgUnitId) q.set("orgUnitId", params.orgUnitId);
+  if (params?.companyGoalId) q.set("companyGoalId", params.companyGoalId);
+  if (params?.productId) q.set("productId", params.productId);
+  if (params?.agentId) q.set("agentId", params.agentId);
+  if (params?.runId) q.set("runId", params.runId);
+  const qs = q.toString();
+  return request<OfficeCostReport>(`/office/costs${qs ? `?${qs}` : ""}`);
+};
+
+/** @deprecated Use getOfficeCostReport */
+export const getCosts = async () => {
+  const r = await getOfficeCostReport();
+  return { totalCostUsd: r.totalCostUsd, activeRuns: r.activeRuns };
+};
+
+export type DepartmentOperationHealth = "healthy" | "warning" | "paused" | "disabled";
+
+export interface DepartmentOperationRunRow {
+  id: string;
+  status: string;
+  completedAt: string | null;
+  totalCostUsd: number;
+  href: string;
+}
+
+export interface DepartmentOperationRow {
+  scheduleId: string;
+  scheduleName: string;
+  enabled: boolean;
+  orchestrationMode: "fixed" | "meta_dynamic";
+  workflowId: string | null;
+  workflowName: string | null;
+  procedureLabel: string | null;
+  intervalSec: number;
+  cronExpr: string | null;
+  nextRunAt: string | null;
+  lastRunAt: string | null;
+  tenantTimezone: string;
+  conditionsMet: boolean;
+  currentSkipReason: string | null;
+  health: DepartmentOperationHealth;
+  pauseReason: string | null;
+  avgCostUsd: number | null;
+  lastRunStatus: string | null;
+  lastRunId: string | null;
+  recentRuns: DepartmentOperationRunRow[];
+}
+
+export const getDepartmentOperations = async (ctx: {
+  departmentSlug?: string;
+  orgUnitId?: string;
+}) => {
+  if (ctx.orgUnitId) {
+    return request<{ items: DepartmentOperationRow[] }>(
+      `/office/org-units/${ctx.orgUnitId}/operations`,
+    ).then((r) => r.items);
+  }
+  if (ctx.departmentSlug) {
+    return request<{ items: DepartmentOperationRow[] }>(
+      `/office/departments/${encodeURIComponent(ctx.departmentSlug)}/operations`,
+    ).then((r) => r.items);
+  }
+  return [];
+};
+
+export interface CollaborationEdge {
+  fromOrgUnitId: string;
+  fromName: string;
+  fromSlug: string;
+  toOrgUnitId: string;
+  toName: string;
+  toSlug: string;
+  totalCount: number;
+  pendingCount: number;
+}
+
+export const getCollaborationMap = async () =>
+  request<{ edges: CollaborationEdge[] }>("/office/collaboration-map");
+
+export const patchEncargoStrategicLink = async (
+  runId: string,
+  body: { companyGoalId?: string | null; initiativeId?: string | null },
+) =>
+  request<{
+    companyGoalId: string | null;
+    companyGoalName: string | null;
+    initiativeId: string | null;
+    initiativeName: string | null;
+  }>(`/office/encargos/${runId}/strategic-link`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
 /**
  * CRUD for objectives
  */

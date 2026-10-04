@@ -38,6 +38,7 @@ import RunScopeBadge from "../components/runs/RunScopeBadge";
 import EncargoActivityTimeline from "../components/office/EncargoActivityTimeline";
 import DocumentReviewPanel from "../components/office/DocumentReviewPanel";
 import { StrategicContextBanner } from "../components/office/StrategicContextBanner";
+import { EncargoStrategicLinkEditor } from "../components/office/EncargoStrategicLinkEditor";
 import EncargoStatusRail, {
   EncargoBlockersPanel,
   EncargoParticipantsPanel,
@@ -204,13 +205,15 @@ export default function OfficeEncargoDetailPage() {
 
   return (
     <div className="office-page office-encargo-detail">
-      <StrategicContextBanner
-        className="mb-4"
-        companyGoalId={detail.companyGoalId}
-        companyGoalName={detail.companyGoalName}
-        initiativeId={detail.initiativeId}
-        initiativeName={detail.initiativeName}
-      />
+      <div className="mb-4 space-y-2">
+        <StrategicContextBanner
+          companyGoalId={detail.companyGoalId}
+          companyGoalName={detail.companyGoalName}
+          initiativeId={detail.initiativeId}
+          initiativeName={detail.initiativeName}
+        />
+        <EncargoStrategicLinkEditor runId={detail.id} detail={detail} onUpdated={() => void refresh()} />
+      </div>
       <PageHeader
         eyebrow={
           <Breadcrumbs

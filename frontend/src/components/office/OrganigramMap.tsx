@@ -3,6 +3,7 @@ import { getDashboard, getOrganigram, type OrganigramNode, type OfficeDepartment
 import PageLoading from "../ui/PageLoading";
 import EmptyState from "../ui/EmptyState";
 import { DepartmentOrgCard } from "./DepartmentOrgCard";
+import { CollaborationMapPanel } from "./CollaborationMapPanel";
 
 /**
  * Fase E — mapa jerárquico de departamentos con tarjetas Kreo y enlaces a salas.
@@ -47,7 +48,8 @@ export const OrganigramMap: React.FC = () => {
   }
 
   return (
-    <div className="organigram-map space-y-4">
+    <div className="organigram-map space-y-6">
+      <CollaborationMapPanel />
       {tree.map((node) => {
         const room = roomBySlug.get(node.slug);
         return (

@@ -70,11 +70,23 @@ import { handleRouteError, requireImpersonatedTenant, requireSession, HttpError 
 
 export async function officeRoutes(app: FastifyInstance) {
   // New endpoints for Corte 3 (Organigrama y Dashboard)
-  app.get('/office/organigram', async (request, reply) => {
+  app.get<{ Querystring: { executive?: string } }>('/office/organigram', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/organigram.js').then(m => m.getOrganigram(tenantId));
-      return result;
+      const { getOrganigram, wrapOrganigramWithExecutive } = await import('../../lib/organigram.js');
+      const roots = await getOrganigram(tenantId);
+      const withExecutive = request.query.executive !== "0";
+      return withExecutive ? wrapOrganigramWithExecutive(roots) : roots;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.get('/office/collaboration-map', async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const map = await import('../../lib/collaboration-map.js').then((m) => m.getCollaborationMap(tenantId));
+      return map;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -224,12 +236,35 @@ export async function officeRoutes(app: FastifyInstance) {
     }
   });
 
-  // Corte 4 – Cost metrics
-  app.get('/office/costs', async (request, reply) => {
+  // Corte 4 / Fase J – Cost metrics
+  app.get<{
+    Querystring: {
+      since?: string;
+      orgUnitId?: string;
+      companyGoalId?: string;
+      productId?: string;
+      agentId?: string;
+      runId?: string;
+    };
+  }>('/office/costs', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const result = await import('../../lib/objectives.js').then(m => m.getCostMetrics(tenantId));
-      return result;
+      const sinceRaw = request.query.since;
+      const since = sinceRaw ? new Date(sinceRaw) : undefined;
+      if (sinceRaw && since && Number.isNaN(since.getTime())) {
+        return reply.status(400).send({ error: "Invalid since date" });
+      }
+      const report = await import('../../lib/office-costs.js').then((m) =>
+        m.getOfficeCostReport(tenantId, {
+          since,
+          orgUnitId: request.query.orgUnitId,
+          companyGoalId: request.query.companyGoalId,
+          productId: request.query.productId,
+          agentId: request.query.agentId,
+          runId: request.query.runId,
+        }),
+      );
+      return report;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -280,6 +315,20 @@ export async function officeRoutes(app: FastifyInstance) {
       const detail = await getOfficeEncargoDetail(tenantId, request.params.runId);
       if (!detail) return reply.status(404).send({ error: "Encargo not found" });
       return detail;
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
+  app.patch<{
+    Params: { runId: string };
+    Body: { companyGoalId?: string | null; initiativeId?: string | null };
+  }>("/office/encargos/:runId/strategic-link", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const { updateEncargoStrategicLink } = await import("../../lib/strategic-context.js");
+      const fields = await updateEncargoStrategicLink(tenantId, request.params.runId, request.body ?? {});
+      return fields;
     } catch (err) {
       return handleRouteError(reply, err);
     }
@@ -473,6 +522,33 @@ export async function officeRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  app.get<{ Params: { slug: string } }>(
+    "/office/departments/:slug/operations",
+    async (request, reply) => {
+      try {
+        const tenantId = requireImpersonatedTenant(request);
+        const items = await import("../../lib/department-operations.js").then((m) =>
+          m.listDepartmentOperations(tenantId, { departmentSlug: request.params.slug }),
+        );
+        return { items };
+      } catch (err) {
+        return handleRouteError(reply, err);
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>("/office/org-units/:id/operations", async (request, reply) => {
+    try {
+      const tenantId = requireImpersonatedTenant(request);
+      const items = await import("../../lib/department-operations.js").then((m) =>
+        m.listDepartmentOperations(tenantId, { orgUnitId: request.params.id }),
+      );
+      return { items };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
 
   app.get<{ Params: { slug: string } }>(
     "/office/departments/:slug/procedures",

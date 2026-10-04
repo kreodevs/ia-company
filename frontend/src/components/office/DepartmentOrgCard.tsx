@@ -24,8 +24,14 @@ export function DepartmentOrgCard({
   agentCount,
   className,
 }: DepartmentOrgCardProps) {
-  const deptPath = `/office/departments/${encodeURIComponent(node.slug)}`;
-  const encargosPath = `/office/trabajo?departmentSlug=${encodeURIComponent(node.slug)}`;
+  const deptPath =
+    node.slug === "__executive__" || node.type === "executive"
+      ? "/office"
+      : `/office/departments/${encodeURIComponent(node.slug)}`;
+  const encargosPath =
+    node.slug === "__executive__"
+      ? "/office/trabajo"
+      : `/office/trabajo?departmentSlug=${encodeURIComponent(node.slug)}`;
 
   return (
     <Card
@@ -49,7 +55,7 @@ export function DepartmentOrgCard({
       footer={
         <div className="flex flex-wrap gap-2 border-t border-[var(--border)] px-[var(--spacing-md)] py-[var(--spacing-sm)]">
           <Button variant="outline" size="sm" asChild>
-            <Link to={deptPath}>Abrir sala</Link>
+            <Link to={deptPath}>{node.type === "executive" ? "Ir a oficina" : "Abrir sala"}</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
             <Link to={encargosPath}>

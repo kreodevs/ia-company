@@ -27,6 +27,10 @@
 | `StrategicContextFields` | Selector opcional objetivo → iniciativa al lanzar encargo (`CoordinatorChat`) |
 | `StrategicContextBanner` | Kreo `Card` con enlaces a objetivo/iniciativa (detalle encargo, war room) |
 | `OfficeGlobalSearch` | Búsqueda global ⌘K — Kreo `Command` + `Dialog`; API `GET /office/search` |
+| `DepartmentOperationsPanel` / `RoutineCard` / `RoutineHealthBadge` / `RoutineRunHistory` | Fase I — operaciones recurrentes (Kreo `Card`, `StatusPill`) |
+| `OfficeCostsPanel` | Fase J — coste multidimensional y alertas de presupuesto |
+| `CollaborationMapPanel` | Fase E — handoffs entre departamentos |
+| `EncargoStrategicLinkEditor` | Fase F — PATCH vínculo objetivo/iniciativa en detalle de encargo |
 
 Páginas: `OfficeObjectiveDetailPage` en `/office/objetivos/:goalId` — KPIs, rollups por iniciativa y encargos vinculados.
 

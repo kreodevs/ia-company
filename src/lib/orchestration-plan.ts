@@ -224,16 +224,16 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
   }
 
   const { buildScheduledWorkflowInitialMemory } = await import("./workflow-run-memory.js");
-  const initialMemory = await buildScheduledWorkflowInitialMemory(
-    schedule.tenantId,
-    workflow.name,
-    {
+  const initialMemory = {
+    ...(await buildScheduledWorkflowInitialMemory(schedule.tenantId, workflow.name, {
       reason: `Scheduled: ${schedule.name}`,
       productId,
       productSlug,
       orgMemory,
-    },
-  );
+    })),
+    scheduleId: schedule.id,
+    scheduleName: schedule.name,
+  };
 
   return executeWorkflowInBackground(schedule.workflowId, {
     tenantId: schedule.tenantId,

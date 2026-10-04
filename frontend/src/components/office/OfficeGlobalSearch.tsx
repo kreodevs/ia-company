@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Briefcase, Layers, Target } from "lucide-react";
+import { Building2, Briefcase, FileText, Gavel, Layers, Target, User, ArrowLeftRight } from "lucide-react";
 import { Dialog } from "@/components/molecules/Dialog";
 import {
   Command,
@@ -18,6 +18,10 @@ const TYPE_LABEL: Record<OfficeSearchResultType, string> = {
   objective: "Objetivos",
   initiative: "Iniciativas",
   department: "Departamentos",
+  decision: "Decisiones",
+  handoff: "Handoffs",
+  agent: "Agentes",
+  document: "Documentos",
 };
 
 function iconFor(type: OfficeSearchResultType) {
@@ -30,6 +34,14 @@ function iconFor(type: OfficeSearchResultType) {
       return Layers;
     case "department":
       return Building2;
+    case "decision":
+      return Gavel;
+    case "handoff":
+      return ArrowLeftRight;
+    case "agent":
+      return User;
+    case "document":
+      return FileText;
   }
 }
 
@@ -91,7 +103,16 @@ export function OfficeGlobalSearch() {
       acc[row.type].push(row);
       return acc;
     },
-    { encargo: [], objective: [], initiative: [], department: [] },
+    {
+      encargo: [],
+      objective: [],
+      initiative: [],
+      department: [],
+      decision: [],
+      handoff: [],
+      agent: [],
+      document: [],
+    },
   );
 
   return (

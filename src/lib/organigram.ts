@@ -95,3 +95,29 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
 
   return roots;
 }
+
+/** Nodo raíz CEO/coordinador (Fase E) envolviendo el árbol real. */
+export function wrapOrganigramWithExecutive(roots: OrganigramNode[]): OrganigramNode[] {
+  if (!roots.length) return roots;
+  const sum = (pick: (n: OrganigramNode) => number) =>
+    roots.reduce((acc, node) => acc + pick(node) + sumChildren(node, pick), 0);
+
+  function sumChildren(node: OrganigramNode, pick: (n: OrganigramNode) => number): number {
+    return node.children.reduce((acc, child) => acc + pick(child) + sumChildren(child, pick), 0);
+  }
+
+  return [
+    {
+      id: "__executive__",
+      name: "Dirección (CEO)",
+      type: "executive",
+      slug: "__executive__",
+      parentId: null,
+      workItemCount: sum((n) => n.workItemCount),
+      blockedWorkItems: sum((n) => n.blockedWorkItems),
+      pendingHandoffsIn: sum((n) => n.pendingHandoffsIn),
+      pendingHandoffsOut: sum((n) => n.pendingHandoffsOut),
+      children: roots,
+    },
+  ];
+}

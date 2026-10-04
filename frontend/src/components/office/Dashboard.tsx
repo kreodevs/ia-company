@@ -15,6 +15,7 @@ import Panel from "../ui/Panel";
 import StatusPill from "../ui/StatusPill";
 import EmptyState from "../ui/EmptyState";
 import { DataTable, type DataTableColumn } from "../organisms/DataTable";
+import { OfficeCostsPanel } from "./OfficeCostsPanel";
 
 function formatUsd(value: number): string {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(
@@ -266,6 +267,8 @@ export function Dashboard() {
           rows={8}
         />
       </Panel>
+
+      <OfficeCostsPanel />
 
       <Panel title="Actividad reciente" subtitle="Pulso operativo de la oficina" bodySize="sm">
         {activity.length === 0 ? (

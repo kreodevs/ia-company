@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma.js";
 
 export interface StrategicLinkInput {
@@ -124,12 +125,54 @@ export async function attachStrategicLinkToRun(
   tenantId: string,
   context: ResolvedStrategicContext | null,
 ): Promise<void> {
-  if (!context) return;
-  await prisma.executionRun.updateMany({
+  const run = await prisma.executionRun.findFirst({
     where: { id: runId, tenantId },
+    select: { sharedMemory: true },
+  });
+  if (!run) throw new Error("Encargo not found");
+
+  const memory = { ...((run.sharedMemory ?? {}) as Record<string, unknown>) };
+  if (!context) {
+    delete memory.companyGoalId;
+    delete memory.companyGoalName;
+    delete memory.initiativeId;
+    delete memory.initiativeName;
+    delete memory.strategicBrief;
+    await prisma.executionRun.update({
+      where: { id: runId },
+      data: { companyGoalId: null, initiativeId: null, sharedMemory: memory as Prisma.InputJsonValue },
+    });
+    return;
+  }
+
+  Object.assign(memory, context.memoryFields);
+  await prisma.executionRun.update({
+    where: { id: runId },
     data: {
       companyGoalId: context.companyGoalId,
       initiativeId: context.initiativeId,
+      sharedMemory: memory as Prisma.InputJsonValue,
     },
   });
+}
+
+/** Actualiza vínculo estratégico de un encargo existente (Fase F). */
+export async function updateEncargoStrategicLink(
+  tenantId: string,
+  runId: string,
+  input: StrategicLinkInput,
+): Promise<StrategicContextFields> {
+  const hasLink =
+    Boolean(input.companyGoalId?.trim()) || Boolean(input.initiativeId?.trim());
+  const context = hasLink ? await resolveStrategicContext(tenantId, input) : null;
+  await attachStrategicLinkToRun(runId, tenantId, context);
+  const run = await prisma.executionRun.findFirst({
+    where: { id: runId, tenantId },
+    include: {
+      companyGoal: { select: { id: true, name: true } },
+      initiative: { select: { id: true, name: true } },
+    },
+  });
+  if (!run) throw new Error("Encargo not found");
+  return readStrategicContextFromRun(run);
 }

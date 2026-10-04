@@ -6,6 +6,7 @@ import CoordinatorChat from "./CoordinatorChat";
 import DepartmentProceduresPanel, {
   type DepartmentProcedureSelection,
 } from "./DepartmentProceduresPanel";
+import { DepartmentOperationsPanel } from "./DepartmentOperationsPanel";
 import DepartmentWarRoomPanel from "./DepartmentWarRoomPanel";
 import SpecialistProfileModal from "./SpecialistProfileModal";
 import WarRoomIdleSeats from "../war-room/WarRoomIdleSeats";
@@ -231,6 +232,10 @@ export default function DepartmentRoomView({
         </aside>
       </div>
         </>
+      ) : null}
+
+      {(departmentSlug || orgUnitId) ? (
+        <DepartmentOperationsPanel departmentSlug={departmentSlug} orgUnitId={orgUnitId} />
       ) : null}
 
       {(departmentSlug || orgUnitId) ? (
