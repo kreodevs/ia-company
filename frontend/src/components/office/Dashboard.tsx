@@ -173,6 +173,11 @@ export function Dashboard() {
           trend={management.recentDeliveries > 0 ? "up" : "flat"}
         />
         <KpiCard
+          label="Bloqueo (media h)"
+          value={management.avgBlockedWorkItemHours ?? "—"}
+          delta="Tiempo en estado bloqueado"
+        />
+        <KpiCard
           label="Handoff (media h)"
           value={management.avgHandoffAcceptHours ?? "—"}
           delta="Aceptación entre deptos."

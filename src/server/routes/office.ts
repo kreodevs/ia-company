@@ -73,10 +73,17 @@ export async function officeRoutes(app: FastifyInstance) {
   app.get<{ Querystring: { executive?: string } }>('/office/organigram', async (request, reply) => {
     try {
       const tenantId = requireImpersonatedTenant(request);
-      const { getOrganigram, wrapOrganigramWithExecutive } = await import('../../lib/organigram.js');
+      const {
+        getOrganigram,
+        wrapOrganigramWithExecutive,
+        appendMissingVirtualDepartmentNodes,
+      } = await import('../../lib/organigram.js');
       const roots = await getOrganigram(tenantId);
       const withExecutive = request.query.executive !== "0";
-      return withExecutive ? wrapOrganigramWithExecutive(roots) : roots;
+      const tree = appendMissingVirtualDepartmentNodes(
+        withExecutive ? wrapOrganigramWithExecutive(roots) : roots,
+      );
+      return tree;
     } catch (err) {
       return handleRouteError(reply, err);
     }

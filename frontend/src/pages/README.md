@@ -7,7 +7,7 @@ Route-level screens for the Auto-Company frontend.
 | Route | Page | Description |
 |-------|------|-------------|
 | `/admin` | `SuperAdminDashboardPage` | Breadcrumbs, KPIs, secciones en `Panel`, `EmptyState` en tenants/audit |
-| `/admin/qa` | `SuperAdminQaPage` | Smoke QA contra PostgreSQL interno (`POST /admin/qa/run`); impersonar tenant para checks Office |
+| `/admin/qa` | `SuperAdminQaPage` | QA automatizada + checklist manual (localStorage); `POST /admin/qa/run`, `GET /admin/qa/checklist`; CLI `npm run qa:platform` en contenedor |
 | `/admin/settings` | `PlatformSettingsPage` | Breadcrumbs, `TabsBar` sticky, tabs en `Panel`, botón guardar Kreo |
 | `/admin/templates` | `PlatformTemplatesPage` | Breadcrumbs, sync en `Panel`, `TabsBar` sticky, `EmptyState` |
 | `/admin/templates/workflows` | `PlatformWorkflowTemplatesPage` | Breadcrumbs, búsqueda en `Panel`, `EmptyState` |

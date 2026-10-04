@@ -1,40 +1,86 @@
 # QA — paperclip-reingenieria2 (F–J)
 
-## QA automatizada (producción / contenedor)
+## Runbook producción (recomendado)
 
-La base de datos **no está expuesta** fuera del contenedor API. Usa **Superadmin → QA plataforma** (`/admin/qa`):
+La base de datos vive **solo dentro del contenedor API**. No uses `DATABASE_URL` en tu máquina para validar prod.
 
-1. Inicia sesión como superadmin.
-2. (Opcional) Impersona un tenant de prueba.
-3. **Ejecutar QA** — valida conexión, migraciones reingeniería 2 y, con tenant, smoke de organigrama, dashboard, inbox, búsqueda y costes.
+### 1. Automatizado — UI superadmin
 
-Los fallos de migración indican ejecutar `prisma migrate deploy` **dentro** del contenedor API.
+1. Inicia sesión como **superadmin**.
+2. Ve a **Plataforma → QA plataforma** (`/admin/qa`).
+3. En el desplegable, **impersona el tenant** de prueba (staging o prod controlado).
+4. Pulsa **Ejecutar QA**.
+5. Revisa la tabla de checks: **0 fail** antes de dar por bueno el despliegue.
+6. En el panel **Checklist manual**, marca cada paso tras probarlo en UI. Los badges **auto** indican qué ya validó el servidor (pass/warn/fail).
 
-## QA manual (UI)
+Si falla `migrations_paperclip`:
 
-Checklist complementario en el tenant impersonado (sin `DATABASE_URL` local):
+```bash
+# Dentro del contenedor API (o job de deploy)
+npm run db:deploy
+```
 
-## F — Objetivos e iniciativas
+### 2. Automatizado — CLI en contenedor
 
-- [ ] Crear objetivo e iniciativa; lanzar encargo con vínculo desde coordinador.
-- [ ] Dashboard: panel **Objetivos estratégicos** y KPIs de entregas/handoff/docs.
-- [ ] `/office/objetivos/:id` muestra rollups y filtros de encargos.
-- [ ] Detalle encargo y war room muestran `StrategicContextBanner`.
+Útil en CI o SSH al pod:
 
-## E — Organigrama
+```bash
+# Solo plataforma (migraciones + ping)
+npm run qa:platform
 
-- [ ] `/office/organigram` — tarjetas con bloqueados y handoffs in/out.
+# Con tenant
+QA_TENANT_ID=<cuid-del-tenant> npm run qa:platform
+```
 
-## H — Dashboard gestión
+Exit code `1` si hay checks en **fail**.
 
-- [ ] Periodo 30d vs todo cambia coste y tabla departamental.
-- [ ] Enlaces activos/bloqueados abren trabajo o inbox.
+### 3. Checklist manual (UI tenant)
 
-## J — Búsqueda global
+Con el **mismo tenant impersonado**, recorre los pasos del panel en `/admin/qa` o esta lista. Orden sugerido:
 
-- [ ] ⌘K (Ctrl+K): buscar encargo, objetivo, iniciativa, departamento (≥2 caracteres).
-- [ ] Selección navega a la ruta correcta.
+| Fase | Ruta | Qué validar |
+|------|------|-------------|
+| F | `/office/objetivos` | Crear objetivo + iniciativa |
+| F | Coordinador `/office` | Encargo con vínculo estratégico |
+| F/H | `/office/dashboard` | Panel objetivos, KPIs, periodo 30d vs todo |
+| F | `/office/objetivos/:id` | Rollups y encargos |
+| F | `/office/encargos/:id` | `StrategicContextBanner` |
+| E | `/office/organigrama` | Tarjetas, bloqueados, handoffs, grafo |
+| H | `/office/inbox` | Enlaces desde KPIs bloqueados |
+| I | `/office/departments/engineering` | Operaciones recurrentes |
+| J | `/office/dashboard` | Panel costes, filtros, alertas |
+| J | `/office` | ⌘K / Ctrl+K: búsqueda y «bloqueados ingeniería» |
+| Corte 2 | `/office/inbox` | Handoff + revisión documento (si hay datos) |
 
-## Migraciones
+### 4. Flujo profundo Corte 2 (cuando haya tiempo)
 
-- [ ] `npx prisma migrate deploy` en el entorno objetivo.
+1. Encargo con **Estrategia → Producto → Ingeniería** (mapa de trabajo).
+2. Enviar y **aceptar handoff** desde inbox.
+3. **Revisión de documento** en pestaña Archivos del encargo.
+4. Volver a **Ejecutar QA**: `corte2_data_smoke` debería pasar de warn → pass.
+
+---
+
+## Referencia por fase
+
+### F — Objetivos e iniciativas
+
+- Objetivo, iniciativa y encargo vinculado.
+- Dashboard y detalle de objetivo con rollups.
+- Banner estratégico en encargo / war room.
+
+### E — Organigrama
+
+- `/office/organigrama` — jerarquía, virtuales, colaboración.
+
+### H — Dashboard
+
+- Periodo y drill-down a inbox/trabajo.
+
+### J — Coste y búsqueda
+
+- Costes, proyección, ⌘K.
+
+### Migraciones
+
+Cubierto por check `migrations_paperclip` en QA automatizada (`db:deploy` en contenedor).

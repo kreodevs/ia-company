@@ -757,9 +757,9 @@ QA manual pendiente cuando exista un `DATABASE_URL` válido: aplicar la migraci�
 
 ---
 
-# Pendientes detectados (auditoría 2026-10-03)
+# Pendientes detectados (auditoría 2026-10-03) — histórico
 
-> Resultado de la validación de Corte 3 y Corte 4 tras los commits `e8a30f0`, `8a417f0`, `78df7b9` y `011b351`. El build técnico pasa (`npm run build` limpio, backend `tsc --noEmit` limpio, frontend `tsc -b` limpio), pero la funcionalidad está incompleta respecto al alcance definido en las Fases E, F, H, I y J.
+> **Actualización 2026-10-04:** Corte 3/4 cerrado en código (`9e7d7ef` + pulido posterior). Usar **Superadmin → `/admin/qa`** y `docs/qa/paperclip-reingenieria2-manual.md` para validación en contenedor. La tabla siguiente refleja el estado **actual**; las subsecciones P1–P9 debajo son referencia histórica (muchas ya resueltas).
 
 ## Estado por fase
 

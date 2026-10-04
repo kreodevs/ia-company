@@ -214,6 +214,14 @@ export async function finalizeSessionRunIfComplete(input: {
   // ── Resumen del run (solo en éxito, igual que el executor DAG) ──
   if (input.tenantId && aggregate === "COMPLETED") {
     try {
+      const { syncCompanyGoalProgressForRun } = await import("./objectives.js");
+      await syncCompanyGoalProgressForRun(input.tenantId, {
+        companyGoalId: run.companyGoalId,
+      });
+    } catch (err) {
+      console.error("[session-finalizer] goal progress sync failed:", err);
+    }
+    try {
       const tenant = await prisma.tenant.findUnique({
         where: { id: input.tenantId },
         include: { llmConfig: true },

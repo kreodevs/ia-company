@@ -55,6 +55,33 @@ export async function syncCostBudgetAlerts(tenantId: string): Promise<void> {
   if (level >= 100) await pauseSchedulesForBudgetExhausted(tenantId);
 }
 
+/** Alerta cuando el coste medio por entrega completada es alto (Fase J). */
+export async function syncLowDeliveryEfficiencyAlert(
+  tenantId: string,
+  costPerRunUsd: number,
+  completedRuns: number,
+): Promise<void> {
+  const since = startOfMonth();
+  const marker = "low-delivery-efficiency";
+  const existing = await prisma.tenantNotification.findFirst({
+    where: {
+      tenantId,
+      type: "cost_alert",
+      body: { contains: marker },
+      createdAt: { gte: since },
+    },
+  });
+  if (existing) return;
+
+  await createTenantNotification({
+    tenantId,
+    type: "cost_alert",
+    title: "Coste alto por entrega\n---\nHigh cost per delivery",
+    body: `${marker}: $${costPerRunUsd.toFixed(2)} por encargo (${completedRuns} completados en el periodo).`,
+    href: "/office/dashboard",
+  });
+}
+
 async function pauseSchedulesForBudgetExhausted(tenantId: string): Promise<void> {
   const { setDepartmentOperationEnabled } = await import("./department-operations.js");
   const schedules = await prisma.autonomousSchedule.findMany({

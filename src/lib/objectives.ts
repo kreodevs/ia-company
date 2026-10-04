@@ -78,6 +78,51 @@ export function computeGoalProgressPercent(
   return Math.min(100, Math.round(completionRatio * cap));
 }
 
+const ACTIVE_STATUSES: ExecutionStatus[] = [
+  "PENDING",
+  "RUNNING",
+  "DELEGATED",
+  "AWAITING_USER",
+];
+
+/** Recalcula y persiste `currentValue` tras completar encargos (Fase F). */
+export async function syncCompanyGoalProgress(
+  tenantId: string,
+  goalId: string,
+): Promise<number | null> {
+  const goal = await prisma.companyGoal.findFirst({ where: { id: goalId, tenantId } });
+  if (!goal) return null;
+
+  const [encargoCount, deliveredEncargos] = await Promise.all([
+    prisma.executionRun.count({ where: { tenantId, companyGoalId: goalId } }),
+    prisma.executionRun.count({
+      where: { tenantId, companyGoalId: goalId, status: "COMPLETED" },
+    }),
+  ]);
+
+  const progressPercent = computeGoalProgressPercent(
+    deliveredEncargos,
+    encargoCount,
+    goal.targetValue,
+  );
+
+  if (goal.currentValue !== progressPercent) {
+    await prisma.companyGoal.update({
+      where: { id: goalId },
+      data: { currentValue: progressPercent },
+    });
+  }
+  return progressPercent;
+}
+
+export async function syncCompanyGoalProgressForRun(
+  tenantId: string,
+  run: { companyGoalId: string | null },
+): Promise<void> {
+  if (!run.companyGoalId) return;
+  await syncCompanyGoalProgress(tenantId, run.companyGoalId);
+}
+
 export interface ObjectiveEncargoSummary {
   id: string;
   title: string;
@@ -111,8 +156,6 @@ export interface CompanyGoalDetail {
   initiativeRollups: InitiativeRollup[];
   recentEncargos: ObjectiveEncargoSummary[];
 }
-
-const ACTIVE_STATUSES: ExecutionStatus[] = ["PENDING", "RUNNING", "DELEGATED", "AWAITING_USER"];
 
 function runPhase(status: ExecutionStatus): ObjectiveEncargoSummary["phase"] {
   if (status === "COMPLETED") return "delivered";
@@ -186,19 +229,10 @@ export async function getObjectiveDetail(
   });
   const totalCostUsd = Math.round((costAgg._sum.totalCostUsd ?? 0) * 100) / 100;
 
-  const progressPercent = computeGoalProgressPercent(
-    deliveredEncargos,
-    encargoCount,
-    goal.targetValue,
-  );
-
-  if (goal.currentValue !== progressPercent) {
-    await prisma.companyGoal.update({
-      where: { id: goalId },
-      data: { currentValue: progressPercent },
-    });
-    goal.currentValue = progressPercent;
-  }
+  const progressPercent =
+    (await syncCompanyGoalProgress(tenantId, goalId)) ??
+    computeGoalProgressPercent(deliveredEncargos, encargoCount, goal.targetValue);
+  goal.currentValue = progressPercent;
 
   const deliveredByInitiative = await prisma.executionRun.groupBy({
     by: ["initiativeId"],

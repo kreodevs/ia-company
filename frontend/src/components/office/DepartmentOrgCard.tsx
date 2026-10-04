@@ -28,6 +28,7 @@ export function DepartmentOrgCard({
   className,
 }: DepartmentOrgCardProps) {
   const { t } = useTranslation();
+  const displayName = node.labelKey ? t(node.labelKey) : node.name;
   const missionText =
     (node.missionDescKey ? t(node.missionDescKey) : null) ??
     node.mission ??
@@ -48,7 +49,7 @@ export function DepartmentOrgCard({
       title={
         <span className="inline-flex items-center gap-2">
           <Building2 className="h-4 w-4 text-[var(--primary)]" aria-hidden />
-          {node.name}
+          {displayName}
         </span>
       }
       subtitle={

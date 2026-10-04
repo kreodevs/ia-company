@@ -1,4 +1,36 @@
+import { DepartmentWorkStatus } from "@prisma/client";
 import { prisma } from "./prisma.js";
+import { VIRTUAL_OFFICE_DEPARTMENTS } from "./office-departments.js";
+
+interface SearchIntent {
+  departmentSlug?: string;
+  blockedOnly: boolean;
+  awaitingApproval: boolean;
+  freeText: string;
+}
+
+function parseSearchIntent(query: string): SearchIntent {
+  const lower = query.toLowerCase();
+  let departmentSlug: string | undefined;
+  if (lower.includes("ingenier")) departmentSlug = "engineering";
+  else if (lower.includes("estrateg")) departmentSlug = "strategy";
+  else if (lower.includes("producto")) departmentSlug = "product";
+  else if (lower.includes("marketing") || lower.includes("negocio")) departmentSlug = "business";
+  else {
+    for (const def of VIRTUAL_OFFICE_DEPARTMENTS) {
+      if (lower.includes(def.slug)) {
+        departmentSlug = def.slug;
+        break;
+      }
+    }
+  }
+  return {
+    departmentSlug,
+    blockedOnly: lower.includes("bloquead"),
+    awaitingApproval: lower.includes("aprobación") || lower.includes("aprobacion"),
+    freeText: query.trim(),
+  };
+}
 
 export type OfficeSearchResultType =
   | "encargo"
@@ -30,16 +62,75 @@ export async function searchOffice(
   const q = query.trim();
   if (q.length < 2) return [];
 
+  const intent = parseSearchIntent(q);
+  const results: OfficeSearchResult[] = [];
   const take = Math.min(10, limit);
+
+  if (intent.blockedOnly) {
+    const blockedRuns = await prisma.executionRun.findMany({
+      where: {
+        tenantId,
+        departmentWorkItems: {
+          some: {
+            status: DepartmentWorkStatus.blocked,
+            ...(intent.departmentSlug ? { departmentSlug: intent.departmentSlug } : {}),
+          },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take,
+      select: { id: true, sharedMemory: true, companyGoal: { select: { name: true } } },
+    });
+    for (const run of blockedRuns) {
+      const memory = run.sharedMemory as Record<string, unknown>;
+      const task =
+        (typeof memory.task === "string" && memory.task) ||
+        (typeof memory.officeRequest === "string" && memory.officeRequest) ||
+        run.id;
+      results.push({
+        type: "encargo",
+        id: run.id,
+        title: String(task).slice(0, 120),
+        subtitle: intent.departmentSlug
+          ? `Bloqueado · ${intent.departmentSlug}`
+          : "Encargo bloqueado",
+        href: `/office/encargos/${run.id}`,
+      });
+    }
+  }
+
+  if (intent.awaitingApproval) {
+    const pending = await prisma.decisionProposal.findMany({
+      where: { tenantId, status: { in: ["pending_review", "drilling"] } },
+      orderBy: { createdAt: "desc" },
+      take,
+      select: { id: true, workflowName: true, runId: true },
+    });
+    for (const decision of pending) {
+      results.push({
+        type: "decision",
+        id: decision.id,
+        title: decision.workflowName,
+        subtitle: "Esperando aprobación",
+        href: decision.runId
+          ? `/office/encargos/${decision.runId}`
+          : "/office/inbox?category=decisions",
+      });
+    }
+  }
+
+  if (results.length >= limit) return results.slice(0, limit);
+
+  const textQ = intent.freeText;
   const [runs, goals, initiatives, orgUnits, decisions, handoffs, agents, docs, comments] =
     await Promise.all([
     prisma.executionRun.findMany({
       where: {
         tenantId,
         OR: [
-          { id: { contains: q, mode: "insensitive" } },
-          { companyGoal: { name: { contains: q, mode: "insensitive" } } },
-          { initiative: { name: { contains: q, mode: "insensitive" } } },
+          { id: { contains: textQ, mode: "insensitive" } },
+          { companyGoal: { name: { contains: textQ, mode: "insensitive" } } },
+          { initiative: { name: { contains: textQ, mode: "insensitive" } } },
         ],
       },
       orderBy: { createdAt: "desc" },
@@ -51,17 +142,17 @@ export async function searchOffice(
       },
     }),
     prisma.companyGoal.findMany({
-      where: { tenantId, name: { contains: q, mode: "insensitive" } },
+      where: { tenantId, name: { contains: textQ, mode: "insensitive" } },
       take,
       select: { id: true, name: true },
     }),
     prisma.initiative.findMany({
-      where: { tenantId, name: { contains: q, mode: "insensitive" } },
+      where: { tenantId, name: { contains: textQ, mode: "insensitive" } },
       take,
       select: { id: true, name: true, companyGoalId: true },
     }),
     prisma.orgUnit.findMany({
-      where: { tenantId, isActive: true, name: { contains: q, mode: "insensitive" } },
+      where: { tenantId, isActive: true, name: { contains: textQ, mode: "insensitive" } },
       take,
       select: { id: true, name: true, slug: true },
     }),
@@ -69,15 +160,15 @@ export async function searchOffice(
       where: {
         tenantId,
         OR: [
-          { workflowName: { contains: q, mode: "insensitive" } },
-          { rationale: { contains: q, mode: "insensitive" } },
+          { workflowName: { contains: textQ, mode: "insensitive" } },
+          { rationale: { contains: textQ, mode: "insensitive" } },
         ],
       },
       take,
       select: { id: true, workflowName: true, runId: true },
     }),
     prisma.departmentHandoff.findMany({
-      where: { tenantId, message: { contains: q, mode: "insensitive" } },
+      where: { tenantId, message: { contains: textQ, mode: "insensitive" } },
       take,
       select: {
         id: true,
@@ -86,7 +177,7 @@ export async function searchOffice(
       },
     }),
     prisma.agent.findMany({
-      where: { tenantId, isActive: true, name: { contains: q, mode: "insensitive" } },
+      where: { tenantId, isActive: true, name: { contains: textQ, mode: "insensitive" } },
       take,
       select: { id: true, name: true, role: true },
     }),
@@ -94,21 +185,19 @@ export async function searchOffice(
       where: {
         tenantId,
         OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { previewText: { contains: q, mode: "insensitive" } },
+          { title: { contains: textQ, mode: "insensitive" } },
+          { previewText: { contains: textQ, mode: "insensitive" } },
         ],
       },
       take,
       select: { id: true, title: true, runId: true },
     }),
     prisma.documentComment.findMany({
-      where: { tenantId, body: { contains: q, mode: "insensitive" } },
+      where: { tenantId, body: { contains: textQ, mode: "insensitive" } },
       take,
       select: { id: true, body: true, runId: true, docKey: true },
     }),
   ]);
-
-  const results: OfficeSearchResult[] = [];
 
   for (const goal of goals) {
     results.push({

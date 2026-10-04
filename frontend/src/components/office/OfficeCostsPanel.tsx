@@ -39,7 +39,9 @@ export function OfficeCostsPanel() {
   const [productId, setProductId] = useState("");
   const [orgUnitId, setOrgUnitId] = useState("");
   const [runId, setRunId] = useState("");
+  const [agentId, setAgentId] = useState("");
   const [objectives, setObjectives] = useState<CompanyGoal[]>([]);
+  const [agents, setAgents] = useState<Array<{ id: string; name: string }>>([]);
   const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
   const [departments, setDepartments] = useState<Array<{ id: string; name: string }>>([]);
 
@@ -47,6 +49,7 @@ export function OfficeCostsPanel() {
     void Promise.all([
       getObjectives().then(setObjectives).catch(() => setObjectives([])),
       api.products.list().then((rows) => setProducts(rows.map((p) => ({ id: p.id, name: p.name })))).catch(() => []),
+      api.agents.list().then((rows) => setAgents(rows.map((a) => ({ id: a.id, name: a.name })))).catch(() => []),
       getDashboard()
         .then((d) =>
           setDepartments(
@@ -68,10 +71,11 @@ export function OfficeCostsPanel() {
       productId: productId || undefined,
       orgUnitId: orgUnitId || undefined,
       runId: runId.trim() || undefined,
+      agentId: agentId || undefined,
     })
       .then(setReport)
       .catch((e) => setError(e instanceof Error ? e.message : "Error"));
-  }, [period, modelFilter, companyGoalId, productId, orgUnitId, runId]);
+  }, [period, modelFilter, companyGoalId, productId, orgUnitId, runId, agentId]);
 
   useEffect(() => {
     load();
@@ -132,6 +136,11 @@ export function OfficeCostsPanel() {
           </StatusPill>
         </p>
       ) : null}
+      {report.lowDeliveryEfficiency ? (
+        <p className="mb-4 text-sm text-amber-800 dark:text-amber-200">
+          Coste por entrega elevado — revisa encargos del periodo o ajusta presupuesto.
+        </p>
+      ) : null}
       <div className="mb-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         <label className="text-sm text-[var(--foreground-muted)]">
           Objetivo
@@ -175,6 +184,19 @@ export function OfficeCostsPanel() {
         <label className="text-sm text-[var(--foreground-muted)]">
           Encargo (id)
           <Input className="mt-1" value={runId} onChange={(e) => setRunId(e.target.value)} placeholder="run id" />
+        </label>
+        <label className="text-sm text-[var(--foreground-muted)]">
+          Agente
+          <select
+            className="mt-1 w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1.5 text-sm"
+            value={agentId}
+            onChange={(e) => setAgentId(e.target.value)}
+          >
+            <option value="">Todos</option>
+            {agents.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
         </label>
         <label className="text-sm text-[var(--foreground-muted)]">
           Modelo LLM

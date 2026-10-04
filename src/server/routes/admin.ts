@@ -216,6 +216,15 @@ export async function adminRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get("/admin/qa/checklist", async (_request, reply) => {
+    try {
+      const { getPlatformQaChecklist } = await import("../../lib/platform-qa.js");
+      return { steps: getPlatformQaChecklist() };
+    } catch (err) {
+      return handleRouteError(reply, err);
+    }
+  });
+
   app.post<{ Body: { tenantId?: string | null } }>("/admin/qa/run", async (request, reply) => {
     try {
       const tenantId =

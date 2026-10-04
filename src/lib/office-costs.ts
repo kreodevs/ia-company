@@ -37,6 +37,8 @@ export interface OfficeCostReport {
   /** USD por encargo completado en el periodo filtrado. */
   costPerCompletedRunUsd: number | null;
   completedRunCount: number;
+  /** true si el coste por entrega supera umbral con volumen suficiente (Fase J). */
+  lowDeliveryEfficiency: boolean;
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
@@ -175,6 +177,16 @@ export async function getOfficeCostReport(
       : null;
   const costPerCompletedRunUsd =
     completedRuns > 0 ? Math.round((totalCostUsd / completedRuns) * 100) / 100 : null;
+  const lowDeliveryEfficiency =
+    completedRuns >= 3 &&
+    costPerCompletedRunUsd != null &&
+    costPerCompletedRunUsd >= 25;
+
+  if (lowDeliveryEfficiency) {
+    void import("./cost-alerts.js").then((m) =>
+      m.syncLowDeliveryEfficiencyAlert(tenantId, costPerCompletedRunUsd!, completedRuns),
+    );
+  }
 
   return {
     totalCostUsd,
@@ -188,6 +200,7 @@ export async function getOfficeCostReport(
     projectedMonthEndUsd,
     projectedBudgetPercent,
     costPerCompletedRunUsd,
+    lowDeliveryEfficiency,
     byDepartment: deptCostRows.sort((a, b) => b.costUsd - a.costUsd).slice(0, 12),
     byObjective: goalGroups
       .filter((g) => g.companyGoalId)

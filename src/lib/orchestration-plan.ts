@@ -183,7 +183,14 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
 
   const workflow = await prisma.workflow.findUnique({
     where: { id: schedule.workflowId },
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      steps: {
+        orderBy: { stepOrder: "asc" },
+        include: { agent: { select: { name: true } } },
+      },
+    },
   });
   if (!workflow) {
     throw new Error(`Workflow ${schedule.workflowId} not found`);
@@ -224,6 +231,9 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
   }
 
   const { buildScheduledWorkflowInitialMemory } = await import("./workflow-run-memory.js");
+  const teamAgents = workflow.steps
+    .map((step) => step.agent?.name)
+    .filter((name): name is string => Boolean(name));
   const initialMemory = {
     ...(await buildScheduledWorkflowInitialMemory(schedule.tenantId, workflow.name, {
       reason: `Scheduled: ${schedule.name}`,
@@ -233,9 +243,10 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
     })),
     scheduleId: schedule.id,
     scheduleName: schedule.name,
+    ...(teamAgents.length ? { teamAgents } : {}),
   };
 
-  return executeWorkflowInBackground(schedule.workflowId, {
+  const runId = await executeWorkflowInBackground(schedule.workflowId, {
     tenantId: schedule.tenantId,
     productId: isCompanyScopedWorkflow(workflow.name) ? undefined : productId,
     productSlug: isCompanyScopedWorkflow(workflow.name) ? undefined : productSlug,
@@ -245,6 +256,15 @@ export async function executeScheduleRule(schedule: AutonomousSchedule): Promise
     initialMemory,
     metaReason: `Scheduled: ${schedule.name}`,
   });
+
+  try {
+    const { ensureDepartmentWorkItems } = await import("./office-work-items.js");
+    await ensureDepartmentWorkItems(schedule.tenantId, runId);
+  } catch (err) {
+    console.error("[orchestration] department work bootstrap failed:", err);
+  }
+
+  return runId;
 }
 
 export async function pickDueScheduleForTenant(

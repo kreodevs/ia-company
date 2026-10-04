@@ -227,6 +227,12 @@ export const admin = {
     manualDocHint: "Complementary manual checklist in internal docs",
     emptyTitle: "No run yet",
     emptyDescription: "Click «Run QA» to validate the current deployment.",
+    prodRunbook:
+      "Prod runbook: impersonate tenant → Run QA (0 fail) → tick the manual checklist. In the API container: npm run qa:platform.",
+    manualTitle: "Manual checklist (tenant UI)",
+    manualSubtitle: "{{done}} / {{total}} steps checked in this browser",
+    failBlocking: "Fix failing checks before signing off the deployment.",
+    cliHint: "CLI inside API container:",
   },
   impersonation: {
     label: "Impersonate tenant",

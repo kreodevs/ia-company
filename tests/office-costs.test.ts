@@ -29,6 +29,7 @@ describe("wrapOrganigramWithExecutive", () => {
         pendingHandoffsOut: 1,
         mission: "Operaciones",
         missionDescKey: null,
+        labelKey: null,
         procedureHighlights: ["Informe semanal"],
         children: [],
       },

@@ -127,6 +127,18 @@ export async function resyncEncargoTaskWithStrategicLink(
     where: { id: runId },
     data: { sharedMemory: memory as Prisma.InputJsonValue },
   });
+
+  await refreshActiveAgentSessionGoals(runId, next);
+}
+
+async function refreshActiveAgentSessionGoals(runId: string, task: string): Promise<void> {
+  await prisma.agentSession.updateMany({
+    where: {
+      runId,
+      status: { in: ["PENDING", "RUNNING", "AWAITING_INPUT", "AWAITING_APPROVAL"] },
+    },
+    data: { goal: task },
+  });
 }
 
 export interface StrategicContextFields {

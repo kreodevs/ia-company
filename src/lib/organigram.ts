@@ -1,5 +1,6 @@
 import { DepartmentHandoffStatus, DepartmentWorkStatus } from "@prisma/client";
 import { prisma } from "./prisma.js";
+import { VIRTUAL_OFFICE_DEPARTMENTS } from "./office-departments.js";
 
 export interface OrganigramNode {
   id: string;
@@ -14,6 +15,7 @@ export interface OrganigramNode {
   mission: string | null;
   /** i18n key para departamentos virtuales (Fase E). */
   missionDescKey: string | null;
+  labelKey: string | null;
   procedureHighlights: string[];
   children: OrganigramNode[];
 }
@@ -88,6 +90,7 @@ export async function getOrganigram(tenantId: string): Promise<OrganigramNode[]>
       pendingHandoffsOut: handoffsOutMap.get(unit.id) ?? 0,
       mission: unit.description?.trim() || null,
       missionDescKey: null,
+      labelKey: null,
       procedureHighlights: [],
       children: [],
     });
@@ -110,7 +113,6 @@ async function attachProcedureHighlights(
   nodeMap: Map<string, OrganigramNode>,
 ): Promise<void> {
   const { listGroupedProcedures } = await import("./office-procedures.js");
-  const { VIRTUAL_OFFICE_DEPARTMENTS } = await import("./office-departments.js");
   const grouped = await listGroupedProcedures(tenantId);
 
   for (const group of grouped.groups) {
@@ -131,10 +133,49 @@ async function attachProcedureHighlights(
 
   for (const def of VIRTUAL_OFFICE_DEPARTMENTS) {
     const node = [...nodeMap.values()].find((n) => n.slug === def.slug);
-    if (node && !node.mission) {
-      node.missionDescKey = def.descKey;
+    if (node) {
+      if (!node.mission) node.missionDescKey = def.descKey;
+      if (!node.labelKey) node.labelKey = def.labelKey;
     }
   }
+}
+
+function collectOrganigramSlugs(nodes: OrganigramNode[], out = new Set<string>()): Set<string> {
+  for (const node of nodes) {
+    out.add(node.slug);
+    collectOrganigramSlugs(node.children, out);
+  }
+  return out;
+}
+
+/** Añade nodos virtuales (Estrategia, Producto, …) si no hay OrgUnit con ese slug. */
+export function appendMissingVirtualDepartmentNodes(roots: OrganigramNode[]): OrganigramNode[] {
+  const slugs = collectOrganigramSlugs(roots);
+  const missing: OrganigramNode[] = VIRTUAL_OFFICE_DEPARTMENTS
+    .filter((def) => !slugs.has(def.slug))
+    .map((def) => ({
+      id: `virtual-dept-${def.slug}`,
+      name: def.slug,
+      type: "virtual",
+      slug: def.slug,
+      parentId: null,
+      workItemCount: 0,
+      blockedWorkItems: 0,
+      pendingHandoffsIn: 0,
+      pendingHandoffsOut: 0,
+      mission: null,
+      missionDescKey: def.descKey,
+      labelKey: def.labelKey,
+      procedureHighlights: [],
+      children: [],
+    }));
+
+  if (!missing.length) return roots;
+
+  if (roots.length === 1 && roots[0].type === "executive") {
+    return [{ ...roots[0], children: [...roots[0].children, ...missing] }];
+  }
+  return [...roots, ...missing];
 }
 
 /** Nodo raíz CEO/coordinador (Fase E) envolviendo el árbol real. */
@@ -160,6 +201,7 @@ export function wrapOrganigramWithExecutive(roots: OrganigramNode[]): Organigram
       pendingHandoffsOut: sum((n) => n.pendingHandoffsOut),
       mission: "Coordinación estratégica, priorización de encargos y visión de empresa.",
       missionDescKey: null,
+      labelKey: null,
       procedureHighlights: [],
       children: roots,
     },

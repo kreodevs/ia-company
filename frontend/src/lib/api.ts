@@ -53,12 +53,28 @@ export interface QaCheckResult {
   durationMs: number;
 }
 
+export interface ManualQaStep {
+  id: string;
+  phase: string;
+  title: string;
+  detail: string;
+  href: string | null;
+  autoCheckId?: string;
+}
+
+export type ManualQaAutoStatus = "pass" | "fail" | "warn" | "skip" | "manual";
+
+export interface ManualQaStepWithAuto extends ManualQaStep {
+  autoStatus: ManualQaAutoStatus;
+}
+
 export interface PlatformQaReport {
   ranAt: string;
   tenantId: string | null;
   tenantName: string | null;
   checks: QaCheckResult[];
   summary: { pass: number; fail: number; warn: number; skip: number };
+  manualChecklist: ManualQaStepWithAuto[];
 }
 
 export interface AdminDashboard {
@@ -249,6 +265,7 @@ export interface OrganigramNode {
   pendingHandoffsOut: number;
   mission: string | null;
   missionDescKey: string | null;
+  labelKey: string | null;
   procedureHighlights: string[];
   children: OrganigramNode[];
 }
@@ -413,6 +430,7 @@ export interface OfficeCostReport {
   projectedBudgetPercent: number | null;
   costPerCompletedRunUsd: number | null;
   completedRunCount: number;
+  lowDeliveryEfficiency: boolean;
   byDepartment: OfficeCostBreakdownRow[];
   byObjective: OfficeCostBreakdownRow[];
   byProduct: OfficeCostBreakdownRow[];
@@ -2099,6 +2117,7 @@ export const api = {
         method: "POST",
         body: JSON.stringify(body ?? {}),
       }),
+    qaChecklist: () => request<{ steps: ManualQaStep[] }>("/admin/qa/checklist"),
     runPlatformQa: (tenantId?: string | null) =>
       request<PlatformQaReport>("/admin/qa/run", {
         method: "POST",

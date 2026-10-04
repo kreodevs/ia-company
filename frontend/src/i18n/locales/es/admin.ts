@@ -228,6 +228,12 @@ export const admin = {
     manualDocHint: "Checklist manual complementario en documentación interna",
     emptyTitle: "Sin ejecución aún",
     emptyDescription: "Pulsa «Ejecutar QA» para validar el despliegue actual.",
+    prodRunbook:
+      "Runbook prod: impersona tenant → Ejecutar QA (0 fail) → marca el checklist manual en UI. En contenedor: npm run qa:platform.",
+    manualTitle: "Checklist manual (UI tenant)",
+    manualSubtitle: "{{done}} / {{total}} pasos marcados en este navegador",
+    failBlocking: "Corrige los fail antes de cerrar el despliegue.",
+    cliHint: "CLI en contenedor API:",
   },
   impersonation: {
     label: "Impersonar tenant",
