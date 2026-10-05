@@ -7,6 +7,7 @@ import WarRoomGeneralContent from "../components/war-room/WarRoomGeneralContent"
 import WarRoomProductToolbar from "../components/war-room/WarRoomProductToolbar";
 import { WAR_ROOM_GENERAL_VALUE } from "../components/war-room/war-room-shared";
 import PageLoading from "../components/ui/PageLoading";
+import PageFrame from "../components/ui/PageFrame";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 
@@ -55,7 +56,7 @@ export default function WarRoomPage() {
 
   if (products.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl py-8">
+      <PageFrame width="narrow" className="py-8">
         <EmptyState
           title={t("warRoom.noProductsTitle")}
           description={t("warRoom.noProductsHint")}
@@ -65,7 +66,7 @@ export default function WarRoomPage() {
             </Link>
           }
         />
-      </div>
+      </PageFrame>
     );
   }
 
@@ -76,7 +77,7 @@ export default function WarRoomPage() {
   const selectedValue = productId ?? WAR_ROOM_GENERAL_VALUE;
 
   return (
-    <div className="war-room-page">
+    <PageFrame width="wide" className="war-room-page">
       <WarRoomProductToolbar
         products={products}
         focusProductId={focusProductId}
@@ -93,6 +94,6 @@ export default function WarRoomPage() {
       ) : (
         <WarRoomGeneralContent products={products} watchRunId={watchRunId} />
       )}
-    </div>
+    </PageFrame>
   );
 }

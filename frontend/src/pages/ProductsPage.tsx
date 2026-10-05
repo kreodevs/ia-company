@@ -8,6 +8,7 @@ import { toast } from "../components/molecules/Sonner";
 import ProductActionsMenu from "../components/ui/ProductActionsMenu";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Panel from "../components/ui/Panel";
@@ -143,8 +144,9 @@ export default function ProductsPage() {
   const readyForDecisionCount = overview.pipeline.filter((idea) => idea.evaluationPhase === "ready").length;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <PageFrame width="default">
       <PageHeader
+        variant="command"
         title={t("products.title")}
         subtitle={t("products.subtitle")}
         actions={
@@ -292,7 +294,7 @@ export default function ProductsPage() {
           )}
         </Panel>
       )}
-    </div>
+    </PageFrame>
   );
 }
 

@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Objectives } from "../components/office/Objectives";
 import { ObjectiveForm } from "../components/office/ObjectiveForm";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 
@@ -13,8 +14,9 @@ export const OfficeObjectivesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -30,6 +32,6 @@ export const OfficeObjectivesPage: React.FC = () => {
       <Panel title="Objetivos activos" subtitle="Progreso frente a la meta definida">
         <Objectives key={refreshKey} />
       </Panel>
-    </div>
+    </PageFrame>
   );
 };

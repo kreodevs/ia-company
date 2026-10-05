@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type TenantInterests } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -47,8 +48,9 @@ export default function TenantInterestsPage() {
   if (loading || !data) return <PageLoading message={t("common.loading")} />;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <PageFrame width="narrow">
       <PageHeader
+        variant="command"
         title={t("interests.title")}
         subtitle={t("interests.subtitle")}
       />
@@ -99,6 +101,6 @@ export default function TenantInterestsPage() {
           {saving ? t("common.saving") : t("interests.save")}
         </Button>
       </Card>
-    </div>
+    </PageFrame>
   );
 }

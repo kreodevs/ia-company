@@ -10,6 +10,7 @@ import LlmProviderCredentialPanel, {
 } from "../components/LlmProviderCredentialPanel";
 import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import TabsBar from "../components/ui/TabsBar";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
@@ -88,8 +89,9 @@ export default function PlatformSettingsPage() {
   }
 
   return (
-    <div className="settings-page space-y-6">
+    <PageFrame width="narrow" className="settings-page--frame">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -487,6 +489,6 @@ export default function PlatformSettingsPage() {
       <Button disabled={saving} onClick={() => void save()} fullWidthMobile className="w-full sm:w-auto">
         {saving ? t("common.saving") : t("admin.platformSettings.save")}
       </Button>
-    </div>
+    </PageFrame>
   );
 }

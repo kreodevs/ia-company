@@ -13,6 +13,7 @@ import {
   type Workflow,
 } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -210,8 +211,9 @@ export default function SettingsPage() {
   if (loading) return <PageLoading message={t("settings.loading")} />;
 
   return (
-    <div className="settings-page space-y-6">
+    <PageFrame width="narrow" className="settings-page--frame">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -677,6 +679,6 @@ export default function SettingsPage() {
       )}
 
       {activeTab === "delivery" && <TenantDeliveryBrandingPanel />}
-    </div>
+    </PageFrame>
   );
 }

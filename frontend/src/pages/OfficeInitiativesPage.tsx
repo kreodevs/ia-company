@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Initiatives } from "../components/office/Initiatives";
 import { InitiativeForm } from "../components/office/InitiativeForm";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 
@@ -13,8 +14,9 @@ export const OfficeInitiativesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -30,6 +32,6 @@ export const OfficeInitiativesPage: React.FC = () => {
       <Panel title="Iniciativas" subtitle="Estado y objetivo padre">
         <Initiatives key={refreshKey} />
       </Panel>
-    </div>
+    </PageFrame>
   );
 };

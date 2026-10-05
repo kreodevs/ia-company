@@ -40,7 +40,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           mobileSidebarOpen={mobileSidebarOpen}
           onMobileSidebarToggle={toggleMobileSidebar}
         />
-        {children}
+        <div className="app-viewport">{children}</div>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
   type TenantProduct,
 } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -184,8 +185,9 @@ export default function ProductCodePage() {
   const canCreateRepo = ["building", "launching", "growing"].includes(product?.phase ?? "");
 
   return (
-    <div className="mx-auto max-w-7xl space-y-4">
+    <PageFrame width="wide" className="gap-4">
       <PageHeader
+        variant="command"
         title={t("code.title", { name: product?.name ?? "Product" })}
         subtitle={t("code.subtitle")}
       />
@@ -351,6 +353,6 @@ export default function ProductCodePage() {
           </p>
         )}
       </Card>
-    </div>
+    </PageFrame>
   );
 }

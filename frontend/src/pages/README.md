@@ -2,6 +2,8 @@
 
 Route-level screens for the Auto-Company frontend.
 
+**Layout:** authenticated routes render inside `page-shell` → `app-viewport` → `PageFrame` (`narrow` | `default` | `wide` | `office` | `fluid`) + `PageHeader variant="command"` on tenant/admin screens. War Room uses `PageFrame` + `.war-room-page`. See `src/styles/command-center.css`.
+
 ## Admin (super-admin)
 
 | Route | Page | Description |

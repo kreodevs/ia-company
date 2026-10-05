@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import type { OrgUnit } from "../lib/org-types";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
 import EmptyState from "../components/ui/EmptyState";
@@ -26,8 +27,9 @@ export default function OrgUnitsPage() {
   if (loading) return <PageLoading message={t("org.loading")} />;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <PageFrame width="default">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs items={[{ label: t("nav.orgUnits"), to: "/org-units" }, { label: t("org.title") }]} />
         }
@@ -87,6 +89,6 @@ export default function OrgUnitsPage() {
           ))}
         </ul>
       )}
-    </div>
+    </PageFrame>
   );
 }

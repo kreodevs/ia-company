@@ -1,0 +1,273 @@
+/* Command center shell — industrial B2B (Inspo: stat-led, dark grotesk, warm accent) */
+
+:root,
+[data-theme="letter"],
+[data-theme="slash"],
+[data-theme="paperclip"] {
+  --page-width-narrow: 48rem;
+  --page-width-default: 72rem;
+  --page-width-wide: 88rem;
+  --page-width-office: 87.5rem;
+  --page-frame-gap: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+[data-theme="slash"],
+[data-theme="paperclip"] {
+  --command-ambient-accent: var(--accent, var(--color-copper));
+  --command-grid-line: color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.app-viewport {
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px));
+}
+
+html[data-theme="slash"] .app-viewport::before,
+html[data-theme="paperclip"] .app-viewport::before {
+  content: "";
+  position: fixed;
+  top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+  right: 0;
+  bottom: 0;
+  left: var(--sidebar-width);
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 70% 45% at 12% -8%,
+      color-mix(in srgb, var(--command-ambient-accent) 14%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 35% at 92% 8%,
+      color-mix(in srgb, var(--info, #3b82f6) 7%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background) 96%, var(--command-ambient-accent) 4%) 0%,
+      var(--background) 28%
+    );
+  opacity: 0.95;
+}
+
+html[data-sidebar-collapsed="true"][data-theme="slash"] .app-viewport::before,
+html[data-sidebar-collapsed="true"][data-theme="paperclip"] .app-viewport::before {
+  left: var(--sidebar-width-collapsed);
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="slash"] .app-viewport::before,
+  html[data-theme="paperclip"] .app-viewport::before {
+    left: 0;
+  }
+}
+
+.app-viewport > .page-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.page-shell--app {
+  width: 100%;
+  max-width: none;
+  padding-block: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.page-frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-frame-gap, 1.5rem);
+  width: 100%;
+  margin-inline: auto;
+  min-width: 0;
+}
+
+.page-frame--narrow {
+  max-width: var(--page-width-narrow, 48rem);
+}
+
+.page-frame--default {
+  max-width: var(--page-width-default, 72rem);
+}
+
+.page-frame--wide {
+  max-width: var(--page-width-wide, 88rem);
+}
+
+.page-frame--office {
+  max-width: var(--page-width-office, 87.5rem);
+}
+
+.page-frame--fluid {
+  max-width: none;
+}
+
+/* Page header — command variant */
+.page-header--command {
+  padding-bottom: var(--page-frame-gap, 1.25rem);
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid var(--command-grid-line);
+}
+
+.page-header--command .page-header-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent, var(--command-ambient-accent));
+}
+
+.page-header--command .page-header-title {
+  font-family: var(--font-display, var(--font-sans));
+  font-size: clamp(1.625rem, 3.2vw, 2.125rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.page-header--command .page-header-description {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  max-width: 42rem;
+}
+
+.page-header--command::after {
+  content: "";
+  display: block;
+  height: 1px;
+  width: min(8rem, 40%);
+  margin-top: 1rem;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--command-ambient-accent) 85%, transparent),
+    transparent
+  );
+}
+
+/* Stat-led KPI bento */
+.command-stat-bento {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+.command-stat-bento > * {
+  grid-column: span 6;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .command-stat-bento > * {
+    grid-column: span 4;
+  }
+
+  .command-stat-bento > *:nth-child(1) {
+    grid-column: span 6;
+  }
+
+  .command-stat-bento > *:nth-child(2) {
+    grid-column: span 6;
+  }
+}
+
+@media (min-width: 1024px) {
+  .command-stat-bento > * {
+    grid-column: span 3;
+  }
+
+  .command-stat-bento > *:nth-child(1) {
+    grid-column: span 4;
+  }
+
+  .command-stat-bento > *:nth-child(2),
+  .command-stat-bento > *:nth-child(3) {
+    grid-column: span 4;
+  }
+}
+
+.command-stat-bento .kpi-card,
+.command-stat-bento [class*="rounded-[var(--radius-2xl)]"] {
+  background: color-mix(in srgb, var(--card) 92%, var(--background) 8%);
+  border-color: color-mix(in srgb, var(--border) 80%, var(--command-ambient-accent) 20%);
+  box-shadow: var(--shadow-xs);
+}
+
+.command-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid var(--command-grid-line);
+  background: color-mix(in srgb, var(--card) 75%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.app-panel--warn {
+  border-color: color-mix(in srgb, var(--warning) 45%, var(--border)) !important;
+  background: color-mix(in srgb, var(--warning) 10%, var(--card)) !important;
+  color: var(--foreground) !important;
+}
+
+html[data-theme="slash"] .app-panel,
+html[data-theme="paperclip"] .app-panel {
+  border-color: color-mix(in srgb, var(--border) 70%, var(--command-ambient-accent) 30%);
+  box-shadow:
+    var(--shadow-xs),
+    0 0 0 1px color-mix(in srgb, var(--background) 40%, transparent) inset;
+}
+
+html[data-theme="slash"] .app-topbar--scrolled,
+html[data-theme="paperclip"] .app-topbar--scrolled {
+  box-shadow: 0 1px 0 var(--command-grid-line), 0 12px 40px rgb(0 0 0 / 0.22);
+}
+
+/* Office surfaces */
+.office-page .office-header {
+  padding-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  border-bottom: 1px solid var(--command-grid-line);
+}
+
+.office-page-home .office-hero-strip {
+  gap: clamp(0.65rem, 2vw, 0.85rem);
+}
+
+.office-inbox-page .office-inbox-filters,
+.office-trabajo-page .office-trabajo-tabs {
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid var(--command-grid-line);
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 0.35rem;
+}
+
+/* War Room */
+.war-room-page {
+  width: 100%;
+  max-width: var(--page-width-wide, 88rem);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-frame-gap, 1.5rem);
+  min-width: 0;
+}
+
+.war-room-page .war-room-toolbar {
+  margin-bottom: 0;
+  border-color: var(--command-grid-line);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.settings-page--frame {
+  max-width: var(--page-width-narrow, 48rem);
+}

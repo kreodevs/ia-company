@@ -1,10 +1,12 @@
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import { OrganigramMap } from "../components/office/OrganigramMap";
 
 export const OfficeOrganigramPage: React.FC = () => (
-  <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+  <PageFrame width="office">
     <PageHeader
+      variant="command"
       eyebrow={
         <Breadcrumbs
           items={[
@@ -17,5 +19,5 @@ export const OfficeOrganigramPage: React.FC = () => (
       subtitle="Jerarquía de departamentos, responsables y acceso a salas (Fase E)."
     />
     <OrganigramMap />
-  </div>
+  </PageFrame>
 );

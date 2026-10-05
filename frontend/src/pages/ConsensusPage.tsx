@@ -6,6 +6,7 @@ import { api, type PipelineIdea, type TenantConsensus, type TenantProduct } from
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -134,8 +135,9 @@ export default function ConsensusPage() {
   if (loading) return <PageLoading message={t("consensus.loading")} />;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -149,7 +151,7 @@ export default function ConsensusPage() {
       />
 
       {/* KPI hero */}
-      <section className="hero-strip">
+      <section className="hero-strip command-stat-bento">
         <KpiCard
           label={t("consensus.kpis.phase")}
           value={
@@ -360,6 +362,6 @@ export default function ConsensusPage() {
           </Panel>
         </aside>
       </div>
-    </div>
+    </PageFrame>
   );
 }

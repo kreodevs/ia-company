@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Building2, ChevronDown, Package, Settings } from "lucide-react";
 import MarkdownDoc from "../components/MarkdownDoc";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 import { defaultHelpSlug, getHelpArticle, getHelpArticles, resolveHelpSlugRedirect } from "../content/help";
@@ -203,8 +204,9 @@ export default function HelpPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <PageFrame width="wide">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -347,6 +349,6 @@ export default function HelpPage() {
           </div>
         </Panel>
       </div>
-    </div>
+    </PageFrame>
   );
 }

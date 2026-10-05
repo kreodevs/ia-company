@@ -1,10 +1,12 @@
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import { Dashboard } from "../components/office/Dashboard";
 
 export const OfficeDashboardPage: React.FC = () => (
-  <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+  <PageFrame width="office">
     <PageHeader
+      variant="command"
       eyebrow={
         <Breadcrumbs
           items={[
@@ -17,5 +19,5 @@ export const OfficeDashboardPage: React.FC = () => (
       subtitle="Métricas de gestión, salud departamental y actividad reciente (Fase H)."
     />
     <Dashboard />
-  </div>
+  </PageFrame>
 );

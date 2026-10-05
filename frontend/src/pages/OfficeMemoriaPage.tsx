@@ -11,6 +11,7 @@ import {
 import { translateApiError } from "../lib/translate-error";
 import { toast } from "../components/molecules/Sonner";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -232,8 +233,9 @@ export default function OfficeMemoriaPage() {
   };
 
   return (
-    <div className="office-memoria-page mx-auto max-w-6xl space-y-6">
+    <PageFrame width="office" className="office-memoria-page office-page">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -311,6 +313,6 @@ export default function OfficeMemoriaPage() {
           </Link>
         </Panel>
       ) : null}
-    </div>
+    </PageFrame>
   );
 }

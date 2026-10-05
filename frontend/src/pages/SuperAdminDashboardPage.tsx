@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { api, type AdminDashboard } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import StatCard from "../components/ui/StatCard";
 import Panel from "../components/ui/Panel";
@@ -118,8 +119,9 @@ export default function SuperAdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <PageFrame width="wide" className="gap-8">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs items={[{ label: t("nav.admin") }]} />
         }
@@ -395,6 +397,6 @@ export default function SuperAdminDashboardPage() {
         </div>
         )}
       </Panel>
-    </div>
+    </PageFrame>
   );
 }

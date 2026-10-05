@@ -6,6 +6,7 @@ import { api, type OfficeProcedureGroup, type OfficeProcedureSummary, type Workf
 import WorkflowTemplateCard from "../components/WorkflowTemplateCard";
 import WorkflowAiStudioModal from "../components/workflows/WorkflowAiStudioModal";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import EmptyState from "../components/ui/EmptyState";
@@ -133,8 +134,9 @@ export default function ProceduresSettingsPage() {
   if (loading) return <PageLoading message={t("office.procedures.loading")} />;
 
   return (
-    <div className="space-y-6">
+    <PageFrame width="default">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -281,6 +283,6 @@ export default function ProceduresSettingsPage() {
           ) : null}
         </div>
       )}
-    </div>
+    </PageFrame>
   );
 }

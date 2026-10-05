@@ -17,6 +17,7 @@ import OfficeScopeBar from "../components/office/OfficeScopeBar";
 import { DEPARTMENT_SCOPE_GENERAL } from "../components/office/DepartmentRoomView";
 import { NotificationPermissionPrompt } from "../components/office/NotificationBell";
 import PageLoading from "../components/ui/PageLoading";
+import PageFrame from "../components/ui/PageFrame";
 
 export default function OfficePage() {
   const { t } = useTranslation();
@@ -147,7 +148,7 @@ export default function OfficePage() {
   const chatKey = chatSeed ?? revisionContext.parentRunId ?? "default";
 
   return (
-    <div className="office-page office-page-home">
+    <PageFrame width="office" className="office-page office-page-home">
       <header className="office-header">
         <div>
           <p className="office-eyebrow">{t("office.eyebrow")}</p>
@@ -373,6 +374,6 @@ export default function OfficePage() {
         }
         onExecuted={() => void refresh()}
       />
-    </div>
+    </PageFrame>
   );
 }

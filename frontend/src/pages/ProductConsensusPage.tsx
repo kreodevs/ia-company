@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ProductConsensus, type ProductConsensusRevision, type ProductLastRunTrace, type TenantProduct } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -577,9 +578,9 @@ export default function ProductConsensusPage({
     </>
   );
 
-  return (
-    <div className={officeMode ? "space-y-6" : "mx-auto max-w-6xl space-y-6"}>
-      {pageBody}
-    </div>
-  );
+  if (officeMode) {
+    return <div className="space-y-6">{pageBody}</div>;
+  }
+
+  return <PageFrame width="office">{pageBody}</PageFrame>;
 }

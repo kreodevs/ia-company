@@ -5,6 +5,7 @@ import { Check, ChevronRight, GitBranch, History, Sparkles, X } from "lucide-rea
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -96,8 +97,9 @@ export default function DecisionsPage() {
   if (loading) return <PageLoading message={t("decisions.loading")} />;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -110,7 +112,7 @@ export default function DecisionsPage() {
         subtitle={t("decisions.subtitle")}
       />
 
-      <section className="hero-strip">
+      <section className="hero-strip command-stat-bento">
         <KpiCard
           label={t("decisions.kpis.pending")}
           value={pending.length}
@@ -322,6 +324,6 @@ export default function DecisionsPage() {
           </ol>
         </Panel>
       )}
-    </div>
+    </PageFrame>
   );
 }

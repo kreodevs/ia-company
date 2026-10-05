@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getObjectiveDetail, type CompanyGoalDetail } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
@@ -95,17 +96,18 @@ export default function OfficeObjectiveDetailPage() {
   if (loading) return <PageLoading message="Cargando objetivo…" />;
   if (error || !detail) {
     return (
-      <div className="mx-auto max-w-6xl p-4">
+      <PageFrame width="office">
         <EmptyState title="Objetivo no encontrado" description={error ?? undefined} />
-      </div>
+      </PageFrame>
     );
   }
 
   const { goal, stats } = detail;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-0">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -149,6 +151,6 @@ export default function OfficeObjectiveDetailPage() {
           rows={10}
         />
       </Panel>
-    </div>
+    </PageFrame>
   );
 }

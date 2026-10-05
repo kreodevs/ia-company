@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun, type Workflow } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Panel from "../components/ui/Panel";
 import EmptyState from "../components/ui/EmptyState";
@@ -119,8 +120,9 @@ export default function RunsPage() {
   }
 
   return (
-    <div>
+    <PageFrame width="wide">
       <PageHeader
+        variant="command"
         title={t("runs.list.title")}
         actions={
           <Button variant="secondary" onClick={() => void load()}>
@@ -246,6 +248,6 @@ export default function RunsPage() {
           </div>
         </>
       )}
-    </div>
+    </PageFrame>
   );
 }

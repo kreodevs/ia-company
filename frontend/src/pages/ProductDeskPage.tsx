@@ -15,6 +15,7 @@ import {
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -542,8 +543,9 @@ export default function ProductDeskPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <PageFrame width="office">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -662,6 +664,6 @@ export default function ProductDeskPage() {
       {tab === "playbooks" ? (
         <PlaybooksPanel playbooks={playbooks} onLaunch={handleLaunchPlaybook} busy={busy} />
       ) : null}
-    </div>
+    </PageFrame>
   );
 }

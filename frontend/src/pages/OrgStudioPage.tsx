@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type WorkItemKind } from "../lib/api";
 import type { BusinessTemplateSummary, OrgStudioProposal } from "../lib/org-types";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
@@ -105,8 +106,9 @@ export default function OrgStudioPage() {
   if (loading) return <PageLoading message={t("org.studio.loading")} />;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <PageFrame width="narrow">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -270,6 +272,6 @@ export default function OrgStudioPage() {
           </Button>
         </>
       )}
-    </div>
+    </PageFrame>
   );
 }

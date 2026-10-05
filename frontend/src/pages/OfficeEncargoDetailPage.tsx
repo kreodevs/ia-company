@@ -24,6 +24,7 @@ import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import StatusBadge from "../components/ui/StatusBadge";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -163,8 +164,9 @@ export default function OfficeEncargoDetailPage() {
 
   if (!detail) {
     return (
-      <div className="office-page mx-auto max-w-6xl space-y-6">
+      <PageFrame width="office" className="office-page">
         <PageHeader
+          variant="command"
           eyebrow={
             <Breadcrumbs
               items={[
@@ -184,7 +186,7 @@ export default function OfficeEncargoDetailPage() {
             </Link>
           }
         />
-      </div>
+      </PageFrame>
     );
   }
 
@@ -204,7 +206,7 @@ export default function OfficeEncargoDetailPage() {
   ];
 
   return (
-    <div className="office-page office-encargo-detail">
+    <PageFrame width="office" className="office-page office-encargo-detail">
       <div className="mb-4 space-y-2">
         <StrategicContextBanner
           companyGoalId={detail.companyGoalId}
@@ -215,6 +217,7 @@ export default function OfficeEncargoDetailPage() {
         <EncargoStrategicLinkEditor runId={detail.id} detail={detail} onUpdated={() => void refresh()} />
       </div>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -642,6 +645,6 @@ export default function OfficeEncargoDetailPage() {
           </div>
         </section>
       ) : null}
-    </div>
+    </PageFrame>
   );
 }

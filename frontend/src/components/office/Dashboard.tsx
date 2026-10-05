@@ -112,8 +112,9 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-[var(--foreground-muted)]">Periodo:</span>
+      <div className="command-toolbar">
+        <span className="text-sm font-medium text-[var(--foreground-muted)]">Periodo</span>
+        <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
           size="sm"
@@ -130,9 +131,10 @@ export function Dashboard() {
         >
           Todo
         </Button>
+        </div>
       </div>
 
-      <section className="hero-strip">
+      <section className="hero-strip command-stat-bento" aria-label="Indicadores clave">
         <KpiCard
           label="Coste (periodo)"
           value={formatUsd(management.totalCostUsd)}

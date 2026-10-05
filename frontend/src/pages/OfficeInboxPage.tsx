@@ -6,6 +6,7 @@ import { api, type OfficeInboxItem, type OfficeInboxCategory } from "../lib/api"
 import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Button from "../components/ui/Button";
 import StatusPill from "../components/ui/StatusPill";
 
@@ -110,10 +111,10 @@ export default function OfficeInboxPage() {
 
   if (loading) {
     return (
-      <div className="office-page office-inbox-page">
-        <PageHeader title={t("office.inbox.title")} subtitle={t("office.inbox.subtitle")} />
+      <PageFrame width="office" className="office-page office-inbox-page">
+        <PageHeader variant="command" title={t("office.inbox.title")} subtitle={t("office.inbox.subtitle")} />
         <PageLoading message={t("office.inbox.loading")} />
-      </div>
+      </PageFrame>
     );
   }
 
@@ -122,8 +123,9 @@ export default function OfficeInboxPage() {
   ).length;
 
   return (
-    <div className="office-page office-inbox-page">
+    <PageFrame width="office" className="office-page office-inbox-page">
       <PageHeader
+        variant="command"
         title={t("office.inbox.title")}
         subtitle={t("office.inbox.subtitle")}
         meta={
@@ -221,6 +223,6 @@ export default function OfficeInboxPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageFrame>
   );
 }

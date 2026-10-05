@@ -11,6 +11,7 @@
 @import "./styles/office-encargos.css";
 @import "./styles/war-room.css";
 @import "./styles/kreo-vars.css";
+@import "./styles/command-center.css";
 
 @theme inline {
   --color-vault-ink: var(--color-vault-ink);
@@ -357,6 +358,8 @@ html[data-theme="letter"] .auth-card {
 }
 
 .app-layout-column {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   margin-left: var(--sidebar-width);
   transition: margin-left 200ms ease;

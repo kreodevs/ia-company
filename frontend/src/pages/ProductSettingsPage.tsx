@@ -6,6 +6,7 @@ import { api, type TenantProduct } from "../lib/api";
 import { toast } from "../components/molecules/Sonner";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -198,12 +199,12 @@ export default function ProductSettingsPage() {
   if (loading) return <PageLoading message={t("products.settings.loading")} />;
   if (!productId || !product) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <PageFrame width="narrow" className="gap-4">
         <p className="text-sm text-[var(--color-muted-foreground)]">{t("products.settings.notFound")}</p>
         <Link to="/products?tab=active" className="text-[var(--color-primary)] hover:underline">
           {t("products.title")}
         </Link>
-      </div>
+      </PageFrame>
     );
   }
 
@@ -216,8 +217,9 @@ export default function ProductSettingsPage() {
   ];
 
   return (
-    <div className={`mx-auto space-y-6 ${activeTab === "intake" ? "max-w-6xl" : "max-w-4xl"}`}>
+    <PageFrame width={activeTab === "intake" ? "office" : "narrow"}>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -417,6 +419,6 @@ export default function ProductSettingsPage() {
           <ExternalLink className="h-3 w-3" aria-hidden />
         </Link>
       </p>
-    </div>
+    </PageFrame>
   );
 }

@@ -28,7 +28,7 @@ export default function Panel({
 }: PanelProps) {
   const hasHeader = title !== undefined || subtitle !== undefined || actions !== undefined;
   const padding = bodySize === "flush" ? "none" : bodySize === "sm" ? "sm" : "md";
-  const toneClass = tone === "warn" ? "!bg-amber-50 !border-amber-300 text-amber-900" : "";
+  const toneClass = tone === "warn" ? "app-panel--warn" : "";
 
   return (
     <KreoCard

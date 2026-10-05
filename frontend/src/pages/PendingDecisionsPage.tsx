@@ -5,6 +5,7 @@ import { Check, ChevronRight, GitBranch, X } from "lucide-react";
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
 import { useDecisionActorEmail } from "../hooks/useDecisionActorEmail";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -129,9 +130,13 @@ export default function PendingDecisionsPage({
   if (loading) return <PageLoading message={t("decisions.loading")} />;
 
   return (
-    <div className={`mx-auto max-w-6xl space-y-6 ${embedded ? "office-trabajo-pendientes-embedded" : ""}`}>
+    <PageFrame
+      width="office"
+      className={embedded ? "office-trabajo-pendientes-embedded" : undefined}
+    >
       {!embedded ? (
         <PageHeader
+          variant="command"
           eyebrow={
             <Breadcrumbs
               items={[
@@ -333,6 +338,6 @@ export default function PendingDecisionsPage({
           </ol>
         )}
       </Panel>
-    </div>
+    </PageFrame>
   );
 }

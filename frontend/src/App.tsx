@@ -80,7 +80,7 @@ function AppShell() {
 
   return (
     <AppLayout>
-      <main id="main-content" className="page-shell">
+      <main id="main-content" className="page-shell page-shell--app">
         <Routes>
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />

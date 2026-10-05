@@ -9,6 +9,7 @@ import OpsFlowStepper from "../components/ops/OpsFlowStepper";
 import OpsSchedulesPanel from "../components/ops/OpsSchedulesPanel";
 import OrchestrationPreviewPanel from "../components/ops/OrchestrationPreviewPanel";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Panel from "../components/ui/Panel";
@@ -99,8 +100,9 @@ export default function OpsPage() {
   const pendingOpportunities = portfolio.pipeline.length;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <PageFrame width="default">
       <PageHeader
+        variant="command"
         eyebrow={
           <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.18em] text-[var(--color-muted-foreground)]">
             <Sparkles className="h-3 w-3" aria-hidden /> {t("ops.eyebrow")}
@@ -320,6 +322,6 @@ export default function OpsPage() {
           <li>{t("ops.metaCycle.step3")}</li>
         </ol>
       </Panel>
-    </div>
+    </PageFrame>
   );
 }

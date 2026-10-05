@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api, type Skill } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
@@ -103,9 +104,10 @@ export default function SkillsPage({ embedded = false }: { embedded?: boolean })
   if (loading) return <PageLoading message={t("workflows.skills.loading")} />;
 
   return (
-    <div className="space-y-6">
+    <PageFrame width={embedded ? "fluid" : "wide"}>
       {!embedded && (
         <PageHeader
+          variant="command"
           title={t("nav.skills")}
           actions={
             <Button onClick={openCreate} fullWidthMobile>
@@ -222,6 +224,6 @@ export default function SkillsPage({ embedded = false }: { embedded?: boolean })
           )}
         </section>
       </div>
-    </div>
+    </PageFrame>
   );
 }

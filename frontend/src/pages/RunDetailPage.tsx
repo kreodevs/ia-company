@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type ExecutionRun } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Panel from "../components/ui/Panel";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
@@ -90,8 +91,9 @@ export default function RunDetailPage() {
   const statusLabel = t(`status.${run.status}`, { defaultValue: run.status });
 
   return (
-    <div className="space-y-6">
+    <PageFrame width="wide">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -197,6 +199,6 @@ export default function RunDetailPage() {
           </div>
         </Panel>
       </div>
-    </div>
+    </PageFrame>
   );
 }

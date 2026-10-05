@@ -12,6 +12,7 @@ import {
   type QaCheckResult,
 } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 import Button from "../components/ui/Button";
@@ -139,8 +140,9 @@ export default function SuperAdminQaPage() {
   const manualDone = manualRows.filter((r) => doneIds.has(r.id)).length;
 
   return (
-    <div className="space-y-6">
+    <PageFrame width="wide">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -259,6 +261,6 @@ export default function SuperAdminQaPage() {
       {!report && !loading && !error && (
         <EmptyState title={t("admin.qa.emptyTitle")} description={t("admin.qa.emptyDescription")} />
       )}
-    </div>
+    </PageFrame>
   );
 }

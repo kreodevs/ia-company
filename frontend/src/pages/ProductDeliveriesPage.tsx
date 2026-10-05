@@ -14,6 +14,7 @@ import {
   type ProductDeliveriesOverview,
 } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import PageFrame from "../components/ui/PageFrame";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -93,8 +94,9 @@ export default function ProductDeliveriesPage() {
   const { product, stats, attention, inProgress, delivered, failed } = overview;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <PageFrame width="default">
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -262,6 +264,6 @@ export default function ProductDeliveriesPage() {
           </ul>
         )}
       </Panel>
-    </div>
+    </PageFrame>
   );
 }

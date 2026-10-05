@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type OfficeEncargoDetail } from "../lib/api";
 import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
 import PageLoading from "../components/ui/PageLoading";
+import PageFrame from "../components/ui/PageFrame";
 import OfficeEncargosPage, { type EncargosPageMode } from "./OfficeEncargosPage";
 import PendingDecisionsPage from "./PendingDecisionsPage";
 
@@ -108,7 +109,7 @@ export default function OfficeTrabajoPage() {
   const showLivePanel = tab === "activos" && watchRunId && highlightEncargo;
 
   return (
-    <div className="office-page office-trabajo-page">
+    <PageFrame width="office" className="office-page office-trabajo-page">
       <header className="office-header">
         <div>
           <p className="office-eyebrow">{t("office.trabajo.eyebrow")}</p>
@@ -181,6 +182,6 @@ export default function OfficeTrabajoPage() {
           ) : null}
         </div>
       )}
-    </div>
+    </PageFrame>
   );
 }

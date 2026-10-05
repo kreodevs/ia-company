@@ -3,9 +3,11 @@
 .office-page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  max-width: 1400px;
+  gap: var(--page-frame-gap, 1.5rem);
+  max-width: var(--page-width-office, 87.5rem);
+  width: 100%;
   margin: 0 auto;
+  min-width: 0;
 }
 
 .office-header {
