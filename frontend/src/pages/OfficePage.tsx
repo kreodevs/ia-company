@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { LayoutDashboard } from "lucide-react";
 import { api, type OfficeDashboard, type OfficeServiceTemplate } from "../lib/api";
 import { encargoContextLine } from "../lib/office-encargo-display";
 import CoordinatorChat from "../components/office/CoordinatorChat";
@@ -178,6 +179,28 @@ export default function OfficePage() {
         </div>
       </header>
 
+      <section className="office-command-hero" aria-label={t("office.pulse.title")}>
+        <div className="office-command-hero-glow" aria-hidden />
+        <ul className="office-command-hero-metrics">
+          <li>
+            <span className="office-command-hero-value tabular-nums">{dashboard.stats.activeRuns}</span>
+            <span className="office-command-hero-label">{t("office.homeHero.activeRuns")}</span>
+          </li>
+          <li>
+            <span className="office-command-hero-value tabular-nums">{dashboard.stats.pendingDecisions}</span>
+            <span className="office-command-hero-label">{t("office.homeHero.pendingDecisions")}</span>
+          </li>
+          <li>
+            <span className="office-command-hero-value tabular-nums">{dashboard.departments?.length ?? 0}</span>
+            <span className="office-command-hero-label">{t("office.homeHero.departments")}</span>
+          </li>
+        </ul>
+        <Link to="/office/dashboard" className="office-command-hero-cta interactive">
+          <LayoutDashboard className="h-4 w-4" aria-hidden />
+          {t("office.homeHero.ctaDashboard")}
+        </Link>
+      </section>
+
       <NotificationPermissionPrompt />
 
       {showOnboarding && (
@@ -239,7 +262,10 @@ export default function OfficePage() {
           <div className="office-panel office-lobby-activity">
             <h2 className="office-panel-title">{t("office.activity.title")}</h2>
             {dashboard.activity.length === 0 ? (
-              <p className="office-empty">{t("office.activity.empty")}</p>
+              <div className="office-empty-hero">
+                <p className="office-empty-hero-title">{t("office.homeHero.emptyActivityTitle")}</p>
+                <p className="office-empty-hero-desc">{t("office.homeHero.emptyActivityDescription")}</p>
+              </div>
             ) : (
               <ul className="office-activity-list">
                 {dashboard.activity.slice(0, 6).map((item) => {

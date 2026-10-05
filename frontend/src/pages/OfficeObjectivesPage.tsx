@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Objectives } from "../components/office/Objectives";
 import { ObjectiveForm } from "../components/office/ObjectiveForm";
 import PageHeader from "../components/ui/PageHeader";
@@ -7,6 +8,7 @@ import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
 
 export const OfficeObjectivesPage: React.FC = () => {
+  const { t } = useTranslation();
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSuccess = useCallback(() => {
@@ -20,16 +22,16 @@ export const OfficeObjectivesPage: React.FC = () => {
         eyebrow={
           <Breadcrumbs
             items={[
-              { label: "Oficina", to: "/office" },
-              { label: "Objetivos" },
+              { label: t("office.title"), to: "/office" },
+              { label: t("nav.objectives") },
             ]}
           />
         }
-        title="Objetivos empresariales"
-        subtitle="Resultados que la empresa persigue; vinculan iniciativas y encargos (Fase F)."
+        title={t("office.pages.objectives.title")}
+        subtitle={t("office.pages.objectives.subtitle")}
       />
       <ObjectiveForm onSuccess={handleSuccess} />
-      <Panel title="Objetivos activos" subtitle="Progreso frente a la meta definida">
+      <Panel title={t("office.pages.objectives.panelActive")} subtitle={t("office.pages.objectives.panelActiveSubtitle")}>
         <Objectives key={refreshKey} />
       </Panel>
     </PageFrame>

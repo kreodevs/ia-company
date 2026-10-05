@@ -9,6 +9,7 @@ import {
   resolveWorkflowTaskOverride,
 } from "../lib/workflow-task-override";
 import PageHeader from "../components/ui/PageHeader";
+import WorkspaceShell from "../components/ui/WorkspaceShell";
 import PageLoading from "../components/ui/PageLoading";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -119,8 +120,9 @@ export default function WorkflowEditorPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
+    <WorkspaceShell>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -171,7 +173,7 @@ export default function WorkflowEditorPage() {
         </Button>
       </Panel>
 
-      <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
+      <div className="workspace-canvas min-h-[420px] flex-1 sm:min-h-[520px]">
         <WorkflowFlowEditor
           workflow={workflow}
           agents={agents}
@@ -191,6 +193,6 @@ export default function WorkflowEditorPage() {
           void load();
         }}
       />
-    </div>
+    </WorkspaceShell>
   );
 }

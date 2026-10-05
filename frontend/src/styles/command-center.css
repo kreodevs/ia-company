@@ -271,3 +271,209 @@ html[data-theme="paperclip"] .app-topbar--scrolled {
 .settings-page--frame {
   max-width: var(--page-width-narrow, 48rem);
 }
+
+/* Letter (light) — same structure, softer indigo ambient */
+html[data-theme="letter"] {
+  --command-ambient-accent: var(--stripe-indigo, var(--color-deep-teal));
+  --command-grid-line: color-mix(in srgb, var(--quiet-surface, var(--border)) 70%, transparent);
+}
+
+html[data-theme="letter"] .app-viewport::before {
+  content: "";
+  position: fixed;
+  top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+  right: 0;
+  bottom: 0;
+  left: var(--sidebar-width);
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 65% 40% at 8% -5%,
+      color-mix(in srgb, var(--command-ambient-accent) 12%, transparent),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 45% 30% at 95% 5%,
+      color-mix(in srgb, var(--stripe-orange, #ff7a00) 6%, transparent),
+      transparent 48%
+    ),
+    linear-gradient(180deg, var(--pale-background, var(--background)) 0%, var(--background) 32%);
+  opacity: 1;
+}
+
+html[data-sidebar-collapsed="true"][data-theme="letter"] .app-viewport::before {
+  left: var(--sidebar-width-collapsed);
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="letter"] .app-viewport::before {
+    left: 0;
+  }
+}
+
+html[data-theme="letter"] .app-panel {
+  border-color: color-mix(in srgb, var(--quiet-surface) 80%, var(--command-ambient-accent) 20%);
+  box-shadow: 0 1px 2px rgb(10 37 64 / 0.04);
+}
+
+html[data-theme="letter"] .command-toolbar,
+html[data-theme="letter"] .workspace-canvas {
+  border-color: var(--command-grid-line);
+  background: color-mix(in srgb, var(--surface-white, var(--card)) 88%, var(--pale-background, var(--background)));
+}
+
+/* Workspace (templates + flow editors) */
+.workspace-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-frame-gap, 1.25rem);
+  min-width: 0;
+}
+
+.workspace-shell--fill {
+  min-height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px) - 2.5rem);
+  max-height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px) - 2.5rem);
+  overflow: hidden;
+}
+
+.workspace-shell--fill > .grid,
+.workspace-shell--fill > div[class*="grid"] {
+  min-height: 0;
+}
+
+.workspace-canvas {
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid var(--command-grid-line);
+  background: color-mix(in srgb, var(--card) 82%, var(--background));
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+/* Office home — command hero */
+.office-command-hero {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  padding: clamp(1rem, 2.5vw, 1.35rem) clamp(1.1rem, 3vw, 1.5rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid var(--command-grid-line);
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.office-command-hero-glow {
+  position: absolute;
+  inset: -40% auto auto -20%;
+  width: 55%;
+  height: 140%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    color-mix(in srgb, var(--command-ambient-accent, var(--office-accent, #38bdf8)) 22%, transparent),
+    transparent 65%
+  );
+  pointer-events: none;
+  animation: office-hero-pulse 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .office-command-hero-glow {
+    animation: none;
+  }
+}
+
+@keyframes office-hero-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.office-command-hero-metrics {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.office-command-hero-metrics li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 4.5rem;
+}
+
+.office-command-hero-value {
+  font-family: var(--font-display, var(--font-sans));
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.office-command-hero-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+.office-command-hero-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full, 999px);
+  border: 1px solid color-mix(in srgb, var(--command-ambient-accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--command-ambient-accent) 10%, var(--card));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.office-command-hero-cta:hover {
+  border-color: color-mix(in srgb, var(--command-ambient-accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--command-ambient-accent) 16%, var(--card));
+}
+
+.office-empty-hero {
+  padding: 1.25rem 1rem;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px dashed color-mix(in srgb, var(--command-grid-line) 80%, var(--border));
+  background: color-mix(in srgb, var(--card) 50%, transparent);
+  text-align: center;
+}
+
+.office-empty-hero-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.office-empty-hero-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground-muted);
+}

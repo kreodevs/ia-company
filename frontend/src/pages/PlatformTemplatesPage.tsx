@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api, type Agent, type Skill, type TenantSummary } from "../lib/api";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import WorkspaceShell from "../components/ui/WorkspaceShell";
 import Button from "../components/ui/Button";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import TabsBar from "../components/ui/TabsBar";
@@ -180,8 +181,9 @@ export default function PlatformTemplatesPage() {
   };
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
+    <WorkspaceShell fillViewport>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -375,6 +377,6 @@ export default function PlatformTemplatesPage() {
           )}
         </div>
       )}
-    </div>
+    </WorkspaceShell>
   );
 }

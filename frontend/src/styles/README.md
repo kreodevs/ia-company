@@ -22,4 +22,4 @@ Brief: dark B2B AI operations console — **stat-led** KPIs, grotesk sans (Inter
 - **`.command-stat-bento`** — 12-column KPI bento for dashboards
 - **`.command-toolbar`** — glass filter bars (period, filters)
 
-Use `PageFrame` + `PageHeader variant="command"` on Office and superadmin pages.
+Use `PageFrame` + `PageHeader variant="command"` on Office and superadmin pages. Full-height editors use `WorkspaceShell` + `.workspace-canvas`. Letter theme gets the same ambient/grid tokens as dark command center.

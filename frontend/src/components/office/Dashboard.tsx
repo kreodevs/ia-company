@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Activity, Inbox, Target } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
@@ -36,6 +37,7 @@ function sinceForPeriod(period: PeriodKey): string | undefined {
  * Fase H — dashboard empresarial (Kreo KPI + DataTable + Panel).
  */
 export function Dashboard() {
+  const { t } = useTranslation();
   const [dash, setDash] = useState<OfficeDashboard | null>(null);
   const [objectives, setObjectives] = useState<ObjectiveSummaryRow[]>([]);
   const [period, setPeriod] = useState<PeriodKey>("30d");
@@ -48,14 +50,14 @@ export function Dashboard() {
         setDash(d);
         setObjectives(objs);
       })
-      .catch((e) => setError(e instanceof Error ? e.message : "Error loading dashboard"));
-  }, [period]);
+      .catch((e) => setError(e instanceof Error ? e.message : t("office.companyDashboard.loadError")));
+  }, [period, t]);
 
   const departmentColumns: DataTableColumn[] = useMemo(
     () => [
       {
         field: "departmentName",
-        header: "Departamento",
+        header: t("office.companyDashboard.colDepartment"),
         sortable: true,
         body: (row: DepartmentManagementRow) => (
           <Link className="font-medium text-[var(--primary)] hover:underline" to={row.href}>
@@ -65,7 +67,7 @@ export function Dashboard() {
       },
       {
         field: "activeCount",
-        header: "Activos",
+        header: t("office.companyDashboard.colActive"),
         sortable: true,
         body: (row: DepartmentManagementRow) => (
           <Link className="tabular-nums hover:underline" to={`${row.href}?tab=work`}>
@@ -75,7 +77,7 @@ export function Dashboard() {
       },
       {
         field: "blockedCount",
-        header: "Bloqueados",
+        header: t("office.companyDashboard.colBlocked"),
         sortable: true,
         body: (row: DepartmentManagementRow) =>
           row.blockedCount > 0 ? (
@@ -88,24 +90,24 @@ export function Dashboard() {
       },
       {
         field: "costUsd",
-        header: "Coste",
+        header: t("office.companyDashboard.colCost"),
         sortable: true,
         body: (row: DepartmentManagementRow) => formatUsd(row.costUsd),
       },
       {
         field: "deliveredCount",
-        header: "Entregados",
+        header: t("office.companyDashboard.colDelivered"),
         sortable: true,
         body: (row: DepartmentManagementRow) => <span className="tabular-nums">{row.deliveredCount}</span>,
       },
     ],
-    [],
+    [t],
   );
 
   if (error) {
-    return <EmptyState title="No se pudo cargar el dashboard" description={error} />;
+    return <EmptyState title={t("office.companyDashboard.loadError")} description={error} />;
   }
-  if (!dash) return <PageLoading message="Cargando métricas de empresa…" />;
+  if (!dash) return <PageLoading message={t("office.companyDashboard.loading")} />;
 
   const { stats, usage, activity, management, departmentMetrics } = dash;
   const costLimit = usage.limits.maxCostUsdPerMonth;
@@ -113,7 +115,7 @@ export function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="command-toolbar">
-        <span className="text-sm font-medium text-[var(--foreground-muted)]">Periodo</span>
+        <span className="text-sm font-medium text-[var(--foreground-muted)]">{t("office.companyDashboard.period")}</span>
         <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
@@ -121,7 +123,7 @@ export function Dashboard() {
           variant={period === "30d" ? "default" : "outline"}
           onClick={() => setPeriod("30d")}
         >
-          30 días
+          {t("office.companyDashboard.period30d")}
         </Button>
         <Button
           type="button"
@@ -129,74 +131,77 @@ export function Dashboard() {
           variant={period === "all" ? "default" : "outline"}
           onClick={() => setPeriod("all")}
         >
-          Todo
+          {t("office.companyDashboard.periodAll")}
         </Button>
         </div>
       </div>
 
-      <section className="hero-strip command-stat-bento" aria-label="Indicadores clave">
+      <section className="hero-strip command-stat-bento" aria-label={t("office.companyDashboard.kpiAria")}>
         <KpiCard
-          label="Coste (periodo)"
+          label={t("office.companyDashboard.costPeriod")}
           value={formatUsd(management.totalCostUsd)}
-          delta={`Mes en curso: ${formatUsd(usage.totalCostUsd)}${costLimit ? ` / ${formatUsd(costLimit)}` : ""}`}
+          delta={t("office.companyDashboard.costMonthDelta", {
+            amount: formatUsd(usage.totalCostUsd),
+            limit: costLimit ? t("office.companyDashboard.costMonthLimit", { limit: formatUsd(costLimit) }) : "",
+          })}
         />
         <KpiCard
-          label="Encargos activos"
+          label={t("office.companyDashboard.activeJobs")}
           value={stats.activeRuns}
-          delta={`${management.activeRuns} runs en ejecución técnica`}
+          delta={t("office.companyDashboard.activeJobsDelta", { count: management.activeRuns })}
           trend={stats.activeRuns > 0 ? "up" : "flat"}
         />
         <KpiCard
-          label="Trabajos bloqueados"
+          label={t("office.companyDashboard.blockedWork")}
           value={management.blockedWorkItems}
-          delta="Requieren desbloqueo"
+          delta={t("office.companyDashboard.blockedWorkDelta")}
           trend={management.blockedWorkItems > 0 ? "down" : "up"}
         />
         <KpiCard
-          label="Decisiones pendientes"
+          label={t("office.companyDashboard.pendingDecisions")}
           value={management.pendingDecisions}
-          delta="Bandeja de decisiones"
+          delta={t("office.companyDashboard.pendingDecisionsDelta")}
           trend={management.pendingDecisions > 0 ? "down" : "up"}
         />
         <KpiCard
-          label="Handoffs pendientes"
+          label={t("office.companyDashboard.pendingHandoffs")}
           value={management.pendingHandoffs}
-          delta="Entre departamentos"
+          delta={t("office.companyDashboard.pendingHandoffsDelta")}
         />
         <KpiCard
-          label="Objetivos / iniciativas"
+          label={t("office.companyDashboard.goalsInitiatives")}
           value={management.activeGoals}
-          delta={`${management.activeInitiatives} iniciativas activas`}
+          delta={t("office.companyDashboard.goalsInitiativesDelta", { count: management.activeInitiatives })}
         />
         <KpiCard
-          label="Entregas (periodo)"
+          label={t("office.companyDashboard.deliveriesPeriod")}
           value={management.recentDeliveries}
-          delta="Encargos completados"
+          delta={t("office.companyDashboard.deliveriesDelta")}
           trend={management.recentDeliveries > 0 ? "up" : "flat"}
         />
         <KpiCard
-          label="Bloqueo (media h)"
+          label={t("office.companyDashboard.avgBlockedHours")}
           value={management.avgBlockedWorkItemHours ?? "—"}
-          delta="Tiempo en estado bloqueado"
+          delta={t("office.companyDashboard.avgBlockedHoursDelta")}
         />
         <KpiCard
-          label="Handoff (media h)"
+          label={t("office.companyDashboard.avgHandoffHours")}
           value={management.avgHandoffAcceptHours ?? "—"}
-          delta="Aceptación entre deptos."
+          delta={t("office.companyDashboard.avgHandoffHoursDelta")}
         />
         <KpiCard
-          label="Docs 1ª pasada"
+          label={t("office.companyDashboard.docFirstPass")}
           value={
             management.documentFirstPassApprovalRate != null
               ? `${management.documentFirstPassApprovalRate}%`
               : "—"
           }
-          delta="Aprobación sin revisión"
+          delta={t("office.companyDashboard.docFirstPassDelta")}
         />
         <KpiCard
-          label="Inversión / ingresos"
+          label={t("office.companyDashboard.investmentRevenue")}
           value={formatUsd(stats.totalInvestedUsd)}
-          delta={`Ingresos: ${formatUsd(stats.totalRevenueUsd)}`}
+          delta={t("office.companyDashboard.investmentRevenueDelta", { amount: formatUsd(stats.totalRevenueUsd) })}
         />
       </section>
 
@@ -204,27 +209,27 @@ export function Dashboard() {
         <Button variant="default" size="sm" asChild>
           <Link to="/office/inbox">
             <Inbox className="mr-1.5 h-4 w-4" aria-hidden />
-            Bandeja empresarial
+            {t("office.companyDashboard.ctaInbox")}
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link to="/office/trabajo">Ver encargos</Link>
+          <Link to="/office/trabajo">{t("office.companyDashboard.ctaJobs")}</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link to="/office/objectives">
+          <Link to="/office/objetivos">
             <Target className="mr-1.5 h-4 w-4" aria-hidden />
-            Objetivos
+            {t("office.companyDashboard.ctaObjectives")}
           </Link>
         </Button>
       </div>
 
       {objectives.length > 0 && (
-        <Panel title="Objetivos estratégicos" subtitle="Encargos y coste por objetivo (Fase F)">
+        <Panel title={t("office.companyDashboard.objectivesPanelTitle")} subtitle={t("office.companyDashboard.objectivesPanelSubtitle")}>
           <DataTable
             columns={[
               {
                 field: "name",
-                header: "Objetivo",
+                header: t("office.companyDashboard.colObjective"),
                 body: (row: ObjectiveSummaryRow) => (
                   <Link className="font-medium text-[var(--primary)] hover:underline" to={`/office/objetivos/${row.id}`}>
                     {row.name}
@@ -233,7 +238,7 @@ export function Dashboard() {
               },
               {
                 field: "encargoCount",
-                header: "Encargos",
+                header: t("office.companyDashboard.colJobs"),
                 body: (row: ObjectiveSummaryRow) => (
                   <Link className="tabular-nums hover:underline" to={`/office/trabajo?tab=todos&companyGoalId=${row.id}`}>
                     {row.encargoCount}
@@ -242,18 +247,18 @@ export function Dashboard() {
               },
               {
                 field: "totalCostUsd",
-                header: "Coste",
+                header: t("office.companyDashboard.colCost"),
                 body: (row: ObjectiveSummaryRow) => formatUsd(row.totalCostUsd),
               },
               {
                 field: "currentValue",
-                header: "Progreso",
+                header: t("office.companyDashboard.colProgress"),
                 body: (row: ObjectiveSummaryRow) =>
                   row.targetValue != null ? `${row.currentValue ?? 0} / ${row.targetValue}` : "—",
               },
             ]}
             data={objectives}
-            emptyMessage="Sin objetivos."
+            emptyMessage={t("office.companyDashboard.noObjectives")}
             paginator={objectives.length > 6}
             rows={6}
           />
@@ -261,15 +266,15 @@ export function Dashboard() {
       )}
 
       <Panel
-        title="Salud por departamento"
-        subtitle="Activos, bloqueados, coste y entregas por unidad (Fase H)"
+        title={t("office.companyDashboard.deptHealthTitle")}
+        subtitle={t("office.companyDashboard.deptHealthSubtitle")}
       >
         <DataTable
           columns={departmentColumns}
           data={departmentMetrics}
           globalFilterEnabled
-          globalFilterPlaceholder="Filtrar departamento…"
-          emptyMessage="Sin actividad departamental en este periodo."
+          globalFilterPlaceholder={t("office.companyDashboard.filterDept")}
+          emptyMessage={t("office.companyDashboard.noDeptActivity")}
           paginator={departmentMetrics.length > 8}
           rows={8}
         />
@@ -277,9 +282,9 @@ export function Dashboard() {
 
       <OfficeCostsPanel />
 
-      <Panel title="Actividad reciente" subtitle="Pulso operativo de la oficina" bodySize="sm">
+      <Panel title={t("office.companyDashboard.activityTitle")} subtitle={t("office.companyDashboard.activitySubtitle")} bodySize="sm">
         {activity.length === 0 ? (
-          <p className="text-sm text-[var(--foreground-muted)]">Sin actividad reciente.</p>
+          <p className="text-sm text-[var(--foreground-muted)]">{t("office.companyDashboard.noActivity")}</p>
         ) : (
           <ul className="divide-y divide-[var(--border)]">
             {activity.slice(0, 12).map((item) => (

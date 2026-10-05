@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import WorkflowFlowEditor from "../components/workflows/WorkflowFlowEditor";
 import { api, type Agent, type Workflow } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
+import WorkspaceShell from "../components/ui/WorkspaceShell";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -79,8 +80,9 @@ export default function PlatformWorkflowEditorPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 sm:gap-6">
+    <WorkspaceShell>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -135,9 +137,9 @@ export default function PlatformWorkflowEditorPage() {
         </div>
       </Panel>
 
-      <div className="min-h-[420px] flex-1 sm:min-h-[520px]">
+      <div className="workspace-canvas min-h-[420px] flex-1 sm:min-h-[520px]">
         <WorkflowFlowEditor workflow={workflow} agents={agents} onSave={handleSave} saving={saving} />
       </div>
-    </div>
+    </WorkspaceShell>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { getObjectiveDetail, type CompanyGoalDetail } from "../lib/api";
 import PageHeader from "../components/ui/PageHeader";
@@ -17,6 +18,7 @@ function formatUsd(value: number): string {
 }
 
 export default function OfficeObjectiveDetailPage() {
+  const { t } = useTranslation();
   const { goalId } = useParams<{ goalId: string }>();
   const [detail, setDetail] = useState<CompanyGoalDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export default function OfficeObjectiveDetailPage() {
     () => [
       {
         field: "title",
-        header: "Encargo",
+        header: t("office.pages.objectiveDetail.colJob"),
         body: (row: CompanyGoalDetail["recentEncargos"][number]) => (
           <Link className="font-medium text-[var(--primary)] hover:underline" to={`/office/encargos/${row.id}`}>
             {row.title}
@@ -44,7 +46,7 @@ export default function OfficeObjectiveDetailPage() {
       },
       {
         field: "phase",
-        header: "Fase",
+        header: t("office.pages.objectiveDetail.colPhase"),
         body: (row: CompanyGoalDetail["recentEncargos"][number]) => (
           <StatusPill status={row.phase === "delivered" ? "completed" : row.phase === "in_progress" ? "running" : "pending"}>
             {row.phase}
@@ -53,24 +55,24 @@ export default function OfficeObjectiveDetailPage() {
       },
       {
         field: "initiativeName",
-        header: "Iniciativa",
+        header: t("office.pages.objectiveDetail.colInitiative"),
         body: (row: CompanyGoalDetail["recentEncargos"][number]) => row.initiativeName ?? "—",
       },
       {
         field: "totalCostUsd",
-        header: "Coste",
+        header: t("office.companyDashboard.colCost"),
         body: (row: CompanyGoalDetail["recentEncargos"][number]) => formatUsd(row.totalCostUsd),
       },
     ],
-    [],
+    [t],
   );
 
   const initiativeColumns: DataTableColumn[] = useMemo(
     () => [
-      { field: "name", header: "Iniciativa", sortable: true },
+      { field: "name", header: t("office.pages.objectiveDetail.colInitiative"), sortable: true },
       {
         field: "encargoCount",
-        header: "Encargos",
+        header: t("office.pages.objectiveDetail.encargos"),
         body: (row: CompanyGoalDetail["initiativeRollups"][number]) =>
           row.id === "__unlinked__" ? (
             <span>{row.encargoCount}</span>
@@ -83,21 +85,21 @@ export default function OfficeObjectiveDetailPage() {
             </Link>
           ),
       },
-      { field: "deliveredCount", header: "Entregados", sortable: true },
+      { field: "deliveredCount", header: t("office.pages.objectiveDetail.delivered"), sortable: true },
       {
         field: "totalCostUsd",
-        header: "Coste",
+        header: t("office.companyDashboard.colCost"),
         body: (row: CompanyGoalDetail["initiativeRollups"][number]) => formatUsd(row.totalCostUsd),
       },
     ],
-    [goalId],
+    [goalId, t],
   );
 
-  if (loading) return <PageLoading message="Cargando objetivo…" />;
+  if (loading) return <PageLoading message={t("office.pages.objectiveDetail.loading")} />;
   if (error || !detail) {
     return (
       <PageFrame width="office">
-        <EmptyState title="Objetivo no encontrado" description={error ?? undefined} />
+        <EmptyState title={t("office.pages.objectiveDetail.notFound")} description={error ?? undefined} />
       </PageFrame>
     );
   }
@@ -111,8 +113,8 @@ export default function OfficeObjectiveDetailPage() {
         eyebrow={
           <Breadcrumbs
             items={[
-              { label: "Oficina", to: "/office" },
-              { label: "Objetivos", to: "/office/objetivos" },
+              { label: t("office.title"), to: "/office" },
+              { label: t("nav.objectives"), to: "/office/objetivos" },
               { label: goal.name },
             ]}
           />
@@ -121,32 +123,40 @@ export default function OfficeObjectiveDetailPage() {
         subtitle={goal.description ?? undefined}
         actions={
           <Button variant="outline" size="sm" asChild>
-            <Link to={`/office/trabajo?tab=todos&companyGoalId=${goal.id}`}>Ver todos los encargos</Link>
+            <Link to={`/office/trabajo?tab=todos&companyGoalId=${goal.id}`}>{t("office.pages.objectiveDetail.viewAllEncargos")}</Link>
           </Button>
         }
       />
 
       <section className="hero-strip">
-        <KpiCard label="Progreso" value={`${stats.progressPercent}%`} delta={`Meta: ${goal.targetValue ?? "—"}%`} />
-        <KpiCard label="Encargos" value={stats.encargoCount} delta={`${stats.activeEncargos} activos`} />
-        <KpiCard label="Entregados" value={stats.deliveredEncargos} trend={stats.deliveredEncargos > 0 ? "up" : "flat"} />
-        <KpiCard label="Coste total" value={formatUsd(stats.totalCostUsd)} />
-        <KpiCard label="Iniciativas" value={detail.initiatives.length} />
+        <KpiCard
+          label={t("office.pages.objectiveDetail.progress")}
+          value={`${stats.progressPercent}%`}
+          delta={t("office.pages.objectiveDetail.target", { value: goal.targetValue ?? "—" })}
+        />
+        <KpiCard label={t("office.pages.objectiveDetail.encargos")} value={stats.encargoCount} delta={`${stats.activeEncargos}`} />
+        <KpiCard
+          label={t("office.pages.objectiveDetail.delivered")}
+          value={stats.deliveredEncargos}
+          trend={stats.deliveredEncargos > 0 ? "up" : "flat"}
+        />
+        <KpiCard label={t("office.companyDashboard.colCost")} value={formatUsd(stats.totalCostUsd)} />
+        <KpiCard label={t("office.pages.objectiveDetail.colInitiative")} value={detail.initiatives.length} />
       </section>
 
-      <Panel title="Iniciativas" subtitle="Encargos y coste por iniciativa">
+      <Panel title={t("office.pages.objectiveDetail.panelInitiatives")} subtitle={t("office.pages.objectiveDetail.panelInitiativesSubtitle")}>
         <DataTable
           columns={initiativeColumns}
           data={detail.initiativeRollups}
-          emptyMessage="Aún no hay encargos vinculados a iniciativas."
+          emptyMessage={t("office.companyDashboard.noObjectives")}
         />
       </Panel>
 
-      <Panel title="Encargos recientes" subtitle="Vinculados a este objetivo">
+      <Panel title={t("office.pages.objectiveDetail.panelEncargos")} subtitle={t("office.pages.objectiveDetail.panelEncargosSubtitle")}>
         <DataTable
           columns={encargoColumns}
           data={detail.recentEncargos}
-          emptyMessage="Crea un encargo desde la recepción y asígnalo a este objetivo."
+          emptyMessage={t("office.recentArchive.empty")}
           paginator={detail.recentEncargos.length > 10}
           rows={10}
         />

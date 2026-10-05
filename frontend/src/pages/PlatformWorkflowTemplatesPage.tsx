@@ -6,6 +6,7 @@ import { api, type Workflow } from "../lib/api";
 import { formatWorkflowTitle } from "../lib/workflow-display";
 import { translateApiError } from "../lib/translate-error";
 import PageHeader from "../components/ui/PageHeader";
+import WorkspaceShell from "../components/ui/WorkspaceShell";
 import PageLoading from "../components/ui/PageLoading";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import Panel from "../components/ui/Panel";
@@ -85,8 +86,9 @@ export default function PlatformWorkflowTemplatesPage() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-4 overflow-hidden sm:h-[calc(100dvh-8rem)] sm:gap-6">
+    <WorkspaceShell fillViewport>
       <PageHeader
+        variant="command"
         eyebrow={
           <Breadcrumbs
             items={[
@@ -170,6 +172,6 @@ export default function PlatformWorkflowTemplatesPage() {
           ))}
         </ul>
       )}
-    </div>
+    </WorkspaceShell>
   );
 }

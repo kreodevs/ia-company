@@ -14,6 +14,7 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 | `Panel` | `molecules/Card` | Keeps `app-panel-*` layout classes |
 | `PageHeader` | `molecules/PageHeader` | `variant="command"` for Office/admin chrome |
 | `PageFrame` | — | Width tokens (`office`, `wide`, `default`, `narrow`, `fluid`) inside `page-shell` |
+| `WorkspaceShell` | `PageFrame` wide | Full-height admin templates / workflow editors (`fillViewport`, `.workspace-canvas`) |
 | `AuthPageShell` | — | Centered auth layout (login, setup, password recovery) |
 | `PageLoading` | `atoms/Skeleton` | |
 | `EmptyState` | `molecules/EmptyState` | |
