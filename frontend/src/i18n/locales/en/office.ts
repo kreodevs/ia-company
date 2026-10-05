@@ -896,6 +896,7 @@ export const office = {
     aria: "Today at the office",
     title: "Today",
     subtitle: "Start with what needs your attention.",
+    metricsAria: "Office at a glance",
     inboxTitle: "Inbox",
     inboxDesc: "{{count}} waiting",
     inboxDescEmpty: "All clear",

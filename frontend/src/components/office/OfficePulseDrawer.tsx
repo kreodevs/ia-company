@@ -11,6 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { OfficeDashboard } from "../../lib/api";
+import { officeActivosHref } from "../../lib/office-trabajo-links";
 import { DashboardKPI } from "../organisms/DashboardKPI";
 
 interface OfficePulseDrawerProps {
@@ -78,7 +79,7 @@ export default function OfficePulseDrawer({
               variant={spendPct > 80 ? "warning" : "default"}
             />
           </Link>
-          <Link to="/office/encargos" className="office-pulse-kpi-link">
+          <Link to={officeActivosHref(dashboard)} className="office-pulse-kpi-link">
             <DashboardKPI
               title={t("office.kpis.activeRuns")}
               value={String(dashboard.stats.activeRuns)}
@@ -86,7 +87,7 @@ export default function OfficePulseDrawer({
               variant={dashboard.stats.activeRuns > 0 ? "primary" : "default"}
             />
           </Link>
-          <Link to="/office/pendientes" className="office-pulse-kpi-link">
+          <Link to="/office/inbox" className="office-pulse-kpi-link">
             <DashboardKPI
               title={t("office.kpis.pendingDecisions")}
               value={String(dashboard.stats.pendingDecisions)}

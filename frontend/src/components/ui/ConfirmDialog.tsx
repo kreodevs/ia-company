@@ -36,6 +36,7 @@ export default function ConfirmDialog({
       variant={destructive ? "destructive" : "default"}
       onConfirm={busy ? undefined : onConfirm}
       onCancel={onCancel}
+      onHide={busy ? undefined : onCancel}
     />
   );
 }

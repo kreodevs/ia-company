@@ -3,6 +3,7 @@
 | Module | Role |
 |--------|------|
 | `sidebar.ts` | Nav sections/items, collapse + group open persistence, `NavSection.variant` (`operate` = day-to-day block in sidebar) |
+| `office-trabajo-links.ts` | Deep links from dashboard activity → `/office/trabajo?tab=activos&run=` |
 | `office-chat-config.ts` | Coordinator chat mode (`stream` \| `legacy`), endpoint path, localStorage override — **no `.env`** |
 | `coordinator-chat-stream.ts` | Parse TanStack AI message parts (plan, clarifications, approval) |
 | `workflow-task-override.ts` | Initial run task for workflow editor — AI Studio brief, skip STUCK consensus |

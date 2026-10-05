@@ -5,7 +5,7 @@ Unified shell for product, company-wide, and department tactical views.
 | File | Role |
 |------|------|
 | `hooks/useWarRoomTeam.ts` | **Shared live data** — fetch, SSE, debounced refresh, poll fallback, handoff, optional live notes |
-| `WarRoomTable.tsx` | **Tactical ring** — core, handoff overlay, seats, optional toolbar + fullscreen |
+| `WarRoomTable.tsx` | **Tactical ring** — core, handoff overlay, seats, optional toolbar + fullscreen (portaled to `document.body`) |
 | `WarRoomBriefingBar.tsx` | Briefing + thinking agent + legend (product war room) |
 | `WarRoomCoordinatorAside.tsx` | Collapsible coordinator aside + `WarRoomMainShell` (product + general war rooms) |
 | `WarRoomIdleSeats.tsx` | Idle department seats ring (shared with `DepartmentRoomView`) |

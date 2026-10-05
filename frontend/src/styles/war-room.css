@@ -1434,24 +1434,41 @@ html[data-theme="letter"] .war-room {
   border-color: var(--war-room-accent);
 }
 
-.war-room-table-shell.is-fullscreen {
+/* Fullscreen uses a body portal (.war-room-fullscreen-portal) — avoid fixed inside blurred .office-panel */
+.war-room-fullscreen-portal {
   position: fixed;
   inset: 0;
-  z-index: 120;
-  padding: 1rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
   background: var(--war-room-bg);
+  overflow: hidden;
+}
+
+.war-room-fullscreen-portal .war-room-table-shell.is-fullscreen {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
   border: none;
   border-radius: 0;
 }
 
-.war-room-table-shell.is-fullscreen .war-room-table {
+.war-room-fullscreen-portal .war-room-table-shell.is-fullscreen .war-room-table {
   flex: 1;
   min-height: 0;
+  width: 100%;
   aspect-ratio: unset;
   height: auto;
+  max-height: none;
 }
 
-.war-room-table-shell.is-fullscreen .war-room-table-toolbar {
+.war-room-fullscreen-portal .war-room-table-shell.is-fullscreen .war-room-table-toolbar {
   flex-shrink: 0;
 }
 

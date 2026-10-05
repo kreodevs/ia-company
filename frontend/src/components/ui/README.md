@@ -22,7 +22,7 @@ Thin **compatibility adapters** over Kreo UI (`atoms/`, `molecules/`, `organisms
 | `KpiCard` | `organisms/DashboardKPI` | Sparkline + trend |
 | `StatusPill` | `atoms/StatusPill` | Domain status → Kreo semantic via `kreo-status-map.ts` |
 | `StatusBadge` | `atoms/StatusPill` | Run status mapping |
-| `ConfirmDialog` | `molecules/Dialog` (`AlertDialog`) | |
+| `ConfirmDialog` | `molecules/Dialog` (`AlertDialog`) | Modal content is `fixed` + centered above `--z-modal-backdrop` |
 | `Breadcrumbs` | `atoms/Breadcrumb` | React Router `to` links |
 | `TabsBar` | Radix tabs + Kreo underline tokens | Header-only tabs; optional `sticky` for long settings pages |
 | `MermaidDiagram` | `molecules/MermaidDiagram` | Prop `chart` → `code` |

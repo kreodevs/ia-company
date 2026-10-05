@@ -1,5 +1,6 @@
 .office-page,
-.office-archive-page {
+.office-archive-page,
+.office-inbox-page {
   --office-accent: #38bdf8;
   --office-accent-hover: #7dd3fc;
   --office-accent-bg: rgba(56, 189, 248, 0.08);
@@ -30,7 +31,8 @@
 }
 
 html[data-theme="paperclip"] .office-page,
-html[data-theme="paperclip"] .office-archive-page {
+html[data-theme="paperclip"] .office-archive-page,
+html[data-theme="paperclip"] .office-inbox-page {
   --office-accent: var(--manila);
   --office-accent-hover: #e8d4a8;
   --office-accent-bg: rgba(243, 230, 196, 0.08);
@@ -65,7 +67,8 @@ html[data-theme="paperclip"] .office-encargo-card {
 }
 
 html[data-theme="letter"] .office-page,
-html[data-theme="letter"] .office-archive-page {
+html[data-theme="letter"] .office-archive-page,
+html[data-theme="letter"] .office-inbox-page {
   --office-accent: #533afd;
   --office-accent-hover: #4228e0;
   --office-accent-bg: rgba(83, 58, 253, 0.08);
@@ -96,7 +99,8 @@ html[data-theme="letter"] .office-archive-page {
 }
 
 html[data-theme="slash"] .office-page,
-html[data-theme="slash"] .office-archive-page {
+html[data-theme="slash"] .office-archive-page,
+html[data-theme="slash"] .office-inbox-page {
   --office-accent: var(--color-copper);
   --office-accent-hover: #e0a878;
   --office-accent-bg: rgba(204, 145, 102, 0.1);
@@ -1643,18 +1647,77 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   margin-bottom: 0.25rem;
 }
 
+.office-inbox-filter {
+  border: 1px solid var(--office-border);
+  background: var(--office-filter-bg);
+  color: var(--office-muted);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.office-inbox-filter:hover {
+  color: var(--office-text-emphasis);
+  border-color: var(--office-accent-border);
+}
+
+.office-inbox-filter-active {
+  border-color: var(--office-accent-border-strong);
+  background: var(--office-filter-active-bg);
+  color: var(--office-filter-active-text);
+  font-weight: 600;
+}
+
+.office-inbox-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 .office-inbox-group {
   display: grid;
   gap: 0.5rem;
 }
 
+.office-inbox-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.35rem;
+}
+
 .office-inbox-group-label {
-  margin: 0.5rem 0 0.15rem;
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--office-muted, #94a3b8);
+  color: var(--office-muted, var(--foreground-muted));
+}
+
+.office-inbox-group-count {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: var(--office-filter-active-bg);
+  color: var(--office-filter-active-text);
+}
+
+.office-inbox-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .office-inbox-item {
@@ -1662,19 +1725,46 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid var(--office-border, #334155);
-  border-radius: 0.6rem;
-  background: rgba(2, 6, 23, 0.45);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--command-grid-line, var(--office-border));
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--office-surface, var(--card));
+  box-shadow: var(--shadow-xs, none);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+html[data-theme="letter"] .office-inbox-item {
+  background: var(--surface-white, var(--card));
+  box-shadow: 0 1px 2px rgb(10 37 64 / 0.05);
+}
+
+.office-inbox-item:hover {
+  border-color: color-mix(in srgb, var(--office-accent) 28%, var(--office-border));
 }
 
 .office-inbox-item[data-priority="1"] {
-  border-color: rgba(248, 113, 113, 0.5);
+  border-color: color-mix(in srgb, var(--destructive, #ef4444) 35%, var(--office-border));
 }
 
 .office-inbox-item[data-priority="2"],
 .office-inbox-item[data-priority="3"] {
-  border-color: rgba(251, 191, 36, 0.35);
+  border-color: color-mix(in srgb, var(--warning, #f59e0b) 30%, var(--office-border));
+}
+
+.office-inbox-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.office-inbox-item-content {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
 .office-inbox-item-body {
@@ -1685,15 +1775,27 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 
 .office-inbox-item-title {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--office-text-emphasis);
+  line-height: 1.35;
+  color: var(--office-text-emphasis, var(--foreground));
 }
 
+.office-inbox-item-body,
 .office-inbox-item-body-text {
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--office-muted, #94a3b8);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--office-muted, var(--foreground-muted));
+}
+
+.office-inbox-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--office-muted-dim, var(--foreground-muted));
 }
 
 .office-inbox-item-actions {
@@ -1701,6 +1803,7 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
   flex-wrap: wrap;
   gap: 0.35rem;
   flex-shrink: 0;
+  align-items: flex-start;
 }
 
 /* --- Timeline unificado (Fase A) --------------------------------------- */

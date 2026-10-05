@@ -50,11 +50,11 @@ export const Dialog = forwardRef<HTMLDivElement, DialogInputProps>(
       >
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay
-            className="fixed inset-0 z-[var(--z-modal)] bg-[var(--background)]/60 backdrop-blur-sm transition-opacity duration-200 data-[state=entering]:animate-fade-in"
+            className="fixed inset-0 z-[var(--z-modal-backdrop,1040)] bg-[var(--background)]/60 backdrop-blur-sm transition-opacity duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
           />
           <DialogPrimitive.Content
             ref={ref}
-            className={`relative w-full ${sizeClass} rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)] shadow-xl animate-slide-in overflow-hidden ${className}`}
+            className={`fixed left-1/2 top-1/2 z-[var(--z-modal,1050)] flex w-[calc(100%-2rem)] max-h-[min(90dvh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col ${sizeClass} rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--card)] shadow-xl animate-slide-in overflow-hidden ${className}`}
             {...props}
           >
             {/* Header */}
@@ -148,7 +148,10 @@ export const AlertDialog = ({
       description={description}
       size="sm"
       showClose={false}
-      onHide={onHide}
+      onHide={() => {
+        onCancel?.()
+        onHide?.()
+      }}
       footer={
         <>
           <button

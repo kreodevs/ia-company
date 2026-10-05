@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Maximize2, Minimize2 } from "lucide-react";
 import WarRoomAgentSeat from "./WarRoomAgentSeat";
@@ -103,7 +104,7 @@ export default function WarRoomTable({
     return table;
   }
 
-  return (
+  const shell = (
     <div className={`war-room-table-shell${fullscreen ? " is-fullscreen" : ""} ${shellClassName}`.trim()}>
       {(toolbar || enableFullscreen) && (
         <div className="war-room-table-toolbar">
@@ -129,4 +130,20 @@ export default function WarRoomTable({
       {table}
     </div>
   );
+
+  if (fullscreen && typeof document !== "undefined") {
+    return createPortal(
+      <div
+        className="war-room war-room-fullscreen-portal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("warRoom.fullscreen")}
+      >
+        {shell}
+      </div>,
+      document.body,
+    );
+  }
+
+  return shell;
 }

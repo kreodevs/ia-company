@@ -3166,6 +3166,17 @@ html[data-theme="letter"] .office-link-inline {
   margin-bottom: 1rem;
 }
 
+.office-encargo-live-panel .war-room-table {
+  min-height: 420px;
+  aspect-ratio: 1 / 1;
+}
+
+@media (min-width: 1024px) {
+  .office-encargo-live-panel .war-room-table {
+    min-height: 480px;
+  }
+}
+
 .office-encargo-live-header {
   display: flex;
   flex-wrap: wrap;

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { api, type OfficeDashboard, type OfficeServiceTemplate } from "../lib/api";
 import { encargoContextLine } from "../lib/office-encargo-display";
+import { officeActivosHref } from "../lib/office-trabajo-links";
 import CoordinatorChat from "../components/office/CoordinatorChat";
 import OfficeFloorPlan from "../components/office/OfficeFloorPlan";
 import OfficeOnboardingPanel, {
@@ -141,6 +142,11 @@ export default function OfficePage() {
     return Math.round(((totalRevenueUsd - totalInvestedUsd) / totalInvestedUsd) * 100);
   }, [dashboard]);
 
+  const activosHref = useMemo(
+    () => (dashboard ? officeActivosHref(dashboard) : "/office/trabajo?tab=activos"),
+    [dashboard],
+  );
+
   const pickService = (service: OfficeServiceTemplate) => {
     setServiceId(service.id);
     setChatSeed(t(service.examplePromptKey as "office.serviceTemplates.marketScan.example"));
@@ -185,6 +191,36 @@ export default function OfficePage() {
           </h2>
           <p className="office-home-section-desc">{t("office.homeToday.subtitle")}</p>
         </div>
+        <div className="office-home-metrics" role="list" aria-label={t("office.homeToday.metricsAria")}>
+          <Link
+            to={activosHref}
+            role="listitem"
+            className={cn(
+              "office-home-metric interactive",
+              dashboard.stats.activeRuns > 0 && "office-home-metric--live",
+            )}
+          >
+            <span className="office-home-metric-value tabular-nums">{dashboard.stats.activeRuns}</span>
+            <span className="office-home-metric-label">{t("office.homeHero.activeRuns")}</span>
+          </Link>
+          <Link
+            to="/office/inbox"
+            role="listitem"
+            className={cn(
+              "office-home-metric interactive",
+              dashboard.stats.pendingDecisions > 0 && "office-home-metric--attention",
+            )}
+          >
+            <span className="office-home-metric-value tabular-nums">{dashboard.stats.pendingDecisions}</span>
+            <span className="office-home-metric-label">{t("office.homeHero.pendingDecisions")}</span>
+          </Link>
+          <Link to="#office-home-explore" role="listitem" className="office-home-metric interactive">
+            <span className="office-home-metric-value tabular-nums">
+              {dashboard.departments?.length ?? 0}
+            </span>
+            <span className="office-home-metric-label">{t("office.homeHero.departments")}</span>
+          </Link>
+        </div>
         <div className="office-home-today-grid">
           <Link
             to="/office/inbox"
@@ -206,7 +242,7 @@ export default function OfficePage() {
               <span className="office-home-action-metric tabular-nums">{dashboard.stats.pendingDecisions}</span>
             ) : null}
           </Link>
-          <Link to="/office/trabajo" className="office-home-action-card interactive">
+          <Link to={activosHref} className="office-home-action-card interactive">
             <ClipboardList className="office-home-action-icon" aria-hidden />
             <span className="office-home-action-body">
               <span className="office-home-action-title">{t("office.homeToday.trabajoTitle")}</span>

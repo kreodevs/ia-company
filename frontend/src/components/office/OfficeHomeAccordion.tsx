@@ -34,6 +34,12 @@ export default function OfficeHomeAccordion({
   const [open, setOpen] = useState(() => defaultOpenForViewport(sectionId));
 
   useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === `#office-home-${sectionId}`) {
+      setOpen(true);
+    }
+  }, [sectionId]);
+
+  useEffect(() => {
     const mq = window.matchMedia(MOBILE_MQ);
     const sync = () => {
       if (localStorage.getItem(STORAGE_PREFIX + sectionId) !== null) return;
@@ -54,6 +60,7 @@ export default function OfficeHomeAccordion({
 
   return (
     <section
+      id={`office-home-${sectionId}`}
       className={cn("office-home-accordion", open && "office-home-accordion--open", className)}
     >
       <button
