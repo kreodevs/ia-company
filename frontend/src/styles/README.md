@@ -23,3 +23,5 @@ Brief: dark B2B AI operations console — **stat-led** KPIs, grotesk sans (Inter
 - **`.command-toolbar`** — glass filter bars (period, filters)
 
 Use `PageFrame` + `PageHeader variant="command"` on Office and superadmin pages. Full-height editors use `WorkspaceShell` + `.workspace-canvas`. Letter theme gets the same ambient/grid tokens as dark command center.
+
+**Office home** (`/office`): `.office-home-today` action cards, `.office-home-strategy` direction chips, then lobby chat — see `command-center.css` and `office-theme.css` (`.office-home-lobby`).

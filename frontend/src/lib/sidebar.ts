@@ -23,6 +23,8 @@ export type NavSection = {
   items: NavItem[];
   /** When true, section title toggles visibility of its items (expanded sidebar only). */
   collapsible?: boolean;
+  /** Visual grouping in the sidebar (operate = day-to-day links). */
+  variant?: "default" | "operate";
 };
 
 const GROUP_STORAGE_PREFIX = "auto-company-sidebar-group-";
@@ -37,6 +39,24 @@ export function getStoredNavGroupOpen(id: string, defaultOpen: boolean): boolean
 
 export function setStoredNavGroupOpen(id: string, open: boolean): void {
   localStorage.setItem(GROUP_STORAGE_PREFIX + id, open ? "1" : "0");
+}
+
+const MOBILE_NAV_MQ = "(max-width: 767px)";
+
+/** Collapsible Office sections start closed on small screens unless the route is active. */
+export function getDefaultNavSectionOpen(sectionId: string, sectionActive: boolean): boolean {
+  if (sectionActive) return true;
+  if (typeof window === "undefined") return true;
+  if (
+    window.matchMedia(MOBILE_NAV_MQ).matches &&
+    (sectionId === "office-strategy" ||
+      sectionId === "office-portfolio" ||
+      sectionId === "office-catalog" ||
+      sectionId === "debug")
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export function getStoredNavSectionOpen(id: string, defaultOpen: boolean): boolean {

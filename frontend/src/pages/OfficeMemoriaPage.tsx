@@ -92,17 +92,11 @@ function CompanyMemoryEditor() {
 
   return (
     <Panel
-      title={t("office.memoria.tabs.empresa")}
-      subtitle={t("consensus.companyHelp", { defaultValue: "Company-level memory: phase, pipeline and next action." })}
+      title={t("consensus.document")}
       actions={
-        <div className="flex flex-wrap gap-2">
-          <Button variant="destructive" size="sm" onClick={() => void clearConsensus()} disabled={clearing || saving}>
-            {clearing ? t("common.loading") : t("consensus.clearConsensus")}
-          </Button>
-          <Button size="sm" onClick={() => void save()} disabled={saving || !dirty || clearing}>
-            {saving ? t("common.saving") : t("consensus.saveConsensus")}
-          </Button>
-        </div>
+        <Button size="sm" onClick={() => void save()} disabled={saving || !dirty || clearing}>
+          {saving ? t("common.saving") : t("consensus.saveConsensus")}
+        </Button>
       }
       hover
     >
@@ -114,6 +108,16 @@ function CompanyMemoryEditor() {
           placeholder={t("consensus.nextActionPlaceholder")}
         />
         <MarkdownPreview value={content} onChange={setContent} rows={16} ariaLabel={t("consensus.document")} />
+        <div className="border-t border-[var(--color-border)] pt-4">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => void clearConsensus()}
+            disabled={clearing || saving}
+          >
+            {clearing ? t("common.loading") : t("consensus.clearConsensus")}
+          </Button>
+        </div>
       </div>
     </Panel>
   );
@@ -288,7 +292,17 @@ export default function OfficeMemoriaPage() {
         </Panel>
       )}
 
-      {tab === "empresa" ? <CompanyMemoryEditor /> : null}
+      {tab === "empresa" ? (
+        <>
+          <div className="office-memoria-chat-cta">
+            <p className="office-memoria-chat-cta-text">{t("office.memoria.coordinatorCta")}</p>
+            <Link to="/office#office-coordinator-chat" className="office-link-btn office-link-btn-emphasis">
+              {t("office.emptyCta.coordinator")}
+            </Link>
+          </div>
+          <CompanyMemoryEditor />
+        </>
+      ) : null}
 
       {tab === "producto" && productId ? (
         <div className="office-memoria-product-embed">

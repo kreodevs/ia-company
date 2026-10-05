@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ClipboardList, Inbox, MessageSquare } from "lucide-react";
 import { api, type OfficeEncargoDetail } from "../lib/api";
+import OfficeActionCardLink from "../components/office/OfficeActionCardLink";
+import { usePendingDecisionsCount } from "../hooks/usePendingDecisionsCount";
 import OfficeEncargoLivePanel from "../components/office/OfficeEncargoLivePanel";
 import PageLoading from "../components/ui/PageLoading";
 import PageFrame from "../components/ui/PageFrame";
@@ -48,6 +51,20 @@ export default function OfficeTrabajoPage() {
   const initiativeId = searchParams.get("initiativeId")?.trim() || null;
   const [highlightEncargo, setHighlightEncargo] = useState<OfficeEncargoDetail | null>(null);
   const [loadingRun, setLoadingRun] = useState(false);
+  const [activeCount, setActiveCount] = useState(0);
+  const pendingDecisions = usePendingDecisionsCount(true);
+
+  useEffect(() => {
+    api.office
+      .encargos({ limit: 80 })
+      .then((res) => {
+        const n = res.items.filter(
+          (i) => i.phase === "in_progress" || i.phase === "queued",
+        ).length;
+        setActiveCount(n);
+      })
+      .catch(() => setActiveCount(0));
+  }, [tab]);
 
   const setTab = (next: TrabajoTab) => {
     setSearchParams((prev) => {
@@ -122,6 +139,43 @@ export default function OfficeTrabajoPage() {
           </Link>
         </div>
       </header>
+
+      <section className="office-home-today office-trabajo-today" aria-labelledby="office-trabajo-today-title">
+        <h2 id="office-trabajo-today-title" className="office-home-section-title">
+          {t("office.trabajo.todayTitle")}
+        </h2>
+        <div className="office-home-today-grid">
+          <OfficeActionCardLink
+            to="/office/trabajo?tab=activos"
+            icon={ClipboardList}
+            title={t("office.trabajo.tabs.activos")}
+            description={
+              activeCount > 0
+                ? t("office.homeToday.trabajoDesc", { count: activeCount })
+                : t("office.homeToday.trabajoDescEmpty")
+            }
+            metric={activeCount}
+          />
+          <OfficeActionCardLink
+            to="/office/trabajo?tab=pendientes"
+            icon={Inbox}
+            title={t("office.trabajo.tabs.pendientes")}
+            description={
+              pendingDecisions > 0
+                ? t("office.homeToday.inboxDesc", { count: pendingDecisions })
+                : t("office.homeToday.inboxDescEmpty")
+            }
+            metric={pendingDecisions}
+            attention={pendingDecisions > 0}
+          />
+          <OfficeActionCardLink
+            to="/office#office-coordinator-chat"
+            icon={MessageSquare}
+            title={t("office.emptyCta.coordinatorShort")}
+            description={t("office.trabajo.todayCoordinatorDesc")}
+          />
+        </div>
+      </section>
 
       <div
         className="office-encargos-filters office-trabajo-tabs"

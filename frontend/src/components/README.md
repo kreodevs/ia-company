@@ -36,7 +36,7 @@ Synced via MCP `user-kreo` (`upgrade_component` + dependency pulls). Skipped loc
 | Shared widgets | `LlmProviderCredentialPanel.tsx` | Collapsible provider credential block on platform LLM settings (configured = collapsed + summary) |
 | Shared widgets | `ThemeSwitcher.tsx` | Stripe HDS Light / Paperclip Warm / Slash theme selector |
 | Layout | `AppLayout.tsx` | Authenticated shell: sidebar + top bar + content; monta `OfficeGlobalSearch` (⌘K) |
-| Layout | `AppSidebar.tsx` | Oficina + **Oficina de depuración** (sección colapsable) + **Catálogo IA** (grupo colapsable) |
+| Layout | `AppSidebar.tsx` | Tenant nav por tareas: **Tu oficina** (inicio, trabajo, bandeja) → **Estrategia** → **Memoria** → **Portfolio** → **Catálogo IA** → **Administración**; depuración colapsable en modo avanzado (`lib/sidebar.ts`) |
 | Layout | `AppHeader.tsx` | Fixed top bar (tenant, theme, language, logout); solid at top, translucent + blur on scroll |
 | Layout | `AuthPageShell.tsx` | Unauthenticated pages: gradient backdrop + centered card column |
 | Workflows | `WorkflowCanvas.tsx` | React Flow editor: floating toolbar (add/save), node panel (agent, label, delete), drag/connect/delete key |

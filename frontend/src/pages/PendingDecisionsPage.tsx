@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Check, ChevronRight, GitBranch, X } from "lucide-react";
 import { api, type DecisionProposal, type DecisionStatus } from "../lib/api";
@@ -12,6 +12,7 @@ import Input from "../components/ui/Input";
 import Panel from "../components/ui/Panel";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import EmptyState from "../components/ui/EmptyState";
+import { toast } from "../components/molecules/Sonner";
 import StatusPill from "../components/ui/StatusPill";
 import DecisionEvidencePanel from "../components/decisions/DecisionEvidencePanel";
 import DecisionExecutiveSummary from "../components/decisions/DecisionExecutiveSummary";
@@ -58,6 +59,7 @@ export default function PendingDecisionsPage({
   onInboxTabChange?: (tab: InboxTab) => void;
 } = {}) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const actorEmail = useDecisionActorEmail();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = controlledInboxTab ?? parseInboxTab(searchParams.get("tab"));
@@ -80,11 +82,24 @@ export default function PendingDecisionsPage({
     refresh();
   }, []);
 
-  const act = async (id: string, fn: () => Promise<unknown>) => {
+  const act = async (
+    id: string,
+    fn: () => Promise<unknown>,
+    options?: { followUpRunId?: string | null },
+  ) => {
     setBusy(id);
     try {
       await fn();
       await refresh();
+      if (options?.followUpRunId) {
+        const href = `/office/trabajo?tab=activos&run=${encodeURIComponent(options.followUpRunId)}`;
+        toast.success(t("office.inbox.approvedFollowUp"), {
+          action: {
+            label: t("office.inbox.continueWork"),
+            onClick: () => navigate(href),
+          },
+        });
+      }
     } finally {
       setBusy(null);
     }
@@ -186,6 +201,17 @@ export default function PendingDecisionsPage({
           <EmptyState
             title={t("decisions.emptyTitle")}
             description={t(`pendientes.empty.${tab}`)}
+            action={
+              tab === "pending" ? (
+                <Link to="/office#office-coordinator-chat" className="office-link-btn office-link-btn-emphasis">
+                  {t("office.emptyCta.coordinator")}
+                </Link>
+              ) : (
+                <Link to="/office/inbox" className="office-link-btn">
+                  {t("office.emptyCta.inbox")}
+                </Link>
+              )
+            }
           />
         ) : (
           <ol className="space-y-6">
@@ -293,7 +319,11 @@ export default function PendingDecisionsPage({
                         <Button
                           disabled={busy === p.id}
                           onClick={() =>
-                            void act(p.id, () => api.decisions.approve(p.id, { actorEmail }))
+                            void act(
+                              p.id,
+                              () => api.decisions.approve(p.id, { actorEmail }),
+                              { followUpRunId: p.runId },
+                            )
                           }
                           size="sm"
                         >
