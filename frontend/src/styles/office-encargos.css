@@ -1531,11 +1531,116 @@ html[data-theme="letter"] .office-encargo-phase[data-phase="queued"] {
 
 /* --- Inbox ------------------------------------------------------------- */
 
+.office-inbox-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 .office-inbox-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-bottom: 1rem;
+}
+
+.office-inbox-filters-secondary {
+  margin-top: 0.35rem;
+}
+
+.office-inbox-more-filters summary {
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground-muted);
+  list-style: none;
+}
+
+.office-inbox-more-filters summary::-webkit-details-marker {
+  display: none;
+}
+
+.office-inbox-next {
+  margin-bottom: 1.25rem;
+}
+
+.office-inbox-next-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+.office-inbox-next-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--primary)) 35%, var(--border));
+  background: color-mix(in srgb, var(--accent, var(--primary)) 8%, var(--card));
+}
+
+.office-inbox-next-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.office-inbox-next-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.office-memoria-chat-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid var(--command-grid-line, var(--color-border));
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+}
+
+.office-memoria-chat-cta-text {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.875rem;
+  color: var(--foreground-muted);
+}
+
+.office-lobby-aside-heading {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+@media (min-width: 1024px) {
+  .office-lobby-aside-heading {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .office-lobby-aside {
+    margin-top: 0.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--command-grid-line, var(--surface-sidebar-border));
+  }
+}
+
+.office-trabajo-today {
+  margin-bottom: 0.25rem;
 }
 
 .office-inbox-group {

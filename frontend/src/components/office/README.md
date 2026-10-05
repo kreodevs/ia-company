@@ -5,6 +5,8 @@
 | `OfficeEncargoLivePanel` | Embeddable live war-room table for an encargo (trabajo hub + detail) |
 | `OfficeCompanyMemoryPanel` | Compact tenant consensus preview on home/archive; links to `/office/memoria` |
 | `CoordinatorChat` | Chat streaming; `executeRedirect` auto → war room (product) or `/office/trabajo` (general); thread memory in localStorage |
+| `OfficeHomeAccordion` | Collapsible home blocks (floor plan, portfolio) — mobile-first default |
+| `OfficeActionCardLink` | Shared “Hoy” action card (home, trabajo) |
 | `OfficeFloorPlan` | Virtual office floor — departments, reception, busy/idle (letter theme: white cards on pale gradient) |
 | `OfficeScopeBar` | Product + org-unit scope selectors on the home office (`/office`) |
 | `OfficePulseDrawer` | Collapsible KPI strip (Kreo `DashboardKPI`) — metrics hidden by default on home |
@@ -36,7 +38,18 @@
 
 Páginas: `OfficeObjectiveDetailPage` en `/office/objetivos/:goalId` — KPIs, rollups por iniciativa y encargos vinculados.
 
-## Home layout (Oleada 1)
+## Home layout (`OfficePage`)
+
+1. **Hoy** — tarjetas Bandeja / Mi trabajo / Memoria + enlaces de dirección (dashboard, objetivos, organigrama, iniciativas).
+2. **Recepción** — chat del coordinador + actividad lateral (prioridad visual).
+3. **Planta** — `OfficeFloorPlan` debajo del chat (`OfficeHomeAccordion`, id `explore`).
+4. **Servicios y cartera** — plantillas + ROI (`OfficeHomeAccordion`, id `portfolio`).
+
+Acordeones: cerrados por defecto en viewport ≤767px; abiertos en desktop. La preferencia del usuario se guarda en `localStorage` (`ac.office-home-section-*`).
+
+`OfficePulseDrawer` sigue disponible para métricas bajo demanda.
+
+## Home layout (Oleada 1, histórico)
 
 `/office` order: **floor plan → reception/chat lobby → archive sidebar → collapsed pulse metrics → services/ROI**.
 

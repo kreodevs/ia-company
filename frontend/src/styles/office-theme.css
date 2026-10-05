@@ -136,14 +136,14 @@ html[data-theme="paperclip"] .office-eyebrow {
   );
 }
 
-.office-page-home .office-grid {
+.office-page-home .office-home-lobby {
   flex: 1;
   align-items: stretch;
   min-height: 0;
 }
 
 @media (min-width: 1101px) {
-  .office-page-home .office-grid {
+  .office-page-home .office-home-lobby {
     min-height: 28rem;
   }
 }
@@ -169,7 +169,7 @@ html[data-theme="paperclip"] .office-eyebrow {
     min-height: 0;
   }
 
-  .office-page-home .office-grid {
+  .office-page-home .office-home-lobby {
     flex: none;
   }
 

@@ -562,6 +562,31 @@ html[data-sidebar-collapsed="true"] .app-sidebar {
   border-top: 1px solid var(--surface-sidebar-border);
 }
 
+.sidebar-section {
+  margin-block-end: 0.35rem;
+}
+
+.sidebar-section--operate {
+  margin-block-end: 0.75rem;
+  padding-block-end: 0.65rem;
+  border-bottom: 1px solid var(--surface-sidebar-border);
+}
+
+.sidebar-section--operate .sidebar-link {
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.sidebar-link-attention:not(.sidebar-link-active) {
+  background: color-mix(in srgb, var(--accent, var(--primary)) 10%, transparent);
+  color: var(--foreground);
+}
+
+.sidebar-link-attention .sidebar-nav-badge {
+  font-weight: 700;
+}
+
 .sidebar-link {
   display: flex;
   align-items: center;

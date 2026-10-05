@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { LayoutDashboard } from "lucide-react";
+import {
+  ClipboardList,
+  Crosshair,
+  Inbox,
+  LayoutDashboard,
+  Brain,
+  Network,
+  ClipboardCheck,
+} from "lucide-react";
 import { api, type OfficeDashboard, type OfficeServiceTemplate } from "../lib/api";
 import { encargoContextLine } from "../lib/office-encargo-display";
 import CoordinatorChat from "../components/office/CoordinatorChat";
@@ -14,11 +22,13 @@ import OfficePulseDrawer from "../components/office/OfficePulseDrawer";
 import OfficeRecentArchive from "../components/office/OfficeRecentArchive";
 import OfficeCompanyMemoryPanel from "../components/office/OfficeCompanyMemoryPanel";
 import OfficeReceptionOverlay from "../components/office/OfficeReceptionOverlay";
+import OfficeHomeAccordion from "../components/office/OfficeHomeAccordion";
 import OfficeScopeBar from "../components/office/OfficeScopeBar";
 import { DEPARTMENT_SCOPE_GENERAL } from "../components/office/DepartmentRoomView";
 import { NotificationPermissionPrompt } from "../components/office/NotificationBell";
 import PageLoading from "../components/ui/PageLoading";
 import PageFrame from "../components/ui/PageFrame";
+import { cn } from "../lib/utils";
 
 export default function OfficePage() {
   const { t } = useTranslation();
@@ -165,40 +175,80 @@ export default function OfficePage() {
             <span aria-hidden>●</span>
             {t(`office.mode.${dashboard.mode}`)}
           </div>
-          {dashboard.stats.pendingDecisions > 0 ? (
-          <Link to="/office/inbox?category=decision" className="office-link-btn office-link-btn-emphasis">
-            {t("nav.inbox")} ({dashboard.stats.pendingDecisions})
-          </Link>
-          ) : null}
-          <Link to="/office/trabajo" className="office-link-btn">
-            {t("nav.trabajo")}
-          </Link>
-          <Link to="/office/archive" className="office-link-btn">
-            {t("office.archive.title")}
-          </Link>
         </div>
       </header>
 
-      <section className="office-command-hero" aria-label={t("office.pulse.title")}>
-        <div className="office-command-hero-glow" aria-hidden />
-        <ul className="office-command-hero-metrics">
-          <li>
-            <span className="office-command-hero-value tabular-nums">{dashboard.stats.activeRuns}</span>
-            <span className="office-command-hero-label">{t("office.homeHero.activeRuns")}</span>
-          </li>
-          <li>
-            <span className="office-command-hero-value tabular-nums">{dashboard.stats.pendingDecisions}</span>
-            <span className="office-command-hero-label">{t("office.homeHero.pendingDecisions")}</span>
-          </li>
-          <li>
-            <span className="office-command-hero-value tabular-nums">{dashboard.departments?.length ?? 0}</span>
-            <span className="office-command-hero-label">{t("office.homeHero.departments")}</span>
-          </li>
-        </ul>
-        <Link to="/office/dashboard" className="office-command-hero-cta interactive">
-          <LayoutDashboard className="h-4 w-4" aria-hidden />
-          {t("office.homeHero.ctaDashboard")}
-        </Link>
+      <section className="office-home-today" aria-labelledby="office-home-today-title">
+        <div className="office-home-today-intro">
+          <h2 id="office-home-today-title" className="office-home-section-title">
+            {t("office.homeToday.title")}
+          </h2>
+          <p className="office-home-section-desc">{t("office.homeToday.subtitle")}</p>
+        </div>
+        <div className="office-home-today-grid">
+          <Link
+            to="/office/inbox"
+            className={cn(
+              "office-home-action-card interactive",
+              dashboard.stats.pendingDecisions > 0 && "office-home-action-card--attention",
+            )}
+          >
+            <Inbox className="office-home-action-icon" aria-hidden />
+            <span className="office-home-action-body">
+              <span className="office-home-action-title">{t("office.homeToday.inboxTitle")}</span>
+              <span className="office-home-action-desc">
+                {dashboard.stats.pendingDecisions > 0
+                  ? t("office.homeToday.inboxDesc", { count: dashboard.stats.pendingDecisions })
+                  : t("office.homeToday.inboxDescEmpty")}
+              </span>
+            </span>
+            {dashboard.stats.pendingDecisions > 0 ? (
+              <span className="office-home-action-metric tabular-nums">{dashboard.stats.pendingDecisions}</span>
+            ) : null}
+          </Link>
+          <Link to="/office/trabajo" className="office-home-action-card interactive">
+            <ClipboardList className="office-home-action-icon" aria-hidden />
+            <span className="office-home-action-body">
+              <span className="office-home-action-title">{t("office.homeToday.trabajoTitle")}</span>
+              <span className="office-home-action-desc">
+                {dashboard.stats.activeRuns > 0
+                  ? t("office.homeToday.trabajoDesc", { count: dashboard.stats.activeRuns })
+                  : t("office.homeToday.trabajoDescEmpty")}
+              </span>
+            </span>
+            {dashboard.stats.activeRuns > 0 ? (
+              <span className="office-home-action-metric tabular-nums">{dashboard.stats.activeRuns}</span>
+            ) : null}
+          </Link>
+          <Link to="/office/memoria" className="office-home-action-card interactive">
+            <Brain className="office-home-action-icon" aria-hidden />
+            <span className="office-home-action-body">
+              <span className="office-home-action-title">{t("office.homeToday.memoriaTitle")}</span>
+              <span className="office-home-action-desc">{t("office.homeToday.memoriaDesc")}</span>
+            </span>
+          </Link>
+        </div>
+        <nav className="office-home-strategy" aria-label={t("office.homeToday.strategyAria")}>
+          <span className="office-home-strategy-label">{t("office.homeToday.strategyTitle")}</span>
+          <div className="office-home-strategy-links">
+            <Link to="/office/dashboard" className="office-home-strategy-link interactive">
+              <LayoutDashboard className="h-3.5 w-3.5" aria-hidden />
+              {t("nav.dashboard")}
+            </Link>
+            <Link to="/office/objetivos" className="office-home-strategy-link interactive">
+              <Crosshair className="h-3.5 w-3.5" aria-hidden />
+              {t("nav.objectives")}
+            </Link>
+            <Link to="/office/organigrama" className="office-home-strategy-link interactive">
+              <Network className="h-3.5 w-3.5" aria-hidden />
+              {t("nav.organigram")}
+            </Link>
+            <Link to="/office/iniciativas" className="office-home-strategy-link interactive">
+              <ClipboardCheck className="h-3.5 w-3.5" aria-hidden />
+              {t("nav.initiatives")}
+            </Link>
+          </div>
+        </nav>
       </section>
 
       <NotificationPermissionPrompt />
@@ -215,13 +265,7 @@ export default function OfficePage() {
         />
       )}
 
-      <OfficeFloorPlan
-        departments={dashboard.departments ?? []}
-        agents={dashboard.agents}
-        onReceptionClick={openReception}
-      />
-
-      <section className="office-lobby" aria-label={t("office.lobby.title")}>
+      <section className="office-lobby office-home-lobby" aria-label={t("office.lobby.title")}>
         <div className="office-lobby-main">
           <section className="office-task-panel office-chat-panel" id="office-coordinator-chat">
             <div className="office-lobby-chat-header">
@@ -256,7 +300,8 @@ export default function OfficePage() {
           </section>
         </div>
 
-        <aside className="office-lobby-aside">
+        <aside className="office-lobby-aside" aria-label={t("office.lobby.asideTitle")}>
+          <p className="office-lobby-aside-heading">{t("office.lobby.asideTitle")}</p>
           <OfficeCompanyMemoryPanel compact />
           <OfficeRecentArchive />
           <div className="office-panel office-lobby-activity">
@@ -312,13 +357,39 @@ export default function OfficePage() {
         </aside>
       </section>
 
+      <OfficeHomeAccordion
+        sectionId="explore"
+        className="office-home-explore"
+        title={t("office.homeToday.exploreTitle")}
+        description={
+          <>
+            {t("office.homeToday.exploreSubtitle")}
+            <span className="office-home-explore-meta">
+              · {t("office.homeToday.departmentCount", { count: dashboard.departments?.length ?? 0 })}
+            </span>
+          </>
+        }
+      >
+        <OfficeFloorPlan
+          departments={dashboard.departments ?? []}
+          agents={dashboard.agents}
+          onReceptionClick={openReception}
+        />
+      </OfficeHomeAccordion>
+
       <OfficePulseDrawer
         dashboard={dashboard}
         spendPct={spendPct}
         portfolioRoi={portfolioRoi}
       />
 
-      <div className="office-grid office-grid-secondary">
+      <OfficeHomeAccordion
+        sectionId="portfolio"
+        className="office-home-portfolio"
+        title={t("office.homeToday.portfolioTitle")}
+        description={t("office.homeToday.portfolioDesc")}
+      >
+        <div className="office-grid office-grid-secondary">
         <aside className="office-panel">
           <h2 className="office-panel-title">{t("office.services.title")}</h2>
           <p className="office-panel-subtitle">{t("office.services.subtitle")}</p>
@@ -385,7 +456,8 @@ export default function OfficePage() {
             </div>
           )}
         </aside>
-      </div>
+        </div>
+      </OfficeHomeAccordion>
 
       <OfficeReceptionOverlay
         open={receptionOpen}

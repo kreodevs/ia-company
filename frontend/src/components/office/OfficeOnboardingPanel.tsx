@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { OfficeDashboard } from "../../lib/api";
 
-const STORAGE_KEY = "ac.office-onboarding-v1";
+const STORAGE_KEY = "ac.office-onboarding-v2";
 
 export function isOfficeOnboardingDismissed(): boolean {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "1";
+    return (
+      localStorage.getItem(STORAGE_KEY) === "1" || localStorage.getItem("ac.office-onboarding-v1") === "1"
+    );
   } catch {
     return false;
   }
@@ -29,6 +31,7 @@ export function shouldShowOfficeOnboarding(dashboard: OfficeDashboard): boolean 
 
 interface OfficeOnboardingPanelProps {
   dashboard: OfficeDashboard;
+  /** @deprecated kept for call-site compatibility */
   customDeptCount?: number;
   virtualDeptCount?: number;
   onDismiss: () => void;
@@ -36,35 +39,33 @@ interface OfficeOnboardingPanelProps {
 
 export default function OfficeOnboardingPanel({
   dashboard,
-  customDeptCount = 0,
-  virtualDeptCount = 0,
   onDismiss,
 }: OfficeOnboardingPanelProps) {
   const { t } = useTranslation();
 
   const steps = [
     {
+      id: "chat",
+      done: dashboard.activity.some(
+        (a) => a.type === "run_completed" || a.type === "run_active",
+      ),
+      titleKey: "office.onboarding.stepChat",
+      descKey: "office.onboarding.stepChatDesc",
+      to: "/office#office-coordinator-chat",
+    },
+    {
+      id: "inbox",
+      done: dashboard.stats.pendingDecisions === 0 && dashboard.activity.length > 0,
+      titleKey: "office.onboarding.stepInbox",
+      descKey: "office.onboarding.stepInboxDesc",
+      to: "/office/inbox",
+    },
+    {
       id: "team",
       done: dashboard.stats.agentsTotal >= 1,
       titleKey: "office.onboarding.stepTeam",
       descKey: "office.onboarding.stepTeamDesc",
       to: "/settings/specialists",
-    },
-    {
-      id: "dept",
-      done: customDeptCount > 0 || virtualDeptCount > 0,
-      titleKey: "office.onboarding.stepDept",
-      descKey: "office.onboarding.stepDeptDesc",
-      to: "/org-studio",
-    },
-    {
-      id: "task",
-      done: dashboard.activity.some(
-        (a) => a.type === "run_completed" || a.type === "run_active",
-      ),
-      titleKey: "office.onboarding.stepTask",
-      descKey: "office.onboarding.stepTaskDesc",
-      to: "#office-coordinator-chat",
     },
   ] as const;
 

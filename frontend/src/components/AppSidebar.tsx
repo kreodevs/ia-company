@@ -38,6 +38,7 @@ import {
   flattenNavItems,
   getStoredSidebarCollapsed,
   getStoredNavGroupOpen,
+  getDefaultNavSectionOpen,
   getStoredNavSectionOpen,
   navItemIsActive,
   sectionIsActive,
@@ -91,6 +92,7 @@ function SidebarNavLink({
   collapsed,
   nested = false,
   badge,
+  attention = false,
   onNavigate,
 }: {
   to: string;
@@ -99,6 +101,7 @@ function SidebarNavLink({
   collapsed: boolean;
   nested?: boolean;
   badge?: number;
+  attention?: boolean;
   onNavigate?: () => void;
 }) {
   const location = useLocation();
@@ -118,6 +121,7 @@ function SidebarNavLink({
         active && "sidebar-link-active",
         collapsed && "sidebar-link-collapsed",
         nested && !collapsed && "sidebar-link-nested",
+        attention && "sidebar-link-attention",
       )}
     >
       <Icon className="sidebar-link-icon" aria-hidden />
@@ -232,6 +236,7 @@ function SidebarNavEntry({
       label={t(item.labelKey)}
       collapsed={collapsed}
       badge={item.badge}
+      attention={item.badge != null && item.badge > 0}
       onNavigate={onNavigate}
     />
   );
@@ -250,7 +255,10 @@ function SidebarSection({
   const location = useLocation();
   const active = sectionIsActive(location.pathname, section);
   const [open, setOpen] = useState(() =>
-    getStoredNavSectionOpen(section.id, section.collapsible ? active : true),
+    getStoredNavSectionOpen(
+      section.id,
+      section.collapsible ? getDefaultNavSectionOpen(section.id, active) : true,
+    ),
   );
 
   useEffect(() => {
@@ -268,7 +276,12 @@ function SidebarSection({
   const showItems = !section.collapsible || collapsed || open;
 
   return (
-    <div className="space-y-1">
+    <div
+      className={cn(
+        "sidebar-section space-y-1",
+        section.variant === "operate" && "sidebar-section--operate",
+      )}
+    >
       {!collapsed && section.collapsible ? (
         <button
           type="button"
@@ -360,32 +373,60 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: AppSidebarProp
 
     if (showTenantNav) {
       result.push({
-        id: "office",
-        titleKey: "nav.sectionOffice",
+        id: "office-operate",
+        titleKey: "nav.groupOffice",
+        variant: "operate",
         items: [
           { to: "/office", labelKey: "nav.office", end: true },
-          {
-            labelKey: "nav.groupStrategy",
-            children: [
-              { to: "/office/dashboard", labelKey: "nav.dashboard" },
-              { to: "/office/organigrama", labelKey: "nav.organigram" },
-              { to: "/office/objetivos", labelKey: "nav.objectives" },
-              { to: "/office/iniciativas", labelKey: "nav.initiatives" },
-            ],
-          },
           { to: "/office/trabajo", labelKey: "nav.trabajo" },
           { to: "/office/inbox", labelKey: "nav.inbox", badge: pendingDecisions },
-          { to: "/office/memoria", labelKey: "nav.memoria" },
-          { to: "/office/archive", labelKey: "nav.archive" },
-          { to: "/war-room", labelKey: "nav.warRoom" },
-          { to: "/products", labelKey: "nav.products" },
-          { to: "/org-units", labelKey: "nav.orgUnits" },
-          { to: "/org-studio", labelKey: "nav.orgStudio" },
-          ...(isTenantAdmin
-            ? [{ to: "/settings", labelKey: "nav.settings", end: true } as NavItem]
-            : []),
         ],
       });
+      result.push({
+        id: "office-strategy",
+        titleKey: "nav.groupStrategy",
+        collapsible: true,
+        items: [
+          { to: "/office/dashboard", labelKey: "nav.dashboard" },
+          { to: "/office/organigrama", labelKey: "nav.organigram" },
+          { to: "/office/objetivos", labelKey: "nav.objectives" },
+          { to: "/office/iniciativas", labelKey: "nav.initiatives" },
+        ],
+      });
+      result.push({
+        id: "office-memory",
+        titleKey: "nav.groupMemory",
+        items: [
+          { to: "/office/memoria", labelKey: "nav.memoria" },
+          { to: "/office/archive", labelKey: "nav.archive" },
+        ],
+      });
+      result.push({
+        id: "office-portfolio",
+        titleKey: "nav.groupAutonomous",
+        collapsible: true,
+        items: [
+          { to: "/war-room", labelKey: "nav.warRoom" },
+          { to: "/products", labelKey: "nav.products" },
+        ],
+      });
+      result.push({
+        id: "office-catalog",
+        titleKey: "nav.groupCatalog",
+        collapsible: true,
+        items: [
+          { to: "/org-units", labelKey: "nav.orgUnits" },
+          { to: "/org-studio", labelKey: "nav.orgStudio" },
+        ],
+      });
+      if (isTenantAdmin) {
+        result.push({
+          id: "office-admin",
+          titleKey: "nav.groupAdministration",
+          collapsible: true,
+          items: [{ to: "/settings", labelKey: "nav.settings", end: true }],
+        });
+      }
 
       if (advancedMode) {
         const debugItems: NavItem[] = [
